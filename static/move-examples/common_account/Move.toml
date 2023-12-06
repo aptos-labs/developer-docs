@@ -1,0 +1,9 @@
+[package]
+name = "CommonAccount"
+version = "1.0.0"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }
+
+[addresses]
+common_account = "_"

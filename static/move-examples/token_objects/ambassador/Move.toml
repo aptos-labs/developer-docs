@@ -1,0 +1,11 @@
+[package]
+name = 'ambassador'
+version = '1.0.0'
+
+# do not change to "_", concrete address needed for module-publish testing framework
+[addresses]
+ambassador = "0xCAFE"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }
+AptosTokenObjects = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-token-objects" }

@@ -1,0 +1,9 @@
+[package]
+name = "ArgumentExample"
+version = "0.0.0"
+
+[addresses]
+deploy_address = "_"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }

@@ -1,0 +1,11 @@
+[package]
+name = "ResourceGroupsSecondary"
+version = "0.0.0"
+
+[addresses]
+resource_groups_primary = "_"
+resource_groups_secondary = "_"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }
+ResourceGroupsPrimary = { local = "../primary" }

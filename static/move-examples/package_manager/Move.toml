@@ -1,0 +1,11 @@
+[package]
+name = "package_manager"
+version = "1.0.0"
+upgrade_policy = "compatible"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }
+
+[addresses]
+deployer = "_"
+package = "_"

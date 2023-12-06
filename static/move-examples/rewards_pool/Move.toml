@@ -1,0 +1,9 @@
+[package]
+name = "Examples"
+version = "1.0.0"
+
+[addresses]
+rewards_pool = "_"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }
