@@ -344,7 +344,7 @@ The general term for the item that introduces the bindings is a _pattern_. The p
 both destructure data (possibly recursively) and introduce the bindings. The pattern grammar is as
 follows:
 
-> _pattern_ → _local-variable_ | _struct-type_ **{** _field-binding-list_ **}**
+> _pattern_ → _local-variable_ | _struct-type_ { _field-binding-list_ }
 
 > _field-binding-list_ → _field-binding_ **,**<sub>_opt_</sub> | _field-binding_ **,** _field-binding-list_
 

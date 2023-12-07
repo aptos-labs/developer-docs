@@ -77,7 +77,7 @@ git clone https://github.com/aptos-labs/aptos-core.git
 ## Step 3: Understand the output
 
 <Tabs groupId="sdk-output">
-<TabItem value="typescript" label="Typescript">
+  <TabItem value="typescript" label="Typescript">
 
 The following output should appear after executing the `simple_digital_asset` example, though some values will be different:
 
@@ -162,12 +162,13 @@ Bob's digital assets balance: 1
 
 This example demonstrates:
 
+<Details>
 * Initializing the Aptos client.
 * The creation of two accounts: Alice and Bob.
 * The funding and creation of Alice and Bob's accounts.
 * The creation of a collection and a token using Alice's account.
 * Alice sending a token to Bob.
-
+</Details>
 
   </TabItem>
   <TabItem value="python" label="Python">
@@ -213,13 +214,14 @@ Token owner: Alice
 
 This example demonstrates:
 
+<Details>
 * Initializing the REST and faucet clients.
 * The creation of two accounts: Alice and Bob.
 * The funding and creation of Alice and Bob's accounts.
 * The creation of a collection and a token using Alice's account.
 * Alice sending a token to Bob.
 * Bob sending the token back to Alice.
-
+</Details>
 
   </TabItem>
 </Tabs>

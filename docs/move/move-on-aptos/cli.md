@@ -60,47 +60,47 @@ The `aptos` CLI can be used to analyze and improve the testing of your Move modu
 3. Receive results in standard output containing the result for each test case followed by a basic coverage summary resembling:
    ```bash
    BUILDING MoveStdlib
-Running Move unit tests
-[ PASS    ] 0x1::vector_tests::append_empties_is_empty
-[ PASS    ] 0x1::option_tests::borrow_mut_none
-[ PASS    ] 0x1::fixed_point32_tests::ceil_can_round_up_correctly
-[ PASS    ] 0x1::features::test_change_feature_txn
-[ PASS    ] 0x1::bcs_tests::bcs_bool
-[ PASS    ] 0x1::bit_vector_tests::empty_bitvector
-[ PASS    ] 0x1::option_tests::borrow_mut_some
-Test result: OK. Total tests: 149; passed: 149; failed: 0
-+-------------------------+
-| Move Coverage Summary   |
-+-------------------------+
-Module 0000000000000000000000000000000000000000000000000000000000000001::bcs
->>> % Module coverage: NaN
-Module 0000000000000000000000000000000000000000000000000000000000000001::fixed_point32
->>> % Module coverage: 100.00
-Module 0000000000000000000000000000000000000000000000000000000000000001::hash
->>> % Module coverage: NaN
-Module 0000000000000000000000000000000000000000000000000000000000000001::vector
->>> % Module coverage: 92.19
-Module 0000000000000000000000000000000000000000000000000000000000000001::error
->>> % Module coverage: 0.00
-Module 0000000000000000000000000000000000000000000000000000000000000001::acl
->>> % Module coverage: 0.00
-Module 0000000000000000000000000000000000000000000000000000000000000001::bit_vector
->>> % Module coverage: 97.32
-Module 0000000000000000000000000000000000000000000000000000000000000001::signer
->>> % Module coverage: 100.00
-Module 0000000000000000000000000000000000000000000000000000000000000001::features
->>> % Module coverage: 69.41
-Module 0000000000000000000000000000000000000000000000000000000000000001::option
->>> % Module coverage: 100.00
-Module 0000000000000000000000000000000000000000000000000000000000000001::string
->>> % Module coverage: 81.82
-+-------------------------+
-| % Move Coverage: 83.50  |
-+-------------------------+
-Please use `aptos move coverage -h` for more detailed test coverage of this package
-{
-  "Result": "Success"
-}
+   Running Move unit tests
+   [ PASS    ] 0x1::vector_tests::append_empties_is_empty
+   [ PASS    ] 0x1::option_tests::borrow_mut_none
+   [ PASS    ] 0x1::fixed_point32_tests::ceil_can_round_up_correctly
+   [ PASS    ] 0x1::features::test_change_feature_txn
+   [ PASS    ] 0x1::bcs_tests::bcs_bool
+   [ PASS    ] 0x1::bit_vector_tests::empty_bitvector
+   [ PASS    ] 0x1::option_tests::borrow_mut_some
+   Test result: OK. Total tests: 149; passed: 149; failed: 0
+   +-------------------------+
+   | Move Coverage Summary   |
+   +-------------------------+
+   Module 0000000000000000000000000000000000000000000000000000000000000001::bcs
+   >>> % Module coverage: NaN
+   Module 0000000000000000000000000000000000000000000000000000000000000001::fixed_point32
+   >>> % Module coverage: 100.00
+   Module 0000000000000000000000000000000000000000000000000000000000000001::hash
+   >>> % Module coverage: NaN
+   Module 0000000000000000000000000000000000000000000000000000000000000001::vector
+   >>> % Module coverage: 92.19
+   Module 0000000000000000000000000000000000000000000000000000000000000001::error
+   >>> % Module coverage: 0.00
+   Module 0000000000000000000000000000000000000000000000000000000000000001::acl
+   >>> % Module coverage: 0.00
+   Module 0000000000000000000000000000000000000000000000000000000000000001::bit_vector
+   >>> % Module coverage: 97.32
+   Module 0000000000000000000000000000000000000000000000000000000000000001::signer
+   >>> % Module coverage: 100.00
+   Module 0000000000000000000000000000000000000000000000000000000000000001::features
+   >>> % Module coverage: 69.41
+   Module 0000000000000000000000000000000000000000000000000000000000000001::option
+   >>> % Module coverage: 100.00
+   Module 0000000000000000000000000000000000000000000000000000000000000001::string
+   >>> % Module coverage: 81.82
+   +-------------------------+
+   | % Move Coverage: 83.50  |
+   +-------------------------+
+   Please use `aptos move coverage -h` for more detailed test coverage of this package
+   {
+     "Result": "Success"
+   }
    ```
 
 4. Optionally, narrow down your test runs and results to a specific package name with the `--filter` option, like so:
@@ -145,10 +145,10 @@ Please use `aptos move coverage -h` for more detailed test coverage of this pack
 
     /// Return true only if `a` is a transaction signer address. This is a spec function only available in spec.
     spec native fun is_txn_signer_addr(a: address): bool;
-}
-{
-  "Result": "Success"
-}
+   }
+   {
+     "Result": "Success"
+   }
    ```
 6. Find failures and iteratively improve your testing and running these commands to eliminate gaps in your testing coverage.
 
@@ -438,7 +438,8 @@ aptos key generate \
     --output-file ace.key
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -469,7 +470,8 @@ Fund Ace's account with the faucet (either devnet or testnet):
 aptos account fund-with-faucet --account $ace_addr
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -488,7 +490,8 @@ aptos move publish \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -544,7 +547,8 @@ aptos move run \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -579,7 +583,8 @@ aptos move run \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -678,7 +683,8 @@ First compile the package (this will compile the script):
 aptos move compile --named-addresses test_account=$ace_addr
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -708,7 +714,8 @@ aptos move run-script \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -736,7 +743,8 @@ aptos move run-script \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -823,7 +831,8 @@ aptos key generate \
     --output-file bee.key
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -854,7 +863,8 @@ Fund Bee's account using the faucet:
 aptos account fund-with-faucet --account $bee_addr
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -874,7 +884,8 @@ aptos multisig create \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -913,7 +924,8 @@ aptos move view \
         address:"$multisig_addr"
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -932,7 +944,8 @@ aptos move view \
         address:"$multisig_addr"
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -954,7 +967,8 @@ aptos move view \
         address:"$multisig_addr"
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -973,7 +987,8 @@ aptos move view \
         address:"$multisig_addr"
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -997,7 +1012,8 @@ aptos move build-publish-payload \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1018,7 +1034,8 @@ aptos multisig create-transaction \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1047,7 +1064,8 @@ aptos move view \
         address:"$multisig_addr"
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1068,7 +1086,8 @@ aptos move view \
         address:"$multisig_addr"
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1090,7 +1109,8 @@ aptos move view \
         String:1
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1142,7 +1162,8 @@ aptos multisig create-transaction \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1171,7 +1192,8 @@ aptos move view \
         address:"$multisig_addr"
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1192,7 +1214,8 @@ aptos move view \
         address:"$multisig_addr"
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1257,7 +1280,8 @@ aptos move view \
         String:1
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1278,7 +1302,8 @@ aptos multisig verify-proposal \
     --sequence-number 1
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1321,7 +1346,8 @@ aptos multisig approve \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1351,7 +1377,8 @@ aptos move view \
         String:1
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1378,7 +1405,8 @@ aptos multisig execute-with-payload \
 Pending the resolution of [#8304](https://github.com/aptos-labs/aptos-core/issues/8304), the transaction simulator (which is used to estimate gas costs) is broken for multisig transactions, so you will have to manually specify a max gas amount.
 :::
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 Also pending the resolution of [#8304](https://github.com/aptos-labs/aptos-core/issues/8304), the CLI output for a successful multisig publication transaction execution results in an API error if only the payload hash has been stored on-chain, but the transaction can be manually verified using an explorer.
 
@@ -1396,7 +1424,8 @@ aptos move view \
         String:2
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1424,7 +1453,8 @@ aptos multisig verify-proposal \
     --sequence-number 2
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1472,7 +1502,8 @@ aptos multisig verify-proposal \
     --sequence-number 2
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1492,7 +1523,8 @@ aptos multisig approve \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -1522,7 +1554,8 @@ aptos multisig execute \
     --assume-yes
 ```
 
-<details><summary>Output</summary>
+<details>
+<summary>Output</summary>
 
 ```bash
 {
