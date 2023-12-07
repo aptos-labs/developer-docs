@@ -13,7 +13,7 @@ const ApiExplorer = ({ network, layout }: ApiExplorerProps) => {
     const fetchAndFixSpec = async () => {
       // Get the spec file.
       const data = await fetch(
-        `https://raw.githubusercontent.com/aptos-labs/aptos-core/${network}/api/doc/spec.json`
+        `https://raw.githubusercontent.com/aptos-labs/aptos-core/${network}/api/doc/spec.json`,
       );
       // Convert the data to json.
       const json = await data.json();
@@ -28,7 +28,7 @@ const ApiExplorer = ({ network, layout }: ApiExplorerProps) => {
 
     // Call the function to get and fix the spec.
     fetchAndFixSpec().catch((err) =>
-      console.log(`Error fetching spec: ${err}`)
+      console.log(`Error fetching spec: ${err}`),
     );
 
     return () => {

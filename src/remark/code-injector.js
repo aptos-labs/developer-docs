@@ -36,7 +36,7 @@ const plugin = (options) => {
         const parts = node.value.split(" ");
         if (parts.length !== 3) {
           throw new Error(
-            `Correct format is ":!: file_path section_name", but got: ${node.value}`
+            `Correct format is ":!: file_path section_name", but got: ${node.value}`,
           );
         }
         const [_, filepath, sectionName] = parts;
@@ -49,13 +49,13 @@ const plugin = (options) => {
             "\n?(.*?)\n?(//)?(#)?s*" +
             endTag +
             sectionName,
-          "s"
+          "s",
         );
         matches = fileContent.match(re);
 
         if (!matches) {
           throw new Error(
-            `Could not find open/closing tags for section '${sectionName}' in ${filepath}`
+            `Could not find open/closing tags for section '${sectionName}' in ${filepath}`,
           );
         }
         // Remove line breaks from start/end, but not whitespace

@@ -11,7 +11,7 @@ const getImage = (
   imageDarkHover,
   imageLight,
   imageLightHover,
-  isHovered
+  isHovered,
 ) => {
   if (!imageLight) {
     return "";
@@ -49,7 +49,7 @@ const WithBackgroundImage = ({
     imageDarkHover,
     imageLight,
     imageLightHover,
-    isHovered
+    isHovered,
   );
 
   const backgroundImageStyle = image

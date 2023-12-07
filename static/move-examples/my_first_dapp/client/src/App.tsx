@@ -38,7 +38,7 @@ function App() {
     try {
       const todoListResource = await provider.getAccountResource(
         account?.address,
-        `${moduleAddress}::todolist::TodoList`
+        `${moduleAddress}::todolist::TodoList`,
       );
       setAccountHasList(true);
       // tasks table handle
@@ -136,7 +136,7 @@ function App() {
 
   const onCheckboxChange = async (
     event: CheckboxChangeEvent,
-    taskId: string
+    taskId: string,
   ) => {
     if (!account) return;
     if (!event.target.checked) return;
@@ -254,7 +254,7 @@ function App() {
                             href={`https://explorer.aptoslabs.com/account/${task.address}/`}
                             target="_blank"
                           >{`${task.address.slice(0, 6)}...${task.address.slice(
-                            -5
+                            -5,
                           )}`}</a>
                         }
                       />
