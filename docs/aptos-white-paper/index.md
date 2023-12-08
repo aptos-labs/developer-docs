@@ -2,6 +2,10 @@
 title: "Aptos White Paper"
 ---
 
+<head>
+  <link rel="canonical" href="https://aptosfoundation.org/whitepaper" />
+</head>
+
 # The Aptos Blockchain
 ## A Safe, Scalable, and Upgradeable Web3 Infrastructure
 
