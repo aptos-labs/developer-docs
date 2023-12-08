@@ -36,7 +36,7 @@ See [Accounts](../concepts/accounts.md) for more information.
 
 ### Aptos
 
-**Aptos** is a Layer 1 blockchain for everyone. It uses the Move programming language and launched its mainnet on 2022-10-17 to redefine the web3 user experience. The Aptos blockchain is dedicated to creating better user experiences through increased speed, security, scalability, reliability and usability with low transaction costs.  The word "Aptos" means "The People" in the Ohlone language. See the [Aptos White Paper](../aptos-white-paper/index.md) for more details.
+**Aptos** is a Layer 1 blockchain for everyone. It uses the Move programming language and launched its mainnet on 2022-10-17 to redefine the web3 user experience. The Aptos blockchain is dedicated to creating better user experiences through increased speed, security, scalability, reliability and usability with low transaction costs.  The word “Aptos" means "The People" in the Ohlone language. Learn more about the Aptos blockchain on the [official Aptos website](https://aptosfoundation.org).
 
 ### AptosBFT
 
@@ -61,7 +61,7 @@ See [Accounts](../concepts/accounts.md) for more information.
 
 ### Aptos Ecosystem
 
-- **Aptos ecosystem** refers to various components of the Aptos blockchain network and their interactions.  The Aptos ecosystem includes the community, community-driven projects, and events. See [Contribute to the Aptos Ecosystem](../community/index.md) for all possible ways to join Aptos.
+- **Aptos ecosystem** refers to various components of the Aptos blockchain network and their interactions.  The Aptos ecosystem includes the community, [community-driven projects](https://aptosfoundation.org/ecosystem/projects/all), and [events](https://aptosfoundation.org/events). See [Contribute to the Aptos Ecosystem](../community/index.md) for all possible ways to join Aptos.
 
 ### Aptos Explorer
 
@@ -182,7 +182,7 @@ then there is a guarantee that T_N will never be included in the blockchain.
 - **Faucet** is a service that mints APT on devnet and testnet. APT on these networks has no real world value, it is only for development purposes.
 - You can use the faucet in a few different ways:
   - With the [Aptos CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md#fund-an-account-with-the-faucet).
-  - Through a wallet, such as Petra, Martian, or Pontem. You can find a full list [here](https://github.com/aptos-foundation/ecosystem-projects#wallets).
+  - Through a wallet, such as [Petra](https://aptosfoundation.org/ecosystem/project/petra), [Martian](https://aptosfoundation.org/ecosystem/project/martian), or [Pontem](https://aptosfoundation.org/ecosystem/project/pontem-wallet). See full list of [Aptos Wallets](https://aptosfoundation.org/ecosystem/projects/wallets).
   - Using an SDK, for example by using the `FaucetClient` in the TypeScript SDK.
   - With a direct HTTP request. Learn how to do this [here](guides/system-integrators-guide.md#calling-the-faucet-other-languages).
 
