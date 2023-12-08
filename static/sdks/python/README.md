@@ -49,7 +49,7 @@ Finally run the tests:
 make examples
 ```
 
-Note: These end-to-end tests are tested against a node built from the same commit as part of CI, not devnet. For examples tested against devnet, see `developer-docs-site/static/examples/python/` from the root of the repo.
+Note: These end-to-end tests are tested against a node built from the same commit as part of CI, not devnet. For examples tested against devnet, see `static/examples/python/` from the root of the repo.
 
 ## Autoformatting
 ```bash

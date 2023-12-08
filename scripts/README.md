@@ -1,6 +1,6 @@
 # Scripts
 ## Spellchecking
-In order to spell check, you just need to run this from anywhere in `developer-docs-site/`:
+In order to spell check, you just need to run this from anywhere in `developer-docs`:
 ```
 pnpm spellcheck
 ```

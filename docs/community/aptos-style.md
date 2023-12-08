@@ -64,12 +64,12 @@ Set recursion depth accordingly to delve into sub-links.
 
 ## Add images to `static` directory
 
-Place all images in the [`developer-docs-site/static/img`](https://github.com/aptos-labs/aptos-core/tree/main/developer-docs-site/static/img) directory and use relative links to include them. See the image paths in [Set up a React app](../tutorials/build-e2e-dapp/2-set-up-react-app.md) for examples.
+Place all images in the [`static/img`](https://github.com/aptos-labs/developer-docs/tree/main/static/img) directory and use relative links to include them. See the image paths in [Set up a React app](../tutorials/build-e2e-dapp/2-set-up-react-app.md) for examples.
 
 ## Redirect moved pages
 
 Avoid losing users by adding redirects for moved and renamed [Aptos.dev](http://Aptos.dev) pages in:
-https://github.com/aptos-labs/aptos-core/blob/main/developer-docs-site/docusaurus.config.js
+https://github.com/aptos-labs/developer-docs/blob/main/docusaurus.config.js
 
 ## Name files succinctly
 
@@ -103,7 +103,7 @@ Avoid passive tense and gerunds when possible:
     
     - **Preferred**: Fork and clone the Aptos repo.
     - **Avoid**: The Aptos repo should be cloned.
-    - **Preferred**: Copy the `Config path` information from the terminal.
+    - **Preferred**: Copy the `Config path` information from the terminal.
     - **Avoid**: The `Config path` information should be copied from the terminal.
     
 - Avoid hypothetical future "would". Instead, write in present tense.

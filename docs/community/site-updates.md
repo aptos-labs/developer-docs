@@ -16,13 +16,13 @@ Simply click **Edit this page** at the bottom of any location to go to the sourc
 Here are the basic steps for editing in your web browser:
 
 1. Click **Edit this page** at the bottom to get started.
-2. Modify and add source Markdown files in the [developer-docs-site](https://github.com/aptos-labs/aptos-core/tree/main/developer-docs-site) directory.
-3. See your changes in Netlify (by swapping `prnumber` in):
+2. Modify and add source Markdown files in the [developer-docs](https://github.com/aptos-labs/developer-docs/tree/docs/) directory.
+3. See your changes in Netlify (by swapping `pull request number` in for `prnumber`):
  [https://deploy-preview-prnumber--aptos-developer-docs.netlify.app/](https://deploy-preview-prnumber--aptos-developer-docs.netlify.app/)
 4. Have at least two verified reviewers examine and test the change.
 5. Merge in the change and see it go live.
 
-For more complex documentation updates, we recommend [forking the repository](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md#developer-workflow) and using a local editor to make changes. To edit at the command line and preview your changes on your localhost, see our [Developer Documentation](https://github.com/aptos-labs/aptos-core/blob/main/developer-docs-site/README.md) README.
+For more complex documentation updates, we recommend [forking the repository](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md#developer-workflow) and using a local editor to make changes. To edit at the command line and preview your changes on your localhost, see our [Developer Documentation](https://github.com/aptos-labs/developer-docs/blob/main/README.md) README.
 
 When ready, [start a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) with your changes. We will get back to you shortly.
 
@@ -43,17 +43,17 @@ Whenever possible, update [Aptos.dev](http://Aptos.dev) directly to reflect your
 
 To update [Aptos.dev](http://Aptos.dev) directly:
 
-1. Trigger an edit to the source files in the [developer-docs-site](https://github.com/aptos-labs/aptos-core/tree/main/developer-docs-site) directory:
+1. Trigger an edit to the source files in the [developer-docs](https://github.com/aptos-labs/developer-docs/tree/main) directory:
     1. In web browser:
        * for simple, one-page changes, use the ***Edit this page*** link on the bottom of any page to access the source Markdown file in GitHub:
        ![v-fn-network.svg](../../static/img/docs/trigger-edits-aptosdev.png)
          Then click the pencil icon and select **Edit this file** to work in the GitHub web editor, and create a pull request to have it reviewed:
        ![v-fn-network.svg](../../static/img/docs/edit-file-in-GH.png)
-       * To add a new page, navigate to the relevant subdirectory of the [developer-docs-site/docs/](https://github.com/aptos-labs/aptos-core/tree/main/developer-docs-site/docs/) directory, click **Add file**, give it a name, append the `.md` file extension, include your contents, and create a pull request to have it reviewed:
+       * To add a new page, navigate to the relevant subdirectory of the [developer-docs/docs/](https://github.com/aptos-labs/aptos-core/tree/main/developer-docs/docs/) directory, click **Add file**, give it a name, append the `.md` file extension, include your contents, and create a pull request to have it reviewed:
        ![v-fn-network.svg](../../static/img/docs/add-file-in-GH.png)
     2. Via local editor - for more complex, multipage changes, use your preferred source code editor to navigate to and update the source Markdown files in GitHub. See our [CONTRIBUTING](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) README for `git clone` instructions.
 2. For web edits, use the *Preview* function at top to see your updates in browser.
-3. For local edits, use the [local doc build instructions](https://github.com/aptos-labs/aptos-core/blob/main/developer-docs-site/README.md) to see your updates at: [http://localhost:3000](http://localhost:3000)
+3. For local edits, use the [local doc build instructions](https://github.com/aptos-labs/developer-docs/blob/main/README.md) to see your updates at: [http://localhost:3000](http://localhost:3000)
 4. After creating the pull request, use the *Deploy Preview* in Netlify to see your updates made in web browser or via local editor by replacing the *pull request number* with your own in:
 [https://deploy-preview-prnumber--aptos-developer-docs.netlify.app/](https://deploy-preview-prnumber--aptos-developer-docs.netlify.app/)
 5. Have at least two verified reviewers review and test your changes.
