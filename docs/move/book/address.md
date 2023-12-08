@@ -35,8 +35,7 @@ and module members _must_ be accessed through the module's named address
 and not through the numerical value assigned to the named address during
 compilation, e.g., `use my_addr::foo` is _not_ equivalent to `use 0x2::foo`
 even if the Move program is compiled with `my_addr` set to `0x2`. This
-distinction is discussed in more detail in the section on [Modules and
-Scripts](./modules-and-scripts.md).
+distinction is discussed in more detail in the section on [Modules and Scripts](./modules-and-scripts.md).
 
 ### Examples
 

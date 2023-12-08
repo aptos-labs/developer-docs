@@ -30,7 +30,7 @@ function getGitHubToken() {
   // If no token was provided via the environment, try to use the GH CLI.
   if (!commandExists.sync("gh")) {
     throw new Error(
-      "The GITHUB_TOKEN environment variable is not set and the gh CLI is not installed, please read the README for instructions on how to fix this"
+      "The GITHUB_TOKEN environment variable is not set and the gh CLI is not installed, please read the README for instructions on how to fix this",
     );
   }
   // Confirm that the GH auth token used for the CLI has the necessary scopes.
@@ -41,10 +41,10 @@ function getGitHubToken() {
   if (!status.includes("read:user") || !status.includes("user:email")) {
     // Initiate the flow to add the necessary scopes.
     console.log(
-      "The GH CLI auth token does not have the necessary scopes. Refreshing token..."
+      "The GH CLI auth token does not have the necessary scopes. Refreshing token...",
     );
     shell.exec(
-      "gh auth refresh --scopes read:user,user:email --hostname github.com"
+      "gh auth refresh --scopes read:user,user:email --hostname github.com",
     );
   }
   const ghToken = shell.exec("gh auth token", { silent: true }).stdout.trim();
@@ -69,7 +69,7 @@ async function fetchEmailToUsername(docRoot) {
   // Filter out emails ending with @users.noreply.github.com since the first part of
   // that email is the username.
   const emails = emailsUnfiltered.filter(
-    (email) => !email.endsWith("@users.noreply.github.com")
+    (email) => !email.endsWith("@users.noreply.github.com"),
   );
 
   // To use the GraphQL endpoint we need to provide an auth token.
@@ -101,13 +101,13 @@ async function fetchEmailToUsername(docRoot) {
 
     const response = await fetch(
       "https://api.github.com/graphql",
-      fetchOptions
+      fetchOptions,
     );
     const responseBody = await response.json();
 
     // Parse the JSON response and append to the email => username map.
     for (const [idx, [_, value]] of Object.entries(
-      Object.entries(responseBody.data)
+      Object.entries(responseBody.data),
     )) {
       const email = emailChunk.at(idx);
       let login = Array.prototype.at(value.nodes, 0);
@@ -122,7 +122,7 @@ async function fetchEmailToUsername(docRoot) {
     console.log(
       `Fetched ${page + emailChunk.length} usernames out of ${
         emails.length
-      } emails`
+      } emails`,
     );
   }
 
@@ -133,7 +133,7 @@ async function fetchEmailToUsernameViaCommit(email, docRoot) {
   const commit = shell
     .exec(
       `git log --author="${email}" --format="%H" --max-count=1 -- ${docRoot}`,
-      { silent: true }
+      { silent: true },
     )
     .trim();
   if (!commit) {
@@ -192,7 +192,7 @@ function resolveContributors(contributors, emailToUsername) {
     if (!contributor.username) {
       contributor.username = lookupEmailToUsername(
         contributor.email,
-        emailToUsername
+        emailToUsername,
       );
     }
   }
@@ -212,7 +212,7 @@ function compare_contributors(left, right) {
 function contributorsForPath(filePath, emailToUsername) {
   const shortlog = shell.exec(
     `git log --format="%aN <%aE>" -- "${filePath}" | sort -u`,
-    { silent: true }
+    { silent: true },
   );
   if (shortlog.code !== 0) {
     return;
@@ -230,7 +230,7 @@ function contributorsForPath(filePath, emailToUsername) {
         const username = lookupEmailToUsername(email, emailToUsername);
         return { name, email, username };
       }),
-    emailToUsername
+    emailToUsername,
   );
 }
 

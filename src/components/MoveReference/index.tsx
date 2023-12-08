@@ -97,7 +97,7 @@ const SideNav = ({ branch }: SideNavProps) => {
             framework_content.push(
               <div key={name}>
                 <a href={url}>{name}</a>
-              </div>
+              </div>,
             );
           }
 
@@ -105,7 +105,7 @@ const SideNav = ({ branch }: SideNavProps) => {
             <div key={framework}>
               <div key={`${framework}.name`}>{framework}</div>
               <div key={`${framework}.content`}>{framework_content}</div>
-            </div>
+            </div>,
           );
         }
       }
@@ -154,19 +154,19 @@ const Content = ({ branch, page }: ContentProps) => {
       const regex_markdown = /\(([\w\-]+\.md.*)\)/g;
       let redirected = raw_content.replaceAll(
         regex_major,
-        `href="${url_root}?branch=${branch}&page=$1$2"`
+        `href="${url_root}?branch=${branch}&page=$1$2"`,
       );
       redirected = redirected.replaceAll(
         regex_local,
-        `href="/reference/move?branch=${branch}&page=$1`
+        `href="/reference/move?branch=${branch}&page=$1`,
       );
       redirected = redirected.replaceAll(
         regex_minor,
-        `branch=${branch}&page=${page_root}/$1`
+        `branch=${branch}&page=${page_root}/$1`,
       );
       redirected = redirected.replaceAll(
         regex_markdown,
-        `(/reference/move?branch=${branch}&page=${page_root}/$1)`
+        `(/reference/move?branch=${branch}&page=${page_root}/$1)`,
       );
 
       if (isMounted) {
@@ -176,7 +176,7 @@ const Content = ({ branch, page }: ContentProps) => {
             rehypePlugins={[rehypeRaw]}
             remarkPlugins={[remarkGfm]}
             remarkRehypeOptions={{ allowDangerousHtml: true }}
-          />
+          />,
         );
       }
     };
