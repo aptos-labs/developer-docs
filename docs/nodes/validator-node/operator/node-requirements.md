@@ -10,7 +10,7 @@ To make your validator node and validator fullnode deployment hassle-free, make 
 ## Validator and validator fullnode
 
 - **Both a validator node and a validator fullnode required:** For the Aptos mainnet, we require that you run a validator node and a validator fullnode. We strongly recommend that you run the validator node and the validator fullnode on two separate and independent machines. Make sure that these machines are well-provisioned and isolated from each other. Guaranteeing the resource isolation between the validator and the validator fullnode will help ensure smooth deployment of these nodes.
-- **Public fullnode is optional:** We recommend that optionally you run a public fullnode also. However, a public fullnode is not required. If you run public fullnode also, then we strongly recommend that you run the public fullnode on a third machine that is separate and independent from either the validator or the validator fullnode machines. 
+- **Public fullnode is optional:** We recommend that optionally you run a public fullnode also. However, a public fullnode is not required. If you run public fullnode also, then we strongly recommend that you run the public fullnode on a third machine that is separate and independent of either the validator or the validator fullnode machines. 
 :::tip Terraform support
 For deploying the nodes in cloud we have provided Terraform support on two cloud providers: **GCP** and **AWS**. See [**Running Validator Node**](running-validator-node/index.md).
 :::
@@ -33,10 +33,10 @@ For running an Aptos **validator node and validator fullnode** we recommend the 
 ### Example machine types on various clouds
 
 - **AWS**
-    - c6id.8xlarge (if use local SSD)
+    - c6id.8xlarge (if using a local SSD)
     - c6i.8xlarge + io1/io2 EBS volume with 40K IOPS.
 - **GCP**
-    - n2-standard-16 (if use local SSD)
+    - n2-standard-16 (if using a local SSD)
     - n2-standard-32 + pd-ssd with 40K IOPS.
 
 ### Motivations for hardware requirements

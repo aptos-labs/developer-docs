@@ -32,7 +32,7 @@ A machine identity YAML has the string `identity` in its name. For example:
 - validator-**identity**.yaml contains the private keys for the validator node. 
 - validator-full-node-**identity**.yaml contains the private keys for validator fullnode and public fullnode. 
 
-Hence if you are looking for your machine’s private keys, look for YAML filenames with  `identity` in them.
+Hence, if you are looking for your machine’s private keys, look for YAML filenames with  `identity` in them.
 
 #### Configuration
 
@@ -100,14 +100,14 @@ validator_network_public_key: "0x71f2642aeaa6cbfacf75663cf14d2f6e9e1bd890f9bc1c9
 
 #### Description
 
-| public-keys.yaml | Description |
-| --- | --- |
-| account_address |The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.  |
-| account_public_key | The public key associated with the blockchain account. |
-| consensus_public_key | Used only by the operator for validation purpose. |
-| consensus_proof_of_possession | Used only by the operator for validation purpose. |
-| full_node_network_public_key | The public key for the fullnode by which a VFN (validator fullnode) or a PFN (public fullnode) is identified in the Aptos network. |
-| validator_network_public_key | The public key for the validator node and by which the validator node is identified in the Aptos network. |
+| public-keys.yaml              | Description                                                                                                                        |
+|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| account_address               | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                           |
+| account_public_key            | The public key associated with the blockchain account.                                                                             |
+| consensus_public_key          | Used only by the operator for validation purpose.                                                                                  |
+| consensus_proof_of_possession | Used only by the operator for validation purpose.                                                                                  |
+| full_node_network_public_key  | The public key for the fullnode by which a VFN (validator fullnode) or a PFN (public fullnode) is identified in the Aptos network. |
+| validator_network_public_key  | The public key for the validator node and by which the validator node is identified in the Aptos network.                          |
 
 ### private-keys.yaml
 
@@ -131,12 +131,12 @@ validator_network_private_key: "0xa03ec46b24f2f1066d7980dc13b4baf722ba60c367e498
 
 #### Description
 
-| private-keys.yaml | Description |
-| --- | --- |
-| account_address | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node. |
-| account_private_key | The private key associated with the blockchain account. |
-| consensus_private_key | The consensus private key, used only by the operator for validation purpose and for rotating the consensus key.|
-| full_node_network_private_key |The private key for the fullnode. Whoever holds this private key will be able to establish the ownership of the VFN and PFN in the Aptos network. |
+| private-keys.yaml             | Description                                                                                                                                                |
+|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| account_address               | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                                                   |
+| account_private_key           | The private key associated with the blockchain account.                                                                                                    |
+| consensus_private_key         | The consensus private key, used only by the operator for validation purpose and for rotating the consensus key.                                            |
+| full_node_network_private_key | The private key for the fullnode. Whoever holds this private key will be able to establish the ownership of the VFN and PFN in the Aptos network.          |
 | validator_network_private_key | The private key for the validator node. Whoever holds this private key will be able to establish the ownership of the validator node in the Aptos network. |
 
 ### validator-identity.yaml
@@ -161,12 +161,12 @@ network_private_key: "0xa03ec46b24f2f1066d7980dc13b4baf722ba60c367e498e47a657ba0
 
 #### Description
 
-| validator-identity.yaml | Description |
-| --- | --- |
-| account_address | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node. |
-| account_private_key |The private key associated with the blockchain account. |
-| consensus_private_key | The consensus private key, used only by the operator for validation purpose and for rotating the consensus key. |
-| network_private_key | The private key for the validator node. Whoever holds this private key will be able to establish the ownership of the validator node in the Aptos network. |
+| validator-identity.yaml | Description                                                                                                                                                |
+|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| account_address         | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                                                   |
+| account_private_key     | The private key associated with the blockchain account.                                                                                                    |
+| consensus_private_key   | The consensus private key, used only by the operator for validation purpose and for rotating the consensus key.                                            |
+| network_private_key     | The private key for the validator node. Whoever holds this private key will be able to establish the ownership of the validator node in the Aptos network. |
 
 
 ### validator-full-node-identity.yaml
@@ -190,10 +190,10 @@ network_private_key: "0x689c11c6e5405219b5eae1312086c801e3a044946afc74429e5157b4
 
 #### Description
 
-| validator-full-node-identity.yaml | Description |
-| --- | --- |
-| account_address | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node. |
-| network_private_key | The private key for the fullnode. Whoever holds this private key will be able to establish the ownership of the VFN and PFN in the Aptos network. |
+| validator-full-node-identity.yaml | Description                                                                                                                                       |
+|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| account_address                   | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                                          |
+| network_private_key               | The private key for the fullnode. Whoever holds this private key will be able to establish the ownership of the VFN and PFN in the Aptos network. |
 
 
 

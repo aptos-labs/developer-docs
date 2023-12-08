@@ -179,7 +179,7 @@ Example output:
 **commission_percentage**
 - This can be set only by the stake pool owner. Operator receives the "commission_percentage" of the generated staking rewards. If you request the commission (you can do so by running the command `aptos stake request-commission`), then at the end of the `lockup_expiration_utc_time` the commission part of the rewards will go to the operator address while the rest will stay in the stake pool and belong to the owner. Here "the commission part of the rewards" means the value of **commission_not_yet_unlocked**. 
 
-  For example, in a scenario with a lock up of one month, you call `aptos stake request-commission` every month. This will pay out the commission that was accrued during the previous month but only when unlocked at the end of the previous month. Regardless of how often you run `aptos stake request-commission` during the month, the commission is only paid out upon the completion of `lockup_expiration_utc_time`.
+  For example, in a scenario with a lock-up of one month, you call `aptos stake request-commission` every month. This will pay out the commission that was accrued during the previous month but only when unlocked at the end of the previous month. Regardless of how often you run `aptos stake request-commission` during the month, the commission is only paid out upon the completion of `lockup_expiration_utc_time`.
 
   :::tip Compounding
   Note that if you do not request commission for multiple months, your commission will accrue more due to compounding of the **commission_percentage** during these months.
@@ -193,7 +193,7 @@ Example output:
 - The date when the commission will unlock. However, this unlocked commission will not be auto-disbursed. It will only disburse when the command `aptos stake request-commission` is called again.
 
 **epoch_info**
-- Use the [Epoch Converter](https://www.epochconverter.com/) to convert the `unix_time` into human readable time. 
+- Use the [Epoch Converter](https://www.epochconverter.com/) to convert the `unix_time` into human-readable time. 
 
 ## Requesting commission
 
@@ -214,7 +214,7 @@ Month 1 Day 29, you call the command, it would initiate unlock for 29 days worth
 
 Month 2, Day 29, if you call the command again, it would disburse the fully unlocked commission from previous month (29 days worth), and initiate commission unlock for Month 1 Day 30 + Month 2 Day 1-29 (30 days worth).
 
-Month 3, Day 29, if you call the commission again, 30 days of commission would be disbursed, and the a new batch of commission would initiate unlock.
+Month 3, Day 29, if you call the commission again, 30 days of commission would be disbursed, and a new batch of commission would initiate unlock.
 
 You can call the command multiple times, and the amount you receive depends on the day when you requested commission unlock previously.
 

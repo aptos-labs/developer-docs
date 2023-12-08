@@ -14,5 +14,5 @@ Most devs should use the CLI to run a local development network. It is simpler a
 If you're developing the core Aptos node software itself or have complex testing needs, consider these guides.
 
 - ### [Run a Local Testnet with Validator](./run-a-local-testnet.md)
-- ### [Run a Local Multinode Network](../../guides/running-a-local-multi-node-network.md)
+- ### [Run a Local Multi-node Network](../../guides/running-a-local-multi-node-network.md)
 

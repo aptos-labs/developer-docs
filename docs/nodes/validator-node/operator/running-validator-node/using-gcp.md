@@ -17,8 +17,8 @@ This guide assumes you already have a Google Cloud Platform (GCP) account setup,
 
 ## Before you proceed
 
-Make sure the following are setup for your environment:
-  - **GCP account**: hhttps://cloud.google.com/
+Make sure the following are set up for your environment:
+  - **GCP account**: https://cloud.google.com/
   - **Aptos CLI**: https://aptos.dev/tools/aptos-cli/install-cli/
   - **Terraform 1.3.6**: https://www.terraform.io/downloads.html
   - **Kubernetes CLI**: https://kubernetes.io/docs/tasks/tools/
