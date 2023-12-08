@@ -24,14 +24,13 @@ const frameworks = [
 const TopNav = ({ branch }: TopNavProps) => {
   const adjustBranch = (event) => {
     const params = new URLSearchParams(window.location.search);
-    params.set("branch", event.target.getAttribute("branch"));
+    params.set("branch", event.target.getAttribute("key"));
     window.location.href = `${location.pathname}?${params.toString()}`;
   };
 
   return (
     <div className="move-top-bar" key="move-top-bar">
       <div
-        branch="mainnet"
         className="move-top-bar-button"
         key="mainnet"
         onClick={adjustBranch}
@@ -39,7 +38,6 @@ const TopNav = ({ branch }: TopNavProps) => {
         Mainnet
       </div>
       <div
-        branch="testnet"
         className="move-top-bar-button"
         key="testnet"
         onClick={adjustBranch}
@@ -47,7 +45,6 @@ const TopNav = ({ branch }: TopNavProps) => {
         Testnet
       </div>
       <div
-        branch="devnet"
         className="move-top-bar-button"
         key="devnet"
         onClick={adjustBranch}
@@ -55,7 +52,6 @@ const TopNav = ({ branch }: TopNavProps) => {
         Devnet
       </div>
       <div
-        branch="main"
         className="move-top-bar-button"
         key="main"
         onClick={adjustBranch}
