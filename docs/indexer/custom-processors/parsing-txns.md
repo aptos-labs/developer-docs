@@ -2,7 +2,7 @@
 title: "Parsing Transactions"
 ---
 
-import BetaNotice from '../../../src/components/_indexer_beta_notice.mdx';
+import BetaNotice from '../../../src/components/\_indexer_beta_notice.mdx';
 
 <BetaNotice />
 
@@ -18,6 +18,7 @@ Fundamentally an indexer processor is just something that consumes a stream of a
 A transaction is a unit of execution on the Aptos blockchain. If the execution of the program in a transaction (e.g. starting with an entry function in a Move module) is successful, the resulting change in state will be applied to the ledger. Learn more about the transaction lifecycle at [this page](/concepts/blockchain/#life-of-a-transaction).
 
 There are four types of transactions on Aptos:
+
 - Genesis
 - Block metadata transactions
 - State checkpoint transactions
@@ -28,6 +29,7 @@ The first 3 of these are internal to the system and are not relevant to most pro
 Generally speaking, most user transactions originate from a user calling an entry function in a Move module deployed on chain, for example `0x1::coin::transfer`. In all other cases they originate from [Move scripts](/move/move-on-aptos/move-scripts). You can learn more about the different types of transactions [here](../../concepts/txns-states##types-of-transactions).
 
 A user transaction that a processor handles contains a variety of information. At a high level it contains:
+
 - The payload that was submitted.
 - The changes to the ledger resulting from the execution of the function / script.
 
@@ -38,6 +40,7 @@ We'll dive into this in the following sections.
 ### Payload
 
 The payload is what the user submits to the blockchain when they wish to execute a Move function. Some of the key information in the payload is:
+
 - The sender address
 - The address + module name + function name of the function being executed.
 - The arguments to the function.
@@ -49,6 +52,7 @@ There is other potentially interesting information in the payload that you can l
 Events are emitted during the execution of a transaction. Each Move module can define its own events and choose when to emit the events during execution of a function.
 
 For example, in Move you might have the following:
+
 ```rust
 struct MemberInvitedEvent has store, drop {
     member: address,

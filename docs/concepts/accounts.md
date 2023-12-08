@@ -8,17 +8,19 @@ id: "accounts"
 An account on the Aptos blockchain represents access control over a set of assets including on-chain currency and NFTs. In Aptos, these assets are represented by a Move language primitive known as a **resource** that emphasizes both access control and scarcity.
 
 Each account on the Aptos blockchain is identified by a 32-byte account address. You can employ the [Aptos Name Service](../integration/aptos-name-service-connector.md) at [www.aptosnames.com](https://www.aptosnames.com/) to secure .apt domains for key accounts to make them memorable and unique.
- 
-Different from other blockchains where accounts and addresses are implicit, accounts on Aptos are explicit and need to be created before they can execute transactions. The account can be created explicitly or implicitly by transferring Aptos tokens (APT) there.  See the [Creating an account](#creating-an-account) section for more details. In a way, this is similar to other chains where an address needs to be sent funds for gas before it can send transactions.
+
+Different from other blockchains where accounts and addresses are implicit, accounts on Aptos are explicit and need to be created before they can execute transactions. The account can be created explicitly or implicitly by transferring Aptos tokens (APT) there. See the [Creating an account](#creating-an-account) section for more details. In a way, this is similar to other chains where an address needs to be sent funds for gas before it can send transactions.
 
 Explicit accounts allow first-class features that are not available on other networks such as:
-* Rotating authentication key. The account's authentication key can be changed to be controlled via a different private key. This is similar to changing passwords in the web2 world.
-* Native multisig support. Accounts on Aptos support k-of-n multisig using both Ed25519 and Secp256k1 ECDSA signature schemes when constructing the authentication key.
+
+- Rotating authentication key. The account's authentication key can be changed to be controlled via a different private key. This is similar to changing passwords in the web2 world.
+- Native multisig support. Accounts on Aptos support k-of-n multisig using both Ed25519 and Secp256k1 ECDSA signature schemes when constructing the authentication key.
 
 There are three types of accounts on Aptos:
-  * *Standard account* - This is a typical account corresponding to an address with a corresponding pair of public/private keys.
-  * [*Resource account*](../move/move-on-aptos/resource-accounts.md) - An autonomous account without a corresponding private key used by developers to store resources or publish modules on-chain.
-  * [*Object*](../standards/aptos-object.md) - A complex set of resources stored within a single address representing a single entity.
+
+- _Standard account_ - This is a typical account corresponding to an address with a corresponding pair of public/private keys.
+- [_Resource account_](../move/move-on-aptos/resource-accounts.md) - An autonomous account without a corresponding private key used by developers to store resources or publish modules on-chain.
+- [_Object_](../standards/aptos-object.md) - A complex set of resources stored within a single address representing a single entity.
 
 :::tip Account address example
 Account addresses are 32-bytes. They are usually shown as 64 hex characters, with each hex character a nibble.
@@ -29,6 +31,7 @@ of how an address appears, reproduced below:
 Alice: 0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b
 Bob: 0x19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c
 ```
+
 :::
 
 ## Account address
@@ -72,10 +75,10 @@ To generate an authentication key and the account address for an Ed25519 signatu
 
 1. **Generate a key-pair**: Generate a fresh key-pair (`privkey_A`, `pubkey_A`). The Aptos blockchain uses the PureEdDSA scheme over the Ed25519 curve, as defined in RFC 8032.
 2. **Derive a 32-byte authentication key**: Derive a 32-byte authentication key from the `pubkey_A`:
-     ```
-     auth_key = sha3-256(pubkey_A | 0x00)
-     ```
-     where `|` denotes concatenation. The `0x00` is the 1-byte single-signature scheme identifier. 
+   ```
+   auth_key = sha3-256(pubkey_A | 0x00)
+   ```
+   where `|` denotes concatenation. The `0x00` is the 1-byte single-signature scheme identifier.
 3. Use this initial authentication key as the permanent account address.
 
 ### MultiEd25519 authentication
@@ -88,10 +91,10 @@ To generate a K-of-N multisig account's authentication key and the account addre
 1. **Generate key-pairs**: Generate `N` ed25519 public keys `p_1`, ..., `p_n`.
 2. Decide on the value of `K`, the threshold number of signatures needed for authenticating the transaction.
 3. **Derive a 32-byte authentication key**: Compute the authentication key as described below:
-    ```
-    auth_key = sha3-256(p_1 | . . . | p_n | K | 0x01)
-    ```
-    The `0x01` is the 1-byte multisig scheme identifier.
+   ```
+   auth_key = sha3-256(p_1 | . . . | p_n | K | 0x01)
+   ```
+   The `0x01` is the 1-byte multisig scheme identifier.
 4. Use this initial authentication key as the permanent account address.
 
 ### Generalized authentication
@@ -102,24 +105,31 @@ Generalized authentication supports both Ed25519 and Secp256k1 ECDSA. Like the p
 - **1-byte Secp256k1 ECDSA generalized scheme**: `0x01`.
 
 For a single key Secp256k1 ECDSA account, using public key `pubkey`, the authentication key would be derived as follows:
+
 ```
 auth_key = sha3-256(0x01 | pubkey | 0x02)
 ```
+
 Where
-* the first entry, `0x01`, represents the use of a Secp256k1 ECDSA key;
-* the last entry, `0x02`, represents the authentication scheme.
+
+- the first entry, `0x01`, represents the use of a Secp256k1 ECDSA key;
+- the last entry, `0x02`, represents the authentication scheme.
 
 For a multi-key account containing, a single Secp256k1 ECDSA public key, `pubkey_0`, and a single Ed25519 public key, `pubkey_1`, where one signature suffices, the authentication key would be derived as follows:
+
 ```
 auth_key = sha3-256(0x02 | 0x01 | pubkey_0 | 0x02 | pubkey_2 | 0x01 | 0x03)
 ```
+
 Where
-* the first entry, `0x02`, represents the total number of keys as a single byte;
-* the second to last entry, `0x01`, represents the required number of signatures as a single byte;
-* the last entry, `0x03`, represents the authentication scheme.
+
+- the first entry, `0x02`, represents the total number of keys as a single byte;
+- the second to last entry, `0x01`, represents the required number of signatures as a single byte;
+- the last entry, `0x03`, represents the authentication scheme.
 
 ## Rotating the keys
-An Account on Aptos has the ability to rotate keys so that potentially compromised keys cannot be used to access the accounts.  Keys can be rotated via the `account::rotate_authentication_key` function.
+
+An Account on Aptos has the ability to rotate keys so that potentially compromised keys cannot be used to access the accounts. Keys can be rotated via the `account::rotate_authentication_key` function.
 
 Refreshing the keys is generally regarded as good hygiene in the security field. However, this presents a challenge for system integrators who are used to using a mnemonic to represent both a private key and its associated account. To simplify this for the system integrators, Aptos provides an on-chain mapping via aptos account lookup-address. The on-chain data maps an effective account address as defined by the current mnemonic to the actual account address.
 
@@ -134,7 +144,7 @@ The state of each account comprises both the code (Move modules) and the data (M
 
 ## Access control with signers
 
-The sender of a transaction is represented by a signer. When a function in a Move module takes `signer` as an argument, the Aptos Move VM translates the identity of the account that signed the transaction into a signer in a Move module entry point.  See the below Move example code with `signer` in the `initialize` and `withdraw` functions. When a `signer` is not specified in a function, for example, the below `deposit` function, then no signer-based access controls will be provided for this function:
+The sender of a transaction is represented by a signer. When a function in a Move module takes `signer` as an argument, the Aptos Move VM translates the identity of the account that signed the transaction into a signer in a Move module entry point. See the below Move example code with `signer` in the `initialize` and `withdraw` functions. When a `signer` is not specified in a function, for example, the below `deposit` function, then no signer-based access controls will be provided for this function:
 
 ```rust
 module Test::Coin {

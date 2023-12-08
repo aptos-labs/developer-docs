@@ -20,6 +20,7 @@ $ aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --
 ```
 
 The above command will generate the below terminal output:
+
 ```bash
 {
   "Result": [
@@ -36,7 +37,9 @@ In this example, we'll use the `HelloBlockchain` in [move-examples](https://gith
 ```bash
 $ aptos move test --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=superuser
 ```
+
 The above command will generate the following terminal output:
+
 ```bash
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib
@@ -50,14 +53,18 @@ Test result: OK. Total tests: 2; passed: 2; failed: 0
   "Result": "Success"
 }
 ```
+
 ## Generating test coverage details for Move
+
 The `aptos` CLI can be used to analyze and improve the testing of your Move modules. To use this feature:
+
 1. In your `aptos-core` source checkout, navigate to the `aptos-move/framework/move-stdlib` directory.
 2. Execute the command:
    ```bash
    $ aptos move test --coverage
    ```
 3. Receive results in standard output containing the result for each test case followed by a basic coverage summary resembling:
+
    ```bash
    BUILDING MoveStdlib
    Running Move unit tests
@@ -104,11 +111,13 @@ The `aptos` CLI can be used to analyze and improve the testing of your Move modu
    ```
 
 4. Optionally, narrow down your test runs and results to a specific package name with the `--filter` option, like so:
+
    ```bash
    $ aptos move test --coverage --filter vector
    ```
 
    With results like:
+
    ```
    BUILDING MoveStdlib
    Running Move unit tests
@@ -117,14 +126,17 @@ The `aptos` CLI can be used to analyze and improve the testing of your Move modu
    [ PASS    ] 0x1::bit_vector_tests::index_bit_out_of_bounds
    [ PASS    ] 0x1::vector_tests::append_respects_order_empty_lhs
    ```
+
 5. Run the `aptos move coverage` command to obtain more detailed coverage information.
 6. Optionally, isolate the results to a module by passing its name to the `--module` option, for example:
+
    ```bash
    $ aptos move coverage source --module signer
    ```
 
    With results:
-   ```
+
+   ````
    module std::signer {
        // Borrows the address of the signer
        // Conceptually, you can think of the `signer` as being a struct wrapper arround an
@@ -149,16 +161,20 @@ The `aptos` CLI can be used to analyze and improve the testing of your Move modu
    {
      "Result": "Success"
    }
-   ```
+   ````
+
 7. Find failures and iteratively improve your testing and running these commands to eliminate gaps in your testing coverage.
 
 ## Proving Move
 
 The `aptos` CLI can be used to run [Move Prover](../../move/prover/index.md), which is a formal verification tool for the Move language. The below example proves the `hello_prover` package in [move-examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples).
+
 ```bash
 aptos move prove --package-dir aptos-move/move-examples/hello_prover/
 ```
+
 The above command will generate the following terminal output:
+
 ```bash
 SUCCESS proving 1 modules from package `hello_prover` in 1.649s
 {
@@ -167,12 +183,14 @@ SUCCESS proving 1 modules from package `hello_prover` in 1.649s
 ```
 
 Move Prover may fail with the following terminal output if the dependencies are not installed and set up properly:
+
 ```bash
 FAILURE proving 1 modules from package `hello_prover` in 0.067s
 {
   "Error": "Move Prover failed: No boogie executable set.  Please set BOOGIE_EXE"
 }
 ```
+
 In this case, see [Install the dependencies of Move Prover](../../tools/aptos-cli/install-cli/index.md#step-3-optional-install-the-dependencies-of-move-prover).
 
 ## Profiling gas usage
@@ -190,11 +208,13 @@ In this example, we will use `DebugDemo` in [debug-move-example](https://github.
 Now, you can use `debug::print` and `debug::print_stack_trace` in your [DebugDemo Move file](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos/debug-move-example/sources/DebugDemo.move).
 
 You can run the following command:
+
 ```bash
 $ aptos move test --package-dir crates/aptos/debug-move-example
 ```
 
 The command will generate the following output:
+
 ```bash
 Running Move unit tests
 [debug] 0000000000000000000000000000000000000000000000000000000000000001
@@ -216,7 +236,6 @@ Call Stack:
 Operand Stack:
 ```
 
-
 ## Publishing a Move package with a named address
 
 In this example, we'll use the `HelloBlockchain` in [move-examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples).
@@ -224,6 +243,7 @@ In this example, we'll use the `HelloBlockchain` in [move-examples](https://gith
 Publish the package with your account address set for `HelloBlockchain`.
 
 Here, you need to change 8946741e5c907c43c9e042b3739993f32904723f8e2d1491564d38959b59ac71 to your account address.
+
 ```bash
 $ aptos move publish --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=8946741e5c907c43c9e042b3739993f32904723f8e2d1491564d38959b59ac71
 ```
@@ -234,9 +254,11 @@ As an open source project, the source code as well as compiled code published to
 ```
 aptos move publish --included-artifacts none
 ```
+
 :::
 
-You can additionally use named profiles for the addresses.  The first placeholder is `default`
+You can additionally use named profiles for the addresses. The first placeholder is `default`
+
 ```bash
 $ aptos move publish --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=default
 ```
@@ -249,7 +271,7 @@ When publishing Move modules, if multiple modules are in one package, then all t
 
 Now that you've published the function above, you can run it.
 
-Arguments must be given a type with a colon to separate it.  In this example, we want the input to be
+Arguments must be given a type with a colon to separate it. In this example, we want the input to be
 parsed as a string, so we put `string:Hello!`.
 
 ```bash
@@ -330,6 +352,7 @@ $ aptos move run --function-id 0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3
 ```
 
 Additionally, profiles can replace addresses in the function id.
+
 ```bash
 $ aptos move run --function-id default::message::set_message --args string:hello!
 {
@@ -425,12 +448,12 @@ Set your working directory to [`aptos-move/move-examples/cli_args`](https://gith
 ```bash
 cd <aptos-core-parent-directory>/aptos-core/aptos-move/move-examples/cli_args
 ```
+
 :::
 
 ### Deploying the package
 
 Start by mining a vanity address for Ace, who will deploy the package:
-
 
 ```bash title=Command
 aptos key generate \
@@ -783,17 +806,8 @@ aptos move view \
 {
   "Result": [
     {
-      "address_vec_vec": [
-        [
-          "0xace"
-        ]
-      ],
-      "bool_vec": [
-        false,
-        false,
-        true,
-        true
-      ],
+      "address_vec_vec": [["0xace"]],
+      "bool_vec": [false, false, true, true],
       "bytes": "0x1234",
       "type_info_1_match": true,
       "type_info_2_match": true,
@@ -807,7 +821,6 @@ aptos move view \
 :::note
 As of the time of this writing, the `aptos` CLI only supports script function arguments for vectors of type `u8`, and only up to a vector depth of 1. Hence `vector<address>` and `vector<vector<u8>>` are invalid script function argument types.
 :::
-
 
 ## Multisig governance
 
@@ -1336,7 +1349,6 @@ aptos multisig verify-proposal \
 </details>
 
 Since Bee has verified that the on-chain payload hash checks out against her locally-compiled package publication JSON file, she votes yes:
-
 
 ```bash title="Approving transaction"
 aptos multisig approve \

@@ -4,7 +4,7 @@
 
 Although an `address` is a 256-bit integer under the hood, Move addresses are intentionally opaque---they cannot be created from integers, they do not support arithmetic operations, and they cannot be modified. Even though there might be interesting programs that would use such a feature (e.g., pointer arithmetic in C fills a similar niche), Move does not allow this dynamic behavior because it has been designed from the ground up to support static verification.
 
-You can use runtime address values (values of type `address`) to access resources at that address. You *cannot* access modules at runtime via address values.
+You can use runtime address values (values of type `address`) to access resources at that address. You _cannot_ access modules at runtime via address values.
 
 ## Addresses and Their Syntax
 
@@ -16,8 +16,9 @@ literals.
 
 To distinguish when an address is being used in an expression context or not, the
 syntax when using an address differs depending on the context where it's used:
-* When an address is used as an expression the address must be prefixed by the `@` character, i.e., [`@<numerical_value>`](./integers.md) or `@<named_address_identifier>`.
-* Outside of expression contexts, the address may be written without the leading `@` character, i.e., [`<numerical_value>`](./integers.md) or `<named_address_identifier>`.
+
+- When an address is used as an expression the address must be prefixed by the `@` character, i.e., [`@<numerical_value>`](./integers.md) or `@<named_address_identifier>`.
+- Outside of expression contexts, the address may be written without the leading `@` character, i.e., [`<numerical_value>`](./integers.md) or `<named_address_identifier>`.
 
 In general, you can think of `@` as an operator that takes an address from being a namespace item to being an expression item.
 
@@ -25,7 +26,7 @@ In general, you can think of `@` as an operator that takes an address from being
 
 Named addresses are a feature that allow identifiers to be used in place of
 numerical values in any spot where addresses are used, and not just at the
-value level.  Named addresses are declared and bound as top level elements
+value level. Named addresses are declared and bound as top level elements
 (outside of modules and scripts) in Move Packages, or passed as arguments
 to the Move compiler.
 
@@ -65,7 +66,7 @@ The primary purpose of `address` values are to interact with the global storage 
 
 `address` values are used with the `exists`, `borrow_global`, `borrow_global_mut`, and `move_from` [operations](./global-storage-operators.md).
 
-The only global storage operation that *does not* use `address` is `move_to`, which uses [`signer`](./signer.md).
+The only global storage operation that _does not_ use `address` is `move_to`, which uses [`signer`](./signer.md).
 
 ## Ownership
 

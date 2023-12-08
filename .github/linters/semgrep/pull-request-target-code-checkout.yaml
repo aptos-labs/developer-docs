@@ -2,7 +2,8 @@ rules:
   - id: pull-request-target-code-checkout
     languages:
       - yaml
-    message: This GitHub Actions workflow file uses `pull_request_target` and checks
+    message:
+      This GitHub Actions workflow file uses `pull_request_target` and checks
       out code from the incoming pull request. When using `pull_request_target`,
       the Action runs in the context of the target repository, which includes
       access to all repository secrets. Please ensure you have `permission-check`

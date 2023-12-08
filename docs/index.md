@@ -136,31 +136,31 @@ The Aptos devnet is reset every Thursday. See the latest updates in the [Aptos D
 
 We are excited that you are here, and we look forward to getting to know you. Welcome to the Aptos community! Find out more about us and exchange ideas at:
 
-* [Discord](https://discord.gg/aptosnetwork)
-* [Stack Overflow](https://stackoverflow.com/questions/tagged/aptos)
-* [Forum](https://forum.aptoslabs.com/)
-* [Medium](https://medium.com/aptoslabs)
-* [Telegram](https://t.me/aptos_official)
-* [Twitter](https://twitter.com/Aptos_Network)
+- [Discord](https://discord.gg/aptosnetwork)
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/aptos)
+- [Forum](https://forum.aptoslabs.com/)
+- [Medium](https://medium.com/aptoslabs)
+- [Telegram](https://t.me/aptos_official)
+- [Twitter](https://twitter.com/Aptos_Network)
 
 ## Community projects on Aptos
 
-Visit [Aptos Ecosystem Projects](https://aptosfoundation.org/ecosystem/projects/all) to discover live projects built on Aptos: 
+Visit [Aptos Ecosystem Projects](https://aptosfoundation.org/ecosystem/projects/all) to discover live projects built on Aptos:
 
-* [DeFi](https://aptosfoundation.org/ecosystem/projects/defi)
-* [NFT Tooling](https://aptosfoundation.org/ecosystem/projects/nft-tooling)
-* [Gaming](https://aptosfoundation.org/ecosystem/projects/gaming)
-* [Wallets](https://aptosfoundation.org/ecosystem/projects/wallets)
-* [Tooling](https://aptosfoundation.org/ecosystem/projects/tooling)
-* [Stablecoins](https://aptosfoundation.org/ecosystem/projects/stablecoins)
-* [Security](https://aptosfoundation.org/ecosystem/projects/security)
-* [Marketplaces](https://aptosfoundation.org/ecosystem/projects/marketplaces)
-* [Launchpads](https://aptosfoundation.org/ecosystem/projects/launchpads)
-* [Infra](https://aptosfoundation.org/ecosystem/projects/infra)
-* [Explorers](https://aptosfoundation.org/ecosystem/projects/explorers)
-* [Bridges](https://aptosfoundation.org/ecosystem/projects/bridges)
-* [Social](https://aptosfoundation.org/ecosystem/projects/social)
+- [DeFi](https://aptosfoundation.org/ecosystem/projects/defi)
+- [NFT Tooling](https://aptosfoundation.org/ecosystem/projects/nft-tooling)
+- [Gaming](https://aptosfoundation.org/ecosystem/projects/gaming)
+- [Wallets](https://aptosfoundation.org/ecosystem/projects/wallets)
+- [Tooling](https://aptosfoundation.org/ecosystem/projects/tooling)
+- [Stablecoins](https://aptosfoundation.org/ecosystem/projects/stablecoins)
+- [Security](https://aptosfoundation.org/ecosystem/projects/security)
+- [Marketplaces](https://aptosfoundation.org/ecosystem/projects/marketplaces)
+- [Launchpads](https://aptosfoundation.org/ecosystem/projects/launchpads)
+- [Infra](https://aptosfoundation.org/ecosystem/projects/infra)
+- [Explorers](https://aptosfoundation.org/ecosystem/projects/explorers)
+- [Bridges](https://aptosfoundation.org/ecosystem/projects/bridges)
+- [Social](https://aptosfoundation.org/ecosystem/projects/social)
 
-If you would like to showcase your project, please make your submission from the directory.  
+If you would like to showcase your project, please make your submission from the directory.
 
 Want to pitch in on smaller tasks, such as doc updates and code fixes? See our [Community](./community/index.md) list for opportunities to help the Aptos ecosystem.

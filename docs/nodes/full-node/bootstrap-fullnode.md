@@ -15,6 +15,7 @@ It is not recommended to use fullnode snapshots for running fullnodes in product
 ## Find an existing fullnode snapshot
 
 There are a number of fullnode snapshots that can be downloaded from different Aptos community members. These include:
+
 - BWareLabs (Testnet and Mainnet): [BWareLabs Aptos Node Snapshots](https://bwarelabs.com/snapshots)
 - Polkachu (Mainnet): [Polkachu Aptos Node Snapshots](https://polkachu.com/aptos_snapshots/aptos)
 

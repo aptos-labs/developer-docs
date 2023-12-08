@@ -53,13 +53,13 @@ System information including operating system information (including versions), 
 
 ## Disabling telemetry
 
-On macOS and Linux, you can set the following environment variables to control the metrics sent by your node. For example, to disable all telemetry, set the  `APTOS_DISABLE_TELEMETRY` environment variable to `true` as shown below:
+On macOS and Linux, you can set the following environment variables to control the metrics sent by your node. For example, to disable all telemetry, set the `APTOS_DISABLE_TELEMETRY` environment variable to `true` as shown below:
 
 ```bash
 export APTOS_DISABLE_TELEMETRY=true
 ```
 
-The above example only disables telemetry for a single session in the current terminal where you ran the above command. To disable it permanently on your node, include it in your startup profile, as below: 
+The above example only disables telemetry for a single session in the current terminal where you ran the above command. To disable it permanently on your node, include it in your startup profile, as below:
 
 ```bash
 echo "export APTOS_DISABLE_TELEMETRY=true" >> ~/.profile

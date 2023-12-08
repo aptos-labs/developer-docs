@@ -13,7 +13,7 @@ If you are deploying a validator node, then make sure to read the [Node Requirem
 
 ### Deploy
 
-The following guides provide step-by-step instructions for running public fullnode, validator node, and validator fullnode for the Aptos blockchain. 
+The following guides provide step-by-step instructions for running public fullnode, validator node, and validator fullnode for the Aptos blockchain.
 
 - ### [On AWS](./using-aws.md)
 - ### [On Azure](./using-azure.md)
@@ -29,7 +29,7 @@ After deploying your nodes, [connect to the Aptos Network](../connect-to-aptos-n
 
 ## Set up staking and delegation pool operations
 
-After connecting your nodes to the Aptos network, establish [staking pool operations](../staking-pool-operations.md) to add your node to the validator set. 
+After connecting your nodes to the Aptos network, establish [staking pool operations](../staking-pool-operations.md) to add your node to the validator set.
 
 Similarly, conduct [delegation pool operations](../delegation-pool-operations.md) for APT delegated to your validator. Your node will start syncing and participating in consensus.
 
@@ -41,7 +41,7 @@ After your nodes are deployed and configured, make sure they meet [node liveness
 
 Note that many of the same instructions can be used to run a validator fullnode in Aptos:
 
--  If you use the provided reference Kubernetes deployments (i.e. for cloud-managed kubernetes on AWS, Azure, or GCP), then one validator node and one validator fullnode are deployed by default.
-- When using the Docker or the source code, the `fullnode.yaml` will enable you to run a validator fullnode. 
-  - See [Step 11](./using-docker.md#docker-vfn) in the Docker-based instructions. 
+- If you use the provided reference Kubernetes deployments (i.e. for cloud-managed kubernetes on AWS, Azure, or GCP), then one validator node and one validator fullnode are deployed by default.
+- When using the Docker or the source code, the `fullnode.yaml` will enable you to run a validator fullnode.
+  - See [Step 11](./using-docker.md#docker-vfn) in the Docker-based instructions.
   - Similarly, if you use source code, see [Step 9](./using-source-code.md#source-code-vfn) in the source code instructions.

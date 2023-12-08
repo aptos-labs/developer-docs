@@ -25,10 +25,10 @@ File [new issues](https://github.com/aptos-labs/aptos-core/issues/new/choose) to
 
 Here are the primary bug queues:
 
-* [Bug report](https://github.com/aptos-labs/aptos-core/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBug%5D) - Create a bug report to help improve Aptos Core.
-* [DevEx RFC](https://github.com/aptos-labs/aptos-core/issues/new?assignees=&labels=DevEx&template=devex_rfc.md&title=%5BDevEx+RFC%5D+) - Open a Request for Comments (RFC) for DevEx improvements.
-* [Documentation/aptos.dev Bug report](https://github.com/aptos-labs/aptos-core/issues/new?assignees=clay-aptos&labels=bug%2Cdocumentation&template=documentation_bug_report.md&title=%5BDocs%5D) - Create a bug report to help improve the Aptos Developers website.
-* [Feature request](https://github.com/aptos-labs/aptos-core/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=%5BFeature+Request%5D) - Suggest a new feature in Aptos Core.
+- [Bug report](https://github.com/aptos-labs/aptos-core/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBug%5D) - Create a bug report to help improve Aptos Core.
+- [DevEx RFC](https://github.com/aptos-labs/aptos-core/issues/new?assignees=&labels=DevEx&template=devex_rfc.md&title=%5BDevEx+RFC%5D+) - Open a Request for Comments (RFC) for DevEx improvements.
+- [Documentation/aptos.dev Bug report](https://github.com/aptos-labs/aptos-core/issues/new?assignees=clay-aptos&labels=bug%2Cdocumentation&template=documentation_bug_report.md&title=%5BDocs%5D) - Create a bug report to help improve the Aptos Developers website.
+- [Feature request](https://github.com/aptos-labs/aptos-core/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=%5BFeature+Request%5D) - Suggest a new feature in Aptos Core.
 
 ## Develop your own project
 
@@ -42,10 +42,9 @@ Help organize events, develop content and more for the ecosystem by joining the 
 
 We at Aptos love direct contributions in the form of [pull requests](https://github.com/aptos-labs/aptos-core/pulls). Help us make small fixes to code. Follow our coding conventions for:
 
-* [Move](../move/book/coding-conventions.md)
-* [Rust](./rust-coding-guidelines.md)
+- [Move](../move/book/coding-conventions.md)
+- [Rust](./rust-coding-guidelines.md)
 
 ## Update the documentation
 
 You may report problems and supply other input in the [#docs-feedback](https://discord.com/channels/945856774056083548/1034215378299133974) channel of [Aptos Discord](https://discord.gg/aptosnetwork). To help with our contents, follow [Update Aptos.dev](./site-updates.md).
-

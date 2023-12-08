@@ -47,7 +47,8 @@ To allow access from other modules or from scripts, the function must be declare
 
 #### `public` visibility
 
-A `public` function can be called by *any* function defined in *any* module or script. As shown in the following example, a `public` function can be called by:
+A `public` function can be called by _any_ function defined in _any_ module or script. As shown in the following example, a `public` function can be called by:
+
 - other functions defined in the same module,
 - functions defined in another module, or
 - the function defined in a script.
@@ -78,6 +79,7 @@ script {
 #### `public(friend)` visibility
 
 The `public(friend)` visibility modifier is a more restricted form of the `public` modifier to give more control about where a function can be used. A `public(friend)` function can be called by:
+
 - other functions defined in the same module, or
 - functions defined in modules which are explicitly specified in the **friend list** (see [Friends](./friends.md) on how to specify the friend list).
 
@@ -456,7 +458,6 @@ script {
 
 For more details, see [Move generics](./generics.md).
 
-
 ## Returning values
 
 The result of a function, its "return value", is the final value of its function body. For example
@@ -555,7 +556,7 @@ For example, when the function parameter type is `|u64, u64| bool`, any lambda e
 Below is an example that showcases many of these concepts in action (this example is taken from the `std::vector` module):
 
 ```move=
-/// Fold the function over the elements. 
+/// Fold the function over the elements.
 /// E.g, `fold(vector[1,2,3], 0, f)` is the same as `f(f(f(0, 1), 2), 3)`.
 public inline fun fold<Accumulator, Element>(
     v: vector<Element>,

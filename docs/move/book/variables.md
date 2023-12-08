@@ -344,12 +344,11 @@ The general term for the item that introduces the bindings is a _pattern_. The p
 both destructure data (possibly recursively) and introduce the bindings. The pattern grammar is as
 follows:
 
-
 > _pattern_ → _local-variable_ | _struct-type_ **\{** _field-binding-list_ **}**
 
-> *field-binding-list* → _field-binding_ **,**<sub>_opt_</sub> | _field-binding_ **,** _field-binding-list_
+> _field-binding-list_ → _field-binding_ **,**<sub>_opt_</sub> | _field-binding_ **,** _field-binding-list_
 
-> *field-binding* → _field_ | _field_ **:** _pattern_
+> _field-binding_ → _field_ | _field_ **:** _pattern_
 
 A few concrete examples with this grammar applied:
 
@@ -720,7 +719,7 @@ algorithm for doing so is quite simple:
   - Except under special circumstances where it is made a `move` for predictable borrow checker
     errors.
 - Any other value is given a `move`.
-- If the compiler can prove that the source value with copy ability is not used after the 
+- If the compiler can prove that the source value with copy ability is not used after the
   assignment, then a move may be used instead of a copy for performance, but this will be invisible
   to the programmer (except in possible decreased time or gas cost).
 

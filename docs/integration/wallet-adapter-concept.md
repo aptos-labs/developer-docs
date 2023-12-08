@@ -9,7 +9,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 # Integrate with Aptos wallets
 
 Decentralized applications often run through a browser extension or mobile application to read on-chain data and submit
-transactions.  The Aptos Wallet Adapter allows for a single interface for apps and wallets to integrate together.
+transactions. The Aptos Wallet Adapter allows for a single interface for apps and wallets to integrate together.
 
 ## Implementing the Aptos Wallet Adapter
 

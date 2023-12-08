@@ -46,8 +46,8 @@ Note, an account should be managed by a single instance of the transaction manag
 ### Implementations
 
 - Python
-    - [Sequence number manager](https://github.com/aptos-labs/aptos-core/pull/7987)
-    - [Transaction manager](https://github.com/aptos-labs/aptos-core/pull/7987)
+  - [Sequence number manager](https://github.com/aptos-labs/aptos-core/pull/7987)
+  - [Transaction manager](https://github.com/aptos-labs/aptos-core/pull/7987)
 - [Worker-leader smart contract](https://github.com/aptos-labs/aptos-core/pull/7986)
 
 ### Managing Sequence Numbers
@@ -66,9 +66,10 @@ In parallel, monitor new transactions submitted. Once the earliest transaction e
 If there is any failure, wait until all outstanding transactions have timed out and leave it to the application to decide how to proceed, e.g., replay failed transactions. The best method to waiting for outstanding transactions is to query the ledger timestamp and ensure it is at least elapsed the maximum timeout from the last transactions submit time. From there, validate with mempool that all transactions since the last known committed transaction are either committed or no longer exist within the mempool. This can be done by querying the REST API for transactions of a specific account, specifying the currently being evaluated sequence number and setting a limit to 1. Once these checks are complete, the local transaction number can be resynchronized.
 
 These failure handling steps are critical for the following reasons:
-* Mempool does not immediate evict expired transactions.
-* A new transaction cannot overwrite an existing transaction, even if it is expired.
-* Consensus, i.e., the ledger timestamp, dictates expirations, the local node will only expire after it sees a committed timestamp after the transactions expiration time and a garbage collection has happened.
+
+- Mempool does not immediate evict expired transactions.
+- A new transaction cannot overwrite an existing transaction, even if it is expired.
+- Consensus, i.e., the ledger timestamp, dictates expirations, the local node will only expire after it sees a committed timestamp after the transactions expiration time and a garbage collection has happened.
 
 ### Managing Transactions
 
@@ -84,15 +85,15 @@ Once a transaction has been submitted it goes through a variety of steps:
 There are many potential failure cases that must be considered:
 
 - Failure during transaction submission (1 and 2):
-    - Visibility: The application will receive an error either that the network is unavailable or that the transaction failed pre-execution validation.
-    - If the error is related to availability or duplicate sequence numbers, wait until access is available and the sequence number has re-synchronized.
-    - Pre-execution validation failures are currently out of scope, outside of those related to duplicate sequence numbers, account issues are likely related to an invalid key for the account or the account lacks sufficient funds for gas.
+  - Visibility: The application will receive an error either that the network is unavailable or that the transaction failed pre-execution validation.
+  - If the error is related to availability or duplicate sequence numbers, wait until access is available and the sequence number has re-synchronized.
+  - Pre-execution validation failures are currently out of scope, outside of those related to duplicate sequence numbers, account issues are likely related to an invalid key for the account or the account lacks sufficient funds for gas.
 - Failure between submission and execution (3, 4, and 5):
-    - Visibility: Only known by waiting until the transaction has expired.
-    - These are the same as other pre-execution validation errors due to changes to the account as earlier transactions execute. It is likely either duplicate sequence numbers or the account lacks sufficient funds for gas.
+  - Visibility: Only known by waiting until the transaction has expired.
+  - These are the same as other pre-execution validation errors due to changes to the account as earlier transactions execute. It is likely either duplicate sequence numbers or the account lacks sufficient funds for gas.
 - Failure during execution (6):
-    - Visibility: These are committed to the blockchain.
-    - These errors occur as a result of on-chain state issues, these tend to be application specific, such as an auction where a new bid might not actually be higher than the current bid.
+  - Visibility: These are committed to the blockchain.
+  - These errors occur as a result of on-chain state issues, these tend to be application specific, such as an auction where a new bid might not actually be higher than the current bid.
 
 ### Workers and Identity
 

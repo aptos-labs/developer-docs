@@ -2,6 +2,7 @@
 title: "Aptos Error Codes"
 slug: "error-codes"
 ---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -11,19 +12,19 @@ This page catalogs common errors encountered in the Aptos blockchain and explain
 
 For the sources of these errors, see:
 
-  * [vm_status.rs](https://github.com/move-language/move/blob/main/language/move-core/types/src/vm_status.rs)
-  * [error.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/move-stdlib/sources/error.move)
-  * [account.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/account.move)
-  * [coin.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)
-  * [token.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move)
-  * [token_transfers.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token_transfers.move)
+- [vm_status.rs](https://github.com/move-language/move/blob/main/language/move-core/types/src/vm_status.rs)
+- [error.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/move-stdlib/sources/error.move)
+- [account.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/account.move)
+- [coin.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)
+- [token.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move)
+- [token_transfers.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token_transfers.move)
 
-Help us update this list by sending pull requests containing the errors you encounter. If you don't know how to resolve the error, as described int the *Action* column, simply leave it blank.
+Help us update this list by sending pull requests containing the errors you encounter. If you don't know how to resolve the error, as described int the _Action_ column, simply leave it blank.
 
 ## Move Virtual Machine (VM)
 
 | Error                                                    |                                                                                                                                                 Meaning                                                                                                                                                 | Possible Resolution                                                                                                                                   |
-|----------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------------------------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | LOOKUP_FAILED                                            |                                                                                                                 A function that is being called isn't present on the network being used                                                                                                                 | Check that your dependencies on-chain have the same version                                                                                           |
 | UNKNOWN_VALIDATION_STATUS                                |                                                                                                                              We don't want the default value to be valid.                                                                                                                               | N/A                                                                                                                                                   |
 | INVALID_SIGNATURE                                        |                                                                                                                                  The transaction has a bad signature.                                                                                                                                   | Submit a new transaction with a new signature                                                                                                         |
@@ -76,7 +77,7 @@ Help us update this list by sending pull requests containing the errors you enco
 ## Move Standard Library (stdlib)
 
 | Error              |                                             Meaning                                             |
-|--------------------|:-----------------------------------------------------------------------------------------------:|
+| ------------------ | :---------------------------------------------------------------------------------------------: |
 | INVALID_ARGUMENT   |                        Caller specified an invalid argument (http: 400).                        |
 | OUT_OF_RANGE       |                An input or result of a computation is out of range (http: 400).                 |
 | INVALID_STATE      |         The system is not in a state where the operation can be performed (http: 400).          |
@@ -94,7 +95,7 @@ Help us update this list by sending pull requests containing the errors you enco
 ## Aptos accounts
 
 | Error                                |                                                              Meaning                                                               | Possible Resolution                                                              |
-|--------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------:|----------------------------------------------------------------------------------|
+| ------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------: | -------------------------------------------------------------------------------- |
 | EACCOUNT_ALREADY_EXISTS              |                                                      Account already exists.                                                       | N/A                                                                              |
 | EACCOUNT_DOES_NOT_EXIST              |                                                      Account does not exist.                                                       | Create the account first                                                         |
 | ESEQUENCE_NUMBER_TOO_BIG             |                                        Sequence number exceeds the maximum value for a u64.                                        | Provide a smaller sequence number                                                |
@@ -113,7 +114,7 @@ Help us update this list by sending pull requests containing the errors you enco
 ## Aptos coins
 
 | Error                              |                                                Meaning                                                 | Possible Resolution                                                       |
-|------------------------------------|:------------------------------------------------------------------------------------------------------:|---------------------------------------------------------------------------|
+| ---------------------------------- | :----------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------- |
 | ECOIN_INFO_ADDRESS_MISMATCH        | Address of account which is used to initialize a coin `CoinType` doesn't match the deployer of module. | Create the coin using a `CoinType` in the same account creating the coin. |
 | ECOIN_INFO_ALREADY_PUBLISHED       |                              `CoinType` is already initialized as a coin.                              | N/A                                                                       |
 | ECOIN_INFO_NOT_PUBLISHED           |                             `CoinType` hasn't been initialized as a coin.                              | Create the coin with `CoinType` first before using it                     |
@@ -130,7 +131,7 @@ Help us update this list by sending pull requests containing the errors you enco
 ## Aptos tokens
 
 | Error                                        |                            Meaning                             |
-|----------------------------------------------|:--------------------------------------------------------------:|
+| -------------------------------------------- | :------------------------------------------------------------: |
 | EALREADY_HAS_BALANCE                         |        The token has balance and cannot be initialized.        |
 | ECOLLECTIONS_NOT_PUBLISHED                   |         There isn't any collection under this account.         |
 | ECOLLECTION_NOT_PUBLISHED                    |          Cannot find collection in creator's account.          |

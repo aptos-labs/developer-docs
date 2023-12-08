@@ -2,17 +2,15 @@
 
 Move programs can create, delete, and update [resources](./structs-and-resources.md) in global storage using the following five instructions:
 
+| Operation                               | Description                                                     | Aborts?                                 |
+| --------------------------------------- | --------------------------------------------------------------- | --------------------------------------- |
+| `move_to<T>(&signer,T)`                 | Publish `T` under `signer.address`                              | If `signer.address` already holds a `T` |
+| `move_from<T>(address): T`              | Remove `T` from `address` and return it                         | If `address` does not hold a `T`        |
+| `borrow_global_mut<T>(address): &mut T` | Return a mutable reference to the `T` stored under `address`    | If `address` does not hold a `T`        |
+| `borrow_global<T>(address): &T`         | Return an immutable reference to the `T` stored under `address` | If `address` does not hold a `T`        |
+| `exists<T>(address): bool`              | Return `true` if a `T` is stored under `address`                | Never                                   |
 
-| Operation                              | Description                                                     | Aborts?                                 |
----------------------------------------- |---------------------------------------------------------------- |---------------------------------------- |
-|`move_to<T>(&signer,T)`                 | Publish `T` under `signer.address`                              | If `signer.address` already holds a `T` |
-|`move_from<T>(address): T`              | Remove `T` from `address` and return it                         | If `address` does not hold a `T`        |
-|`borrow_global_mut<T>(address): &mut T` | Return a mutable reference to the `T` stored under `address`    | If `address` does not hold a `T`        |
-|`borrow_global<T>(address): &T`         | Return an immutable reference to the `T` stored under `address` | If `address` does not hold a `T`        |
-|`exists<T>(address): bool`              | Return `true` if a `T` is stored under `address`                |  Never                                  |
-
-
-Each of these instructions is parameterized by a type `T` with the [`key` ability](./abilities.md). However, each type `T` *must be declared in the current module*. This ensures that a resource can only be manipulated via the API exposed by its defining module. The instructions also take either an [`address`](./address.md) or [`&signer`](./signer.md) representing the account address where the resource of type `T` is stored.
+Each of these instructions is parameterized by a type `T` with the [`key` ability](./abilities.md). However, each type `T` _must be declared in the current module_. This ensures that a resource can only be manipulated via the API exposed by its defining module. The instructions also take either an [`address`](./address.md) or [`&signer`](./signer.md) representing the account address where the resource of type `T` is stored.
 
 ## References to resources
 
@@ -50,7 +48,7 @@ fun publish_instantiated_generic_container(account: &signer, t: u64) {
 }
 ```
 
-The ability to index into global storage via a type parameter chosen at runtime is a powerful Move feature known as *storage polymorphism*. For more on the design patterns enabled by this feature, see [Move generics](./generics.md).
+The ability to index into global storage via a type parameter chosen at runtime is a powerful Move feature known as _storage polymorphism_. For more on the design patterns enabled by this feature, see [Move generics](./generics.md).
 
 ## Example: `Counter`
 
@@ -129,7 +127,7 @@ fun call_increment(addr: address): u64 acquires Counter {
 }
 ```
 
-However, the same function *outside* `Counter` would not need an annotation:
+However, the same function _outside_ `Counter` would not need an annotation:
 
 ```move
 address 0x43 {

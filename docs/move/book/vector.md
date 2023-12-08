@@ -13,7 +13,7 @@ A `vector<T>` can be instantiated with any type `T`. For example, `vector<u64>`,
 Vectors of any type can be created with `vector` literals.
 
 | Syntax                | Type                                                                          | Description                                |
-|-----------------------|-------------------------------------------------------------------------------|--------------------------------------------|
+| --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------ |
 | `vector[]`            | `vector[]: vector<T>` where `T` is any single, non-reference type             | An empty vector                            |
 | `vector[e1, ..., en]` | `vector[e1, ..., en]: vector<T>` where `e_i: T` s.t. `0 < i <= n` and `n > 0` | A vector with `n` elements (of length `n`) |
 
@@ -43,7 +43,7 @@ result. These values are so common that specific syntax is provided to make the 
 readable, as opposed to having to use `vector[]` where each individual `u8` value is specified in
 numeric form.
 
-There are currently two supported types of `vector<u8>` literals, *byte strings* and *hex strings*.
+There are currently two supported types of `vector<u8>` literals, _byte strings_ and _hex strings_.
 
 #### Byte Strings
 
@@ -53,7 +53,7 @@ These are ASCII encoded strings that allow for escape sequences. Currently, the 
 sequences are:
 
 | Escape Sequence | Description                                    |
-|-----------------|------------------------------------------------|
+| --------------- | ---------------------------------------------- |
 | `\n`            | New line (or Line feed)                        |
 | `\r`            | Carriage return                                |
 | `\t`            | Tab                                            |
@@ -89,12 +89,11 @@ fun byte_and_hex_strings() {
 ## Operations
 
 `vector` provides several operations via the `std::vector` module in the Move standard
-library, as shown below. More operations may be added over time. 
+library, as shown below. More operations may be added over time.
 Up-to-date document on `vector` can be found [here](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/move-stdlib/doc/vector.md#0x1_vector).
 
-
 | Function                                                                           | Description                                                                                                                                                     | Aborts?                                    |
-|------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
 | `vector::empty<T>(): vector<T>`                                                    | Create an empty vector that can store values of type `T`                                                                                                        | Never                                      |
 | `vector::is_empty<T>(): bool`                                                      | Return `true` if the vector `v` has no elements and `false` otherwise.                                                                                          | Never                                      |
 | `vector::singleton<T>(t: T): vector<T>`                                            | Create a vector of size 1 containing `t`                                                                                                                        | Never                                      |

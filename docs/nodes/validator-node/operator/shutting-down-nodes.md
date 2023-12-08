@@ -16,35 +16,34 @@ aptos node leave-validator-set --profile mainnet-operator --pool-address <owner-
 ```
 
 :::danger Important
-If you leave and then rejoin in the same epoch, the rejoin would fail. This is because  when you leave, your validator state changes from "active" to "pending_inactive" but not yet "inactive". Hence, the rejoin would fail.
-::: 
+If you leave and then rejoin in the same epoch, the rejoin would fail. This is because when you leave, your validator state changes from "active" to "pending_inactive" but not yet "inactive". Hence, the rejoin would fail.
+:::
 
-After leaving the validator set, follow any one of the below sections to shut down your nodes. 
+After leaving the validator set, follow any one of the below sections to shut down your nodes.
 
 ## Using source code
 
 1. Stop your node.
 2. Remove the data directory: `rm -r <your-data-directory>`.
 3. Remove the genesis blob file and waypoint file.
-4. If you want to reuse your node identity, you can choose to keep these configuration files: 
+4. If you want to reuse your node identity, you can choose to keep these configuration files:
    - `private-keys.yaml`
    - `validator-identity.yaml`
-   - `validator-full-node-identity.yaml` 
-  
-  or else you can delete these files.
+   - `validator-full-node-identity.yaml`
+
+or else you can delete these files.
 
 ## Using Docker
 
 1. Stop your node and remove the data volumes: `docker compose down --volumes`.
 2. Remove the genesis blob file and waypoint file.
-3. If you want to reuse your node identity, you can choose to keep these configuration files: 
+3. If you want to reuse your node identity, you can choose to keep these configuration files:
    - `private-keys.yaml`
    - `validator-identity.yaml`
-   - `validator-full-node-identity.yaml` 
-  
-  or else you can delete these files.
+   - `validator-full-node-identity.yaml`
+
+or else you can delete these files.
 
 ## Using Terraform
 
 - Stop your node and delete all the resources: `terraform destroy`.
-

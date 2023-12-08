@@ -10,14 +10,14 @@ If you are already somewhat familiar with abilities from writing Move programs, 
 
 The four abilities are:
 
-* [`copy`](#copy)
-    * Allows values of types with this ability to be copied.
-* [`drop`](#drop)
-    * Allows values of types with this ability to be popped/dropped.
-* [`store`](#store)
-    * Allows values of types with this ability to exist inside a struct in global storage.
-* [`key`](#key)
-    * Allows the type to serve as a key for global storage operations.
+- [`copy`](#copy)
+  - Allows values of types with this ability to be copied.
+- [`drop`](#drop)
+  - Allows values of types with this ability to be popped/dropped.
+- [`store`](#store)
+  - Allows values of types with this ability to exist inside a struct in global storage.
+- [`key`](#key)
+  - Allows the type to serve as a key for global storage operations.
 
 ### `copy`
 
@@ -28,16 +28,17 @@ If a value has `copy`, all values contained inside of that value have `copy`.
 ### `drop`
 
 The `drop` ability allows values of types with that ability to be dropped. By dropped, we mean that value is not transferred and is effectively destroyed as the Move program executes. As such, this ability gates the ability to ignore values in a multitude of locations, including:
-* not using the value in a local variable or parameter
-* not using the value in a [sequence via `;`](./variables.md#expression-blocks)
-* overwriting values in variables in [assignments](./variables.md#assignments)
-* overwriting values via references when [writing `*e1 = e2`](./references.md#reading-and-writing-through-references).
+
+- not using the value in a local variable or parameter
+- not using the value in a [sequence via `;`](./variables.md#expression-blocks)
+- overwriting values in variables in [assignments](./variables.md#assignments)
+- overwriting values via references when [writing `*e1 = e2`](./references.md#reading-and-writing-through-references).
 
 If a value has `drop`, all values contained inside of that value have `drop`.
 
 ### `store`
 
-The `store` ability allows values of types with this ability to exist inside a struct (resource) in global storage, *but* not necessarily as a top-level resource in global storage. This is the only ability that does not directly gate an operation. Instead, it gates the existence in global storage when used in tandem with `key`.
+The `store` ability allows values of types with this ability to exist inside a struct (resource) in global storage, _but_ not necessarily as a top-level resource in global storage. This is the only ability that does not directly gate an operation. Instead, it gates the existence in global storage when used in tandem with `key`.
 
 If a value has `store`, all values contained inside of that value have `store`
 
@@ -51,14 +52,14 @@ If a value has `key`, all values contained inside of that value have `store`. Th
 
 Most primitive, builtin types have `copy`, `drop`, and `store` except for `signer`, which just has `drop`
 
-* `bool`, `u8`, `u16`, `u32`, `u64`, `u128`, `u256`, and `address` all have `copy`, `drop`, and `store`.
-* `signer` has `drop`
-    * Cannot be copied and cannot be put into global storage
-* `vector<T>` may have `copy`, `drop`, and `store` depending on the abilities of `T`.
-    * See [Conditional Abilities and Generic Types](#conditional-abilities-and-generic-types) for more details.
-* Immutable references `&` and mutable references `&mut` both have `copy` and `drop`.
-    * This refers to copying and dropping the reference itself, not what they refer to.
-    * References cannot appear in global storage, hence they do not have `store`.
+- `bool`, `u8`, `u16`, `u32`, `u64`, `u128`, `u256`, and `address` all have `copy`, `drop`, and `store`.
+- `signer` has `drop`
+  - Cannot be copied and cannot be put into global storage
+- `vector<T>` may have `copy`, `drop`, and `store` depending on the abilities of `T`.
+  - See [Conditional Abilities and Generic Types](#conditional-abilities-and-generic-types) for more details.
+- Immutable references `&` and mutable references `&mut` both have `copy` and `drop`.
+  - This refers to copying and dropping the reference itself, not what they refer to.
+  - References cannot appear in global storage, hence they do not have `store`.
 
 None of the primitive types have `key`, meaning none of them can be used directly with the [global storage operations](./global-storage-operators.md).
 
@@ -73,16 +74,15 @@ struct Pair has copy, drop, store { x: u64, y: u64 }
 
 In this case: `Ignorable` has the `drop` ability. `Pair` has `copy`, `drop`, and `store`.
 
-
 All of these abilities have strong guarantees over these gated operations. The operation can be performed on the value only if it has that ability; even if the value is deeply nested inside some other collection!
 
 As such: when declaring a struct’s abilities, certain requirements are placed on the fields. All fields must satisfy these constraints. These rules are necessary so that structs satisfy the reachability rules for the abilities given above. If a struct is declared with the ability...
 
-* `copy`, all fields must have `copy`.
-* `drop`, all fields must have `drop`.
-* `store`, all fields must have `store`.
-* `key`, all fields must have `store`.
-    * `key` is the only ability currently that doesn't require itself.
+- `copy`, all fields must have `copy`.
+- `drop`, all fields must have `drop`.
+- `store`, all fields must have `store`.
+- `key`, all fields must have `store`.
+  - `key` is the only ability currently that doesn't require itself.
 
 For example:
 
@@ -114,7 +114,7 @@ When abilities are annotated on a generic type, not all instances of that type a
 struct Cup<T> has copy, drop, store, key { item: T }
 ```
 
-It might be very helpful if `Cup` could hold any type, regardless of its abilities. The type system can *see* the type parameter, so it should be able to remove abilities from `Cup` if it *sees* a type parameter that would violate the guarantees for that ability.
+It might be very helpful if `Cup` could hold any type, regardless of its abilities. The type system can _see_ the type parameter, so it should be able to remove abilities from `Cup` if it _sees_ a type parameter that would violate the guarantees for that ability.
 
 This behavior might sound a bit confusing at first, but it might be more understandable if we think about collection types. We could consider the builtin type `vector` to have the following type declaration:
 
@@ -122,14 +122,14 @@ This behavior might sound a bit confusing at first, but it might be more underst
 vector<T> has copy, drop, store;
 ```
 
-We want `vector`s to work with any type. We don't want separate `vector` types for different abilities. So what are the rules we would want? Precisely the same that we would want with the field rules above.  So, it would be safe to copy a `vector` value only if the inner elements can be copied. It would be safe to ignore a `vector` value only if the inner elements can be ignored/dropped. And, it would be safe to put a `vector` in global storage only if the inner elements can be in global storage.
+We want `vector`s to work with any type. We don't want separate `vector` types for different abilities. So what are the rules we would want? Precisely the same that we would want with the field rules above. So, it would be safe to copy a `vector` value only if the inner elements can be copied. It would be safe to ignore a `vector` value only if the inner elements can be ignored/dropped. And, it would be safe to put a `vector` in global storage only if the inner elements can be in global storage.
 
 To have this extra expressiveness, a type might not have all the abilities it was declared with depending on the instantiation of that type; instead, the abilities a type will have depends on both its declaration **and** its type arguments. For any type, type parameters are pessimistically assumed to be used inside the struct, so the abilities are only granted if the type parameters meet the requirements described above for fields. Taking `Cup` from above as an example:
 
-* `Cup` has the ability `copy` only if `T` has `copy`.
-* It has `drop` only if `T` has `drop`.
-* It has `store` only if `T` has `store`.
-* It has `key` only if `T` has `store`.
+- `Cup` has the ability `copy` only if `T` has `copy`.
+- It has `drop` only if `T` has `drop`.
+- It has `store` only if `T` has `store`.
+- It has `key` only if `T` has `store`.
 
 Here are examples for this conditional system for each ability:
 
