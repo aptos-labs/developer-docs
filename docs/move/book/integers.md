@@ -3,7 +3,7 @@
 Move supports six unsigned integer types: `u8`, `u16`, `u32`, `u64`, `u128`, and `u256`. Values of these types range from 0 to a maximum that depends on the size of the type.
 
 | Type                             | Value Range              |
-| -------------------------------- | ------------------------ |
+|----------------------------------|--------------------------|
 | Unsigned 8-bit integer, `u8`     | 0 to 2<sup>8</sup> - 1   |
 | Unsigned 16-bit integer, `u16`   | 0 to 2<sup>16</sup> - 1  |
 | Unsigned 32-bit integer, `u32`   | 0 to 2<sup>32</sup> - 1  |
@@ -70,13 +70,13 @@ Each of these types supports the same set of checked arithmetic operations. For 
 
 All arithmetic operations abort instead of behaving in a way that mathematical integers would not (e.g., overflow, underflow, divide-by-zero).
 
-| Syntax | Operation | Aborts If
-|--------|-----------|-------------------------------------
-| `+` |addition | Result is too large for the integer type
-| `-` | subtraction | Result is less than zero
-| `*` | multiplication | Result is too large for the integer type
-| `%` | modular division | The divisor is `0`
-| `/` | truncating division | The divisor is `0`
+| Syntax | Operation           | Aborts If                                |
+|--------|---------------------|------------------------------------------|
+| `+`    | addition            | Result is too large for the integer type |
+| `-`    | subtraction         | Result is less than zero                 |
+| `*`    | multiplication      | Result is too large for the integer type |
+| `%`    | modular division    | The divisor is `0`                       |
+| `/`    | truncating division | The divisor is `0`                       |
 
 ### Bitwise
 
@@ -92,14 +92,14 @@ Bitwise operations do not abort.
 
 ### Bit Shifts
 
-Similar to the bitwise operations, each integer type supports bit shifts. But unlike the other operations, the righthand side operand (how many bits to shift by) must *always* be a `u8` and need not match the left side operand (the number you are shifting).
+Similar to the bitwise operations, each integer type supports bit shifts. But unlike the other operations, the right-hand side operand (how many bits to shift by) must *always* be a `u8` and need not match the left side operand (the number you are shifting).
 
 Bit shifts can abort if the number of bits to shift by is greater than or equal to `8`, `16`, `32`, `64`, `128` or `256` for `u8`, `u16`, `u32`, `u64`, `u128` and `u256` respectively.
 
-| Syntax | Operation  | Aborts if
-|--------|------------|----------
-|`<<`    | shift left | Number of bits to shift by is greater than the size of the integer type
-|`>>`    | shift right| Number of bits to shift by is greater than the size of the integer type
+| Syntax | Operation   | Aborts if                                                               |
+|--------|-------------|-------------------------------------------------------------------------|
+| `<<`   | shift left  | Number of bits to shift by is greater than the size of the integer type |
+| `>>`   | shift right | Number of bits to shift by is greater than the size of the integer type |
 
 ### Comparisons
 
@@ -107,12 +107,12 @@ Integer types are the *only* types in Move that can use the comparison operators
 
 Comparison operations do not abort.
 
-| Syntax | Operation
-|--------|-----------
-| `<`    | less than
-| `>`    | greater than
-| `<=`   | less than or equal to
-| `>=`   | greater than or equal to
+| Syntax | Operation                |
+|--------|--------------------------|
+| `<`    | less than                |
+| `>`    | greater than             |
+| `<=`   | less than or equal to    |
+| `>=`   | greater than or equal to |
 
 ### Equality
 
@@ -120,10 +120,10 @@ Like all types with [`drop`](./abilities.md) in Move, all integer types support 
 
 Equality operations do not abort.
 
-| Syntax | Operation
-|--------|----------
-| `==`   | equal
-| `!=`   | not equal
+| Syntax | Operation |
+|--------|-----------|
+| `==`   | equal     |
+| `!=`   | not equal |
 
 For more details see the section on [equality](./equality.md)
 
@@ -133,9 +133,9 @@ Integer types of one size can be cast to integer types of another size. Integers
 
 Casts *do not* truncate. Casting will abort if the result is too large for the specified type
 
-| Syntax     | Operation                                                                       | Aborts if
-|------------|---------------------------------------------------------------------------------|---------------------------------------
-| `(e as T)`| Cast integer expression `e` into an integer type `T` | `e` is too large to represent as a `T`
+| Syntax     | Operation                                            | Aborts if                              |
+|------------|------------------------------------------------------|----------------------------------------|
+| `(e as T)` | Cast integer expression `e` into an integer type `T` | `e` is too large to represent as a `T` |
 
 Here, the type of `e` must be `8`, `16`, `32`, `64`, `128` or `256` and `T` must be `u8`, `u16`, `u32`, `u64`, `u128` or `u256`.
 

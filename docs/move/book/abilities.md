@@ -1,10 +1,10 @@
 # Abilities
 
-Abilities are a typing feature in Move that control what actions are permissible for values of a given type. This system grants fine grained control over the "linear" typing behavior of values, as well as if and how values are used in global storage. This is implemented by gating access to certain bytecode instructions so that for a value to be used with the bytecode instruction, it must have the ability required (if one is required at all—not every instruction is gated by an ability).
+Abilities are a typing feature in Move that control what actions are permissible for values of a given type. This system grants fine-grained control over the "linear" typing behavior of values, as well as if and how values are used in global storage. This is implemented by gating access to certain bytecode instructions so that for a value to be used with the bytecode instruction, it must have the ability required (if one is required at all—not every instruction is gated by an ability).
 
-<!-- TODO future section on detailed walk through maybe. We have some examples at the end but it might be helpful to explain why we have precisely this set of abilities
+<!-- TODO future section on detailed walk through, maybe. We have some examples at the end, but it might be helpful to explain why we have precisely this set of abilities
 
-If you are already somewhat familiar with abilities from writing Move programs, but are still confused as to what is going on, it might be helpful to skip to the [motivating walkthrough](#motivating-walkthrough) section to get an idea of what the system is setup in the way that it is. -->
+If you are already somewhat familiar with abilities from writing Move programs, but are still confused as to what is going on, it might be helpful to skip to the [motivating walkthrough](#motivating-walkthrough) section to get an idea of what the system is set up in the way that it is. -->
 
 ## The Four Abilities
 
@@ -37,7 +37,7 @@ If a value has `drop`, all values contained inside of that value have `drop`.
 
 ### `store`
 
-The `store` ability allows values of types with this ability to exist inside of a struct (resource) in global storage, *but* not necessarily as a top-level resource in global storage. This is the only ability that does not directly gate an operation. Instead it gates the existence in global storage when used in tandem with `key`.
+The `store` ability allows values of types with this ability to exist inside a struct (resource) in global storage, *but* not necessarily as a top-level resource in global storage. This is the only ability that does not directly gate an operation. Instead, it gates the existence in global storage when used in tandem with `key`.
 
 If a value has `store`, all values contained inside of that value have `store`
 
@@ -49,7 +49,7 @@ If a value has `key`, all values contained inside of that value have `store`. Th
 
 ## Builtin Types
 
-Most primitive, builtin types have `copy`, `drop`, and `store` with the exception of `signer`, which just has `drop`
+Most primitive, builtin types have `copy`, `drop`, and `store` except for `signer`, which just has `drop`
 
 * `bool`, `u8`, `u16`, `u32`, `u64`, `u128`, `u256`, and `address` all have `copy`, `drop`, and `store`.
 * `signer` has `drop`
@@ -74,7 +74,7 @@ struct Pair has copy, drop, store { x: u64, y: u64 }
 In this case: `Ignorable` has the `drop` ability. `Pair` has `copy`, `drop`, and `store`.
 
 
-All of these abilities have strong guarantees over these gated operations. The operation can be performed on the value only if it has that ability; even if the value is deeply nested inside of some other collection!
+All of these abilities have strong guarantees over these gated operations. The operation can be performed on the value only if it has that ability; even if the value is deeply nested inside some other collection!
 
 As such: when declaring a struct’s abilities, certain requirements are placed on the fields. All fields must satisfy these constraints. These rules are necessary so that structs satisfy the reachability rules for the abilities given above. If a struct is declared with the ability...
 
@@ -82,7 +82,7 @@ As such: when declaring a struct’s abilities, certain requirements are placed 
 * `drop`, all fields must have `drop`.
 * `store`, all fields must have `store`.
 * `key`, all fields must have `store`.
-    * `key` is the only ability currently that doesn’t require itself.
+    * `key` is the only ability currently that doesn't require itself.
 
 For example:
 
@@ -124,7 +124,7 @@ vector<T> has copy, drop, store;
 
 We want `vector`s to work with any type. We don't want separate `vector` types for different abilities. So what are the rules we would want? Precisely the same that we would want with the field rules above.  So, it would be safe to copy a `vector` value only if the inner elements can be copied. It would be safe to ignore a `vector` value only if the inner elements can be ignored/dropped. And, it would be safe to put a `vector` in global storage only if the inner elements can be in global storage.
 
-To have this extra expressiveness, a type might not have all the abilities it was declared with depending on the instantiation of that type; instead, the abilities a type will have depends on both its declaration **and** its type arguments. For any type, type parameters are pessimistically assumed to be used inside of the struct, so the abilities are only granted if the type parameters meet the requirements described above for fields. Taking `Cup` from above as an example:
+To have this extra expressiveness, a type might not have all the abilities it was declared with depending on the instantiation of that type; instead, the abilities a type will have depends on both its declaration **and** its type arguments. For any type, type parameters are pessimistically assumed to be used inside the struct, so the abilities are only granted if the type parameters meet the requirements described above for fields. Taking `Cup` from above as an example:
 
 * `Cup` has the ability `copy` only if `T` has `copy`.
 * It has `drop` only if `T` has `drop`.

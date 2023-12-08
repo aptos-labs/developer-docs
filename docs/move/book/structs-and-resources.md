@@ -81,7 +81,7 @@ module m {
 
     fun example() {
         let foo = Foo { x: 0, y: false };
-        let baz = Baz { foo: foo };
+        let baz = Baz { foo };
     }
 }
 }
@@ -247,7 +247,7 @@ The reason behind this design decision is that copying a vector or another struc
 expensive operation. It is important for a programmer to be aware of this copy and make others aware
 with the explicit syntax `*&`.
 
-In addition reading from fields, the dot syntax can be used to modify fields, regardless of the
+In addition, reading from fields, the dot syntax can be used to modify fields, regardless of the
 field being a primitive type or some other struct.
 
 ```move

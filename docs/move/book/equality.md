@@ -5,7 +5,7 @@ Move supports two equality operations `==` and `!=`
 ## Operations
 
 | Syntax | Operation | Description                                                                 |
-| ------ | --------- | --------------------------------------------------------------------------- |
+|--------|-----------|-----------------------------------------------------------------------------|
 | `==`   | equal     | Returns `true` if the two operands have the same value, `false` otherwise   |
 | `!=`   | not equal | Returns `true` if the two operands have different values, `false` otherwise |
 

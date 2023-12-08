@@ -99,7 +99,7 @@ const REM: u256 = 57896044618658097711785492504343953926634992332820282019728792
 const EQUAL: bool = 1 == 1;
 ```
 
-If the operation would result in a runtime exception, the compiler will give an error that it is
+If the operation results in a runtime exception, the compiler will give an error that it is
 unable to generate the constant's value
 
 ```move

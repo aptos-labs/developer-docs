@@ -53,7 +53,7 @@ use std::vector::empty;
 use std::vector::empty as empty_vec;
 ```
 
-This would let you use the function `std::vector::empty` without full qualification. Instead you
+This would let you use the function `std::vector::empty` without full qualification. Instead, you
 could use `empty` and `empty_vec` respectively. Again, `use std::vector::empty;` is equivalent to
 `use std::vector::empty as empty;`
 
@@ -97,7 +97,7 @@ single `use` using `Self`. `Self` is a member of sorts that refers to the module
 use std::vector::{Self, empty};
 ```
 
-For clarity, all of the following are equivalent:
+For clarity, all the following are equivalent:
 
 ```move
 use std::vector;
@@ -131,7 +131,7 @@ fun pop_twice<T>(v: &mut vector<T>): (T, T) {
 
 ## Inside a `module`
 
-Inside of a `module` all `use` declarations are usable regardless of the order of declaration.
+Inside a `module` all `use` declarations are usable regardless of the order of declaration.
 
 ```move=
 address 0x42 {
@@ -286,7 +286,7 @@ module example {
 }
 ```
 
-Inside of an expression block, they cannot overlap with each other, but they can
+Inside an expression block, they cannot overlap with each other, but they can
 [shadow](#shadowing) other aliases or names from an outer scope
 
 ## Shadowing

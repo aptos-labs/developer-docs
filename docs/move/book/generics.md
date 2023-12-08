@@ -65,7 +65,7 @@ If you do not specify the type arguments, Move's [type inference](#type-inferenc
 
 ### Type Argument Mismatch
 
-If you specify the type arguments and they conflict with the actual values supplied, an error will be given:
+If you specify the type arguments, and they conflict with the actual values supplied, an error will be given:
 
 ```move
 fun foo() {
@@ -84,7 +84,7 @@ fun foo() {
 
 ## Type Inference
 
-In most cases, the Move compiler will be able to infer the type arguments so you don't have to write them down explicitly. Here's what the examples above would look like if we omit the type arguments:
+In most cases, the Move compiler will be able to infer the type arguments, so you don't have to write them down explicitly. Here's what the examples above would look like if we omit the type arguments:
 
 ```move
 fun foo() {
@@ -310,7 +310,7 @@ Constraints can be imposed on type parameters using the following syntax.
 T: <ability> (+ <ability>)*
 ```
 
-The `<ability>` can be any of the four [abilities](./abilities.md), and a type parameter can be constrained with multiple abilities at once. So all of the following would be valid type parameter declarations:
+The `<ability>` can be any of the four [abilities](./abilities.md), and a type parameter can be constrained with multiple abilities at once. So all the following would be valid type parameter declarations:
 
 ```move
 T: copy
@@ -376,7 +376,7 @@ For more information, see the abilities section on [conditional abilities and ge
 
 ### Recursive Structs
 
-Generic structs can not contain fields of the same type, either directly or indirectly, even with different type arguments. All of the following struct definitions are invalid:
+Generic structs can not contain fields of the same type, either directly or indirectly, even with different type arguments. All the following struct definitions are invalid:
 
 ```move
 struct Foo<T> {
