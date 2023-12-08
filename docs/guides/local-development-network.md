@@ -5,7 +5,7 @@ title: "Run a Local Development Network"
 # Run a Local Development Network
 
 You can run the Aptos network locally. This local network will not be connected to any production Aptos network (e.g. mainnet), it will run on your local machine, independent of other Aptos networks. Building against a local network has a few advantages:
-- **No ratelimits:** Hosted services (including the Node API, Indexer API, and faucet) are generally subject to ratelimits. Local development networks have no ratelimits.
+- **No rate-limits:** Hosted services (including the Node API, Indexer API, and faucet) are generally subject to rate-limits. Local development networks have no rate-limits.
 - **Reproducibility:** When using a production network you might have to repeatedly make new accounts or rename Move modules to avoid incompatibility issues. With a local network you can just choose to start from scratch.
 - **High availability:** The Aptos devnet and testnet networks are periodically upgraded, during which time they can be unavailable. The internet can also be unreliable sometimes. Local development networks are always available, even if you have no internet access.
 
@@ -120,7 +120,7 @@ The provider is a single super client for both the node and indexer APIs.
 ## Resetting the local network
 
 Sometimes while developing it is helpful to reset the local network back to its initial state:
-- You made backwards incompatible changes to a Move module and you'd like to redeploy it without renaming it or using a new account.
+- You made backwards incompatible changes to a Move module, and you'd like to redeploy it without renaming it or using a new account.
 - You are building a [custom indexer processor](../indexer/custom-processors/index.md) and would like to index using a fresh network.
 - You want to clear all on chain state, e.g. accounts, objects, etc.
 
@@ -255,7 +255,7 @@ Note: As mentioned above, if you're on Mac or Windows, we recommend you use Dock
 If the CLI seems to sit there and do nothing when you are using `--with-indexer-api`, consider quitting and restarting Docker. Sometimes Docker gets in a bad state. Note that Docker is only required if you are using `--with-indexer-api`.
 
 ### How do I use the Postgres on my host machine?
-By default when using `--with-indexer-api` the CLI will run a Postgres instance in Docker. If you have Postgres running on your host machine and would like to use that instead, you can do so with the `--use-host-postgres` flag. There are also flags for specifying how it should connect to the host Postgres. Here is an example invocation:
+By default, when using `--with-indexer-api` the CLI will run a Postgres instance in Docker. If you have Postgres running on your host machine and would like to use that instead, you can do so with the `--use-host-postgres` flag. There are also flags for specifying how it should connect to the host Postgres. Here is an example invocation:
 ```bash
 aptos node run-local-testnet --with-indexer-api --use-host-postgres --postgres-user $USER
 ```
@@ -274,7 +274,7 @@ You can inspect the response to see which services are ready.
 <summary>Example using curl</summary>
 <p>
 
-```json
+```bash
 $ curl http://127.0.0.1:8070 | jq .
 {
   "ready": [

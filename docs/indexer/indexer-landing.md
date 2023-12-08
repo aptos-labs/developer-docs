@@ -41,8 +41,8 @@ sources={{
 At a high level, indexing on the Aptos blockchain works like this:
 
 1. Users of a dApp, for example, on an NFT marketplace, interact with the Aptos blockchain via a rich UI presented by the dApp. Behind the scenes, these interactions generate, via smart contracts, the transaction and event data. This raw data is stored in the distributed ledger database, for example, on an Aptos fullnode.
-1. This raw ledger data is read and indexed using an application-specific data model, in this case an NFT marketplace-specific data model (”Business logic” in the above diagram). This NFT marketplace-specific index is then stored in a separate database (”Indexed database” in the above diagram) and exposed via an API.
-1. The dApp sends NFT-specific GraphQL queries to this indexed database and receives rich data back, which is then served to the users.
+2. This raw ledger data is read and indexed using an application-specific data model, in this case an NFT marketplace-specific data model (”Business logic” in the above diagram). This NFT marketplace-specific index is then stored in a separate database (”Indexed database” in the above diagram) and exposed via an API.
+3. The dApp sends NFT-specific GraphQL queries to this indexed database and receives rich data back, which is then served to the users.
 
 Step 2 is facilitated by the Aptos Indexer. The diagram above is a simplified view of how the system works at a high level. In reality, the system is composed of many components. If you are interested in these details, see the [Detailed Overview](#detailed-overview) below.
 
@@ -51,18 +51,18 @@ Step 2 is facilitated by the Aptos Indexer. The diagram above is a simplified vi
 Aptos supports the following ways to access indexed data.
 
 1. [Labs hosted Indexer API](/indexer/api/labs-hosted): This API is rate-limited and is intended only for lightweight applications such as wallets. This option is not recommended for high-bandwidth applications.
-2. [Self hosted Indexer API](/indexer/api/self-hosted): Run your own deployment of the Labs hosted indexer stack.
+2. [Self-hosted Indexer API](/indexer/api/self-hosted): Run your own deployment of the Labs hosted indexer stack.
 3. [Custom processor](/indexer/custom-processors): Write and deploy a custom processor to index and expose data in a way specific to your needs.
 
 ## Transaction Stream Service
 
-The Indexer API and Custom Processors depend on the Transaction Stream Service. In short, this service provides a GRPC stream of transactions that processors consume. Learn more about this service [here](/indexer/txn-stream/). Aptos Labs offers a [hosted instance of this service](/indexer/txn-stream/labs-hosted) but you may also [run your own](/indexer/txn-stream/self-hosted).
+The Indexer API and Custom Processors depend on the Transaction Stream Service. In short, this service provides a GRPC stream of transactions that processors consume. Learn more about this service [here](/indexer/txn-stream/). Aptos Labs offers a [hosted instance of this service](/indexer/txn-stream/labs-hosted), but you may also [run your own](/indexer/txn-stream/self-hosted).
 
 ## Detailed Overview
 
 This diagram explains how the Aptos Indexer tech stack works in greater detail.
 
-<center>
+<div style="text-align: center;">
 <div style={{marginBottom: 20}}>
 <iframe
   style={{border: "1px solid rgba(0, 0, 0, 0.1);"}}
@@ -72,7 +72,7 @@ This diagram explains how the Aptos Indexer tech stack works in greater detail.
   allowfullscreen>
 </iframe>
 </div>
-</center>
+</div>
 
 <!-- TODO: Write an explanation of this diagram. -->
 

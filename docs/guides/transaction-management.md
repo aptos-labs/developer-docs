@@ -35,13 +35,13 @@ Now that we understand the nuances of transactions, let's dig into building a ro
 - A transaction manager that receives payloads from an application or a user, sequence numbers from the sequence number generator, and has access to the account key to combine the three pieces together into a viable signed transaction. It then also takes the responsibility for pushing the transaction to the blockchain.
 - An on-chain worker, leader harness that lets multiple accounts share the signer of a single shared account.
 
-Currently this framework assumes that the network builds no substantial queue, that is a transaction that is submitted executes and commits with little to no delay. In order to address high demand, this work needs to be extended with the following components:
+Currently, this framework assumes that the network builds no substantial queue, that is a transaction that is submitted executes and commits with little to no delay. In order to address high demand, this work needs to be extended with the following components:
 
 - Optimizing `base_gas_unit` price to ensure priority transactions can be committed to the blockchain.
 - Further handling of transaction processing rates to ensure that the expiration timer is properly set.
 - Handling of transaction failures to either be ignored or resubmitted based upon desired outcome.
 
-Note, an account should be managed by a single instance of the transaction manager. Otherwise each instance of the transaction manager will likely have stale in-memory state resulting in overlapping sequence numbers.
+Note, an account should be managed by a single instance of the transaction manager. Otherwise, each instance of the transaction manager will likely have stale in-memory state resulting in overlapping sequence numbers.
 
 ### Implementations
 
@@ -58,12 +58,12 @@ Each transaction requires a distinct sequence number that is sequential to previ
 2. Support up to 100 transactions in flight at the same time, that is 100 sequence numbers can be allocated without confirming that any have been committed.
 3. If there are 100 transactions in flight, determine the actual committed state by querying the network. This will update the current sequence number.
 4. If there are less than 100 transactions in flight, return to step 2.
-5. Otherwise sleep for .1 seconds and continue to re-evaluate the current on-chain sequence number.
+5. Otherwise, sleep for .1 seconds and continue to re-evaluate the current on-chain sequence number.
 6. All transactions should have an expiration time. If the expiration time has passed, assume that there has been a failure and reset the sequence number. The trivial case is to only monitor for failures when the maximum number of transactions are in flight and to let other services manages this otherwise.
 
 In parallel, monitor new transactions submitted. Once the earliest transaction expiration time has expired synchronize up to that transaction. Then repeat the process for the next transaction.
 
-If there is any failure, wait until all outstanding transactions have timed out and leave it to the application to decide how to proceed, e.g., replay failed transactions. The best method for waiting for outstanded transactions is first to query the ledger timestamp and ensure it is at least elapsed the maximum timeout from the last transactions submit time. From there, validate with mempool that all transactions since the last known committed transaction are either committed or no longer exist within the mempool. This can be done by querying the REST API for transactions of a specific account, specifying the currently being evaluated sequence number and setting a limit to 1. Once these checks are complete, the local transaction number can be resynchronized.
+If there is any failure, wait until all outstanding transactions have timed out and leave it to the application to decide how to proceed, e.g., replay failed transactions. The best method to waiting for outstanding transactions is to query the ledger timestamp and ensure it is at least elapsed the maximum timeout from the last transactions submit time. From there, validate with mempool that all transactions since the last known committed transaction are either committed or no longer exist within the mempool. This can be done by querying the REST API for transactions of a specific account, specifying the currently being evaluated sequence number and setting a limit to 1. Once these checks are complete, the local transaction number can be resynchronized.
 
 These failure handling steps are critical for the following reasons:
 * Mempool does not immediate evict expired transactions.
@@ -102,6 +102,6 @@ To fully leverage the blockchain for massive throughput, using a single user acc
 
 In this model, each worker has access to the `SignerCap` of the shared account, which enables them to impersonate the shared account or generate the `signer` for the shared account. Upon gaining the `signer`, the transaction can execute the logic that is gated by the signer of the shared account.
 
-Another model, if viable, is to decouple the `signer` altogether away from permissions and to make an application specific capability. Then this capability can be given to each worker that let’s them operate on the shared infrastructure.
+Another model, if viable, is to decouple the `signer` altogether away from permissions and to make an application specific capability. Then this capability can be given to each worker that lets them operate on the shared infrastructure.
 
 Note that parallelization on the shared infrastructure can be limited if any transaction would have any read or write conflicts. This won’t prevent multiple transactions from executing within a block, but can impact maximum blockchain performance.

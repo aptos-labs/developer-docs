@@ -118,7 +118,7 @@ Avoid passive tense and gerunds when possible:
 - Break up walls of text (long passages of text) into smaller chunks for easier reading.
 - Use lists. When you use lists, keep each item as distinct as you can from another item.
 - Provide context. Your readers can be beginner developers or experts in specialized fields. They may not know what you are talking about without any context.
-- Use shorter sentences (26 words or less) They are easier to understand (and translate).
+- Use shorter sentences (26 words or fewer) They are easier to understand (and translate).
 - Define acronyms and abbreviations at the first usage in every topic.
 - Keep in mind our documentation is written in US English, but the audience will include people for whom English is not their primary language.
 - Avoid culturally specific references, humor, names.
@@ -171,7 +171,7 @@ This approach makes it easier for the reader to get her specific development tas
 
 A document title is the main title of a document page. A document has only one document title.
 
-💡 **Example**: "Writing Style Guide" at the beginning of this page. The document title also appears at the top level in the navigation bar, so it must be short, preferably four to five words or less.
+💡 **Example**: "Writing Style Guide" at the beginning of this page. The document title also appears at the top level in the navigation bar, so it must be short, preferably four to five words or fewer.
 
 
 **Section headings within a document (h2, h3, h4, h5)**
@@ -202,7 +202,7 @@ A section heading is the title for an individual section within a document page.
 
 ## Avoid duplication
 
-We face too many challenges to tackle the same one from scratch again or split our efforts into silos. We must collaborate to make best use of our diverse and growing skillset.
+We face too many challenges to tackle the same one from scratch again or split our efforts into silos. We must collaborate to make best use of our diverse skills.
 
 Search and navigate across this site to see if an existing document already serves your purpose and garners an update before starting anew. As with code, [don't repeat yourself](https://www.wikipedia.org/wiki/Don%27t_repeat_yourself).
     
@@ -210,20 +210,20 @@ Search and navigate across this site to see if an existing document already serv
 
 The below table lists the correct usage of Aptos words and phrases. 
 
-| Recommended way to use in mid-sentence  | Avoid these forms |
-| --- | --- |
-| First letter uppercase if appearing at the start of a sentence. |  |
-| fullnode (FN) | FullNode, Fullnode |
-| validator or validator node (VN) | Validator Node, ValidatorNode |
-| validator fullnode (VFN) | Validator FullNode or ValidatorFullNode |
-| public fullnode | Public FullNode |
-| Aptos blockchain | Aptos Blockchain |
-| Move module | Move Module |
-| Move resource | Move Resource |
-| Aptos framework | Aptos Framework |
-| Faucet | faucet |
-| mempool | Mempool |
-| bytecode | bytecodes |
-| MoveVM | Move VM |
-| REST service | REST Service |
-| upgradeable | upgradable |
+| Recommended way to use in mid-sentence                          | Avoid these forms                       |
+|-----------------------------------------------------------------|-----------------------------------------|
+| First letter uppercase if appearing at the start of a sentence. |                                         |
+| fullnode (FN)                                                   | FullNode, Fullnode                      |
+| validator or validator node (VN)                                | Validator Node, ValidatorNode           |
+| validator fullnode (VFN)                                        | Validator FullNode or ValidatorFullNode |
+| public fullnode                                                 | Public FullNode                         |
+| Aptos blockchain                                                | Aptos Blockchain                        |
+| Move module                                                     | Move Module                             |
+| Move resource                                                   | Move Resource                           |
+| Aptos framework                                                 | Aptos Framework                         |
+| Faucet                                                          | faucet                                  |
+| mempool                                                         | Mempool                                 |
+| bytecode                                                        | bytecodes                               |
+| MoveVM                                                          | Move VM                                 |
+| REST service                                                    | REST Service                            |
+| upgradeable                                                     | upgradable                              |

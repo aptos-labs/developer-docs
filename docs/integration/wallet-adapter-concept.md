@@ -8,7 +8,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Integrate with Aptos wallets
 
-Decentralized applications often run through a browser extension or mobile application to read onchain data and submit
+Decentralized applications often run through a browser extension or mobile application to read on-chain data and submit
 transactions.  The Aptos Wallet Adapter allows for a single interface for apps and wallets to integrate together.
 
 ## Implementing the Aptos Wallet Adapter
@@ -25,7 +25,7 @@ Implementing wallet integration can be difficult for dapps in:
 
 In addition, creating and implementing a wallet is also not an easy task,
 
-1. Provide a wallet that follows a known standard so it is easy to integrate with
+1. Provide a wallet that follows a known standard, so it is easy to integrate with
 2. Getting visibility and exposure in the ecosystem among all the other wallets
 3. Dapp projects need to dedicate time and resource to integrate the wallet within their app
 
@@ -65,7 +65,7 @@ Dapps should not _know_ this package as dapps interact with the provider, which 
 Wallets should implement their own plugin class that extends the basic plugin class (properties + events) interface that lives in the core package.
 
 :::tip
-If a wallet supports functions that are not part of the basic plugin interface, a pull request should be made to the core package to include this function so it can support it. You can take a look at the `signTransaction` on the wallet core package for guidance.
+If a wallet supports functions that are not part of the basic plugin interface, a pull request should be made to the core package to include this function, so it can support it. You can take a look at the `signTransaction` on the wallet core package for guidance.
 :::
 
 ### Adapter React provider
@@ -82,7 +82,7 @@ The [Wallet Adapter Plugin Template repo](https://github.com/aptos-labs/wallet-a
 
 Follow the [Wallet Adapter For Wallet Builders](./wallet-adapter-for-wallets.md) on how to use the template to implement and publish your wallet plugin.
 
-<center>
+<div style="text-align: center;">
 <ThemedImage
 alt="Wallet Adapter Concept"
 sources={{
@@ -90,4 +90,4 @@ sources={{
     dark: useBaseUrl('/img/docs/wallet-adapter-chart-dark.svg'),
   }}
 />
-</center>
+</div>

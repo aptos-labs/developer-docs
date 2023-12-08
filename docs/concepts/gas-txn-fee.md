@@ -75,7 +75,7 @@ In the Aptos network, the Aptos governance sets the absolute minimum gas unit pr
 
 By specifying a higher gas unit price than the current market price, you can **increase** the priority level for your transaction on the blockchain by paying a larger processing fee. As part of consensus, when the leader selects transactions from its mempool to propose as part of the next block, it will prioritize selecting transactions with a higher gas unit price. Please note that higher gas fees only prioritize transaction selection for the next block.
 
-However, within a block, the order of transaction execution is determined by the system. This order is based on [transaction shuffling](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-27.md), which makes parallel execution more efficient by considering conflict patterns. While in most cases this is unnecessary, if the network is under load this measure can ensure your transaction is processed more quickly. See the `gas_unit_price` entry under [Estimating the gas units via simulation](#estimating-the-gas-units-via-simulation) for details.
+However, within a block, the order of transaction execution is determined by the system. This order is based on [transaction shuffling](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-27.md), which makes parallel execution more efficient by considering conflict patterns. While in most cases this is unnecessary, if the network is under load this measure can ensure your transaction is processed more quickly. See the `gas_unit_price` entry under [Estimating the gas units via simulation](#estimating-gas-consumption-via-simulation) for details.
 
 :::caution Increasing gas unit price with in-flight transactions
 👉 If you are increasing gas unit price, but have in-flight (uncommitted) transactions for the same account, you should resubmit all of those transactions with the higher gas unit price. This is because transactions within the same account always have to respect sequence number, so effectively the higher gas unit price transaction will increase priority only after the in-flight transactions are included in a block.
@@ -127,7 +127,7 @@ Here is an example. Suppose we have a transaction that costs `100` gas units in 
 - `100 + 5000 / 100 = 150` gas units if the gas unit price is `100`, or
 - `100 + 5000 / 200 = 125` gas units if the unit price is `200`.
 
-We are aware of the confusion this might create, and plan to present these as separate items in the future. However this will require some changes to the transaction output format and downstream clients, so please be patient while we work hard to make this happen.
+We are aware of the confusion this might create, and plan to present these as separate items in the future. However, this will require some changes to the transaction output format and downstream clients, so please be patient while we work hard to make this happen.
 
 ## Calculating Storage Deletion Refund
 

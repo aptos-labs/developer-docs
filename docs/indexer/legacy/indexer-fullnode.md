@@ -9,8 +9,8 @@ This is documentation for the legacy indexer. To learn how to run the underlying
 
 # Run an Aptos Indexer
 
-:::danger On macOS with Apple silicon only
-The below installation steps are verified only on macOS with Apple silicon. They might require minor tweaking when running on other builds.
+:::danger On macOS with Apple Silicon only
+The below installation steps are verified only on macOS with Apple Silicon. They might require minor tweaking when running on other builds.
 :::
 
 ## Summary
@@ -82,7 +82,7 @@ For an Aptos indexer fullnode, install these packages:
         emit_every: 500
     ```
 
-:::tip Bootstap the fullnode
+:::tip Bootstrap the fullnode
 Instead of syncing your indexer fullnode from genesis, which may take a long period of time, you can choose to bootstrap your fullnode using backup data before starting it. To do so, follow the instructions to [restore from a backup](/nodes/full-node/aptos-db-restore.md).
 
 Note: indexers cannot be bootstrapped using [a snapshot](/nodes/full-node/bootstrap-fullnode.md) or [fast sync](../../guides/state-sync.md#fast-syncing).

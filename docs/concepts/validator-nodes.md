@@ -40,7 +40,7 @@ Mempool is a component within each node that holds an in-memory buffer of transa
 
 The JSON-RPC service of a fullnode sends transactions to a validator node's mempool. Mempool performs various checks on the transactions to ensure transaction validity and protect against DOS attacks. When a new transaction passes initial verification and is added to mempool, it is then distributed to the mempools of other validator nodes in the network.
 
-When a validator node temporarily becomes a leader in the consensus protocol, consensus pulls the transactions from mempool and proposes a new transaction block. This block is broadcasted to other validators and contains a total ordering over all transactions in the block. Each validator then executes the block and submits votes on whether or not to accept the new block proposal.
+When a validator node temporarily becomes a leader in the consensus protocol, consensus pulls the transactions from mempool and proposes a new transaction block. This block is broadcast to other validators and contains a total ordering over all transactions in the block. Each validator then executes the block and submits votes on whether to accept the new block proposal.
 
 ### Consensus
 

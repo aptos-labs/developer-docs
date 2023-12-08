@@ -40,7 +40,7 @@ type `0x66c34778730acbb120cefa57a3d98fd21e0c8b3a51e9baee530088b2e444e94c::event:
 
 ## Access in Tests
 
-Events are stored in a separate merkle tree called event accumulator for each transaction. As it is ephemeral and hence independent from the state tree, MoveVM does not have read access to events when executing transaction in production. But in tests, Aptos Move supports two native functions that read emitted events for testing and debugging purposes:
+Events are stored in a separate merkle tree called event accumulator for each transaction. As it is ephemeral and hence independent of the state tree, MoveVM does not have read access to events when executing transaction in production. But in tests, Aptos Move supports two native functions that read emitted events for testing and debugging purposes:
 
 ```rust
 /// Return all emitted module events with type T as a vector.
