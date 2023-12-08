@@ -94,7 +94,7 @@ for more information.
 All Aptos fullnodes are configured to accept a maximum number of network
 connections. As a result, if the network is experiencing high network
 connection volume, your fullnode might not able to connect to the default
-nodes in the network and you may see several errors in your node's logs, e.g.,
+nodes in the network, and you may see several errors in your node's logs, e.g.,
 `No connected AptosNet peers!` or `Unable to fetch peers to poll!`.
 
 If this happens continuously, you should manually add seed peers to your node's

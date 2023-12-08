@@ -57,7 +57,7 @@ The TypeScript SDK provides 2 efficient ways to `generate a raw transaction` tha
 
 #### Transaction Builder
 
-The `generateTransaction()` method, accepts an `entry function payload` type and is available for entry funtion transaction submission. It uses the [TransactionBuilderRemoteABI](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilderRemoteABI.html) to fetch the ABI from the blockchain, serializes the payload arguments based on the entry function argument types and generates and return a raw transaction that can be signed and submitted to the blockchain.
+The `generateTransaction()` method, accepts an `entry function payload` type and is available for entry function transaction submission. It uses the [TransactionBuilderRemoteABI](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilderRemoteABI.html) to fetch the ABI from the blockchain, serializes the payload arguments based on the entry function argument types and generates and return a raw transaction that can be signed and submitted to the blockchain.
 
 ```ts
 const alice = new AptosAccount();
@@ -81,7 +81,7 @@ To submit an entry function payload, using the Transaction Builder would be simp
 
 #### BCS Transaction
 
-The `generateRawTransaction()` method, accept `any transaction payload type (entry, script, multisig)` and exepcts for the arguments passed in to be serialized. It then generates and returns a raw transaction that can be signed and submitted to chain.
+The `generateRawTransaction()` method, accept `any transaction payload type (entry, script, multisig)` and expects for the arguments passed in to be serialized. It then generates and returns a raw transaction that can be signed and submitted to chain.
 
 ```ts
 const alice = new AptosAccount();

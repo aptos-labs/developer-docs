@@ -108,7 +108,7 @@ You should store the metadata in a JSON file located in an off-chain storage sol
         "type": "video/mp4"
       }
     ],
-    "category": "video",
+    "category": "video"
   }
 }
 ```
@@ -163,16 +163,16 @@ The following tables describe fields at the struct level. For the definitive lis
 
 #### Resource stored at the creator’s address
 
-| Field | Description |
-| --- | --- |
-| [`Collections`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#resource-collections) | Maintains a table called `collection_data`, which maps the collection name to the `CollectionData`. It also stores all the `TokenData` that this creator creates. |
-| [`CollectionData`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#struct-collectiondata) | Stores the collection metadata. The supply is the number of tokens created for the current collection. The maximum is the upper bound of tokens in this collection. |
-| [`CollectionMutabilityConfig`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_CollectionMutabilityConfig) | Specifies which field is mutable. |
-| [`TokenData`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenData) | Acts as the main struct for holding the token metadata. Properties is a where users can add their own properties that are not defined in the token data. Users can mint more tokens based on the `TokenData`, and those tokens share the same `TokenData`. |
-| [`TokenMutabilityConfig`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenMutabilityConfig) | Controls which fields are mutable. |
-| [`TokenDataId`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenDataId) | An ID used for representing and querying `TokenData` on-chain. This ID mainly contains three fields including creator address, collection name and token name. |
-| [`Royalty`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_Royalty) | Specifies the denominator and numerator for calculating the royalty fee. It also has the payee account address for depositing the royalty. |
-| `PropertyValue` | Contains both value of a property and type of property. |
+| Field                                                                                                                                                                 | Description                                                                                                                                                                                                                                                |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`Collections`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#resource-collections)                                | Maintains a table called `collection_data`, which maps the collection name to the `CollectionData`. It also stores all the `TokenData` that this creator creates.                                                                                          |
+| [`CollectionData`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#struct-collectiondata)                            | Stores the collection metadata. The supply is the number of tokens created for the current collection. The maximum is the upper bound of tokens in this collection.                                                                                        |
+| [`CollectionMutabilityConfig`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_CollectionMutabilityConfig) | Specifies which field is mutable.                                                                                                                                                                                                                          |
+| [`TokenData`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenData)                                   | Acts as the main struct for holding the token metadata. Properties is a where users can add their own properties that are not defined in the token data. Users can mint more tokens based on the `TokenData`, and those tokens share the same `TokenData`. |
+| [`TokenMutabilityConfig`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenMutabilityConfig)           | Controls which fields are mutable.                                                                                                                                                                                                                         |
+| [`TokenDataId`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenDataId)                               | An ID used for representing and querying `TokenData` on-chain. This ID mainly contains three fields including creator address, collection name and token name.                                                                                             |
+| [`Royalty`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_Royalty)                                       | Specifies the denominator and numerator for calculating the royalty fee. It also has the payee account address for depositing the royalty.                                                                                                                 |
+| `PropertyValue`                                                                                                                                                       | Contains both value of a property and type of property.                                                                                                                                                                                                    |
 
 #### Resource stored at the owner’s address
 

@@ -46,7 +46,7 @@ fun smallest_factor(n: u64): u64 {
 }
 ```
 
-The `break` expression cannot be used outside of a loop.
+The `break` expression cannot be used outside a loop.
 
 ### `continue`
 
@@ -66,7 +66,7 @@ fun sum_intermediate(n: u64): u64 {
 }
 ```
 
-The `continue` expression cannot be used outside of a loop.
+The `continue` expression cannot be used outside a loop.
 
 ### The type of `break` and `continue`
 

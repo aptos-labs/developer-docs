@@ -31,7 +31,7 @@ function App() {
 
 2. Update our `fetchList` function to fetch the tasks in the account’s `TodoList` resource:
 
-```js
+```ts
 const fetchList = async () => {
   if (!account) return [];
   try {
@@ -67,18 +67,18 @@ const fetchList = async () => {
 
 **This part is a bit confusing, so stick with us!**
 
-Tasks are stored in a table (this is how we built our contract). To fetch a table item (i.e a task), we need that task's table handle. We also need the `task_counter` in that resource so we can loop over and fetch the task with the `task_id` that matches the `task_counter`.
+Tasks are stored in a table (this is how we built our contract). To fetch a table item (i.e a task), we need that task's table handle. We also need the `task_counter` in that resource, so we can loop over and fetch the task with the `task_id` that matches the `task_counter`.
 
-```js
+```ts
 const tableHandle = (TodoListResource as any).data.tasks.handle;
 const taskCounter = (TodoListResource as any).data.task_counter;
 ```
 
 Now that we have our tasks table handle and our `task_counter` variable, lets loop over the `taskCounter` . We define a `counter` and set it to 1 as the task_counter / task_id is never less than 1.
 
-We loop while the `counter` is less then the `taskCounter` and fetch the table item and push it to the tasks array:
+We loop while the `counter` is less than the `taskCounter` and fetch the table item and push it to the tasks array:
 
-```js
+```ts
 let tasks = [];
 let counter = 1;
 while (counter <= taskCounter) {
@@ -108,11 +108,11 @@ table::upsert(&mut todo_list.tasks, counter, new_task);
 
 So the object we built is:
 
-```js
+```ts
 {
   key_type: "u64",
   value_type:`${moduleAddress}::todolist::Task`,
-  key: `${taskCounter}`,
+  key: `${taskCounter}`
 }
 ```
 
@@ -126,7 +126,7 @@ The last thing we want to do is display the tasks we just fetched.
 
 6. In our `App.tsx` file, update our UI with the following code:
 
-```jsx
+```tsx
 {
   !accountHasList ? (
     <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
@@ -171,7 +171,7 @@ The last thing we want to do is display the tasks we just fetched.
 }
 ```
 
-That will display the **Add new list** button if account doesn’t have a list or instead the tasks if the account has a list.
+That will display the **Add new list** button if account doesn't have a list or instead the tasks if the account has a list.
 
 Go ahead and refresh your browser - see the magic!
 
@@ -181,7 +181,7 @@ We haven’t added any tasks yet, so we simply see a box of empty data. Let’s 
 
 1. Update our UI with an _add task_ input:
 
-```jsx
+```tsx
 {!accountHasList ? (
   ...
 ) : (
@@ -211,7 +211,7 @@ We have added a text input to write the task and a button to add the task.
 
 2. Create a new local state that holds the task content:
 
-```jsx
+```tsx
 function App() {
   ...
   const [newTask, setNewTask] = useState<string>("");
@@ -221,7 +221,7 @@ function App() {
 
 3. Add an `onWriteTask` function that will get called whenever a user types something in the input text:
 
-```jsx
+```tsx
 function App() {
   ...
   const [newTask, setNewTask] = useState<string>("");
@@ -236,7 +236,7 @@ function App() {
 
 4. Find our `<Input/>` component, add the `onChange` event to it, pass it our `onWriteTask` function and set the input value to be the `newTask` local state:
 
-```jsx
+```tsx
 <Input
   onChange={(event) => onWriteTask(event)} // add this
   style={{ width: "calc(100% - 60px)" }}
@@ -250,7 +250,7 @@ Cool! Now we have a working flow that when the user types something on the Input
 
 5. Let’s also add a function that submits the typed task to chain! Find our Add `<Button />` component and update it with the following
 
-```jsx
+```tsx
 <Button
   onClick={onTaskAdded} // add this
   type="primary"
@@ -272,7 +272,7 @@ When someones adds a new task we:
 
 6. Add an `onTaskAdded` function with:
 
-```jsx
+```tsx
   const onTaskAdded = async () => {
     // check for connected account
     if (!account) return;
@@ -325,7 +325,7 @@ First, note we use the `account` property from our wallet provider to make sure 
 
 Then we build our transaction payload to be submitted to chain:
 
-```js
+```ts
 const payload = {
   type: "entry_function_payload",
   function: `${moduleAddress}::todolist::create_task`,
@@ -340,7 +340,7 @@ const payload = {
 - `arguments` - the arguments the function expects, in our case the task content.
 
 Then, within our try/catch block, we use a wallet provider function to submit the transaction to chain and an SDK function to wait for that transaction.
-If all goes well, we want to find the current latest task ID so we can add it to our current tasks state array. We will also create a new task to push to the current tasks state array (so we can display the new task in our tasks list on the UI without the need to refresh the page).
+If all goes well, we want to find the current latest task ID, so we can add it to our current tasks state array. We will also create a new task to push to the current tasks state array (so we can display the new task in our tasks list on the UI without the need to refresh the page).
 
 TRY IT!
 
@@ -352,7 +352,7 @@ Next, we can implement the `complete_task` function. We have the checkbox in our
 
 1. Update the `<Checkbox/>` component with an `onCheck` property that would call an `onCheckboxChange` function once it is checked:
 
-```jsx
+```tsx
 <List.Item actions={[
   <Checkbox onChange={(event) => onCheckboxChange(event, task.task_id)}/>
 ]}>
@@ -360,7 +360,7 @@ Next, we can implement the `complete_task` function. We have the checkbox in our
 
 2. Create the `onCheckboxChange` function (make sure to import `CheckboxChangeEvent` from `antd` - `import { CheckboxChangeEvent } from "antd/es/checkbox";`):
 
-```js
+```ts
 const onCheckboxChange = async (
     event: CheckboxChangeEvent,
     taskId: string
@@ -409,7 +409,7 @@ We make sure there is an account connected, set the transaction in progress stat
 
 3. Update the `Checkbox` component to be checked by default if a task has already marked as completed:
 
-```jsx
+```tsx
 ...
 <List.Item
   actions={[

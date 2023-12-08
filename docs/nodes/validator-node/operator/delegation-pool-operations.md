@@ -11,7 +11,7 @@ Validator operators should follow these instructions to carry out delegation poo
 
 The delegation pool owner should set an operator for the pool via the `set_operator` function described in the [Perform pool owner operations](#perform-pool-owner-operations) section. The operator should then start their own Aptos node, as it is a best practice to have a different account for owner and operator. Once the delegation pool attains 1 million APT, the operator can join the validator set.
 
-The operator address will receive the pool commission that was set at the initialization of the delegation pool, which is automatically distributed as stake in the delegation pool at the end of each epoch. The operator will act as a normal Delegation Pool account that is able to do all of the operations described in [Perform delegation pool operations](#perform-delegation-pool-operations).
+The operator address will receive the pool commission that was set at the initialization of the delegation pool, which is automatically distributed as stake in the delegation pool at the end of each epoch. The operator will act as a normal Delegation Pool account that is able to do all the operations described in [Perform delegation pool operations](#perform-delegation-pool-operations).
 
 
 ## Prerequisites

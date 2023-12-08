@@ -15,7 +15,7 @@ In this guide we only mention the API differences and updates you would need to 
 
 ## Install the SDK
 
-The TypeScript SDK V2 is under a new [github repo](https://github.com/aptos-labs/aptos-ts-sdk) and with a new package name - `@aptos-labs/ts-sdk`
+The TypeScript SDK V2 is under a new [GitHub repo](https://github.com/aptos-labs/aptos-ts-sdk) and with a new package name - `@aptos-labs/ts-sdk`
 
 <Tabs groupId="install-sdk">
   <TabItem value="pnpm" label="pnpm">
@@ -50,7 +50,7 @@ The TypeScript SDK V2 is under a new [github repo](https://github.com/aptos-labs
 
 ## SDK usage and query the Aptos chain
 
-Remove all `<*>Client` modules (i.e `AptosClient`, `FaucetClient`, `CoinClient`, etc) and replace with an `Aptos` entry point class
+Remove all `<*>Client` modules (i.e `AptosClient`, `FaucetClient`, `CoinClient`, etc.) and replace with an `Aptos` entry point class
 
 **V1**
 

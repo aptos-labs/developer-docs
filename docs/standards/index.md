@@ -45,7 +45,7 @@ The Wallet standard ensures that all wallets use the same functionality for key 
 
 The old existing [Token module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move), on the other hand:
 
-- Encapsulates rich, flexible assets and collectibles. These assets are discrete (non-decimal) and can be fungible, semi-fungible, or nonfungible.
+- Encapsulates rich, flexible assets and collectibles. These assets are discrete (non-decimal) and can be fungible, semi-fungible, or non-fungible.
 - The token standard is in its own `AptosToken` package at the Address `0x3` to allow for rapid iteration based on feedback from the community.
 
 ### [Aptos Coin](./aptos-coin.md)
@@ -53,4 +53,4 @@ The old existing [Token module](https://github.com/aptos-labs/aptos-core/blob/ma
 The [Coin module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) is a lightweight standard meant for simple, typesafe, and fungible assets. The coin standard is separated out into its own Move module to ensure that:
 
 - Applications and users can create and use simple tokens, with high performance and low gas overhead.
-- The Coin standard is part of the Aptos core framework so it can be used for currencies, including the gas currency.
+- The Coin standard is part of the Aptos core framework, so it can be used for currencies, including the gas currency.

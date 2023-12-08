@@ -27,7 +27,7 @@ State sync runs in two modes. All nodes will first bootstrap (in bootstrapping m
 When the node starts, state sync will perform bootstrapping by using the specified bootstrapping mode configuration. This allows the node to catch up to the Aptos blockchain. There are several bootstrapping modes:
 
 - **Execute all the transactions since genesis**. In this state sync mode the node will retrieve from the Aptos network all the transactions since genesis, i.e., since the start of the blockchain's history, and re-execute those transactions. Naturally, this synchronization mode takes the longest amount of time.
-- **Apply transaction outputs since genesis**. In this state sync mode the node will retrieve all the transactions since genesis but it will skip the transaction execution and will only apply the outputs of the transactions that were previously produced by validator execution. This mode reduces the amount of CPU time required.
+- **Apply transaction outputs since genesis**. In this state sync mode the node will retrieve all the transactions since genesis, but it will skip the transaction execution and will only apply the outputs of the transactions that were previously produced by validator execution. This mode reduces the amount of CPU time required.
 - **(Default) Intelligent syncing since genesis**. In this state sync mode the node will retrieve all the transactions since genesis and will either execute the transactions, or apply the transaction outputs, depending on whichever is faster, per data chunk. This allows the node to adapt to CPU and network resource constraints more efficiently. This mode is the default mode.
 - **Fast syncing**. In this state sync mode the node will skip the transaction history in the blockchain and will download only the latest blockchain state directly. As a result, the node will not have the historical transaction data, but it will be able to catch up to the Aptos network much more rapidly.
 
@@ -109,7 +109,7 @@ storage data).
 
 :::caution Proceed with caution
 Fast sync should only be used as a last resort for validators and
-validator fullnodes. This is because fast sync skips all of the blockchain
+validator fullnodes. This is because fast sync skips all the blockchain
 history and as a result: (i) reduces the data availability in the network;
 and (ii) may hinder validator consensus performance if too much data has
 been skipped. Thus, validator and validator fullnode operators should be
@@ -176,6 +176,6 @@ transactions in the transaction history as well as trust that all transactions
 were correctly executed by the validators. However, all other blockchain state
 is still manually re-verified, e.g., epoch changes and the resulting blockchain states.
 
-All of the syncing modes get their root of trust from the validator set
+All the syncing modes get their root of trust from the validator set
 and cryptographic signatures from those validators over the blockchain data.
 For more information about how this works, see the [state synchronization blogpost](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10).

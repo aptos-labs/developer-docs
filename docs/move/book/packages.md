@@ -1,7 +1,7 @@
 # Packages
 
 Packages allow Move programmers to more easily re-use code and share it
-across projects. The Move package system allows programmers to easily:
+across projects. The Move package system allows programmers to easily do the following:
 * Define a package containing Move code;
 * Parameterize a package by [named addresses](./address.md);
 * Import and use packages in other Move code and instantiate named addresses;
@@ -104,8 +104,8 @@ MoveStdlib = { git = "https://github.com/diem/diem.git", subdir="language/move-s
 address_to_be_filled_in = "0x101010101"
 ```
 
-Most of the sections in the package manifest are self explanatory, but named
-addresses can be a bit difficult to understand so it's worth examining them in
+Most of the sections in the package manifest are self-explanatory, but named
+addresses can be a bit difficult to understand, so it's worth examining them in
 a bit more detail.
 
 ## Named Addresses During Compilation
@@ -141,7 +141,7 @@ named_addr = "_"
 ```
 
 Declares `named_addr` as a named address in the package `ExamplePkg` and
-that _this address can be any valid address value_. Therefore an importing
+that _this address can be any valid address value_. Therefore, an importing
 package can pick the value of the named address `named_addr` to be any address
 it wishes. Intuitively you can think of this as parameterizing the package
 `ExamplePkg` by the named address `named_addr`, and the package can then be

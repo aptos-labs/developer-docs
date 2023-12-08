@@ -1,6 +1,6 @@
 # Modules and Scripts
 
-Move has two different types of programs: ***Modules*** and ***Scripts***. Modules are libraries that define struct types along with functions that operate on these types. Struct types define the schema of Move's [global storage](./global-storage-structure.md), and module functions define the rules for updating storage. Modules themselves are also stored in global storage. Scripts are executable entrypoints similar to a `main` function in a conventional language. A script typically calls functions of a published module that perform updates to global storage. Scripts are ephemeral code snippets that are not published in global storage.
+Move has two different types of programs: ***Modules*** and ***Scripts***. Modules are libraries that define struct types along with functions that operate on these types. Struct types define the schema of Move's [global storage](./global-storage-structure.md), and module functions define the rules for updating storage. Modules themselves are also stored in global storage. A scripts is an executable entrypoint similar to a `main` function in a conventional language. A script typically calls functions of a published module that perform updates to global storage. Scripts are ephemeral code snippets that are not published in global storage.
 
 A Move source file (or **compilation unit**) may contain multiple modules and scripts. However, publishing a module or executing a script are separate VM operations.
 
@@ -116,7 +116,7 @@ script {
 }
 ```
 
-However at the source level, these _are not equivalent_—the function
+However, at the source level, these _are not equivalent_—the function
 `m::foo` _must_ be accessed through the `my_addr` named address, and not through
 the numerical value assigned to that address.
 
@@ -127,7 +127,7 @@ module my_module {}
 module foo_bar_42 {}
 ```
 
-Typically, module names start with an lowercase letter. A module named `my_module` should be stored in a source file named `my_module.move`.
+Typically, module names start with a lowercase letter. A module named `my_module` should be stored in a source file named `my_module.move`.
 
 All elements inside a `module` block can appear in any order.
 Fundamentally, a module is a collection of [`types`](./structs-and-resources.md) and [`functions`](./functions.md).

@@ -15,8 +15,8 @@ Our database restore tool lets you use the existing [public backup files](#publi
 
 Aptos Labs maintains a few publicly accessible database backups by continuously querying a local fullnode and storing the backup data in remote storage, such as Amazon S3 or Google Cloud Storage.
 
-|  | AWS Backup Data | Google Cloud Backup Data  |
-| --- | --- | --- |
+|         | AWS Backup Data                                                                       | Google Cloud Backup Data                                                        |
+|---------|---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
 | Testnet | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/s3-public.yaml | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/gcs.yaml |
 | Mainnet | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/s3-public.yaml | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/gcs.yaml |
 

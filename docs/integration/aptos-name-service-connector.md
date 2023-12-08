@@ -13,10 +13,10 @@ The Aptos Name Service provides a React UI package that offers developers a cust
 
 ## Use Aptos Names Service Connector
 1. Open a terminal session and navigate to the root directory of your React project.
-1. Install the `aptos-names-connector` package using npm or yarn:  
+2. Install the `aptos-names-connector` package using npm or yarn:  
     - `npm install "@aptos-labs/aptos-names-connector"`
     - `yarn add "@aptos-labs/aptos-names-connector"`
-1. Once you have installed the package, you can import the `AptosNamesConnector` component and use it in your React application (by default in `./src/App.js`):
+3. Once you have installed the package, you can import the `AptosNamesConnector` component and use it in your React application (by default in `./src/App.js`):
     ```
     import { AptosNamesConnector } from "@aptos-labs/aptos-names-connector";
 
@@ -35,7 +35,7 @@ The Aptos Name Service provides a React UI package that offers developers a cust
       );
     }
     ```
- 1. To see your changes, start a development server using npm or yarn. The following commands will open the React application in your default web browser (typically to `localhost:3000`):
+4. To see your changes, start a development server using npm or yarn. The following commands will open the React application in your default web browser (typically to `localhost:3000`):
     - `npm start`
     - `yarn start`
 

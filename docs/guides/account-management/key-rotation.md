@@ -69,7 +69,7 @@ aptos move view --function-id 0x1::account::get_authentication_key --args addres
 aptos move view --function-id 0x1::account::get_authentication_key --args address:test_profile_2
 ```
 
-```json title="Example output from the previous two commands"
+```bash title="Example output from the previous two commands"
 {
   "Result": [
     "0x458fba533b84717c91897cab05047c1dd7ac2ea73e75c77281781f5b7fec180c"

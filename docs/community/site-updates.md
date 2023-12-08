@@ -51,10 +51,10 @@ To update [Aptos.dev](http://Aptos.dev) directly:
        ![v-fn-network.svg](../../static/img/docs/edit-file-in-GH.png)
        * To add a new page, navigate to the relevant subdirectory of the [developer-docs-site/docs/](https://github.com/aptos-labs/aptos-core/tree/main/developer-docs-site/docs/) directory, click **Add file**, give it a name, append the `.md` file extension, include your contents, and create a pull request to have it reviewed:
        ![v-fn-network.svg](../../static/img/docs/add-file-in-GH.png)
-    2. Via local editor - for more complex, multi-page changes, use your preferred source code editor to navigate to and update the source Markdown files in GitHub. See our [CONTRIBUTING](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) README for `git clone` instructions.
+    2. Via local editor - for more complex, multipage changes, use your preferred source code editor to navigate to and update the source Markdown files in GitHub. See our [CONTRIBUTING](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) README for `git clone` instructions.
 2. For web edits, use the *Preview* function at top to see your updates in browser.
 3. For local edits, use the [local doc build instructions](https://github.com/aptos-labs/aptos-core/blob/main/developer-docs-site/README.md) to see your updates at: [http://localhost:3000](http://localhost:3000)
-4. After creating the pull request, use the *Deploy Preview* in Netlify to see your updates made in web browser or via local editor by replacing the *prnumber* with your own in:
+4. After creating the pull request, use the *Deploy Preview* in Netlify to see your updates made in web browser or via local editor by replacing the *pull request number* with your own in:
 [https://deploy-preview-prnumber--aptos-developer-docs.netlify.app/](https://deploy-preview-prnumber--aptos-developer-docs.netlify.app/)
 5. Have at least two verified reviewers review and test your changes.
 6. Make direct commits during review.
@@ -78,7 +78,7 @@ If you are unable to make the update yourself or simply need Docs team help alon
     3. [P2](https://github.com/aptos-labs/aptos-core/issues?q=is%3Aissue+is%3Aopen+label%3Adocumentation+label%3Ap2+) - can wait for this; still dependent on other work
     4. [P3](https://github.com/aptos-labs/aptos-core/issues?q=is%3Aissue+is%3Aopen+label%3Adocumentation+label%3Ap3+) - back burner item; there is no urgency here
 5. Explain in the issue precisely what is expected in the doc; what requirements must it meet?
-6. Assign the issue to and work with the subject matter experts and the Docs team to generate new and updated materials.
+6. Assign the issue to and work with the subject-matter experts and the Docs team to generate new and updated materials.
 7. Associate all related pull requests with the issue by adding the issue number to the *Development* field of each PR.
 8. Re-open the issue when related PRs are merged and work is still needed.
 9. Close the issue only when all relevant parties are satisfied with the work. 

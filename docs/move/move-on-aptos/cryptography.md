@@ -11,7 +11,7 @@ Cryptography plays an integral role in ensuring the security, integrity, confide
 Move, through the Aptos adapter, encompasses several fundamental cryptographic tools:
 
 1. [Cryptographic Hash Functions](#cryptographic-hash-functions) – Algorithms that produce a fixed-size output (hash) from variable-sized input data. Supported functions include SHA2-256, SHA3-256, Keccak256, and Blake2b-256.
-2. [Digital Signature Verification](#digital-signature-verification) – Algorithms for signing a message so as to ensure its integrity, authenticate its sender, ensure non-repudiation, or any combination thereof. Supported signature schemes include Ed25519, ECDSA, and BLS.
+2. [Digital Signature Verification](#digital-signature-verification) – Algorithms for signing a message to ensure its integrity, authenticate its sender, ensure non-repudiation, or any combination thereof. Supported signature schemes include Ed25519, ECDSA, and BLS.
 3. [Elliptic Curve Arithmetic](#elliptic-curve-arithmetic) – Elliptic curves are one of the building blocks of advanced cryptographic primitives, such as digital signatures, public-key encryption or verifiable secret sharing. Supported curves include Ristretto255 and BLS12-381.
 4. [Zero-Knowledge Proofs (ZKP)](#building-powerful-cryptographic-applications) – These cryptographic techniques enable a party to prove that a relation $R(x; w)$ is satisfied on a public statement $x$ without leaking the secret witness $w$ that makes it hold. Currently, we support Groth16 ZKP verification and Bulletproofs ZK range proof verification.
 
@@ -51,12 +51,12 @@ In general, a wider variety of hash functions give developers additional freedom
 
 Developers can now use a *type-safe* API for verifying many kinds of digital signatures in Move:
 
-| Signature scheme                                                                                                                                          | Curve         | Sig. size (bytes) | PK size (bytes) | Malleability | Assumptions | Pros          | Cons                |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------------|-----------------|--------------|-------------|---------------|---------------------|
-| [ECDSA](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/secp256k1.move)                         | secp256k1     | 64                | 64              | Yes          | GGM         | Wide adoption | Security proof      |
-| [Ed25519](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ed25519.move)                         | Edwards 25519 | 64                | 32              | No           | DLA, ROM    | Fast          | Subtleties          |
-| [MultiEd25519](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/multi_ed25519.move)              | Edwards 25519 | $4 + t \cdot 64$  | $n \cdot 32$    | No           | DLA, ROM    | Easy-to-adopt | Large sig. size     |
-| [MinPK BLS](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381.move)                      | BLS12-381     | 96                | 48              | No           | CDH, ROM    | Versatile     | Slower verification |
+| Signature scheme                                                                                                                                           | Curve         | Sig. size (bytes) | PK size (bytes) | Malleability | Assumptions | Pros          | Cons                |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------------|-----------------|--------------|-------------|---------------|---------------------|
+| [ECDSA](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/secp256k1.move)                          | secp256k1     | 64                | 64              | Yes          | GGM         | Wide adoption | Security proof      |
+| [Ed25519](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ed25519.move)                          | Edwards 25519 | 64                | 32              | No           | DLA, ROM    | Fast          | Subtleties          |
+| [MultiEd25519](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/multi_ed25519.move)               | Edwards 25519 | $4 + t \cdot 64$  | $n \cdot 32$    | No           | DLA, ROM    | Easy-to-adopt | Large sig. size     |
+| [MinPK BLS](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381.move)                       | BLS12-381     | 96                | 48              | No           | CDH, ROM    | Versatile     | Slower verification |
 | [MinSig BLS](https://github.com/aptos-labs/aptos-core/blob/7d4fb98c6604c67e526a96f55668e7add7aaebf6/aptos-move/move-examples/drand/sources/drand.move#L57) | BLS12-381     | 48                | 96              | No           | CDH, ROM    | Versatile     | Slower verification |
 
 
@@ -83,9 +83,9 @@ The right choice of a signature scheme in your dapp could depend on many factors
 4. **Security analysis**
    - It is essential to consider the underlying assumptions and potential vulnerabilities of a signature scheme.
      - Example: ECDSA's security is proven under strong assumptions such as the Generic Group Model (GGM).
-     - Malleability concerns: Some signature schemes are susceptible to malleability, where a valid signature, $\sigma$, can be mauled into a different yet still valid signature, $\sigma'$, for the same message $m$.
+     - Malleability concerns: Some signature schemes are susceptible to malleability, where a valid signature, $\sigma$, can be mauled into a different yet still valid signature, $\sigma$, for the same message $m$.
 5. **Versatility**
-   - The adaptability and flexibility of signature schemes are important to consider so you may properly accommodate the cryptographic needs of your dapp.
+   - The adaptability and flexibility of signature schemes are important to consider, so you may properly accommodate the cryptographic needs of your dapp.
      - Example: $t$-out-of-$n$ threshold BLS signatures are very simple to implement.
 
 :::caution

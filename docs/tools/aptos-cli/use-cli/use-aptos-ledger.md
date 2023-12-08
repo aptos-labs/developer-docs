@@ -11,8 +11,8 @@ NOTE: It is highly recommended to use `Ledger Nano S Plus` or `Ledger Nano X` de
 
 ## Blind Signing
 
-Before you begin, make sure you have `Blind Signing` enabled on your Ledger device. Otherwise you will not be able to sign transactions.
-`Blind Signing` - confirming a smart contract interaction you can’t verify through a human readable language.
+Before you begin, make sure you have `Blind Signing` enabled on your Ledger device. Otherwise, you will not be able to sign transactions.
+`Blind Signing` - confirming a smart contract interaction you can’t verify through a human-readable language.
 
 ## Create a new Ledger profile
 
@@ -31,7 +31,7 @@ Please choose an index from the following 5 ledger accounts, or choose an arbitr
 [3] Derivation path: m/44'/637'/3'/0'/0' (Address: 2dcf037a9f31d93e202c074229a1b69ea8ee4d2f2d63323476001c65b0ec4f31)
 [4] Derivation path: m/44'/637'/4'/0'/0' (Address: 23c579a9bdde1a59f1c9d36d8d379aeefe7a5997b5b58bd5a5b0c12a4f170431)
 0
-Account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb has been already found onchain
+Account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb has been already found on-chain
 
 ---
 Aptos CLI is now set up for account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb as profile myprofile!  Run `aptos --help` for more information about commands
@@ -81,13 +81,13 @@ yes
 }
 ```
 
-After the above command, you will be prompted to confirm the transaction on your Ledger device. Once you confirm, the transaction will be submitted to the network. Note: Make sure you have `Blind Signing` enabled on your Ledger device. Otherwise you will not be able to sign transactions.
-`Blind Signing` - confirming a smart contract interaction you can’t verify through a human readable language.
+After the above command, you will be prompted to confirm the transaction on your Ledger device. Once you confirm, the transaction will be submitted to the network. Note: Make sure you have `Blind Signing` enabled on your Ledger device. Otherwise, you will not be able to sign transactions.
+`Blind Signing` - confirming a smart contract interaction you can’t verify through a human-readable language.
 
 ## Common Errors
 
 ### Error: Wrong raw transaction length
-Your raw transaction or package size is too big. Currently the Aptos ledger app can only support up to 20kb transaction. If you are using a `Ledger Nano S`, the supported transaction size will be even smaller.
+Your raw transaction or package size is too big. Currently, the Aptos ledger app can only support up to 20kb transaction. If you are using a `Ledger Nano S`, the supported transaction size will be even smaller.
 ```bash
 {
   "Error": "Unexpected error: Error - Wrong raw transaction length"

@@ -60,14 +60,14 @@ You can then find the generated gas report in the directory `gas-profiling`:
   - sources
   - Move.toml
 ```
-index.html is the main page of the report and you can view it in your web browser.
+index.html is the main page of the report, and you can view it in your web browser.
 
 ## Understanding the Gas Report
 The gas report consists of three parts, enabling you to understand the gas usage through different lenses.
 
 ### Flamegraphs
 The first section consists of visualization of the gas usage in the form of two flamegraphs: one for execution & IO, the other for storage.
-The reason why we need two graphs is because these are measured in different units: one in gas units, and the other in APT.
+The reason why we need two graphs is that these are measured in different units: one in gas units, and the other in APT.
 
 It is possible to interact with various elements in the graph. If you hover your cursor over an item, it will show you the precise cost and percentage.
 ![gas-profiling-flamegraph-0.png](../../../static/img/docs/gas-profiling-flamegraph-0.png)

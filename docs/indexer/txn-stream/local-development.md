@@ -9,7 +9,7 @@ import BetaNotice from '../../../src/components/_indexer_beta_notice.mdx';
 <BetaNotice />
 
 :::info
-This has been tested on MacOS 13 on ARM and Debian 11 on x86_64.
+This has been tested on macOS 13 on ARM and Debian 11 on x86_64.
 :::
 
 When building a custom processor, you might find it helpful to develop against a local development stack. The Transaction Stream Service is a complicated, multi-component system. To assist with local development, we offer a Python script that wraps a Docker compose file to set up the entire system.
@@ -64,7 +64,7 @@ poetry install
 poetry run python indexer_grpc_local.py start
 ```
 
-You will know this succeeded if the command exits and you see the following:
+You will know this succeeded if the command exits, and you see the following:
 ```
 Attempting to stream from indexer grpc for 10s
 Stream finished successfully
@@ -114,7 +114,7 @@ Try setting the following environment variable before running the script:
 export REDIS_IMAGE_REPO=arm64v8/redis
 ```
 
-### Cache worker is crashlooping or `Redis latest version update failed.` in log
+### Cache worker is crash-looping or `Redis latest version update failed.` in log
 Wipe the data:
 ```bash
 poetry run python indexer_grpc_local.py wipe

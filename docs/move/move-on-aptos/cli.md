@@ -150,7 +150,7 @@ The `aptos` CLI can be used to analyze and improve the testing of your Move modu
      "Result": "Success"
    }
    ```
-6. Find failures and iteratively improve your testing and running these commands to eliminate gaps in your testing coverage.
+7. Find failures and iteratively improve your testing and running these commands to eliminate gaps in your testing coverage.
 
 ## Proving Move
 
@@ -457,7 +457,7 @@ aptos key generate \
 The exact account address should vary for each run, though the vanity prefix should not.
 :::
 
-Store Ace's address in a shell variable so you can call it inline later on:
+Store Ace's address in a shell variable, so you can call it inline later on:
 
 ```bash
 # Your exact address should vary
@@ -850,7 +850,7 @@ aptos key generate \
 The exact account address should vary for each run, though the vanity prefix should not.
 :::
 
-Store Bee's address in a shell variable so you can call it inline later on:
+Store Bee's address in a shell variable, so you can call it inline later on:
 
 ```bash
 # Your exact address should vary
@@ -1077,7 +1077,7 @@ aptos move view \
 
 </details>
 
-However the next sequence number has been incremented because a transaction has been enqueued:
+However, the next sequence number has been incremented because a transaction has been enqueued:
 
 ```bash title="Next sequence number"
 aptos move view \

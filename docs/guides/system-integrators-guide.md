@@ -14,13 +14,13 @@ If you provide blockchain services to your customers and wish to add the Aptos b
 
 This document will guide you through the following tasks to integrate with Aptos:
 1. Prepare an environment for testing.
-1. Create an account on the blockchain.
-1. Exchange account identifiers with another entity on the blockchain, for example, to perform swaps.
-1. Create a transaction.
-1. Obtain a gas estimate and validate the transaction for correctness.
-1. Submit the transaction to the blockchain.
-1. Wait for the outcome of the transaction.
-1. Query historical transactions and interactions for a given account with a specific account, i.e., withdraws and deposits.
+2. Create an account on the blockchain.
+3. Exchange account identifiers with another entity on the blockchain, for example, to perform swaps.
+4. Create a transaction.
+5. Obtain a gas estimate and validate the transaction for correctness.
+6. Submit the transaction to the blockchain.
+7. Wait for the outcome of the transaction.
+8. Query historical transactions and interactions for a given account with a specific account, i.e., withdraws and deposits.
 
 ## Getting Started
 
@@ -31,9 +31,9 @@ In order to get started you'll need to select a network and pick your set of too
 There are four well-supported networks for integrating with the Aptos blockchain:
 
 1. [Local testnet](http://127.0.0.1:8080) -- our standalone tool for local development against a known version of the codebase with no external network.
-1. [Devnet](https://fullnode.devnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data resets weekly, weekly update from aptos-core main branch.
-1. [Testnet](https://fullnode.testnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data will be preserved, network configuration will mimic Mainnet.
-1. [Mainnet](https://fullnode.mainnet.aptoslabs.com/v1/spec#/) -- a production network with real assets.
+2. [Devnet](https://fullnode.devnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data resets weekly, weekly update from aptos-core main branch.
+3. [Testnet](https://fullnode.testnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data will be preserved, network configuration will mimic Mainnet.
+4. [Mainnet](https://fullnode.mainnet.aptoslabs.com/v1/spec#/) -- a production network with real assets.
 
 See [Aptos Blockchain Networks](../nodes/networks.md) for full details on each environment.
 
@@ -124,8 +124,8 @@ BCS-encoded transactions can be submitted to the `/transactions` endpoint but 
 JSON-encoded transactions can be generated via the [REST API](https://fullnode.devnet.aptoslabs.com/v1/spec#/), following these steps:
 
 1. First construct an appropriate JSON payload for the `/transactions/encode_submission` endpoint as demonstrated in the [Python SDK](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L128).
-1. The output of the above contains an object containing a `message` that must be signed with the sender’s private key locally.
-1. Extend the original JSON payload with the signature information and post it to the `/transactions` [endpoint](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L142). This will return a transaction submission result that, if successful, contains a transaction hash in the `hash` [field](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L145).
+2. The output of the above contains an object containing a `message` that must be signed with the sender’s private key locally.
+3. Extend the original JSON payload with the signature information and post it to the `/transactions` [endpoint](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L142). This will return a transaction submission result that, if successful, contains a transaction hash in the `hash` [field](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L145).
 
 JSON-encoded transactions allow for rapid development and support seamless ABI conversions of transaction arguments to native types. However, most system integrators prefer to generate transactions within their own tech stack. Both the [TypeScript SDK](https://github.com/aptos-labs/aptos-core/blob/9b85d41ed8ef4a61a9cd64f9de511654fcc02024/ecosystem/typescript/sdk/src/aptos_client.ts#L259) and [Python SDK](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L100) support generating BCS transactions.
 
@@ -138,7 +138,7 @@ Within a given transaction, the target of execution can be one of two types:
 
 Both [Python](https://github.com/aptos-labs/aptos-core/blob/3973311dac6bb9348bfc81cf983c2a1be11f1b48/ecosystem/python/sdk/aptos_sdk/client.py#L256) and [TypeScript](https://github.com/aptos-labs/aptos-core/blob/3973311dac6bb9348bfc81cf983c2a1be11f1b48/ecosystem/typescript/sdk/src/aptos_client.test.ts#L93) support the generation of transactions that target entry points. This guide points out many of those entry points, such as `aptos_account::transfer` and `aptos_account::create_account`.
 
-Most basic operations on the Aptos blockchain should be available via entry point calls. While one could submit multiple transactions calling entry points in series, such operations benefit from being called atomically from a single transaction. A script payload transaction can call any public (entry) function defined within any module. Here's an example [Move script](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/scripts/two_by_two_transfer) that uses a MultiAgent transaction to extract funds from two accounts and deposit them into two other accounts. This is a [Python example](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/transfer_two_by_two.py) that uses the bytecode generated by compiling that script. Currently there is limited support for script payloads in TypeScript.
+Most basic operations on the Aptos blockchain should be available via entry point calls. While one could submit multiple transactions calling entry points in series, such operations benefit from being called atomically from a single transaction. A script payload transaction can call any public (entry) function defined within any module. Here's an example [Move script](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/scripts/two_by_two_transfer) that uses a MultiAgent transaction to extract funds from two accounts and deposit them into two other accounts. This is a [Python example](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/transfer_two_by_two.py) that uses the bytecode generated by compiling that script. Currently, there is limited support for script payloads in TypeScript.
 
 ### Status of a transaction
 
@@ -318,7 +318,7 @@ Here is a breakdown of the information in a transaction:
 * `version` indicates the globally unique identifier for this transaction, its ordered position in all the committed transactions on the blockchain
 * `sender` is the account address of the entity that submitted the transaction
 * `gas_used` is the units paid for executing the transaction
-* `success` and `vm_status` indicate whether or not the transaction successfully executed and any reasons why it might not have
+* `success` and `vm_status` indicate whether the transaction successfully executed and any reasons why it might not have
 * `changes` include the final values for any state resources that have been modified during the execution of the transaction
 * `events` contain all the events emitted during the transaction execution
 * `timestamp` is the near real-time timestamp of the transaction's execution

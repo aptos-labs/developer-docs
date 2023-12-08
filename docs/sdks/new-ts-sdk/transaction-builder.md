@@ -231,5 +231,5 @@ for (let i = 0; i < recipients.length; i += 1) {
   payloads.push(txn);
 }
 
-await aptos.batchTransactionsForSingleAccount({ sender, data: payloads }));
+await aptos.batchTransactionsForSingleAccount({ sender, data: payloads });
 ```

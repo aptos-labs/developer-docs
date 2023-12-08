@@ -58,7 +58,7 @@ swap between `s1` and `s2`.
 The `std::signer` standard library module provides two utility functions over `signer` values:
 
 | Function                                    | Description                                                    |
-| ------------------------------------------- | -------------------------------------------------------------  |
+|---------------------------------------------|----------------------------------------------------------------|
 | `signer::address_of(&signer): address`      | Return the `address` wrapped by this `&signer`.                |
 | `signer::borrow_address(&signer): &address` | Return a reference to the `address` wrapped by this `&signer`. |
 
@@ -68,6 +68,6 @@ ensures that only an authenticated user can elect to publish a resource under th
 
 ## Ownership
 
-Unlike simple scalar values, `signer` values are not copyable, meaning they cannot be copied (from
+Unlike simple scalar values, `signer` values are not copyable, meaning they cannot be copied from
 any operation whether it be through an explicit [`copy`](./variables.md#move-and-copy) instruction
 or through a [dereference `*`](./references.md#reading-and-writing-through-references).

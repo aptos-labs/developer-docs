@@ -27,7 +27,7 @@ Aptos account creation can be supported across wallets in the following manner:
 1. Generate a mnemonic phrase, for example with BIP39.
 2. Get the master seed from that mnemonic phrase.
 3. Use the BIP44-derived path to retrieve an account address (e.g. `m/44'/637'/0'/0'/0'`)
-    - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69))
+    - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69)
     - For example, Petra Wallet always uses the path `m/44'/637'/0'/0'/0'` since there is one mnemonic per one account.
 
 
@@ -63,9 +63,9 @@ However, many wallets from other ecosystems use this paradigm, and take these st
 
 1. Generate a mnemonic phrase, for example with BIP39.
 2. Get the master seed from that mnemonic phrase.
-4. Use the BIP44-derived path to retrieve private keys (e.g. `m/44'/637'/i'/0'/0'`) where `i` is the account index.
-    - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69))
-6. Increase `i` until all of the accounts the user wants to import are found.
+3. Use the BIP44-derived path to retrieve private keys (e.g. `m/44'/637'/i'/0'/0'`) where `i` is the account index.
+    - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69)
+4. Increase `i` until all the accounts the user wants to import are found.
     - Note: The iteration should be limited, if an account doesn't exist during iteration, keep iterating for a constant `address_gap_limit` (10 for now) to see if there are any other accounts. If an account is found we will continue to iterate as normal.
 
 ie.
@@ -217,7 +217,7 @@ Key rotation is currently not implemented in any wallets. Mapping of rotated key
 
 Wallets that import a private key will have to do the following:
 1. Derive the authentication key.
-2. Lookup the authentication key onchain in the Account origination table.
+2. Lookup the authentication key on-chain in the Account origination table.
   - If the account doesn't exist, it's a new account. The address to be used is the authentication key.
   - If the account does exist, it's a rotated key account, and the address to be used will come from the table.
 

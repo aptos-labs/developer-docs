@@ -18,10 +18,10 @@ The Aptos Blockchain network can be accessed by several APIs, depending on your 
 
 4. #### Faucet API (Only Testnet/Devnet)
    
-   This API provides the ability to mint coins on the Aptos Labs operated devnet and testnet and it's primary purpose is development and testing of your apps and Move contracts before deploying them to mainnet.
+   This API provides the ability to receive test tokens on devnet and testnet.  Its primary purpose is development and testing of applications and Move contracts before deploying them to mainnet.
 
 
-The code of each of the above mentioned APIs is open-sourced on [GitHub](https://github.com/aptos-labs/aptos-core). As such anyone can operate these APIs and many independent operators and builders worldwide choose to do so.
+The code of each of the above-mentioned APIs is open-sourced on [GitHub](https://github.com/aptos-labs/aptos-core). As such anyone can operate these APIs and many independent operators and builders worldwide choose to do so.
 
 
 ### Aptos Labs operated API Deployments

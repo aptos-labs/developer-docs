@@ -117,7 +117,7 @@ So the arithmetic expression is never evaluated!
 When using `abort`, it is important to understand how the `u64` code will be used by the VM.
 
 Normally, after successful execution, the Move VM produces a change-set for the changes made to
-global storage (added/removed resources, updates to existing resources, etc).
+global storage (added/removed resources, updates to existing resources, etc.).
 
 If an `abort` is reached, the VM will instead indicate an error. Included in that error will be two
 pieces of information:

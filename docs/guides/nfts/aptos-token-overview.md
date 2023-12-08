@@ -6,7 +6,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Aptos Token Standards
 
-The [Aptos Digital Asset Standard](../../standards/digital-asset.md) defines the canonical Nonfungible Token on Aptos. Aptos leverages composability to extend the digital asset standard with features like fungibility via the [Fungible Asset standard](../../standards/fungible-asset.md). The concept of composability comes from the underlying data model for these constructs: the [Move object](../../standards/aptos-object.md) data model.
+The [Aptos Digital Asset Standard](../../standards/digital-asset.md) defines the canonical Non-fungible Token on Aptos. Aptos leverages composability to extend the digital asset standard with features like fungibility via the [Fungible Asset standard](../../standards/fungible-asset.md). The concept of composability comes from the underlying data model for these constructs: the [Move object](../../standards/aptos-object.md) data model.
 
 The rest of this document discusses how the Aptos token standards compare to the standards on Ethereum and Solana.
 

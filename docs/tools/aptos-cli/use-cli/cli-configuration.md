@@ -65,7 +65,7 @@ If you did not set any global configuration, then the `./.aptos/config.yaml` in 
 
 ### Setting up shell completion
 
-You can set up shell completions with the `generate-shell-completions` command. You can lookup configuration for your specific shell. The supported shells are `[bash, zsh, fish, powershell, elvish]`. An example is below for [`oh my zsh`](https://ohmyz.sh/).
+You can set up shell completions with the `generate-shell-completions` command. You can look up configuration for your specific shell. The supported shells are `[bash, zsh, fish, powershell, elvish]`. An example is below for [`oh my zsh`](https://ohmyz.sh/).
 
 ```bash
 aptos config generate-shell-completions --shell zsh --output-file ~/.oh-my-zsh/completions/_aptos

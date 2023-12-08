@@ -26,7 +26,7 @@ In this section, we will describe the lifecycle of transaction T<sub>5</sub>, fr
 
 For the relevant steps, we've included a link to the corresponding inter-component interactions of the validator node. After you are familiar with all the steps in the lifecycle of the transaction, you may want to refer to the information on the corresponding inter-component interactions for each step.
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Lifecycle of a transaction"
 sources={{
@@ -34,7 +34,7 @@ sources={{
     dark: useBaseUrl('/img/docs/1-life-of-txn-dark.svg'),
   }}
 />
-</center>
+</div>
 
 :::tip Alert
 The arrows in all the visuals in this article originate on the component initiating an interaction/action and terminate on the component on which the action is being performed. The arrows do not represent data read, written, or returned.
@@ -70,8 +70,8 @@ The raw transaction includes the following fields:
 | ------ | ----------- |
 | [Account address](../reference/glossary.md#account-address) | Alice's account address |
 | Payload | Indicates an action or set of actions Alice's behalf. In the case this is a Move function, it directly calls into Move bytecode on the chain. Alternatively, it may be Move bytecode peer-to-peer [transaction script](../reference/glossary.md#transaction-script). It also contains a list of inputs to the function or script. For this example, it is a function call to transfer an amount of Aptos Coins from Alice account to Bob's account, where Alice's account is implied by sending the transaction and Bob's account and the amount are specified as transaction inputs. |
-| [Gas unit price](../reference/glossary.md#gas-unit-price) | The amount the sender is willing to pay per unit of gas, to execute the transaction. This is represented as Octa or units of 10<sup>-8</sup> Aptos utility tokens.
-| [Maximum gas amount](../reference/glossary.md#maximum-gas-amount) | The maximum gas amount in Aptos utility tokens Alice is willing to pay for this transaction. Gas charges are equal to the base gas cost covered by computation and IO multiplied by the gas price. Gas costs also include storage with an Apt-fixed priced storage model. This is represents as Octa or units of 10<sup>-8</sup> Aptos utility tokens.
+| [Gas unit price](../reference/glossary.md#gas-unit-price) | The amount the sender is willing to pay per unit of gas, to execute the transaction. This is represented as Octa or units of 10<sup>-8</sup> Aptos utility tokens. |
+| [Maximum gas amount](../reference/glossary.md#maximum-gas-amount) | The maximum gas amount in Aptos utility tokens Alice is willing to pay for this transaction. Gas charges are equal to the base gas cost covered by computation and IO multiplied by the gas price. Gas costs also include storage with an Apt-fixed priced storage model. This is represents as Octa or units of 10<sup>-8</sup> Aptos utility tokens. |
 | [Expiration time](../reference/glossary.md#expiration-time) | Expiration time of the transaction. |
 | [Sequence number](../reference/glossary.md#sequence-number)  | The sequence number (5, in this example) for an account indicates the number of transactions that have been submitted and committed on-chain from that account. In this case, 5 transactions have been submitted from Alice’s account, including Traw<sub>5</sub>. Note: a transaction with sequence number 5 can only be committed on-chain if the account sequence number is 5. |
 | [Chain ID](https://github.com/aptos-labs/aptos-core/blob/main/types/src/chain_id.rs) | An identifier that distinguishes the Aptos networks (to prevent cross-network attacks). |
@@ -145,7 +145,7 @@ The following are the core components of an Aptos node used in the lifecycle of 
 
 ## REST Service
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Lifecycle of a transaction"
 sources={{
@@ -153,7 +153,7 @@ sources={{
     dark: useBaseUrl('/img/docs/7-life-of-txn-dark.svg'),
   }}
 />
-</center>
+</div>
 
 Any request made by a client goes to the REST Service of a fullnode first. Then, the submitted transaction is forwarded to the validator fullnode, which then sends it to the validator node V<sub>X</sub>.
 
@@ -175,7 +175,7 @@ When a client performs a read query on the Aptos blockchain (for example, to get
 
 ## Virtual Machine (VM)
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Lifecycle of a transaction"
 sources={{
@@ -183,7 +183,7 @@ sources={{
     dark: useBaseUrl('/img/docs/2-life-of-txn-dark.svg'),
   }}
 />
-</center>
+</div>
 
 The Move VM verifies and executes transaction scripts written in Move bytecode.
 
@@ -211,7 +211,7 @@ For implementation details refer to the [Move Virtual Machine README](https://gi
 
 ## Mempool
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Lifecycle of a transaction"
 sources={{
@@ -219,7 +219,7 @@ sources={{
     dark: useBaseUrl('/img/docs/3-life-of-txn-dark.svg'),
   }}
 />
-</center>
+</div>
 
 Mempool is a shared buffer that holds the transactions that are “waiting” to be executed. When a new transaction is added to the mempool, the mempool shares this transaction with other validator nodes in the system. To reduce network consumption in the “shared mempool,” each validator is responsible for delivering its own transactions to other validators. When a validator receives a transaction from the mempool of another validator, the transaction is added to the mempool of the recipient validator.
 
@@ -245,7 +245,7 @@ When mempool receives a transaction from other validators, mempool invokes <code
 
 ## Consensus
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Lifecycle of a transaction"
 sources={{
@@ -253,7 +253,7 @@ sources={{
     dark: useBaseUrl('/img/docs/4-life-of-txn-dark.svg'),
   }}
 />
-</center>
+</div>
 
 The consensus component is responsible for ordering blocks of transactions and agreeing on the results of execution by participating in the [consensus protocol](../reference/glossary.md#consensus-protocol) with other validators in the network.
 
@@ -278,7 +278,7 @@ If enough validators vote for the same execution result, the consensus component
 
 ## Execution
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Lifecycle of a transaction"
 sources={{
@@ -286,7 +286,7 @@ sources={{
     dark: useBaseUrl('/img/docs/5-life-of-txn-dark.svg'),
   }}
 />
-</center>
+</div>
 
 The execution component coordinates the execution of a block of transactions and maintains a transient state that can be voted upon by consensus. If these transactions are successful, they are committed to storage.
 
@@ -313,7 +313,7 @@ For implementation details refer to the [Execution README](https://github.com/ap
 
 ## Storage
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Lifecycle of a transaction"
 sources={{
@@ -321,9 +321,9 @@ sources={{
     dark: useBaseUrl('/img/docs/6-life-of-txn-dark.svg'),
   }}
 />
-</center>
+</div>
 
-The storage component persists agreed upon blocks of transactions and their execution results to the Aptos blockchain. A block of transactions (which includes transaction T<sub>N</sub>) will be saved via storage when there is agreement between more than a quorum (2f+1) of the validators participating in consensus. Agreement must include all of the following:
+The storage component persists agreed upon blocks of transactions and their execution results to the Aptos blockchain. A block of transactions (which includes transaction T<sub>N</sub>) will be saved via storage when there is agreement between more than a quorum (2f+1) of the validators participating in consensus. Agreement must include all the following:
 * The transactions to include in the block
 * The order of the transactions
 * The execution results of the transactions in the block

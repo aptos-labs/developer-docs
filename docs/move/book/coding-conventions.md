@@ -4,15 +4,15 @@ This section lays out some basic coding conventions for Move that the Move team 
 
 ## Naming
 
-- **Module names**: should be lower snake case, e.g., `fixed_point32`, `vector`.
+- **Module names**: should be lowercase snake case, e.g., `fixed_point32`, `vector`.
 - **Type names**: should be camel case if they are not a native type, e.g., `Coin`, `RoleId`.
-- **Function names**: should be lower snake case, e.g., `destroy_empty`.
+- **Function names**: should be lowercase snake case, e.g., `destroy_empty`.
 - **Constant names**: should be upper camel case and begin with an `E` if they represent error codes (e.g., `EIndexOutOfBounds`) and upper snake case if they represent a non-error value (e.g., `MIN_STAKE`).
 -
 - **Generic type names**: should be descriptive, or anti-descriptive where appropriate, e.g., `T` or `Element` for the Vector generic type parameter. Most of the time the "main" type in a module should be the same name as the module e.g., `option::Option`, `fixed_point32::FixedPoint32`.
 - **Module file names**: should be the same as the module name e.g., `option.move`.
-- **Script file names**: should be lower snake case and should match the name of the “main” function in the script.
-- **Mixed file names**: If the file contains multiple modules and/or scripts, the file name should be lower snake case, where the name does not match any particular module/script inside.
+- **Script file names**: should be lowercase snake case and should match the name of the “main” function in the script.
+- **Mixed file names**: If the file contains multiple modules and/or scripts, the file name should be lowercase snake case, where the name does not match any particular module/script inside.
 
 ## Imports
 
@@ -51,7 +51,7 @@ module 0x1::bar {
 And, if there is a local name-clash when importing two modules:
 
 ```move
-module other_foo {
+module 0x1::other_foo {
     struct Foo {}
     ...
 }
@@ -70,7 +70,7 @@ module 0x1::importer {
 
 ## Formatting
 
-The Move team plans to write an autoformatter to enforce formatting conventions. However, in the meantime:
+The Move team plans to write an auto-formatter to enforce formatting conventions. However, in the meantime:
 
 - Four space indentation should be used except for `script` and `address` blocks whose contents should not be indented.
 - Lines should be broken if they are longer than 100 characters.

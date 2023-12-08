@@ -8,7 +8,7 @@ slug: "unity-sdk"
 
 The [Aptos Unity SDK](https://github.com/aptos-labs/Aptos-Unity-SDK) is a .NET implementation of the [Aptos SDK](./index.md), compatible with .NET Standard 2.0 and .NET 4.x for Unity. The goal of this SDK is to provide a set of tools for developers to build multi-platform applications (mobile, desktop, web, VR) using the Unity game engine and the Aptos blockchain infrastructure.
 
-See the post [Aptos Labs brings Web3 to Gaming with its new SDK for Unity developers](https://medium.com/aptoslabs/aptos-labs-brings-web3-to-gaming-with-its-new-sdk-for-unity-developers-e6544bdf9ba9) and the [Technical details](https://github.com/aptos-labs/Aptos-Unity-SDK#technical-details) section of the Unity SDK README for all of the features offered to game developers by the Aptos Unity SDK.
+See the post [Aptos Labs brings Web3 to Gaming with its new SDK for Unity developers](https://medium.com/aptoslabs/aptos-labs-brings-web3-to-gaming-with-its-new-sdk-for-unity-developers-e6544bdf9ba9) and the [Technical details](https://github.com/aptos-labs/Aptos-Unity-SDK#technical-details) section of the Unity SDK README for all the features offered to game developers by the Aptos Unity SDK.
 
 ## User flows
 
@@ -23,13 +23,13 @@ The Aptos Unity SDK supports these use cases:
 
 ### Supported Unity versions
 | Supported Version: | Tested |
-| -- | -- |
-| 2021.3.x | ✅ |
-| 2022.2.x | ✅ |
+|--------------------|--------|
+| 2021.3.x           | ✅      |
+| 2022.2.x           | ✅      |
 
-| Windows | Mac  | iOS | Android | WebGL |
-| -- | -- | -- | -- | -- |
-| ✅ | ✅ | ✅ | ✅ | ✅ |
+| Windows | Mac | iOS | Android | WebGL |
+|---------|-----|-----|---------|-------|
+| ✅       | ✅   | ✅   | ✅       | ✅     |
 
 ### Dependencies
 

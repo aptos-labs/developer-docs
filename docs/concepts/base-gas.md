@@ -203,14 +203,14 @@ The following gas parameters are applied (i.e., charged) to represent the costs 
 
 The following storage fee parameters are applied (i.e., charged in absolute APT values) to represent the disk space and structural costs associated with using the [Aptos authenticated data structure](../reference/glossary.md#merkle-trees) for storing items on the blockchain. This encompasses actions such as creating things in the global state, emitting events, and similar operations:
 
-| Parameter                         | Meaning                                                                                |
-|-----------------------------------|----------------------------------------------------------------------------------------|
-| free_write_bytes_quota            | 1KB (configurable) free bytes per state slot. (*Subject to short-term change.*)        |
-| free_event_bytes_quota            | 1KB (configurable) free event bytes per transaction. (*Subject to short-term change.*) |
-| storage_fee_per_state_slot_create | allocating a state slot, by `move_to()`, `table::add()`, etc                           |
-| storage_fee_per_excess_state_byte | per byte beyond `free_write_bytes_quota` per state slot. Notice this is charged every time the slot is written to, not only at allocation time.  |
-| storage_fee_per_event_byte        | per byte beyond `free_event_bytes_quota` per transaction.                              |
-| storage_fee_per_transaction_byte  | each transaction byte beyond `large_transaction_cutoff`. (search in the page)          |
+| Parameter                         | Meaning                                                                                                                                         |
+|-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| free_write_bytes_quota            | 1KB (configurable) free bytes per state slot. (*Subject to short-term change.*)                                                                 |
+| free_event_bytes_quota            | 1KB (configurable) free event bytes per transaction. (*Subject to short-term change.*)                                                          |
+| storage_fee_per_state_slot_create | allocating a state slot, by `move_to()`, `table::add()`, etc                                                                                    |
+| storage_fee_per_excess_state_byte | per byte beyond `free_write_bytes_quota` per state slot. Notice this is charged every time the slot is written to, not only at allocation time. |
+| storage_fee_per_event_byte        | per byte beyond `free_event_bytes_quota` per transaction.                                                                                       |
+| storage_fee_per_transaction_byte  | each transaction byte beyond `large_transaction_cutoff`. (search in the page)                                                                   |
 
 ### Vectors
 
@@ -221,7 +221,7 @@ Byte-wise fees are similarly assessed on vectors, which consume $\sum_{i = 0}^{n
 * $b(n)$ is a "base size" which is a function of $n$
 
 See the [BCS sequence specification] for more information on vector base size (technically a `ULEB128`), which typically occupies just one byte in practice, such that a vector of 100 `u8` elements accounts for $100 + 1 = 101$ bytes.
-Hence per the item-wise read methodology described above, reading the last element of such a vector is treated as a 101-byte read.
+Hence, per the item-wise read methodology described above, reading the last element of such a vector is treated as a 101-byte read.
 
 ## Payload gas
 
@@ -248,11 +248,11 @@ Then, to convert from external gas units to octas, multiply by the "gas price", 
 
 As of the time of this writing, `min_price_per_gas_unit` in [`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs) is defined as [`aptos_global_constants`]`::GAS_UNIT_PRICE` (which is itself defined as 100), with other noteworthy [`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs) constants as follows:
 
-| Constant                  | Value  |
-|---------------------------|--------|
-| `min_price_per_gas_unit`  | 100    |
+| Constant                  | Value          |
+|---------------------------|----------------|
+| `min_price_per_gas_unit`  | 100            |
 | `max_price_per_gas_unit`  | 10,000,000,000 |
-| `gas_unit_scaling_factor` | 1,000,000 |
+| `gas_unit_scaling_factor` | 1,000,000      |
 
 See [Payload gas](#payload-gas) for the meaning of these constants.
 
@@ -275,7 +275,7 @@ Some cost optimization strategies concerning the storage fee:
 ### Instruction gas
 
 As of the time of this writing, all instruction gas operations are multiplied by the `EXECUTION_GAS_MULTIPLIER` defined in [`gas_meter.rs`], which is set to 20.
-Hence the following representative operations assume gas costs as follows (divide internal gas by scaling factor, then multiply by minimum gas price):
+Hence, the following representative operations assume gas costs as follows (divide internal gas by scaling factor, then multiply by minimum gas price):
 
 | Operation                    | Minimum octas |
 |------------------------------|---------------|
@@ -298,7 +298,7 @@ In extreme cases it is possible for instruction gas to far outweigh storage gas,
 ### Payload gas
 
 As of the time of this writing, [`transaction/mod.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs) defines the minimum amount of internal gas per transaction as 1,500,000 internal units (15,000 octas at minimum), an amount that increases by 2,000 internal gas units (20 octas minimum) per byte for payloads larger than 600 bytes, with the maximum number of bytes permitted in a transaction set at 65536.
-Hence in practice, payload gas is unlikely to be a concern.
+Hence, in practice, payload gas is unlikely to be a concern.
 
 <!--- Alphabetized reference links -->
 

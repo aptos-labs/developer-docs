@@ -89,7 +89,7 @@ let Foo = e; // ERROR!
 
 ### Type annotations
 
-The type of a local variable can almost always be inferred by Move's type system. However, Move
+The type of local variable can almost always be inferred by Move's type system. However, Move
 allows explicit type annotations that can be useful for readability, clarity, or debuggability. The
 syntax for adding a type annotation is:
 
@@ -327,7 +327,7 @@ let (x1, y, z1) = three(); // ERROR!
 
 ### General `let` grammar
 
-All of the different structures in `let` can be combined! With that we arrive at this general
+All the different structures in `let` can be combined! With that we arrive at this general
 grammar for `let` statements:
 
 > _let-binding_ → **let** _pattern-or-list_ _type-annotation_<sub>_opt_</sub> _initializer_<sub>_opt_</sub>
@@ -486,7 +486,7 @@ For more details, see [Move references](./references.md).
 Any local declared with `let` is available for any subsequent expression, _within that scope_.
 Scopes are declared with expression blocks, `{`...`}`.
 
-Locals cannot be used outside of the declared scope.
+Locals cannot be used outside the declared scope.
 
 ```move
 let x = 0;
@@ -675,11 +675,11 @@ assert!(x == 0, 42);
 
 All local variables in Move can be used in two ways, either by `move` or `copy`. If one or the other
 is not specified, the Move compiler is able to infer whether a `copy` or a `move` should be used.
-This means that in all of the examples above, a `move` or a `copy` would be inserted by the
+This means that in all the examples above, a `move` or a `copy` would be inserted by the
 compiler. A local variable cannot be used without the use of `move` or `copy`.
 
 `copy` will likely feel the most familiar coming from other programming languages, as it creates a
-new copy of the value inside of the variable to use in that expression. With `copy`, the local
+new copy of the value inside the variable to use in that expression. With `copy`, the local
 variable can be used more than once.
 
 ```move

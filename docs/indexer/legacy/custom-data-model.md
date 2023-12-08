@@ -141,7 +141,7 @@ The `process_transactions` function takes in a vector of transactions with a sta
 See [coin_process.rs](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/coin_processor.rs) for a relatively straightforward example. You can search for `coin_balances` in the page for the specific code snippet related to coin balances.
 :::
 
-**How to decide whether to create a new processor:** This is completely up to you. The benefit of creating a new processor is that you are starting from scratch so you will have full control over exactly what gets written to the indexed database. The downside is that you will have to maintain a new fullnode, since there is a 1-to-1 mapping between a fullnode and the processor.
+**How to decide whether to create a new processor:** This is completely up to you. The benefit of creating a new processor is that you are starting from scratch, so you will have full control over exactly what gets written to the indexed database. The downside is that you will have to maintain a new fullnode, since there is a 1-to-1 mapping between a fullnode and the processor.
 
 ### 4. Integrate the new processor
 

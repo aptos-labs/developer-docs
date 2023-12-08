@@ -14,7 +14,7 @@ tuple, and any restrictions that apply to tuples also apply to unit.
 It might feel weird to have tuples in the language at all given these restrictions. But one of the
 most common use cases for tuples in other languages is for functions to allow functions to return
 multiple values. Some languages work around this by forcing the users to write structs that contain
-the multiple return values. However in Move, you cannot put references inside of
+the multiple return values. However, in Move, you cannot put references inside of
 [structs](./structs-and-resources.md). This required Move to support multiple return values. These
 multiple return values are all pushed on the stack at the bytecode level. At the source level, these
 multiple return values are represented using tuples.
@@ -24,12 +24,12 @@ multiple return values are represented using tuples.
 Tuples are created by a comma separated list of expressions inside of parentheses.
 
 | Syntax          | Type                                                                         | Description                                                  |
-| --------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------ |
+|-----------------|------------------------------------------------------------------------------|--------------------------------------------------------------|
 | `()`            | `(): ()`                                                                     | Unit, the empty tuple, or the tuple of arity 0               |
 | `(e1, ..., en)` | `(e1, ..., en): (T1, ..., Tn)` where `e_i: Ti` s.t. `0 < i <= n` and `n > 0` | A `n`-tuple, a tuple of arity `n`, a tuple with `n` elements |
 
 Note that `(e)` does not have type `(e): (t)`, in other words there is no tuple with one element. If
-there is only a single element inside of the parentheses, the parentheses are only used for
+there is only a single element inside the parentheses, the parentheses are only used for
 disambiguation and do not carry any other special meaning.
 
 Sometimes, tuples with two elements are called "pairs" and tuples with three elements are called

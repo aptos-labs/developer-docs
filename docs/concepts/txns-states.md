@@ -52,7 +52,7 @@ A signed transaction on the blockchain contains the following information:
 - **Sender public key**: The public authentication key that corresponds to the private authentication key used to sign the transaction.
 - **Payload**: Indicates an action or set of actions Alice's behalf. In the case this is a Move function, it directly calls into Move bytecode on the chain. Alternatively, it may be Move bytecode peer-to-peer [transaction script](../reference/glossary.md#transaction-script). It also contains a list of inputs to the function or script. For this example, it is a function call to transfer an amount of Aptos Coins from Alice account to Bob's account, where Alice's account is implied by sending the transaction and Bob's account and the amount are specified as transaction inputs.
 - [**Gas unit price**](../reference/glossary.md#gas-unit-price): The amount the sender is willing to pay per unit of gas, to execute the transaction. This is represented as Octa or units of 10<sup>-8</sup> utility tokens.
-- [**Maximum gas amount**](../reference/glossary.md#maximum-gas-amount): The maximum gas amount in Aptos utility tokens the sender is willing to pay for this transaction. Gas charges are equal to the base gas cost covered by computation and IO multiplied by the gas price. Gas costs also include storage with an Apt-fixed priced storage model. This is represents as Octa or units of 10<sup>-8</sup> Aptos utility tokens.
+- [**Maximum gas amount**](../reference/glossary.md#maximum-gas-amount): The maximum gas amount in Aptos utility tokens the sender is willing to pay for this transaction. Gas charges are equal to the base gas cost covered by computation and IO multiplied by the gas price. Gas costs also include storage with an Apt-fixed priced storage model. This is represented as Octas or units of 10<sup>-8</sup> Aptos utility tokens.
 - **Gas price** (in specified gas units): This is the amount the sender is willing to pay per unit of [gas](./gas-txn-fee.md) to execute the transaction. [Gas](./gas-txn-fee.md) is a way to pay for computation and storage. A gas unit is an abstract measurement of computation with no inherent real-world value.
 - **Maximum gas amount**: The [maximum gas amount](./gas-txn-fee.md#gas-and-transaction-fee-on-the-aptos-blockchain) is the maximum gas units the transaction is allowed to consume.
 - **Sequence number**: This is an unsigned integer that must be equal to the sender's account [sequence number](./accounts.md#account-sequence-number) at the time of execution.
@@ -64,7 +64,7 @@ Within a given transaction, the two most common types of payloads include:
 - An entry point
 - [A script (payload)](../move/move-on-aptos/move-scripts)
 
-Currently the SDKs [Python](https://aptos.dev/sdks/python-sdk) and [Typescript](https://aptos.dev/sdks/ts-sdk/index) support both. This guide points out many of those entry points, such as `coin::transfer` and `aptos_account::create_account`.
+Currently, the SDKs [Python](https://aptos.dev/sdks/python-sdk) and [Typescript](https://aptos.dev/sdks/ts-sdk/index) support both. This guide points out many of those entry points, such as `coin::transfer` and `aptos_account::create_account`.
 
 All operations on the Aptos blockchain should be available via entry point calls. While one could submit multiple transactions calling entry points in series, many such operations may benefit from being called atomically from a single transaction. A script payload transaction can call any entry point or public function defined within any module.
 

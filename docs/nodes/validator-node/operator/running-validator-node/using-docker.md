@@ -52,7 +52,7 @@ Docker method has only been tested on Linux, Windows, and Intel macOS. If you ar
        Backup your `private-keys.yaml` somewhere safe. These keys are important for you to establish ownership of your node. **Never share private keys with anyone.**
       :::
 
-4. Configure validator information. You need to setup a static IP / DNS address (DNS is much preferred) which can be used by the node, and make sure the network / firewalls are properly configured to accept external connections. See [Network Identity For Fullnode](../../../full-node/network-identity-fullnode.md) for how to do this. 
+4. Configure validator information. You need to set up a static IP / DNS address (DNS is much preferred) which can be used by the node, and make sure the network / firewalls are properly configured to accept external connections. See [Network Identity For Fullnode](../../../full-node/network-identity-fullnode.md) for how to do this. 
 
     ```bash
     cd ~/$WORKSPACE
@@ -107,7 +107,7 @@ Docker method has only been tested on Linux, Windows, and Intel macOS. If you ar
 
 7. Run docker-compose: `docker-compose up`. (or `docker compose up` depends on your version)
 
-**Now you have completed setting up your validator node. Next, setup a validator fullnode following the instructions below.**
+**Now you have completed setting up your validator node. Next, set up a validator fullnode following the instructions below.**
 
 9. <span id="docker-vfn">Set up a validator fullnode on a different machine. Download the `fullnode.yaml` and `docker-compose-fullnode.yaml` configuration files into the working directory of fullnode machine.</span> See [Node Files](../../../node-files-all-networks/node-files.md) for a full list of files you should download and the download commands. 
 

@@ -93,7 +93,7 @@ Processor::CoinProcessor => {
 
 Even though the new processors have the same Postgres schemas as the old ones, we recommend you do a complete backfill (ideally writing to a new DB altogether) because some fields are a bit different as a result of the protobuf conversion.
 
-These instructions asusme you are familar with using [Diesel migrations](https://docs.rs/diesel_migrations/latest/diesel_migrations/). Run the full database migration with the following command:
+These instructions assume you are familiar with using [Diesel migrations](https://docs.rs/diesel_migrations/latest/diesel_migrations/). Run the full database migration with the following command:
 
 ```
 DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration run
@@ -119,6 +119,6 @@ The protobuf schema may be updated in the future. Backwards incompatible changes
 
 ### 2. What if I already have custom logic written in the old indexer? Is it easy to migrate those?
 
-Since the new indexer stack has the same Postgres schema as the old indexer stack, it should be easy to migrate your processors. We still highly recommend creating a new DB for this migration so that any custom DB migrations are applie.
+Since the new indexer stack has the same Postgres schema as the old indexer stack, it should be easy to migrate your processors. We still highly recommend creating a new DB for this migration so that any custom DB migrations are applied.
 
 Follow Step 3 in this guide to migrate your custom logic over to the new processors stack.

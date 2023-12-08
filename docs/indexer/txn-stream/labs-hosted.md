@@ -21,15 +21,15 @@ The following rate limit applies for the Aptos Labs hosted Transaction Stream Se
 
 - todo todo
 
-If you need a higher rate limit, consider running the Transaction Stream Service yourself. See the guide to self hosting [here](./self-hosted).
+If you need a higher rate limit, consider running the Transaction Stream Service yourself. See the guide to self-hosting [here](./self-hosted).
 -->
 
 ## Auth tokens
 
 In order to use the Labs-Hosted Transaction Stream Service you must have an auth token. To get an auth token, do the following:
-1. Go to https://aptos-api-gateway-prod.firebaseapp.com.
-1. Sign in and select "API Tokens" in the left sidebar.
-1. Create a new token. You will see the token value in the first table.
+1. Go to https://aptos-api-gateway-prod.firebaseapp.com. 
+2. Sign in and select "API Tokens" in the left sidebar.
+3. Create a new token. You will see the token value in the first table.
 
 You can provide the auth key by setting the `Authorization` HTTP header ([MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)). For example, with curl:
 ```

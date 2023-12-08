@@ -33,7 +33,7 @@ The Aptos Explorer renders data from all Aptos networks: Mainnet, Testnet, Devne
 
 To select a network in the [Aptos Explorer](https://explorer.aptoslabs.com/), load the explorer and use the *Select Network* drop-down menu at the top right to select your desired network.
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Select Network in Aptos Explorer"
 sources={{
@@ -41,7 +41,7 @@ sources={{
     dark: useBaseUrl('/img/docs/0-explorer-select-network-dark.png'),
   }}
 />
-</center>
+</div>
 
 ### Find a transaction
 
@@ -50,10 +50,10 @@ One of the most common tasks is to track a transaction in Aptos Explorer. You ma
 To find a transaction:
 
 1. Enter the value in the *Search transactions* field near the top of any page.
-1. Do not press return.
-1. Click the transaction result that appears immediately below the search field, highlighted in green within the following screenshot:
+2. Do not press return.
+3. Click the transaction result that appears immediately below the search field, highlighted in green within the following screenshot:
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Search Aptos Explorer for a transaction"
 sources={{
@@ -61,7 +61,7 @@ sources={{
     dark: useBaseUrl('/img/docs/1-explorer-search-txn-dark.png'),
   }}
 />
-</center>
+</div>
 
 The resulting [Transaction details](#transaction-details) page appears.
 
@@ -85,7 +85,7 @@ This section walks you through the available screens in Aptos Explorer to help y
 
 The Aptos Explorer home page provides an immediate view into the total supply of Aptos coins, those that are now staked, transactions per second (TPS), and active validators on the network, as well as a rolling list of the latest transactions:
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer home page"
 sources={{
@@ -93,7 +93,7 @@ sources={{
     dark: useBaseUrl('/img/docs/2-explorer-home-dark.png'),
   }}
 />
-</center>
+</div>
 
 Click the **Transactions** tab at the top or  **View all Transactions** at the bottom to go to the [Transactions](#transactions) page.
 
@@ -103,7 +103,7 @@ The *Transactions* page displays all transactions on the Aptos blockchain in ord
 
 In the transactions list, single-click the **Hash** column to see and copy the hash for the transaction or double-click the hash to go directly to the transaction details for the hash.
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer Transactions page with hash highlighted"
 sources={{
@@ -111,7 +111,7 @@ sources={{
     dark: useBaseUrl('/img/docs/3-explorer-transactions-dark.png'),
   }}
 />
-</center>
+</div>
 
 Otherwise, click anywhere else in the row of the desired transaction to load its [Transaction details](#transaction-details) page.
 
@@ -121,7 +121,7 @@ Use the controls at the bottom of the list to navigate back through transactions
 
 The *Transaction details* page reveals all information for a given transaction, starting with its default *Overview* tab. There you can see a transaction's status, sender, version, gas fee, and much more:
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer Transaction Details tab"
 sources={{
@@ -129,7 +129,7 @@ sources={{
     dark: useBaseUrl('/img/docs/4-explorer-txn-details-dark.png'),
   }}
 />
-</center>
+</div>
 
 Scrolling down on the Overview, you can also see the transaction's signature (with `public_key`) and hashes for tracking.
 
@@ -151,7 +151,7 @@ The Transaction details *Changes* tab shows the addresses, state key hashes, and
 
 The *Accounts* page aggregates all transactions, tokens, and other resources in a single set of views starting with its default *Transactions* tab:
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer Accounts page"
 sources={{
@@ -159,12 +159,12 @@ sources={{
     dark: useBaseUrl('/img/docs/5-explorer-account-dark.png'),
   }}
 />
-</center>
+</div>
 
 You can load your account page by appending your account address to:
 https://explorer.aptoslabs.com/account/
 
-See [Find account address](#find-account-address) for more help.
+See [Find account address](#find-an-account-address) for more help.
 
 On the Accounts > Transactions tab, click any transaction to go to its [Transaction details](#transaction-details) page.
 
@@ -183,15 +183,15 @@ The *Token details* page contains:
   * *Overview* tab including token name, owner, collection, creator, royalty, and more.
   * *Activities* tab showing all transfer types, the addresses involved, property version, and amount.
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer Token Activities tab"
 sources={{
-    light: useBaseUrl('/img/docs/6-explorer-token-acitivities.png'),
-    dark: useBaseUrl('/img/docs/6-explorer-token-acitivities-dark.png'),
+    light: useBaseUrl('/img/docs/6-explorer-token-activities.png'),
+    dark: useBaseUrl('/img/docs/6-explorer-token-activities-dark.png'),
   }}
 />
-</center>
+</div>
 
 On either tab, click an address to go to the *Account* page for the address.
 
@@ -203,7 +203,7 @@ The *Resources* tab presents a view of all types used by the account. Use the *C
 
 The *Modules* tab displays the source code and ABI used by the account. Select different modules on the left sidebar to view Move source code and ABI of a specific module. Use the expand button at the top right of the source code to expand the code for better readability.
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer Modules tab"
 sources={{
@@ -211,7 +211,7 @@ sources={{
     dark: useBaseUrl('/img/docs/10-explorer-modules-dark.png'),
   }}
 />
-</center>
+</div>
 
 #### Info
 
@@ -221,7 +221,7 @@ The *Info* tab shows the [sequence number](../reference/glossary.md#sequence-num
 
 The *Blocks* page presents a running list of the latest blocks to be committed to the Aptos blockchain.
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer Latest Blocks page"
 sources={{
@@ -229,7 +229,7 @@ sources={{
     dark: useBaseUrl('/img/docs/7-explorer-latest-blocks-dark.png'),
   }}
 />
-</center>
+</div>
 
 Click the:
   * Hash to see and copy the hash of the block.
@@ -244,7 +244,7 @@ The *Block details* page contains:
   * *Overview* tab including block height, versions, timestamp, proposer, epoch and round.
   * *Transactions* tab showing the version, status, type, hash, gas, and timestamp.
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer Block details page"
 sources={{
@@ -252,7 +252,7 @@ sources={{
     dark: useBaseUrl('/img/docs/8-explorer-block-transactions-dark.png'),
   }}
 />
-</center>
+</div>
 
  On the *Overview* tab, click the versions to go to the related transactions or double-click the address of the proposer to go to the *Account* page for that address.
 
@@ -262,7 +262,7 @@ sources={{
 
 The *Validators* page lists every validator on the Aptos blockchain, including their validator address, voting power, public key, fullnode address, and network address.
 
-<center>
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer Validators page"
 sources={{
@@ -270,6 +270,6 @@ sources={{
     dark: useBaseUrl('/img/docs/9-explorer-validators-dark.png'),
   }}
 />
-</center>
+</div>
 
 Click the validator address to go to the *Account* page for that address. Click the public key or any of the other addresses to see and copy their values.

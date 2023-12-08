@@ -115,7 +115,7 @@ auth_key = sha3-256(0x02 | 0x01 | pubkey_0 | 0x02 | pubkey_2 | 0x01 | 0x03)
 ```
 Where
 * the first entry, `0x02`, represents the total number of keys as a single byte;
-* the second to last entry, `0x01`, represents the required number of singatures as a single byte;
+* the second to last entry, `0x01`, represents the required number of signatures as a single byte;
 * the last entry, `0x03`, represents the authentication scheme.
 
 ## Rotating the keys

@@ -499,7 +499,7 @@ fun safe_sub(x: u64, y: u64): u64 {
 
 Note that the body of this function could also have been written as `if (y > x) 0 else x - y`.
 
-However where `return` really shines is in exiting deep within other control flow constructs. In this example, the function iterates through a vector to find the index of a given value:
+However, where `return` really shines is in exiting deep within other control flow constructs. In this example, the function iterates through a vector to find the index of a given value:
 
 ```move=
 use std::vector;
@@ -549,7 +549,7 @@ Some simple examples are: `|x| x + 1`, `|x, y| x + y`, `|| 1`, `|| { 1 }`.
 A lambda's body can refer to variables available in the scope where the lambda is defined: this is also known as capturing.
 Such variables can be read or written (if mutable) by the lambda expression.
 
-The type of a function parameter is written as `|<list of parameter types>| <return type>`.
+The type of function parameter is written as `|<list of parameter types>| <return type>`.
 For example, when the function parameter type is `|u64, u64| bool`, any lambda expression that takes two `u64` parameters and returns a `bool` value can be provided as the argument.
 
 Below is an example that showcases many of these concepts in action (this example is taken from the `std::vector` module):

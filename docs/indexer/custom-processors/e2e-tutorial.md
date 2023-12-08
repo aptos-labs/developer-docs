@@ -31,7 +31,7 @@ cd aptos-indexer-processors
 cd python/processors/coin_flip
 ```
 
-Processors consume a stream of transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an auth token. Follow [this guide](/indexer/txn-stream/labs-hosted#auth-tokens) to guide to get one. Once you're done, you should have a token that looks like this:
+Processors consume a stream of transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an auth token. Follow [this guide](/indexer/txn-stream/labs-hosted#auth-tokens) to get one. Once you're done, you should have a token that looks like this:
 ```
 aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx
 ```
@@ -72,7 +72,7 @@ Create your database with the name `coin_flip`, where our username is `user` and
 
 If your database is set up correctly, and you have the `psql` tool, you should be able to run the command `psql -d coin_flip`.
 
-### Setup your local environment with poetry and grpc
+### Set up your local environment with poetry and grpc
 
 If you haven't yet, make sure to read the introductory [custom processor guide](https://github.com/aptos-labs/aptos-indexer-processors).
 
@@ -80,9 +80,9 @@ You can also check out the python-specific broad overview of how to create an in
 
 ## Configure your indexer processor
 
-Now let's setup the configuration details for the actual indexer processor we're going to use.
+Now lets set up the configuration details for the actual indexer processor we're going to use.
 
-### Setup your config.yaml file
+### Set up your config.yaml file
 
 Copy the contents below and save it to a file called `config.yaml`. Save it in the `coin_flip` folder. Your file directory structure should look something like this:
 
@@ -294,7 +294,7 @@ for event_index, event in enumerate(user_transaction.events):
 In our case, a single event prints this out:
 
 
-```json
+```
 {
     'losses': '49',
     'prediction': False,

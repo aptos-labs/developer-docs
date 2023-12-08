@@ -27,7 +27,7 @@ The rest of this document describes:
 
 1. Follow steps in [Building Aptos From Source](../../guides/building-from-source.md)
 
-1. With your development environment ready, now you can start your testnet network. Before you proceed, make a note of the following:
+2. With your development environment ready, now you can start your testnet network. Before you proceed, make a note of the following:
 
     :::tip
      - When you run the below command to start the local testnet, your terminal will enter into an interactive mode, with a message `Aptos is running, press ctrl-c to exit`. Hence, you will need to open another shell terminal for the subsequent steps described in this section.

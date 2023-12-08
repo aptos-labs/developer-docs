@@ -20,7 +20,7 @@ const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
 
 Some query responses do not provide the full response type as the SDK can't infer the actual type. For that we might want to provide a generic type for the response type, so we can access the response properties that are not included in the API type.
 
-For example, for the `getAccountResource` query we can define the `resource` to query but the SDK can't infer the response type and we can't have access to the response properties.
+For example, for the `getAccountResource` query we can define the `resource` to query but the SDK can't infer the response type, and we can't have access to the response properties.
 
 For that we support generic response types for different queries.
 
@@ -60,7 +60,7 @@ const tokens = await aptos.getAccountOwnedTokens({
 ## Wait for Indexer to sync up
 
 Sometimes we use Indexer service to fetch data, this is because we can not get complex data direct from fullnode or some queries are not supported with the fullnode API.
-Since Indexer indexes the chain, it might take it some time to catch up with the latest ledger version and we can end up not getting the real time data.
+Since Indexer indexes the chain, it might take it some time to catch up with the latest ledger version, and we can end up not getting the real time data.
 
 For that, the SDK supports an optional input argument `minimumLedgerVersion`. We can pass a ledger version to sync up to, before querying.
 If no version provided, the SDK will not wait for Indexer to sync up.
@@ -96,9 +96,9 @@ const tokens = await aptos.getAccountOwnedTokens({
 ## Use namespace
 
 The `Aptos` class holds different namespaces related to the query operation we seek to do. For example, all `account` related queries are under the `aptos.account` namespace.
-Once we intiate the `Aptos` class, all namespaces will be available for as with autocomplete along with all the possible API functions.
+Once we initiate the `Aptos` class, all namespaces will be available for as with autocomplete along with all the possible API functions.
 
-Thought we dont need to specify the namespace when making a query, it can be beneficial while developing.
+Thought we don't need to specify the namespace when making a query, it can be beneficial while developing.
 
 ```ts
 const aptos = new Aptos()
