@@ -62,7 +62,7 @@ The Indexer API and Custom Processors depend on the Transaction Stream Service. 
 
 This diagram explains how the Aptos Indexer tech stack works in greater detail.
 
-<div style="text-align: center;">
+<div style={{textAlign:"center"}}>
 <div style={{marginBottom: 20}}>
 <iframe
   style={{border: "1px solid rgba(0, 0, 0, 0.1);"}}

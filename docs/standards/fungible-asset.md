@@ -27,7 +27,7 @@ The standard also supports minting new units and burning existing units with app
 
 The different objects involved - `Object<Metadata>` and `Object<FungibleStore>` objects, and their relationships to accounts are shown in the diagram below:
 
-<div style="text-align: center;">
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="fungible asset architecture"
 sources={{

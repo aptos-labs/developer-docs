@@ -82,7 +82,7 @@ The [Wallet Adapter Plugin Template repo](https://github.com/aptos-labs/wallet-a
 
 Follow the [Wallet Adapter For Wallet Builders](./wallet-adapter-for-wallets.md) on how to use the template to implement and publish your wallet plugin.
 
-<div style="text-align: center;">
+<div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Wallet Adapter Concept"
 sources={{
