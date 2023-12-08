@@ -88,8 +88,7 @@ fun test_only_function(...) { ... }
 
 ## Running Unit Tests
 
-Unit tests for a Move package can be run with the [`aptos move test`
-command](./packages.md).
+Unit tests for a Move package can be run with the `aptos move test` command. See [package](./packages.md) for more info.
 
 When running tests, every test will either `PASS`, `FAIL`, or `TIMEOUT`. If a test case fails, the location of the failure along with the function name that caused the failure will be reported if possible. You can see an example of this below.
 
