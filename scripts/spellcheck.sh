@@ -37,7 +37,7 @@ done
 if [ $everything_spelled_correctly -eq 0 ]
 then
     echo "Misspelled words were found 😭"
-    echo "If the typo is not actually a typo, add the word to developer-docs-site/scripts/additional_dict.txt"
+    echo "If the typo is not actually a typo, add the word to scripts/additional_dict.txt"
     echo
     exit 1
 else
