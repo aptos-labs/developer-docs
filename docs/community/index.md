@@ -5,7 +5,7 @@ slug: ./
 
 # Contribute to the Aptos Ecosystem
 
-We welcome your own [contributions](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) to the [Aptos](https://aptosfoundation.org/currents) blockchain and this site! Aptos exists to foster an inclusive ecosystem. This page describes ways you can help, while the other pages in this section highlight our community's contributions.
+We welcome your own [contributions](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) to the [Aptos](https://aptosfoundation.org) blockchain and this site! Aptos exists to foster an inclusive ecosystem. This page describes ways you can help, while the other pages in this section highlight our community's contributions.
 
 As always, adhere to the [Aptos Code of Conduct](https://github.com/aptos-labs/aptos-core/blob/main/CODE_OF_CONDUCT.md) when taking part in our ecosystem.
 
@@ -32,7 +32,7 @@ Here are the primary bug queues:
 
 ## Develop your own project
 
-See, employ and join the growing number of delightful [community-driven projects](https://github.com/aptos-foundation/ecosystem-projects) in the Aptos ecosystem.
+See, employ and join the growing number of delightful [community-driven projects](https://aptosfoundation.org/ecosystem/projects/all) in the Aptos ecosystem.
 
 ## Become an Aptos ambassador
 

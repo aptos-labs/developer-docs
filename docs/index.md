@@ -8,7 +8,9 @@ hide_table_of_contents: true
 
 # Aptos Developer Documentation
 
-Welcome! Aptos is a Layer 1 for everyone. In the [Ohlone language](https://en.wikipedia.org/wiki/Ohlone_languages), ["Aptos"](https://en.wikipedia.org/wiki/Aptos,_California) means "The People." This site is here to help you grow a [web3 ecosystem project](https://github.com/aptos-foundation/ecosystem-projects) that benefits the entire world through easier development, more reliable services, faster transactions, and a supportive, decentralized family. 
+Welcome! Aptos is a Layer 1 for everyone. In the [Ohlone language](https://en.wikipedia.org/wiki/Ohlone_languages), ["Aptos"](https://en.wikipedia.org/wiki/Aptos,_California) means "The People."
+
+Our documentation is designed to assist you in developing a [web3 ecosystem project](https://aptosfoundation.org/ecosystem/projects/all) that contributes positively to the global community. We focus on facilitating easier development, ensuring more reliable services, enabling faster transactions, and fostering a supportive, decentralized community.
 
 This documentation will help you develop applications for the Aptos blockchain, run nodes, and be a part of the blossoming Aptos community. This documentation covers both basic and advanced topics. Here you will find concepts, how-to guides, quickstarts, tutorials, API references, code examples, release notes, and more.
 
@@ -130,7 +132,7 @@ The Aptos devnet is reset every Thursday. See the latest updates in the [Aptos D
 
 :::
 
-## Find the ecosystem
+## Engage with the community
 
 We are excited that you are here, and we look forward to getting to know you. Welcome to the Aptos community! Find out more about us and exchange ideas at:
 
@@ -143,6 +145,22 @@ We are excited that you are here, and we look forward to getting to know you. We
 
 ## Community projects on Aptos
 
-Here's a [list of community-maintained projects](https://github.com/aptos-foundation/ecosystem-projects) collected by the [Aptos Foundation](https://aptosfoundation.org/). If you have a project that you want added to the list, just edit the page and add a GitHub pull request.
+Visit [Aptos Ecosystem Projects](https://aptosfoundation.org/ecosystem/projects/all) to discover live projects built on Aptos: 
+
+* [DeFi](https://aptosfoundation.org/ecosystem/projects/defi)
+* [NFT Tooling](https://aptosfoundation.org/ecosystem/projects/nft-tooling)
+* [Gaming](https://aptosfoundation.org/ecosystem/projects/gaming)
+* [Wallets](https://aptosfoundation.org/ecosystem/projects/wallets)
+* [Tooling](https://aptosfoundation.org/ecosystem/projects/tooling)
+* [Stablecoins](https://aptosfoundation.org/ecosystem/projects/stablecoins)
+* [Security](https://aptosfoundation.org/ecosystem/projects/security)
+* [Marketplaces](https://aptosfoundation.org/ecosystem/projects/marketplaces)
+* [Launchpads](https://aptosfoundation.org/ecosystem/projects/launchpads)
+* [Infra](https://aptosfoundation.org/ecosystem/projects/infra)
+* [Explorers](https://aptosfoundation.org/ecosystem/projects/explorers)
+* [Bridges](https://aptosfoundation.org/ecosystem/projects/bridges)
+* [Social](https://aptosfoundation.org/ecosystem/projects/social)
+
+If you would like to showcase your project, please make your submission from the directory.  
 
 Want to pitch in on smaller tasks, such as doc updates and code fixes? See our [Community](./community/index.md) list for opportunities to help the Aptos ecosystem.
