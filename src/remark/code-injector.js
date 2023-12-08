@@ -2,7 +2,7 @@
 const fs = require("fs");
 
 /**
- * This allows injecting code from files so we only need to keep one copy of the code.
+ * This allows injecting code from files, so we only need to keep one copy of the code.
  * Used as such, from within any markdown file:
  * ```python
  * :!: static/examples/python/first_transaction.py section_6

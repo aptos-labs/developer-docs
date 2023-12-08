@@ -156,7 +156,7 @@ Alice's digital asset: {
 
 === Transfer the digital asset to Bob ===
 
-Alices's digital assets balance: 0
+Alice's digital assets balance: 0
 Bob's digital assets balance: 1
 ```
 
@@ -468,7 +468,7 @@ const alicesCollection = await aptos.getCollectionData({
 console.log(`Alice's collection: ${JSON.stringify(alicesCollection, null, 4)}`);
 ```
 
-To read a owned token's metadata:
+To read an owned token's metadata:
 ```ts
 const alicesDigitalAsset = await aptos.getOwnedTokens({
   ownerAddress: alice.accountAddress,

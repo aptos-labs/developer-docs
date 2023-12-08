@@ -37,7 +37,7 @@ const provider = new Provider(Network.DEVNET);
 
 This will initialize a `Provider` instance for us with the devnet network.
 
-Our app displays different UIs based on a user resource (i.e if a user has a list ⇒ if a user has a `TodoList` resource). For that, we need to know the current account connected to our app.
+Our app displays different UIs based on a user resource (i.e. if a user has a list ⇒ if a user has a `TodoList` resource). For that, we need to know the current account connected to our app.
 
 1. Import wallet from the wallet adapter React provider:
 
@@ -101,7 +101,7 @@ const fetchList = async () => {
 };
 ```
 
-The `moduleAddress` is the address we publish the module under, i.e the account address you have in your `Move.toml` file (`myaddr`).
+The `moduleAddress` is the address we publish the module under, i.e. the account address you have in your `Move.toml` file (`myaddr`).
 
 The `provider.getAccountResource()`expects an _account address_ that holds the resource we are looking for and a string representation of an on-chain _Move struct type_.
 
@@ -144,7 +144,7 @@ return (
 );
 ```
 
-We now have an **Add new list** button that appears only if the account doesn’t have a list.
+We now have an **Add new list** button that appears only if the account doesn't have a list.
 
 Start the local server with `npm start`. You should see the **Add new list** button.
 

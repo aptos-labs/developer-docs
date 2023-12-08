@@ -15,7 +15,7 @@ For the UI, we will use [Ant Design](https://ant.design/). This is just a person
 
 1. In the root folder of the `my-first-dapp` project, run:
 
-```js
+```bash
 npx create-react-app client --template typescript
 ```
 
@@ -30,7 +30,7 @@ That will create a new `client` folder in the current path:
 
    At this point you should have your app running on [http://localhost:3000](http://localhost:3000), which displays the default React layout.
 
-5. In the `client/src` directory, find all of the React app files. Let’s clean it up a bit.
+5. In the `client/src` directory, find all the React app files. Let’s clean it up a bit.
 6. Open the `App.tsx` file and update its content to be:
 
 ```js
@@ -51,7 +51,7 @@ Once you save the changes, you should see that the app content has changed in th
 
 First we will build the dApp UI layout. We have two UI states for the app:
 
-- When an account hasn’t created a list yet (on the left).
+- When an account hasn't created a list yet (on the left).
 - When an account has created a list and can now add tasks to it (on the right).
   ![dapp-ui](../../../static/img/docs/build-e2e-dapp-img-3.png)
 
@@ -78,7 +78,7 @@ return (
 );
 ```
 
-4. Dont forget to import the _components_ we just added:
+4. Don't forget to import the _components_ we just added:
 
 ```js
 import { Layout, Row, Col } from "antd";

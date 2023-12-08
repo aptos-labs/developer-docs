@@ -85,18 +85,18 @@ The following tables describe fields at the struct level. For the definitive lis
 
 ##### [`Coin`](https://github.com/aptos-labs/aptos-core/blob/744c2def47cddced878fda9bbd5633022fdb083a/aptos-move/framework/aptos-framework/sources/coin.move#L68)
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `value` | u64 | Value of the token, eg: 1000000000 |
+| Field   | Type | Description                        |
+|---------|------|------------------------------------|
+| `value` | u64  | Value of the token, eg: 1000000000 |
 
 ##### [`CoinInfo`](https://github.com/aptos-labs/aptos-core/blob/744c2def47cddced878fda9bbd5633022fdb083a/aptos-move/framework/aptos-framework/sources/coin.move#L92)
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `name` | String | Name of the token, eg: Aptos Coin |
-| `symbol` | String | Symbol for the token, eg: APT |
-| `decimals` | u8 | Determines how the value of coin is represented; for example APT’s decimal is 8, so a value of 100000000 is represented by 1 APT |
-| `supply` | Option&lt;OptionalAggregator&gt; | option::some(optional_aggregator::new(MAX_U128, parallelizable)) |
+| Field      | Type                             | Description                                                                                                                      |
+|------------|----------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| `name`     | String                           | Name of the token, eg: Aptos Coin                                                                                                |
+| `symbol`   | String                           | Symbol for the token, eg: APT                                                                                                    |
+| `decimals` | u8                               | Determines how the value of coin is represented; for example APT’s decimal is 8, so a value of 100000000 is represented by 1 APT |
+| `supply`   | Option&lt;OptionalAggregator&gt; | option::some(optional_aggregator::new(MAX_U128, parallelizable))                                                                 |
 
 ### Creating a new CoinType
 
@@ -112,7 +112,7 @@ public fun initialize<CoinType>(
 ): (BurnCapability<CoinType>, FreezeCapability<CoinType>, MintCapability<CoinType>) {
 ```
 
-The creator has the opportunity to define a name, symbol, decimals, and whether or not the total supply for the coin is monitored. The following applies:
+The creator has the opportunity to define a name, symbol, decimals, and whether the total supply for the coin is monitored. The following applies:
 
 - The first three of the above (`name`, `symbol`, `decimals`)  are purely metadata and have no impact for on-chain applications. Some applications may use decimal to equate a single Coin from fractional coin. 
 - Monitoring supply (`monitor_supply`) helps track total coins in supply. However, due to the way the parallel executor works, turning on this option will prevent any parallel execution of mint and burn. If the coin will be regularly minted or burned, consider disabling `monitor_supply`.

@@ -197,7 +197,7 @@ We also have a new `move/build` directory (created by the compiler) that holds o
 
 ### Create list function
 
-The first thing an account can and should do with our contract is create a new list.
+The first thing an account can and should do with our contract is to create a new list.
 
 Creating a list is essentially submitting a transaction, and so we need to know the `signer` who signed and submitted the transaction:
 
@@ -280,7 +280,7 @@ use aptos_std::table::{Self, Table}; // This one we already have, need to modify
 
 **Back to the code; what is happening here?**
 
-- First, we want to get the signer address so we can get this account’s `TodoList` resource.
+- First, we want to get the signer address, so we can get this account’s `TodoList` resource.
 - Then, we retrieve the `TodoList` resource with the `signer_address`; with that we have access to the `TodoList` properties.
 - We can now increment the `task_counter` property, and create a new `Task` with the `signer_address`, `counter` and the provided `content`.
 - We push it to the `todo_list.tasks` table that holds all of our tasks along with the new `counter` (which is the table key) and the newly created Task.
@@ -308,7 +308,7 @@ public entry fun complete_task(account: &signer, task_id: u64) acquires TodoList
 
 **Let’s understand the code.**
 
-- As before in our create list function, we retrieve the `TodoList` struct by the signer address so we can have access to the tasks table that holds all of the account tasks.
+- As before in our create list function, we retrieve the `TodoList` struct by the signer address, so we can have access to the tasks table that holds all the account tasks.
 - Then, we look for the task with the provided `task_id` on the `todo_list.tasks` table.
 - Finally, we update that task completed property to be true.
 
@@ -325,7 +325,7 @@ use aptos_framework::account;
 
 ### Add validations
 
-As this code now compiles, we want to have some validations and checks before creating a new task or updating the task as completed so we can be sure our functions work as expected.
+As this code now compiles, we want to have some validations and checks before creating a new task or updating the task as completed, so we can be sure our functions work as expected.
 
 1. Add a check to the `create_task` function to make sure the signer account has a list:
 
@@ -497,7 +497,7 @@ Additionally, the function itself now accepts a signer argument.
 
 **Let’s understand our tests.**
 
-Since our tests run outside of an account scope, we need to _create_ accounts to use in our tests. The `#[test]` annotation gives us the option to declare those accounts. We use an `admin` account and set it to a random account address (`@0x123`). The function accepts this signer (account) and creates it by using a built-in function to create an account for test.
+Since our tests run outside an account scope, we need to _create_ accounts to use in our tests. The `#[test]` annotation gives us the option to declare those accounts. We use an `admin` account and set it to a random account address (`@0x123`). The function accepts this signer (account) and creates it by using a built-in function to create an account for test.
 
 Then we simply go through the flow by:
 

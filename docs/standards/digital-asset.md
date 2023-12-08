@@ -34,7 +34,7 @@ The [Aptos Digital Asset Standard](https://github.com/aptos-labs/aptos-core/blob
 
 The base token only provides minimal functionalities and is meant to build upon to add more functionalities. All of its
 functions are non-entry and thus not callable directly from off chain. Creators need to write their own modules that use
-these fuctionalities or use "no code" solutions also provided in the framework. One such solution is [aptos_token](#aptos-token)
+these functionalities or use "no code" solutions also provided in the framework. One such solution is [aptos_token](#aptos-token)
 which provides functionalities such as custom metadata (via PropertyMap) and soul bound.
 
 ## Comparison to the legacy Aptos Token Standard
@@ -44,7 +44,7 @@ rather than account resources traditionally used in Move. This allows for storin
 flexibility in this way.
 * Tokens can be easily extended with custom data and functionalities without requiring any changes in the framework
 * Transfers are simply a reference update
-* Direct transfer is allowed without an opt in
+* Direct transfer is allowed without an opt-in
 * NFTs can own other NFTs adding easy composability
 * Soul bound tokens can be easily supported
 

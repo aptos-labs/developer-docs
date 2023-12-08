@@ -65,7 +65,7 @@ The main read methods are:
 
 ## CoinClient class
 
-The [CoinClient](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/plugins/coin_client.ts) class provides methods to interact with the coin module to transfer coins between accounts and to check an account balance. By default it transfers `0x1::aptos_coin::AptosCoin`, but you can specify a different coin type with the `coinType` argument.
+The [CoinClient](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/plugins/coin_client.ts) class provides methods to interact with the coin module to transfer coins between accounts and to check an account balance. By default, it transfers `0x1::aptos_coin::AptosCoin`, but you can specify a different coin type with the `coinType` argument.
 
 The main methods are:
 

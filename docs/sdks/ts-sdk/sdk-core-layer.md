@@ -16,7 +16,7 @@ The Aptos TypeScript SDK exposes five transaction builder classes:
 
 - [TransactionBuilder](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilder.html) that takes in a Signing Message (serialized raw transaction) and returns a signature.
 - [TransactionBuilderEd25519](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilderEd25519.html) extends the TransactionBuilder class and provides a signing method for raw transactions with a single public key.
-- [TransactionBuilderMultiEd25519](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilderMultiEd25519.html) extends the TransactionBuilder class and provides a signing method for signing a raw transaction with a multisignature public key.
+- [TransactionBuilderMultiEd25519](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilderMultiEd25519.html) extends the TransactionBuilder class and provides a signing method for signing a raw transaction with a multi-signature public key.
 - [TransactionBuilderABI](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilderABI.html) builds raw transactions based on ABI.
 - [TransactionBuilderRemoteABI](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilderRemoteABI.html) downloads JSON ABIs from the fullnodes. It then translates the JSON ABIs to the format accepted by TransactionBuilderABI.
 
@@ -30,7 +30,7 @@ The Transaction Builder contains the TypeScript types for constructing the trans
 
 The TypeScript SDK provides 2 efficient ways to generate a raw transaction that can be signed and submitted to chain
 
-1. Using the `generateTransaction()` method. This methods accepts an `entry function payload` type and is available for entry function transaction submission. It uses the [TransactionBuilderRemoteABI](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilderRemoteABI.html) to fetch the ABI from chain, serializes the payload arguments based on the entry function argument types and generates and return a raw transaction that can be signed and submitted to chain.
+1. Using the `generateTransaction()` method. This method accepts an `entry function payload` type and is available for entry function transaction submission. It uses the [TransactionBuilderRemoteABI](https://aptos-labs.github.io/ts-sdk-doc/classes/TransactionBuilderRemoteABI.html) to fetch the ABI from chain, serializes the payload arguments based on the entry function argument types and generates and return a raw transaction that can be signed and submitted to chain.
 2. Using the `generateRawTransaction()` method. This method accept any transaction payload type (entry, script, multisig) and expects the passed in arguments to be serialized. It then generates and returns a raw transaction that can be signed and submitted to chain.
 
 In addition, The Aptos SDK supports transaction status queries (success, failure, pending), by transaction hash.

@@ -16,9 +16,9 @@ Begin by preparing your environment by following the instructions in [building A
 #### Building the Aptos CLI
 
 1. Build the CLI tool: `cargo build --package aptos --release`
-1. The binary will be available in at `target/release/aptos`
-1. (Optional) Move this executable to a place on your path. For example: `~/bin/aptos`
-1. View help instructions by running `~/bin/aptos help`
+2. The binary will be available in at `target/release/aptos`
+3. (Optional) Move this executable to a place on your path. For example: `~/bin/aptos`
+4. View help instructions by running `~/bin/aptos help`
 
 </details>
 
@@ -30,7 +30,7 @@ Begin by preparing your environment by following the instructions in [building A
 #### Building aptos-core
 
 1. Build the CLI tool: `cargo build --package aptos --release`
-1. The binary will be available at `target\release\aptos.exe`
-1. View help instructions by running `target\release\aptos.exe`
+2. The binary will be available at `target\release\aptos.exe`
+3. View help instructions by running `target\release\aptos.exe`
 
 </details>

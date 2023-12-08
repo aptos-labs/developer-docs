@@ -199,7 +199,7 @@ Note that after references are created and stored, they do not guarantee that th
 ### Events
 Objects come with transfer_events by default, which are emitted when the object is transferred. Transfer events are stored in the ObjectCore resource.
 
-Additionally, similar to account resources, events can be added in an object' resources. The object module offers the following functions to create event handles for objects:
+Additionally, similar to account resources, events can be added in an object's resources. The object module offers the following functions to create event handles for objects:
 ```rust
 /// Create a guid for the object, typically used for events
 public fun create_guid(object: &signer): guid::GUID;

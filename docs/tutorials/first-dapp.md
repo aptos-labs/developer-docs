@@ -29,7 +29,7 @@ We recommend becoming familiar with the newer full source code documented in the
 
 ### Aptos Wallet
 
-Before starting this tutorial, you'll need a chrome extension wallet to interact with the dapp, such as, the [Petra wallet extension](https://petra.app).
+Before starting this tutorial, you'll need a Chrome extension wallet to interact with the dapp, such as, the [Petra wallet extension](https://petra.app).
 
 If you haven't installed the Petra wallet extension before:
 1. Open the Wallet and click **Create a new wallet**. Then click **Create account** to create an Aptos Account.
@@ -63,7 +63,7 @@ We will also be installing the Aptos CLI so that we can publish
 You will see output resembling:
 
 ```text
-Account <account-number> has been already found onchain
+Account <account-number> has been already found on-chain
 
 ---
 Aptos CLI is now set up for account <account-number> as profile my-first-nft!  Run `aptos --help` for more information about commands
@@ -428,9 +428,9 @@ cat bytecode_modules/message.mv | od -v -t x1 -A n | tr -d ' \n'
 ```
 That will also output a hex string we can later use. Keep both of the hex strings ready!
 
-Back to our react app, let's add a button to click on to publish the module, use the `publishPackage` function TypeScript SDK provides us and display a link to get the account's resources where we can see the published module.
+Back to our React app, let's add a button to click on to publish the module, use the `publishPackage` function TypeScript SDK provides us and display a link to get the account's resources where we can see the published module.
 
-We would need our account's private key to initialize an `AptosAccount` to publish the module with. You can get the private key from the Petra Wallet by going to: **Settings** > **Manage account**, show the private key, and copy that field. Since a private key is *very* sensitive data, we dont want to expose it in the code but rather hold it in an `.env` file and use it from there.
+We would need our account's private key to initialize an `AptosAccount` to publish the module with. You can get the private key from the Petra Wallet by going to: **Settings** > **Manage account**, show the private key, and copy that field. Since a private key is *very* sensitive data, we don't want to expose it in the code but rather hold it in an `.env` file and use it from there.
 
 1. Create a new `.env` file on the `root` of the project and add to the file:
 ```bash
@@ -788,7 +788,7 @@ function App() {
 
 To test it:
 
-- Refresh the page and you will see the message you wrote earlier.
+- Refresh the page, and you will see the message you wrote earlier.
 - Change the text, submit the form, and refresh the page again. You will see that the contents have been updated with your new message.
 
 This confirms that you are reading and writing messages on the Aptos blockchain.
@@ -801,7 +801,7 @@ We will set it up so that going to the URL `/<account address>` displays the mes
 
 - If the app is loaded at `/<account address>`, we will also disable editing.
 
-- If editing is enabled, we will show a "Get public URL" link so you can share your message.
+- If editing is enabled, we will show a "Get public URL" link, so you can share your message.
 
 Update `src/App.tsx`:
 

@@ -325,7 +325,7 @@ The script accepts as arguments the signature of the account hosting the package
 Note that both functions in the script are `public entry fun` functions, which means that everything achieved in the script could be performed without a script.
 However, a non-script approach would require two transactions instead of just one, and would complicate the signature aggregation process:
 in practical terms, Alice, Bob, and/or Chad would likely have to send single-signer transaction signatures around through off-chain communication channels, and a *scribe* for the group would then have to submit a multisig `Authenticator` (for *each* `public entry fun` call).
-Hence in a non-script approach, extra operational complexity can quickly introduce opportunities for consensus failure.
+Hence, in a non-script approach, extra operational complexity can quickly introduce opportunities for consensus failure.
 
 A Move script, by contrast, collapses multiple governance function calls into a single transaction; and moreover, Move scripts can be published in a public forum like GitHub so that all signatories can review the actual function calls before they sign the script.
 

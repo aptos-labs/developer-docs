@@ -13,7 +13,7 @@ slug: "glossary"
 
 ### Account
 
-- An **account** in the Aptos blockchain is a container for an arbitrary number of [Move modules](#move-module) and [Move resources](#move-resources). This essentially means that the state of each [account](../concepts/accounts.md) is comprised of both code and data.
+- An **account** in the Aptos blockchain is a container for an arbitrary number of [Move modules](#move-module) and [Move resources](#move-resources). This essentially means that the state of each [account](../concepts/accounts.md) is composed of both code and data.
 - The account is identified by [account address](#account-address).
 
 See [Accounts](../concepts/accounts.md) for more information.
@@ -28,7 +28,7 @@ See [Accounts](../concepts/accounts.md) for more information.
 
 ### API
 
-- An **Application Programming Interface (API)(** is a set of protocols and tools that allow users to interact with Aptos blockchain nodes and client networks via external applications. Aptos offers a REST API for this purpose. See the [Aptos API reference](https://aptos.dev/nodes/aptos-api-spec#/) documentation and [Use the Aptos API](../apis/fullnode-rest-api.md) for more details.
+- An **Application Programming Interface (API)** is a set of protocols and tools that allow users to interact with Aptos blockchain nodes and client networks via external applications. Aptos offers a REST API for this purpose. See the [Aptos API reference](https://aptos.dev/nodes/aptos-api-spec#/) documentation and [Use the Aptos API](../apis/fullnode-rest-api.md) for more details.
 
 ### APT
 
@@ -36,7 +36,7 @@ See [Accounts](../concepts/accounts.md) for more information.
 
 ### Aptos
 
-**Aptos** is a Layer 1 blockchain for everyone. It uses the Move programming language and launched its mainnet on 2022-10-17 to redefine the web3 user experience. The Aptos blockchain is dedicated to creating better user experiences through increased speed, security, scalability, reliability and usability with low transaction costs.  The word “Aptos" means "The People" in the Ohlone language. See the [Aptos White Paper](../aptos-white-paper/index.md) for more details.
+**Aptos** is a Layer 1 blockchain for everyone. It uses the Move programming language and launched its mainnet on 2022-10-17 to redefine the web3 user experience. The Aptos blockchain is dedicated to creating better user experiences through increased speed, security, scalability, reliability and usability with low transaction costs.  The word "Aptos" means "The People" in the Ohlone language. See the [Aptos White Paper](../aptos-white-paper/index.md) for more details.
 
 ### AptosBFT
 
@@ -72,7 +72,7 @@ See [Accounts](../concepts/accounts.md) for more information.
 The **Aptos Framework** defines the public API for blockchain updates and the structure of on-chain data. It defines the business logic and access control for the three key pillars of Aptos functionality: payments, treasury, and on-chain governance. It is implemented as a set of modules written in the Move programming language and stored on-chain as Move bytecode.
 
 ### Aptos Node
-An **Aptos node** is a peer entity of the Aptos network that tracks the state of the Aptos blockchain. There are two types of Aptos nodes, [validators](#validator) and [fullnodes](#fullnode)).
+An **Aptos node** is a peer entity of the Aptos network that tracks the state of the Aptos blockchain. There are two types of Aptos nodes, [validators](#validator) and [fullnodes](#fullnode).
 
 ### Aptos Protocol
 
@@ -273,7 +273,7 @@ then there is a guarantee that T_N will never be included in the blockchain.
 ### Merkle Accumulator
 
 - The **[Merkle Accumulator](https://www.usenix.org/legacy/event/sec09/tech/full_papers/crosby.pdf)** is an _append-only_ Merkle tree that the Aptos blockchain uses to store the ledger.
-- Merkle accumulators can provide proofs that a transaction was included in the chain (“proof of inclusion”).
+- A Merkle accumulator can provide proofs that a transaction was included in the chain (“proof of inclusion”).
 - They are also called "history trees" in literature.
 
 ### Module
@@ -424,7 +424,7 @@ See [`table.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move
 ### Transaction (or Move) Script
 
 - Each transaction submitted by a user includes a **transaction script**.
-- These transactions, also know as Move scripts, represent the operations a client submits to a validator.
+- These transactions, also known as Move scripts, represent the operations a client submits to a validator.
 - The operation could be a request to move coins from user A to user B, or it could involve interactions with published [Move modules](#move-module) (smart contracts).
 - The transaction script is an arbitrary program that interacts with resources published in the global storage of the Aptos blockchain by calling the procedures of a module. It encodes the logic for a transaction.
 - A single transaction script can send funds to multiple recipients and invoke procedures from several different modules.
@@ -456,7 +456,7 @@ To see example uses of transaction scripts, follow [Move scripts](../move/move-o
 
 ### Well-Formed Transaction
 
-An Aptos transaction is **well formed** if each of the following conditions are true for the transaction:
+An Aptos transaction is **well-formed** if each of the following conditions are true for the transaction:
 
 - The transaction has a valid signature.
 - An account exists at the sender address.

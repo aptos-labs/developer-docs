@@ -6,7 +6,7 @@ title: "SDK Configuration"
 
 ## `Aptos` class
 
-The first step to interact with the Aptos chain using the SDK it to intansiate an `Aptos` class. This class is the main entry point into Aptos's APIs.
+The first step to interact with the Aptos chain using the SDK it to instantiate an `Aptos` class. This class is the main entry point into Aptos's APIs.
 
 ```ts
 const aptos = new Aptos();
@@ -50,5 +50,4 @@ readonly indexer?: string;
  * A configuration object we can pass with the request to the server.
  */
 readonly clientConfig?: ClientConfig;
-
 ```

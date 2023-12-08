@@ -23,7 +23,7 @@ Follow these instructions to install the Aptos CLI on various operating systems.
 <summary>macOS / Linux / Windows Subsystem for Linux (WSL)</summary>
 
 :::tip
-These instructions have been tested on Ubuntu 20.04, Ubuntu 22.04, Arch Linux, MacOS (ARM), and WSL and assume you have either `curl` or `wget` installed to download the script.
+These instructions have been tested on Ubuntu 20.04, Ubuntu 22.04, Arch Linux, macOS (ARM), and WSL and assume you have either `curl` or `wget` installed to download the script.
 :::
 
 In your terminal, run the following `curl` command:

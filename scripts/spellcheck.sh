@@ -17,31 +17,31 @@ echo
 
 everything_spelled_correctly=1
 
-# Check the spelling of all md files, printing mispelled words if found.
+# Check the spelling of all md files, printing misspelled words if found.
 for file in `find docs -type f -name "*.md"`
 do
     # Rewrite the file to remove inline and multiline code blocks.
     # We also remove HTML tags.
     cat $file | sed '/```/,//d' | sed '/`/,//d' | sed 's/<[^>]*>/\n/g' > $rewritten_file_path
-    mispelled_words=`aspell --lang=en --encoding=utf-8 list --add-extra-dicts=$build_dict_path < $rewritten_file_path`
-    if [ ! -z "$mispelled_words" ]
+    misspelled_words=`aspell --lang=en --encoding=utf-8 list --add-extra-dicts=$build_dict_path < $rewritten_file_path`
+    if [ ! -z "$misspelled_words" ]
     then
-        echo "Mispelled words in $file:"
-        echo "$mispelled_words"
+        echo "Misspelled words in $file:"
+        echo "$misspelled_words"
         echo
         everything_spelled_correctly=0
     fi
 done
 
-# If any word was mispelled, exit with an error.
+# If any word was misspelled, exit with an error.
 if [ $everything_spelled_correctly -eq 0 ]
 then
-    echo "Mispelled words were found 😭"
+    echo "Misspelled words were found 😭"
     echo "If the typo is not actually a typo, add the word to developer-docs-site/scripts/additional_dict.txt"
     echo
     exit 1
 else
-    echo "No mispelled words were found 🥳"
+    echo "No misspelled words were found 🥳"
     echo
     exit 0
 fi
