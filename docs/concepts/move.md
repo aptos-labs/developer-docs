@@ -45,7 +45,7 @@ The Aptos framework ships with many useful libraries:
 * A [Fungible asset standard](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) as defined in [AIP-21](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-21.md) to modernize the coin concept with better programmability and controls.
 * A [staking](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/staking_contract.move) and [delegation](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/delegation_pool.move) framework.
 * A [`type_of`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/type_info.move) service to identify at run-time the address, module, and struct name of a given type.
-* A [timestamp service](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/timestamp.move) that provides a monotonically increasing clock that maps to the actual current unix time.
+* A [timestamp service](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/timestamp.move) that provides a monotonically increasing clock that maps to the actual current Unix time.
 
 With updates frequently.
 
