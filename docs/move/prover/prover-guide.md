@@ -159,7 +159,7 @@ spec increment {
 
 With this, the Move Prover will succeed without any errors.
 
-### Postcondition failure
+### Post-condition failure
 
 Let us inject an error into the `ensures` condition of the above example:
 

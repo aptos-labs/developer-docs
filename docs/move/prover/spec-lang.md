@@ -226,7 +226,7 @@ language:
 - `TRACE(T): T` is semantically the identity function and causes visualization of the argument's
   value in error messages created by the prover.
 - `int2bv(v)` explicitly converts an integer `v` into its `bv` representation.
-- `bv2int(b)` explicitly converts a 'bv' integer 'b' into the `num` representation. However it is not encouraged to use it due to efficiency issue.
+- `bv2int(b)` explicitly converts a 'bv' integer 'b' into the `num` representation. However, it is not encouraged to use it due to efficiency issue.
 
 Built-in functions live in an unnamed outer scope of a module. If the module defines a function `len`,
 then this definition will shadow that of the according built-in function. To access the built-in
@@ -240,7 +240,7 @@ have total semantics, since they either deliver a value or abort.
 An expression `e[X]` that depends on some variables `X` may have a known interpretation for
 some assignments to variables in `X` but is unknown for others. An unknown interpretation for a
 sub-expression causes no issue if its value is not needed for the overall expression result.
-Therefore it does not matter if we say `y != 0 && x / y > 0`
+Therefore, it does not matter if we say `y != 0 && x / y > 0`
 or `x / y > 0 && y != 0`: boolean operators are commutative.
 
 This basic principle inherits to higher-level language constructs. For example, in specifications,
@@ -299,7 +299,7 @@ module addr::M {
 }
 ```
 
-Apart of spec blocks inside Move functions, the textual position of spec block is irrelevant. Also,
+Apart from spec blocks inside Move functions, the textual position of spec block is irrelevant. Also,
 a spec block for a struct, function, or module can be repeated multiple times, accumulating the
 content.
 
@@ -460,7 +460,7 @@ A helper function can be defined as **uninterpreted** by simply omitting its bod
 spec fun something(x: num): num;
 ```
 
-An uninterpreted function is one the prover is allowed to assign some arbitrary meaning to, as long
+An uninterpreted function is one of the prover is allowed to assign some arbitrary meaning to, as long
 as it is consistent within a given verification context. Uninterpreted functions are a useful tool
 for abstraction in specifications (see also [abstract specifications](#abstract-specifications)).
 
@@ -696,8 +696,7 @@ spec mutate_S_test {
 ```
 
 In the function `mutate_S_test`, the assertion in the spec block is expected to hold. A benefit of
-the modifies specification on `mutate_at` is that this assertion can be proved whether or
-not `mutate_at` is inlined.
+the modifies specification on `mutate_at` is that this assertion can be proved whether `mutate_at` is inlined.
 
 If the modifies annotation is omitted on a function, then that function is deemed to have all
 possible permissions for those resources it may modify during its execution. The set of all
@@ -717,7 +716,7 @@ The invariant condition can be applied on structs and on global level.
 The `invariant` condition on a function is simply a shortcut for a `requires` and `ensures` with the
 same predicate.
 
-Thus the following spec block:
+Thus, the following spec block:
 
 ```move
 spec increment {
