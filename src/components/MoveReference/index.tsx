@@ -30,32 +30,16 @@ const TopNav = ({ branch }: TopNavProps) => {
 
   return (
     <div className="move-top-bar" key="move-top-bar">
-      <div
-        className="move-top-bar-button"
-        key="mainnet"
-        onClick={adjustBranch}
-      >
+      <div className="move-top-bar-button" key="mainnet" onClick={adjustBranch}>
         Mainnet
       </div>
-      <div
-        className="move-top-bar-button"
-        key="testnet"
-        onClick={adjustBranch}
-      >
+      <div className="move-top-bar-button" key="testnet" onClick={adjustBranch}>
         Testnet
       </div>
-      <div
-        className="move-top-bar-button"
-        key="devnet"
-        onClick={adjustBranch}
-      >
+      <div className="move-top-bar-button" key="devnet" onClick={adjustBranch}>
         Devnet
       </div>
-      <div
-        className="move-top-bar-button"
-        key="main"
-        onClick={adjustBranch}
-      >
+      <div className="move-top-bar-button" key="main" onClick={adjustBranch}>
         Main
       </div>
     </div>
