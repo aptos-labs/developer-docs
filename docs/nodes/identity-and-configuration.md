@@ -6,7 +6,6 @@ slug: "identity-and-configuration"
 import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-
 # Node Identity and Configuration
 
 When installing a node on an Aptos network, the installation steps require you to work with identities and configurations. This document describes how to interpret the terms **identity** and **configuration**, and presents a description of the identity YAML files.
@@ -18,7 +17,7 @@ This section presents a mental-model view of an identity and configuration. It i
 The terms **identity** and **configuration** should be understood in the following way:
 
 - The terms **validator node**, **fullnode**, and **validator fullnode** refer to the machine (physical or virtual).
-- The terms **operator**, **owner** and **voter** refer to the persona. 
+- The terms **operator**, **owner** and **voter** refer to the persona.
 - A machine has both an identity and a configuration. They are defined in separate YAML files. A persona's identity and configuration are combined into a single YAML file.
 
 ### Machine
@@ -29,18 +28,18 @@ Machine **identity** is defined in a YAML file. An identity is established by me
 
 A machine identity YAML has the string `identity` in its name. For example:
 
-- validator-**identity**.yaml contains the private keys for the validator node. 
-- validator-full-node-**identity**.yaml contains the private keys for validator fullnode and public fullnode. 
+- validator-**identity**.yaml contains the private keys for the validator node.
+- validator-full-node-**identity**.yaml contains the private keys for validator fullnode and public fullnode.
 
-Hence, if you are looking for your machine’s private keys, look for YAML filenames with  `identity` in them.
+Hence, if you are looking for your machine’s private keys, look for YAML filenames with `identity` in them.
 
 #### Configuration
 
-Machine **configuration** is also defined in a YAML file. A machine configuration YAML **never contains any key, public or private**. For example, the configuration YAMLs validator.yaml, fullnode.yaml, docker-compose.yaml and docker-compose-fullnode.yaml **do not contain any keys.** 
+Machine **configuration** is also defined in a YAML file. A machine configuration YAML **never contains any key, public or private**. For example, the configuration YAMLs validator.yaml, fullnode.yaml, docker-compose.yaml and docker-compose-fullnode.yaml **do not contain any keys.**
 
 As noted earlier, a machine has an identity and a configuration. Hence:
 
-- For a validator node, identity is defined in validator-**identity**.yaml and configuration is in validator.yaml. 
+- For a validator node, identity is defined in validator-**identity**.yaml and configuration is in validator.yaml.
 - For a validator fullnode, its identity is defined in validator-full-node-**identity**.yaml and its configuration is defined in fullnode.yaml.
 
 ### Persona
@@ -49,9 +48,9 @@ As noted earlier, a machine has an identity and a configuration. Hence:
 
 A persona has a single YAML that combines the persona’s identity and configuration information. For example, for the three personas, owner, operator and voter:
 
-- An owner's identity-configuration is defined in **owner.yaml**. The owner.yaml contains the public keys and blockchain account addresses for owner, operator and voter, and some owner-specific configuration such as stake amount and commission percentage. 
-- An operator’s identity-configuration is defined in **operator.yaml**. The operator.yaml contains public keys and blockchain account address for the operator and some machine configuration information plus a consensus public key and consensus proof of possession key. **Only the operator has the consensus keys.** Neither the owner nor the voter has the consensus keys. 
-- A voter's identity-configuration, i.e., voter.yaml, does not exist. 
+- An owner's identity-configuration is defined in **owner.yaml**. The owner.yaml contains the public keys and blockchain account addresses for owner, operator and voter, and some owner-specific configuration such as stake amount and commission percentage.
+- An operator’s identity-configuration is defined in **operator.yaml**. The operator.yaml contains public keys and blockchain account address for the operator and some machine configuration information plus a consensus public key and consensus proof of possession key. **Only the operator has the consensus keys.** Neither the owner nor the voter has the consensus keys.
+- A voter's identity-configuration, i.e., voter.yaml, does not exist.
 
 ## Description of identity YAMLs
 
@@ -62,7 +61,7 @@ This section explains the following key and identity YAML files that are generat
 - `validator-identity.yaml`.
 - `validator-full-node-identity.yaml`.
 
-The following command is used to generate the above key and identity YAMLs. See, for example, [Step 10 while using AWS to deploy the validator node](./validator-node/operator/running-validator-node/using-aws.md), or in [Step 10 while using GCP](./validator-node/operator/running-validator-node/using-gcp.md). 
+The following command is used to generate the above key and identity YAMLs. See, for example, [Step 10 while using AWS to deploy the validator node](./validator-node/operator/running-validator-node/using-aws.md), or in [Step 10 while using GCP](./validator-node/operator/running-validator-node/using-gcp.md).
 
 ```bash
 aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
@@ -83,6 +82,7 @@ sources={{
 #### Example
 
 Click below to see an example YAML configuration:
+
 <details>
 <summary>public-keys.yaml</summary>
 
@@ -95,13 +95,13 @@ consensus_proof_of_possession: "0xa51dfd1734e581df99c4c637324ee38c3e48e51c61c1e1
 full_node_network_public_key: "0xa6845691a00d6cfdaa9823c4d12b2b5e13d2ecfdc3049d0f2838c805bfd01633"
 validator_network_public_key: "0x71f2642aeaa6cbfacf75663cf14d2f6e9e1bd890f9bc1c96900fd225cce01836"
 ```
- 
+
 </details>
 
 #### Description
 
 | public-keys.yaml              | Description                                                                                                                        |
-|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | account_address               | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                           |
 | account_public_key            | The public key associated with the blockchain account.                                                                             |
 | consensus_public_key          | Used only by the operator for validation purpose.                                                                                  |
@@ -114,10 +114,10 @@ validator_network_public_key: "0x71f2642aeaa6cbfacf75663cf14d2f6e9e1bd890f9bc1c9
 #### Example
 
 Click below to see an example YAML configuration:
+
 <details>
 <summary>private-keys.yaml</summary>
 
-    
 ```yaml
 ---
 account_address: a5a643aa695fc5f34927386c8d767cddcc0607933f40c89a7ad78de7804965b8
@@ -132,7 +132,7 @@ validator_network_private_key: "0xa03ec46b24f2f1066d7980dc13b4baf722ba60c367e498
 #### Description
 
 | private-keys.yaml             | Description                                                                                                                                                |
-|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | account_address               | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                                                   |
 | account_private_key           | The private key associated with the blockchain account.                                                                                                    |
 | consensus_private_key         | The consensus private key, used only by the operator for validation purpose and for rotating the consensus key.                                            |
@@ -147,7 +147,6 @@ Click below to see an example YAML configuration:
 
 <details>
 <summary>validator-identity.yaml</summary>
-    
 
 ```yaml
 ---
@@ -162,12 +161,11 @@ network_private_key: "0xa03ec46b24f2f1066d7980dc13b4baf722ba60c367e498e47a657ba0
 #### Description
 
 | validator-identity.yaml | Description                                                                                                                                                |
-|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | account_address         | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                                                   |
 | account_private_key     | The private key associated with the blockchain account.                                                                                                    |
 | consensus_private_key   | The consensus private key, used only by the operator for validation purpose and for rotating the consensus key.                                            |
 | network_private_key     | The private key for the validator node. Whoever holds this private key will be able to establish the ownership of the validator node in the Aptos network. |
-
 
 ### validator-full-node-identity.yaml
 
@@ -178,7 +176,6 @@ Click below to see an example YAML configuration:
 <details>
 <summary>validator-full-node-identity.yaml</summary>
 
-    
 ```yaml
 ---
 account_address: a5a643aa695fc5f34927386c8d767cddcc0607933f40c89a7ad78de7804965b8
@@ -186,14 +183,10 @@ network_private_key: "0x689c11c6e5405219b5eae1312086c801e3a044946afc74429e5157b4
 ```
 
 </details>
-    
 
 #### Description
 
 | validator-full-node-identity.yaml | Description                                                                                                                                       |
-|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | account_address                   | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                                          |
 | network_private_key               | The private key for the fullnode. Whoever holds this private key will be able to establish the ownership of the VFN and PFN in the Aptos network. |
-
-
-

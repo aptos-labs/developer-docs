@@ -20,7 +20,9 @@ To initialize the `IndexerClient` class, you will need to pass in the necessary 
 ```ts
 import { IndexerClient } from "aptos";
 
-const client = new IndexerClient("https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql");
+const client = new IndexerClient(
+  "https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql",
+);
 ```
 
 ## Make API fetch calls
@@ -77,7 +79,9 @@ All Indexer queries, which are basically GraphQL queries, live under the `src/in
 
 ```graphql
 query getAccountTokensCount($owner_address: String) {
-  current_token_ownerships_aggregate(where: { owner_address: { _eq: $owner_address }, amount: { _gt: "0" } }) {
+  current_token_ownerships_aggregate(
+    where: { owner_address: { _eq: $owner_address }, amount: { _gt: "0" } }
+  ) {
     aggregate {
       count
     }

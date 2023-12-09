@@ -8,6 +8,7 @@ id: "use-aptos-cli"
 The `aptos` tool is a command line interface (CLI) for developing on the Aptos blockchain, debugging, and for node operations. This document describes how to use the `aptos` CLI tool. To download or build the CLI, follow [Install Aptos CLI](../install-cli/index.md).
 
 For example on how to use specific commands, see the following documents:
+
 - [Configuration and Initialization](./cli-configuration.md)
 - [Account](./cli-account.md)
 - [Key](./cli-key.md)
@@ -108,22 +109,22 @@ Usage: aptos move compile [OPTIONS]
 Options:
       --save-metadata
           Save the package metadata in the package's build directory
-          
+
           If set, package metadata should be generated and stored in the package's build directory. This metadata can be used to construct a transaction to publish a package.
 
       --included-artifacts <INCLUDED_ARTIFACTS>
           Artifacts to be generated when building the package
-          
+
           Which artifacts to include in the package. This can be one of `none`, `sparse`, and `all`. `none` is the most compact form and does not allow to reconstruct a source package from chain; `sparse` is the minimal set of artifacts needed to reconstruct a source package; `all` includes all available artifacts. The choice of included artifacts heavily influences the size and therefore gas cost of publishing: `none` is the size of bytecode alone; `sparse` is roughly 2 times as much; and `all` 3-4 as much.
-          
+
           [default: sparse]
           [possible values: none, sparse, all]
 
       --dev
           Enables dev mode, which uses all dev-addresses and dev-dependencies
-          
+
           Dev mode allows for changing dependencies and addresses to the preset [dev-addresses] and [dev-dependencies] fields.  This works both inside and out of tests for using preset values.
-          
+
           Currently, it also additionally pulls in all test compilation artifacts
 
       --package-dir <PACKAGE_DIR>
@@ -131,21 +132,21 @@ Options:
 
       --output-dir <OUTPUT_DIR>
           Path to save the compiled move package
-          
+
           Defaults to `<package_dir>/build`
 
       --named-addresses <NAMED_ADDRESSES>
           Named addresses for the move binary
-          
+
           Example: alice=0x1234, bob=0x5678
-          
+
           Note: This will fail if there are duplicates in the Move.toml file remove those first.
-          
+
           [default: ]
 
       --skip-fetch-latest-git-deps
           Skip pulling the latest git dependencies
-          
+
           If you don't have a network connection, the compiler may fail due to no ability to pull git dependencies.  This will allow overriding this for local development.
 
       --bytecode-version <BYTECODE_VERSION>
@@ -153,7 +154,7 @@ Options:
 
       --compiler-version <COMPILER_VERSION>
           Specify the version of the compiler
-          
+
           [possible values: v1, v2]
 
       --skip-attribute-checks
@@ -189,4 +190,3 @@ Run the `aptos info` command to get the CLI information for debugging purposes. 
   }
 }
 ```
-

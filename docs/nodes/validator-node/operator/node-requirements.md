@@ -5,15 +5,15 @@ slug: "node-requirements"
 
 # Node Requirements
 
-To make your validator node and validator fullnode deployment hassle-free, make sure you have the resources specified in this document. 
+To make your validator node and validator fullnode deployment hassle-free, make sure you have the resources specified in this document.
 
 ## Validator and validator fullnode
 
 - **Both a validator node and a validator fullnode required:** For the Aptos mainnet, we require that you run a validator node and a validator fullnode. We strongly recommend that you run the validator node and the validator fullnode on two separate and independent machines. Make sure that these machines are well-provisioned and isolated from each other. Guaranteeing the resource isolation between the validator and the validator fullnode will help ensure smooth deployment of these nodes.
-- **Public fullnode is optional:** We recommend that optionally you run a public fullnode also. However, a public fullnode is not required. If you run public fullnode also, then we strongly recommend that you run the public fullnode on a third machine that is separate and independent of either the validator or the validator fullnode machines. 
-:::tip Terraform support
-For deploying the nodes in cloud we have provided Terraform support on two cloud providers: **GCP** and **AWS**. See [**Running Validator Node**](running-validator-node/index.md).
-:::
+- **Public fullnode is optional:** We recommend that optionally you run a public fullnode also. However, a public fullnode is not required. If you run public fullnode also, then we strongly recommend that you run the public fullnode on a third machine that is separate and independent of either the validator or the validator fullnode machines.
+  :::tip Terraform support
+  For deploying the nodes in cloud we have provided Terraform support on two cloud providers: **GCP** and **AWS**. See [**Running Validator Node**](running-validator-node/index.md).
+  :::
 
 - **Open the network ports:** Make sure that you open the network ports prior to connecting to the network. See [Ports](#ports).
 - **Close the network ports:** Make sure that you close these ports after either being accepted or rejected for the network.
@@ -22,22 +22,22 @@ For deploying the nodes in cloud we have provided Terraform support on two cloud
 
 For running an Aptos **validator node and validator fullnode** we recommend the following hardware resources:
 
-  - **CPU**:
-      - 8 cores, 16 threads
-      - 2.8GHz, or faster
-      - Intel Xeon Skylake or newer
-  - **Memory**: 32GB RAM.
-  - **Storage**: 2T SSD with at least 40K IOPS and 200MiB/s bandwidth.
-  - **Networking bandwidth**: 1Gbps
+- **CPU**:
+  - 8 cores, 16 threads
+  - 2.8GHz, or faster
+  - Intel Xeon Skylake or newer
+- **Memory**: 32GB RAM.
+- **Storage**: 2T SSD with at least 40K IOPS and 200MiB/s bandwidth.
+- **Networking bandwidth**: 1Gbps
 
 ### Example machine types on various clouds
 
 - **AWS**
-    - c6id.8xlarge (if using a local SSD)
-    - c6i.8xlarge + io1/io2 EBS volume with 40K IOPS.
+  - c6id.8xlarge (if using a local SSD)
+  - c6i.8xlarge + io1/io2 EBS volume with 40K IOPS.
 - **GCP**
-    - n2-standard-16 (if using a local SSD)
-    - n2-standard-32 + pd-ssd with 40K IOPS.
+  - n2-standard-16 (if using a local SSD)
+  - n2-standard-32 + pd-ssd with 40K IOPS.
 
 ### Motivations for hardware requirements
 
@@ -47,7 +47,7 @@ The current hardware requirements are set considering the estimated growth over 
 
 **Local SSD vs. network storage**
 
-Cloud deployments require choosing between using local or network storage such as AWS EBS, GCP PD. Local SSD provides lower latency and cost, especially relative to IOPS. 
+Cloud deployments require choosing between using local or network storage such as AWS EBS, GCP PD. Local SSD provides lower latency and cost, especially relative to IOPS.
 
 On the one hand, network storage requires additional CPU support to scale IOPS, but on the other hand, the network storage provides better support for backup snapshots and provide resilience for the nodes in scenarios where the instance is stopped. Network storage makes it easier to support storage needs for high availability.
 
@@ -60,6 +60,7 @@ When you are running a validator node, you are required to open network ports on
 Your node can be configured so that each of these networks can connect using a different port on your node.
 
 There are three types of Aptos networks:
+
 1. **Validator network:** A validator node connects to this network.
 2. **Public network:** A public fullnode connects to this network.
 3. **Validator fullnode network:** A validator fullnode (VFN) connects to this network. The VFN network allows the validator fullnode to connect to a specific validator.
@@ -92,7 +93,8 @@ The recommendations described below assume the default port settings used by val
   - `80/8080` – To prevent unauthorized REST API access
 
 #### For a public fullnode:
-- Open the TCP port `6182` publicly to enable other public fullnodes to connect to your node. 
+
+- Open the TCP port `6182` publicly to enable other public fullnodes to connect to your node.
 - Close the following TCP ports:
   - `9101` – To prevent unauthorized metric inspection
   - `80/8080` – To prevent unauthorized REST API access

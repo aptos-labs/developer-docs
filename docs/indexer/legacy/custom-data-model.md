@@ -12,6 +12,7 @@ Use this method if you want to develop your custom indexer for the Aptos ledger 
 
 :::tip When to use custom indexer
 Currently Aptos-provided indexing service (see above) supports the following core Move modules:
+
 - `0x1::coin`.
 - `0x3::token`.
 - `0x3::token_transfers`.
@@ -132,10 +133,11 @@ See the full code in [coin_balances.rs](https://github.com/aptos-labs/aptos-core
 Now that we have the data model and the parsing function, we need to call that parsing function and save the resulting model in our Postgres database. We do this by creating (or modifying) a `processor`. We have abstracted a lot already from that class, so the only function that should be implemented is `process_transactions` (there are a few more functions that should be copied, those should be obvious from the example).
 
 The `process_transactions` function takes in a vector of transactions with a start and end version that are used for tracking purposes. The general flow should be:
-  - Loop through transactions in the vector.
-  - Aggregate relevant models. Sometimes deduping is required, e.g. in the case of `CurrentCoinBalance`.
-  - Insert the models into the database in a single Diesel transaction. This is important, to ensure that we do not have partial writes.
-  - Return status (error or success).
+
+- Loop through transactions in the vector.
+- Aggregate relevant models. Sometimes deduping is required, e.g. in the case of `CurrentCoinBalance`.
+- Insert the models into the database in a single Diesel transaction. This is important, to ensure that we do not have partial writes.
+- Return status (error or success).
 
 :::tip Coin transaction processor
 See [coin_process.rs](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/coin_processor.rs) for a relatively straightforward example. You can search for `coin_balances` in the page for the specific code snippet related to coin balances.
@@ -174,8 +176,8 @@ Processor::CoinProcessor => Arc::new(CoinTransactionProcessor::new(conn_pool.clo
 storage:
   enable_indexer: true
   storage_pruner_config:
-      ledger_pruner_config:
-          enable: false
+    ledger_pruner_config:
+      enable: false
 
 indexer:
   enabled: true

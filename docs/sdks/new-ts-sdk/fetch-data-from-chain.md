@@ -85,7 +85,9 @@ const ledgerVersion = ledgerInfo.ledger_version;
 2. If we just committed a transaction with the SDK, we can use `waitForTransaction` method, that would return us a `CommittedTransactionResponse` that holds the latest ledger version
 
 ```ts
-const response = await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
+const response = await aptos.waitForTransaction({
+  transactionHash: pendingTransaction.hash,
+});
 
 const tokens = await aptos.getAccountOwnedTokens({
   accountAddress: alice.accountAddress,

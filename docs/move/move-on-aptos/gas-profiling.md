@@ -5,12 +5,14 @@ title: "Gas Profiling"
 import CodeBlock from '@theme/CodeBlock';
 
 # Gas Profiling
+
 The Aptos Gas Profiler is a powerful tool that can help you understand the gas usage of Aptos transactions.
 Once activated, it will simulate transactions using an instrumented VM, and generate a web-based report. <a href="/gas-profiling/sample-report/index.html" target="_blank">[Sample]</a>
 
 The gas profiler can also double as a debugger since the report also includes a full execution trace.
 
 ## Using the Gas Profiler
+
 The gas profiler can be invoked by appending the `--profile-gas` option to Aptos CLI’s `move publish`, `move run` or `move run-script` commands.
 
 Here is an example using the [hello_blockchain package from move examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain). First, `cd` into the package directory.
@@ -22,11 +24,13 @@ $ cd aptos-move/move-examples/hello_blockchain
 Then, we can simulate module publishing with the extra option `--profile-gas`.
 
 Notice that you do need to have your CLI profile set up properly and bind the named addresses correctly. Please refer to [CLI Configuration](../../../tools/aptos-cli/use-cli/cli-configuration#initialize-local-configuration-and-create-an-account) for more details.
+
 ```bash
 $ aptos move publish --named-addresses hello_blockchain=default --profile-gas
 ```
 
 This will result in some terminal output that looks like this:
+
 ```bash title="Output"
 Compiling, may take a little while to download git dependencies...
 INCLUDING DEPENDENCY AptosFramework
@@ -48,9 +52,11 @@ Simulating transaction locally with the gas profiler...
   }
 }
 ```
+
 Again, it should be emphasized that even though the live chain-state is being used, this is a simulation so the module has NOT really been published to the target network.
 
 You can then find the generated gas report in the directory `gas-profiling`:
+
 ```text title="Directory Layout"
 - hello_blockchain
   - gas-profiling
@@ -60,12 +66,15 @@ You can then find the generated gas report in the directory `gas-profiling`:
   - sources
   - Move.toml
 ```
+
 index.html is the main page of the report, and you can view it in your web browser.
 
 ## Understanding the Gas Report
+
 The gas report consists of three parts, enabling you to understand the gas usage through different lenses.
 
 ### Flamegraphs
+
 The first section consists of visualization of the gas usage in the form of two flamegraphs: one for execution & IO, the other for storage.
 The reason why we need two graphs is that these are measured in different units: one in gas units, and the other in APT.
 
@@ -80,6 +89,7 @@ There is also “Search” button in the top-right corner that allows to match c
 ![gas-profiling-flamegraph-2.png](../../../static/img/docs/gas-profiling-flamegraph-2.png)
 
 ### Cost Break-down
+
 The second section is a detailed break-down of all gas costs. Data presented in this section is categorized, aggregated and sorted.
 This can be especially helpful if you know what numbers to look at.
 
@@ -88,8 +98,8 @@ The percentage here is relative to the total cost of the belonging category (Exe
 
 ![gas-profiling-cost-break-down-table.png](../../../static/img/docs/gas-profiling-cost-break-down-table.png)
 
-
 ### Full Execution Trace
+
 The final section of the gas report is the full execution trace of the transaction that looks like this:
 
 ```
@@ -122,6 +132,7 @@ execution & IO (gas unit, full trace)                        106.45206    100.00
             @17
 ...
 ```
+
 The left column lists all Move instructions and operations being executed, with each level of indentation indicating a function call.
 
 The middle column represents the gas costs associated with the operations.
@@ -130,7 +141,9 @@ There is also a special notation `@number` that represents a jump to a particula
 This is purely informational and to help understand the control flow.
 
 ## Future Plans
+
 We plan to extend the gas profiler with the following features:
+
 - Ability to replay historical transactions that have been committed (on mainnet, testnet etc.).
 - Ability to annotate source files.
 

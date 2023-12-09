@@ -57,8 +57,8 @@ When linking to code files in GitHub, use a [permanent link](https://docs.github
 
 It never hurts to run a link check against your pages or entire site. Here are some freely available and useful tools for **public** site checking:
 
-  * https://validator.w3.org/checklink
-  * https://www.drlinkcheck.com/
+- https://validator.w3.org/checklink
+- https://www.drlinkcheck.com/
 
 Set recursion depth accordingly to delve into sub-links.
 
@@ -74,10 +74,11 @@ https://github.com/aptos-labs/developer-docs/blob/main/docusaurus.config.js
 ## Name files succinctly
 
 Use short, detailed names with no spaces:
-* hyphenate rather than underscore
 
-* be descriptive
-* use noun (topic) first, with verb optional: ex. accounts.md, site-updates.md
+- hyphenate rather than underscore
+
+- be descriptive
+- use noun (topic) first, with verb optional: ex. accounts.md, site-updates.md
 
 ## Use active tense
 
@@ -91,27 +92,19 @@ Avoid passive tense and gerunds when possible:
 
 - Address the user directly. Use "you" instead of "user" or "they".
 - Avoid writing the way you speak, i.e., avoid using contractions, jokes or using colloquial content.
-    
-    💡 **Example**:
-    
-    - **Preferred**: “it will” or “we will” or “it would”.
-    - **Avoid**: “it’ll” or “we’ll” or “it’d”.
-    
+  💡 **Example**:
+  - **Preferred**: “it will” or “we will” or “it would”.
+  - **Avoid**: “it’ll” or “we’ll” or “it’d”.
 - Use the active voice.
-    
-    💡 **Example**:
-    
-    - **Preferred**: Fork and clone the Aptos repo.
-    - **Avoid**: The Aptos repo should be cloned.
-    - **Preferred**: Copy the `Config path` information from the terminal.
-    - **Avoid**: The `Config path` information should be copied from the terminal.
-    
+  💡 **Example**:
+  - **Preferred**: Fork and clone the Aptos repo.
+  - **Avoid**: The Aptos repo should be cloned.
+  - **Preferred**: Copy the `Config path` information from the terminal.
+  - **Avoid**: The `Config path` information should be copied from the terminal.
 - Avoid hypothetical future "would". Instead, write in present tense.
-    
-    💡 **Example**:
-    
-    - **Preferred**: "The compiler sends".
-    - **Avoid**: “The compiler would then send”.
+  💡 **Example**:
+  - **Preferred**: "The compiler sends".
+  - **Avoid**: “The compiler would then send”.
 
 ## Ensure readability
 
@@ -124,14 +117,10 @@ Avoid passive tense and gerunds when possible:
 - Avoid culturally specific references, humor, names.
 - Write dates and times in unambiguous and clear ways using the [international standard](https://en.wikipedia.org/wiki/Date_format_by_country). Write "27 November 2020" instead of either "11/27/2020" or "27/11/2020" or "November 27, 2020".
 - Avoid negative sentence construction.
-    
-    💡 **Example**:
-    
-    - **Preferred**: It is common.
-    - **Avoid**: It is not uncommon.
-    
+  💡 **Example**:
+  - **Preferred**: It is common.
+  - **Avoid**: It is not uncommon.
     Yes there is a subtle difference between the two, but for technical writing this simplification works better.
-    
 - Avoid directional language (below, left) in procedural documentation, **unless** you are pointing to an item that is immediately next to it.
 - Be consistent in capitalization and punctuation.
 - Avoid the `&` character in the descriptive text. Use the English word "and".
@@ -153,8 +142,8 @@ Of course, capitalize [proper nouns](https://www.scribbr.com/nouns-and-pronouns/
 ## Write clear titles and headings
 
 - Document titles and section headings should:
-    - Explicitly state the purpose of the section.
-    - Be a call to action, or intention.
+  - Explicitly state the purpose of the section.
+  - Be a call to action, or intention.
 
 This approach makes it easier for the reader to get her specific development task done.
 
@@ -173,12 +162,11 @@ A document title is the main title of a document page. A document has only one d
 
 💡 **Example**: "Writing Style Guide" at the beginning of this page. The document title also appears at the top level in the navigation bar, so it must be short, preferably four to five words or fewer.
 
-
 **Section headings within a document (h2, h3, h4, h5)**
 
 - Use sentence case. **For example**: "Verify initial synchronization"
 
-A section heading is the title for an individual section within a document page. 
+A section heading is the title for an individual section within a document page.
 
 💡 **Example**: "Titles and headings" at the top of this section. A document page can have multiple sections, and hence multiple section headings.
 
@@ -186,32 +174,27 @@ A section heading is the title for an individual section within a document page.
 - To change the visual formatting of a heading, use CSS instead of using a heading level that does not fit the hierarchy.
 - Do not keep blank headings or headings with no associated content.
 - Avoid using question mark in document titles and section headings.
-    
-    💡 **Example**:
-    
-    - **Preferred**: How it works
-    - **Avoid**: How it works?
-    
+  💡 **Example**:
+  - **Preferred**: How it works
+  - **Avoid**: How it works?
 - Avoid using emphasis or italics in document titles or section headings.
 - Avoid joining words using a slash.
-    
-    💡 **Example**:
-    
-    - **Preferred**: Execute on your macOS or Linux system
-    - **Avoid**: Execute on your macOS/Linux system
+  💡 **Example**:
+  - **Preferred**: Execute on your macOS or Linux system
+  - **Avoid**: Execute on your macOS/Linux system
 
 ## Avoid duplication
 
 We face too many challenges to tackle the same one from scratch again or split our efforts into silos. We must collaborate to make best use of our diverse skills.
 
 Search and navigate across this site to see if an existing document already serves your purpose and garners an update before starting anew. As with code, [don't repeat yourself](https://www.wikipedia.org/wiki/Don%27t_repeat_yourself).
-    
+
 ## Use these Aptos words and phrases consistently
 
-The below table lists the correct usage of Aptos words and phrases. 
+The below table lists the correct usage of Aptos words and phrases.
 
 | Recommended way to use in mid-sentence                          | Avoid these forms                       |
-|-----------------------------------------------------------------|-----------------------------------------|
+| --------------------------------------------------------------- | --------------------------------------- |
 | First letter uppercase if appearing at the start of a sentence. |                                         |
 | fullnode (FN)                                                   | FullNode, Fullnode                      |
 | validator or validator node (VN)                                | Validator Node, ValidatorNode           |

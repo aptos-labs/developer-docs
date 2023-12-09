@@ -1,13 +1,14 @@
 # NFT DAO V0 Eng Design Doc
+
 PR: https://github.com/aptos-labs/aptos-core/pull/5918
 
 ## Motivation
 
-*Quoted from product specification*
+_Quoted from product specification_
 
 Currently there are no easy ways for projects in the ecosystem to engage with their communities post mint. A key part of building a vibrant NFT community (as well as community of other web3 verticals) is to empower holders and supporters to be included in the decision making process of a project via a DAO. To do this, we must provide easy to use DAO management tooling for projects on Aptos to build a DAO where entry is gated by the ownership of a token in a NFT collection.
 
-With the NFT DAO, token holders can 
+With the NFT DAO, token holders can
 
 - be able to create a DAO and connect it to my existing NFT project
 - be able to create proposals that can be voted on-chain
@@ -19,7 +20,7 @@ There are multiple roles:
 
 - DAO platform: the entity deploys the contract and provides one website for the NFT community to create DAO, propose, vote, and resolve.
 - DAO admin: this entity creates the DAO through the platform. They can also transfer their admin authority to other accounts. DAO admin has special authority to veto or execute a proposal without voting
-- Proposer:  people who create a proposal
+- Proposer: people who create a proposal
 - Voter: people who vote on a proposal
 - Resolver: people who resolve a proposal
 
@@ -29,7 +30,7 @@ There are multiple roles:
 
 `[DAO](https://github.com/areshand/aptos-core-1/blob/98b5372b57c15df6b56d1b1879bebba2a1dc8b7b/aptos-move/move-examples/dao/nft_dao/sources/nft_dao.move#L103)`: this contains all the DAO’s key data fields including DAO resource account signer capability. This data is stored in the DAO resource account.
 
-`[Proposal](https://github.com/areshand/aptos-core-1/blob/98b5372b57c15df6b56d1b1879bebba2a1dc8b7b/aptos-move/move-examples/dao/nft_dao/sources/nft_dao.move#L139)`: this contains the proposal info including the functions and their arguments to be executed.  The state change of proposal is as below:
+`[Proposal](https://github.com/areshand/aptos-core-1/blob/98b5372b57c15df6b56d1b1879bebba2a1dc8b7b/aptos-move/move-examples/dao/nft_dao/sources/nft_dao.move#L139)`: this contains the proposal info including the functions and their arguments to be executed. The state change of proposal is as below:
 
 ![Screenshot 2023-01-20 at 1.46.33 PM.png](./doc_images/Screenshot_2023-01-20_at_1.46.33_PM.png)
 
@@ -50,7 +51,7 @@ public entry fun create_dao(
     name: String,
     threshold: u64,
     voting_duration: u64,
-    voting_token_collection_creator: address, 
+    voting_token_collection_creator: address,
     collection_name: String,
     min_required_proposer_voting_power: u64,
     required_proposer_voting_power: u64,
@@ -60,6 +61,7 @@ public entry fun create_dao(
 3. Proposer can create a proposal executing a list of functions.
 
 Proposer can combine any number of supported functions in one proposal. During resolving, the list of functions will be executed in sequence.
+
 ```rust
 create_proposal(
   account: &signer,
@@ -79,16 +81,14 @@ create_proposal(
 3 types of functions can be created:
 
 - `no_op`, no automatic execution happens on-chain. Only the proposal and its result is recorded on-chain for the DAO admin to take actions
-    - arg_names empty
-    - arg_values empty
-    - arg_types empty
+  - arg_names empty
+  - arg_values empty
+  - arg_types empty
 - `transfer_fund`, the fund will be automatically transferred from DAO resource account to the destination account.
-    - arg_names: “dst”, “amount”
-    - arg_values: bcs_serialized values, please refer to TS SDK function. You need to provide original values in TS and arg_types to get the serialized values
-    
+  - arg_names: “dst”, “amount”
+  - arg_values: bcs_serialized values, please refer to TS SDK function. You need to provide original values in TS and arg_types to get the serialized values
     [aptos-core/property_map_serde.ts at main · aptos-labs/aptos-core](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/utils/property_map_serde.ts#L48)
-    
-    - arg_types: “address”, “u64”
+  - arg_types: “address”, “u64”
 
 4. A voter can vote for a proposal of a DAO
 
@@ -113,23 +113,21 @@ public entry fun resolve<CoinType>(proposal_id: u64, nft_dao: address)
 
 ### Special DAO Admin Functions
 
-DAO admin can perform some special operations. This is to provide the NFT creator a way to manage their DAO before the DAO becomes mature. Once the DAO becomes mature, they can get rid of the admin address by updating the field. The functions below are some special DAO admin operations: 
+DAO admin can perform some special operations. This is to provide the NFT creator a way to manage their DAO before the DAO becomes mature. Once the DAO becomes mature, they can get rid of the admin address by updating the field. The functions below are some special DAO admin operations:
 
 **DAO Admin transfer**
 
 DAO admin can transfer his admin authority through an offer - claim two step process. He can also cancel an pending offer before anyone claims the offer.
 
-- `offer_admin`: offer the admin authority to another account.  This offer is directly recorded in the DAO struct
+- `offer_admin`: offer the admin authority to another account. This offer is directly recorded in the DAO struct
 - `claim_admin`: the receiver can claim this offer. The contract will set the admin of the DAO to this receiver and empty the pending claim
 - `cancel_admin_offer`: the admin can also cancel an admin offer by making the pending claim field empty in the DAO struct.
 
-**DAO admin privileges** 
+**DAO admin privileges**
 
 - `admin_resolve`: admin of a DAO can directly resolve an **pending** proposal regardless of voting results and time. After resolving, the contract will record the resolution of the proposal as proposal resolved by admin.
-- `admin_veto_proposal`: admin can veto an **pending** proposal regardless of voting results or time.  After vetoing, the contract will mark the resolution as vetoed by the admin
+- `admin_veto_proposal`: admin can veto an **pending** proposal regardless of voting results or time. After vetoing, the contract will mark the resolution as vetoed by the admin
 - update DAO configs: admin can use his authority to update the DAO’s name, proposal duration, resolve threshold, min power required to create proposal.
-
- 
 
 ## Rationals
 
@@ -142,31 +140,31 @@ DAO admin can transfer his admin authority through an offer - claim two step pro
 ### Some aligned design choices
 
 - Separate the `[ProposalVotingStatistics](https://github.com/areshand/aptos-core-1/blob/98b5372b57c15df6b56d1b1879bebba2a1dc8b7b/aptos-move/move-examples/dao/nft_dao/sources/nft_dao.move#L158)` from `[Proposal](https://github.com/areshand/aptos-core-1/blob/98b5372b57c15df6b56d1b1879bebba2a1dc8b7b/aptos-move/move-examples/dao/nft_dao/sources/nft_dao.move#L139)`,
-    - NFT DAO records which token voted. This can take up a lot of space. We want to keep this data in a separate struct that can be destroyed later after proposal ends
+  - NFT DAO records which token voted. This can take up a lot of space. We want to keep this data in a separate struct that can be destroyed later after proposal ends
 - [Resolving threshold](https://github.com/areshand/aptos-core-1/blob/98b5372b57c15df6b56d1b1879bebba2a1dc8b7b/aptos-move/move-examples/dao/nft_dao/sources/nft_dao.move#L107) is an absolute number of NFTs
-    - This is what we learned from our partners and our own investigation of existing DAOs’ setting
+  - This is what we learned from our partners and our own investigation of existing DAOs’ setting
 - Don’t allow the same token being used twice for voting by recording voted token_ids and deduping on token_id
-    - This is to allow escrow-less voting and accommodating to existing NFTs since most of them are globally unique
-- Relax to globally_unique_**now** from globally_unique_**permanently** as the constraint for **governance token**
-    - globally_unique_**now**  requires TokenData to have a maximum = 1 and globally_unique_**permanently** requires TokenData to have a **maximum = 1 && maximum_mutable = false**
-    - we found popular collections (eg Aptos mingo) are globally_unique_now. We want to make sure our tool work for these collections.
-    - Relaxing the constraint doesn’t increase the risk since only the creator can mint more tokens. If the creator is the malicious entity, there is no way to
+  - This is to allow escrow-less voting and accommodating to existing NFTs since most of them are globally unique
+- Relax to globally\*unique**\*now** from globally\*unique**\*permanently** as the constraint for **governance token**
+  - globally\*unique**\*now** requires TokenData to have a maximum = 1 and globally\*unique**\*permanently** requires TokenData to have a **maximum = 1 && maximum_mutable = false**
+  - we found popular collections (eg Aptos mingo) are globally_unique_now. We want to make sure our tool work for these collections.
+  - Relaxing the constraint doesn’t increase the risk since only the creator can mint more tokens. If the creator is the malicious entity, there is no way to
 - Not supporting features like mutating the collection maximum requiring creator authority
-    - [We don’t support move compiling in v0 for each DAO individually](https://www.notion.so/NFT-DAO-V0-Eng-Design-Doc-139179339c78475e95d1f3bb71df9f9d). This makes it infeasible to acquire the signer of the creator account to perform the operation.
+  - [We don’t support move compiling in v0 for each DAO individually](https://www.notion.so/NFT-DAO-V0-Eng-Design-Doc-139179339c78475e95d1f3bb71df9f9d). This makes it infeasible to acquire the signer of the creator account to perform the operation.
 - Use property map for serializing and deserializing proposal function arguments
-    - Leverage existing support in both TS SDK and Move to support the serde of a list of heterogeneous arguments
-    - Property map should be able to support all eligible TXN arguments through simple extension.
-    - We can also switch to raw vectors since the property map is not exposed in the interface.
+  - Leverage existing support in both TS SDK and Move to support the serde of a list of heterogeneous arguments
+  - Property map should be able to support all eligible TXN arguments through simple extension.
+  - We can also switch to raw vectors since the property map is not exposed in the interface.
 - Vote with a batch of tokens
-    - To reduce the number of TXN required to vote
+  - To reduce the number of TXN required to vote
 
 ## Remaining Questions
 
-**DAO upgrade**  upgrading DAO to support integration with creator resource account to gain creator authority to do mint more NFT, update the collection maximum, etc.
+**DAO upgrade** upgrading DAO to support integration with creator resource account to gain creator authority to do mint more NFT, update the collection maximum, etc.
 
 - [Significant blocker] browser side or server-side move compiling lacks TS tooling support for community developers
 - Alternatives:
-    - DAO admin compiles and executes the script themselves
+  - DAO admin compiles and executes the script themselves
 
 **DAO migration** Have smooth migration when DAO platform contracts have breaking changes
 

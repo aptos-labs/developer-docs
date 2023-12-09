@@ -29,7 +29,6 @@ Digital Asset (DA) is recommended for any new collections or protocols that want
 The new [Aptos Fungible Asset Standard](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) is a standard meant for simple, typesafe, and fungible assets based on object model intending to replace Aptos coin.
 Fungible Asset (FA) offers more features and flexibilities to Aptos move developers on creating and managing fungible assets.
 
-
 ## Wallet Standard
 
 ### [Aptos Wallet](./wallets.md)

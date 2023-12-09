@@ -1,6 +1,6 @@
 # Generics
 
-Generics can be used to define functions and structs over different input data types. This language feature is sometimes referred to as *parametric polymorphism*. In Move, we will often use the term generics interchangeably with type parameters and type arguments.
+Generics can be used to define functions and structs over different input data types. This language feature is sometimes referred to as _parametric polymorphism_. In Move, we will often use the term generics interchangeably with type parameters and type arguments.
 
 Generics are commonly used in library code, such as in vector, to declare code that works over any possible instantiation (that satisfies the specified constraints). In other frameworks, generic code can sometimes be used to interact with global storage many different ways that all still share the same implementation.
 
@@ -208,7 +208,7 @@ Moreover, the spurious annotations would be infectious,
 requiring many functions generic on the unused type parameter to also include the necessary constraints.
 
 Phantom type parameters solve this problem.
-Unused type parameters can be marked as *phantom* type parameters,
+Unused type parameters can be marked as _phantom_ type parameters,
 which do not participate in the ability derivation for structs.
 In this way,
 arguments to phantom type parameters are not considered when deriving the abilities for generic types,

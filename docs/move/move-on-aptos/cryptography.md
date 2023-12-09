@@ -28,7 +28,7 @@ Continue reading to delve a bit deeper and uncover some of the intricacies behin
 Developers can now use more cryptographic hash functions in Move via the [`aptos_std::aptos_hash`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/hash.move) module:
 
 | Hash function | Hash size (bits) | Cost for hashing 1KiB (in internal gas units) | Collision-resistance security (bits) |
-|---------------|------------------|-----------------------------------------------|--------------------------------------|
+| ------------- | ---------------- | --------------------------------------------- | ------------------------------------ |
 | Keccak256     | 256              | 1,001,600                                     | 128                                  |
 | SHA2-256      | 256              | 1,084,000                                     | 128                                  |
 | SHA2-512      | 512              | 1,293,600                                     | 256                                  |
@@ -49,34 +49,35 @@ In general, a wider variety of hash functions give developers additional freedom
 
 ## Digital signature verification
 
-Developers can now use a *type-safe* API for verifying many kinds of digital signatures in Move:
+Developers can now use a _type-safe_ API for verifying many kinds of digital signatures in Move:
 
 | Signature scheme                                                                                                                                           | Curve         | Sig. size (bytes) | PK size (bytes) | Malleability | Assumptions | Pros          | Cons                |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------------|-----------------|--------------|-------------|---------------|---------------------|
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------- | --------------- | ------------ | ----------- | ------------- | ------------------- |
 | [ECDSA](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/secp256k1.move)                          | secp256k1     | 64                | 64              | Yes          | GGM         | Wide adoption | Security proof      |
 | [Ed25519](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ed25519.move)                          | Edwards 25519 | 64                | 32              | No           | DLA, ROM    | Fast          | Subtleties          |
 | [MultiEd25519](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/multi_ed25519.move)               | Edwards 25519 | $4 + t \cdot 64$  | $n \cdot 32$    | No           | DLA, ROM    | Easy-to-adopt | Large sig. size     |
 | [MinPK BLS](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381.move)                       | BLS12-381     | 96                | 48              | No           | CDH, ROM    | Versatile     | Slower verification |
 | [MinSig BLS](https://github.com/aptos-labs/aptos-core/blob/7d4fb98c6604c67e526a96f55668e7add7aaebf6/aptos-move/move-examples/drand/sources/drand.move#L57) | BLS12-381     | 48                | 96              | No           | CDH, ROM    | Versatile     | Slower verification |
 
-
 :::note
- - CDH stands for the _"Computational Diffie-Hellman Assumption"_
- - DLA stands for the _"Discrete Log Assumption"_
- - GGM stands for the _"Generic Group Model"_
- - ROM stands for the _"Random Oracle Model"_
-:::
+
+- CDH stands for the _"Computational Diffie-Hellman Assumption"_
+- DLA stands for the _"Discrete Log Assumption"_
+- GGM stands for the _"Generic Group Model"_
+- ROM stands for the _"Random Oracle Model"_
+  :::
 
 The digital signature modules above can be used to build smart contract-based wallets, secure claiming mechanisms for airdrops, or any digital-signature-based access-control mechanism for dapps.
 
 The right choice of a signature scheme in your dapp could depend on many factors:
-1. **Backwards-compatibility** 
+
+1. **Backwards-compatibility**
    - If your dapp's user base predominantly uses a particular signing mechanism, it would be prudent to support that mechanism for ease of transition and adoption.
      - Example: If users mainly sign using Ed25519, it becomes a logical choice.
 2. **Ease-of-implementation**
    - While theoretically sound, complex protocols may be challenging to implement in practice.
      - Example: Even though $t$-out-of-$n$ threshold protocols for Ed25519 exist, their intricacy on the signer's side might push developers toward MultiEd25519 due to its more straightforward signing implementation.
-3. **Efficiency** 
+3. **Efficiency**
    - Depending on the dapp's requirements, you might prioritize one aspect of efficiency over another.
      - Signature size vs. public key size: Some applications might prioritize a smaller signature footprint, while others might emphasize a compact PK.
      - Signing time vs. verification time: For certain dapps, the signing speed might be more crucial, while for others, rapid signature verification could be the priority.
@@ -92,7 +93,7 @@ The right choice of a signature scheme in your dapp could depend on many factors
 Despite its careful, principled design[^ed25519], Ed25519 has known implementation subtleties. For example, different implementations could easily disagree on the validity of signatures, especially when batch verification is employed[^devalence]$^,$[^eddsa].
 :::
 
-:::tip 
+:::tip
 Our [`aptos_std::bls12381`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381.move) module for [MinPK BLS](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#name-variants) supports verification of individual signatures, **multi**-signatures, **aggregate** signatures and **threshold** signatures.
 :::
 
@@ -100,28 +101,28 @@ Our [`aptos_std::bls12381`](https://github.com/aptos-labs/aptos-core/blob/main/a
 
 While the [hash function](#cryptographic-hash-functions) and [digital signature](#digital-signature-verification) modules should provide enough functionality for most applications, some applications will require more powerful cryptography.
 Normally, developers of such applications would have to wait until their desired cryptographic functionality is implemented efficiently as a [Move native function](../book/functions.md#native-functions) in the [Aptos Move framework](/reference/move).
-Instead, we expose basic building blocks that developers can use to implement their own cryptographic primitives directly in the Move language and do so **efficiently**.  
+Instead, we expose basic building blocks that developers can use to implement their own cryptographic primitives directly in the Move language and do so **efficiently**.
 
 Specifically, we currently expose low-level arithmetic operations on two popular elliptic curve groups and their associated finite fields:
 
- 1. Ristretto255, via [`aptos_std::ristretto255`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255.move)
- 2. BLS12-381, via [`aptos_std::crypto_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/crypto_algebra.move) 
+1.  Ristretto255, via [`aptos_std::ristretto255`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255.move)
+2.  BLS12-381, via [`aptos_std::crypto_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/crypto_algebra.move)
     and [`aptos_std::bls12381_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381_algebra.move)
 
 These modules support low-level operations such as:
 
- * scalar multiplication of elliptic curve points
- * multi-scalar multiplications (MSMs)
- * pairings
- * scalar addition, multiplication, inversion
- * hashing to a scalar or to a point
- * and many more
+- scalar multiplication of elliptic curve points
+- multi-scalar multiplications (MSMs)
+- pairings
+- scalar addition, multiplication, inversion
+- hashing to a scalar or to a point
+- and many more
 
-Examples of powerful applications that can be built on top include:  
+Examples of powerful applications that can be built on top include:
 
- 1. **Validity rollups** – See the [`groth16` zkSNARK verifier example](#groth16-zksnark-verifier).
- 2. **Randomness-based games** – See the [`drand` verifier example](#verifying-randomness-from-the-drand-beacon).
- 3. **Privacy-preserving applications** – See the [`veiled_coin` example](#veiled-coins).
+1.  **Validity rollups** – See the [`groth16` zkSNARK verifier example](#groth16-zksnark-verifier).
+2.  **Randomness-based games** – See the [`drand` verifier example](#verifying-randomness-from-the-drand-beacon).
+3.  **Privacy-preserving applications** – See the [`veiled_coin` example](#veiled-coins).
 
 ### Ristretto255 arithmetic
 
@@ -131,10 +132,10 @@ Furthermore, Ristretto255 serialization is canonical and deserialization only ac
 
 This module has proven useful for implementing several cryptographic primitives:
 
- 1. **Zero-knowledge $\Sigma$-protocols** – See the [`veiled_coin` example](#veiled-coins).
- 2. **ElGamal** encryption – See [`aptos_std::ristretto255_elgamal`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_elgamal.move)
- 3. **Pedersen** commitments – See [`aptos_std::ristretto255_pedersen`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_pedersen.move)
- 4. **Bulletproofs** ZK range proofs[^bulletproofs] – See [`aptos_std::ristretto255_bulletproofs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_bulletproofs.move)
+1.  **Zero-knowledge $\Sigma$-protocols** – See the [`veiled_coin` example](#veiled-coins).
+2.  **ElGamal** encryption – See [`aptos_std::ristretto255_elgamal`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_elgamal.move)
+3.  **Pedersen** commitments – See [`aptos_std::ristretto255_pedersen`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_pedersen.move)
+4.  **Bulletproofs** ZK range proofs[^bulletproofs] – See [`aptos_std::ristretto255_bulletproofs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_bulletproofs.move)
 
 Need ideas for a cryptosystem to build on top of `ristretto255`?
 A popular primitive that you could easily build would be the [schnorrkel](https://github.com/w3f/schnorrkel) signature scheme, which is a hardended version of Schnorr signatures over Ristretto255 groups.
@@ -157,9 +158,9 @@ use aptos_std::crypto_algebra::{eq, pairing, one, deserialize, hash_to};
 
 /// Example of a BLS signature verification function that works over any pairing-friendly
 /// group triple `Gr1`, `Gr2`, `GrT` where signatures are in `Gr1` and PKs in `Gr2`.
-/// Points are serialized using the format in `FormatG1` and `FormatG2` and the hashing 
+/// Points are serialized using the format in `FormatG1` and `FormatG2` and the hashing
 /// method is `HashMethod`.
-/// 
+///
 /// WARNING: This example is type-unsafe and probably not a great fit for production code.
 public fun bls_verify_sig<Gr1, Gr2, GrT, FormatG1, FormatG2, HashMethod>(
     dst:        vector<u8>,
@@ -170,10 +171,10 @@ public fun bls_verify_sig<Gr1, Gr2, GrT, FormatG1, FormatG2, HashMethod>(
     let sig  = option::extract(&mut deserialize<Gr1, FormatG1>(&signature));
     let pk   = option::extract(&mut deserialize<Gr2, FormatG2>(&public_key));
     let hash = hash_to<Gr1, HashMethod>(&dst, &message);
-    
+
     // Checks if $e(H(m), pk) = e(sig, g_2)$, where $g_2$ generates $\mathbb{G}_2$
     eq(
-        &pairing<Gr1, Gr2, GrT>(&hash, &pk), 
+        &pairing<Gr1, Gr2, GrT>(&hash, &pk),
         &pairing<Gr1, Gr2, GrT>(&sig, &one<Gr2>())
     )
 }
@@ -187,7 +188,7 @@ use aptos_std::bls12381_algebra::{
     G1, G2, Gt, FormatG1Compr, FormatG2Compr, HashG1XmdSha256SswuRo
 };
 
-// Aborts with code 1 if the MinSig BLS signature over the BLS12-381 curve fails to verify. 
+// Aborts with code 1 if the MinSig BLS signature over the BLS12-381 curve fails to verify.
 assert(
     bls_verify_sig<G1, G2, Gt, FormatG1Compr, FormatG2Compr, HashG1XmdSha256SswuRo>(
         dst, signature, message, public_key
@@ -198,7 +199,7 @@ assert(
 
 For more use cases of the `crypto_algebra` module, check out some Move examples:
 
-1. [Verifying Groth16 zkSNARK proofs](#groth16-zksnark-verifier) over **any** curve 
+1. [Verifying Groth16 zkSNARK proofs](#groth16-zksnark-verifier) over **any** curve
 2. [Verifying randomness from the `drand` beacon](#verifying-randomness-from-the-drand-beacon)
 
 ## Building powerful cryptographic applications
@@ -218,7 +219,7 @@ This module is educational. It is **not** production-ready. Using it could lead 
 ### Groth16 zkSNARK verifier
 
 The [`groth16` example](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/groth16_example/sources/groth16.move) demonstrates how to verify Groth16 zkSNARK proofs[^groth16], which are the shortest, fastest-to-verify, general-purpose zero-knowledge proofs.
-Importantly, as explained [above](#generic-elliptic-curve-arithmetic), this implementation is *generic* over **any** curve, making it very easy for Move developers to use it with their favorite (supported) curves.
+Importantly, as explained [above](#generic-elliptic-curve-arithmetic), this implementation is _generic_ over **any** curve, making it very easy for Move developers to use it with their favorite (supported) curves.
 
 :::caution
 This code has not been audited by a third-party organization. If using it in a production system, proceed at your own risk.

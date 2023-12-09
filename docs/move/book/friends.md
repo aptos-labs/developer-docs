@@ -2,7 +2,7 @@
 
 The `friend` syntax is used to declare modules that are trusted by the current module.
 A trusted module is allowed to call any function defined in the current module that have the `public(friend)` visibility.
-For details on function visibilities, please refer to the *Visibility* section in [Functions](./functions.md).
+For details on function visibilities, please refer to the _Visibility_ section in [Functions](./functions.md).
 
 ## Friend declaration
 
@@ -46,10 +46,12 @@ Unlike `use` statements, `friend` can only be declared in the module scope and n
 However, for readability, it is advised to place friend declarations near the beginning of the module definition.
 
 Note that the concept of friendship does not apply to Move scripts:
+
 - A Move script cannot declare `friend` modules as doing so is considered meaningless: there is no mechanism to call the function defined in a script.
 - A Move module cannot declare `friend` scripts as well because scripts are ephemeral code snippets that are never published to global storage.
 
 ### Friend declaration rules
+
 Friend declarations are subject to the following rules:
 
 - A module cannot declare itself as a friend.
@@ -75,7 +77,7 @@ Friend declarations are subject to the following rules:
   }
   ```
 
-- Friend modules must be within the same account address. (Note: this is not a technical requirement but rather a policy decision which *may* be relaxed later.)
+- Friend modules must be within the same account address. (Note: this is not a technical requirement but rather a policy decision which _may_ be relaxed later.)
 
   ```move=
   address 0x42 {
@@ -91,8 +93,9 @@ Friend declarations are subject to the following rules:
 - Friends relationships cannot create cyclic module dependencies.
 
   Cycles are not allowed in the friend relationships, e.g., the relation `0x2::a` friends `0x2::b` friends `0x2::c` friends `0x2::a` is not allowed.
-More generally, declaring a friend module adds a dependency upon the current module to the friend module (because the purpose is for the friend to call functions in the current module).
-If that friend module is already used, either directly or transitively, a cycle of dependencies would be created.
+  More generally, declaring a friend module adds a dependency upon the current module to the friend module (because the purpose is for the friend to call functions in the current module).
+  If that friend module is already used, either directly or transitively, a cycle of dependencies would be created.
+
   ```move=
   address 0x2 {
   module a {

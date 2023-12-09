@@ -1,6 +1,7 @@
 ---
 title: "Aptos Token (Legacy)"
 ---
+
 import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
@@ -9,7 +10,6 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 :::tip Aptos Token standards compared
 Also see the [comparison of Aptos Token standards](../guides/nfts/aptos-token-overview.md).
 :::
-
 
 ## Overview of NFT
 
@@ -25,8 +25,8 @@ Additionally, most NFTs are part of a collection or a set of NFTs with a common 
 - `name`: The name of the collection. The name must be unique within the creator's account.
 - `description`: The description of the collection.
 - `uri`: A URL pointer to off-chain for more information about the asset. The asset could be media such as an image or video or more metadata.
-- `supply`: The total number of NFTs in this collection. 
-- `maximum`: The maximum number of NFTs that this collection can have. If `maximum` is set to 0, then supply is untracked. 
+- `supply`: The total number of NFTs in this collection.
+- `maximum`: The maximum number of NFTs that this collection can have. If `maximum` is set to 0, then supply is untracked.
 
 ## Design principles
 
@@ -53,7 +53,7 @@ The `default_properties` field is a key-value store with type information. It le
 
 #### Token properties
 
-You can also use the `token_properties` defined in the token itself for customization on-chain. You can create customized values for a property of this  specific token, thereby allowing a token to have a different property value from its default.
+You can also use the `token_properties` defined in the token itself for customization on-chain. You can create customized values for a property of this specific token, thereby allowing a token to have a different property value from its default.
 
 Note that limits exist to storing customized token properties on-chain, namely 1000 properties per token with field names limited to 128 characters.
 
@@ -61,8 +61,8 @@ Note that limits exist to storing customized token properties on-chain, namely 1
 
 Fungible tokens share the same default property values. However, these property values can evolve over time and become different from each other. To support such evolution of token properties, the Aptos token standard provides the `property_version` field. Here is how it works:
 
-- During the token creation (minting), all tokens initially have `property_version` set to `0` and these tokens can be stacked together as fungible token. 
-- When the creators mutate the default properties of a token, the mutated token will be assigned a unique `property_version` to create a new [`token_id`](https://github.com/aptos-labs/aptos-core/blob/bba1690d7268759bd86ccd7459d7967172f1da24/aptos-move/framework/aptos-token/sources/token.move#L288) to differentiate it from other fungible tokens. This unique `token_id` allows the token to have its own property values, and all further mutation of this token does **not** change the `property_version` again. This token essentially becomes an NFT now. 
+- During the token creation (minting), all tokens initially have `property_version` set to `0` and these tokens can be stacked together as fungible token.
+- When the creators mutate the default properties of a token, the mutated token will be assigned a unique `property_version` to create a new [`token_id`](https://github.com/aptos-labs/aptos-core/blob/bba1690d7268759bd86ccd7459d7967172f1da24/aptos-move/framework/aptos-token/sources/token.move#L288) to differentiate it from other fungible tokens. This unique `token_id` allows the token to have its own property values, and all further mutation of this token does **not** change the `property_version` again. This token essentially becomes an NFT now.
 
 #### Configuring mutability
 
@@ -73,6 +73,7 @@ To make mutability explicit for both the creator and owner, the Aptos token stan
 Follow the standard below to ensure your NFT can be correctly displayed by various wallets.
 
 You should store the metadata in a JSON file located in an off-chain storage solution such as [arweave](https://www.arweave.org/) and provide the URL to the JSON file in the `uri` field of the token or the collection. We recommend the developers follow the [ERC-1155 off-chain data](https://eips.ethereum.org/EIPS/eip-1155) schema to format their JSON files.
+
 ```json
 {
   "image": "https://www.arweave.net/abcd5678?ext=png",
@@ -112,21 +113,23 @@ You should store the metadata in a JSON file located in an off-chain storage sol
   }
 }
 ```
-* `image`: URL to the image asset. You may use the `?ext={file_extension}` query to provide information on the file type.
-* `animation_url`: URL to the multimedia attachment of the asset. You may use the same `file_extension` query to provide the file type.
-* `external_url`: URL to an external website where the user can also view the image.
-* `attributes` - Object array, where an object should contain `trait_type` and `value` fields. `value` can be a string or a number.
-* `properties.files`: Object array, where an object should contain the URI and type of the file that is part of the asset. The type should match the file extension. The array should also include files specified in `image` and `animation_url` fields, as well as any other files associated with the asset. You may use the `?ext={file_extension}` query to provide information on the file type.
-* `properties.category`: Has supported categories:
-  * `image` - PNG, GIF, JPG
-  * `video` - MP4, MOV 
-  * `audio` - MP3, FLAC, WAV
-  * `vr` - 3D models; GLB, GLTF 
-  * `html` - HTML pages; scripts and relative paths within the HTML page are also supported
 
-You can also host your files on CDN to provide faster loading time by using the `cdn` flag in the file object. 
-When the file exists, this should be the primary location to read the media file (`video`, `audio`, `vr`) by wallet. 
-If the file is no longer available, the wallet can fall back to use the `animation_url` to load the file. 
+- `image`: URL to the image asset. You may use the `?ext={file_extension}` query to provide information on the file type.
+- `animation_url`: URL to the multimedia attachment of the asset. You may use the same `file_extension` query to provide the file type.
+- `external_url`: URL to an external website where the user can also view the image.
+- `attributes` - Object array, where an object should contain `trait_type` and `value` fields. `value` can be a string or a number.
+- `properties.files`: Object array, where an object should contain the URI and type of the file that is part of the asset. The type should match the file extension. The array should also include files specified in `image` and `animation_url` fields, as well as any other files associated with the asset. You may use the `?ext={file_extension}` query to provide information on the file type.
+- `properties.category`: Has supported categories:
+  - `image` - PNG, GIF, JPG
+  - `video` - MP4, MOV
+  - `audio` - MP3, FLAC, WAV
+  - `vr` - 3D models; GLB, GLTF
+  - `html` - HTML pages; scripts and relative paths within the HTML page are also supported
+
+You can also host your files on CDN to provide faster loading time by using the `cdn` flag in the file object.
+When the file exists, this should be the primary location to read the media file (`video`, `audio`, `vr`) by wallet.
+If the file is no longer available, the wallet can fall back to use the `animation_url` to load the file.
+
 ```json
 "properties": {
   "files": [
@@ -164,7 +167,7 @@ The following tables describe fields at the struct level. For the definitive lis
 #### Resource stored at the creator’s address
 
 | Field                                                                                                                                                                 | Description                                                                                                                                                                                                                                                |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`Collections`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#resource-collections)                                | Maintains a table called `collection_data`, which maps the collection name to the `CollectionData`. It also stores all the `TokenData` that this creator creates.                                                                                          |
 | [`CollectionData`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#struct-collectiondata)                            | Stores the collection metadata. The supply is the number of tokens created for the current collection. The maximum is the upper bound of tokens in this collection.                                                                                        |
 | [`CollectionMutabilityConfig`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_CollectionMutabilityConfig) | Specifies which field is mutable.                                                                                                                                                                                                                          |
@@ -176,11 +179,11 @@ The following tables describe fields at the struct level. For the definitive lis
 
 #### Resource stored at the owner’s address
 
-| Field | Description |
-| --- | --- |
-| [`TokenStore`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenStore) | The main struct for storing the token owned by this address. It maps `TokenId` to the actual token. |
-| [`Token`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_Token) | The amount is the number of tokens. |
-| [`TokenId`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenId) | `TokenDataId` points to the metadata of this token. The `property_version` represents a token with mutated `PropertyMap` from `default_properties` in the `TokenData`. |
+| Field                                                                                                                                 | Description                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`TokenStore`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenStore) | The main struct for storing the token owned by this address. It maps `TokenId` to the actual token.                                                                    |
+| [`Token`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_Token)           | The amount is the number of tokens.                                                                                                                                    |
+| [`TokenId`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenId)       | `TokenDataId` points to the metadata of this token. The `property_version` represents a token with mutated `PropertyMap` from `default_properties` in the `TokenData`. |
 
 For more detailed descriptions, see [Aptos Token Framework](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/overview.md).
 
@@ -192,11 +195,12 @@ Every Aptos token belongs to a collection. The developer first needs to create a
 To achieve parallel `TokenData` and `Token` creation, a developer can create unlimited collection and `TokenData` where the `maximum` of the collection and `TokenData` are set as 0. With this setting, the token contract won’t track the supply of types of token (`TokenData` count) and supply of token within each token type. As the result, the `TokenData` and token can be created in parallel.
 
 Aptos also enforces simple validation of the input size and prevents duplication:
-* Token name - unique within each collection
-* Collection name - unique within each account
-* Token and collection name length - smaller than 128 characters
-* URI length - smaller than 512 characters
-* Property map - can hold at most 1000 properties, and each key should be smaller than 128 characters
+
+- Token name - unique within each collection
+- Collection name - unique within each account
+- Token and collection name length - smaller than 128 characters
+- URI length - smaller than 512 characters
+- Property map - can hold at most 1000 properties, and each key should be smaller than 128 characters
 
 ### Token mutation
 
@@ -204,8 +208,9 @@ Our standard supports mutation with a principle that the mutable fields are spec
 Our contract uses `CollectionMutabilityConfig` to check if a field is mutable. Our contract uses `TokenMutabilityConfig` to check if a `TokenData` field is mutable.
 
 For mutation of properties, we have both
-* `default_properties` stored in `TokenData` shared by all tokens belonging to the `TokenData`
-* `token_properties` stored in the token itself
+
+- `default_properties` stored in `TokenData` shared by all tokens belonging to the `TokenData`
+- `token_properties` stored in the token itself
 
 To mutate `default_properties`, developers can use `mutate_tokendata_property` to mutate the properties when `TokenMutabilityConfig` is set to `true`.
 
@@ -226,6 +231,7 @@ We provide three different modes for transferring tokens between the sender and 
 #### Two-step transfer
 
 To protect users from receiving undesired NFTs, they must be first offered NFTs, and then accept the offered NFTs. Then only the offered NFTs will be deposited in the users' token stores. This is the default token transfer behavior. For example:
+
 1. If Alice wants to send Bob an NFT, she must first offer Bob this NFT. This NFT is still stored under Alice’s account.
 2. Only when Bob claims the NFT, will the NFT be removed from Alice’s account and stored in Bob’s token store.
 
@@ -244,4 +250,3 @@ The user can also turn off this direct transfer behavior by calling the same `op
 #### Multi-agent transfer
 
 The sender and receiver can both sign a transfer transaction to directly transfer a token from the sender to receiver [`direct_transfer_script`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#function-direct_transfer_script). For example, once Alice and Bob both sign the transfer transaction, the token will be directly transferred from Alice's account to Bob.
-

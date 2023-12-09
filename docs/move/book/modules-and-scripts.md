@@ -1,6 +1,6 @@
 # Modules and Scripts
 
-Move has two different types of programs: ***Modules*** and ***Scripts***. Modules are libraries that define struct types along with functions that operate on these types. Struct types define the schema of Move's [global storage](./global-storage-structure.md), and module functions define the rules for updating storage. Modules themselves are also stored in global storage. A scripts is an executable entrypoint similar to a `main` function in a conventional language. A script typically calls functions of a published module that perform updates to global storage. Scripts are ephemeral code snippets that are not published in global storage.
+Move has two different types of programs: **_Modules_** and **_Scripts_**. Modules are libraries that define struct types along with functions that operate on these types. Struct types define the schema of Move's [global storage](./global-storage-structure.md), and module functions define the rules for updating storage. Modules themselves are also stored in global storage. A scripts is an executable entrypoint similar to a `main` function in a conventional language. A script typically calls functions of a published module that perform updates to global storage. Scripts are ephemeral code snippets that are not published in global storage.
 
 A Move source file (or **compilation unit**) may contain multiple modules and scripts. However, publishing a module or executing a script are separate VM operations.
 
@@ -11,7 +11,6 @@ A Move source file (or **compilation unit**) may contain multiple modules and sc
 :::tip Tutorial
 To learn how to publish and execute a Move script, follow the [Move Scripts](../move-on-aptos/move-scripts.md) example.
 :::
-
 
 A script has the following structure:
 

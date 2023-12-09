@@ -35,11 +35,20 @@ const transaction = await aptos.build.transaction({
 });
 
 // using sign and submit separately
-const senderAuthenticator = aptos.sign.transaction({ signer: alice, transaction });
-const committedTransaction = await aptos.submit.transaction({ transaction, senderAuthenticator });
+const senderAuthenticator = aptos.sign.transaction({
+  signer: alice,
+  transaction,
+});
+const committedTransaction = await aptos.submit.transaction({
+  transaction,
+  senderAuthenticator,
+});
 
 // using signAndSubmit combined
-const committedTransaction = await aptos.signAndSubmitTransaction({ signer: alice, transaction });
+const committedTransaction = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction,
+});
 ```
 
 ### Complex transaction - Multi agent
@@ -57,8 +66,14 @@ const transaction = await aptos.build.multiAgentTransaction({
 });
 
 // sign transaction
-const senderAuthenticator = aptos.sign.transaction({ signer: alice, transaction });
-const secondarySignerAuthenticator = aptos.sign.transaction({ signer: secondarySignerAccount, transaction });
+const senderAuthenticator = aptos.sign.transaction({
+  signer: alice,
+  transaction,
+});
+const secondarySignerAuthenticator = aptos.sign.transaction({
+  signer: secondarySignerAccount,
+  transaction,
+});
 // submit transaction
 const committedTransaction = await aptos.submit.multiAgentTransaction({
   transaction,
@@ -82,7 +97,10 @@ const transaction = await aptos.build.transaction({
 });
 
 // sign transaction
-const senderAuthenticator = aptos.sign.transaction({ signer: alice, transaction });
+const senderAuthenticator = aptos.sign.transaction({
+  signer: alice,
+  transaction,
+});
 const feePayerSignerAuthenticator = aptos.sign.transactionAsFeePayer({
   signer: feePayerAccount,
   transaction,
@@ -111,8 +129,14 @@ const transaction = await aptos.build.multiAgentTransaction({
 });
 
 // sign transaction
-const senderAuthenticator = aptos.sign.transaction({ signer: alice, transaction });
-const secondarySignerAuthenticator = aptos.sign.transaction({ signer: secondarySignerAccount, transaction });
+const senderAuthenticator = aptos.sign.transaction({
+  signer: alice,
+  transaction,
+});
+const secondarySignerAuthenticator = aptos.sign.transaction({
+  signer: secondarySignerAccount,
+  transaction,
+});
 const feePayerSignerAuthenticator = aptos.sign.transactionAsFeePayer({
   signer: feePayerAccount,
   transaction,
@@ -216,9 +240,12 @@ To use and leverage the transaction management layer, we provide an array of pay
 ```ts
 const aptos = new Aptos();
 const sender = Account.generate();
-await aptos.fundAccount({ accountAddress: sender.accountAddress, amount: 10000000000 })
+await aptos.fundAccount({
+  accountAddress: sender.accountAddress,
+  amount: 10000000000,
+});
 // recipients is an array of accounts
-const recipients = [Account.generate(),Account.generate(),Account.generate()]
+const recipients = [Account.generate(), Account.generate(), Account.generate()];
 
 // create payloads
 const payloads: InputGenerateTransactionPayloadData[] = [];

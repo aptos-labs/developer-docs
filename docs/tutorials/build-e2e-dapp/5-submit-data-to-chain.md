@@ -18,7 +18,12 @@ const { account, signAndSubmitTransaction } = useWallet();
 2. Add an `onClick` event to the new list button:
 
 ```js
-<Button onClick={addNewList} block type="primary" style={{ height: "40px", backgroundColor: "#3f67ff" }}>
+<Button
+  onClick={addNewList}
+  block
+  type="primary"
+  style={{ height: "40px", backgroundColor: "#3f67ff" }}
+>
   Add new list
 </Button>
 ```
@@ -53,7 +58,8 @@ In our `fetchList` function, find the line:
 
 ```js
 // replace with your own address
-const moduleAddress = "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
+const moduleAddress =
+  "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
 ```
 
 And move it to outside the main `App` function, right beneath our const `provider` declarations.
@@ -61,7 +67,8 @@ And move it to outside the main `App` function, right beneath our const `provide
 ```js
 export const provider = new Provider(Network.DEVNET);
 // change this to be your module account address
-export const moduleAddress = "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
+export const moduleAddress =
+  "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
 ```
 
 **Let’s go over the `addNewList` function code.**
@@ -90,7 +97,8 @@ Next, we submit the transaction payload and wait for its response. The response 
    Add a local state to keep track whether a transaction is in progress:
 
 ```ts
-const [transactionInProgress, setTransactionInProgress] = useState<boolean>(false);
+const [transactionInProgress, setTransactionInProgress] =
+  useState<boolean>(false);
 ```
 
 6. Update our `addNewList` function to update the local state:
@@ -130,7 +138,12 @@ return (
       {!accountHasList && (
         <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
           <Col span={8} offset={8}>
-            <Button onClick={addNewList} block type="primary" style={{ height: "40px", backgroundColor: "#3f67ff" }}>
+            <Button
+              onClick={addNewList}
+              block
+              type="primary"
+              style={{ height: "40px", backgroundColor: "#3f67ff" }}
+            >
               Add new list
             </Button>
           </Col>

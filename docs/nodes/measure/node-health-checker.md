@@ -169,4 +169,3 @@ cargo run -- server generate-openapi -f json > doc/spec.json
 ```
 
 You can also hit the `/spec.yaml` and `/spec.json` endpoints of the running service.
-

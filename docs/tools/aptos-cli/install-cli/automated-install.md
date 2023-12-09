@@ -9,15 +9,17 @@ The `aptos` tool is a command line interface (CLI) for developing on the Aptos b
 ## Prerequisites
 
 First, ensure you have Python 3.6+ installed:
+
 ```
 $ python3 --version
 Python 3.9.13
 ```
+
 If it is not installed, you can find installation instructions on [python.org](https://www.python.org/downloads/).
 
 ## Install
 
-Follow these instructions to install the Aptos CLI on various operating systems. Regardless of the operating system, you will always be directed to the latest release of the Aptos CLI. 
+Follow these instructions to install the Aptos CLI on various operating systems. Regardless of the operating system, you will always be directed to the latest release of the Aptos CLI.
 
 <details>
 <summary>macOS / Linux / Windows Subsystem for Linux (WSL)</summary>
@@ -33,6 +35,7 @@ curl -fsSL "https://aptos.dev/scripts/install_cli.py" | python3
 ```
 
 Or with `wget`:
+
 ```
 wget -qO- "https://aptos.dev/scripts/install_cli.py" | python3
 ```
@@ -48,6 +51,7 @@ These instructions have been tested on Windows 11.
 :::
 
 In Powershell:
+
 ```
 iwr "https://aptos.dev/scripts/install_cli.py" -useb | Select-Object -ExpandProperty Content | python3
 ```
@@ -57,6 +61,7 @@ iwr "https://aptos.dev/scripts/install_cli.py" -useb | Select-Object -ExpandProp
 ## Update
 
 To trigger an update to the Aptos CLI, run `aptos update` and see output indicating success:
+
 ```
 {
   "Result": "CLI already up to date (v1.0.4)"
@@ -71,6 +76,3 @@ Currently installed CLI: 1.0.4
 
 The latest version (1.0.4) is already installed.
 ```
-
-
-

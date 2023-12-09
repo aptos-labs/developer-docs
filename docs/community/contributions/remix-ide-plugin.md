@@ -8,14 +8,14 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Use Remix IDE Plugin
 
-This tutorial explains how to deploy and run Move modules with the [WELLDONE Code Remix IDE](https://docs.welldonestudio.io/code) plugin. This tool offers a graphical interface for developing Move [modules](../../move/book/modules-and-scripts.md#modules). 
+This tutorial explains how to deploy and run Move modules with the [WELLDONE Code Remix IDE](https://docs.welldonestudio.io/code) plugin. This tool offers a graphical interface for developing Move [modules](../../move/book/modules-and-scripts.md#modules).
 
 Here are the steps to use the Remix IDE plugin for Move (described in detail below):
 
 1. [Connect to Remix IDE](#step-1-connect-to-remix-ide).
 2. [Select a chain](#step-2-select-a-chain).
 3. [Install a browser extension wallet](#step-3-install-a-wallet).
-4. [Create the project](#step-4-create-the-project). 
+4. [Create the project](#step-4-create-the-project).
 5. [Compile and publish a Move module to the Aptos blockchain](#step-5-compile-and-publish-a-move-module-to-the-aptos-blockchain).
 6. [Interact with a Move module](#step-6-interact-with-a-move-module).
 
@@ -62,7 +62,7 @@ This steps assumes you are using the WELLDONE Wallet. Follow [the manual](https
 1. Choose a network (e.g. devnet) in the dropdown menu at the top of the main tab.
 1. Go into the **Settings** tab of your wallet and activate **Developer Mode**.
 
-Now in the Remix UI click the **Connect to WELLDONE** button to connect to the **WELLDONE Wallet**. 
+Now in the Remix UI click the **Connect to WELLDONE** button to connect to the **WELLDONE Wallet**.
 
 Click the **Refresh** button in the upper right corner of the plug-in to apply changes to your wallet.
 
@@ -72,7 +72,7 @@ In Aptos, you can write smart contracts with the [Move programming language](../
 
 ### Select a template
 
-Create simple example contract code written in Move. You can create a sample contract by selecting the *template* option and clicking the **Create** button.
+Create simple example contract code written in Move. You can create a sample contract by selecting the _template_ option and clicking the **Create** button.
 
 <center>
 <ThemedImage
@@ -93,19 +93,19 @@ Automatically generate the Move module structure. Write a name for the project, 
 You can create your own Move projects without using the features above. However, for the Remix IDE plugin to build and deploy the Move module, it must be built within the directory `aptos/`. If you start a new project, the structure should resemble:
 :::
 
-  ```
-  aptos
-  └── <YOUR_PROJECT_NAME>
-      ├── Move.toml
-      └── sources
-          └── YOUR_CONTRACT_FILE.move
-  ```
+```
+aptos
+└── <YOUR_PROJECT_NAME>
+    ├── Move.toml
+    └── sources
+        └── YOUR_CONTRACT_FILE.move
+```
 
 ## Step 5: Compile and publish a Move module to the Aptos blockchain
 
 1. Select the project you want to compile in the **PROJECT TO COMPILE** section.
 2. Add your address to the `Move.toml` file.
-3. Click the `Compile` button. 
+3. Click the `Compile` button.
 
 ```toml
 [package]
@@ -129,12 +129,13 @@ If you need to revise the contract and compile again, delete the `out` directo
 
 :::info
 There are two ways to import contracts.
+
 1. Automatically import contracts deployed through the above process.
 2. Import existing deployed contracts through the **At Address** button.
-:::
+   :::
 
-1. Check the modules and resources owned by the current account and read the resources through the **Get Resource** button.
-2. You can select a function, enter parameters as needed, and click a button to run the function. For an entry function - not the view function - a signature from the WELLDONE Wallet is required because the transaction signature and request are required.
+3. Check the modules and resources owned by the current account and read the resources through the **Get Resource** button.
+4. You can select a function, enter parameters as needed, and click a button to run the function. For an entry function - not the view function - a signature from the WELLDONE Wallet is required because the transaction signature and request are required.
 
 <center>
 <ThemedImage
@@ -152,6 +153,7 @@ sources={{
     dark: useBaseUrl('/img/docs/remix-entry-function.png'),
   }}
 />
+
 </center>
 
 ## Get support

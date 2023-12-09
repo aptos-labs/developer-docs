@@ -6,6 +6,7 @@ slug: "supporting-resources"
 # Move Prover Supporting Resources
 
 ## Standard Library and Framework Specifications
+
 - [Move Stdlib](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/move-stdlib)
 - [Aptos Stdlib](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-stdlib)
 - [Aptos Framework](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-framework)
@@ -36,7 +37,7 @@ slug: "supporting-resources"
 
 ## Conference papers
 
-- Zhong, Jingyi Emma, Kevin Cheang, Shaz Qadeer, Wolfgang Grieskamp, Sam Blackshear, Junkil Park, Yoni Zohar, Clark Barrett, and David L. Dill. "The move prover." In *International Conference on Computer Aided Verification*, pp. 137-150. Springer, Cham, 2020.Harvard
-    - https://research.facebook.com/publications/the-move-prover/
-- Dill, David, Wolfgang Grieskamp, Junkil Park, Shaz Qadeer, Meng Xu, and Emma Zhong. "Fast and reliable formal verification of smart contracts with the Move prover." In *International Conference on Tools and Algorithms for the Construction and Analysis of Systems*, pp. 183-200. Springer, Cham, 2022.Harvard
-    - https://research.facebook.com/publications/fast-and-reliable-formal-verification-of-smart-contracts-with-the-move-prover/
+- Zhong, Jingyi Emma, Kevin Cheang, Shaz Qadeer, Wolfgang Grieskamp, Sam Blackshear, Junkil Park, Yoni Zohar, Clark Barrett, and David L. Dill. "The move prover." In _International Conference on Computer Aided Verification_, pp. 137-150. Springer, Cham, 2020.Harvard
+  - https://research.facebook.com/publications/the-move-prover/
+- Dill, David, Wolfgang Grieskamp, Junkil Park, Shaz Qadeer, Meng Xu, and Emma Zhong. "Fast and reliable formal verification of smart contracts with the Move prover." In _International Conference on Tools and Algorithms for the Construction and Analysis of Systems_, pp. 183-200. Springer, Cham, 2022.Harvard
+  - https://research.facebook.com/publications/fast-and-reliable-formal-verification-of-smart-contracts-with-the-move-prover/

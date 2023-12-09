@@ -2,7 +2,7 @@
 title: "Learn about Indexing"
 ---
 
-import BetaNotice from '../../src/components/_indexer_beta_notice.mdx';
+import BetaNotice from '../../src/components/\_indexer_beta_notice.mdx';
 import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
@@ -77,4 +77,5 @@ This diagram explains how the Aptos Indexer tech stack works in greater detail.
 <!-- TODO: Write an explanation of this diagram. -->
 
 ## Legacy Indexer
+
 Find information about the legacy indexer [here](/indexer/legacy/).
