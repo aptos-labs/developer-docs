@@ -2,7 +2,7 @@
 title: "Aptos Labs Developer Portal"
 ---
 
-import BetaNotice from '../../src/components/_dev_portal_beta_notice.mdx';
+import BetaNotice from '../../src/components/\_dev_portal_beta_notice.mdx';
 
 <BetaNotice />
 

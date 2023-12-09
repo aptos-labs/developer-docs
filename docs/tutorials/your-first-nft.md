@@ -12,13 +12,12 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 This tutorial describes how to create and transfer non-fungible assets on the Aptos blockchain. The Aptos no-code implementation for non-fungible digital assets can be found in the [aptos_token.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move) Move module.
 
-
 ## Step 1: Pick an SDK
 
 Install your preferred SDK from the below list:
 
-* [TypeScript SDK](../sdks/new-ts-sdk/index.md)
-* [Python SDK](../sdks/python-sdk.md)
+- [TypeScript SDK](../sdks/new-ts-sdk/index.md)
+- [Python SDK](../sdks/python-sdk.md)
 
 ---
 
@@ -28,47 +27,57 @@ Install your preferred SDK from the below list:
   <TabItem value="typescript" label="Typescript">
 
 Clone the `aptos-ts-sdk` repo:
+
 ```bash
-git clone git@github.com:aptos-labs/aptos-ts-sdk.git 
+git clone git@github.com:aptos-labs/aptos-ts-sdk.git
 ```
 
-  Navigate to the Typescript SDK examples directory:
-  ```bash
-  cd aptos-ts-sdk/examples/typescript-esm
-  ```
+Navigate to the Typescript SDK examples directory:
 
-  Install the necessary dependencies:
-  ```bash
-  pnpm install
-  ```
+```bash
+cd aptos-ts-sdk/examples/typescript-esm
+```
 
-  Run the Typescript [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) example:
-  ```bash
-  pnpm run simple_digital_asset
-  ```
+Install the necessary dependencies:
+
+```bash
+pnpm install
+```
+
+Run the Typescript [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) example:
+
+```bash
+pnpm run simple_digital_asset
+```
+
   </TabItem>
   <TabItem value="python" label="Python">
 
-  Clone the `aptos-core` repo:
+Clone the `aptos-core` repo:
+
 ```bash
 git clone https://github.com/aptos-labs/aptos-core.git
 ```
 
-  Navigate to the Python SDK directory:
-  ```bash
-  cd ~/aptos-core/ecosystem/python/sdk
-  ```
+Navigate to the Python SDK directory:
 
-  Install the necessary dependencies:
-  ```bash
-  curl -sSL https://install.python-poetry.org | python3
-  poetry install
-  ```
+```bash
+cd ~/aptos-core/ecosystem/python/sdk
+```
 
-  Run the Python [`simple_aptos_token`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/simple_aptos_token.py) example:
-  ```bash
-  poetry run python -m examples.simple_aptos_token
-  ```
+Install the necessary dependencies:
+
+```bash
+curl -sSL https://install.python-poetry.org | python3
+poetry install
+```
+
+Run the Python [`simple_aptos_token`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/simple_aptos_token.py) example:
+
+```bash
+poetry run python -m examples.simple_aptos_token
+```
+
   </TabItem>
 </Tabs>
 
@@ -236,13 +245,13 @@ This example demonstrates:
 :::tip See the full code
 See [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) for the complete code as you follow the below steps.
 :::
-  </TabItem>
-  <TabItem value="python" label="Python">
+</TabItem>
+<TabItem value="python" label="Python">
 
 :::tip See the full code
 See [`simple_aptos_token`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/simple_aptos_token.py) for the complete code as you follow the below steps.
 :::
-  </TabItem>
+</TabItem>
 </Tabs>
 
 ---
@@ -255,7 +264,8 @@ See [`simple_aptos_token`](https://github.com/aptos-labs/aptos-core/blob/main/ec
 In the first step, the `simple_digital_asset` example initializes the Aptos client:
 
 ```ts
-const APTOS_NETWORK: Network = NetworkToNetworkName[process.env.APTOS_NETWORK] || Network.DEVNET;
+const APTOS_NETWORK: Network =
+  NetworkToNetworkName[process.env.APTOS_NETWORK] || Network.DEVNET;
 const config = new AptosConfig({ network: APTOS_NETWORK });
 const aptos = new Aptos(config);
 ```
@@ -291,19 +301,18 @@ Using the API client we can create a `TokenClient` that we use for common token 
 :::tip
 
 By default, the URLs for both the services point to Aptos devnet services. However, they can be configured with the following environment variables:
-  - `APTOS_NODE_URL`
-  - `APTOS_FAUCET_URL`
-:::
-  </TabItem>
-</Tabs>
 
+- `APTOS_NODE_URL`
+- `APTOS_FAUCET_URL`
+  :::
+  </TabItem>
+  </Tabs>
 
 ---
 
 ### Step 4.2: Creating local accounts
 
 The next step is to create two accounts locally. [Accounts](../concepts/accounts.md) consist of a public address and the public/private key pair used to authenticate ownership of the account. This step demonstrates how to generate an Account and store its key pair and address in a variable.
-
 
 <Tabs groupId="sdk-examples">
   <TabItem value="typescript" label="Typescript">
@@ -312,12 +321,14 @@ The next step is to create two accounts locally. [Accounts](../concepts/accounts
 const alice = Account.generate();
 const bob = Account.generate();
 ```
+
   </TabItem>
   <TabItem value="python" label="Python">
 
 ```python
 :!: static/sdks/python/examples/simple_aptos_token.py section_2
 ```
+
   </TabItem>
 </Tabs>
 
@@ -336,20 +347,22 @@ In order to actually instantiate the Account on-chain, it must be explicitly cre
 
 ```ts
 await aptos.fundAccount({
-    accountAddress: alice.accountAddress,
-    amount: 100_000_000,
-  });
+  accountAddress: alice.accountAddress,
+  amount: 100_000_000,
+});
 await aptos.faucet.fundAccount({
   accountAddress: bob.accountAddress,
   amount: 100_000_000,
 });
 ```
+
   </TabItem>
   <TabItem value="python" label="Python">
 
 ```python
 :!: static/sdks/python/examples/simple_aptos_token.py section_3
 ```
+
   </TabItem>
 </Tabs>
 
@@ -363,18 +376,23 @@ Now begins the process of creating the digital, non-fungible assets. First, as t
   <TabItem value="typescript" label="Typescript">
 
 Your application will call `createCollectionTransaction` and then `signAndSubmitTransaction` to chain:
+
 ```ts
 const createCollectionTransaction = await aptos.createCollectionTransaction({
-    creator: alice,
-    description: collectionDescription,
-    name: collectionName,
-    uri: collectionURI,
-  });
+  creator: alice,
+  description: collectionDescription,
+  name: collectionName,
+  uri: collectionURI,
+});
 
-const committedTxn = await aptos.signAndSubmitTransaction({ signer: alice, transaction: createCollectionTransaction });
+const committedTxn = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: createCollectionTransaction,
+});
 ```
 
 This is the function signature of `createCollectionTransaction`. It returns a `SingleSignerTransaction` that can be simulated or submitted to chain:
+
 ```ts
 export async function createCollectionTransaction(
   args: {
@@ -384,20 +402,24 @@ export async function createCollectionTransaction(
     uri: string;
     options?: InputGenerateTransactionOptions;
   } & CreateCollectionOptions,
-): Promise<SingleSignerTransaction>
+): Promise<SingleSignerTransaction>;
 ```
+
   </TabItem>
   <TabItem value="python" label="Python">
 
 Your application will call `create_collection`:
+
 ```python
 :!: static/sdks/python/examples/simple_aptos_token.py section_4
 ```
 
 This is the function signature of `create_collection`. It returns a transaction hash:
+
 ```python
 :!: static/sdks/python/aptos_sdk/aptos_token_client.py create_collection
 ```
+
   </TabItem>
 </Tabs>
 
@@ -411,6 +433,7 @@ To create a token, the creator must specify an associated collection. A token mu
   <TabItem value="typescript" label="Typescript">
 
 Your application will call `mintTokenTransaction`:
+
 ```ts
 const mintTokenTransaction = await aptos.mintTokenTransaction({
   creator: alice,
@@ -420,10 +443,14 @@ const mintTokenTransaction = await aptos.mintTokenTransaction({
   uri: tokenURI,
 });
 
-const committedTxn = await aptos.signAndSubmitTransaction({ signer: alice, transaction: mintTokenTransaction });
+const committedTxn = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: mintTokenTransaction,
+});
 ```
 
 This is the function signature of `mintTokenTransaction`. It returns a `SingleSignerTransaction` that can be simulated or submitted to chain:
+
 ```ts
 async mintTokenTransaction(args: {
     creator: Account;
@@ -434,18 +461,22 @@ async mintTokenTransaction(args: {
     options?: InputGenerateTransactionOptions;
   }): Promise<SingleSignerTransaction>
 ```
+
   </TabItem>
   <TabItem value="python" label="Python">
 
 Your application will call `mint_token`:
+
 ```python
 :!: static/sdks/python/examples/simple_aptos_token.py section_5
 ```
 
 This is the function signature of `mint_token`. It returns a transaction hash:
+
 ```python
 :!: static/sdks/python/aptos_sdk/aptos_token_client.py mint_token
 ```
+
   </TabItem>
 </Tabs>
 
@@ -459,6 +490,7 @@ Both the collection and token assets are [Objects](../standards/aptos-object) on
   <TabItem value="typescript" label="Typescript">
 
 To read a collection's metadata:
+
 ```ts
 const alicesCollection = await aptos.getCollectionData({
   creatorAddress: alice.accountAddress,
@@ -469,24 +501,29 @@ console.log(`Alice's collection: ${JSON.stringify(alicesCollection, null, 4)}`);
 ```
 
 To read an owned token's metadata:
+
 ```ts
 const alicesDigitalAsset = await aptos.getOwnedTokens({
   ownerAddress: alice.accountAddress,
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
 
-console.log(`Alice's digital asset: ${JSON.stringify(alicesDigitalAsset[0], null, 4)}`);
+console.log(
+  `Alice's digital asset: ${JSON.stringify(alicesDigitalAsset[0], null, 4)}`,
+);
 ```
 
   </TabItem>
   <TabItem value="python" label="Python">
 
 To read a collection's metadata:
+
 ```python
 :!: static/sdks/python/examples/simple_aptos_token.py section_6
 ```
 
 To read a token's metadata:
+
 ```python
 :!: static/sdks/python/examples/simple_aptos_token.py get_token_data
 ```
@@ -509,11 +546,12 @@ const alicesDigitalAsset = await aptos.getOwnedTokens({
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
 
-console.log(`Alice's digital asset: ${JSON.stringify(alicesDigitalAsset[0], null, 4)}`);
+console.log(
+  `Alice's digital asset: ${JSON.stringify(alicesDigitalAsset[0], null, 4)}`,
+);
 ```
 
 ```ts title="Making the query to get the data"
-
 export async function getOwnedTokens(args: {
   aptosConfig: AptosConfig;
   ownerAddress: AccountAddressInput;
@@ -545,6 +583,7 @@ export async function getOwnedTokens(args: {
   return data.current_token_ownerships_v2;
 }
 ```
+
   </TabItem>
   <TabItem value="python" label="Python">
 
@@ -574,7 +613,9 @@ const alicesDigitalAsset = await aptos.getOwnedTokens({
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
 
-console.log(`Alice's digital asset: ${JSON.stringify(alicesDigitalAsset[0], null, 4)}`);
+console.log(
+  `Alice's digital asset: ${JSON.stringify(alicesDigitalAsset[0], null, 4)}`,
+);
 ```
 
 ```ts title="Transfer the token from Alice to Bob"
@@ -583,8 +624,13 @@ const transferTransaction = await aptos.transferDigitalAsset({
   digitalAssetAddress: alicesDigitalAsset[0].token_data_id,
   recipient: bob.accountAddress,
 });
-const committedTxn = await aptos.signAndSubmitTransaction({ signer: alice, transaction: transferTransaction });
-const pendingTxn = await aptos.waitForTransaction({ transactionHash: committedTxn.hash });
+const committedTxn = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: transferTransaction,
+});
+const pendingTxn = await aptos.waitForTransaction({
+  transactionHash: committedTxn.hash,
+});
 ```
 
 ```ts title="Print each user's queried token amount"
@@ -592,7 +638,9 @@ const alicesDigitalAssetsAfter = await aptos.getOwnedTokens({
   ownerAddress: alice.accountAddress,
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
-console.log(`Alices's digital assets balance: ${alicesDigitalAssetsAfter.length}`);
+console.log(
+  `Alices's digital assets balance: ${alicesDigitalAssetsAfter.length}`,
+);
 
 const bobDigitalAssetsAfter = await aptos.getOwnedTokens({
   ownerAddress: bob.accountAddress,
@@ -624,16 +672,14 @@ console.log(`Bob's digital assets balance: ${bobDigitalAssetsAfter.length}`);
 :!: static/sdks/python/examples/simple_aptos_token.py section_11
 ```
 
-
   </TabItem>
 </Tabs>
 
 ---
 
-
 ## Supporting documentation
 
-* [Account basics](../concepts/accounts.md)
-* [TypeScript SDK](../sdks/new-ts-sdk/index.md)
-* [Python SDK](../sdks/python-sdk.md)
-* [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)
+- [Account basics](../concepts/accounts.md)
+- [TypeScript SDK](../sdks/new-ts-sdk/index.md)
+- [Python SDK](../sdks/python-sdk.md)
+- [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)

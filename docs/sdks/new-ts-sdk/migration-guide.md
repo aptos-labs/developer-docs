@@ -94,16 +94,20 @@ Removed all separate transaction functions in favor of a more simplified and fri
 const aptosClient = new AptosClient(NODE_URL);
 
 // bcs serialized arguments payload
-const entryFunctionPayload = new TxnBuilderTypes.TransactionPayloadEntryFunction(
-  TxnBuilderTypes.EntryFunction.natural(
-    "0x1::aptos_account",
-    "transfer",
-    [],
-    [bcsToBytes(TxnBuilderTypes.AccountAddress.fromHex(receiver.address()))],
-  ),
-);
+const entryFunctionPayload =
+  new TxnBuilderTypes.TransactionPayloadEntryFunction(
+    TxnBuilderTypes.EntryFunction.natural(
+      "0x1::aptos_account",
+      "transfer",
+      [],
+      [bcsToBytes(TxnBuilderTypes.AccountAddress.fromHex(receiver.address()))],
+    ),
+  );
 // generate a raw transaction
-const transaction = await client.generateRawTransaction(sender.address(), entryFunctionPayload);
+const transaction = await client.generateRawTransaction(
+  sender.address(),
+  entryFunctionPayload,
+);
 
 // non-serialized arguments payload
 const payload: Gen.TransactionPayload = {
@@ -113,10 +117,16 @@ const payload: Gen.TransactionPayload = {
   arguments: [account2.address().hex(), 100000],
 };
 // generate a raw transaction
-const transaction = await client.generateTransaction(account1.address(), payload);
+const transaction = await client.generateTransaction(
+  account1.address(),
+  payload,
+);
 
 // sign transaction
-const signedTransaction = AptosClient.generateBCSTransaction(sender, transaction);
+const signedTransaction = AptosClient.generateBCSTransaction(
+  sender,
+  transaction,
+);
 // submit transaction
 const txn = await client.submitSignedBCSTransaction(signedTransaction);
 ```
@@ -149,9 +159,15 @@ const transaction = await aptos.build.transaction({
   },
 });
 // sign transaction
-const senderAuthenticator = aptos.sign.transaction({ signer: alice, transaction });
+const senderAuthenticator = aptos.sign.transaction({
+  signer: alice,
+  transaction,
+});
 // submit transaction
-const committedTransaction = await aptos.submit.transaction({ transaction, senderAuthenticator });
+const committedTransaction = await aptos.submit.transaction({
+  transaction,
+  senderAuthenticator,
+});
 ```
 
 ## Account
@@ -178,13 +194,19 @@ Read more about it [here](./account.md)
 // generate a new account (or key pair)
 const account = Account.generate(); // defaults to Legacy Ed25519
 const account = Account.generate({ scheme: SingingSchemeInput.Secp256k1 }); // Single Sender Secp256k1
-const account = Account.generate({ scheme: SingingSchemeInput.Ed25519, legacy: false }); // Single Sender Ed25519
+const account = Account.generate({
+  scheme: SingingSchemeInput.Ed25519,
+  legacy: false,
+}); // Single Sender Ed25519
 
 // derive account from private key
 const account = Account.fromPrivateKey({ privateKey });
 
 // derive account from private key and address
-const account = Account.fromPrivateKeyAndAddress({ privateKey, address: accountAddress });
+const account = Account.fromPrivateKeyAndAddress({
+  privateKey,
+  address: accountAddress,
+});
 
 // derive account from derivation path
 const acccount = Account.fromDerivationPath({

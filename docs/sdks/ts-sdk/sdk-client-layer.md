@@ -68,7 +68,10 @@ const payload = {
   arguments: ["read aptos.dev"],
 };
 
-const rawTxn = await provider.generateTransaction(alice.address(), entryFunctionPayload);
+const rawTxn = await provider.generateTransaction(
+  alice.address(),
+  entryFunctionPayload,
+);
 ```
 
 `function` – This must be a fully qualified function name and composed of `module address`, `module name` and `function name` separated by `::`.
@@ -86,17 +89,29 @@ The `generateRawTransaction()` method, accept `any transaction payload type (ent
 ```ts
 const alice = new AptosAccount();
 
-const entryFunctionPayload = new TxnBuilderTypes.TransactionPayloadEntryFunction(
-  TxnBuilderTypes.EntryFunction.natural("0x123::todolist", "create_task", [], [bcsSerializeStr("read aptos.dev")]),
-);
+const entryFunctionPayload =
+  new TxnBuilderTypes.TransactionPayloadEntryFunction(
+    TxnBuilderTypes.EntryFunction.natural(
+      "0x123::todolist",
+      "create_task",
+      [],
+      [bcsSerializeStr("read aptos.dev")],
+    ),
+  );
 
-const rawTxn = await provider.generateRawTransaction(alice.address(), entryFunctionPayload);
+const rawTxn = await provider.generateRawTransaction(
+  alice.address(),
+  entryFunctionPayload,
+);
 ```
 
 For simplicity, the TypeScript SDK provides a method that can submit a BCS transaction in a one call.
 
 ```ts
-const rawTxn = await provider.generateSignSubmitTransaction(alice, entryFunctionPayload);
+const rawTxn = await provider.generateSignSubmitTransaction(
+  alice,
+  entryFunctionPayload,
+);
 ```
 
 ### Sign a Raw Transaction

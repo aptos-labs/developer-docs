@@ -89,7 +89,10 @@ const transaction = await aptos.transferCoinTransaction({
   recipient: bob.accountAddress,
   amount: 100,
 });
-const pendingTransaction = await aptos.signAndSubmitTransaction({ signer: alice, transaction });
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction,
+});
 ```
 
 ### Build and submit transaction
@@ -114,9 +117,18 @@ const transaction = await aptos.build.transaction({
 });
 
 // using sign and submit separately
-const senderAuthenticator = aptos.sign.transaction({ signer: alice, transaction });
-const pendingTransaction = await aptos.submit.transaction({ transaction, senderAuthenticator });
+const senderAuthenticator = aptos.sign.transaction({
+  signer: alice,
+  transaction,
+});
+const pendingTransaction = await aptos.submit.transaction({
+  transaction,
+  senderAuthenticator,
+});
 
 // using signAndSubmit combined
-const pendingTransaction = await aptos.signAndSubmitTransaction({ signer: alice, transaction });
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction,
+});
 ```

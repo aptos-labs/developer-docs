@@ -2,11 +2,12 @@
 
 Packages allow Move programmers to more easily re-use code and share it
 across projects. The Move package system allows programmers to easily do the following:
-* Define a package containing Move code;
-* Parameterize a package by [named addresses](./address.md);
-* Import and use packages in other Move code and instantiate named addresses;
-* Build packages and generate associated compilation artifacts from packages; and
-* Work with a common interface around compiled Move artifacts.
+
+- Define a package containing Move code;
+- Parameterize a package by [named addresses](./address.md);
+- Import and use packages in other Move code and instantiate named addresses;
+- Build packages and generate associated compilation artifacts from packages; and
+- Work with a common interface around compiled Move artifacts.
 
 ## Package Layout and Manifest Syntax
 
@@ -163,9 +164,10 @@ address without needing to worry about the exact value assigned to it.
 
 With these two different declaration methods, there are two ways that
 information about named addresses can flow in the package graph:
-* The former ("unassigned named addresses") allows named address values to flow
+
+- The former ("unassigned named addresses") allows named address values to flow
   from the importation site to the declaration site.
-* The latter ("assigned named addresses") allows named address values to flow
+- The latter ("assigned named addresses") allows named address values to flow
   from the declaration site upwards in the package graph to usage sites.
 
 With these two methods for flowing named address information throughout the
@@ -175,10 +177,11 @@ understand.
 ## Scoping and Renaming of Named Addresses
 
 A named address `N` in a package `P` is in scope if:
+
 1. It declares a named address `N`; or
 2. A package in one of `P`'s transitive dependencies declares the named address
-  `N` and there is a dependency path in the package graph between `P` and the
-  declaring package of `N` with no renaming of `N`.
+   `N` and there is a dependency path in the package graph between `P` and the
+   declaring package of `N` with no renaming of `N`.
 
 Additionally, every named address in a package is exported. Because of this and
 the above scoping rules each package can be viewed as coming with a set of
@@ -304,6 +307,7 @@ Note, both `aptos move prove` and `aptos move test` commands, currently, do not 
 ## Recommended structure
 
 We use an example to illustrate the dev flow of using this feature. Suppose we want to compile the package `A`. The package layout is:
+
 ```rust
 ./A
 ├── Move.toml

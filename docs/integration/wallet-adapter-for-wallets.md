@@ -18,7 +18,9 @@ The [wallet-adapter-plugin-template](https://github.com/aptos-labs/wallet-adapte
 5. Replace `url` with your website URL.
 6. Change `icon` to your wallet icon (pay attention to the required format).
 7. Replace `window.aptos` with: `window.<your-wallet-name>`
-  - Make sure the `Window Interface` has `<your-wallet-name>` as a key (instead of `aptos`).
+
+- Make sure the `Window Interface` has `<your-wallet-name>` as a key (instead of `aptos`).
+
 8. Open `__tests/index.test.tsx` and change `AptosWallet` to: `<Your-Wallet-Name>Wallet`
 9. Run tests with `pnpm test` - all tests should pass.
 

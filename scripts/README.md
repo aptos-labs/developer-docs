@@ -1,6 +1,9 @@
 # Scripts
+
 ## Spellchecking
+
 In order to spell check, you just need to run this from anywhere in `developer-docs`:
+
 ```
 pnpm spellcheck
 ```
@@ -10,4 +13,5 @@ If you want to add a new word to the dictionary, you should add the word to `add
 Note that aspell, at least as it is configured now, does not support adding words with numbers in them, such as `MultiEd25519`. Instead, you'd just want to add `MultiEd`.
 
 ## Contributors
+
 See the top level README.

@@ -1,15 +1,17 @@
 ---
 title: "Aptos Wallet Standard"
 ---
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 # Aptos Wallet Standard
 
-The wallet standard provides guidelines for interoperability between wallet types.  This ensures dapp developers do not need to change
+The wallet standard provides guidelines for interoperability between wallet types. This ensures dapp developers do not need to change
 their applications to handle different wallets. This standard offers a single interface for all dapp developers, allowing easy additions of new wallets and more users to each application. This interoperability allows users to choose which wallet they want without worrying about whether apps support their use cases.
 
 In order to ensure interoperability across Aptos wallets, the following is required:
+
 1. Mnemonics - a set of words that can be used to derive account private keys
 2. dapp API - entry points into the wallet to support access to identity managed by the wallet
 3. Key rotation - the feature handling both the relationship around mnemonics and the recovery of accounts in different wallets
@@ -27,9 +29,8 @@ Aptos account creation can be supported across wallets in the following manner:
 1. Generate a mnemonic phrase, for example with BIP39.
 2. Get the master seed from that mnemonic phrase.
 3. Use the BIP44-derived path to retrieve an account address (e.g. `m/44'/637'/0'/0'/0'`)
-    - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69)
-    - For example, Petra Wallet always uses the path `m/44'/637'/0'/0'/0'` since there is one mnemonic per one account.
-
+   - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69)
+   - For example, Petra Wallet always uses the path `m/44'/637'/0'/0'/0'` since there is one mnemonic per one account.
 
 ```typescript
 /**
@@ -64,31 +65,32 @@ However, many wallets from other ecosystems use this paradigm, and take these st
 1. Generate a mnemonic phrase, for example with BIP39.
 2. Get the master seed from that mnemonic phrase.
 3. Use the BIP44-derived path to retrieve private keys (e.g. `m/44'/637'/i'/0'/0'`) where `i` is the account index.
-    - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69)
+   - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69)
 4. Increase `i` until all the accounts the user wants to import are found.
-    - Note: The iteration should be limited, if an account doesn't exist during iteration, keep iterating for a constant `address_gap_limit` (10 for now) to see if there are any other accounts. If an account is found we will continue to iterate as normal.
+   - Note: The iteration should be limited, if an account doesn't exist during iteration, keep iterating for a constant `address_gap_limit` (10 for now) to see if there are any other accounts. If an account is found we will continue to iterate as normal.
 
 ie.
+
 ```typescript
 const gapLimit = 10;
 let currentGap = 0;
 
 for (let i = 0; currentGap < gapLimit; i += 1) {
-    const derivationPath = `m/44'/637'/${i}'/0'/0'`;
-    const account = fromDerivePath(derivationPath, mnemonic);
-    const response = account.getResources();
-    if (response.status !== 404) {
-        wallet.addAccount(account);
-        currentGap = 0;
-    } else {
-        currentGap += 1;
-    }
+  const derivationPath = `m/44'/637'/${i}'/0'/0'`;
+  const account = fromDerivePath(derivationPath, mnemonic);
+  const response = account.getResources();
+  if (response.status !== 404) {
+    wallet.addAccount(account);
+    currentGap = 0;
+  } else {
+    currentGap += 1;
+  }
 }
 ```
 
 ## dapp API
 
-More important than account creation, is how wallets connect to dapps. Additionally, following these APIs will allow for the wallet developer to integrate with the [Aptos Wallet Adapter Standard](../integration/wallet-adapter-concept.md).  The APIs are as follows:
+More important than account creation, is how wallets connect to dapps. Additionally, following these APIs will allow for the wallet developer to integrate with the [Aptos Wallet Adapter Standard](../integration/wallet-adapter-concept.md). The APIs are as follows:
 
 - `connect()`, `disconnect()`
 - `account()`
@@ -128,44 +130,51 @@ The connection APIs ensure that wallets don't accept requests until the user ack
 the user state clean and prevents the user from unknowingly having prompts.
 
 - `connect()` will prompt the user for a connection
-    - return `Promise<AccountInfo>`
+  - return `Promise<AccountInfo>`
 - `disconnect()` allows the user to stop giving access to a dapp and also helps the dapp with state management
-    - return `Promise<void>`
+  - return `Promise<void>`
 
 ### State APIs
+
 #### Get Account
+
 **Connection required**
 
 Allows a dapp to query for the current connected account address and public key
 
 - `account()` no prompt to the user
-    - returns `Promise<AccountInfo>`
+  - returns `Promise<AccountInfo>`
 
 #### Get Network
+
 **Connection required**
 
 Allows a dapp to query for the current connected network name, chain ID, and URL
 
 - `network()` no prompt to the user
-    - returns `Promise<NetworkInfo>`
+  - returns `Promise<NetworkInfo>`
 
 ### Signing APIs
+
 #### Sign and submit transaction
+
 **Connection required**
 
 Allows a dapp to send a simple JSON payload using the [TypeScript SDK](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_client.ts#L217-L221)
 for signing and submission to the current network. The user should be prompted for approval.
 
 - `signAndSubmitTransaction(transaction: EntryFunctionPayload)` will prompt the user with the transaction they are signing
-    - returns `Promise<PendingTransaction>`
+  - returns `Promise<PendingTransaction>`
 
 #### Sign message
+
 **Connection required**
 
 Allows a dapp to sign a message with their private key. The most common use case is to verify identity, but there are a few other possible use
 cases. The user should be prompted for approval. You may notice some wallets from other chains just provide an interface to sign arbitrary strings. This can be susceptible to man-in-the-middle attacks, signing string transactions, etc.
 
 Types:
+
 ```typescript
 export interface SignMessagePayload {
   address?: boolean; // Should we include the address of the account in the message
@@ -181,20 +190,21 @@ export interface SignMessageResponse {
   chainId?: number;
   fullMessage: string; // The message that was generated to sign
   message: string; // The message passed in by the user
-  nonce: string,
-  prefix: string, // Should always be APTOS
+  nonce: string;
+  prefix: string; // Should always be APTOS
   signature: string | string[]; // The signed full message
   bitmap?: Uint8Array; // a 4-byte (32 bits) bit-vector of length N
 }
 ```
 
 - `signMessage(payload: SignMessagePayload)` prompts the user with the `payload.message` to be signed
-    - returns `Promise<SignMessageResponse>`
+  - returns `Promise<SignMessageResponse>`
 
 An example:
 `signMessage({nonce: 1234034, message: "Welcome to dApp!", address: true, application: true, chainId: true })`
 
 This would generate the `fullMessage` to be signed and returned as the `signature`:
+
 ```yaml
 APTOS
 address: 0x000001
@@ -209,6 +219,7 @@ Aptos has support for both single-signer and multi-signer accounts. If the walle
 ### Event listening
 
 To be added in the future:
+
 - Event listening (`onAccountChanged(listener)`, `onNetworkChanged(listener)`)
 
 ## Key rotation
@@ -216,10 +227,13 @@ To be added in the future:
 Key rotation is currently not implemented in any wallets. Mapping of rotated keys has been [implemented](https://github.com/aptos-labs/aptos-core/pull/2972), but SDK integration is in progress.
 
 Wallets that import a private key will have to do the following:
+
 1. Derive the authentication key.
 2. Lookup the authentication key on-chain in the Account origination table.
-  - If the account doesn't exist, it's a new account. The address to be used is the authentication key.
-  - If the account does exist, it's a rotated key account, and the address to be used will come from the table.
+
+- If the account doesn't exist, it's a new account. The address to be used is the authentication key.
+- If the account does exist, it's a rotated key account, and the address to be used will come from the table.
 
 ## Appendix
+
 - **[Forum post with discussion](https://forum.aptoslabs.com/t/wallet-dapp-api-standards/11765/33)** about the dapp API

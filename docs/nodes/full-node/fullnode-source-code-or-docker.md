@@ -36,7 +36,7 @@ We recommend the following hardware resources:
 
 ## Storage requirements
 
-The amount of data stored by Aptos depends on the ledger history (length) of the blockchain and the number of on-chain states (e.g., accounts). These values depend on several factors, including: the age of the blockchain, the average transaction rate and the configuration of the ledger pruner. Follow the storage requirements described in [Validator Hardware Requirements](../validator-node/operator/node-requirements.md#hardware-requirements). 
+The amount of data stored by Aptos depends on the ledger history (length) of the blockchain and the number of on-chain states (e.g., accounts). These values depend on several factors, including: the age of the blockchain, the average transaction rate and the configuration of the ledger pruner. Follow the storage requirements described in [Validator Hardware Requirements](../validator-node/operator/node-requirements.md#hardware-requirements).
 
 :::tip Devnet blockchain storage
 The Aptos devnet is currently reset on a weekly basis. Hence we estimate that if you are connecting to the devnet, then the Aptos blockchain will not require more than several GBs of storage. See the `#devnet-release` channel on Aptos Discord.
@@ -60,61 +60,65 @@ See [Building Aptos From Source](../../guides/building-from-source.md)
 1. Make sure your current working directory is `aptos-core`.
 
    Run:
+
    ```bash
    cp config/src/config/test_data/public_full_node.yaml fullnode.yaml
    ```
+
    to create a copy of the public fullnode configuration YAML template. You will edit this file to ensure that your public fullnode:
 
-    - Contains the correct genesis blob that is published by the Aptos mainnet.
-    - Synchronizes correctly with the mainnet, by using the checkpoint file `waypoint.txt` published by the mainnet. 
-    - Stores the mainnet database at a location of your choice on your local machine.
+   - Contains the correct genesis blob that is published by the Aptos mainnet.
+   - Synchronizes correctly with the mainnet, by using the checkpoint file `waypoint.txt` published by the mainnet.
+   - Stores the mainnet database at a location of your choice on your local machine.
 
 1. Make sure your current working directory is `aptos-core`. The Aptos mainnet publishes the `genesis.blob` and `waypoint.txt` files. Download them:
 
-    - Run the below command on your terminal to download the file:
-      ```bash
-      curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/genesis.blob
-      ```
+   - Run the below command on your terminal to download the file:
 
-    - Run the below command on your terminal to download the file:
-      ```bash
-      curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/waypoint.txt
-      ```
-  
-    :::caution Don't want to connect to mainnet?
-    To connect to other networks (e.g., `devnet` and `testnet`), you can find genesis and waypoint here ➜ https://github.com/aptos-labs/aptos-networks.
-    Be sure to download the `genesis.blob` and `waypoint.txt` for those networks, instead of using the genesis
-    and waypoint pointed to by the `curl` commands above.
-    :::
+     ```bash
+     curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/genesis.blob
+     ```
+
+   - Run the below command on your terminal to download the file:
+     ```bash
+     curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/waypoint.txt
+     ```
+
+   :::caution Don't want to connect to mainnet?
+   To connect to other networks (e.g., `devnet` and `testnet`), you can find genesis and waypoint here ➜ https://github.com/aptos-labs/aptos-networks.
+   Be sure to download the `genesis.blob` and `waypoint.txt` for those networks, instead of using the genesis
+   and waypoint pointed to by the `curl` commands above.
+   :::
 
 1. Edit the `fullnode.yaml` file in your current working directory as follows.
 
-    - Specify the correct path to the `waypoint.txt` you just downloaded by editing the `base.waypoint.from_file` in the `fullnode.yaml`. By default it points to `waypoint.txt` in the current working directory.
+   - Specify the correct path to the `waypoint.txt` you just downloaded by editing the `base.waypoint.from_file` in the `fullnode.yaml`. By default it points to `waypoint.txt` in the current working directory.
 
-    For example:
-      ```yaml
-      base:
-        waypoint:
-          from_file: "./waypoint.txt"
-      ```
+   For example:
 
-    - For the `genesis_file_location` key, provide the full path to the `genesis.blob` file. For example:
+   ```yaml
+   base:
+     waypoint:
+       from_file: "./waypoint.txt"
+   ```
 
-      ```yaml
-      genesis_file_location: "./genesis.blob"
-      ```
+   - For the `genesis_file_location` key, provide the full path to the `genesis.blob` file. For example:
 
-    - For the `data_dir` key in the `base` list, specify the directory where on your local computer you want to store the devnet database. This can be anywhere on your computer. For example, you can create a directory `my-full-node/data` in your home directory and specify it as:
+     ```yaml
+     genesis_file_location: "./genesis.blob"
+     ```
 
-      ```yaml
-      data_dir: "</path/to/my/homedir/my-full-node/data>"
-      ```
+   - For the `data_dir` key in the `base` list, specify the directory where on your local computer you want to store the devnet database. This can be anywhere on your computer. For example, you can create a directory `my-full-node/data` in your home directory and specify it as:
+
+     ```yaml
+     data_dir: "</path/to/my/homedir/my-full-node/data>"
+     ```
 
 1. Start your local public fullnode by running the below command:
 
-  ```bash
-  cargo run -p aptos-node --release -- -f ./fullnode.yaml
-  ```
+```bash
+cargo run -p aptos-node --release -- -f ./fullnode.yaml
+```
 
 You have now successfully configured and started running a fullnode connected to Aptos devnet.
 
@@ -136,6 +140,7 @@ Running Aptos-core via Docker is currently only supported on x86-64 CPUs. If you
 
 1. Install [Docker](https://docs.docker.com/get-docker/).
 2. Run the following script to prepare your local configuration and data directory for mainnet:
+
 ```bash
 mkdir mainnet && cd mainnet
 mkdir data && \
@@ -157,9 +162,9 @@ execution:
   genesis_file_location: "/opt/aptos/etc/genesis.blob"
 
 full_node_networks:
-- network_id: "public"
-  discovery_method: "onchain"
-  listen_address: "/ip4/0.0.0.0/tcp/6182"
+  - network_id: "public"
+    discovery_method: "onchain"
+    listen_address: "/ip4/0.0.0.0/tcp/6182"
 
 api:
   enabled: true
@@ -169,7 +174,7 @@ api:
 **NOTE**: Set `listen_address: "/ip4/127.0.0.1/tcp/6182"` if you do not want other full nodes connecting to yours. Also see the below note.
 
 4. Run the below `docker` command. **NOTE** the `mainnet` tag always refers to the latest official Docker image tag. You can find the latest hash for comparison at:
-https://github.com/aptos-labs/aptos-networks/tree/main/mainnet
+   https://github.com/aptos-labs/aptos-networks/tree/main/mainnet
 
 ```bash
 docker run --pull=always \
@@ -266,33 +271,39 @@ When receiving an update from Aptos for your fullnode, take these measures to mi
 ### Upgrading from source
 
 If you created your Aptos fullnode from source, you should similarly upgrade from source:
+
 1. Stop your local public fullnode by running the below command:
-  ```bash
-  cargo stop aptos-node
-  ```
+
+```bash
+cargo stop aptos-node
+```
+
 1. Delete the `waypoint.txt`, `genesis.blob` and `fullnode.yaml` files previously downloaded, installed and configured.
 1. Re-install and configure those files as during setup.
 1. Restart your local public fullnode by running the same start (`run`) command as before:
-  ```bash
-  cargo run -p aptos-node --release -- -f ./fullnode.yaml
-  ```
+
+```bash
+cargo run -p aptos-node --release -- -f ./fullnode.yaml
+```
 
 ### Upgrading with Docker
 
 If you created your Aptos fullnode with Docker, you should similarly upgrade with Docker:
+
 1. Stop your local public fullnode by running the below command:
-    ```bash
-    docker-compose down --volumes
-    ```
+   ```bash
+   docker-compose down --volumes
+   ```
 1. Delete the `waypoint.txt`, `genesis.blob` and `fullnode.yaml` files previously downloaded, installed and configured.
 1. Re-install and configure those files as during setup.
 1. Restart your local public fullnode by running the same start (`run`) command as before:
-  ```bash
-  docker run --pull=always \
-      --rm -p 8080:8080 \
-      -p 9101:9101 -p 6180:6180 \
-      -v $(pwd):/opt/aptos/etc -v $(pwd)/data:/opt/aptos/data \
-      --workdir /opt/aptos/etc \
-      --name=aptos-fullnode aptoslabs/validator:mainnet aptos-node \
-      -f /opt/aptos/etc/fullnode.yaml
-  ```
+
+```bash
+docker run --pull=always \
+    --rm -p 8080:8080 \
+    -p 9101:9101 -p 6180:6180 \
+    -v $(pwd):/opt/aptos/etc -v $(pwd)/data:/opt/aptos/data \
+    --workdir /opt/aptos/etc \
+    --name=aptos-fullnode aptoslabs/validator:mainnet aptos-node \
+    -f /opt/aptos/etc/fullnode.yaml
+```

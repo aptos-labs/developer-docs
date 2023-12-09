@@ -2,9 +2,9 @@
 
 Unit testing for Move adds three new annotations to the Move source language:
 
-* `#[test]`
-* `#[test_only]`, and
-* `#[expected_failure]`.
+- `#[test]`
+- `#[test_only]`, and
+- `#[expected_failure]`.
 
 They respectively mark a function as a test, mark a module or module member (`use`, function, or struct) as code to be included for testing only, and mark that a test is expected to fail. These annotations can be placed on a function with any visibility. Whenever a module or module member is annotated as `#[test_only]` or `#[test]`, it will not be included in the compiled bytecode unless it is compiled for testing.
 
@@ -22,9 +22,9 @@ fun this_is_a_test() { ... }
 fun this_is_not_correct(arg: signer) { ... }
 ```
 
-A test can also be annotated as an `#[expected_failure]`. This annotation marks that the test should is expected to raise an error. 
+A test can also be annotated as an `#[expected_failure]`. This annotation marks that the test should is expected to raise an error.
 You can ensure that a test is aborting with a specific abort `<code>` in the module `<loc>`.
-by annotating it with `#[expected_failure(abort_code = <code>, location = <loc>)]`, 
+by annotating it with `#[expected_failure(abort_code = <code>, location = <loc>)]`,
 if it then fails with a different abort code, in a different module or with a non-abort error the test will fail. Note that `<loc>` can be `Self`(in the current module) or a qualified name, e.g. `vector::std`.
 Only functions that have the `#[test]` annotation can also be annotated as an #`[expected_failure]`.
 
@@ -182,6 +182,7 @@ Test result: OK. Total tests: 3; passed: 3; failed: 0
 ### Using Test Flags
 
 #### `-f <str>` or `--filter <str>`
+
 This will only run tests whose fully qualified name contains `<str>`. For example if we wanted to only run tests with `"zero_coin"` in their name:
 
 ```
@@ -195,6 +196,7 @@ Test result: OK. Total tests: 2; passed: 2; failed: 0
 ```
 
 #### `--coverage`
+
 This will compute code being covered by test cases and generate coverage summary.
 
 ```

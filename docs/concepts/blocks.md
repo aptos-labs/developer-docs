@@ -11,7 +11,8 @@ Blocks are still a fundamental unit within Aptos. Transactions are batched and e
 
 ## System transactions
 
-Each Aptos block contains both user transactions and special system transactions to *mark* the beginning and end of the transaction batch. Specifically, there are two system transactions:
+Each Aptos block contains both user transactions and special system transactions to _mark_ the beginning and end of the transaction batch. Specifically, there are two system transactions:
+
 1. `BlockMetadataTransaction` - is inserted at the beginning of the block. A `BlockMetadata` transaction can also mark the end of an [epoch](#epochs) and trigger reward distribution to validators.
 2. `StateCheckpointTransaction` - is appended at the end of the block and is used as a checkpoint milestone.
 

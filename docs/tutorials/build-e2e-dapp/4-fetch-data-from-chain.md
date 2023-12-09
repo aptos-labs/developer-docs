@@ -79,8 +79,9 @@ function App (
   ...
 )
 ```
-also import `useEffect` using 
-```import { useState, useEffect } from "react"; ```
+
+also import `useEffect` using
+`import { useState, useEffect } from "react"; `
 
 5. Our `useEffect` hook is calling a `fetchList` function; let’s create it:
 
@@ -113,8 +114,8 @@ The `provider.getAccountResource()`expects an _account address_ that holds the r
 
 If the request succeeds and there is a resource for that account, we want to set our local state to `true`; otherwise, we would set it to `false`.
 
-6. Let’s update ```import { Layout, Row, Col } from "antd"; ``` to import Button:
-   ```import { Layout, Row, Col, Button  } from "antd"; ```
+6. Let’s update `import { Layout, Row, Col } from "antd"; ` to import Button:
+   `import { Layout, Row, Col, Button  } from "antd"; `
 
 7. Let’s update our UI based on the `accountHasList` state:
 
@@ -134,7 +135,11 @@ return (
     {!accountHasList && (
       <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
         <Col span={8} offset={8}>
-          <Button block type="primary" style={{ height: "40px", backgroundColor: "#3f67ff" }}>
+          <Button
+            block
+            type="primary"
+            style={{ height: "40px", backgroundColor: "#3f67ff" }}
+          >
             Add new list
           </Button>
         </Col>

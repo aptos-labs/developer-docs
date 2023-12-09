@@ -14,9 +14,9 @@ This tutorial introduces how you can compile, deploy, and mint your own coin, na
 
 Install your preferred SDK from the below list:
 
-* [TypeScript SDK](../sdks/new-ts-sdk/index.md)
-* [Python SDK](../sdks/python-sdk.md)
-* [Rust SDK](../sdks/rust-sdk.md)
+- [TypeScript SDK](../sdks/new-ts-sdk/index.md)
+- [Python SDK](../sdks/python-sdk.md)
+- [Rust SDK](../sdks/rust-sdk.md)
 
 ---
 
@@ -32,7 +32,6 @@ Install your preferred SDK from the below list:
   <TabItem value="typescript" label="Typescript">
 
 Clone the `aptos-ts-sdk` repo:
-
 
 ```bash
 git clone https://github.com/aptos-labs/aptos-ts-sdk.git
@@ -70,10 +69,10 @@ Bob's updated MoonCoin balance: 100.
 
 Clone the `aptos-core` repo:
 
-
 ```bash
 git clone https://github.com/aptos-labs/aptos-core
 ```
+
 Navigate to the Python SDK directory:
 
 ```bash
@@ -142,8 +141,6 @@ Bob's updated MoonCoin balance: 100.
 
 ---
 
-
-
 ## Step 4: MoonCoin in depth
 
 ### Step 4.1: Building and publishing the MoonCoin package
@@ -158,26 +155,32 @@ These are read by the example and published to the Aptos blockchain:
 <Tabs groupId="examples">
   <TabItem value="typescript" label="Typescript">
 
-In the TypeScript example, we use `aptos move build-publish-payload` command to compile and build the module. 
+In the TypeScript example, we use `aptos move build-publish-payload` command to compile and build the module.
 That command builds the `build` folder that contains the `package-metadata.bcs` and the bytecode for the `moon_coin.mv` module. The command also builds a publication transaction payload and stores it in a JSON output file that we can later read from to get the `metadataBytes` and `byteCode` to publish the contract to chain with.
 
 Compile the package:
+
 ```ts
 export function compilePackage(
   packageDir: string,
   outputFile: string,
   namedAddresses: Array<{ name: string; address: AccountAddress }>,
 ) {
-  const addressArg = namedAddresses.map(({ name, address }) => `${name}=${address}`).join(" ");
+  const addressArg = namedAddresses
+    .map(({ name, address }) => `${name}=${address}`)
+    .join(" ");
   // Assume-yes automatically overwrites the previous compiled version, only do this if you are sure you want to overwrite the previous version.
   const compileCommand = `aptos move build-publish-payload --json-output-file ${outputFile} --package-dir ${packageDir} --named-addresses ${addressArg} --assume-yes`;
   execSync(compileCommand);
 }
 
-compilePackage("move/moonCoin", "move/moonCoin/moonCoin.json", [{ name: "MoonCoin", address: alice.accountAddress }]);
+compilePackage("move/moonCoin", "move/moonCoin/moonCoin.json", [
+  { name: "MoonCoin", address: alice.accountAddress },
+]);
 ```
 
 Publish the package to chain:
+
 ```ts
 export function getPackageBytesToPublish(filePath: string) {
   // current working directory - the root folder of this repo
@@ -193,7 +196,9 @@ export function getPackageBytesToPublish(filePath: string) {
   return { metadataBytes, byteCode };
 }
 
-const { metadataBytes, byteCode } = getPackageBytesToPublish("move/moonCoin/moonCoin.json");
+const { metadataBytes, byteCode } = getPackageBytesToPublish(
+  "move/moonCoin/moonCoin.json",
+);
 
 // Publish MoonCoin package to chain
 const transaction = await aptos.publishPackageTransaction({
@@ -358,8 +363,9 @@ There are two separate withdraw and deposit events instead of a single transfer 
 :::
 
 ## Supporting documentation
-* [Aptos CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md)
-* [TypeScript SDK](../sdks/new-ts-sdk/index.md)
-* [Python SDK](../sdks/python-sdk.md)
-* [Rust SDK](../sdks/rust-sdk.md)
-* [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)
+
+- [Aptos CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md)
+- [TypeScript SDK](../sdks/new-ts-sdk/index.md)
+- [Python SDK](../sdks/python-sdk.md)
+- [Rust SDK](../sdks/rust-sdk.md)
+- [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)

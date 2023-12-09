@@ -15,13 +15,12 @@ nodes with a pruning window that can be configured. This document describes
 how you can configure the pruning behavior.
 
 :::note
-By default the ledger pruner keeps 150 million recent transactions. The approximate amount of disk space required for every 150M transactions is 200G. Unless 
-bootstrapped from the genesis and configured to disable the pruner or a long 
-prune window, the node doesn't carry the entirety of the ledger history. 
-Majority of the nodes on both the testnet and mainnet have a partial 
+By default the ledger pruner keeps 150 million recent transactions. The approximate amount of disk space required for every 150M transactions is 200G. Unless
+bootstrapped from the genesis and configured to disable the pruner or a long
+prune window, the node doesn't carry the entirety of the ledger history.
+Majority of the nodes on both the testnet and mainnet have a partial
 history of 150 million transactions according to this configuration.
 :::
-
 
 To manage these settings, edit the node configuration YAML files,
 for example, `fullnode.yaml` for fullnodes (validator or public) or
@@ -38,9 +37,9 @@ Disabling the ledger pruner can result in the storage disk filling up very quick
 
 ```yaml
 storage:
- storage_pruner_config:
-  ledger_pruner_config:
-   enable: false
+  storage_pruner_config:
+    ledger_pruner_config:
+      enable: false
 ```
 
 ## Configuring the ledger pruning window
@@ -55,9 +54,9 @@ Setting the pruning window smaller than 100 million can lead to runtime errors a
 
 ```yaml
 storage:
- storage_pruner_config:
-  ledger_pruner_config:
-    prune_window: 1000000000
+  storage_pruner_config:
+    ledger_pruner_config:
+      prune_window: 1000000000
 ```
 
 See the complete set of storage configuration settings in the [Storage README](https://github.com/aptos-labs/aptos-core/tree/main/storage#configs).

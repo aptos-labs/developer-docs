@@ -27,14 +27,20 @@ Account generation supports all current Aptos supported key schemes, `Legacy Ed2
 ```ts
 const account = Account.generate(); // defaults to Legacy Ed25519
 const account = Account.generate({ scheme: SingingSchemeInput.Secp256k1 }); // Single Sender Secp256k1
-const account = Account.generate({ scheme: SingingSchemeInput.Ed25519, legacy: false }); // Single Sender Ed25519
+const account = Account.generate({
+  scheme: SingingSchemeInput.Ed25519,
+  legacy: false,
+}); // Single Sender Ed25519
 ```
 
 :::note
 Creating an account with the SDK creates it locally, to create the account on chain we should fund it.
 
 ```ts
-const transaction = await aptos.fundAccount({ accountAddress: account.accountAddress, amount: 100 });
+const transaction = await aptos.fundAccount({
+  accountAddress: account.accountAddress,
+  amount: 100,
+});
 ```
 
 :::
@@ -66,17 +72,28 @@ The SDK supports deriving an account from a private key and address with `fromPr
 // to derive an account with a legacy Ed25519 key scheme
 const privateKey = new Ed25519PrivateKey(privateKeyBytes);
 const accountAddress = AccountAddress.from(address);
-const account = Account.fromPrivateKeyAndAddress({ privateKey, address: accountAddress, legacy: true });
+const account = Account.fromPrivateKeyAndAddress({
+  privateKey,
+  address: accountAddress,
+  legacy: true,
+});
 
 // to derive an account with a Single Sender Ed25519 key scheme
 const privateKey = new Ed25519PrivateKey(privateKeyBytes);
 const accountAddress = AccountAddress.from(address);
-const account = Account.fromPrivateKeyAndAddress({ privateKey, address: accountAddress, legacy: false });
+const account = Account.fromPrivateKeyAndAddress({
+  privateKey,
+  address: accountAddress,
+  legacy: false,
+});
 
 // to derive an account with a Single Sender Secp256k1 key scheme
 const privateKey = new Secp256k1PrivateKey(privateKeyBytes);
 const accountAddress = AccountAddress.from(address);
-const account = Account.fromPrivateKeyAndAddress({ privateKey, address: accountAddress });
+const account = Account.fromPrivateKeyAndAddress({
+  privateKey,
+  address: accountAddress,
+});
 ```
 
 ## Derive an account from derivation path

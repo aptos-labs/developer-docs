@@ -4,7 +4,7 @@ title: "End-to-End Tutorial"
 
 # Creating a Custom Indexer Processor
 
-import BetaNotice from '../../../src/components/_indexer_beta_notice.mdx';
+import BetaNotice from '../../../src/components/\_indexer_beta_notice.mdx';
 
 <BetaNotice />
 
@@ -17,6 +17,7 @@ The smart contract is already deployed, and you mostly don't need to understand 
 ## Getting Started
 
 To get started, clone the [aptos-indexer-processors](https://github.com/aptos-labs/aptos-indexer-processors) repo:
+
 ```
 # HTTPS
 https://github.com/aptos-labs/aptos-indexer-processors.git
@@ -26,27 +27,31 @@ git@github.com:aptos-labs/aptos-indexer-processors.git
 ```
 
 Navigate to the coin flip directory:
+
 ```
 cd aptos-indexer-processors
 cd python/processors/coin_flip
 ```
 
 Processors consume a stream of transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an auth token. Follow [this guide](/indexer/txn-stream/labs-hosted#auth-tokens) to get one. Once you're done, you should have a token that looks like this:
+
 ```
 aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx
 ```
 
 You also need the following tools:
+
 - The [Aptos CLI](/tools/aptos-cli/install-cli)
 - Python 3.9+: [Installation Guide](https://docs.python-guide.org/starting/installation/#python-3-installation-guides).
 - Poetry: [Installation Guide](https://python-poetry.org/docs/#installation).
 
 We use postgresql as our database in this tutorial. You're free to use whatever you want, but this tutorial is geared towards postgresql for the sake of simplicity. We use the following database configuration and tools:
+
 - [Postgresql](https://www.postgresql.org/download/)
-    - We will use a database hosted on `localhost` on the port `5432`, which should be the default.
-    - When you create your username, keep track of it and the password you use for it.
-    - You can view a tutorial for installing postgresql and psql [here](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-22-04-quickstart) tool to set up your database more quickly.
-    - If you want to easily view your database data, consider using a GUI like [DBeaver](https://dbeaver.io/), [pgAdmin](https://www.pgadmin.org/), or [Postico](https://eggerapps.at/postico2/).
+  - We will use a database hosted on `localhost` on the port `5432`, which should be the default.
+  - When you create your username, keep track of it and the password you use for it.
+  - You can view a tutorial for installing postgresql and psql [here](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-22-04-quickstart) tool to set up your database more quickly.
+  - If you want to easily view your database data, consider using a GUI like [DBeaver](https://dbeaver.io/), [pgAdmin](https://www.pgadmin.org/), or [Postico](https://eggerapps.at/postico2/).
 
 Explaining how to create a database is beyond the scope of this tutorial. If you are not sure how to do it, consider checking out tutorials on how to create a database with the `psql` tool.
 
@@ -113,6 +118,7 @@ Copy the contents below and save it to a file called `config.yaml`. Save it in t
 ```
 
 Once you have your config.yaml file open, you only need to change one field, if you just want to run the processor as is:
+
 ```yaml
 grpc_data_stream_api_key: "<YOUR_API_KEY_HERE>"
 ```
@@ -122,6 +128,7 @@ grpc_data_stream_api_key: "<YOUR_API_KEY_HERE>"
 However, if you'd like to customize things further, you can change some of the other fields.
 
 If you'd like to start at a specific version, you can specify that in the config.yaml file with:
+
 ```yaml
 starting_version_default: 123456789
 ```
@@ -158,6 +165,7 @@ db_connection_uri: "postgresql://username:password@database_url:port_number/data
 First, let's create the name for the database schema we're going to use. We use `coin_flip` in our example, so we need to add it in two places:
 
 1. We need to add it to our `python/utils/processor_name.py` file:
+
 ```python
     class ProcessorName(Enum):
         EXAMPLE_EVENT_PROCESSOR = "python_example_event_processor"
@@ -165,6 +173,7 @@ First, let's create the name for the database schema we're going to use. We use 
         NFT_MARKETPLACE_V2_PROCESSOR = "nft_marketplace_v2_processor"
         COIN_FLIP = "coin_flip"
 ```
+
 2. Add it to the constructor in the `IndexerProcessorServer` match cases in `utils/worker.py`:
 
 ```python
@@ -228,7 +237,9 @@ fun flip_coin(
     );
 }
 ```
+
 The events emitted are of type `CoinFlipEvent`, shown below:
+
 ```rust
 struct CoinFlipEvent has copy, drop, store {
     prediction: bool,     // true = heads, false = tails
@@ -244,7 +255,7 @@ When we submit a transaction that calls the `coin_flip` entry function, the inde
 
 Within the `data` field of each `Event` type, we see the arbitrary event data emitted. We use this data to store the event data in our database.
 
-The processor loops over each event in each transaction to process all event data. There are a *lot* of various types of events that can occur in a transaction- so we need to write a filtering function to deal with various events we don't want to store in our database.
+The processor loops over each event in each transaction to process all event data. There are a _lot_ of various types of events that can occur in a transaction- so we need to write a filtering function to deal with various events we don't want to store in our database.
 
 This is the simple iterative structure for our event List:
 
@@ -291,8 +302,8 @@ for event_index, event in enumerate(user_transaction.events):
     data = json.loads(event.data)
     print(json.dumps(data, indent=3))
 ```
-In our case, a single event prints this out:
 
+In our case, a single event prints this out:
 
 ```
 {
@@ -336,9 +347,10 @@ event_db_obj = CoinFlipEvent(
 )
 event_db_objs.append(event_db_obj)
 ```
+
 ### Creating your database model
 
-Now that we know how we store our CoinFlipEvents in our database, let's go backwards a bit and clarify how we *create* this model for the database to use.
+Now that we know how we store our CoinFlipEvents in our database, let's go backwards a bit and clarify how we _create_ this model for the database to use.
 
 We need to structure the `CoinFlipEvent` class in `models.py` to reflect the structure in our Move contract:
 
@@ -363,7 +375,7 @@ class CoinFlipEvent(Base):
 
 The unmarked fields are from the default event data for every event emitted on Aptos. The marked fields are specifically from the fields we calculated above.
 
-The other fields, __tablename__ and __table_args__, are indications to the python SQLAlchemy library as to what database and schema name we are using.
+The other fields, **tablename** and **table_args**, are indications to the python SQLAlchemy library as to what database and schema name we are using.
 
 ## Running the indexer processor
 

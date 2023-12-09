@@ -5,7 +5,7 @@ slug: "spec-lang"
 
 # Move Specification Language
 
-This document describes the *Move specification language (MSL)*, a subset of the [Move](../move-on-aptos.md) language that supports specification of the behavior of Move programs. MSL works together with the [Move Prover](./index.md), a tool that can statically verify the correctness of MSL specifications against Move programs. In contrast to traditional testing, verification of MSL is exhaustive and holds for all possible inputs and global states of a [Move module](../../reference/glossary.md#move-module) or [transaction script](../../reference/glossary.md#transaction-or-move-script). At the same time, this verification of MSL is fast and automated enough that it can be used at a similar place in the developer workflow where tests are typically conducted (for example, for qualification of pull requests in continuous integration).
+This document describes the _Move specification language (MSL)_, a subset of the [Move](../move-on-aptos.md) language that supports specification of the behavior of Move programs. MSL works together with the [Move Prover](./index.md), a tool that can statically verify the correctness of MSL specifications against Move programs. In contrast to traditional testing, verification of MSL is exhaustive and holds for all possible inputs and global states of a [Move module](../../reference/glossary.md#move-module) or [transaction script](../../reference/glossary.md#transaction-or-move-script). At the same time, this verification of MSL is fast and automated enough that it can be used at a similar place in the developer workflow where tests are typically conducted (for example, for qualification of pull requests in continuous integration).
 
 While the Move programming language at this point is stable, the subset represented by MSL should be
 considered evolving. This has no impact on platform stability, since MSL is not running in
@@ -28,7 +28,7 @@ The type system of MSL is similar to that of Move, with the following difference
 - There are two types of encodings for integer types: `num` and `bv` (bit vector).
   If an integer (either a constant or a variable) is not involved in any bitwise operations directly or indirectly,
   regardless of its type in Move (`u8`, `u16`, `u32`, `u64`, `u128` and `u256`), it is treated as the same type. In
-  specifications, this type is called `num`, which is an arbitrary precision *signed* integer type.
+  specifications, this type is called `num`, which is an arbitrary precision _signed_ integer type.
   When MSL refers to a Move name that represents an `u8` or such, it will be automatically widened
   to `num`. This allows writing MSL expressions like `x + 1 <= MAX_U128` or `x - y >= 0` without
   needing to worry about overflow or underflow.
@@ -91,7 +91,7 @@ the function will be interpreted as:
 spec fun get(addr: address): T { global<T>(addr) }
 ```
 
-This is justified by that MSL having [*partial semantics*](#partial-semantics).
+This is justified by that MSL having [_partial semantics_](#partial-semantics).
 
 ## Statements
 
@@ -100,7 +100,7 @@ Other statement forms of the Move language are not supported.
 
 ## Pack and unpack
 
-Pack expressions are supported. Unpack expressions are currently *not* supported.
+Pack expressions are supported. Unpack expressions are currently _not_ supported.
 
 ## Quantifiers
 
@@ -132,7 +132,7 @@ choose a: address where exists<R>(a) && global<R>(a).value > 0
 
 If the predicate is not satisfiable, the result of the choice will be undetermined. (See [partial semantics](#partial-semantics)).
 
-The choice also comes in a form to select the *minimal* value from a set of integers, as in:
+The choice also comes in a form to select the _minimal_ value from a set of integers, as in:
 
 ```
 choose min i: num where in_range(v, i) && v[i] == 2
@@ -152,8 +152,8 @@ Move programs using bitwise operators `&`, `|` and `^` can be verified in the pr
 Due to encoding and efficiency issues, using bitwise operators has more caveats:
 
 - Integers involved in bitwise operations are encoded as `bv` types at the backend, and two encodings of integers are not compatible. For instance, if a variable `v` is involved in a bitwise operation such as `v & 2` or `v = a ^ b`, then when it is used in an arithmetic operation `v * w` or a shift operation `v << w`, `w` will be implicitly cast to a `bv` type in the Move program.
-However, the specification language does not support implicit type cast so users must explicitly use the built-in function `int2bv` in the specification: `v << int2bv(w)`.
-Not that since each `bv` type has a fixed length (from 8 to 256), values with type `num` cannot be converted into `bv`.
+  However, the specification language does not support implicit type cast so users must explicitly use the built-in function `int2bv` in the specification: `v << int2bv(w)`.
+  Not that since each `bv` type has a fixed length (from 8 to 256), values with type `num` cannot be converted into `bv`.
 
 - Verification of `bv` types is not efficient and may lead to timeout. As a result, users may prefer isolating bitwise operations from other operations and not using `int2bv` if possible. Moreover, users need to use pragmas to explicitly specify which integer-typed function arguments or struct fields will be used in bitwise computations:
 
@@ -190,7 +190,6 @@ Not that since each `bv` type has a fixed length (from 8 to 256), values with ty
 
 Note that if arguments or fields of a generic function or struct are specified with `bv` types,
 they will be of `bv` types in all instances of the function or the struct when the instantiated type is an integer type.
-
 
 - Values with integer types in vectors and tables can be encoded as `bv` types; indices and keys in tables cannot be `bv` types for now. Using other types will lead to internal errors.
 
@@ -253,7 +252,7 @@ Moreover, the principle of partial semantics is inherited to [specification help
 
 # Specifications
 
-Specifications are contained in so-called *specification blocks* (abbreviated **spec block**) that
+Specifications are contained in so-called _specification blocks_ (abbreviated **spec block**) that
 can appear as module members and inside Move functions. The various types of spec blocks are shown
 below, and will be discussed in subsequent sections.
 
@@ -386,23 +385,23 @@ spec increment {
 
 A number of pragmas control general behavior of verification. Those are listed in the table below.
 
-| Name                             | Description |
-|----------------------------------|--------------
-| `verify`     | Turns on or off verification.
-| `intrinsic`  | Marks a function to skip the Move implementation and use a prover native implementation. This makes a function behave like a native function even if it not so in Move.
-| `timeout` | Sets a timeout (in seconds) for function or module. Overrides the timeout provided by command line flags.
-| `verify_duration_estimate`     | Sets an estimate (in seconds) for how long the verification of function takes. If the configured `timeout` is less than this value, verification will be skipped.
-| `seed` | Sets a random seed for function or module. Overrides the seed provided by command line flags.
+| Name                       | Description                                                                                                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `verify`                   | Turns on or off verification.                                                                                                                                           |
+| `intrinsic`                | Marks a function to skip the Move implementation and use a prover native implementation. This makes a function behave like a native function even if it not so in Move. |
+| `timeout`                  | Sets a timeout (in seconds) for function or module. Overrides the timeout provided by command line flags.                                                               |
+| `verify_duration_estimate` | Sets an estimate (in seconds) for how long the verification of function takes. If the configured `timeout` is less than this value, verification will be skipped.       |
+| `seed`                     | Sets a random seed for function or module. Overrides the seed provided by command line flags.                                                                           |
 
 The following properties control general behavior of verification:
 
-| Name       | Description |
-|------------|--------------
-| `[deactivated]` | Excludes the associated condition from verification.
+| Name            | Description                                          |
+| --------------- | ---------------------------------------------------- |
+| `[deactivated]` | Excludes the associated condition from verification. |
 
 ## Pre and post state
 
-Multiple conditions in spec blocks work with a *pre* and *post* state, relating them to each other.
+Multiple conditions in spec blocks work with a _pre_ and _post_ state, relating them to each other.
 Function specifications are one example of this: in the `ensures P` condition, the pre-state (at
 function entry) and the post-state (at function exit) are related via the predicate `P`. However,
 the concept is more general and also applied for invariants, where the pre-state is before and
@@ -513,7 +512,7 @@ spec increment {
 If a function has more than one `aborts_if` condition, those conditions are or-ed with each other.
 The evaluation of the combined aborts condition (or-ed from each individual condition) depends on
 the value of the pragma `aborts_if_is_partial`. If this value is false (the default), the function
-aborts *if and only if* the combined aborts condition is true. In this case, the above aborts
+aborts _if and only if_ the combined aborts condition is true. In this case, the above aborts
 specification for `increment` will lead to a verification error, since there are additional
 situations where `increment` can abort, namely if incrementing `Counter.value` would lead to an
 overflow. To fix this, the specification can be completed like this:
@@ -527,7 +526,7 @@ spec increment {
 ```
 
 If the value of `aborts_if_is_partial` is true, the combined aborts condition (the or-ed individual
-conditions) only *implies* that the function aborts. Formally, if `A` is the combined aborts condition, then
+conditions) only _implies_ that the function aborts. Formally, if `A` is the combined aborts condition, then
 with `aborts_if_is_partial = true`, we have `A ==> function_aborts`; otherwise we have
 `A <==> function_aborts`. Therefore, the following does verify:
 
@@ -539,6 +538,7 @@ spec increment {
 ```
 
 <a name="risk-aborts-if-is-partial"></a>
+
 > Note that there is a certain risk in setting `aborts_if_is_partial` to true, and best practice is to avoid it in specifications of public functions and transaction scripts once those are considered finalized. This is because changing the code after finalization of the spec can add new (non-trivial, undesired) abort situations the original specification did not anticipate yet will nevertheless silently pass verification.
 
 If no aborts condition is specified for a function, abort behavior is unspecified. The function may
@@ -624,8 +624,8 @@ pre-conditions.
 
 A `requires` is different from an `aborts_if`: in the latter case, the function can be called, and
 any aborts it produces will be propagated to the caller context. In the `requires` case, the Move Prover
-will not allow the function to be called in the first place. Nevertheless, the function can *still
-be called at runtime* if verification is skipped. Because of this, `requires` are rare in Move
+will not allow the function to be called in the first place. Nevertheless, the function can _still
+be called at runtime_ if verification is skipped. Because of this, `requires` are rare in Move
 specifications, and `aborts_if` are more common. Specifically, `requires` should be avoided for public APIs.
 
 An example of `requires` is:
@@ -650,7 +650,7 @@ spec increment {
 }
 ```
 
-Within the expression for the `ensures` condition, one can use the `old` function, as discussed in 
+Within the expression for the `ensures` condition, one can use the `old` function, as discussed in
 [Pre and post state](#pre-and-post-state).
 
 ## Modifies condition
@@ -749,7 +749,7 @@ spec Counter {
 ```
 
 A struct invariant is checked by the Move Prover whenever the struct value is constructed (packed). While
-the struct is mutated (e.g. via a `&mut Counter`) the invariant does *not* hold (but see exception
+the struct is mutated (e.g. via a `&mut Counter`) the invariant does _not_ hold (but see exception
 below). In general, we consider mutation as an implicit unpack, and end of mutation as a pack.
 
 The Move language semantics unambiguously identifies the point when mutation ends and starts. This
@@ -758,7 +758,7 @@ follows from the borrow semantics of Move and includes mutation via an enclosing
 ends.)
 
 There is one exception to this rule. When a mutable reference to a struct declared in module M is
-passed into a *public* function of M which does by itself *not* return any other mutable reference (which could be borrowed from the input parameter), we treat this parameter as "packed". That means, on function entry, we will unpack it and on function exit we will pack again, enforcing the invariant. This reflects that in Move, struct data can be mutated only within the module that declares the struct; so for an outside caller of the public function, the mutable reference can actually not be mutated unless by calling public functions of module M again. It is a significant simplification of the verification problem to exploit this in the semantics.
+passed into a _public_ function of M which does by itself _not_ return any other mutable reference (which could be borrowed from the input parameter), we treat this parameter as "packed". That means, on function entry, we will unpack it and on function exit we will pack again, enforcing the invariant. This reflects that in Move, struct data can be mutated only within the module that declares the struct; so for an outside caller of the public function, the mutable reference can actually not be mutated unless by calling public functions of module M again. It is a significant simplification of the verification problem to exploit this in the semantics.
 
 ### Global invariants
 
@@ -797,6 +797,7 @@ fn setup() {
     }
 }
 ```
+
 where `publish1` and `publish2` publish two different structs, `T1` and `T2` at address `a`.
 
 ```move
@@ -814,40 +815,43 @@ By default, a global invariant is checked immediately after the instruction `I` 
 - `delegate_invariants_to_caller`: the invariant will be checked by all callers of the function where `I` resides.
 
 For the example above, we can add the pragma `disable_invariants_in_body`:
+
 ```move
 spec setup {
     pragma disable_invariants_in_body;
 }
 ```
+
 which says that invariants are not required to hold while `setup` is executing but are assumed to hold on entry to and exit from `setup`.
 
-This pragma changes the Move Prover's behavior. The invariants are assumed on entry to `setup` but not proved during or after `publish1` and `publish2`.  Instead, all invariants that could be invalidated in the
-body of `setup` are asserted and proved at the point of return from `setup`.  A consequence of this processing is that the user may need to provide stronger post-conditions on `publish1` and `publish2` to
+This pragma changes the Move Prover's behavior. The invariants are assumed on entry to `setup` but not proved during or after `publish1` and `publish2`. Instead, all invariants that could be invalidated in the
+body of `setup` are asserted and proved at the point of return from `setup`. A consequence of this processing is that the user may need to provide stronger post-conditions on `publish1` and `publish2` to
 make it possible to prove the invariants on exit from `setup`.
 
 Another consequence of this processing is that invariants cannot safely be assumed to hold during the execution of `publish1` and `publish2` (unless nothing in the body of `setup` changes state
 mentioned in the invariant). Therefore, if proving a post-condition requires the invariant to be assumed, the post-condition will fail.
 
-In the example, invariants hold at the call sites of `setup` but not in the body. For `publish1`, invariants don't necessarily hold at the call site *or* in the body of the function. In the example, that
+In the example, invariants hold at the call sites of `setup` but not in the body. For `publish1`, invariants don't necessarily hold at the call site _or_ in the body of the function. In the example, that
 behavior is implied because `publish1` is called in a context where invariants are disabled.
 
 When invariants are disabled in `setup` in the above example, the Move Prover cannot assume them on entry to `publish1` and `publish2` and should not try to prove them on exit from those functions. The Move Prover
-would have the same behavior for any functions called by `publish1` or `publish2`.  The Move Prover *automatically* adopts this behavior when invariants are disabled in a calling function, but it is possible for the user to declare that a function be treated like `publish1`.
+would have the same behavior for any functions called by `publish1` or `publish2`. The Move Prover _automatically_ adopts this behavior when invariants are disabled in a calling function, but it is possible for the user to declare that a function be treated like `publish1`.
 
-For example, if `publish2` is *only* called from the setup function above, and we did *not* disable invariants in `setup`, we could achieve a similar effect by using the pragma `delegate_invariants_to_caller`, instead.
+For example, if `publish2` is _only_ called from the setup function above, and we did _not_ disable invariants in `setup`, we could achieve a similar effect by using the pragma `delegate_invariants_to_caller`, instead.
 
 ```move
 spec setup {
     pragma delegate_invariants_to_caller;
 }
 ```
+
 This would be legal only if `setup` is a private or `public (friend)` function. The difference between this and disabling invariants in `setup` is that the invariants would not be assumed at the beginning of `setup` and would be proved after `setup` returns at each site where it is called.
 
 While both pragmas disable invariants in the body of a function, the difference is that `disable_invariants_in_body` assumes invariants on entry and proves them on exit, while `delegate_invariants_to_caller` does neither.
 
 There are some limitations on how these pragmas can be used. `disable_invariants_in_body` cannot be declared for functions where invariants are delegated to a caller, either explicitly via the pragma
 or implicitly because the function is called in a context where invariants have been disabled. (This restriction is to ensure consistent processing, because on pragma assumes that invariants hold
-in the calling context and the other does not).  Second, it is illegal for a public or script function to delegate invariant checking to its callers (since the Move Prover does not know all the call sites), *unless* the function cannot possibly invalidate an invariant because it doesn't change any of the state mentioned in `exists` and `global` expressions appearing in the invariant.
+in the calling context and the other does not). Second, it is illegal for a public or script function to delegate invariant checking to its callers (since the Move Prover does not know all the call sites), _unless_ the function cannot possibly invalidate an invariant because it doesn't change any of the state mentioned in `exists` and `global` expressions appearing in the invariant.
 
 #### Update invariants
 
@@ -900,6 +904,7 @@ fun simple1(x: u64, y: u64) {
 ```
 
 In such inline spec blocks, only a subset of conditions are permitted:
+
 - `assume` and `assert` statements are allowed in any code locations.
 - loop `invariant` statements are allowed only in code locations that represent loop headers.
 
@@ -948,6 +953,7 @@ fun simple3(n: u64) {
 ```
 
 A loop invariant is translated into two `assert` statements and one `assume` statement to facilitate the inductive reasoning of properties about the loop. In break down, a loop invariant is translated to:
+
 - An `assert` statement that confirms the invariant holds when the loop is first encountered in the
   execution -- establishing the base case.
 - An `assume` statement that encodes the property that the invariant holds at loop iteration `I`.
@@ -1018,7 +1024,7 @@ a mutable reference type. In the above example, `old(v[i])` is not allowed, and 
 
 ## Specification variables
 
-MSL supports *spec variables*, also called *ghost variables* in the verification community. These
+MSL supports _spec variables_, also called _ghost variables_ in the verification community. These
 variables are used only in specifications and represent information derived from the global state of
 resources. An example use case is to compute the sum of all coins available in the system and
 specify that the sum can be changed only in certain scenarios.
@@ -1042,6 +1048,7 @@ spec Counter {
     invariant unpack sum_of_counters = sum_of_counters - value;
 }
 ```
+
 > TODO: `invariant pack` and `invariant unpack` are currently not implemented
 
 Now we may for example want to specify that the sum of all Counter instances in the global state
@@ -1142,7 +1149,7 @@ spec module {
 }
 ```
 
-Notice that while with [global invariants](#global-invariants) we can express similar things, we *cannot*
+Notice that while with [global invariants](#global-invariants) we can express similar things, we _cannot_
 express the restriction of the invariant to only specific functions.
 
 ## Opaque specifications
@@ -1200,7 +1207,7 @@ Move Prover.
 ## Documentation generation
 
 The organization of specification blocks in a file is relevant for documentation generation -- even
-though it is not for the semantics. 
+though it is not for the semantics.
 
 # Expressiveness
 
@@ -1220,11 +1227,11 @@ spec x_or_y {
 }
 ```
 
-We are not able to specify the *full* semantics of `x_or_y` in MSL because we cannot capture the
+We are not able to specify the _full_ semantics of `x_or_y` in MSL because we cannot capture the
 semantics of mutable references. While we can say something about the value behind the reference at
 function exit, subsequent effects as in `*x_or_y(b, &mut s) = 2` cannot be specified.
 
-However, the Move Prover *does* understand the meaning of such functions -- the restriction is only
+However, the Move Prover _does_ understand the meaning of such functions -- the restriction is only
 in what we can specify. Practically, this means we cannot make the function `x_or_y` opaque and must
 let verification rely on that the Move Prover directly works with the implementation. Specifically, we
 can verify the following (which can then be opaque):
@@ -1243,5 +1250,5 @@ spec x_or_y_test {
 
 ## Supporting resources
 
-* [Design by contract PRE_POST_REFERENCE](https://en.wikipedia.org/wiki/Design_by_contract)
-* [APTOS_FRAMEWORK](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/overview.md)
+- [Design by contract PRE_POST_REFERENCE](https://en.wikipedia.org/wiki/Design_by_contract)
+- [APTOS_FRAMEWORK](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/overview.md)

@@ -3,7 +3,6 @@ title: "Configuration"
 id: "cli-configuration"
 ---
 
-
 ## Configuration examples
 
 Configuration for the CLI works like this:

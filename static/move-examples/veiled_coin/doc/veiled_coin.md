@@ -1,19 +1,16 @@
-
 <a name="0x1337_veiled_coin"></a>
 
 # Module `0x1337::veiled_coin`
 
-**WARNING:** This is an **experimental, proof-of-concept** module! It is *NOT* production-ready and it will likely
+**WARNING:** This is an **experimental, proof-of-concept** module! It is _NOT_ production-ready and it will likely
 lead to loss of funds if used (or misused).
 
 This module provides a veiled coin type, denoted <code><a href="veiled_coin.md#0x1337_veiled_coin_VeiledCoin">VeiledCoin</a>&lt;T&gt;</code> that hides the value/denomination of a coin.
 Importantly, although veiled transactions hide the amount of coins sent they still leak the sender and recipient.
 
-
 <a name="@How_to_use_veiled_coins_0"></a>
 
 ### How to use veiled coins
-
 
 This module allows users to "register" a veiled account for any pre-existing <code>aptos_framework::Coin</code> type <code>T</code> via
 the <code>register</code> entry function. For this, an encryption public key will need to be given as input, under which
@@ -39,48 +36,42 @@ larger and larger.
 Lastly, users can easily withdraw veiled coins back into their <b>public</b> balance via </code>unveil<code>. Or, they can withdraw
 publicly into someone <b>else</b>'s <b>public</b> balance via </code>unveil_to<code>.
 
-
 <a name="@Terminology_1"></a>
 
 ### Terminology
 
+1. _Veiled <a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a>_: a <a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a> whose value is secret; i.e., it is encrypted under the owner's <b>public</b> key.
 
-1. *Veiled <a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a>*: a <a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a> whose value is secret; i.e., it is encrypted under the owner's <b>public</b> key.
+2. _Veiled amount_: <a href="../../../framework/aptos-framework/../aptos-stdlib/doc/any.md#0x1_any">any</a> amount that is secret because it was encrypted under some <b>public</b> key.
+3. _Committed amount_: <a href="../../../framework/aptos-framework/../aptos-stdlib/doc/any.md#0x1_any">any</a> amount that is secret because it was committed <b>to</b> (rather than encrypted).
 
-2. *Veiled amount*: <a href="../../../framework/aptos-framework/../aptos-stdlib/doc/any.md#0x1_any">any</a> amount that is secret because it was encrypted under some <b>public</b> key.
-3. *Committed amount*: <a href="../../../framework/aptos-framework/../aptos-stdlib/doc/any.md#0x1_any">any</a> amount that is secret because it was committed <b>to</b> (rather than encrypted).
+4. _Veiled transaction_: a transaction that hides its amount transferred; i.e., a transaction whose amount is veiled.
 
-4. *Veiled transaction*: a transaction that hides its amount transferred; i.e., a transaction whose amount is veiled.
+5. _Veiled balance_: unlike a normal balance, a veiled balance is secret; i.e., it is encrypted under the <a href="../../../framework/aptos-framework/doc/account.md#0x1_account">account</a>'s
+   <b>public</b> key.
 
-5. *Veiled balance*: unlike a normal balance, a veiled balance is secret; i.e., it is encrypted under the <a href="../../../framework/aptos-framework/doc/account.md#0x1_account">account</a>'s
-<b>public</b> key.
-
-6. *ZKRP*: zero-knowledge range proofs; one of the key cryptographic ingredient in veiled coins which <b>ensures</b> users
-can withdraw secretely from their veiled balance without over-withdrawing.
-
+6. _ZKRP_: zero-knowledge range proofs; one of the key cryptographic ingredient in veiled coins which <b>ensures</b> users
+   can withdraw secretely from their veiled balance without over-withdrawing.
 
 <a name="@Limitations_2"></a>
 
 ### Limitations
 
-
-**WARNING:** This <b>module</b> is **experimental**! It is *NOT* production-ready. Specifically:
+**WARNING:** This <b>module</b> is **experimental**! It is _NOT_ production-ready. Specifically:
 
 1. Deploying this <b>module</b> will likely lead <b>to</b> lost funds.
 2. This <b>module</b> <b>has</b> not been cryptographically-audited.
 3. The current implementation is vulnerable <b>to</b> _front-running attacks_ <b>as</b> described in the Zether paper [BAZB20].
 4. There is no integration <b>with</b> wallet software which, for veiled accounts, must maintain an additional ElGamal
-encryption keypair.
+   encryption keypair.
 5. There is no support for rotating the ElGamal encryption <b>public</b> key of a veiled <a href="../../../framework/aptos-framework/doc/account.md#0x1_account">account</a>.
 
-
-<a name="@Veiled_<a_href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a>_amounts_<b>as</b>_truncated_</code>u32<code>'s_3"></a>
+<a name="@Veiled*<a_href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a>\_amounts*<b>as</b>_truncated_</code>u32<code>'s_3"></a>
 
 ### Veiled <a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a> amounts <b>as</b> truncated </code>u32<code>'s
 
-
 Veiled <a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a> amounts must be specified <b>as</b> </code>u32<code>'s rather than </code>u64<code>'s <b>as</b> would be typical for normal coins in the
-Aptos framework. This is because <a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a> amounts must be encrypted <b>with</b> an *efficient*, additively-homomorphic encryption
+Aptos framework. This is because <a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin">coin</a> amounts must be encrypted <b>with</b> an _efficient_, additively-homomorphic encryption
 scheme. Currently, our best candidate is ElGamal encryption in the exponent, which can only decrypt values around
 32 bits or slightly larger.
 
@@ -95,12 +86,13 @@ In order <b>to</b> convert a </code>u32<code> veiled <a href="../../../framework
 
 </code>```
 u64 normal coin amount format:
-[ left    || middle  || right ]
+[ left || middle || right ]
 [ 63 - 32 || 31 - 16 || 15 - 0]
 
 u32 veiled coin amount format; we take the middle 32 bits from the u64 format above and store them in a u32:
 [ middle ]
 [ 31 - 0 ]
+
 ```
 
 Recall that: A coin has a *decimal precision* $d$ (e.g., for <code>AptosCoin</code>, $d = 8$; see <code>initialize</code> in
@@ -682,3 +674,4 @@ the transferred amount committed inside <code>comm_amount</code>.
 
 <pre><code><b>public</b> <b>fun</b> <a href="veiled_coin.md#0x1337_veiled_coin_verify_range_proofs">verify_range_proofs</a>(comm_new_balance: &<a href="../../../framework/aptos-framework/../aptos-stdlib/doc/ristretto255_pedersen.md#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>, zkrp_new_balance: &<a href="_RangeProof">ristretto255_bulletproofs::RangeProof</a>, comm_amount: &<a href="../../../framework/aptos-framework/../aptos-stdlib/../move-stdlib/doc/option.md#0x1_option_Option">option::Option</a>&lt;<a href="../../../framework/aptos-framework/../aptos-stdlib/doc/ristretto255_pedersen.md#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>&gt;, zkrp_amount: &<a href="../../../framework/aptos-framework/../aptos-stdlib/../move-stdlib/doc/option.md#0x1_option_Option">option::Option</a>&lt;<a href="_RangeProof">ristretto255_bulletproofs::RangeProof</a>&gt;)
 </code></pre>
+```

@@ -24,7 +24,7 @@ multiple return values are represented using tuples.
 Tuples are created by a comma separated list of expressions inside of parentheses.
 
 | Syntax          | Type                                                                         | Description                                                  |
-|-----------------|------------------------------------------------------------------------------|--------------------------------------------------------------|
+| --------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | `()`            | `(): ()`                                                                     | Unit, the empty tuple, or the tuple of arity 0               |
 | `(e1, ..., en)` | `(e1, ..., en): (T1, ..., Tn)` where `e_i: Ti` s.t. `0 < i <= n` and `n > 0` | A `n`-tuple, a tuple of arity `n`, a tuple with `n` elements |
 

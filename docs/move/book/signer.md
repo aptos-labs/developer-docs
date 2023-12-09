@@ -58,7 +58,7 @@ swap between `s1` and `s2`.
 The `std::signer` standard library module provides two utility functions over `signer` values:
 
 | Function                                    | Description                                                    |
-|---------------------------------------------|----------------------------------------------------------------|
+| ------------------------------------------- | -------------------------------------------------------------- |
 | `signer::address_of(&signer): address`      | Return the `address` wrapped by this `&signer`.                |
 | `signer::borrow_address(&signer): &address` | Return a reference to the `address` wrapped by this `&signer`. |
 

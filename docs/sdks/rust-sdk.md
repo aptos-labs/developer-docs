@@ -18,6 +18,7 @@ merlin = { git = "https://github.com/aptos-labs/merlin" }
 ```
 
 You must also create a `.cargo/config.toml` file with this content:
+
 ```toml
 [build]
 rustflags = ["--cfg", "tokio_unstable"]

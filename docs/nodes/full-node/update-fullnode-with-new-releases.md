@@ -14,7 +14,7 @@ When `devnet` is wiped and updated with newer versions, you will need to update 
 
 2. Delete the data folder (the directory path is what you specified in the configuration file, e.g., `fullnode.yaml`).
 
-    - The default data folder is `/opt/aptos/data`.
+   - The default data folder is `/opt/aptos/data`.
 
 3. Delete the `genesis.blob` file and `waypoint.txt` file (depending on how you configured it, you might not have this file and may instead have a `waypoint` directly in your configuration file).
 
@@ -36,7 +36,8 @@ When `devnet` is wiped and updated with newer versions, you will need to update 
 
 ## If you run a fullnode on GCP
 
-Aptos devnet releases can be of two types: 
+Aptos devnet releases can be of two types:
+
 - One with a data wipe to start over the Aptos blockchain
 - Second type is only a software update without a data wipe
 
@@ -48,15 +49,15 @@ Aptos devnet releases can be of two types:
 
 3. Update Terraform module for fullnode, run this in the same directory of your `main.tf` file:
 
-  ```bash
-  terraform get -update
-  ```
+```bash
+terraform get -update
+```
 
 4. Apply Terraform changes:
 
-  ```bash
-  terraform apply
-  ```
+```bash
+terraform apply
+```
 
 ### Upgrade without data wipe
 
@@ -64,17 +65,17 @@ Aptos devnet releases can be of two types:
 
 2. Update Terraform module for fullnode, run this in the same directory of your `main.tf` file:
 
-  ```bash
-  terraform get -update
-  ```
+```bash
+terraform get -update
+```
 
 3. Apply Terraform changes:
 
-  ```bash
-  terraform apply
-  # if you didn't update the image tag, terraform will show nothing to change, in this case, force helm update
-  terraform apply -var force_helm_update=true
-  ```
+```bash
+terraform apply
+# if you didn't update the image tag, terraform will show nothing to change, in this case, force helm update
+terraform apply -var force_helm_update=true
+```
 
 [rest_spec]: https://github.com/aptos-labs/aptos-core/tree/main/api
 [devnet_genesis]: https://devnet.aptoslabs.com/genesis.blob

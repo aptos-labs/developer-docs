@@ -14,7 +14,7 @@ reference to an immutable one. Here and elsewhere, we use the notation `e: T` fo
 has type `T`".
 
 | Syntax      | Type                                                  | Description                                                    |
-|-------------|-------------------------------------------------------|----------------------------------------------------------------|
+| ----------- | ----------------------------------------------------- | -------------------------------------------------------------- |
 | `&e`        | `&T` where `e: T` and `T` is a non-reference type     | Create an immutable reference to `e`                           |
 | `&mut e`    | `&mut T` where `e: T` and `T` is a non-reference type | Create a mutable reference to `e`.                             |
 | `&e.f`      | `&T` where `e.f: T`                                   | Create an immutable reference to field `f` of struct `e`.      |
@@ -60,7 +60,7 @@ Both operations use the C-like `*` syntax. However, note that a read is an expre
 write is a mutation that must occur on the left hand side of an equals.
 
 | Syntax     | Type                                | Description                         |
-|------------|-------------------------------------|-------------------------------------|
+| ---------- | ----------------------------------- | ----------------------------------- |
 | `*e`       | `T` where `e` is `&T` or `&mut T`   | Read the value pointed to by `e`    |
 | `*e1 = e2` | `()` where `e1: &mut T` and `e2: T` | Update the value in `e1` with `e2`. |
 

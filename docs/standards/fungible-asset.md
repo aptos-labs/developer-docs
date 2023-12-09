@@ -2,6 +2,7 @@
 title: "Aptos Fungible Asset Standard"
 id: "fungible-asset"
 ---
+
 import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
@@ -17,7 +18,7 @@ Besides the aforementioned features, Fungible Asset (FA) is a superset of crypto
 
 The [Fungible Asset module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) provides a standard, type-safe framework for defining FAs within the Aptos Move ecosystem.
 
-The standard is built upon [Aptos object model](./aptos-object.md), so all the resources defined here are included in the object resource group and stored inside objects. 
+The standard is built upon [Aptos object model](./aptos-object.md), so all the resources defined here are included in the object resource group and stored inside objects.
 There are two types of objects related to FA:
 
 - `Object<Metadata>`: include information about the FA, such as name, symbol, and decimals.
@@ -130,7 +131,7 @@ A Fungible Asset creator can add fungibility to any **non-deletable** object at 
 make that object a metadata of the associated FA. Then FA of this metadata can be minted and used. It is noted here that
 **non-deletable** means the `can_delete` field of `&ConstructorRef` has to be `false`.
 
-```rust   
+```rust
 public fun add_fungibility(
     constructor_ref: &ConstructorRef,
     maximum_supply: Option<u128>,
@@ -139,12 +140,12 @@ public fun add_fungibility(
     decimals: u8,
     icon_uri: String,
     project_uri: String,
-): Object<Metadata> 
+): Object<Metadata>
 ```
 
 The creator has the opportunity to define a name, symbol, decimals, icon uri, project uri, and whether the total supply for the FA has a maximum. The following applies:
 
-- The first three of the above (`name`, `symbol`, `decimals`, `icon_uri`, `project_uri`)  are purely metadata and have no impact for on-chain
+- The first three of the above (`name`, `symbol`, `decimals`, `icon_uri`, `project_uri`) are purely metadata and have no impact for on-chain
   applications. Some applications may use decimals to equate a single Coin from a fractional coin.
 - Maximum supply (`maximum_supply`) helps check the total supply does not exceed a maximum value. However, due to the way the parallel executor
   works, setting the maximum supply will prevent any parallel execution of mint and burn.
@@ -353,7 +354,7 @@ public fun create_primary_store_enabled_fungible_asset(
     decimals: u8,
     icon_uri: String,
     project_uri: String,
-) 
+)
 ```
 
 The parameters are the same as those of `add_fungibility()`.

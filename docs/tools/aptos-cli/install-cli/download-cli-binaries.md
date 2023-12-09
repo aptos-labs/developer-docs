@@ -16,6 +16,7 @@ Binary releases are recommended for most users, otherwise see [Building Aptos Fr
 <summary>macOS</summary>
 
 ## MacOS
+
 We do not release binaries for macOS, you must use [brew](https://brew.sh/).
 
 </details>
