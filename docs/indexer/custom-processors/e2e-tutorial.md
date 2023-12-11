@@ -46,9 +46,9 @@ We use postgresql as our database in this tutorial. You're free to use whatever 
 
 Explaining how to create a database is beyond the scope of this tutorial. If you are not sure how to do it, consider checking out tutorials on how to create a database with the `psql` tool.
 
-## Setup your environment
+## Set up your environment
 
-### Setup the postgresql database
+### Set up the postgresql database
 
 Make sure to start the `postgresql` service:
 
@@ -68,7 +68,7 @@ Create your database with the name `coin_flip`, where our username is `user` and
 
 If your database is set up correctly, and you have the `psql` tool, you should be able to run the command `psql coin_flip`.
 
-### Setup your local environment with poetry and grpc
+### Set up your local environment with poetry and grpc
 
 If you haven't yet, make sure to read the introductory [custom processor guide](https://github.com/aptos-labs/aptos-indexer-processors).
 
@@ -76,9 +76,9 @@ You can also check out the python-specific broad overview of how to create an in
 
 ## Configure your indexer processor
 
-Now let's setup the configuration details for the actual indexer processor we're going to use.
+Now let's set up the configuration details for the actual indexer processor we're going to use.
 
-### Setup your config.yaml file
+### Set up your config.yaml file
 
 Copy the contents below and save it to a file called `config.yaml`. Save it in the `coin_flip` folder. Your file directory structure should look something like this:
 
@@ -109,7 +109,14 @@ Copy the contents below and save it to a file called `config.yaml`. Save it in t
     - typescript
 ```
 
-Once you have your config.yaml file open, you only need to update a certain fields
+Once you have your config.yaml file open, you only need to update certain fields:
+`processor_config.type` - name of the processor
+`chain_id`
+`indexer_grpc_data_service_address` - address of the indexer data service
+`auth_token` - The API key you created in the Developer Portal
+`postgres_connection_string` - connection string to your postgresql database
+`starting_version` - The starting version of the transactions you want to process
+`ending_version` - The ending version of the transactions you want to process
 ```yaml
 server_config:
     processor_config: 
@@ -146,9 +153,9 @@ If you'd would like to see a list of all Coin Flip transactions, you can search 
 If you want to use a different network, change the `indexer_grpc_data_service_address` field to the corresponding desired value:
 
 ```yaml
-grpc.devnet.aptoslabs.com:443
-grpc.testnet.aptoslabs.com:443
-grpc.mainnet.aptoslabs.com:443
+devnet: grpc.devnet.aptoslabs.com:443
+testnet: grpc.testnet.aptoslabs.com:443
+mainnet: grpc.mainnet.aptoslabs.com:443
 ```
 
 If these ip addresses don't work for you, they might be outdated. Check out the `README.md` at the root folder of the repository for the latest endpoints.
@@ -300,7 +307,7 @@ for event_index, event in enumerate(user_transaction.events):
 In our case, a single event prints this out:
 
 
-```json
+```
 {
     'losses': '49',
     'prediction': False,
