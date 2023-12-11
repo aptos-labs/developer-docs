@@ -34,7 +34,7 @@ failing `assert!` macro).
 
 Instead of an `abort_code`, an `expected_failure` may specify program
 execution errors, such as `arithmetic_error`, `major_status`,
-`vector_error`, and `out_of_gas`.  For more specifity, a
+`vector_error`, and `out_of_gas`. For more specifity, a
 `minor_status` may optionally be specified.
 
 If the error is expected from a specific location, that may also be specified:
