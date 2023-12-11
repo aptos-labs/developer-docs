@@ -27,7 +27,7 @@ cd aptos-indexer-processors
 cd python/processors/coin_flip
 ```
 
-Processors consume a stream of transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an auth token. Follow [this guide](/indexer/txn-stream/labs-hosted#auth-tokens) to guide to get a token from Developer Portal. Make sure you create an API Key for `Testnet`, the Coin Flip transactions that are used on this tutorial are in `Testnet`. Once you're done, you should have a token that looks like this:
+Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an authorization token. Follow [this guide](/indexer/txn-stream/labs-hosted#auth-tokens) to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`. Once you're done, you should have a token that looks like this:
 ```
 aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx
 ```
@@ -42,7 +42,7 @@ We use postgresql as our database in this tutorial. You're free to use whatever 
     - We will use a database hosted on `localhost` on the port `5432`, which should be the default.
     - When you create your username, keep track of it and the password you use for it.
     - You can view a tutorial for installing postgresql and psql [here](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-22-04-quickstart) tool to set up your database more quickly.
-    - If you want to easily view your database data, consider using a GUI like [DBeaver](https://dbeaver.io/) *recommended*, or [pgAdmin](https://www.pgadmin.org/), or [Postico](https://eggerapps.at/postico2/).
+    - To easily view your database data, consider using a GUI like [DBeaver](https://dbeaver.io/) *recommended*, [pgAdmin](https://www.pgadmin.org/), or [Postico](https://eggerapps.at/postico2/).
 
 Explaining how to create a database is beyond the scope of this tutorial. If you are not sure how to do it, consider checking out tutorials on how to create a database with the `psql` tool.
 
@@ -126,16 +126,16 @@ server_config:
 
 ### More customization with config.yaml
 
-However, if you'd like to customize things further, you can change some of the other fields.
+You can customize additional configuration with the `config.yaml` file.
 
-If you'd like to start at a specific version, you can specify that in the config.yaml file with:
+To start at a specific ledger version, you can specify the version in the `config.yaml` file with:
 ```yaml
 starting_version: <Starting Version>
 ```
 
 This is the transaction version the indexer starts looking for events at.
 
-The rows in table `next_versions_to_process` are the `indexer_name` as the primary key and the `next_version` to process field, along with the `updated_at`.
+The table `next_versions_to_process` keeps track of the current state of indexing.  The primary key is the `indexer_name`.  The `next_version` field tells us what's the next transaction to process, and the `updated_at` time tells us the last time the indexer processed a transaction.
 
 ```yaml
 ending_version: <Ending Version>
