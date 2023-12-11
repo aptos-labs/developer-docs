@@ -16,28 +16,40 @@ To fetch data from chain, we can use the [Aptos TypeScript SDK](../../sdks/ts-sd
 To get started:
 
 1. Stop the local server if running.
-2. In the `client` directory, run: `npm i aptos`
-3. In the `App.tsx` file, import the `Provider` class and the `Network` type like so:
+2. In the `client` directory, run: `npm i @aptos-labs/ts-sdk`
+3. In the `App.tsx` file, import the `Aptos` class like so:
 
 ```js
-import { Provider, Network } from "aptos";
+import { Aptos } from "@aptos-labs/ts-sdk";
 ```
 
-The TypeScript SDK provides us with a `Provider` class where we can initialize and query the Aptos chain and Indexer. `Provider` expects `Network` type as an argument, which is the [network name](../../guides/system-integrators-guide.md#choose-a-network) we want to interact with.
+The TypeScript SDK provides us with a `Aptos` class which is the main entry point into Aptos's API. By initializing `Aptos` we can query the Aptos chain.
 
 :::tip
-Read more about the [`Provider`](../../sdks/ts-sdk/typescript-sdk-overview.md#provider-class) class in the Aptos TypeScript SDK overview.
+Read more about the [`Aptos`](../../sdks/new-ts-sdk/sdk-configuration.md) class in the Aptos TypeScript SDK docs.
 :::
 
 1. In the `App.tsx` file, add:
 
 ```js
-const provider = new Provider(Network.DEVNET);
+const aptos = new Aptos();
 ```
 
-This will initialize a `Provider` instance for us with the devnet network.
+This will initialize a `Aptos` instance for us.
 
-Our app displays different UIs based on a user resource (i.e. if a user has a list ⇒ if a user has a `TodoList` resource). For that, we need to know the current account connected to our app.
+:::note
+By default, `Aptos` will interact with the `devnet` network, to set up a [different network](../../guides/system-integrators-guide.md#choose-a-network), we can use `AptosConfig` class.
+
+```js
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const aptosConfig = new AptosConfig({ network: Network.MAINNET });
+const aptos = new Aptos(aptosConfig);
+```
+
+:::
+
+Our app displays different UIs based on a user resource (i.e if a user has a list ⇒ if a user has a `TodoList` resource). For that, we need to know the current account connected to our app.
 
 1. Import wallet from the wallet adapter React provider:
 
@@ -91,9 +103,11 @@ const fetchList = async () => {
   // change this to be your module account address
   const moduleAddress = "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
   try {
-    const TodoListResource = await provider.getAccountResource(
-      account.address,
-      `${moduleAddress}::todolist::TodoList`
+    const todoListResource = await aptos.getAccountResource(
+      {
+        accountAddress:account?.address,
+        resourceType:`${moduleAddress}::todolist::TodoList`
+      }
     );
     setAccountHasList(true);
   } catch (e: any) {
@@ -102,7 +116,7 @@ const fetchList = async () => {
 };
 ```
 
-The `moduleAddress` is the address we publish the module under, i.e. the account address you have in your `Move.toml` file (`myaddr`).
+The `moduleAddress` is the address we publish the module under, i.e the account address you have in your `Move.toml` file (`myaddr`).
 
 The `provider.getAccountResource()`expects an _account address_ that holds the resource we are looking for and a string representation of an on-chain _Move struct type_.
 
@@ -149,7 +163,7 @@ return (
 );
 ```
 
-We now have an **Add new list** button that appears only if the account doesn't have a list.
+We now have an **Add new list** button that appears only if the account doesn’t have a list.
 
 Start the local server with `npm start`. You should see the **Add new list** button.
 
