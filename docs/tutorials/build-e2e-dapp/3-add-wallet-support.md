@@ -13,11 +13,11 @@ Aptos provides a [wallet adapter](../../integration/wallet-adapter-concept.md) t
 2. In the `client` folder, run:
 
 ```cmd
-npm i @aptos-labs/wallet-adapter-react@1.0.2
+npm i @aptos-labs/wallet-adapter-react
 ```
 
 ```cmd
-npm i @aptos-labs/wallet-adapter-ant-design@1.0.0
+npm i @aptos-labs/wallet-adapter-ant-design
 ```
 
 This installs two packages:
