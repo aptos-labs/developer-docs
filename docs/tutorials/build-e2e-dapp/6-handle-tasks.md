@@ -31,18 +31,18 @@ function App() {
 
 2. Update our `fetchList` function to fetch the tasks in the account’s `TodoList` resource:
 
-```ts
+```js
 const fetchList = async () => {
   if (!account) return [];
   try {
-    const TodoListResource = await provider.getAccountResource(
-      account?.address,
-      `${moduleAddress}::todolist::TodoList`,
-    );
+    const todoListResource = await aptos.getAccountResource(
+        {accountAddress:account?.address,
+          resourceType:`${moduleAddress}::todolist::TodoList`}
+      );
     setAccountHasList(true);
-    // tasks table handle
+		// tasks table handle
     const tableHandle = (TodoListResource as any).data.tasks.handle;
-    // tasks table counter
+		// tasks table counter
     const taskCounter = (TodoListResource as any).data.task_counter;
 
     let tasks = [];
@@ -53,11 +53,11 @@ const fetchList = async () => {
         value_type: `${moduleAddress}::todolist::Task`,
         key: `${counter}`,
       };
-      const task = await provider.getTableItem(tableHandle, tableItem);
+      const task = await aptos.getTableItem<Task>({handle:tableHandle, data:tableItem});
       tasks.push(task);
       counter++;
     }
-    // set tasks in local state
+		// set tasks in local state
     setTasks(tasks);
   } catch (e: any) {
     setAccountHasList(false);
@@ -67,18 +67,18 @@ const fetchList = async () => {
 
 **This part is a bit confusing, so stick with us!**
 
-Tasks are stored in a table (this is how we built our contract). To fetch a table item (i.e a task), we need that task's table handle. We also need the `task_counter` in that resource, so we can loop over and fetch the task with the `task_id` that matches the `task_counter`.
+Tasks are stored in a table (this is how we built our contract). To fetch a table item (i.e a task), we need that task's table handle. We also need the `task_counter` in that resource so we can loop over and fetch the task with the `task_id` that matches the `task_counter`.
 
-```ts
+```js
 const tableHandle = (TodoListResource as any).data.tasks.handle;
 const taskCounter = (TodoListResource as any).data.task_counter;
 ```
 
 Now that we have our tasks table handle and our `task_counter` variable, lets loop over the `taskCounter` . We define a `counter` and set it to 1 as the task_counter / task_id is never less than 1.
 
-We loop while the `counter` is less than the `taskCounter` and fetch the table item and push it to the tasks array:
+We loop while the `counter` is less then the `taskCounter` and fetch the table item and push it to the tasks array:
 
-```ts
+```js
 let tasks = [];
 let counter = 1;
 while (counter <= taskCounter) {
@@ -108,11 +108,11 @@ table::upsert(&mut todo_list.tasks, counter, new_task);
 
 So the object we built is:
 
-```ts
+```js
 {
   key_type: "u64",
   value_type:`${moduleAddress}::todolist::Task`,
-  key: `${taskCounter}`
+  key: `${taskCounter}`,
 }
 ```
 
@@ -126,7 +126,7 @@ The last thing we want to do is display the tasks we just fetched.
 
 6. In our `App.tsx` file, update our UI with the following code:
 
-```tsx
+```jsx
 {
   !accountHasList ? (
     <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
@@ -158,9 +158,7 @@ The last thing we want to do is display the tasks we just fetched.
                     <a
                       href={`https://explorer.aptoslabs.com/account/${task.address}/`}
                       target="_blank"
-                    >{`${task.address.slice(0, 6)}...${task.address.slice(
-                      -5,
-                    )}`}</a>
+                    >{`${task.address.slice(0, 6)}...${task.address.slice(-5)}`}</a>
                   }
                 />
               </List.Item>
@@ -173,7 +171,7 @@ The last thing we want to do is display the tasks we just fetched.
 }
 ```
 
-That will display the **Add new list** button if account doesn't have a list or instead the tasks if the account has a list.
+That will display the **Add new list** button if account doesn’t have a list or instead the tasks if the account has a list.
 
 Go ahead and refresh your browser - see the magic!
 
@@ -183,7 +181,9 @@ We haven’t added any tasks yet, so we simply see a box of empty data. Let’s 
 
 1. Update our UI with an _add task_ input:
 
-```tsx
+Import `Input` from `antd` - `import { Input } from "antd";`
+
+```jsx
 {!accountHasList ? (
   ...
 ) : (
@@ -213,7 +213,7 @@ We have added a text input to write the task and a button to add the task.
 
 2. Create a new local state that holds the task content:
 
-```tsx
+```jsx
 function App() {
   ...
   const [newTask, setNewTask] = useState<string>("");
@@ -223,7 +223,7 @@ function App() {
 
 3. Add an `onWriteTask` function that will get called whenever a user types something in the input text:
 
-```tsx
+```jsx
 function App() {
   ...
   const [newTask, setNewTask] = useState<string>("");
@@ -238,7 +238,7 @@ function App() {
 
 4. Find our `<Input/>` component, add the `onChange` event to it, pass it our `onWriteTask` function and set the input value to be the `newTask` local state:
 
-```tsx
+```jsx
 <Input
   onChange={(event) => onWriteTask(event)} // add this
   style={{ width: "calc(100% - 60px)" }}
@@ -252,7 +252,7 @@ Cool! Now we have a working flow that when the user types something on the Input
 
 5. Let’s also add a function that submits the typed task to chain! Find our Add `<Button />` component and update it with the following
 
-```tsx
+```jsx
 <Button
   onClick={onTaskAdded} // add this
   type="primary"
@@ -274,76 +274,72 @@ When someones adds a new task we:
 
 6. Add an `onTaskAdded` function with:
 
-```tsx
-const onTaskAdded = async () => {
-  // check for connected account
-  if (!account) return;
-  setTransactionInProgress(true);
-  // build a transaction payload to be submited
-  const payload = {
-    type: "entry_function_payload",
-    function: `${moduleAddress}::todolist::create_task`,
-    type_arguments: [],
-    arguments: [newTask],
+```jsx
+  const onTaskAdded = async () => {
+    // check for connected account
+    if (!account) return;
+    setTransactionInProgress(true);
+    const transaction:InputTransactionData = {
+      data:{
+        function:`${moduleAddress}::todolist::create_task`,
+        functionArguments:[newTask]
+      }
+    }
+
+    // hold the latest task.task_id from our local state
+    const latestId = tasks.length > 0 ? parseInt(tasks[tasks.length - 1].task_id) + 1 : 1;
+
+    // build a newTaskToPush object into our local state
+    const newTaskToPush = {
+      address: account.address,
+      completed: false,
+      content: newTask,
+      task_id: latestId + "",
+    };
+
+    try {
+      // sign and submit transaction to chain
+      const response = await signAndSubmitTransaction(transaction);
+      // wait for transaction
+      await aptos.waitForTransaction({transactionHash:response.hash});
+
+      // Create a new array based on current state:
+      let newTasks = [...tasks];
+
+      // Add item to the tasks array
+      newTasks.push(newTaskToPush);
+      // Set state
+      setTasks(newTasks);
+      // clear input text
+      setNewTask("");
+    } catch (error: any) {
+      console.log("error", error);
+    } finally {
+      setTransactionInProgress(false);
+    }
   };
-
-  // hold the latest task.task_id from our local state
-  const latestId =
-    tasks.length > 0 ? parseInt(tasks[tasks.length - 1].task_id) + 1 : 1;
-
-  // build a newTaskToPush object into our local state
-  const newTaskToPush = {
-    address: account.address,
-    completed: false,
-    content: newTask,
-    task_id: latestId + "",
-  };
-
-  try {
-    // sign and submit transaction to chain
-    const response = await signAndSubmitTransaction(payload);
-    // wait for transaction
-    await provider.waitForTransaction(response.hash);
-
-    // Create a new array based on current state:
-    let newTasks = [...tasks];
-
-    // Add item to the tasks array
-    newTasks.push(newTaskToPush);
-    // Set state
-    setTasks(newTasks);
-    // clear input text
-    setNewTask("");
-  } catch (error: any) {
-    console.log("error", error);
-  } finally {
-    setTransactionInProgress(false);
-  }
-};
 ```
 
 **Let’s go over on what is happening.**
 
 First, note we use the `account` property from our wallet provider to make sure there is an account connected to our app.
 
-Then we build our transaction payload to be submitted to chain:
+Then we build our transaction data to be submitted to chain:
 
-```ts
-const payload = {
-  type: "entry_function_payload",
-  function: `${moduleAddress}::todolist::create_task`,
-  type_arguments: [],
-  arguments: [newTask],
-};
+```js
+const transaction:InputTransactionData = {
+      data:{
+        function:`${moduleAddress}::todolist::create_task`,
+        functionArguments:[newTask]
+      }
+    }
 ```
 
-- `type` is the function type we want to hit - our `create_task` function is an `entry` type function.
 - `function`- is built from the module address, module name and the function name.
-- `type_arguments`- this is for the case a Move function expects a generic type argument.
-- `arguments` - the arguments the function expects, in our case the task content.
+- `functionArguments` - the arguments the function expects, in our case the task content.
 
 Then, within our try/catch block, we use a wallet provider function to submit the transaction to chain and an SDK function to wait for that transaction.
-If all goes well, we want to find the current latest task ID, so we can add it to our current tasks state array. We will also create a new task to push to the current tasks state array (so we can display the new task in our tasks list on the UI without the need to refresh the page).
+If all goes well, we want to find the current latest task ID so we can add it to our current tasks state array. We will also create a new task to push to the current tasks state array (so we can display the new task in our tasks list on the UI without the need to refresh the page).
 
 TRY IT!
 
@@ -355,7 +351,9 @@ Next, we can implement the `complete_task` function. We have the checkbox in our
 
 1. Update the `<Checkbox/>` component with an `onCheck` property that would call an `onCheckboxChange` function once it is checked:
 
-```tsx
+Import `List` from `antd` - `import { List } from "antd";`
+
+```jsx
 <List.Item actions={[
   <Checkbox onChange={(event) => onCheckboxChange(event, task.task_id)}/>
 ]}>
@@ -363,43 +361,46 @@ Next, we can implement the `complete_task` function. We have the checkbox in our
 
 2. Create the `onCheckboxChange` function (make sure to import `CheckboxChangeEvent` from `antd` - `import { CheckboxChangeEvent } from "antd/es/checkbox";`):
 
-```ts
-const onCheckboxChange = async (event: CheckboxChangeEvent, taskId: string) => {
-  if (!account) return;
-  if (!event.target.checked) return;
-  setTransactionInProgress(true);
-  const payload = {
-    type: "entry_function_payload",
-    function: `${moduleAddress}::todolist::complete_task`,
-    type_arguments: [],
-    arguments: [taskId],
-  };
+```js
+const onCheckboxChange = async (
+    event: CheckboxChangeEvent,
+    taskId: string
+  ) => {
+    if (!account) return;
+    if (!event.target.checked) return;
+    setTransactionInProgress(true);
+    const transaction:InputTransactionData = {
+      data:{
+        function:`${moduleAddress}::todolist::complete_task`,
+        functionArguments:[taskId]
+      }
+    }
 
-  try {
-    // sign and submit transaction to chain
-    const response = await signAndSubmitTransaction(payload);
-    // wait for transaction
-    await provider.waitForTransaction(response.hash);
+    try {
+      // sign and submit transaction to chain
+      const response = await signAndSubmitTransaction(transaction);
+      // wait for transaction
+      await aptos.waitForTransaction({transactionHash:response.hash});
 
-    setTasks((prevState) => {
-      const newState = prevState.map((obj) => {
-        // if task_id equals the checked taskId, update completed property
-        if (obj.task_id === taskId) {
-          return { ...obj, completed: true };
-        }
+      setTasks((prevState) => {
+        const newState = prevState.map((obj) => {
+          // if task_id equals the checked taskId, update completed property
+          if (obj.task_id === taskId) {
+            return { ...obj, completed: true };
+          }
 
-        // otherwise return object as is
-        return obj;
+          // otherwise return object as is
+          return obj;
+        });
+
+        return newState;
       });
-
-      return newState;
-    });
-  } catch (error: any) {
-    console.log("error", error);
-  } finally {
-    setTransactionInProgress(false);
-  }
-};
+    } catch (error: any) {
+      console.log("error", error);
+    } finally {
+      setTransactionInProgress(false);
+    }
+  };
 ```
 
 Here we basically do the same thing we did when we created a new list or a new task.
@@ -408,7 +409,9 @@ We make sure there is an account connected, set the transaction in progress stat
 
 3. Update the `Checkbox` component to be checked by default if a task has already marked as completed:
 
-```tsx
+Import `Checkbox` from `antd` - `import { Checkbox } from "antd";`
+
+```jsx
 ...
 <List.Item
   actions={[
