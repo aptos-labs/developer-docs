@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import BrowserOnly from "@docusaurus/BrowserOnly";
-
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -116,7 +115,16 @@ const SideNav = ({ branch }: SideNavProps) => {
       }
     };
 
-    fetchContent().catch((err) => console.log(`Error fetching spec: ${err}`));
+    fetchContent()
+      .catch((err) => console.log(`Error fetching spec: ${err}`))
+      .then(() => {
+        // Load the requested hash after the page has been dynamically loaded
+        if (location.hash) {
+          let requested_hash = location.hash.slice(1);
+          location.hash = "";
+          location.hash = requested_hash;
+        }
+      });
     return () => {
       isMounted = false;
     };
@@ -182,6 +190,8 @@ const Content = ({ branch, page }: ContentProps) => {
     };
 
     fetchContent().catch((err) => console.log(`Error fetching spec: ${err}`));
+    // I've fetched the content, to ensure it's pointing to the right place do a redirect
+    console.log("LOCATION: ", window.location.href);
     return () => {
       isMounted = false;
     };
