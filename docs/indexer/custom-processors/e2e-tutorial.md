@@ -160,9 +160,14 @@ If you'd would like to see a list of all Coin Flip transactions, you can search 
 If you want to use a different network, change the `indexer_grpc_data_service_address` field to the corresponding desired value:
 
 ```yaml
-devnet: grpc.devnet.aptoslabs.com:443
-testnet: grpc.testnet.aptoslabs.com:443
-mainnet: grpc.mainnet.aptoslabs.com:443
+# Devnet
+indexer_grpc_data_service_address: grpc.devnet.aptoslabs.com:443
+
+# Testnet
+indexer_grpc_data_service_address: grpc.testnet.aptoslabs.com:443
+
+# Mainnet
+indexer_grpc_data_service_address: grpc.mainnet.aptoslabs.com:443
 ```
 
 If these ip addresses don't work for you, they might be outdated. Check out the `README.md` at the root folder of the repository for the latest endpoints.
