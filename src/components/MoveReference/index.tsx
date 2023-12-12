@@ -24,22 +24,42 @@ const frameworks = [
 const TopNav = ({ branch }: TopNavProps) => {
   const adjustBranch = (event) => {
     const params = new URLSearchParams(window.location.search);
-    params.set("branch", event.target.getAttribute("key"));
+    params.set("branch", event.target.getAttribute("branch"));
     window.location.href = `${location.pathname}?${params.toString()}`;
   };
 
   return (
     <div className="move-top-bar" key="move-top-bar">
-      <div className="move-top-bar-button" key="mainnet" onClick={adjustBranch}>
+      <div
+        className="move-top-bar-button"
+        key="mainnet"
+        branch="mainnet"
+        onClick={adjustBranch}
+      >
         Mainnet
       </div>
-      <div className="move-top-bar-button" key="testnet" onClick={adjustBranch}>
+      <div
+        className="move-top-bar-button"
+        key="testnet"
+        branch="testnet"
+        onClick={adjustBranch}
+      >
         Testnet
       </div>
-      <div className="move-top-bar-button" key="devnet" onClick={adjustBranch}>
+      <div
+        className="move-top-bar-button"
+        key="devnet"
+        branch="devnet"
+        onClick={adjustBranch}
+      >
         Devnet
       </div>
-      <div className="move-top-bar-button" key="main" onClick={adjustBranch}>
+      <div
+        className="move-top-bar-button"
+        key="main"
+        branch="main"
+        onClick={adjustBranch}
+      >
         Main
       </div>
     </div>
