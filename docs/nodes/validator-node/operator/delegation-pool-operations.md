@@ -103,6 +103,29 @@ Delegation pool owners have access to specific methods designed for modifying th
   --args address:<new_operator_address>
   ```
 
+## Set beneficiary addresses for operators
+
+Delegation pool operators can set beneficiary addresses to receive the operator commission earned by the delegation pool.
+
+- The beneficiary addresses can be set by the operator using the following command:
+
+  ```bash
+  aptos move run --profile delegation_pool_operator \
+  --function-id 0x1::delegation_pool::set_beneficiary_for_operator \
+  --args address:<new_beneficiary_address>
+  ```
+
+- To view the beneficiary address set for the operator, use the following command:
+  ```bash
+  aptos move view --url <REST API for the network> \
+  --function-id 0x1::delegation_pool::beneficiary_for_operator \
+  --args address:<operator_address>
+  ```
+
+Any existing unpaid commission rewards will be paid to the new beneficiary. To ensures payment to the current beneficiary, one should first call `synchronize_delegation_pool` before switching the beneficiary. In case an operator operates multiple delegation pools, the operator can only set one beneficiary for all the delegation pools, not a separate one for each pool.
+
+Once the beneficiary address is set, the operator commission earned by the delegation pool will be distributed to the beneficiary address. The beneficiary account can perform the operations such as `unlock` and `withdraw` for the commission earned.
+
 ## Check delegation pool information
 
 Until the delegation pool has received 1 million APT and the validator has been added to the set of active validators, there will be no rewards to track during each cycle. In order to obtain information about a delegation pool, use the Aptos [View function](../../../apis/fullnode-rest-api.md#reading-state-with-the-view-function).
