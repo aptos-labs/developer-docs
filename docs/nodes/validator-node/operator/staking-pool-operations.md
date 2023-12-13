@@ -110,6 +110,29 @@ aptos move run --function-id 0x1::staking_contract::update_commision \
 --profile mainnet-owner
 ```
 
+## Set beneficiary addresses for operators
+
+Staking pool operators can set beneficiary addresses to receive the operator commission earned by the staking pool.
+
+- The beneficiary addresses can be set by the operator using the following command:
+
+  ```bash
+  aptos move run --profile mainnet_operator \
+  --function-id 0x1::staking_contract::set_beneficiary_for_operator \
+  --args address:<new_beneficiary_address>
+  ```
+
+- To view the beneficiary address set for the operator, use the following command:
+  ```bash
+  aptos move view --url <REST API for the network> \
+  --function-id 0x1::staking_contract::beneficiary_for_operator \
+  --args address:<operator_address>
+  ```
+
+Any existing unpaid commission rewards will be paid to the new beneficiary. To ensures payment to the current beneficiary, one should first call `distribute` before switching the beneficiary. In case an operator operates multiple staking pools, the operator can set one beneficiary for all the staking pools, not a separate one for each pool.
+
+Once the beneficiary address is set, the beneficiary can claim the operator commission by `request_commission`.
+
 ## Checking your stake pool information
 
 :::tip How validation works
@@ -202,7 +225,7 @@ Example output:
 
 ## Requesting commission
 
-Either an owner or an operator can request commission. You can request commission at the end of a lockup period, i.e., at the end of **lockup_expiration_utc_time**, by running the `aptos stake request-commission` command. Make sure to provide the operator and the owner addresses. See an example command below:
+Either an owner, an operator or the beneficiary of the operator can request commission. You can request commission at the end of a lockup period, i.e., at the end of **lockup_expiration_utc_time**, by running the `aptos stake request-commission` command. Make sure to provide the operator and the owner addresses. See an example command below:
 
 ```bash
 aptos stake request-commission \
