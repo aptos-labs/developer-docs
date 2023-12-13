@@ -19,6 +19,11 @@
     "lint": "pnpm install --frozen-lockfile && prettier --check '**/*.(tsx|ts|jx|js|json|md|html)'",
     "contributors": "scripts/contributors.js"
   },
+  "pnpm": {
+    "overrides": {
+      "semver": "7.5.4"
+    }
+  },
   "dependencies": {
     "@algolia/client-search": "^4.20.0",
     "@docusaurus/core": "3.0.1",
