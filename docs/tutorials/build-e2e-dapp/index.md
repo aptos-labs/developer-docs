@@ -24,9 +24,9 @@ After meeting the [prerequisites](#prerequisites) and [getting set up](#setup) a
 
 You must have:
 
-- [Aptos CLI](../../tools/aptos-cli/install-cli/index.md) `@1.0.4` or later
-- [Aptos TypeScript SDK](../../sdks/ts-sdk/index.md) `@1.7.1` or later
-- [Aptos Wallet Adapter](../../integration/wallet-adapter-concept.md) `@1.0.2` or later
+- [Aptos CLI](../../tools/aptos-cli/install-cli/index.md)
+- [Aptos TypeScript SDK](../../sdks/new-ts-sdk/index.md)
+- [Aptos Wallet Adapter](../../integration/wallet-adapter-concept.md)
 - [Create React App](https://create-react-app.dev/)
 - [node and npm](https://nodejs.org/en/)
 

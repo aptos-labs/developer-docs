@@ -90,8 +90,8 @@ const sidebars = {
         "tutorials/first-coin",
         "tutorials/first-fungible-asset",
         "tutorials/first-move-module",
-        "tutorials/first-dapp",
         "tutorials/first-multisig",
+        "tutorials/build-e2e-dapp/index",
       ],
     },
     {
