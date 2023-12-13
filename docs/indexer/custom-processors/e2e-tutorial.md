@@ -4,10 +4,6 @@ title: "End-to-End Tutorial"
 
 # Creating a Custom Indexer Processor
 
-import BetaNotice from '../../../src/components/\_indexer_beta_notice.mdx';
-
-<BetaNotice />
-
 In this tutorial, we're going to walk you through all the steps involved with creating a very basic custom indexer processor to track events and data on the Aptos blockchain.
 
 We use a very simple smart contract called **Coin Flip** that has already emitted events for us.
@@ -33,7 +29,7 @@ cd aptos-indexer-processors
 cd python/processors/coin_flip
 ```
 
-Processors consume a stream of transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an auth token. Follow [this guide](/indexer/txn-stream/labs-hosted#auth-tokens) to get one. Once you're done, you should have a token that looks like this:
+Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an authorization token. Follow [this guide](/indexer/txn-stream/labs-hosted#auth-tokens) to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`. Once you're done, you should have a token that looks like this:
 
 ```
 aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx
@@ -42,7 +38,7 @@ aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx
 You also need the following tools:
 
 - The [Aptos CLI](/tools/aptos-cli/install-cli)
-- Python 3.9+: [Installation Guide](https://docs.python-guide.org/starting/installation/#python-3-installation-guides).
+- Python 3.11+: [Installation Guide](https://docs.python-guide.org/starting/installation/#python-3-installation-guides).
 - Poetry: [Installation Guide](https://python-poetry.org/docs/#installation).
 
 We use postgresql as our database in this tutorial. You're free to use whatever you want, but this tutorial is geared towards postgresql for the sake of simplicity. We use the following database configuration and tools:
@@ -51,13 +47,13 @@ We use postgresql as our database in this tutorial. You're free to use whatever 
   - We will use a database hosted on `localhost` on the port `5432`, which should be the default.
   - When you create your username, keep track of it and the password you use for it.
   - You can view a tutorial for installing postgresql and psql [here](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-22-04-quickstart) tool to set up your database more quickly.
-  - If you want to easily view your database data, consider using a GUI like [DBeaver](https://dbeaver.io/), [pgAdmin](https://www.pgadmin.org/), or [Postico](https://eggerapps.at/postico2/).
+  - To easily view your database data, consider using a GUI like [DBeaver](https://dbeaver.io/) _recommended_, [pgAdmin](https://www.pgadmin.org/), or [Postico](https://eggerapps.at/postico2/).
 
 Explaining how to create a database is beyond the scope of this tutorial. If you are not sure how to do it, consider checking out tutorials on how to create a database with the `psql` tool.
 
-## Setup your environment
+## Set up your environment
 
-### Setup the postgresql database
+### Set up the postgresql database
 
 Make sure to start the `postgresql` service:
 
@@ -73,9 +69,9 @@ For mac, if you're using brew, start it up with:
 brew services start postgresql
 ```
 
-Create your database with the name `coin_flip`, where our username is `user` and our password is `password`.
+Create your database with the name `coin_flip`, where our username is `user` and our password is `password`. If you are using `DBeaver`, you can create a new database by right clicking on the `Databases` tab and selecting `Create New Database`.
 
-If your database is set up correctly, and you have the `psql` tool, you should be able to run the command `psql -d coin_flip`.
+If your database is set up correctly, and you have the `psql` tool, you should be able to run the command `psql coin_flip`.
 
 ### Set up your local environment with poetry and grpc
 
@@ -85,79 +81,101 @@ You can also check out the python-specific broad overview of how to create an in
 
 ## Configure your indexer processor
 
-Now lets set up the configuration details for the actual indexer processor we're going to use.
+Now let's set up the configuration details for the actual indexer processor we're going to use.
 
 ### Set up your config.yaml file
 
 Copy the contents below and save it to a file called `config.yaml`. Save it in the `coin_flip` folder. Your file directory structure should look something like this:
 
 ```
-- indexer
+- aptos-indexer-processor
     - python
-        - aptos_ambassador_token
-        - aptos-tontine
-        - coin_flip
-            - move
-                - sources
-                    - coin_flip.move
-                    - package_manager.move
-                - Move.toml
-            - config.yaml     <-------- Edit this config.yaml file
-            - models.py
-            - processor.py
-            - README.md
-        - example_event_processor
-        - nft_marketplace_v2
-        - nft_orderbooks
-        __init__.py
-        main.py
-        README.md
+        - processors
+            - aptos_ambassador_token
+            - aptos-tontine
+            - coin_flip
+                - move
+                    - sources
+                        - coin_flip.move
+                        - package_manager.move
+                    - Move.toml
+                - config.yaml     <-------- Create and edit this config.yaml file
+                - models.py
+                - processor.py
+                - README.md
+            - example_event_processor
+            - nft_marketplace_v2
+            - nft_orderbooks
+            __init__.py
+            main.py
+            README.md
     - rust
     - scripts
     - typescript
 ```
 
-Once you have your config.yaml file open, you only need to change one field, if you just want to run the processor as is:
+Once you have your config.yaml file open, you only need to update certain fields:
+`processor_config.type` - name of the processor
+`chain_id`
+`indexer_grpc_data_service_address` - address of the indexer data service
+`auth_token` - The API key you created in the Developer Portal
+`postgres_connection_string` - connection string to your postgresql database
+`starting_version` - The starting version of the transactions you want to process
+`ending_version` - The ending version of the transactions you want to process
 
 ```yaml
-grpc_data_stream_api_key: "<YOUR_API_KEY_HERE>"
+server_config:
+  processor_config:
+    type: "coin_flip"
+  chain_id: 2
+  indexer_grpc_data_service_address: "grpc.testnet.aptoslabs.com:443"
+  auth_token: "<API-KEY>"
+  postgres_connection_string: "postgresql://localhost:5432/<Database Name>"
+  # Optional. Start processor at starting_version
+  starting_version: 636585029
+  # Optional. Stop processor after ending_version.
+  ending_version: 636589723
 ```
 
 ### More customization with config.yaml
 
-However, if you'd like to customize things further, you can change some of the other fields.
+You can customize additional configuration with the `config.yaml` file.
 
-If you'd like to start at a specific version, you can specify that in the config.yaml file with:
+To start at a specific ledger version, you can specify the version in the `config.yaml` file with:
 
 ```yaml
-starting_version_default: 123456789
+starting_version: <Starting Version>
 ```
 
-This is the transaction version the indexer starts looking for events at. If the indexer has already processed transactions past this version, **it will skip all of them and go to the latest version stored.**
+This is the transaction version the indexer starts looking for events at.
 
-The rows in `next_versions_to_process` are the `indexer_name` as the primary key and the `next_version` to process field, along with the `updated_at`.
-
-If you want to **force** the indexer to backfill data (overwrite/rewrite data) from previous versions even though it's already indexed past it, you can specify this in the config.yaml file with:
+The table `next_versions_to_process` keeps track of the current state of indexing. The primary key is the `indexer_name`. The `next_version` field tells us what's the next transaction to process, and the `updated_at` time tells us the last time the indexer processed a transaction.
 
 ```yaml
-starting_version_backfill: 123456789
+ending_version: <Ending Version>
 ```
 
-If you want to use a different network, change the `grpc_data_stream_endpoint` field to the corresponding desired value:
+If you'd would like to see a list of all Coin Flip transactions, you can search them in the [Aptos Explorer](https://explorer.aptoslabs.com/?network=testnet). Search for account `0xe57752173bc7c57e9b61c84895a75e53cd7c0ef0855acd81d31cb39b0e87e1d0` - which is the account where the CoinFlip module deployed to. In the result, you will see a list of transactions along with their version numbers. You can use the version numbers to specify the `starting_version` and `ending_version` in the config.yaml file.
+
+If you want to use a different network, change the `indexer_grpc_data_service_address` field to the corresponding desired value:
 
 ```yaml
-devnet: 35.225.218.95:50051
-testnet: 35.223.137.149:50051  # north america
-testnet: 34.64.252.224:50051   # asia
-mainnet: 34.30.218.153:50051
+# Devnet
+indexer_grpc_data_service_address: grpc.devnet.aptoslabs.com:443
+
+# Testnet
+indexer_grpc_data_service_address: grpc.testnet.aptoslabs.com:443
+
+# Mainnet
+indexer_grpc_data_service_address: grpc.mainnet.aptoslabs.com:443
 ```
 
 If these ip addresses don't work for you, they might be outdated. Check out the `README.md` at the root folder of the repository for the latest endpoints.
 
-If you're using a different database name or processor name, change the `processor_name` field and the `db_connection_uri` to your specific needs. Here's the general structure of the field:
+If you're using a different database name or processor name, change the `postgres_connection_string` to your specific needs. Here's the general structure of the field:
 
 ```yaml
-db_connection_uri: "postgresql://username:password@database_url:port_number/database_name"
+postgres_connection_string: "postgresql://username:password@database_url:port_number/database_name"
 ```
 
 ### Add your processor & schema names to the configuration files
@@ -384,7 +402,7 @@ Now that we have our configuration files and our database and the python databas
 Navigate to the `python` directory of your indexer repository:
 
 ```shell
-cd ~/indexer/python
+cd ~/aptos-indexer-processors/python
 ```
 
 And then run the following command:
@@ -393,4 +411,29 @@ And then run the following command:
 poetry run python -m processors.main -c processors/coin_flip/config.yaml
 ```
 
-If you're processing events correctly, the events should now show up in your database.
+If you get an error that complains about pyenv versions, you might need to install the correct version
+
+```shell
+ pyenv install 3.11.0
+```
+
+If you are seeing many dependency errors, you might need to install the dependencies with poetry, run the following command from /aptos-indexer-processors:
+
+```shell
+poetry install
+```
+
+If you're processing events correctly, you should see something like this in your terminal output:
+
+```shell
+{"timestamp": "2023-12-07 18:08:26,493", "level": "INFO", "fields": {"message": "[Parser] Kicking off", "processor_name": "coin_flip", "service_type": "processor"}, "module": "worker", "func_name": "__init__", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 463}
+{"timestamp": "2023-12-07 18:08:26,494", "level": "INFO", "fields": {"message": "[Parser] Initializing DB tables", "processor_name": "coin_flip", "service_type": "processor"}, "module": "worker", "func_name": "run", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 592}
+{"timestamp": "2023-12-07 18:08:26,694", "level": "INFO", "fields": {"message": "[Parser] DB tables initialized", "processor_name": "coin_flip", "service_type": "processor"}, "module": "worker", "func_name": "run", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 600}
+{"timestamp": "2023-12-07 18:08:26,712", "level": "INFO", "fields": {"message": "[Config] Starting from config starting_version"}, "module": "config", "func_name": "get_starting_version", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/config.py", "line_no": 77}
+{"timestamp": "2023-12-07 18:08:26,712", "level": "INFO", "fields": {"message": "[Parser] Starting fetcher task", "processor_name": "coin_flip", "stream_address": "grpc.testnet.aptoslabs.com:443", "start_version": 636585029, "service_type": "processor"}, "module": "worker", "func_name": "run", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 616}
+{"timestamp": "2023-12-07 18:08:26,712", "level": "INFO", "fields": {"message": "[Parser] Setting up rpc channel", "processor_name": "coin_flip", "stream_address": "grpc.testnet.aptoslabs.com:443", "service_type": "processor"}, "module": "worker", "func_name": "get_grpc_stream", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 56}
+{"timestamp": "2023-12-07 18:08:26,730", "level": "INFO", "fields": {"message": "[Parser] Setting up stream", "processor_name": "coin_flip", "stream_address": "grpc.testnet.aptoslabs.com:443", "starting_version": 636585029, "ending_version": 636589723, "count": 4695, "service_type": "processor"}, "module": "worker", "func_name": "get_grpc_stream", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 90}
+{"timestamp": "2023-12-07 18:08:26,733", "level": "INFO", "fields": {"message": "[Parser] Successfully connected to GRPC endpoint", "processor_name": "coin_flip", "stream_address": "grpc.testnet.aptoslabs.com:443", "starting_version": 636585029, "ending_version": 636589723, "service_type": "processor"}, "module": "worker", "func_name": "producer", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 147}
+```
+
+If you see this, you're good to go! You can now view your database and see the data being stored. There should be 2 tables created in your database: `coin_flip_events` and `next_versions_to_process`. The parsed data are stored in `coin_flip_events`.
