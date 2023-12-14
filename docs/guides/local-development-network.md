@@ -30,7 +30,7 @@ You can run a local network using the following Aptos CLI command:
 aptos node run-local-testnet --with-indexer-api
 ```
 
-**Note:** Despite the name (`local-testnet`), this has nothing to with the Aptos testnet, it will run a network entirely local to your machine.
+**Note:** Despite the name (`local-testnet`), this has nothing to do with the Aptos testnet, it will run a network entirely local to your machine.
 
 You should expect to see output similar to this:
 
