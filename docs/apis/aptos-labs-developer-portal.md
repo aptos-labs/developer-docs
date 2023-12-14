@@ -33,7 +33,7 @@ Rate limits are customizable per user upon request. If you have a use-case that 
 
 ### Known Limitations
 
-1. Only authenticated access supported.
+1. Only authenticated access is supported.
 
    At the moment the new URLs introduced by the Developer Portal / API Gateway only support requests with an API Key (Bearer authentication).
    Effectively this means you can only use the new API gateway provided URLs from backend apps that can securely hold credentials.
