@@ -10,7 +10,7 @@ Aptos Move accounts have a public address, an authentication key, a public key, 
 
 The Aptos account model facilitates the unique ability to rotate an account's private key. Since an account's address is the _initial_ authentication key, the ability to sign for an account can be transferred to another private key without changing its public address.
 
-In this guide, we show examples for how to rotate an account's authentication key using a few of the various Aptos SDKs.
+In this guide, we show examples of how to rotate an account's authentication key using a few of the various Aptos SDKs.
 
 Here are the installation links for the SDKs we will cover in this example:
 
