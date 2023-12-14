@@ -72,7 +72,7 @@ In Aptos, you can write smart contracts with the [Move programming language](../
 
 ### Select a template
 
-Create simple example contract code written in Move. You can create a sample contract by selecting the _template_ option and clicking the **Create** button.
+Create a simple example contract code written in Move. You can create a sample contract by selecting the _template_ option and clicking the **Create** button.
 
 <center>
 <ThemedImage
