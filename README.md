@@ -59,9 +59,9 @@ This step will configure the Docusaurus static site generator.
 pnpm start
 ```
 
-4. See your changes staged at: http://localhost:3000/
+3. See your changes staged at: http://localhost:3000/
 
-5. Create a pull request with your changes as described in our [Contributing](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) README.
+4. Create a pull request with your changes as described in our [Contributing](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) README.
 
 ## (Optional) Build static html files
 
