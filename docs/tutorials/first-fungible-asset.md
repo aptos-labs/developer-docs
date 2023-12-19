@@ -70,7 +70,7 @@ The application will complete, printing:
 
 Transaction hash: 0x90fbe811171dde1ffad9157314ce0c4f6070fd5c1095a0e18a0b5634d10d7f48
 metadata address: 0x77503715cb75fcc276b4e7236210fb0bcac7b510f6428233b65468b1cd3d708b
-All the balances in this exmaple refer to balance in primary fungible stores of each account.
+All the balances in this example refer to balance in primary fungible stores of each account.
 Alice's initial FACoin balance: 0.
 Bob's initial FACoin balance: 0.
 Charlie's initial balance: 0.
@@ -133,7 +133,7 @@ Publish the package to chain:
 export function getPackageBytesToPublish(filePath: string) {
   // current working directory - the root folder of this repo
   const cwd = process.cwd();
-  // target directory - current working directory + filePath (filePath json file is generated with the prevoius, compilePackage, cli command)
+  // target directory - current working directory + filePath (filePath json file is generated with the previous, compilePackage, cli command)
   const modulePath = path.join(cwd, filePath);
 
   const jsonData = JSON.parse(fs.readFileSync(modulePath, "utf8"));
@@ -173,7 +173,7 @@ await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
 The FACoin module contains a function called `init_module` in which it creates a named metadata object that defines a type of FA called "FACoin" with a bunch of properties. The `init_module` function is called when the module is published. In this case, FACoin initializes the `FACoin` metadata object, owned by the owner of the account. According to the module code, the owner will be the admin of "FACoin" so that they are entitled to manage "FACoin" under the fungible asset framework.
 
 :::tip Managed Fungible Asset framework
-[`Managed Fungible Asset`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/fungible_asset/managed_fungible_asset/sources/managed_fungible_asset.move) is a full-fledged FA management framework for FAs directly managed by users. It provides convenience wrappers around different `refs` and both primary and secondary fungible stores. This example is a simplified version that only deal with primary stores.
+[`Managed Fungible Asset`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/fungible_asset/managed_fungible_asset/sources/managed_fungible_asset.move) is a full-fledged FA management framework for FAs directly managed by users. It provides convenience wrappers around different `refs` and both primary and secondary fungible stores. This example is a simplified version that only deals with primary stores.
 :::
 
 ---

@@ -165,7 +165,7 @@ async function main() {
 
   const metadata_addr = await client.getMetadata(alice);
 
-  console.log("All the balances in this exmaple refer to balance in primary fungible stores of each account.");
+  console.log("All the balances in this example refer to balance in primary fungible stores of each account.");
   console.log(
     `Alice's initial FACoin balance: ${await fungibleAssetClient.getPrimaryBalance(alice.address(), metadata_addr)}.`,
   );
