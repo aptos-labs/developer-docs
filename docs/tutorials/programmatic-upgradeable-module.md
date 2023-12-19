@@ -6,6 +6,7 @@ slug: "programmatic-upgradeable-module"
 # Programmatic Upgradeable Module
 
 This tutorial will go over two sections:
+
 1. How to publish modules to a resource account.
 2. How to upgrade modules in a resource account.
 
@@ -23,11 +24,13 @@ The first step will go over section 1: **How to publish modules to a resource ac
 
 Before publishing the module, we want to create a resource account prior, so that the module then gets uploaded to the resource account.
 But first, we must calculate the resource account address. This will be needed in the next steps later.
+
 1. Calculate resource account address.
 
 `aptos account derive-resource-account-address --address <your_address> --seed <seed>`
 
 #### Example resource account address creation:
+
 ```
 aptos account derive-resource-account-address --address 0x1c3e5555728c3d0d544f5679229fac153c5f7d78b323751b41860c5ffcc21cfd --seed random3
 ```
@@ -62,10 +65,9 @@ your_module = "0x1c3e5555728c3d0d544f5679229fac153c5f7d78b323751b41860c5ffcc21cf
 resource_account = "0xf48832b9e57bccc6943ec567f95b1cddab880d2e979706bc988d3e8f440ff2dd"
 ```
 
-
 3. Now run the command: `aptos move create-resource-account-and-publish-package --address-name <your-address> --seed <seed>`.
-It will ask for permission to spend gas (octas) for the transaction to go through. Once confirmed, you should see a result of **success**.
-To do this, we run the command:
+   It will ask for permission to spend gas (octas) for the transaction to go through. Once confirmed, you should see a result of **success**.
+   To do this, we run the command:
 
 - `aptos move create-resource-account-and-publish-package --address-name <your-address> --seed <seed>`
    1. Replace `<your-address>` with your account address.
@@ -75,14 +77,14 @@ When running this command, this will **FIRST calculate** your resource account a
 A prompt below will show:
 
 ```
-Do you want to publish this package under the resource account's address 
+Do you want to publish this package under the resource account's address
 0xf48832b9e57bccc6943ec567f95b1cddab880d2e979706bc988d3e8f440ff2dd? [yes/no]
 ```
 
 Make sure this is the address we calculated above. If you have placeholder addresses, .e.g: `_` as addresses, refer to: [Placeholder addresses](#addresses-with-empty-placeholders)
 
-Congratulations, you have deployed your module onto a resource account. To verify, 
-check the [**Aptos explorer**](https://explorer.aptoslabs.com/) and search for your resource account address. 
+Congratulations, you have deployed your module onto a resource account. To verify,
+check the [**Aptos explorer**](https://explorer.aptoslabs.com/) and search for your resource account address.
 Click on `Modules` tab and you should see the code/module published onto the account.
 **[Example](https://explorer.aptoslabs.com/account/0x090ad1536fe5cfcb5632b3026f99f8415c55b69ce54b6f17ed8cd7edbcb5edfa/modules/code/user_info?network=devnet)**
 
@@ -125,10 +127,10 @@ module resource_account::user_info {
 	    owner: address,
 	    signer_cap: SignerCapability,
 	}
-	
+
 	const OWNER: address = @your_module;
 	const RESOURCE_ACCOUNT: address = @resource_account;
-	
+
 	/// `resource_account` injected from Move VM
 	fun init_module(resource_account: &signer) {
 	    // Must create this struct on constructor level, as we don't get the signer back when we create a resource account.
@@ -148,14 +150,13 @@ module resource_account::user_info {
 
 #### 2.1.1. Code Changes - `upgrade`
 
-   The second function is to define the `upgrade` function. This must be an `entry` function as it’s being called from a transaction. Here’s an example of the function with access control configured.
-
+The second function is to define the `upgrade` function. This must be a `entry` function as it’s being called from a transaction. Here’s an example of the function with access control configured.
 
 ```move
 module resource_account::user_info {
 
 	const RESOURCE_ACCOUNT: address = @resource_account;
-	
+
 	public entry fun upgrade(
 	        owner: &signer,
 	        metadata_serialized: vector<u8>,
@@ -164,7 +165,7 @@ module resource_account::user_info {
 	        // Get the config we sent in the `init_module` to the resource_account.
 	        let config = borrow_global<Config>(RESOURCE_ACCOUNT);
 	        assert!(config.owner == signer::address_of(owner), 1);
-	
+
 	        // The resource account `signer` is needed to publish/upgrade the contract
 	        let signer = account::create_signer_with_capability(&config.signer_cap);
 	        code::publish_package_txn(&signer, metadata_serialized, code);
@@ -175,7 +176,7 @@ module resource_account::user_info {
 - In the `init_module`, we moved the `Config` to the resource account signer. In this function, we retrieve it, and validate that the calling user is the `owner` from the `Config` resource.
 - We then generate a `signer` from the `signer_cap` from the `Config`, and pass this to `publish_package_txn`, which expects the resource account signer. This is the address that the code will upgrade the packages.
 
-**Now that the two functions have been implemented, deploy the module to the resource account, 
+**Now that the two functions have been implemented, deploy the module to the resource account,
 following the same steps in section: [How to publish modules to a resource account](#how-to-publish-modules-to-a-resource-account)**
 
 ### 2.2. Upgrade the module
@@ -198,7 +199,6 @@ aptos move build-publish-payload --json-output-file upgrade.json
 
 If you have placeholder addresses `_` in your `Move.toml` file, run the command here: [Upgrade function payload section](#generate-upgrade-function-payload-with-new-function-added-in-upgraded-module)
 
-
 This will create a json file `upgrade.json`, with the args of the `metadata_serialied` and `code`. Just need to adjust the `function_id` in the json file, change this to:
 
 `<resource_account>::user_info::upgrade`
@@ -218,9 +218,7 @@ Your `upgrade.json` file should look like:
     },
     {
       "type": "hex",
-      "value": [
-        "0xa11ceb0b060000000a01000c020c1..."
-      ]
+      "value": ["0xa11ceb0b060000000a01000c020c1..."]
     }
   ]
 }
@@ -238,6 +236,7 @@ Now check the explorer,
 2. Click `Modules`
 
 You should see the source code with the new function `new_function_added` added. It should look like
+
 ```move
     public entry fun upgrade(
         owner: &signer,
@@ -263,6 +262,7 @@ This concludes the tutorial.
 ## 3. Appendix
 
 ### Addresses with Empty Placeholders
+
 If your `[addresses]` have empty placeholders, e.g:
 
 ```toml
@@ -282,7 +282,7 @@ your_module=0x1c3e5555728c3d0d544f5679229fac153c5f7d78b323751b41860c5ffcc21cfd,r
 ### Generate `upgrade` function payload with new function added in upgraded module
 
 ```shell
-aptos move build-publish-payload --json-output-file upgrade.json --named-addresses \ 
+aptos move build-publish-payload --json-output-file upgrade.json --named-addresses \
 your_module=0x1c3e5555728c3d0d544f5679229fac153c5f7d78b323751b41860c5ffcc21cfd,resource_account=0xf48832b9e57bccc6943ec567f95b1cddab880d2e979706bc988d3e8f440ff2dd
 ```
 
@@ -290,14 +290,15 @@ To mitigate mistakes and improve user experience, you should use environment var
 below is an example of how to use them accordingly. (Note this is for unix)
 
 #### Environment variables
+
 To replace the hard-coded addresses in the `aptos move build-publish-payload` command
 with environment variables for easier use, follow the steps below.
-
 
 ```shell
 export YOUR_MODULE_ADDRESS="0x1c3e5555728c3d0d544f5679229fac153c5f7d78b323751b41860c5ffcc21cfd"
 export RESOURCE_ACCOUNT_ADDRESS="0xf48832b9e57bccc6943ec567f95b1cddab880d2e979706bc988d3e8f440ff2dd"
 ```
+
 ```shell
 aptos move build-publish-payload \
 --json-output-file upgrade.json \

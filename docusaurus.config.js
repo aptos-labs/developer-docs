@@ -23,7 +23,10 @@ const config = {
   favicon: "img/favicon.ico",
   organizationName: "aptos-labs", // Usually your GitHub org/user name.
   projectName: "aptos-core", // Usually your repo name.
-
+  markdown: {
+    mermaid: true,
+  },
+  themes: ["@docusaurus/theme-mermaid"],
   presets: [
     [
       "@docusaurus/preset-classic",
