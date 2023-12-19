@@ -74,6 +74,6 @@ All the below variables are set by default to `false`, i.e., sending of these te
 - `APTOS_FORCE_ENABLE_TELEMETRY`: This overrides the chain ID check and forces the node to send telemetry regardless of whether remote service accepts or not.
 - `APTOS_DISABLE_TELEMETRY_PUSH_METRICS`: This disables sending the [Prometheus](https://prometheus.io/) metrics.
 - `APTOS_DISABLE_TELEMETRY_PUSH_LOGS`: This disables sending the logs.
-- `APTOS_DISBALE_TELEMETRY_PUSH_EVENTS`: This disables sending the custom events.
+- `APTOS_DISABLE_TELEMETRY_PUSH_EVENTS`: This disables sending the custom events.
 - `APTOS_DISABLE_LOG_ENV_POLLING`: This disables the dynamic ability to send verbose logs.
 - `APTOS_DISABLE_PROMETHEUS_NODE_METRICS`: This disables sending the node resource metrics such as system CPU, memory, etc.
