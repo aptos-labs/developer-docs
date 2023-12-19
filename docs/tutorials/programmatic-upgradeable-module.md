@@ -70,8 +70,8 @@ resource_account = "0xf48832b9e57bccc6943ec567f95b1cddab880d2e979706bc988d3e8f44
    To do this, we run the command:
 
 - `aptos move create-resource-account-and-publish-package --address-name <your-address> --seed <seed>`
-  1.  Replace `<your-address>` with your account address.
-  2.  Replace `<seed>` with a seed that only you know. This is used as a custom input to generating the resource account address.
+   1. Replace `<your-address>` with your account address.
+   2. Replace `<seed>` with a seed that only you know. This is used as a custom input to generate the resource account address.
 
 When running this command, this will **FIRST calculate** your resource account address.
 A prompt below will show:
