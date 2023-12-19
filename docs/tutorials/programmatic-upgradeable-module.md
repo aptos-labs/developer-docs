@@ -69,7 +69,7 @@ To do this, we run the command:
 
 - `aptos move create-resource-account-and-publish-package --address-name <your-address> --seed <seed>`
    1. Replace `<your-address>` with your account address.
-   2. Replace `<seed>` with a seed that only you know. This is used as a custom input to generating the resource account address.
+   2. Replace `<seed>` with a seed that only you know. This is used as a custom input to generate the resource account address.
 
 When running this command, this will **FIRST calculate** your resource account address.
 A prompt below will show:
@@ -148,7 +148,7 @@ module resource_account::user_info {
 
 #### 2.1.1. Code Changes - `upgrade`
 
-   The second function is to define the `upgrade` function. This must be a `entry` function as it’s being called from a transaction. Here’s an example of the function with access control configured.
+   The second function is to define the `upgrade` function. This must be an `entry` function as it’s being called from a transaction. Here’s an example of the function with access control configured.
 
 
 ```move
