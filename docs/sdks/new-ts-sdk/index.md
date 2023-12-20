@@ -107,7 +107,7 @@ await aptos.fundAccount({ accountAddress: alice.accountAddress, amount: 1000 });
 // submit transaction to transfer APT coin from Alice to Bob
 const bobAddress = "0xb0b";
 
-const transaction = await aptos.build.transaction({
+const transaction = await aptos.transaction.build.transaction({
   sender: alice.accountAddress,
   data: {
     function: "0x1::coin::transfer",
@@ -117,11 +117,11 @@ const transaction = await aptos.build.transaction({
 });
 
 // using sign and submit separately
-const senderAuthenticator = aptos.sign.transaction({
+const senderAuthenticator = aptos.transaction.sign.transaction({
   signer: alice,
   transaction,
 });
-const pendingTransaction = await aptos.submit.transaction({
+const pendingTransaction = await aptos.transaction.submit.transaction({
   transaction,
   senderAuthenticator,
 });
