@@ -131,7 +131,7 @@ fun sum(n: u64): u64 {
 }
 ```
 
-The loop iterator variable (`i` in the above example) currently must be a numeric type (inferred from the bounds), and the bounds `0` and `n` here can be replaced by arbitrary numeric expressions. Each is only evaluated once at the start of the loop. The iterator variable `i` is assigned the `lower_bound` (in this case `0`)  and incremented after each loop iteration; the loop exits when the iterator `i` reaches or exceeds `upper_bound` (in this case `n`).
+The loop iterator variable (`i` in the above example) currently must be a numeric type (inferred from the bounds), and the bounds `0` and `n` here can be replaced by arbitrary numeric expressions. Each is only evaluated once at the start of the loop. The iterator variable `i` is assigned the `lower_bound` (in this case `0`) and incremented after each loop iteration; the loop exits when the iterator `i` reaches or exceeds `upper_bound` (in this case `n`).
 
 ### `break` and `continue` in `for` loops
 
