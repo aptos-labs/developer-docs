@@ -1,6 +1,6 @@
-# While and Loop
+# While, For, and Loop
 
-Move offers two constructs for looping: `while` and `loop`.
+Move offers three constructs for looping: `while`, `for`, and `loop`.
 
 ## `while` loops
 
@@ -46,7 +46,7 @@ fun smallest_factor(n: u64): u64 {
 }
 ```
 
-The `break` expression cannot be used outside a loop.
+The `break` expression cannot be used outside of a loop.
 
 ### `continue`
 
@@ -66,7 +66,7 @@ fun sum_intermediate(n: u64): u64 {
 }
 ```
 
-The `continue` expression cannot be used outside a loop.
+The `continue` expression cannot be used outside of a loop.
 
 ### The type of `break` and `continue`
 
@@ -111,6 +111,47 @@ fun pick(
     };
 
     result
+}
+```
+
+## The `for` expression
+
+The `for` expression iterates over a range defined using integer-typed `lower_bound` (inclusive) and `upper_bound` (non-inclusive) expressions, executing its loop body for each element of the range. `for` is designed for scenarios where the number of iterations of a loop is determined by a specific range.
+
+Here is an example of a `for` loop that computes the sum of the elements in a range from `0` to `n-1`:
+
+```move
+fun sum(n: u64): u64 {
+    let sum = 0;
+    for (i in 0..n) {
+        sum = sum + i;
+    };
+
+    sum
+}
+```
+
+The loop iterator variable (`i` in the above example) currently must be a numeric type (inferred from the bounds), and the bounds `0` and `n` here can be replaced by arbitrary numeric expressions. Each is only evaluated once at the start of the loop. The iterator variable `i` is assigned the `lower_bound` (in this case `0`)  and incremented after each loop iteration; the loop exits when the iterator `i` reaches or exceeds `upper_bound` (in this case `n`).
+
+### `break` and `continue` in `for` loops
+
+Similar to `while` loops, the `break` expression can be used in `for` loops to exit prematurely. The `continue` expression can be used to skip the current iteration and move to the next. Here's an example that demonstrates the use of both `break` and `continue`. The loop will iterate through numbers from `0` to `n-1`, summing up them up. It will skip numbers that are divisible by `3` (using `continue`) and stop when it encounters a number greater than `10` (using `break`):
+
+```move
+fun sum_conditional(n: u64): u64 {
+    let sum = 0;
+    for (iter in 0..n) {
+        if (iter > 10) {
+            break; // Exit the loop if the number is greater than 10
+        }
+        if (iter % 3 == 0) {
+            continue; // Skip the current iteration if the number is divisible by 3
+        }
+
+        sum = sum + iter;
+    };
+
+    sum
 }
 ```
 
@@ -160,12 +201,13 @@ fun sum_intermediate(n: u64): u64 {
 }
 ```
 
-## The type of `while` and `loop`
+## The type of `while`, `loop`, and `for` expression
 
-Move loops are typed expressions. A `while` expression always has type `()`.
+Move loops are typed expressions. The `while` and `for` expression always has type `()`.
 
 ```move
 let () = while (i < 10) { i = i + 1 };
+let () = for (i in 0..10) {};
 ```
 
 If a `loop` contains a `break`, the expression has type unit `()`
