@@ -1,6 +1,5 @@
 ---
 title: "Integrate with Aptos"
-slug: "system-integrators-guide"
 ---
 
 import Tabs from '@theme/Tabs';

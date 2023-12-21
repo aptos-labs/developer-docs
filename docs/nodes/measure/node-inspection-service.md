@@ -1,9 +1,6 @@
 ---
 title: "Node Inspection Service"
-slug: "node-inspection-service"
 ---
-
-# Node Inspection Service
 
 Aptos nodes collect metrics and system information while running. These metrics provide a way to track,
 monitor and inspect the health and performance of the node dynamically, at runtime. Node metrics and system

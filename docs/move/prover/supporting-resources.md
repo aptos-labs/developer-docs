@@ -1,6 +1,5 @@
 ---
 title: "Supporting Resources"
-slug: "supporting-resources"
 ---
 
 # Move Prover Supporting Resources
