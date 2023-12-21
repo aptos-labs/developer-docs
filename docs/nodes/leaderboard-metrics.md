@@ -1,9 +1,6 @@
 ---
 title: "Leaderboard Metrics"
-slug: "leaderboard-metrics"
 ---
-
-# Leaderboard Metrics
 
 This document explains how the rewards for validator are evaluated and displayed on the [Aptos Validator Status](https://explorer.aptoslabs.com/validators/all?network=mainnet) page.
 

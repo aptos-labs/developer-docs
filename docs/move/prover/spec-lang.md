@@ -1,9 +1,6 @@
 ---
 title: "Move Specification Language"
-slug: "spec-lang"
 ---
-
-# Move Specification Language
 
 This document describes the _Move specification language (MSL)_, a subset of the [Move](../move-on-aptos.md) language that supports specification of the behavior of Move programs. MSL works together with the [Move Prover](./index.md), a tool that can statically verify the correctness of MSL specifications against Move programs. In contrast to traditional testing, verification of MSL is exhaustive and holds for all possible inputs and global states of a [Move module](../../reference/glossary.md#move-module) or [transaction script](../../reference/glossary.md#transaction-or-move-script). At the same time, this verification of MSL is fast and automated enough that it can be used at a similar place in the developer workflow where tests are typically conducted (for example, for qualification of pull requests in continuous integration).
 

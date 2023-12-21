@@ -1,6 +1,5 @@
 ---
 title: "Python SDK"
-slug: "python-sdk"
 ---
 
 # Aptos Python SDK

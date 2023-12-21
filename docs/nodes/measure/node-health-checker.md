@@ -1,9 +1,6 @@
 ---
 title: "Node Health Checker"
-slug: "node-health-checker"
 ---
-
-# Node Health Checker
 
 The Aptos Node Health Checker (NHC) service can be used to check the health of the following Aptos node types:
 

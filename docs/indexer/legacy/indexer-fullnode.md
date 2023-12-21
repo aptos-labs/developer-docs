@@ -1,6 +1,5 @@
 ---
 title: "Run an Indexer Fullnode"
-slug: "indexer-fullnode"
 ---
 
 :::warning Legacy Indexer

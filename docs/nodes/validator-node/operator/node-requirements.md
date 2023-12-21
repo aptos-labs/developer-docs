@@ -1,9 +1,6 @@
 ---
 title: "Node Requirements"
-slug: "node-requirements"
 ---
-
-# Node Requirements
 
 To make your validator node and validator fullnode deployment hassle-free, make sure you have the resources specified in this document.
 

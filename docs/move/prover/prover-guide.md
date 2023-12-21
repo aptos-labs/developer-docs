@@ -1,9 +1,6 @@
 ---
 title: "Move Prover User Guide"
-slug: "prover-guide"
 ---
-
-# Move Prover User Guide
 
 This is the user guide for the Move Prover. This document accompanies the
 [Move specification language](spec-lang.md). See the sections below for details.
