@@ -37,7 +37,7 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           sidebarCollapsible: false,
           editUrl:
-            "https://github.com/aptos-labs/aptos-core/tree/main/developer-docs-site/",
+            "https://github.com/aptos-labs/developer-docs/edit/main",
           remarkPlugins: [codeInjector, math],
           path: "docs",
           rehypePlugins: [katex],
