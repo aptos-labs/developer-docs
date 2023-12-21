@@ -1,6 +1,5 @@
 ---
 title: "Unity SDK"
-slug: "unity-sdk"
 ---
 
 # Aptos Unity SDK

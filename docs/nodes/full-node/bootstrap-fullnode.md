@@ -1,6 +1,5 @@
 ---
 title: "Bootstrap Fullnode from Snapshot"
-slug: "bootstrap-fullnode"
 sidebar_position: 14
 ---
 

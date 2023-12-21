@@ -1,9 +1,6 @@
 ---
 title: "Node Liveness Criteria"
-slug: "node-liveness-criteria"
 ---
-
-# Node Liveness Criteria
 
 When you participate in the Aptos network, your validator node and the validator fullnode must pass liveness checks within 24 hours of being selected to participate in the network, and at a regular cadence onwards. This is required to ensure that your nodes contribute to the health of the overall network.
 

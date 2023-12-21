@@ -463,7 +463,6 @@ const sidebars = {
           collapsible: true,
           collapsed: true,
           items: [
-            "guides/sponsored-transactions",
             "guides/local-development-network",
             "nodes/local-testnet/run-a-local-testnet",
             "guides/running-a-local-multi-node-network",
