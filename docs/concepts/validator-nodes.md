@@ -1,6 +1,5 @@
 ---
 title: "Validator Nodes Overview"
-slug: "validator-nodes"
 ---
 
 import BlockQuote from "@site/src/components/BlockQuote";
@@ -22,7 +21,7 @@ Each Aptos node comprises several logical components:
 
 The [Aptos-core](../reference/glossary.md#aptos-core) software can be configured to run as a validator node or as a fullnode.
 
-# Overview
+## Overview
 
 When a transaction is submitted to the Aptos blockchain, validator nodes run a distributed [consensus protocol](../reference/glossary.md#consensus-protocol), execute the transaction, and store the transaction and the execution results on the blockchain. Validator nodes decide which transactions will be added to the blockchain and in which order.
 

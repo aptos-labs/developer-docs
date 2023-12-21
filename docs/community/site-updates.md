@@ -1,6 +1,5 @@
 ---
 title: "Update Aptos.dev"
-slug: "site-updates"
 ---
 
 # Update Aptos.dev

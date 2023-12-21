@@ -1,6 +1,5 @@
 ---
 title: "Telemetry"
-slug: "telemetry"
 ---
 
 When you operate a node on an Aptos network, your node can be set to send telemetry data to Aptos Labs. You can disable telemetry at any point. If telemetry remains enabled, Aptos node binary will send telemetry data in the background.

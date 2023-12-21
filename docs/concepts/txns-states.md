@@ -1,12 +1,9 @@
 ---
 title: "Transactions and States"
-slug: "txns-states"
 ---
 
 import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-
-# Transactions and States
 
 The Aptos blockchain stores three types of data:
 

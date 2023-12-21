@@ -1,9 +1,6 @@
 ---
 title: "Node Health Checker FAQ"
-slug: "node-health-checker-faq"
 ---
-
-# Node Health Checker FAQ
 
 The Aptos Node Health Checker (NHC) service can be used to check the health of your node(s). See [Node Health Checker](./node-health-checker.md) for full documentation on the NHC.
 

@@ -1,9 +1,6 @@
 ---
 title: "Gas and Storage Fees"
-slug: "gas-txn-fee"
 ---
-
-# Gas and Storage Fees
 
 Any transaction execution on the Aptos blockchain requires a processing fee. As of today, this fee comprises two components:
 

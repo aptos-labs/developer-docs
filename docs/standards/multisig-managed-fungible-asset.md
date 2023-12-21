@@ -1,6 +1,5 @@
 ---
 title: "Manage Fungible Assets with Aptos Multisig Account"
-slug: "multisig-managed-fungible-assets"
 ---
 
 # Manage Fungible Assets with Aptos Framework Multisig Account
