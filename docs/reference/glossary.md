@@ -1,6 +1,5 @@
 ---
 title: "Aptos Glossary"
-slug: "glossary"
 ---
 
 # Aptos Glossary

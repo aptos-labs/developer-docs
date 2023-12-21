@@ -1,6 +1,5 @@
 ---
 title: "Resource Accounts"
-slug: "resource-accounts"
 ---
 
 # Resource Accounts

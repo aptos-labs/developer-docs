@@ -1,6 +1,5 @@
 ---
 title: "Fullnode Rest API"
-slug: "fullnode-rest-api"
 ---
 
 # Use the Aptos Fullnode REST API

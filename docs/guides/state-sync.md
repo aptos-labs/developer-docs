@@ -1,12 +1,9 @@
 ---
 title: "State Synchronization"
-slug: "state-sync"
 ---
 
 import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-
-# State Synchronization
 
 Nodes in an Aptos network (e.g., validator nodes and fullnodes) must always be synchronized to the latest Aptos blockchain state. The [state synchronization](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10) (state sync) component that runs on each node is responsible for this. State sync identifies and fetches new blockchain data from the peers, validates the data and persists it to the local storage.
 

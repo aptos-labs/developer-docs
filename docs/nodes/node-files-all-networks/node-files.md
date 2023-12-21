@@ -1,9 +1,6 @@
 ---
 title: "Node Files For Mainnet"
-slug: "node-files"
 ---
-
-# Node Files For Mainnet
 
 When you are deploying an Aptos node in the **mainnet**, you will need to download the files listed on this page.
 

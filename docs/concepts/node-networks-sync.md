@@ -1,6 +1,5 @@
 ---
 title: "Node Networks and Sync"
-slug: "node-networks-sync"
 ---
 
 # Node Networks and Synchronization

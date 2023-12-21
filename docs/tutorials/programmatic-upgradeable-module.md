@@ -1,6 +1,5 @@
 ---
 title: "Programmatic Upgradeable Module"
-slug: "programmatic-upgradeable-module"
 ---
 
 # Programmatic Upgradeable Module

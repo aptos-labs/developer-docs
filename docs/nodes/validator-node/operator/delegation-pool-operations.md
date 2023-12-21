@@ -1,9 +1,6 @@
 ---
 title: "Delegation Pool Operations"
-slug: "delegation-pool-operations"
 ---
-
-# Delegation Pool Operations
 
 > Beta: This documentation is in experimental, beta mode. Supply feedback by [requesting document changes](../../../community/site-updates.md#request-docs-changes). See also the related [Staking Pool Operations](./staking-pool-operations.md) instructions.
 

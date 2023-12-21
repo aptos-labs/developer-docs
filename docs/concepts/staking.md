@@ -1,12 +1,9 @@
 ---
 title: "Staking"
-slug: "staking"
 ---
 
 import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-
-# Staking
 
 :::tip Consensus
 We strongly recommend that you read the consensus section of [Aptos Blockchain Deep Dive](./blockchain.md#consensus) before proceeding further.
