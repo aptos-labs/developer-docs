@@ -1,6 +1,5 @@
 ---
 title: "Aptos Move Tutorial"
-slug: "move-tutorial"
 ---
 
 # Move Tutorial

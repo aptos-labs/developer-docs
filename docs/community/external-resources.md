@@ -1,6 +1,5 @@
 ---
 title: "External Resources"
-slug: "external-resources"
 ---
 
 # Aptos External Resources

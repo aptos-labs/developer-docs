@@ -1,6 +1,5 @@
 ---
 title: "Follow Aptos Style"
-slug: "aptos-style"
 ---
 
 # Follow Aptos Writing Style

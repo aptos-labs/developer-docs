@@ -1,6 +1,5 @@
 ---
 title: "Move Scripts"
-slug: "move-scripts"
 ---
 
 # Move Scripts

@@ -1,11 +1,10 @@
 ---
 title: "Fullnode Rest API"
-slug: "fullnode-rest-api"
 ---
 
 # Use the Aptos Fullnode REST API
 
-If you with to employ the [Aptos API](https://aptos.dev/nodes/aptos-api-spec/#/), then this guide is for you. This guide will walk you through all you need to integrate the Aptos blockchain into your platform with the Aptos API.
+If you wish to employ the [Aptos API](https://aptos.dev/nodes/aptos-api-spec/#/), then this guide is for you. This guide will walk you through all you need to integrate the Aptos blockchain into your platform with the Aptos API.
 
 :::tip
 Also see the [System Integrators Guide](../guides/system-integrators-guide.md) for a thorough walkthrough of Aptos integration.

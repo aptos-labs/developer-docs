@@ -9,7 +9,7 @@
 
 This Aptos Developer Documentation is built using [Docusaurus 2](https://docusaurus.io/) and displayed on https://aptos.dev/. Follow the below steps to build the docs locally and test your contribution.
 
-We now use [lychee-broken-link-checker](https://github.com/marketplace/actions/lychee-broken-link-checker) to check for broken links in the GitHub Markdown. We are a corresponding link checker for pages on Aptos.dev.
+We now use [lychee-broken-link-checker](https://github.com/marketplace/actions/lychee-broken-link-checker) to check for broken links in the GitHub Markdown. We use a corresponding link checker for pages on Aptos.dev.
 
 With results visible at:
 https://github.com//aptos-labs/developer-docs/actions/workflows/links.yml
@@ -59,9 +59,9 @@ This step will configure the Docusaurus static site generator.
 pnpm start
 ```
 
-4. See your changes staged at: http://localhost:3000/
+3. See your changes staged at: http://localhost:3000/
 
-5. Create a pull request with your changes as described in our [Contributing](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) README.
+4. Create a pull request with your changes as described in our [Contributing](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) README.
 
 ## (Optional) Build static html files
 

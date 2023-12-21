@@ -1,9 +1,6 @@
 ---
 title: "Data Pruning"
-slug: "data-pruning"
 ---
-
-# Data Pruning
 
 When a validator node is running, it participates in consensus to execute
 transactions and commit new data to the blockchain. Similarly, when fullnodes

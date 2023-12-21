@@ -1,6 +1,5 @@
 ---
 title: "Identity and Configuration"
-slug: "identity-and-configuration"
 ---
 
 import ThemedImage from '@theme/ThemedImage';

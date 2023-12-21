@@ -20,6 +20,21 @@ const ApiExplorer = ({ network, layout }: ApiExplorerProps) => {
       // Change the `servers` field in the spec file to point to the public
       // API fullnode for that network.
       json.servers = [{ url: `https://fullnode.${network}.aptoslabs.com/v1` }];
+
+      // This removes the `application/x-bcs` content type from the spec file, so it
+      // properly shows the JSON response in the API explorer.  Note that, this means it doesn't show in the spec for,
+      // bcs, but it is poorly documented anyway.  Let's opt for a better docs experience.
+      Object.keys(json.paths).forEach((key, _) => {
+        // This only applies to GET, because it's the only
+        if (
+          json.paths[key].hasOwnProperty("get") &&
+          json.paths[key].get.responses.hasOwnProperty("200")
+        )
+          delete json.paths[key].get?.responses["200"].content[
+            "application/x-bcs"
+          ];
+      });
+
       // Set state with the updated spec.
       if (isMounted) {
         setSpecContent(json);

@@ -1,9 +1,6 @@
 ---
 title: "Gas and Storage Fees"
-slug: "gas-txn-fee"
 ---
-
-# Gas and Storage Fees
 
 Any transaction execution on the Aptos blockchain requires a processing fee. As of today, this fee comprises two components:
 
@@ -58,7 +55,7 @@ As of Aptos Framework release 1.7, the breakdown of fee charges and refunds is e
     ///      `total_charge_gas_units`, the net charge / refund is calculated by
     ///      `total_charge_gas_units` * `gas_unit_price` - `storage_fee_refund_octas`.
     ///
-    /// This is meant to emitted as a module event.
+    /// This is meant to be emitted as a module event.
     struct FeeStatement has drop, store {
         /// Total gas charge.
         total_charge_gas_units: u64,

@@ -1,6 +1,5 @@
 ---
 title: "Aptos Error Codes"
-slug: "error-codes"
 ---
 
 import Tabs from '@theme/Tabs';

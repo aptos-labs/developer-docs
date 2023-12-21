@@ -1,11 +1,10 @@
 ---
 title: "Events"
-slug: "events"
 ---
 
 Events are emitted during the execution of a transaction. Each Move module can define its own events and choose when to emit the events upon execution of the module. Aptos Move supports two form of events: module events and EventHandle events. Module events are the modern event mechanism and shipped in the framework release 1.7. EventHandle events are deprecated and shipped with the original framework. Because of how blockchains work, EventHandle events will likely never be fully removed from Aptos.
 
-# Module Events
+## Module Events
 
 Module events are global event streams identified by a struct type. To define an event struct, add the attribute `#[event]` to a normal Move struct that has `drop` and `store` abilities. For example,
 

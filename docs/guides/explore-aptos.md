@@ -1,6 +1,5 @@
 ---
 title: "Explore Aptos"
-slug: "explore-aptos"
 ---
 
 import Tabs from '@theme/Tabs';

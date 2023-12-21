@@ -26,7 +26,7 @@ Learn how to [deploy and manage a fungible asset](first-fungible-asset.md). The 
 
 Write your first Move module for the Aptos blockchain.
 
-### [Your First Dapp](first-dapp.md)
+### [Your First Dapp](build-e2e-dapp/index.md)
 
 Learn how to build your first dapp. Focuses on building the user interface for the dapp.
 

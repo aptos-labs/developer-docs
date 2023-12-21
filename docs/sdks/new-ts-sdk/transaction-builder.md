@@ -25,7 +25,7 @@ Each step provides supports to all the different transaction types Aptos support
 
 ```ts
 // build a transaction
-const transaction = await aptos.build.transaction({
+const transaction = await aptos.transaction.build.transaction({
   sender: alice.accountAddress,
   data: {
     function: "0x1::coin::transfer",
@@ -35,11 +35,11 @@ const transaction = await aptos.build.transaction({
 });
 
 // using sign and submit separately
-const senderAuthenticator = aptos.sign.transaction({
+const senderAuthenticator = aptos.transaction.sign.transaction({
   signer: alice,
   transaction,
 });
-const committedTransaction = await aptos.submit.transaction({
+const committedTransaction = await aptos.transaction.submit.transaction({
   transaction,
   senderAuthenticator,
 });
@@ -55,7 +55,7 @@ const committedTransaction = await aptos.signAndSubmitTransaction({
 
 ```ts
 // build a transaction
-const transaction = await aptos.build.multiAgentTransaction({
+const transaction = await aptos.transaction.build.multiAgentTransaction({
   sender: alice.accountAddress,
   secondarySignerAddresses: [secondarySignerAccount.accountAddress],
   data: {
@@ -66,27 +66,28 @@ const transaction = await aptos.build.multiAgentTransaction({
 });
 
 // sign transaction
-const senderAuthenticator = aptos.sign.transaction({
+const senderAuthenticator = aptos.transaction.sign.transaction({
   signer: alice,
   transaction,
 });
-const secondarySignerAuthenticator = aptos.sign.transaction({
+const secondarySignerAuthenticator = aptos.transaction.sign.transaction({
   signer: secondarySignerAccount,
   transaction,
 });
 // submit transaction
-const committedTransaction = await aptos.submit.multiAgentTransaction({
-  transaction,
-  senderAuthenticator,
-  additionalSignersAuthenticators: [secondarySignerAuthenticator],
-});
+const committedTransaction =
+  await aptos.transaction.submit.multiAgentTransaction({
+    transaction,
+    senderAuthenticator,
+    additionalSignersAuthenticators: [secondarySignerAuthenticator],
+  });
 ```
 
 ### Complex transaction - Simple transaction with Sponsor transaction
 
 ```ts
 // build a transaction
-const transaction = await aptos.build.transaction({
+const transaction = await aptos.transaction.build.transaction({
   sender: alice.accountAddress,
   withFeePayer: true,
   data: {
@@ -97,16 +98,17 @@ const transaction = await aptos.build.transaction({
 });
 
 // sign transaction
-const senderAuthenticator = aptos.sign.transaction({
+const senderAuthenticator = aptos.transaction.sign.transaction({
   signer: alice,
   transaction,
 });
-const feePayerSignerAuthenticator = aptos.sign.transactionAsFeePayer({
-  signer: feePayerAccount,
-  transaction,
-});
+const feePayerSignerAuthenticator =
+  aptos.transaction.sign.transactionAsFeePayer({
+    signer: feePayerAccount,
+    transaction,
+  });
 // submit transaction
-const committedTransaction = await aptos.submit.transaction({
+const committedTransaction = await aptos.transaction.submit.transaction({
   transaction,
   senderAuthenticator,
   feePayerAuthenticator: feePayerSignerAuthenticator,
@@ -117,7 +119,7 @@ const committedTransaction = await aptos.submit.transaction({
 
 ```ts
 // build a transaction
-const transaction = await aptos.build.multiAgentTransaction({
+const transaction = await aptos.transaction.build.multiAgentTransaction({
   sender: alice.accountAddress,
   secondarySignerAddresses: [secondarySignerAccount.accountAddress],
   withFeePayer: true,
@@ -129,25 +131,27 @@ const transaction = await aptos.build.multiAgentTransaction({
 });
 
 // sign transaction
-const senderAuthenticator = aptos.sign.transaction({
+const senderAuthenticator = aptos.transaction.sign.transaction({
   signer: alice,
   transaction,
 });
-const secondarySignerAuthenticator = aptos.sign.transaction({
+const secondarySignerAuthenticator = aptos.transaction.sign.transaction({
   signer: secondarySignerAccount,
   transaction,
 });
-const feePayerSignerAuthenticator = aptos.sign.transactionAsFeePayer({
-  signer: feePayerAccount,
-  transaction,
-});
+const feePayerSignerAuthenticator =
+  aptos.transaction.sign.transactionAsFeePayer({
+    signer: feePayerAccount,
+    transaction,
+  });
 // submit transaction
-const committedTransaction = await aptos.submit.multiAgentTransaction({
-  transaction,
-  senderAuthenticator,
-  additionalSignersAuthenticators: [secondarySignerAuthenticator],
-  feePayerAuthenticator: feePayerSignerAuthenticator,
-});
+const committedTransaction =
+  await aptos.transaction.submit.multiAgentTransaction({
+    transaction,
+    senderAuthenticator,
+    additionalSignersAuthenticators: [secondarySignerAuthenticator],
+    feePayerAuthenticator: feePayerSignerAuthenticator,
+  });
 ```
 
 ## Simulate transaction
@@ -155,14 +159,14 @@ const committedTransaction = await aptos.submit.multiAgentTransaction({
 ### Simple transaction
 
 ```ts
-const transaction = await aptos.build.transaction({
+const transaction = await aptos.transaction.build.transaction({
   sender: alice.accountAddress,
   data: {
     function: "0x1::coin::transfer",
     functionArguments: [bobAddress, 100],
   },
 });
-const [userTransactionResponse] = await aptos.simulate.transaction({
+const [userTransactionResponse] = await aptos.transaction.simulate.transaction({
   signerPublicKey: alice.publicKey,
   transaction,
 });
@@ -171,7 +175,7 @@ const [userTransactionResponse] = await aptos.simulate.transaction({
 ### Complex transaction - Multi agent
 
 ```ts
-const transaction = await aptos.build.multiAgentTransaction({
+const transaction = await aptos.transaction.build.multiAgentTransaction({
   sender: alice.accountAddress,
   secondarySignerAddresses: [secondarySignerAccount.accountAddress],
   data: {
@@ -179,17 +183,18 @@ const transaction = await aptos.build.multiAgentTransaction({
     functionArguments: [bobAddress, 100],
   },
 });
-const [userTransactionResponse] = await aptos.simulate.multiAgentTransaction({
-  signerPublicKey: alice.publicKey,
-  transaction,
-  secondarySignersPublicKeys: [secondarySignerAccount.publicKey],
-});
+const [userTransactionResponse] =
+  await aptos.transaction.simulate.multiAgentTransaction({
+    signerPublicKey: alice.publicKey,
+    transaction,
+    secondarySignersPublicKeys: [secondarySignerAccount.publicKey],
+  });
 ```
 
 ### Complex transaction - Simple transaction with Sponsor transaction
 
 ```ts
-const transaction = await aptos.build.transaction({
+const transaction = await aptos.transaction.build.transaction({
   sender: alice.accountAddress,
   withFeePayer: true,
   data: {
@@ -197,7 +202,7 @@ const transaction = await aptos.build.transaction({
     functionArguments: [bobAddress, 100],
   },
 });
-const [userTransactionResponse] = await aptos.simulate.transaction({
+const [userTransactionResponse] = await aptos.transaction.simulate.transaction({
   signerPublicKey: alice.publicKey,
   transaction,
   feePayerPublicKey: feePayerAccount.publicKey,
@@ -207,7 +212,7 @@ const [userTransactionResponse] = await aptos.simulate.transaction({
 ### Complex transaction - Multi agent with Sponsor transaction
 
 ```ts
-const transaction = await aptos.build.multiAgentTransaction({
+const transaction = await aptos.transaction.build.multiAgentTransaction({
   sender: alice.accountAddress,
   secondarySignerAddresses: [secondarySignerAccount.accountAddress],
   withFeePayer: true,
@@ -216,12 +221,13 @@ const transaction = await aptos.build.multiAgentTransaction({
     functionArguments: [bobAddress, 100],
   },
 });
-const [userTransactionResponse] = await aptos.simulate.multiAgentTransaction({
-  signerPublicKey: alice.publicKey,
-  transaction,
-  secondarySignersPublicKeys: [secondarySignerAccount.publicKey],
-  feePayerPublicKey: feePayerAccount.publicKey,
-});
+const [userTransactionResponse] =
+  await aptos.transaction.simulate.multiAgentTransaction({
+    signerPublicKey: alice.publicKey,
+    transaction,
+    secondarySignersPublicKeys: [secondarySignerAccount.publicKey],
+    feePayerPublicKey: feePayerAccount.publicKey,
+  });
 ```
 
 ## Transaction Management

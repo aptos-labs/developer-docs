@@ -1,10 +1,7 @@
 ---
 title: "Learn about Nodes"
-slug: "nodes-landing"
 hide_table_of_contents: true
 ---
-
-# Learn about Nodes
 
 The Aptos network consists of three node types: validator node, validator fullnode and public fullnode. To
 participate in consensus, you are required to run both a validator node and a validator fullnode, and stake.
@@ -156,7 +153,7 @@ the [external resources](../community/external-resources.md) offered by your fel
             </div>
             <small>Create a static network identity for your fullnode.</small>
           </a>
-          <a href="./full-node/update-fullnode-with-new-devnet-releases" class="list-group-item">
+          <a href="./full-node/update-fullnode-with-new-releases" class="list-group-item">
             <div class="d-flex w-100 justify-content-between">
               <h4 class="mb-1">Update fullnode</h4>
             </div>

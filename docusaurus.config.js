@@ -23,7 +23,10 @@ const config = {
   favicon: "img/favicon.ico",
   organizationName: "aptos-labs", // Usually your GitHub org/user name.
   projectName: "aptos-core", // Usually your repo name.
-
+  markdown: {
+    mermaid: true,
+  },
+  themes: ["@docusaurus/theme-mermaid"],
   presets: [
     [
       "@docusaurus/preset-classic",
@@ -33,8 +36,7 @@ const config = {
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
           sidebarCollapsible: false,
-          editUrl:
-            "https://github.com/aptos-labs/aptos-core/tree/main/developer-docs-site/",
+          editUrl: "https://github.com/aptos-labs/developer-docs/edit/main",
           remarkPlugins: [codeInjector, math],
           path: "docs",
           rehypePlugins: [katex],
