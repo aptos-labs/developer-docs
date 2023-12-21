@@ -49,7 +49,7 @@ The `OwnerCapability` resource can be used to control the stake pool. Three pers
 - Operator
 - Voter
 
-Using this owner-operator-voter model, a custodian can assume the owner persona and stake on the Aptos blockchain and participate in the Aptos governance. This model allows delegations and staking services to be built as it separates the account that is control of the funds from the other accounts (operator, voter), hence allows secure delegations of responsibilities.
+Using this owner-operator-voter model, a custodian can assume the owner persona and stake on the Aptos blockchain and participate in the Aptos governance. This model allows delegations and staking services to be built as it separates the account that is in control of the funds from the other accounts (operator, voter), hence allows secure delegations of responsibilities.
 
 This section describes how this works, using Bob and Alice in the example.
 

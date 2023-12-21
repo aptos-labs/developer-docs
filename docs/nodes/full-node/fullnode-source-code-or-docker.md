@@ -238,7 +238,7 @@ aptos_connections{direction="outbound",network_id="Public",peer_id="aabd651f",ro
 
 If the number of outbound connections returned is `0`, then it means your node cannot connect to the Aptos blockchain. If this happens to you, follow these steps to resolve the issue:
 
-1. Update your node to the latest release by following the [Update Fullnode With New Devnet Releases](./update-fullnode-with-new-releases.md).
+1. Update your node to the latest release by following the [Update Fullnode With New Releases](./update-fullnode-with-new-releases.md).
 2. Remove any `seed` peers you may have added to your `public_full_node.yaml` configuration file. The seeds may be preventing you from connecting to the network. Seed peers are discussed in the [Connecting your fullnode to seed peers](./fullnode-network-connections.md#connecting-your-fullnode-to-seed-peers) section.
 
 ### (Optional) Examine Docker ledger size
@@ -263,47 +263,3 @@ du -cs -BM /opt/aptos/data
 [devnet_waypoint]: https://devnet.aptoslabs.com/waypoint.txt
 [aptos-labs/aptos-core]: https://github.com/aptos-labs/aptos-core.git
 [status dashboard]: https://status.devnet.aptos.dev
-
-## Upgrade your public fullnode
-
-When receiving an update from Aptos for your fullnode, take these measures to minimize downtime. In all cases, you are essentially undoing setup and restarting anew. So first make sure your development environment is up to date.
-
-### Upgrading from source
-
-If you created your Aptos fullnode from source, you should similarly upgrade from source:
-
-1. Stop your local public fullnode by running the below command:
-
-```bash
-cargo stop aptos-node
-```
-
-1. Delete the `waypoint.txt`, `genesis.blob` and `fullnode.yaml` files previously downloaded, installed and configured.
-1. Re-install and configure those files as during setup.
-1. Restart your local public fullnode by running the same start (`run`) command as before:
-
-```bash
-cargo run -p aptos-node --release -- -f ./fullnode.yaml
-```
-
-### Upgrading with Docker
-
-If you created your Aptos fullnode with Docker, you should similarly upgrade with Docker:
-
-1. Stop your local public fullnode by running the below command:
-   ```bash
-   docker-compose down --volumes
-   ```
-1. Delete the `waypoint.txt`, `genesis.blob` and `fullnode.yaml` files previously downloaded, installed and configured.
-1. Re-install and configure those files as during setup.
-1. Restart your local public fullnode by running the same start (`run`) command as before:
-
-```bash
-docker run --pull=always \
-    --rm -p 8080:8080 \
-    -p 9101:9101 -p 6180:6180 \
-    -v $(pwd):/opt/aptos/etc -v $(pwd)/data:/opt/aptos/data \
-    --workdir /opt/aptos/etc \
-    --name=aptos-fullnode aptoslabs/validator:mainnet aptos-node \
-    -f /opt/aptos/etc/fullnode.yaml
-```

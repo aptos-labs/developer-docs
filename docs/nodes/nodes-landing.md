@@ -156,7 +156,7 @@ the [external resources](../community/external-resources.md) offered by your fel
             </div>
             <small>Create a static network identity for your fullnode.</small>
           </a>
-          <a href="./full-node/update-fullnode-with-new-devnet-releases" class="list-group-item">
+          <a href="./full-node/update-fullnode-with-new-releases" class="list-group-item">
             <div class="d-flex w-100 justify-content-between">
               <h4 class="mb-1">Update fullnode</h4>
             </div>

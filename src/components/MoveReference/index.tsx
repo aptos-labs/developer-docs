@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import BrowserOnly from "@docusaurus/BrowserOnly";
-
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -24,22 +23,42 @@ const frameworks = [
 const TopNav = ({ branch }: TopNavProps) => {
   const adjustBranch = (event) => {
     const params = new URLSearchParams(window.location.search);
-    params.set("branch", event.target.getAttribute("key"));
+    params.set("branch", event.target.getAttribute("branch"));
     window.location.href = `${location.pathname}?${params.toString()}`;
   };
 
   return (
     <div className="move-top-bar" key="move-top-bar">
-      <div className="move-top-bar-button" key="mainnet" onClick={adjustBranch}>
+      <div
+        className="move-top-bar-button"
+        key="mainnet"
+        branch="mainnet"
+        onClick={adjustBranch}
+      >
         Mainnet
       </div>
-      <div className="move-top-bar-button" key="testnet" onClick={adjustBranch}>
+      <div
+        className="move-top-bar-button"
+        key="testnet"
+        branch="testnet"
+        onClick={adjustBranch}
+      >
         Testnet
       </div>
-      <div className="move-top-bar-button" key="devnet" onClick={adjustBranch}>
+      <div
+        className="move-top-bar-button"
+        key="devnet"
+        branch="devnet"
+        onClick={adjustBranch}
+      >
         Devnet
       </div>
-      <div className="move-top-bar-button" key="main" onClick={adjustBranch}>
+      <div
+        className="move-top-bar-button"
+        key="main"
+        branch="main"
+        onClick={adjustBranch}
+      >
         Main
       </div>
     </div>
@@ -96,7 +115,16 @@ const SideNav = ({ branch }: SideNavProps) => {
       }
     };
 
-    fetchContent().catch((err) => console.log(`Error fetching spec: ${err}`));
+    fetchContent()
+      .catch((err) => console.log(`Error fetching spec: ${err}`))
+      .then(() => {
+        // Load the requested hash after the page has been dynamically loaded
+        if (location.hash) {
+          let requested_hash = location.hash.slice(1);
+          location.hash = "";
+          location.hash = requested_hash;
+        }
+      });
     return () => {
       isMounted = false;
     };
@@ -162,6 +190,8 @@ const Content = ({ branch, page }: ContentProps) => {
     };
 
     fetchContent().catch((err) => console.log(`Error fetching spec: ${err}`));
+    // I've fetched the content, to ensure it's pointing to the right place do a redirect
+    console.log("LOCATION: ", window.location.href);
     return () => {
       isMounted = false;
     };

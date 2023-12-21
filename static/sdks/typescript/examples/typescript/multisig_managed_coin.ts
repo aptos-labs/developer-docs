@@ -25,7 +25,7 @@ const MODULE_ADDR = process.env.MODULE_ADDR;
 const ASSET_SYMBOL = "MEME";
 
 /**
- * This code example demonstrates how to use framework mulltisig account module to manage fungible asset with exmaple move code.
+ * This code example demonstrates how to use framework multisig account module to manage fungible asset with example move code.
  */
 (async () => {
   const client = new Provider({ fullnodeUrl: NODE_URL, indexerUrl: NODE_URL /* not used */ });
@@ -135,13 +135,13 @@ const ASSET_SYMBOL = "MEME";
 
   // Step 3: Create another multisig transaction to freeze accounts but use payload hash instead.
   // ===========================================================================================
-  // Create the reeze transaction payload
+  // Create the freeze transaction payload
   {
     // :!:>section_4
     const freezeAccountsSerializer = new BCS.Serializer();
     BCS.serializeVector([AccountAddress.fromHex(owner1.address())], freezeAccountsSerializer);
 
-    // Create freeze tx payload. The last paramter can be set to `false` to unfreeze.
+    // Create freeze tx payload. The last parameter can be set to `false` to unfreeze.
     const freezeTxPayload = new MultiSigTransactionPayload(
       EntryFunction.natural(
         `${MODULE_ADDR}::managed_fungible_asset`,
