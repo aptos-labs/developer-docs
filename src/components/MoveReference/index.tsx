@@ -46,13 +46,13 @@ const TopNav = ({ branch, onBranchChange }: TopNavProps) => (
   </Select>
 );
 
-type FrameworkPageSelectorProps = {
+type ModulePageSelectorProps = {
   frameworksData: FrameworkData[],
   selectedPage: string,
   onSelectPage: (newPage: string) => void
 };
 
-const FrameworkPageSelector = ({ frameworksData, selectedPage, onSelectPage }: FrameworkPageSelectorProps) => {
+const ModulePageSelector = ({ frameworksData, selectedPage, onSelectPage }: ModulePageSelectorProps) => {
   const itemRefs = useRef({});
   const items = useMemo(() => frameworksData.flatMap(frameworkData => frameworkData.pages), [frameworksData]);
   const [isComboBoxOpen, setOpen] = useState(false);
@@ -73,9 +73,9 @@ const FrameworkPageSelector = ({ frameworksData, selectedPage, onSelectPage }: F
         onSelectionChange={onSelectPage}
         onOpenChange={setOpen}
       >
-        <Label>Framework</Label>
+        <Label>Module</Label>
         <div>
-          <Input placeholder="Select a framework" />
+          <Input placeholder="Select a module" />
           <Button><IconChevronDown/></Button>
         </div>
         <Popover>
@@ -208,7 +208,7 @@ const MoveReference = () => {
         <div className="move-reference-body">
           <div className="move-reference-nav">
             <TopNav branch={branch} onBranchChange={(branch) => updateParams({ branch })} />
-            <FrameworkPageSelector 
+            <ModulePageSelector 
               frameworksData={frameworksData} 
               selectedPage={page}
               onSelectPage={(page) => updateParams({ page })}
