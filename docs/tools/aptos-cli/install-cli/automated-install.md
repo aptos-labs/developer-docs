@@ -40,6 +40,16 @@ Or with `wget`:
 wget -qO- "https://aptos.dev/scripts/install_cli.py" | python3
 ```
 
+:::tip
+If you receive an error `ModuleNotFoundError: No module named packaging`
+You need to install `packaging` first
+
+```Shell
+pip3 install packaging
+```
+
+:::
+
 </details>
 
 <details>
@@ -52,9 +62,19 @@ These instructions have been tested on Windows 11.
 
 In Powershell:
 
-```
+```Shell
 iwr "https://aptos.dev/scripts/install_cli.py" -useb | Select-Object -ExpandProperty Content | python3
 ```
+
+:::tip
+If you receive an error `ModuleNotFoundError: No module named packaging`
+You need to install `packaging` first
+
+```Shell
+pip3 install packaging
+```
+
+:::
 
 </details>
 
