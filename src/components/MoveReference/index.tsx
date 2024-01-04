@@ -109,33 +109,45 @@ const Content = ({ branch, page }: ContentProps) => {
   const [content, setContent] = useState(null);
 
   useEffect(() => {
-    const fetchContent = async () => {
-      const pagePath = `${root}/${branch}/aptos-move/framework/${page}`;
-      const response = await fetch(pagePath);
-      if (response.ok) {
-        const rawContent = await response.text();
-        setContent(rawContent);
-      }
-    };
+    // Only fetch content if 'module' is not null
+    if (page) {
+      const fetchContent = async () => {
+        const pagePath = `${root}/${branch}/aptos-move/framework/${page}`;
+        const response = await fetch(pagePath);
+        if (response.ok) {
+          const rawContent = await response.text();
+          setContent(rawContent);
+        }
+      };
 
-    fetchContent();
+      fetchContent();
+    } else {
+      // Reset content to null if page is null
+      setContent(null);
+    }
   }, [branch, page]);
 
+  // Conditionally render different content based on whether 'page' is available or not
   return (
     <div className="move-content">
-      {content ? (
-        <ReactMarkdown
-          children={content}
-          rehypePlugins={[rehypeRaw]}
-          remarkPlugins={[remarkGfm]}
-          remarkRehypeOptions={{ allowDangerousHtml: true }}
-        />
+      {page ? (
+        content ? (
+          <ReactMarkdown
+            children={content}
+            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm]}
+            remarkRehypeOptions={{ allowDangerousHtml: true }}
+          />
+        ) : (
+          <div>Loading content...</div>
+        )
       ) : (
-        <div>Loading content...</div>
+        <div>Please select a module.</div>
       )}
     </div>
   );
 };
+
 
 function parseFilters(searchParams: string): URLParams {
   const params = new URLSearchParams(searchParams);
@@ -143,13 +155,14 @@ function parseFilters(searchParams: string): URLParams {
   const pageFromParams = params.get("page");
 
   const branch = branches.includes(branchFromParams) ? branchFromParams : defaultBranch;
-  const page = pageFromParams ?? `${defaultFramework}/doc/overview.md`
+  // If 'page' parameter is not in the URL, return null for page
+  const page = pageFromParams ? `${pageFromParams}` : null;
 
-  return { branch, page}
+  return { branch, page };
 }
 
 function useURLParams() {
-  const history = useHistory()
+  const history = useHistory();
   const location = useLocation();
   const params = parseFilters(location.search);
 
@@ -157,12 +170,15 @@ function useURLParams() {
     const newSearchParams = new URLSearchParams();
 
     newSearchParams.set("branch", newParams.branch ?? params.branch);
-    newSearchParams.set("page", newParams.page ?? params.page);
+    // Handle null value for page
+    if (newParams.page !== null) {
+      newSearchParams.set("page", newParams.page ?? params.page);
+    }
 
     history.push({ search: decodeURIComponent(newSearchParams.toString()) });
   }
 
-  return { params, updateParams }
+  return { params, updateParams };
 }
 
 async function loadFrameworkData(branch: Branch, framework: Framework): Promise<FrameworkData | null> {
