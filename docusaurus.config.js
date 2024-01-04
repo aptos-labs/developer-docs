@@ -12,6 +12,8 @@ const { ProvidePlugin } = require("webpack");
 const math = require("remark-math");
 const katex = require("rehype-katex");
 
+const postcssPreset = require('postcss-preset-env');
+
 /** @type {import("@docusaurus/types").Config} */
 const config = {
   title: "Aptos Docs",
@@ -438,6 +440,13 @@ const config = {
         };
       },
     }),
+    () => ({
+      name: 'new-css-syntax',
+      configurePostCss(options) {
+          options.plugins.push(postcssPreset); // allow newest CSS syntax
+          return options;
+      },
+  }),
   ],
 };
 
