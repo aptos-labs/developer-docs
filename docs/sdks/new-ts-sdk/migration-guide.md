@@ -193,9 +193,9 @@ Read more about it [here](./account.md)
 ```ts
 // generate a new account (or key pair)
 const account = Account.generate(); // defaults to Legacy Ed25519
-const account = Account.generate({ scheme: SingingSchemeInput.Secp256k1 }); // Single Sender Secp256k1
+const account = Account.generate({ scheme: SigningSchemeInput.Secp256k1 }); // Single Sender Secp256k1
 const account = Account.generate({
-  scheme: SingingSchemeInput.Ed25519,
+  scheme: SigningSchemeInput.Ed25519,
   legacy: false,
 }); // Single Sender Ed25519
 
