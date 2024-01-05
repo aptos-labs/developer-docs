@@ -17,7 +17,7 @@ This document describes how to run NHC locally when you are operating a node.
 
 ## Quickstart
 
-Before you get into the details of how NHC works, you can run the below steps to start the NHC service and send it a request. This quickstart uses a baseline configuration for a devnet fullnode, i.e., it will evaluate your node against a devnet fullnode that is configured with the baseline configuration YAML.
+Before you get into the details of how NHC works, you can run the below steps to start the NHC service and send it a request. This tutorial uses a baseline configuration for a devnet fullnode, i.e., it will evaluate your node against a devnet fullnode that is configured with the baseline configuration YAML.
 
 **Important**: If your local node is not a devnet fullnode, you must use a different baseline config. See [the configuration examples in aptos-core](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples) for other such example configs.
 

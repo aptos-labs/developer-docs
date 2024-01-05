@@ -254,7 +254,7 @@ After merging, `dst_fungible_asset` will have all the amounts.
 A Fungible Asset can have `amount` deducted to create another FA by calling:
 
 ```rust
-public fun extract(fungible_asset:& mut FungibleAsset, amount: u64): FungibleAsset
+public fun extract(fungible_asset: &mut FungibleAsset, amount: u64): FungibleAsset
 ```
 
 :::tip

@@ -306,7 +306,7 @@ Note, both `aptos move prove` and `aptos move test` commands, currently, do not 
 
 ## Recommended structure
 
-We use an example to illustrate the dev flow of using this feature. Suppose we want to compile the package `A`. The package layout is:
+We use an example to illustrate the development flow of using this feature. Suppose we want to compile the package `A`. The package layout is:
 
 ```rust
 ./A

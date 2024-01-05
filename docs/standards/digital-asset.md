@@ -213,8 +213,8 @@ public entry fun mint_token(creator: &signer) {
 }
 ```
 
-2. (Unnamed) tokens based on the creator account's guid. These tokens have addresses are generated based on the creator
-   account's incrementing guid. The addresses of unnamed tokens are not deterministic as the account's guid can change outside
+2. (Unnamed) tokens based on the creator account's GUID. These tokens have addresses are generated based on the creator
+   account's incrementing GUID. The addresses of unnamed tokens are not deterministic as the account's GUID can change outside
    minting. Thus, querying for unnamed tokens is more difficult and requires indexing.
 
 ```rust

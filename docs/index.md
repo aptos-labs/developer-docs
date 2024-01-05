@@ -16,7 +16,7 @@ Welcome! Aptos is a Layer 1 for everyone. In the [Ohlone language](https://en.wi
 
 Our documentation is designed to assist you in developing a [web3 ecosystem project](https://aptosfoundation.org/ecosystem/projects/all) that contributes positively to the global community. We focus on facilitating easier development, ensuring more reliable services, enabling faster transactions, and fostering a supportive, decentralized community.
 
-This documentation will help you develop applications for the Aptos blockchain, run nodes, and be a part of the blossoming Aptos community. This documentation covers both basic and advanced topics. Here you will find concepts, how-to guides, quickstarts, tutorials, API references, code examples, release notes, and more.
+This documentation will help you develop applications for the Aptos blockchain, run nodes, and be a part of the blossoming Aptos community. This documentation covers both basic and advanced topics. Here you will find concepts, how-to guides, tutorials, API references, code examples, release notes, and more.
 
 > Please note, this site is built from the `main` upstream branch of GitHub and so reflects the latest changes to Aptos. If you have checked out [another branch](https://github.com/aptos-labs/aptos-core/branches) to use a [specific network](guides/system-integrators-guide.md#choose-a-network), the code may not yet have all the features described here.
 
@@ -37,7 +37,7 @@ See the newest Aptos releases in the [Latest Releases](./releases/index.md) list
   </div>
   <div class="col">
     <div class="card card-body h-100 d-flex flex-column">
-    <a href="tutorials" class="card-title card-link stretched-link"> <h2>Run quickstart tutorials</h2></a>
+    <a href="tutorials" class="card-title card-link stretched-link"> <h2>Run tutorials</h2></a>
     <p class="card-text">Submit your first transaction, write your first Move module, deploy your first coin, and more.</p>
 </div>
 </div>

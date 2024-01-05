@@ -273,7 +273,7 @@ Some cost optimization strategies concerning the storage fee:
 As of the time of this writing, all instruction gas operations are multiplied by the `EXECUTION_GAS_MULTIPLIER` defined in [`gas_meter.rs`], which is set to 20.
 Hence, the following representative operations assume gas costs as follows (divide internal gas by scaling factor, then multiply by minimum gas price):
 
-| Operation                    | Minimum octas |
+| Operation                    | Minimum Octas |
 | ---------------------------- | ------------- |
 | Table add/borrow/remove box  | 240           |
 | Function call                | 200           |
@@ -289,7 +289,7 @@ For comparison, reading a 100-byte item costs $r_i + 100 * r_b = 3000 + 100 * 3 
 
 Notably, however, there is still technically an incentive to reduce the number of function calls in a program, but engineering efforts are more effectively dedicated to writing modular, decomposed code that is geared toward reducing storage gas costs, rather than attempting to write repetitive code blocks with fewer nested functions (in nearly all cases).
 
-In extreme cases it is possible for instruction gas to far outweigh storage gas, for example if a loopwise mathematical function takes 10,000 iterations to converge; but again this is an extreme case and for most applications storage gas has a larger impact on base gas than does instruction gas.
+In extreme cases it is possible for instruction gas to far outweigh storage gas, for example if a looping mathematical function takes 10,000 iterations to converge; but again this is an extreme case and for most applications storage gas has a larger impact on base gas than does instruction gas.
 
 ### Payload gas
 

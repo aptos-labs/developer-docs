@@ -77,19 +77,19 @@ Help us update this list by sending pull requests containing the errors you enco
 
 | Error              |                                             Meaning                                             |
 | ------------------ | :---------------------------------------------------------------------------------------------: |
-| INVALID_ARGUMENT   |                        Caller specified an invalid argument (http: 400).                        |
-| OUT_OF_RANGE       |                An input or result of a computation is out of range (http: 400).                 |
-| INVALID_STATE      |         The system is not in a state where the operation can be performed (http: 400).          |
-| UNAUTHENTICATED    |      Request not authenticated due to missing, invalid, or expired auth token (http: 401).      |
-| PERMISSION_DENIED  |                   The client does not have sufficient permission (http: 403).                   |
-| NOT_FOUND          |                         A specified resource is not found (http: 404).                          |
-| ABORTED            |              Concurrency conflict, such as read-modify-write conflict (http: 409).              |
-| ALREADY_EXISTS     |             The resource that a client tried to create already exists (http: 409).              |
-| RESOURCE_EXHAUSTED |                         Out of gas or other forms of quota (http: 429).                         |
-| CANCELLED          |                          Request cancelled by the client (http: 499).                           |
-| INTERNAL           |                                   Internal error (http: 500).                                   |
-| NOT_IMPLEMENTED    |                              Feature not implemented (http: 501).                               |
-| UNAVAILABLE        | The service is currently unavailable. Indicates that a retry could solve the issue (http: 503). |
+| INVALID_ARGUMENT   |                        Caller specified an invalid argument (HTTP: 400).                        |
+| OUT_OF_RANGE       |                An input or result of a computation is out of range (HTTP: 400).                 |
+| INVALID_STATE      |         The system is not in a state where the operation can be performed (HTTP: 400).          |
+| UNAUTHENTICATED    |      Request not authenticated due to missing, invalid, or expired auth token (HTTP: 401).      |
+| PERMISSION_DENIED  |                   The client does not have sufficient permission (HTTP: 403).                   |
+| NOT_FOUND          |                         A specified resource is not found (HTTP: 404).                          |
+| ABORTED            |              Concurrency conflict, such as read-modify-write conflict (HTTP: 409).              |
+| ALREADY_EXISTS     |             The resource that a client tried to create already exists (HTTP: 409).              |
+| RESOURCE_EXHAUSTED |                         Out of gas or other forms of quota (HTTP: 429).                         |
+| CANCELLED          |                          Request cancelled by the client (HTTP: 499).                           |
+| INTERNAL           |                                   Internal error (HTTP: 500).                                   |
+| NOT_IMPLEMENTED    |                              Feature not implemented (HTTP: 501).                               |
+| UNAVAILABLE        | The service is currently unavailable. Indicates that a retry could solve the issue (HTTP: 503). |
 
 ## Aptos accounts
 

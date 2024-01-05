@@ -25,9 +25,9 @@ The Aptos Unity SDK supports these use cases:
 | 2021.3.x           | ✅     |
 | 2022.2.x           | ✅     |
 
-| Windows | Mac | iOS | Android | WebGL |
-| ------- | --- | --- | ------- | ----- |
-| ✅      | ✅  | ✅  | ✅      | ✅    |
+| Windows | macOS | iOS | Android | WebGL |
+| ------- | ----- | --- | ------- | ----- |
+| ✅      | ✅    | ✅  | ✅      | ✅    |
 
 ### Dependencies
 

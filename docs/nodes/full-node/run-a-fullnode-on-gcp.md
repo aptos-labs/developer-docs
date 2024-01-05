@@ -20,8 +20,8 @@ The following packages are pre-installed with Cloud Shell. **Make sure to review
 However, if you are running the installation from your laptop or another machine, you need to install:
 
 - Terraform 1.3.6: https://www.terraform.io/downloads.html
-- Kubernetes cli: https://kubernetes.io/docs/tasks/tools/
-- Google Cloud cli: https://cloud.google.com/sdk/docs/install-sdk
+- Kubernetes CLI: https://kubernetes.io/docs/tasks/tools/
+- Google Cloud CLI: https://cloud.google.com/sdk/docs/install-sdk
 
 After you have installed the gcloud CLI, [log into GCP using gcloud](https://cloud.google.com/sdk/gcloud/reference/auth/login):
 
@@ -56,7 +56,7 @@ You will still be able to use the free trial credits, but enabling billing allow
 
 #### Additional GCP resources
 
-This should be enough to get your GCP setup ready to start deploying your fullnode. But if you are brand new to GCP, you may want to check out some of our [quickstart guides](https://cloud.google.com/docs/get-started/quickstarts) and [Google Cloud Skills Boost](https://www.cloudskillsboost.google/catalog).
+This should be enough to get your GCP setup ready to start deploying your fullnode. But if you are brand new to GCP, you may want to check out some of our [guides](https://cloud.google.com/docs/get-started/quickstarts) and [Google Cloud Skills Boost](https://www.cloudskillsboost.google/catalog).
 
 ## Getting started
 
