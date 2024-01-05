@@ -6,10 +6,10 @@ import BetaNotice from '../../src/components/\_dev_portal_beta_notice.mdx';
 
 <BetaNotice />
 
-The [Aptos Labs Developer Portal](https://developers.aptoslabs.com) is your gateway to access Aptos Labs provided APIs in a quick and easy fashion to power your dApp.
+The [Aptos Labs Developer Portal](https://developers.aptoslabs.com) is your gateway to access Aptos Labs provided APIs in a quick and easy fashion to power your dapp.
 It consists of a Portal (UI) and a set of API Gateways operated by Aptos Labs.
 
-The Developer Portal aims to make it easier to build dApps by:
+The Developer Portal aims to make it easier to build dapps by:
 
 1. Providing [unified domain names/URLs](../nodes/networks.md) for each API.
 2. Giving you personalized examples on how to use each API.

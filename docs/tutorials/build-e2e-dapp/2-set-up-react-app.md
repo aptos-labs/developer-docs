@@ -49,7 +49,7 @@ Once you save the changes, you should see that the app content has changed in th
 
 ## Our dapp UI
 
-First we will build the dApp UI layout. We have two UI states for the app:
+First we will build the dapp UI layout. We have two UI states for the app:
 
 - When an account hasn't created a list yet (on the left).
 - When an account has created a list and can now add tasks to it (on the right).
