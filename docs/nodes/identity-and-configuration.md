@@ -34,7 +34,7 @@ Hence, if you are looking for your machine’s private keys, look for YAML filen
 
 #### Configuration
 
-Machine **configuration** is also defined in a YAML file. A machine configuration YAML **never contains any key, public or private**. For example, the configuration YAMLs validator.yaml, fullnode.yaml, docker-compose.yaml and docker-compose-fullnode.yaml **do not contain any keys.**
+Machine **configuration** is also defined in a YAML file. A machine configuration YAML **never contains any key, public or private**. For example, the configuration YAML files validator.yaml, fullnode.yaml, docker-compose.yaml and docker-compose-fullnode.yaml **do not contain any keys.**
 
 As noted earlier, a machine has an identity and a configuration. Hence:
 
@@ -51,7 +51,7 @@ A persona has a single YAML that combines the persona’s identity and configura
 - An operator’s identity-configuration is defined in **operator.yaml**. The operator.yaml contains public keys and blockchain account address for the operator and some machine configuration information plus a consensus public key and consensus proof of possession key. **Only the operator has the consensus keys.** Neither the owner nor the voter has the consensus keys.
 - A voter's identity-configuration, i.e., voter.yaml, does not exist.
 
-## Description of identity YAMLs
+## Description of identity YAML files
 
 This section explains the following key and identity YAML files that are generated during the deployment of a validator node:
 
@@ -60,7 +60,7 @@ This section explains the following key and identity YAML files that are generat
 - `validator-identity.yaml`.
 - `validator-full-node-identity.yaml`.
 
-The following command is used to generate the above key and identity YAMLs. See, for example, [Step 10 while using AWS to deploy the validator node](./validator-node/operator/running-validator-node/using-aws.md), or in [Step 10 while using GCP](./validator-node/operator/running-validator-node/using-gcp.md).
+The following command is used to generate the above key and identity YAML files. See, for example, [Step 10 while using AWS to deploy the validator node](./validator-node/operator/running-validator-node/using-aws.md), or in [Step 10 while using GCP](./validator-node/operator/running-validator-node/using-gcp.md).
 
 ```bash
 aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys

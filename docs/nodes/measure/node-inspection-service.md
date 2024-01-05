@@ -71,7 +71,7 @@ http://localhost:9101/configuration
 ## Expose system information
 
 Likewise, the inspection service also provides a way to examine the system information of your node
-at runtime (i.e., build and hardware information). Simply visit the following url:
+at runtime (i.e., build and hardware information). Simply visit the following URL:
 
 ```
 http://localhost:9101/system_information

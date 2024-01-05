@@ -26,7 +26,7 @@ Digital Asset (DA) is recommended for any new collections or protocols that want
 
 ### [Fungible Asset (FA)](./fungible-asset.md)
 
-The new [Aptos Fungible Asset Standard](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) is a standard meant for simple, typesafe, and fungible assets based on object model intending to replace Aptos coin.
+The new [Aptos Fungible Asset Standard](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) is a standard meant for simple, type-safe, and fungible assets based on object model intending to replace Aptos coin.
 Fungible Asset (FA) offers more features and flexibilities to Aptos move developers on creating and managing fungible assets.
 
 ## Wallet Standard
@@ -49,7 +49,7 @@ The old existing [Token module](https://github.com/aptos-labs/aptos-core/blob/ma
 
 ### [Aptos Coin](./aptos-coin.md)
 
-The [Coin module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) is a lightweight standard meant for simple, typesafe, and fungible assets. The coin standard is separated out into its own Move module to ensure that:
+The [Coin module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) is a lightweight standard meant for simple, type-safe, and fungible assets. The coin standard is separated out into its own Move module to ensure that:
 
 - Applications and users can create and use simple tokens, with high performance and low gas overhead.
 - The Coin standard is part of the Aptos core framework, so it can be used for currencies, including the gas currency.

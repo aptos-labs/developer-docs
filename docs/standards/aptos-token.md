@@ -26,7 +26,7 @@ Additionally, most NFTs are part of a collection or a set of NFTs with a common 
 - `description`: The description of the collection.
 - `uri`: A URL pointer to off-chain for more information about the asset. The asset could be media such as an image or video or more metadata.
 - `supply`: The total number of NFTs in this collection.
-- `maximum`: The maximum number of NFTs that this collection can have. If `maximum` is set to 0, then supply is untracked.
+- `maximum`: The maximum number of NFTs that this collection can have. If `maximum` is set to 0, then supply is not tracked.
 
 ## Design principles
 

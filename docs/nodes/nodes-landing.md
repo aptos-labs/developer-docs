@@ -190,7 +190,7 @@ the [external resources](../community/external-resources.md) offered by your fel
             <div class="d-flex w-100 justify-content-between">
               <h4 class="mb-1">Identity and configuration</h4>
             </div>
-            <small>A mental-model of identity and configuration plus a description of the identity YAMLs.</small>
+            <small>A mental-model of identity and configuration plus a description of the identity YAML files.</small>
           </a>
           <a href="./node-files-all-networks/node-files" class="list-group-item">
             <div class="d-flex w-100 justify-content-between">
