@@ -41,9 +41,9 @@ const fetchList = async () => {
       );
     setAccountHasList(true);
 		// tasks table handle
-    const tableHandle = (TodoListResource as any).data.tasks.handle;
+    const tableHandle = (todoListResource as any).tasks.handle;
 		// tasks table counter
-    const taskCounter = (TodoListResource as any).data.task_counter;
+    const taskCounter = (todoListResource as any).task_counter;
 
     let tasks = [];
     let counter = 1;
