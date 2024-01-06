@@ -137,9 +137,9 @@ An **Aptos node** is a peer entity of the Aptos network that tracks the state of
 
 ## D
 
-### dApps
+### dapps
 
-- **Decentralized applications (dApps)** are programs or digital applications that run on the Aptos blockchain autonomously. Smart contracts are commonly used to achieve this function.
+- **Decentralized applications (dapps)** are programs or digital applications that run on the Aptos blockchain autonomously. Smart contracts are commonly used to achieve this function.
 
 ### devnet
 

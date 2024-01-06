@@ -488,7 +488,7 @@ spec get_R {
 }
 ```
 
-In a spec block that has a pre and post-state (like a function specification), the `let name = e`
+In a spec block that has a pre-state and post-state (like a function specification), the `let name = e`
 form will evaluate `e` in the pre-state. In order to evaluate an expression in the post-state, use `let post name = e`. In the rhs expression of this form, one can use `old(..)` to refer to the
 pre-state.
 
@@ -1131,7 +1131,7 @@ in this list and vice versa.
 The `apply` operator includes the given schema in all function spec blocks that match the patterns,
 except those excluded via the `except` patterns.
 
-A typical use of the `apply` operator is to provide common pre and post conditions to all functions in
+A typical use of the `apply` operator is to provide common pre-conditions and post-conditions to all functions in
 a module with some exceptions. Example:
 
 ```move

@@ -119,7 +119,7 @@ Follow the below instructions **twice**, i.e., first on one machine to run a val
      - `owner.yaml`: Define owner, operator, and voter mapping. They are all the same account in test mode (from step 8).
      - `operator.yaml`: Node information that will be used for both the Validator and the fullnode (from step 8).
    - `waypoint.txt`: The waypoint for the genesis transaction (from step 9).
-   - `genesis.blob` The genesis binary that contains all the information about the framework, validatorSet and more (from step 9).
+   - `genesis.blob` The genesis binary that contains all the information about the framework, validator set and more (from step 9).
 
 9. Start your validator by running the below commands, with the paths assuming you are in the root of the `aptos-core` directory:
 

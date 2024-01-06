@@ -78,7 +78,7 @@ As you can see from the output, once the local network is running, you have acce
 - [Node API](../nodes/aptos-api-spec.md): This is a REST API that runs directly on the node. It enables core write functionality such as transaction submission and a limited set of read functionality, such as reading account resources or Move module information.
 - [Indexer API](../indexer/api/index.md): This is a GraphQL API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default http://127.0.0.1:8090, it will open the Hasura Console. This is a web UI that helps you query the Indexer GraphQL API.
 - [Faucet](../reference/glossary#faucet): You can use this to create accounts and mint APT on your local network.
-- [Transaction Stream Service](../indexer/txn-stream/index.md): This is a grpc stream of transactions. This is relevant to you if you are developing a [custom processor](../indexer/custom-processors/index.md).
+- [Transaction Stream Service](../indexer/txn-stream/index.md): This is a gRPC stream of transactions. This is relevant to you if you are developing a [custom processor](../indexer/custom-processors/index.md).
 - Postgres: This is the database that the indexer processors write to. The Indexer API reads from this database.
 
 ## Using the local network
@@ -225,7 +225,7 @@ To run an Indexer API using `--with-indexer-api` you need to have Docker on your
 You might be seeing an error that looks like this:
 
 ```
-Unexpected error: Failed to apply pre run steps for Postgres: Docker is not available, confirm it is installed and running. On Linux you may need to use sudo
+Unexpected error: Failed to apply pre-run steps for Postgres: Docker is not available, confirm it is installed and running. On Linux you may need to use sudo
 ```
 
 Make sure you have Docker 24+:
@@ -270,7 +270,7 @@ Alternatively, run the CLI like this to tell it where the socket is:
 DEFAULT_SOCKET=/Users/dport/.docker/run/docker.sock aptos node run-local-testnet --with-indexer-api
 ```
 
-Note: As mentioned above, if you're on Mac or Windows, we recommend you use Docker Desktop rather than installing Docker via a package manager (e.g. Homebrew or Choco).
+Note: As mentioned above, if you're on macOS or Windows, we recommend you use Docker Desktop rather than installing Docker via a package manager (e.g. Homebrew or Choco).
 
 ### The local network seems to hang on startup
 
@@ -284,7 +284,7 @@ By default, when using `--with-indexer-api` the CLI will run a Postgres instance
 aptos node run-local-testnet --with-indexer-api --use-host-postgres --postgres-user $USER
 ```
 
-### How do I wait for the local network to come up programmatically?
+### How do I wait for the local network to start?
 
 When running the CLI interactively, you can see if the network is alive by waiting for this message:
 

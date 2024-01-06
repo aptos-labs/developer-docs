@@ -44,7 +44,7 @@ The main write methods supported by the TokenClient class are:
 - Mutate Token Properties
 - Burn Token by Owner or Creator
 
-The main read methods deserializing on-chain data to TypeScript objects are:
+The main read methods to deserialize on-chain data to TypeScript objects are:
 
 - Get CollectionData
 - Get TokenData

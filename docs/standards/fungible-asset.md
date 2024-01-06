@@ -143,7 +143,7 @@ public fun add_fungibility(
 ): Object<Metadata>
 ```
 
-The creator has the opportunity to define a name, symbol, decimals, icon uri, project uri, and whether the total supply for the FA has a maximum. The following applies:
+The creator has the opportunity to define a name, symbol, decimals, icon URI, project URI, and whether the total supply for the FA has a maximum. The following applies:
 
 - The first three of the above (`name`, `symbol`, `decimals`, `icon_uri`, `project_uri`) are purely metadata and have no impact for on-chain
   applications. Some applications may use decimals to equate a single Coin from a fractional coin.
@@ -254,7 +254,7 @@ After merging, `dst_fungible_asset` will have all the amounts.
 A Fungible Asset can have `amount` deducted to create another FA by calling:
 
 ```rust
-public fun extract(fungible_asset:& mut FungibleAsset, amount: u64): FungibleAsset
+public fun extract(fungible_asset: &mut FungibleAsset, amount: u64): FungibleAsset
 ```
 
 :::tip

@@ -133,7 +133,7 @@ Publish the package to chain:
 export function getPackageBytesToPublish(filePath: string) {
   // current working directory - the root folder of this repo
   const cwd = process.cwd();
-  // target directory - current working directory + filePath (filePath json file is generated with the previous, compilePackage, cli command)
+  // target directory - current working directory + filePath (filePath json file is generated with the previous, compilePackage, CLI command)
   const modulePath = path.join(cwd, filePath);
 
   const jsonData = JSON.parse(fs.readFileSync(modulePath, "utf8"));

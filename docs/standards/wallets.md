@@ -116,7 +116,7 @@ type NetworkInfo = {
   url: string;
 };
 
-// The important thing to return here is the transaction hash, the dApp can wait for it
+// The important thing to return here is the transaction hash, the dapp can wait for it
 type [PendingTransaction](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/generated/models/PendingTransaction.ts)
 
 type [EntryFunctionPayload](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/generated/models/EntryFunctionPayload.ts)
@@ -178,10 +178,10 @@ Types:
 ```typescript
 export interface SignMessagePayload {
   address?: boolean; // Should we include the address of the account in the message
-  application?: boolean; // Should we include the domain of the dApp
+  application?: boolean; // Should we include the domain of the dapp
   chainId?: boolean; // Should we include the current chain id the wallet is connected to
   message: string; // The message to be signed and displayed to the user
-  nonce: string; // A nonce the dApp should generate
+  nonce: string; // A nonce the dapp should generate
 }
 
 export interface SignMessageResponse {
@@ -201,7 +201,7 @@ export interface SignMessageResponse {
   - returns `Promise<SignMessageResponse>`
 
 An example:
-`signMessage({nonce: 1234034, message: "Welcome to dApp!", address: true, application: true, chainId: true })`
+`signMessage({nonce: 1234034, message: "Welcome to dapp!", address: true, application: true, chainId: true })`
 
 This would generate the `fullMessage` to be signed and returned as the `signature`:
 
@@ -211,7 +211,7 @@ address: 0x000001
 chain_id: 7
 application: badsite.firebase.google.com
 nonce: 1234034
-message: Welcome to dApp!
+message: Welcome to dapp!
 ```
 
 Aptos has support for both single-signer and multi-signer accounts. If the wallet is single-signer account, there is exactly one signature and `bitmap` is null. If the wallet is a multi-signer account, there are multiple `signature` and `bitmap` values. The `bitmap` masks that public key that has signed the message.

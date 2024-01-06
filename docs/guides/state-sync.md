@@ -179,4 +179,4 @@ each syncing mode:
 
 All the syncing modes get their root of trust from the validator set
 and cryptographic signatures from those validators over the blockchain data.
-For more information about how this works, see the [state synchronization blogpost](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10).
+For more information about how this works, see the [state synchronization blog post](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10).

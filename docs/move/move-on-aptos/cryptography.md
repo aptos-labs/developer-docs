@@ -138,7 +138,7 @@ This module has proven useful for implementing several cryptographic primitives:
 4.  **Bulletproofs** ZK range proofs[^bulletproofs] – See [`aptos_std::ristretto255_bulletproofs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_bulletproofs.move)
 
 Need ideas for a cryptosystem to build on top of `ristretto255`?
-A popular primitive that you could easily build would be the [schnorrkel](https://github.com/w3f/schnorrkel) signature scheme, which is a hardended version of Schnorr signatures over Ristretto255 groups.
+A popular primitive that you could easily build would be the [schnorrkel](https://github.com/w3f/schnorrkel) signature scheme, which is a hardened version of Schnorr signatures over Ristretto255 groups.
 
 ### Generic elliptic curve arithmetic
 
