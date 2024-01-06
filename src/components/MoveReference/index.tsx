@@ -28,17 +28,17 @@ const branchTitles: Record<Branch, string> = {
   devnet: "Devnet",
   main: "Main",
 };
-const frameworks = [
+const pkgs = [
   "move-stdlib",
   "aptos-stdlib",
   "aptos-framework",
   "aptos-token",
   "aptos-token-objects",
 ] as const;
-const defaultFramework = frameworks[0];
+const defaultFramework = pkgs[0];
 
 type Branch = (typeof branches)[number];
-type Framework = (typeof frameworks)[number];
+type Framework = (typeof pkgs)[number];
 type FrameworkData = {
   framework: Framework;
   pages: { id: string; name: string }[];
@@ -70,20 +70,20 @@ const TopNav = ({ branch, onBranchChange }: TopNavProps) => (
 );
 
 type ModulePageSelectorProps = {
-  frameworksData: FrameworkData[];
+  pkgsData: FrameworkData[];
   selectedPage: string;
   onSelectPage: (newPage: string) => void;
 };
 
 const ModulePageSelector = ({
-  frameworksData,
+  pkgsData,
   selectedPage,
   onSelectPage,
 }: ModulePageSelectorProps) => {
   const itemRefs = useRef({});
   const items = useMemo(
-    () => frameworksData.flatMap((frameworkData) => frameworkData.pages),
-    [frameworksData],
+    () => pkgsData.flatMap((frameworkData) => frameworkData.pages),
+    [pkgsData],
   );
   const [isComboBoxOpen, setOpen] = useState(false);
   const comboBoxKey = selectedPage || "none";
@@ -126,7 +126,7 @@ const ModulePageSelector = ({
         </div>
         <Popover>
           <ListBox>
-            {frameworksData.map((frameworkData) => (
+            {pkgsData.map((frameworkData) => (
               <Section key={frameworkData.framework}>
                 <Header>{frameworkData.framework}</Header>
                 {frameworkData.pages.map((item) => (
@@ -268,17 +268,15 @@ async function loadFrameworkData(
 }
 
 function useFrameworksData(branch: Branch) {
-  const [frameworksData, setFrameworksData] = useState<FrameworkData[]>([]);
+  const [pkgsData, setFrameworksData] = useState<FrameworkData[]>([]);
 
   useEffect(() => {
-    Promise.all(
-      frameworks.map((framework) => loadFrameworkData(branch, framework)),
-    )
+    Promise.all(pkgs.map((framework) => loadFrameworkData(branch, framework)))
       .then((data) => data.filter(Boolean))
       .then(setFrameworksData);
   }, [branch]);
 
-  return frameworksData;
+  return pkgsData;
 }
 
 const MoveReference = () => {
@@ -286,7 +284,7 @@ const MoveReference = () => {
     params: { branch, page },
     updateParams,
   } = useURLParams();
-  const frameworksData = useFrameworksData(branch);
+  const pkgsData = useFrameworksData(branch);
 
   return (
     <BrowserOnly fallback={<div>Loading...</div>}>
@@ -298,7 +296,7 @@ const MoveReference = () => {
               onBranchChange={(branch) => updateParams({ branch })}
             />
             <ModulePageSelector
-              frameworksData={frameworksData}
+              pkgsData={pkgsData}
               selectedPage={page}
               onSelectPage={(page) => updateParams({ page })}
             />
