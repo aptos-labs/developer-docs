@@ -80,7 +80,7 @@ Help us update this list by sending pull requests containing the errors you enco
 | INVALID_ARGUMENT   |                        Caller specified an invalid argument (HTTP: 400).                        |
 | OUT_OF_RANGE       |                An input or result of a computation is out of range (HTTP: 400).                 |
 | INVALID_STATE      |         The system is not in a state where the operation can be performed (HTTP: 400).          |
-| UNAUTHENTICATED    |      Request not authenticated due to missing, invalid, or expired auth token (HTTP: 401).      |
+| UNAUTHENTICATED    | Request not authenticated due to missing, invalid, or expired authentication token (HTTP: 401). |
 | PERMISSION_DENIED  |                   The client does not have sufficient permission (HTTP: 403).                   |
 | NOT_FOUND          |                         A specified resource is not found (HTTP: 404).                          |
 | ABORTED            |              Concurrency conflict, such as read-modify-write conflict (HTTP: 409).              |

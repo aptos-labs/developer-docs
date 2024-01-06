@@ -286,7 +286,7 @@ your_module=0x1c3e5555728c3d0d544f5679229fac153c5f7d78b323751b41860c5ffcc21cfd,r
 ```
 
 To mitigate mistakes and improve user experience, you should use environment variables,
-below is an example of how to use them accordingly. (Note this is for unix)
+below is an example of how to use them accordingly. (Note this is for Unix)
 
 #### Environment variables
 

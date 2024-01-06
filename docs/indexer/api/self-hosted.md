@@ -57,7 +57,7 @@ This is the URL for the Transaction Stream Service. If you are using the Labs-Ho
 
 ### `auth_token`
 
-This is the auth token used to connect to the Transaction Stream Service. If you are using the Labs-Hosted instance you can use the API Gateway to get an auth token. Learn more at [this page](/indexer/txn-stream/labs-hosted).
+This is the auth token used to connect to the Transaction Stream Service. If you are using the Labs-Hosted instance you can use the API Gateway to get an API key. Learn more at [this page](/indexer/txn-stream/labs-hosted).
 
 ## Run with source code
 

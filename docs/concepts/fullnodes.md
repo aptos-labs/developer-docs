@@ -29,7 +29,7 @@ Depending on the fullnode upstream, a fullnode can be called as a validator full
 
 There's no difference in their functionality, only whether their upstream node is a validator or another fullnode. Read more details about network topology [here](./node-networks-sync.md)
 
-Third-party blockchain explorers, wallets, exchanges, and DApps may run a local fullnode to:
+Third-party blockchain explorers, wallets, exchanges, and dapps may run a local fullnode to:
 
 - Leverage the REST interface for blockchain interactions.
 - Get a consistent view of the Aptos ledger.
