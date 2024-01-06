@@ -2746,6 +2746,7 @@ html[data-theme='dark'] .sidebar-divider {
   vertical-align: middle;
   font-family:var(--ifm-font-family-base);
   font-weight:500;
+  min-width:20rem;
 }
 
 .react-aria-ComboBox .react-aria-Input[data-focused] {
@@ -2921,4 +2922,10 @@ html[data-theme='dark'] .sidebar-divider {
   flex-direction:column;
   margin-bottom: 2rem;
   gap:1rem;
+}
+
+.form-reset {
+  color: var(--color-text-muted);
+  margin-left:1rem;
+  font-size:0.8rem;
 }
