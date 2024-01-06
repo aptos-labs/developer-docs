@@ -14,4 +14,4 @@ Aptos SDK is designed to be type-safe! Things to keep in mind:
 
 The SDK exports types on the top level and defines and holds all types locally and not using any external type generator excluding for Indexer GraphQL schema that even then the SDK customizes the generated types to be more user friendly and understandable.
 
-You can check the types the SDK supports and exports on the [typedoc site](https://aptos-labs.github.io/aptos-ts-sdk/) organized by SDK version
+You can check the types the SDK supports and exports on the [SDK documentation site](https://aptos-labs.github.io/aptos-ts-sdk/) organized by SDK version

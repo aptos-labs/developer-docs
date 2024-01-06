@@ -41,19 +41,19 @@ You also need the following tools:
 - Python 3.11+: [Installation Guide](https://docs.python-guide.org/starting/installation/#python-3-installation-guides).
 - Poetry: [Installation Guide](https://python-poetry.org/docs/#installation).
 
-We use postgresql as our database in this tutorial. You're free to use whatever you want, but this tutorial is geared towards postgresql for the sake of simplicity. We use the following database configuration and tools:
+We use PostgreSQL as our database in this tutorial. You're free to use whatever you want, but this tutorial is geared towards PostgreSQL for the sake of simplicity. We use the following database configuration and tools:
 
-- [Postgresql](https://www.postgresql.org/download/)
+- [PostgreSQL](https://www.postgresql.org/download/)
   - We will use a database hosted on `localhost` on the port `5432`, which should be the default.
   - When you create your username, keep track of it and the password you use for it.
-  - You can view a tutorial for installing postgresql and psql [here](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-22-04-quickstart) tool to set up your database more quickly.
+  - You can view a tutorial for installing PostgreSQL and psql [here](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-22-04-quickstart) tool to set up your database more quickly.
   - To easily view your database data, consider using a GUI like [DBeaver](https://dbeaver.io/) _recommended_, [pgAdmin](https://www.pgadmin.org/), or [Postico](https://eggerapps.at/postico2/).
 
 Explaining how to create a database is beyond the scope of this tutorial. If you are not sure how to do it, consider checking out tutorials on how to create a database with the `psql` tool.
 
 ## Set up your environment
 
-### Set up the postgresql database
+### Set up the PostgreSQL database
 
 Make sure to start the `postgresql` service:
 
@@ -73,7 +73,7 @@ Create your database with the name `coin_flip`, where our username is `user` and
 
 If your database is set up correctly, and you have the `psql` tool, you should be able to run the command `psql coin_flip`.
 
-### Set up your local environment with poetry and grpc
+### Set up your local environment with Poetry and gRPC
 
 If you haven't yet, make sure to read the introductory [custom processor guide](https://github.com/aptos-labs/aptos-indexer-processors).
 
@@ -119,7 +119,7 @@ Once you have your config.yaml file open, you only need to update certain fields
 `chain_id`
 `indexer_grpc_data_service_address` - address of the indexer data service
 `auth_token` - The API key you created in the Developer Portal
-`postgres_connection_string` - connection string to your postgresql database
+`postgres_connection_string` - connection string to your PostgreSQL database
 `starting_version` - The starting version of the transactions you want to process
 `ending_version` - The ending version of the transactions you want to process
 
@@ -316,7 +316,7 @@ for event_index, event in enumerate(user_transaction.events):
 
     # ...
 
-    # Load the data into a json object and then use/view it as a regular dictionary
+    # Load the data into a JSON object and then use/view it as a regular dictionary
     data = json.loads(event.data)
     print(json.dumps(data, indent=3))
 ```
@@ -417,7 +417,7 @@ If you get an error that complains about pyenv versions, you might need to insta
  pyenv install 3.11.0
 ```
 
-If you are seeing many dependency errors, you might need to install the dependencies with poetry, run the following command from /aptos-indexer-processors:
+If you are seeing many dependency errors, you might need to install the dependencies with Poetry, run the following command from /aptos-indexer-processors:
 
 ```shell
 poetry install

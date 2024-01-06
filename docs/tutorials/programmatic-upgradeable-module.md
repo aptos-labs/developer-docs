@@ -198,7 +198,7 @@ aptos move build-publish-payload --json-output-file upgrade.json
 
 If you have placeholder addresses `_` in your `Move.toml` file, run the command here: [Upgrade function payload section](#generate-upgrade-function-payload-with-new-function-added-in-upgraded-module)
 
-This will create a json file `upgrade.json`, with the args of the `metadata_serialied` and `code`. Just need to adjust the `function_id` in the json file, change this to:
+This will create a JSON file `upgrade.json`, with the args of the `metadata_serialied` and `code`. Just need to adjust the `function_id` in the json file, change this to:
 
 `<resource_account>::user_info::upgrade`
 
@@ -286,7 +286,7 @@ your_module=0x1c3e5555728c3d0d544f5679229fac153c5f7d78b323751b41860c5ffcc21cfd,r
 ```
 
 To mitigate mistakes and improve user experience, you should use environment variables,
-below is an example of how to use them accordingly. (Note this is for unix)
+below is an example of how to use them accordingly. (Note this is for Unix)
 
 #### Environment variables
 

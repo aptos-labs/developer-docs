@@ -26,7 +26,7 @@ or minimally contract. Each collection has a similar set of attributes:
 - `description`: The description of the collection.
 - `uri`: A URL pointer to off-chain for more information about the asset. The asset could be media such as an image or video or more metadata.
 - `supply`: The total number of NFTs in this collection.
-- `maximum`: The maximum number of NFTs that this collection can have. If `maximum` is set to 0, then supply is untracked.
+- `maximum`: The maximum number of NFTs that this collection can have. If `maximum` is set to 0, then supply is not tracked.
 
 ## Design principles
 
@@ -213,8 +213,8 @@ public entry fun mint_token(creator: &signer) {
 }
 ```
 
-2. (Unnamed) tokens based on the creator account's guid. These tokens have addresses are generated based on the creator
-   account's incrementing guid. The addresses of unnamed tokens are not deterministic as the account's guid can change outside
+2. (Unnamed) tokens based on the creator account's GUID. These tokens have addresses are generated based on the creator
+   account's incrementing GUID. The addresses of unnamed tokens are not deterministic as the account's GUID can change outside
    minting. Thus, querying for unnamed tokens is more difficult and requires indexing.
 
 ```rust
@@ -364,10 +364,10 @@ By default, the creator can do the following:
 
 - Mint and burn tokens, including soul bound tokens
 - Disallow transferring a token (freeze) and allow transferring a token (unfreeze)
-- Update the collection's description and uri
+- Update the collection's description and URI
 - Add/Remove metadata properties from a token's property map
 - Update a collection's royalty setting
-- Update a token's name, description and uri
+- Update a token's name, description and URI
 
 ### Further customization
 

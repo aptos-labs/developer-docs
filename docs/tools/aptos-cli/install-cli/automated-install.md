@@ -60,7 +60,7 @@ pip3 install packaging
 These instructions have been tested on Windows 11.
 :::
 
-In Powershell:
+In PowerShell:
 
 ```Shell
 iwr "https://aptos.dev/scripts/install_cli.py" -useb | Select-Object -ExpandProperty Content | python3

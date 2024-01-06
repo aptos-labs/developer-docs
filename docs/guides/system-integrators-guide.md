@@ -329,7 +329,7 @@ Here is a breakdown of the information in a transaction:
 
 If `success` is false, then `vm_status` will contain an error code or message that resulted in the transaction failing to succeed. When `success` is false, `changes` will be limited to gas deducted from the account and the sequence number incrementing. There will be no `events`.
 
-Each event in `events` is differentiated by a `key`. The `key` is derived from the `guid` in `changes`. Specifically, the `key` is a 40-byte hex string where the first eight bytes (or 16 characters) are the little endian representation of the `creation_num` in the `guid` of the `changes` event, and the remaining characters are the account address.
+Each event in `events` is differentiated by a `key`. The `key` is derived from the `guid` in `changes`. Specifically, the `key` is a 40-byte hex string where the first eight bytes (or 16 characters) are the little-endian representation of the `creation_num` in the `guid` of the `changes` event, and the remaining characters are the account address.
 
 As events do not dictate what emitted them, it is imperative to track the path in `changes` to determine the source of an event. In particular, each `CoinStore<T>` has both a `WithdrawEvent` and a `DepositEvent`, based upon the type of coin. In order to determine which coin type is used in a transaction, an indexer can compare the `guid::creation_num` in a `changes` event combined with the address to the `key` for events in `events`.
 

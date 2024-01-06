@@ -15,7 +15,7 @@ Binary releases are recommended for most users, otherwise see [Building Aptos Fr
 <details>
 <summary>macOS</summary>
 
-## MacOS
+## macOS
 
 We do not release binaries for macOS, you must use [brew](https://brew.sh/).
 
@@ -65,7 +65,7 @@ These instructions have been tested on Windows 11 and Windows Server 2022. Windo
    :::tip Upgrading? Remember to look in the default download folder
    When you update the CLI binary with the latest version, note that the newer version binary will be downloaded to your default Downloads folder. Remember to move this newer version binary from the Downloads folder to your preferred location.
    :::
-6. Open a powershell terminal via the windows start menu
-7. In the powershell terminal, you can get help instructions by running the command with help. For example ` .\Downloads\aptos-cli-0.3.5-Windows-x86_64\aptos.exe help` to read help instructions.
+6. Open a PowerShell terminal via the windows start menu
+7. In the PowerShell terminal, you can get help instructions by running the command with help. For example ` .\Downloads\aptos-cli-0.3.5-Windows-x86_64\aptos.exe help` to read help instructions.
 
 </details>

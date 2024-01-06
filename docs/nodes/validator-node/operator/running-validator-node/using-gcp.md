@@ -180,7 +180,7 @@ This might take a while to finish (10 - 20 minutes), Terraform will create all t
       - `owner.yaml`: define owner, operator, and voter mapping. They are all the same account in test mode (from step 11).
       - `operator.yaml`: Node information that will be used for both the Validator and the fullnode (from step 11).
     - `waypoint.txt`: The waypoint for the genesis transaction (from step 12).
-    - `genesis.blob` The genesis binary that contains all the information about the framework, validatorSet and more (from step 12).
+    - `genesis.blob` The genesis binary that contains all the information about the framework, validator set and more (from step 12).
 
 14. Insert `genesis.blob`, `waypoint.txt` and the identity files as secret into k8s cluster.
 

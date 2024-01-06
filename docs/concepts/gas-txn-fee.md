@@ -7,7 +7,7 @@ Any transaction execution on the Aptos blockchain requires a processing fee. As 
 1. Execution & IO costs
 
 - This covers your usage of transient computation resources, such as processing your transactions and propagating the validated record throughout the distributed network of the mainnet.
-- It is measured in Gas Units whose price may fluctuate according to the load of the network. This allows execution & io costs to be low when the network is less busy.
+- It is measured in Gas Units whose price may fluctuate according to the load of the network. This allows execution and IO costs to be low when the network is less busy.
 - This portion of gas is burned permanently upon the execution of a transaction.
 
 2. Storage fees

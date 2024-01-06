@@ -8,7 +8,7 @@ As an open source project, Aptos needs your knowledge to grow. Follow the instru
 
 See the [Aptos Docs](https://github.com/orgs/aptos-labs/projects/14/views/1) project for open issues by status. See detailed instructions for making updates below.
 
-## tl;dr
+## Quick start
 
 Simply click **Edit this page** at the bottom of any location to go to the source and trigger editing there. The contents are in [Markdown](https://www.markdownguide.org/basic-syntax/) format. You may then edit in browser and use the _Preview_ function to view your changes.
 
