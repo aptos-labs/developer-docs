@@ -97,7 +97,7 @@ const ModulePageSelector = ({
     }
   }, [selectedPage, isComboBoxOpen]);
 
-  const handleReset = () => {
+  const handleClear = () => {
     onSelectPage(""); // Update the parent component's state
   };
 
@@ -119,8 +119,8 @@ const ModulePageSelector = ({
             <IconChevronDown />
           </Button>
           {selectedPage && (
-            <a className="form-reset" href="#" onClick={handleReset}>
-              Reset
+            <a className="form-reset" href="#" onClick={handleClear}>
+              Clear
             </a>
           )}
         </div>
