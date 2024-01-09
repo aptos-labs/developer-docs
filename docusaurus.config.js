@@ -335,10 +335,6 @@ const config = {
             to: "/guides/nfts/aptos-token-overview",
           },
           {
-            from: "/guides/nfts/aptos-token-overview",
-            to: "/guides/nfts/aptos-token-overview",
-          },
-          {
             from: "/releases/cli-release",
             to: "/tools/aptos-cli/install-cli",
           },
@@ -399,12 +395,31 @@ const config = {
             to: "/nodes/networks",
           },
         ],
+        // Create redirects for all the move pages
         createRedirects(existingPath) {
           if (existingPath.includes("/move")) {
-            return [
-              existingPath.replace("/move/prover", "/guides/prover-guides"),
-              existingPath.replace("/move", "/guides/move-guides"),
-            ];
+            const paths = [];
+
+            // This is to ensure that we don't push redirects to itself
+            const provePath = existingPath.replace(
+              "/move/prover",
+              "/guides/prover-guides",
+            );
+            if (provePath !== existingPath) {
+              paths.push(provePath);
+            }
+
+            const movePath = existingPath.replace(
+              "/move",
+              "/guides/move-guides",
+            );
+            if (movePath !== existingPath) {
+              paths.push(movePath);
+            }
+
+            if (paths.length > 0) {
+              return paths;
+            }
           }
           return undefined;
         },
