@@ -28,7 +28,7 @@ const fs = require("fs");
 const startTag = " ?:!:>";
 const endTag = " ?<:!:";
 
-const plugin = (options) => {
+const plugin = (_options: {}) => {
   return async (ast) => {
     const visit = await import("unist-util-visit");
     visit.visit(ast, "code", (node) => {
