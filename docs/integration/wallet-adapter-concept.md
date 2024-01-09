@@ -65,7 +65,7 @@ Dapps should not _know_ this package as dapps interact with the provider, which 
 Wallets should implement their own plugin class that extends the basic plugin class (properties + events) interface that lives in the core package.
 
 :::tip
-If a wallet supports functions that are not part of the basic plugin interface, a pull request should be made to the core package to include this function, so it can support it. You can take a look at the `signTransaction` on the wallet core package for guidance.
+If a wallet supports functions that are not part of the basic plugin interface, a pull request should be made to the core package to include this function, so it can support it. You can take a look at the `signTransaction` on the wallet core package for guidance.
 :::
 
 ### Adapter React provider

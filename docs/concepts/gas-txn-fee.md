@@ -95,9 +95,9 @@ When a transaction is submitted to the Aptos blockchain, the transaction must co
   (total gas units consumed) * (gas_price)
   ```
 
-  must not exceed `max_gas_amount`, or else the transaction will abort the execution.
+  must not exceed `max_gas_amount`, or else the transaction will abort the execution.
 
-The transaction fee charged to the client will be at the most `gas_price * max_gas_amount`.
+The transaction fee charged to the client will be at the most `gas_price * max_gas_amount`.
 
 ## Gas parameters set by governance
 

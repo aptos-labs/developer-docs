@@ -25,7 +25,7 @@ Here are the steps to use the Remix IDE plugin for Move (described in detail bel
 
 2. Accept or decline the personal information agreement and dismiss any demonstrations.
 
-3. Click the **Plugin Manager** button near the bottom left, search for *CODE BY WELLDONE STUDIO*, and click **Activate**.
+3. Click the **Plugin Manager** button near the bottom left, search for *CODE BY WELLDONE STUDIO*, and click **Activate**.
 
 <center>
 <ThemedImage
@@ -57,18 +57,18 @@ width="50%"
 
 WELLDONE Wallet can be used with the Remix IDE plugin now, with support for [Petra wallet](https://petra.app/) coming soon. See the list of [Aptos wallets](https://aptosfoundation.org/ecosystem/projects/wallets) available in the ecosystem.
 
-This steps assumes you are using the WELLDONE Wallet. Follow [the manual](https://docs.welldonestudio.io/wallet/manual/) to install the wallet and create an account for the Aptos blockchain. Once that is done, follow these steps:
+This steps assumes you are using the WELLDONE Wallet. Follow [the manual](https://docs.welldonestudio.io/wallet/manual/) to install the wallet and create an account for the Aptos blockchain. Once that is done, follow these steps:
 
 1. Choose a network (e.g. devnet) in the dropdown menu at the top of the main tab.
 1. Go into the **Settings** tab of your wallet and activate **Developer Mode**.
 
-Now in the Remix UI click the **Connect to WELLDONE** button to connect to the **WELLDONE Wallet**.
+Now in the Remix UI click the **Connect to WELLDONE** button to connect to the **WELLDONE Wallet**.
 
-Click the **Refresh** button in the upper right corner of the plug-in to apply changes to your wallet.
+Click the **Refresh** button in the upper right corner of the plug-in to apply changes to your wallet.
 
 ## Step 4: Create the Project
 
-In Aptos, you can write smart contracts with the [Move programming language](../../move/move-on-aptos.md). **WELLDONE Code** provides two features to help developers new to Aptos and Move.
+In Aptos, you can write smart contracts with the [Move programming language](../../move/move-on-aptos.md). **WELLDONE Code** provides two features to help developers new to Aptos and Move.
 
 ### Select a template
 
@@ -103,9 +103,9 @@ aptos
 
 ## Step 5: Compile and publish a Move module to the Aptos blockchain
 
-1. Select the project you want to compile in the **PROJECT TO COMPILE** section.
+1. Select the project you want to compile in the **PROJECT TO COMPILE** section.
 2. Add your address to the `Move.toml` file.
-3. Click the `Compile` button.
+3. Click the `Compile` button.
 
 ```toml
 [package]
@@ -119,11 +119,11 @@ hello_blockchain = "your address"
 AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "aptos-node-v1.2.0" }
 ```
 
-4. When the compilation is complete, a compiled binary file is returned in the `aptos/<YOUR_PROJECT_NAME>/out` directory.
+4. When the compilation is complete, a compiled binary file is returned in the `aptos/<YOUR_PROJECT_NAME>/out` directory.
 
-If you need to revise the contract and compile again, delete the `out` directory and click **Compile** once more.
+If you need to revise the contract and compile again, delete the `out` directory and click **Compile** once more.
 
-5. Once you have compiled contract code, the `Deploy` button will be activated.
+5. Once you have compiled contract code, the `Deploy` button will be activated.
 
 ## Step 6: Interact with a Move module
 
@@ -131,7 +131,7 @@ If you need to revise the contract and compile again, delete the `out` directo
 There are two ways to import contracts.
 
 1. Automatically import contracts deployed through the above process.
-2. Import existing deployed contracts through the **At Address** button.
+2. Import existing deployed contracts through the **At Address** button.
    :::
 
 3. Check the modules and resources owned by the current account and read the resources through the **Get Resource** button.
@@ -158,4 +158,4 @@ sources={{
 
 ## Get support
 
-Click the **Documentation** button to seek help with this Remix IDE plugin. To file requests, click the **Make an issue** button to go to the [welldonestudio](https://github.com/welldonestudio/welldonestudio.github.io) GitHub Repository and [file an issue](https://github.com/welldonestudio/welldonestudio.github.io/issues/new/choose).
+Click the **Documentation** button to seek help with this Remix IDE plugin. To file requests, click the **Make an issue** button to go to the [welldonestudio](https://github.com/welldonestudio/welldonestudio.github.io) GitHub Repository and [file an issue](https://github.com/welldonestudio/welldonestudio.github.io/issues/new/choose).

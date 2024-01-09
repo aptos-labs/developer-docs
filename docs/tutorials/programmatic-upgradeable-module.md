@@ -9,7 +9,7 @@ This tutorial will go over two sections:
 1. How to publish modules to a resource account.
 2. How to upgrade modules in a resource account.
 
-A [resource account](https://aptos.dev/move/move-on-aptos/resource-accounts/) is a developer feature used to manage resources independent of an account managed by a user,
+A [resource account](https://aptos.dev/move/move-on-aptos/resource-accounts/) is a developer feature used to manage resources independent of an account managed by a user,
 specifically publishing modules and providing on-chain-only access control, e.g. signers.
 
 Typically, a resource account is used for two main purposes:
@@ -91,7 +91,7 @@ Click on `Modules` tab and you should see the code/module published onto the acc
 
 Now that we have published a module onto a resource account, the next step would be attempting to upgrade the module.
 
-The Aptos blockchain natively supports different *upgrade policies*, which allow move developers to explicitly define the constraints around how their move code can be upgraded. The default policy is *backwards compatible*. This means that code upgrades are accepted only if they guarantee that no existing resource storage or public APIs are broken by the upgrade (including public functions). This compatibility checking is possible because of Move's strongly typed bytecode semantics.
+The Aptos blockchain natively supports different *upgrade policies*, which allow move developers to explicitly define the constraints around how their move code can be upgraded. The default policy is *backwards compatible*. This means that code upgrades are accepted only if they guarantee that no existing resource storage or public APIs are broken by the upgrade (including public functions). This compatibility checking is possible because of Move's strongly typed bytecode semantics.
 
 More information: https://aptos.dev/move/book/package-upgrades/
 
