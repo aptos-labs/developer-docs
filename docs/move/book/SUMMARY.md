@@ -23,7 +23,7 @@
 - [Equality](equality.md)
 - [Abort and Assert](abort-and-assert.md)
 - [Conditionals](conditionals.md)
-- [While and Loop](loops.md)
+- [While, For, and Loop](loops.md)
 - [Functions](functions.md)
 - [Structs and Resources](structs-and-resources.md)
 - [Constants](constants.md)
