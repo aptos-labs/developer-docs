@@ -25,7 +25,7 @@ Here are the steps to use the Remix IDE plugin for Move (described in detail bel
 
 2. Accept or decline the personal information agreement and dismiss any demonstrations.
 
-3. Click the **Plugin Manager** button near the bottom left, search for *CODE BY WELLDONE STUDIO*, and click **Activate**.
+3. Click the **Plugin Manager** button near the bottom left, search for _CODE BY WELLDONE STUDIO_, and click **Activate**.
 
 <center>
 <ThemedImage

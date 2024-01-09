@@ -91,7 +91,7 @@ Click on `Modules` tab and you should see the code/module published onto the acc
 
 Now that we have published a module onto a resource account, the next step would be attempting to upgrade the module.
 
-The Aptos blockchain natively supports different *upgrade policies*, which allow move developers to explicitly define the constraints around how their move code can be upgraded. The default policy is *backwards compatible*. This means that code upgrades are accepted only if they guarantee that no existing resource storage or public APIs are broken by the upgrade (including public functions). This compatibility checking is possible because of Move's strongly typed bytecode semantics.
+The Aptos blockchain natively supports different _upgrade policies_, which allow move developers to explicitly define the constraints around how their move code can be upgraded. The default policy is _backwards compatible_. This means that code upgrades are accepted only if they guarantee that no existing resource storage or public APIs are broken by the upgrade (including public functions). This compatibility checking is possible because of Move's strongly typed bytecode semantics.
 
 More information: https://aptos.dev/move/book/package-upgrades/
 
