@@ -279,8 +279,8 @@ See the Aptos Stake module in the Move language at [stake.move](https://github.c
 :::
 
 - At any time you can call the following sequence of functions to leave the validator set:
-  - Call `Stake::unlock` to unlock your stake amount, and
-  - Either call `Stake::withdraw` to withdraw your staked amount at the next epoch, or call `Stake::leave_validator_set`.
+  - Call `Stake::unlock` to unlock your stake amount, and
+  - Either call `Stake::withdraw` to withdraw your staked amount at the next epoch, or call `Stake::leave_validator_set`.
 
 ## Rejoining the validator set
 

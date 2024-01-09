@@ -90,7 +90,7 @@ Almost all developers will benefit from exploring the CLI. [Using the CLI](../to
 
 ## Accounts on Aptos
 
-An [account](../concepts/accounts.md) represents an entity on the Aptos blockchain that can send transactions. Each account is identified by a particular 32-byte account address and is a container for [Move modules and resources](../concepts/resources.md). On Aptos, accounts must be created on-chain prior to any blockchain operations involving that account. The Aptos framework supports implicitly creating accounts when transferring Aptos coin via [`aptos_account::transfer`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L18) or explicitly via [`aptos_account::create_account`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L13).
+An [account](../concepts/accounts.md) represents an entity on the Aptos blockchain that can send transactions. Each account is identified by a particular 32-byte account address and is a container for [Move modules and resources](../concepts/resources.md). On Aptos, accounts must be created on-chain prior to any blockchain operations involving that account. The Aptos framework supports implicitly creating accounts when transferring Aptos coin via [`aptos_account::transfer`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L18) or explicitly via [`aptos_account::create_account`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L13).
 
 At creation, an [Aptos account](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/account.move#L23) contains:
 
@@ -105,7 +105,7 @@ Read more about [Accounts](../concepts/accounts.md) and [set one up](../tools/ap
 
 ## Transactions
 
-Aptos [transactions](../concepts/txns-states.md) are encoded in [Binary Canonical Serialization (BCS)](https://github.com/diem/bcs). Transactions contain information such as the sender’s account address, authentication from the sender, the desired operation to be performed on the Aptos blockchain, and the amount of gas the sender is willing to pay to execute the transaction.
+Aptos [transactions](../concepts/txns-states.md) are encoded in [Binary Canonical Serialization (BCS)](https://github.com/diem/bcs). Transactions contain information such as the sender’s account address, authentication from the sender, the desired operation to be performed on the Aptos blockchain, and the amount of gas the sender is willing to pay to execute the transaction.
 
 Read more in [Transactions and States](../concepts/txns-states.md).
 
@@ -120,17 +120,17 @@ The preferred approach is to directly generate native BCS transactions. Generati
 
 #### BCS-encoded transactions
 
-BCS-encoded transactions can be submitted to the `/transactions` endpoint but must specify `Content-Type: application/x.aptos.signed_transaction+bcs` in the HTTP headers. This will return a transaction submission result that, if successful, contains a transaction hash in the `hash` [field](https://github.com/aptos-labs/aptos-core/blob/9b85d41ed8ef4a61a9cd64f9de511654fcc02024/ecosystem/python/sdk/aptos_sdk/client.py#L138).
+BCS-encoded transactions can be submitted to the `/transactions` endpoint but must specify `Content-Type: application/x.aptos.signed_transaction+bcs` in the HTTP headers. This will return a transaction submission result that, if successful, contains a transaction hash in the `hash` [field](https://github.com/aptos-labs/aptos-core/blob/9b85d41ed8ef4a61a9cd64f9de511654fcc02024/ecosystem/python/sdk/aptos_sdk/client.py#L138).
 
 #### JSON-encoded transactions
 
-JSON-encoded transactions can be generated via the [REST API](https://fullnode.devnet.aptoslabs.com/v1/spec#/), following these steps:
+JSON-encoded transactions can be generated via the [REST API](https://fullnode.devnet.aptoslabs.com/v1/spec#/), following these steps:
 
-1. First construct an appropriate JSON payload for the `/transactions/encode_submission` endpoint as demonstrated in the [Python SDK](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L128).
-2. The output of the above contains an object containing a `message` that must be signed with the sender’s private key locally.
-3. Extend the original JSON payload with the signature information and post it to the `/transactions` [endpoint](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L142). This will return a transaction submission result that, if successful, contains a transaction hash in the `hash` [field](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L145).
+1. First construct an appropriate JSON payload for the `/transactions/encode_submission` endpoint as demonstrated in the [Python SDK](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L128).
+2. The output of the above contains an object containing a `message` that must be signed with the sender’s private key locally.
+3. Extend the original JSON payload with the signature information and post it to the `/transactions` [endpoint](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L142). This will return a transaction submission result that, if successful, contains a transaction hash in the `hash` [field](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L145).
 
-JSON-encoded transactions allow for rapid development and support seamless ABI conversions of transaction arguments to native types. However, most system integrators prefer to generate transactions within their own tech stack. Both the [TypeScript SDK](https://github.com/aptos-labs/aptos-core/blob/9b85d41ed8ef4a61a9cd64f9de511654fcc02024/ecosystem/typescript/sdk/src/aptos_client.ts#L259) and [Python SDK](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L100) support generating BCS transactions.
+JSON-encoded transactions allow for rapid development and support seamless ABI conversions of transaction arguments to native types. However, most system integrators prefer to generate transactions within their own tech stack. Both the [TypeScript SDK](https://github.com/aptos-labs/aptos-core/blob/9b85d41ed8ef4a61a9cd64f9de511654fcc02024/ecosystem/typescript/sdk/src/aptos_client.ts#L259) and [Python SDK](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L100) support generating BCS transactions.
 
 ### Types of transactions
 
@@ -145,7 +145,7 @@ Most basic operations on the Aptos blockchain should be available via entry poin
 
 ### Status of a transaction
 
-Obtain transaction status by querying the API [`/transactions/by_hash/{hash}`](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_hash) with the hash returned during the submission of the transaction.
+Obtain transaction status by querying the API [`/transactions/by_hash/{hash}`](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_hash) with the hash returned during the submission of the transaction.
 
 A reasonable strategy for submitting transactions is to limit their lifetime to 30 to 60 seconds, and polling that API at regular intervals until success or several seconds after that time has elapsed. If there is no commitment on-chain, the transaction was likely discarded.
 
@@ -153,7 +153,7 @@ A reasonable strategy for submitting transactions is to limit their lifetime to 
 
 To facilitate evaluation of transactions as well as gas estimation, Aptos supports a simulation API that does not require and should not contain valid signatures on transactions.
 
-The simulation API is a synchronous API that executes a transaction and returns the output inclusive of gas usage. The simulation API can be accessed by submitting a transaction to [`/transactions/simulate`](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction).
+The simulation API is a synchronous API that executes a transaction and returns the output inclusive of gas usage. The simulation API can be accessed by submitting a transaction to [`/transactions/simulate`](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction).
 
 Both the [Typescript SDK](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/transactionSubmission/simulate.ts) and [Python SDK](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/simulate_transfer_coin.py) support the simulation API. Note the output and gas used may change based upon the state of the account. For gas estimations, we recommend that the maximum gas amount be larger than the amount quoted by this API.
 

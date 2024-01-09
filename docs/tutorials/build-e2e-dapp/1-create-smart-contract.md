@@ -18,7 +18,7 @@ Now that you are all set up and at your terminal:
 
 ### What is a `Move.toml` file?
 
-A `Move.toml` file is a manifest file that contains metadata such as name, version, and dependencies for the package.
+A `Move.toml` file is a manifest file that contains metadata such as name, version, and dependencies for the package.
 
 Take a look at the new `Move.toml` file. You should see your package information and an `AptosFramework` dependency. Note that the `name` property is the same `--name` attribute we passed to the `aptos move init` command before. The `AptosFramework` dependency points to the `aptos-core/aptos-move/framework/aptos-framework` GitHub repo main branch.
 
@@ -139,12 +139,12 @@ struct Task has store, drop, copy {
 
 A struct that has the `key` and `store` abilities:
 
-- `Key` ability allows struct to be used as a storage identifier. In other words, `key`
-   is an ability to be stored at the top-level and act as a storage. We need it here to have `TodoList` be a resource stored in our user account.
+- `Key` ability allows struct to be used as a storage identifier. In other words, `key`
+   is an ability to be stored at the top-level and act as a storage. We need it here to have `TodoList` be a resource stored in our user account.
 
 When a struct has the `key` ability, it turns this struct into a `resource`:
 
-- `Resource` is stored under the account - therefore it *exists* only when assigned to an account and can be *accessed* through this account only.
+- `Resource` is stored under the account - therefore it *exists* only when assigned to an account and can be *accessed* through this account only.
 
 **Task**
 
@@ -152,9 +152,9 @@ A struct that has the `store`, `drop` and `copy`abilities.
 
 • `Store` - Task needs `Store` as it’s stored inside another struct (TodoList)
 
-• `Copy` - value can be *copied* (or cloned by value).
+• `Copy` - value can be *copied* (or cloned by value).
 
-• `Drop` - value can be *dropped* by the end of scope.
+• `Drop` - value can be *dropped* by the end of scope.
 
 Let’s try to compile what we have now:
 
@@ -215,7 +215,7 @@ public entry fun create_list(account: &signer){
 
 - `&signer` - The **signer** argument is injected by the Move VM as the address who signed that transaction.
 
-Our code has a `TodoList` resource. Resource is stored under the account; therefore, it *exists* only when assigned to an account and can be *accessed* only through this account.
+Our code has a `TodoList` resource. Resource is stored under the account; therefore, it *exists* only when assigned to an account and can be *accessed* only through this account.
 
 That means to create the `TodoList` resource, we need to assign it to an account that only this account can have access to.
 
