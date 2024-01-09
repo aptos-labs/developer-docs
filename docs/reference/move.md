@@ -1,6 +1,7 @@
 ---
 title: "Move Reference Documentation"
 id: "move"
+hide_table_of_contents: true
 ---
 
 import Link from "@site/src/components/Link";

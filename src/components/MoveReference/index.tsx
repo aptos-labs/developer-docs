@@ -1,241 +1,313 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import BrowserOnly from "@docusaurus/BrowserOnly";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import {
+  Select,
+  Label,
+  Button,
+  ListBox,
+  ListBoxItem,
+  Popover,
+  SelectValue,
+  ComboBox,
+  Input,
+  Section,
+  Header,
+} from "react-aria-components";
+import { IconChevronDown } from "@tabler/icons-react";
+import { useLocation, useHistory } from "@docusaurus/router";
 
-import ExecutionEnvironment from "@docusaurus/ExecutionEnvironment";
-
-const root = "https://raw.githubusercontent.com/aptos-labs/aptos-core/";
-const url_root = "/reference/move";
-
-const branches = ["mainnet", "testnet", "devnet", "main"];
-
-const branch_titles = ["Mainnet", "Testnet", "Devnet", "Main"];
-
-const frameworks = [
+const root = "https://raw.githubusercontent.com/aptos-labs/aptos-core";
+const branches = ["mainnet", "testnet", "devnet", "main"] as const;
+const defaultBranch = branches[0];
+const branchTitles: Record<Branch, string> = {
+  mainnet: "Mainnet",
+  testnet: "Testnet",
+  devnet: "Devnet",
+  main: "Main",
+};
+const pkgs = [
   "move-stdlib",
   "aptos-stdlib",
   "aptos-framework",
   "aptos-token",
   "aptos-token-objects",
-];
-const TopNav = ({ branch }: TopNavProps) => {
-  const adjustBranch = (event) => {
-    const params = new URLSearchParams(window.location.search);
-    params.set("branch", event.target.getAttribute("branch"));
-    window.location.href = `${location.pathname}?${params.toString()}`;
+] as const;
+const defaultFramework = pkgs[0];
+
+type Branch = (typeof branches)[number];
+type Framework = (typeof pkgs)[number];
+type FrameworkData = {
+  framework: Framework;
+  pages: { id: string; name: string }[];
+};
+type URLParams = { branch: Branch; page: string };
+
+type TopNavProps = {
+  branch: Branch;
+  onBranchChange: (branch: Branch) => void;
+};
+
+const TopNav = ({ branch, onBranchChange }: TopNavProps) => (
+  <Select selectedKey={branch} onSelectionChange={onBranchChange}>
+    <Label>Branch</Label>
+    <Button>
+      <SelectValue>{branchTitles[branch]}</SelectValue>
+      <IconChevronDown aria-hidden="true" />
+    </Button>
+    <Popover>
+      <ListBox>
+        {branches.map((branch) => (
+          <ListBoxItem key={branch} id={branch}>
+            {branchTitles[branch]}
+          </ListBoxItem>
+        ))}
+      </ListBox>
+    </Popover>
+  </Select>
+);
+
+type ModulePageSelectorProps = {
+  pkgsData: FrameworkData[];
+  selectedPage: string;
+  onSelectPage: (newPage: string) => void;
+};
+
+const ModulePageSelector = ({
+  pkgsData,
+  selectedPage,
+  onSelectPage,
+}: ModulePageSelectorProps) => {
+  const itemRefs = useRef({});
+  const items = useMemo(
+    () => pkgsData.flatMap((frameworkData) => frameworkData.pages),
+    [pkgsData],
+  );
+  const [isComboBoxOpen, setOpen] = useState(false);
+  const comboBoxKey = selectedPage || "none";
+
+  useEffect(() => {
+    if (isComboBoxOpen && itemRefs.current[selectedPage]) {
+      itemRefs.current[selectedPage].scrollIntoView({
+        behavior: "instant",
+        block: "nearest",
+      });
+    }
+  }, [selectedPage, isComboBoxOpen]);
+
+  const handleClear = () => {
+    onSelectPage(""); // Update the parent component's state
   };
 
   return (
-    <div className="move-top-bar" key="move-top-bar">
-      <div
-        className="move-top-bar-button"
-        key="mainnet"
-        branch="mainnet"
-        onClick={adjustBranch}
+    <div className="d-flex">
+      <ComboBox
+        defaultItems={items}
+        defaultSelectedKey={selectedPage}
+        defaultInputValue={selectedPage}
+        menuTrigger="focus"
+        onSelectionChange={onSelectPage}
+        onOpenChange={setOpen}
+        key={comboBoxKey}
       >
-        Mainnet
-      </div>
-      <div
-        className="move-top-bar-button"
-        key="testnet"
-        branch="testnet"
-        onClick={adjustBranch}
-      >
-        Testnet
-      </div>
-      <div
-        className="move-top-bar-button"
-        key="devnet"
-        branch="devnet"
-        onClick={adjustBranch}
-      >
-        Devnet
-      </div>
-      <div
-        className="move-top-bar-button"
-        key="main"
-        branch="main"
-        onClick={adjustBranch}
-      >
-        Main
-      </div>
+        <Label>Module</Label>
+        <div className="d-flex align-items-center pl-2">
+          <Input placeholder="Select a module" />
+          <Button>
+            <IconChevronDown />
+          </Button>
+          {selectedPage && (
+            <a className="form-reset" href="#" onClick={handleClear}>
+              Clear
+            </a>
+          )}
+        </div>
+        <Popover>
+          <ListBox>
+            {pkgsData.map((frameworkData) => (
+              <Section key={frameworkData.framework}>
+                <Header>{frameworkData.framework}</Header>
+                {frameworkData.pages.map((item) => (
+                  <ListBoxItem
+                    key={item.id}
+                    id={item.id}
+                    ref={(el) => (itemRefs.current[item.id] = el)}
+                  >
+                    {item.name}
+                  </ListBoxItem>
+                ))}
+              </Section>
+            ))}
+          </ListBox>
+        </Popover>
+      </ComboBox>
     </div>
   );
 };
 
-interface TopNavProps {
-  branch: string;
-}
-
-const SideNav = ({ branch }: SideNavProps) => {
-  const [content, setContent] = useState(null);
-  let isMounted = true;
-
-  useEffect(() => {
-    const fetchContent = async () => {
-      if (!isMounted) {
-        return;
-      }
-
-      let navbar_contents = [];
-
-      for (const framework of frameworks) {
-        const page = `${root}/${branch}/aptos-move/framework/${framework}/doc/overview.md`;
-        const response = await fetch(page);
-        if (response.ok) {
-          const raw_content = await response.text();
-          const links_regex = /\[(.+)\]\(([^ ]+?)( "(.+)")?\)/g;
-
-          let framework_content = [];
-          for (const entry of raw_content.matchAll(links_regex)) {
-            const name = entry[1].replaceAll("`", "");
-            const url = `${url_root}?branch=${branch}&page=${framework}/doc/${entry[2]}`;
-
-            framework_content.push(
-              <div key={name}>
-                <a href={url}>{name}</a>
-              </div>,
-            );
-          }
-
-          navbar_contents.push(
-            <div key={framework}>
-              <div key={`${framework}.name`}>{framework}</div>
-              <div key={`${framework}.content`}>{framework_content}</div>
-            </div>,
-          );
-        }
-      }
-
-      const new_content = <div>{navbar_contents}</div>;
-      if (isMounted) {
-        setContent(new_content);
-      }
-    };
-
-    fetchContent()
-      .catch((err) => console.log(`Error fetching spec: ${err}`))
-      .then(() => {
-        // Load the requested hash after the page has been dynamically loaded
-        if (location.hash) {
-          let requested_hash = location.hash.slice(1);
-          location.hash = "";
-          location.hash = requested_hash;
-        }
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return (
-    <div className="move-sidebar" key="move-sidebar">
-      {content}
-    </div>
-  );
+type ContentProps = {
+  branch: Branch;
+  page: string;
 };
-
-interface SideNavProps {
-  branch: string;
-}
 
 const Content = ({ branch, page }: ContentProps) => {
   const [content, setContent] = useState(null);
-  let isMounted = true;
+  const location = useLocation();
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchContent = async () => {
-      if (!isMounted) {
-        return;
-      }
-      const page_root = page.match(".*/doc")[0];
-
-      const page_path = `${root}/${branch}/aptos-move/framework/${page}`;
-      const response = await fetch(page_path);
-      const raw_content = await response.text();
-
-      const regex_major = /href="[\w\-\/\.]*(\/[\w\-]+\/doc\/)([\w\-]+.md.*)"/g;
-      const regex_local = /href="([\w\-]+\.md)/g;
-      const regex_minor = /page=([\w\-]+\.md)/g;
-      const regex_markdown = /\(([\w\-]+\.md.*)\)/g;
-      let redirected = raw_content.replaceAll(
-        regex_major,
-        `href="${url_root}?branch=${branch}&page=$1$2"`,
-      );
-      redirected = redirected.replaceAll(
-        regex_local,
-        `href="/reference/move?branch=${branch}&page=$1`,
-      );
-      redirected = redirected.replaceAll(
-        regex_minor,
-        `branch=${branch}&page=${page_root}/$1`,
-      );
-      redirected = redirected.replaceAll(
-        regex_markdown,
-        `(/reference/move?branch=${branch}&page=${page_root}/$1)`,
-      );
-
-      if (isMounted) {
-        setContent(
-          <ReactMarkdown
-            children={redirected}
-            rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm]}
-            remarkRehypeOptions={{ allowDangerousHtml: true }}
-          />,
-        );
+      if (page && isMounted) {
+        const pagePath = `${root}/${branch}/aptos-move/framework/${page}`;
+        const response = await fetch(pagePath);
+        if (response.ok) {
+          const rawContent = await response.text();
+          setContent(rawContent);
+        }
+      } else {
+        setContent(null);
       }
     };
 
-    fetchContent().catch((err) => console.log(`Error fetching spec: ${err}`));
-    // I've fetched the content, to ensure it's pointing to the right place do a redirect
-    console.log("LOCATION: ", window.location.href);
+    if (page) {
+      fetchContent().catch((err) =>
+        console.log(`Error fetching content: ${err}`),
+      );
+    }
+
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [branch, page]);
 
+  useEffect(() => {
+    if (content && location.hash) {
+      const hash = location.hash;
+      window.location.hash = "";
+      window.location.hash = hash;
+    }
+  }, [content, location.hash]);
+
+  // Conditional rendering based on whether a page is selected
   return (
-    <div className="move-content" key="move-content">
-      {content}
+    <div className="move-content">
+      {page && content ? (
+        <ReactMarkdown
+          children={content}
+          rehypePlugins={[rehypeRaw]}
+          remarkPlugins={[remarkGfm]}
+          remarkRehypeOptions={{ allowDangerousHtml: true }}
+        />
+      ) : page ? (
+        <div>Loading content...</div>
+      ) : (
+        <div>Please select a module to view its content.</div>
+      )}
     </div>
   );
 };
 
-interface ContentProps {
-  branch: string;
-  page: string;
+function parseFilters(searchParams: string): URLParams {
+  const params = new URLSearchParams(searchParams);
+  const branchFromParams = params.get("branch") as Branch;
+  const pageFromParams = params.get("page");
+
+  const branch = branches.includes(branchFromParams)
+    ? branchFromParams
+    : defaultBranch;
+  // If 'page' parameter is not in the URL, return null for page
+  const page = pageFromParams ? `${pageFromParams}` : null;
+
+  return { branch, page };
 }
 
-const Main = () => {
-  let branch = "main";
-  let page = null;
-  if (ExecutionEnvironment.canUseViewport) {
-    const params = new URLSearchParams(location.search);
-    page = params.get("page") ?? "aptos-framework/doc/overview.md";
-    branch = params.get("branch") ?? "mainnet";
+function useURLParams() {
+  const history = useHistory();
+  const location = useLocation();
+  const params = parseFilters(location.search);
+
+  const updateParams = (newParams: Partial<URLParams>) => {
+    const newSearchParams = new URLSearchParams();
+
+    newSearchParams.set("branch", newParams.branch ?? params.branch);
+    if (newParams.page) {
+      newSearchParams.set("page", newParams.page);
+    }
+
+    history.push({ search: decodeURIComponent(newSearchParams.toString()) });
+  };
+
+  return { params, updateParams };
+}
+
+async function loadFrameworkData(
+  branch: Branch,
+  framework: Framework,
+): Promise<FrameworkData | null> {
+  const pageUrl = `${root}/${branch}/aptos-move/framework/${framework}/doc/overview.md`;
+  const response = await fetch(pageUrl);
+
+  if (!response.ok) {
+    return null;
   }
+
+  const rawContent = await response.text();
+  const linksRegex = /\[(.+)\]\(([^ ]+?)( "(.+)")?\)/g;
+  const pages = Array.from(rawContent.matchAll(linksRegex), (entry) => {
+    const name = entry[1].replaceAll("`", "");
+    const page = entry[2].split("#")[0];
+    const id = `${framework}/doc/${page}`;
+
+    return { id, name };
+  });
+
+  return { framework, pages };
+}
+
+function useFrameworksData(branch: Branch) {
+  const [pkgsData, setFrameworksData] = useState<FrameworkData[]>([]);
+
+  useEffect(() => {
+    Promise.all(pkgs.map((framework) => loadFrameworkData(branch, framework)))
+      .then((data) => data.filter(Boolean))
+      .then(setFrameworksData);
+  }, [branch]);
+
+  return pkgsData;
+}
+
+const MoveReference = () => {
+  const {
+    params: { branch, page },
+    updateParams,
+  } = useURLParams();
+  const pkgsData = useFrameworksData(branch);
 
   return (
     <BrowserOnly fallback={<div>Loading...</div>}>
-      {() => {
-        return (
-          <div className="move-reference-body" key="move-reference-body">
-            <TopNav branch={branch} />
-            <div
-              className="move-reference-contents"
-              key="move-reference-contents"
-            >
-              <SideNav branch={branch} />
-              <Content branch={branch} page={page} />
-            </div>
+      {() => (
+        <div className="move-reference-body">
+          <div className="move-reference-nav">
+            <TopNav
+              branch={branch}
+              onBranchChange={(branch) => updateParams({ branch })}
+            />
+            <ModulePageSelector
+              pkgsData={pkgsData}
+              selectedPage={page}
+              onSelectPage={(page) => updateParams({ page })}
+            />
           </div>
-        );
-      }}
+          <div className="move-reference-contents">
+            <Content branch={branch} page={page} />
+          </div>
+        </div>
+      )}
     </BrowserOnly>
   );
 };
 
-export default Main;
+export default MoveReference;
