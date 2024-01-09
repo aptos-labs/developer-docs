@@ -1,5 +1,6 @@
 // const visitChildren = import("unist-util-visit-children");
-const fs = require("fs");
+
+import { readFileSync } from "fs";
 
 /**
  * This allows injecting code from files, so we only need to keep one copy of the code.
@@ -90,10 +91,12 @@ const plugin = (_options: {}) => {
 
 function readFile(filepath) {
   try {
-    return fs.readFileSync(filepath, { encoding: "utf8" });
+    return readFileSync(filepath, { encoding: "utf8" });
   } catch (e) {
     throw new Error(`Failed to read file: ${filepath}`);
   }
 }
+
+export default plugin;
 
 module.exports = plugin;

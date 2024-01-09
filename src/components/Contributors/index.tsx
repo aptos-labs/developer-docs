@@ -2,7 +2,7 @@ import React from "react";
 
 import CONTRIBUTORS from "../../contributors.json";
 
-const Contributor = ({ contributor }: {contributor: Contributor}) => {
+const Contributor = ({ contributor }: { contributor: Contributor }) => {
   const { name, email, username } = contributor;
   const avatar = username
     ? `https://github.com/${username}.png`
