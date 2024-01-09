@@ -257,7 +257,7 @@ async function loadFrameworkData(
   const rawContent = await response.text();
   const linksRegex = /\[(.+)\]\(([^ ]+?)( "(.+)")?\)/g;
   const pages = Array.from(rawContent.matchAll(linksRegex), (entry) => {
-    const name = entry[1].replaceAll("`", "");
+    const name = entry[1].replace(/`/gi, "");
     const page = entry[2].split("#")[0];
     const id = `${framework}/doc/${page}`;
 
