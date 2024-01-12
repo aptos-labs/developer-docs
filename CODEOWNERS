@@ -1,0 +1,24 @@
+# This is the overarching CODEOWNERS file for Aptos.dev documentation.
+# It exists to help route review requests and ensure proper review of changes.
+# We include each subdirectory and relevant owners below:
+# Global rule:
+* @gregnazario @0xzihan
+
+## Aptos White Paper
+docs/aptos-white-paper/** @aching
+
+## Nodes
+docs/nodes/** @rustielin @aptos-labs/prod-eng
+
+## Indexer
+docs/indexer/** @banool
+
+## General UI
+src/** @moonclavedev @gregnazario
+
+## SDKs
+docs/sdks/** @0xmaayan @gregnazario
+static/sdks/** @0xmaayan @gregnazario
+
+## Move
+docs/move/** @movekevin @gregnazario
