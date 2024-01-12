@@ -24,7 +24,7 @@ title: "Supporting Resources"
 
 - [The Move Tutorial, steps 7 and 8](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial#step-7--use-the-move-prover)
 - [Verify Smart Contracts in Aptos with the Move Prover by MoveBit](https://www.movebit.xyz/blog/post/move-prover-tutorial-part-1.html)
-- [The Move Prover: A Practical Guide by OtterSec](https://osec.io/blog/tutorials/2022-09-16-move-prover/)
+- [The Move Prover: A Practical Guide by OtterSec](https://osec.io/blog/2022-09-16-move-prover)
 - [Formal Verification, the Move Language, and the Move Prover by Certik](https://www.certik.com/resources/blog/2wSOZ3mC55AB6CYol6Q2rP-formal-verification-the-move-language-and-the-move-prover)
 - [The Move Prover: Quality Assurance of Formal Verification by Certik](https://www.certik.com/resources/blog/1NygvVeqIwhbUk1U1q3vJF-the-move-prover-quality-assurance-of-formal-verification)
 
