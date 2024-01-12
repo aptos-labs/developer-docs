@@ -31,7 +31,7 @@ title: "Supporting Resources"
 ## Presentations
 
 - [Verifying Smart Contracts with Move Prover by Wolfgang Grieskamp (video)](https://drive.google.com/file/d/1DpI-rQ25Kq1jqMGioLgVrG3YuCqJHVMm/view?usp=share_link)
-- [Formal verification of Move programs for the Libra blockchain by David Dill (video)](http://www.fields.utoronto.ca/talks/Formal-verification-Move-programs-Libra-blockchain)
+- [Formal verification of Move programs for the Libra blockchain by David Dill (video)](https://www.fields.utoronto.ca/talks/Formal-verification-Move-programs-Libra-blockchain)
 - [Move Prover - Best Practices & Tricks - A User’s Perspective by Xu-Dong@MoveBit (slides)](https://docs.google.com/presentation/d/1SuV0m5gGxSN9SaLdj9lLmTjspJ2xN1TOWgnwvdWbKEY/edit?usp=sharing)
 
 ## Conference papers
