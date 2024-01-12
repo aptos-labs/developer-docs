@@ -14,11 +14,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "pnpm": {
+    "overrides": {
+      "follow-redirects": ">=1.15.4"
+    }
+  },
   "dependencies": {
     "aptos": "1.21.0"
   },
   "devDependencies": {
-    "@types/node": "20.10.5",
+    "@types/node": "20.11.0",
     "ts-node": "10.9.2",
     "typescript": "5.3.3"
   }
