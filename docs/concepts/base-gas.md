@@ -270,7 +270,7 @@ Some cost optimization strategies concerning the storage fee:
 
 ### Instruction gas
 
-As of the time of this writing, all instruction gas operations are multiplied by the `EXECUTION_GAS_MULTIPLIER` defined in [`gas_meter.rs`], which is set to 20.
+As of the time of this writing, all instruction gas operations are multiplied by the `EXECUTION_GAS_MULTIPLIER` defined in [`meter.rs`], which is set to 20.
 Hence, the following representative operations assume gas costs as follows (divide internal gas by scaling factor, then multiply by minimum gas price):
 
 | Operation                    | Minimum Octas |
@@ -303,7 +303,7 @@ Hence, in practice, payload gas is unlikely to be a concern.
 [`aptos_global_constants`]: https://github.com/aptos-labs/aptos-core/blob/main/config/global-constants/src/lib.rs
 [`base_8192_exponential_curve()`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/storage_gas.md#0x1_storage_gas_base_8192_exponential_curve
 [BCS sequence specification]: https://github.com/diem/bcs#fixed-and-variable-length-sequences
-[`gas_meter.rs`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas/src/gas_meter.rs
+[`meter.rs`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-meter/src/meter.rs
 [`initialize()`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/storage_gas.md#0x1_storage_gas_initialize
 [`instr.rs`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/instr.rs
 [`move_stdlib.rs`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/move_stdlib.rs
