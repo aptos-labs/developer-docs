@@ -24,14 +24,14 @@ title: "Supporting Resources"
 
 - [The Move Tutorial, steps 7 and 8](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial#step-7--use-the-move-prover)
 - [Verify Smart Contracts in Aptos with the Move Prover by MoveBit](https://www.movebit.xyz/blog/post/move-prover-tutorial-part-1.html)
-- [The Move Prover: A Practical Guide by OtterSec](https://osec.io/blog/tutorials/2022-09-16-move-prover/)
+- [The Move Prover: A Practical Guide by OtterSec](https://osec.io/blog/2022-09-16-move-prover)
 - [Formal Verification, the Move Language, and the Move Prover by Certik](https://www.certik.com/resources/blog/2wSOZ3mC55AB6CYol6Q2rP-formal-verification-the-move-language-and-the-move-prover)
 - [The Move Prover: Quality Assurance of Formal Verification by Certik](https://www.certik.com/resources/blog/1NygvVeqIwhbUk1U1q3vJF-the-move-prover-quality-assurance-of-formal-verification)
 
 ## Presentations
 
 - [Verifying Smart Contracts with Move Prover by Wolfgang Grieskamp (video)](https://drive.google.com/file/d/1DpI-rQ25Kq1jqMGioLgVrG3YuCqJHVMm/view?usp=share_link)
-- [Formal verification of Move programs for the Libra blockchain by David Dill (video)](http://www.fields.utoronto.ca/talks/Formal-verification-Move-programs-Libra-blockchain)
+- [Formal verification of Move programs for the Libra blockchain by David Dill (video)](https://www.fields.utoronto.ca/talks/Formal-verification-Move-programs-Libra-blockchain)
 - [Move Prover - Best Practices & Tricks - A User’s Perspective by Xu-Dong@MoveBit (slides)](https://docs.google.com/presentation/d/1SuV0m5gGxSN9SaLdj9lLmTjspJ2xN1TOWgnwvdWbKEY/edit?usp=sharing)
 
 ## Conference papers

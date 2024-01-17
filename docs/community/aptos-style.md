@@ -42,7 +42,7 @@ Incorrect:
 [How Base Gas Works](/concepts/base-gas)
 ```
 
-The second example will work in [Aptos.dev](http://Aptos.dev) but not when navigating the docs via [GitHub.com](http://GitHub.com) or in source viewer/editor. For links to files in the same directory, include the leading `./` like so:
+The second example will work in [Aptos.dev](https://aptos.dev) but not when navigating the docs via [GitHub.com](https://github.com) or in source viewer/editor. For links to files in the same directory, include the leading `./` like so:
 
 ```markdown
 [proofs](./txns-states.md#proofs)
@@ -67,8 +67,8 @@ Place all images in the [`static/img`](https://github.com/aptos-labs/developer-d
 
 ## Redirect moved pages
 
-Avoid losing users by adding redirects for moved and renamed [Aptos.dev](http://Aptos.dev) pages in:
-https://github.com/aptos-labs/developer-docs/blob/main/docusaurus.config.js
+Avoid losing users by adding redirects for moved and renamed [Aptos.dev](https://aptos.dev) pages in the
+[docusaurus.config.ts file](https://github.com/aptos-labs/developer-docs/blob/main/docusaurus.config.ts).
 
 ## Name files succinctly
 
