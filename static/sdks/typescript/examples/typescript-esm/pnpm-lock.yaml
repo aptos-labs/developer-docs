@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: false
   excludeLinksFromLockfile: false
 
+overrides:
+  follow-redirects: '>=1.15.4'
+
 dependencies:
   aptos:
     specifier: 1.21.0
@@ -11,11 +14,11 @@ dependencies:
 
 devDependencies:
   '@types/node':
-    specifier: 20.10.5
-    version: 20.10.5
+    specifier: 20.11.0
+    version: 20.11.0
   ts-node:
     specifier: 10.9.2
-    version: 10.9.2(@types/node@20.10.5)(typescript@5.3.3)
+    version: 10.9.2(@types/node@20.11.0)(typescript@5.3.3)
   typescript:
     specifier: 5.3.3
     version: 5.3.3
@@ -104,7 +107,7 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.4
       '@types/keyv': 3.1.4
-      '@types/node': 20.10.5
+      '@types/node': 20.11.0
       '@types/responselike': 1.0.3
     dev: false
 
@@ -115,18 +118,18 @@ packages:
   /@types/keyv@3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 20.10.5
+      '@types/node': 20.11.0
     dev: false
 
-  /@types/node@20.10.5:
-    resolution: {integrity: sha512-nNPsNE65wjMxEKI93yOP+NPGGBJz/PoN3kZsVLee0XMiJolxSekEVD8wRwBUBqkwc7UWop0edW50yrCQW4CyRw==}
+  /@types/node@20.11.0:
+    resolution: {integrity: sha512-o9bjXmDNcF7GbM4CNQpmi+TutCgap/K3w1JyKgxAjqx41zp9qlIAVFi0IhCNsJcXolEqLWhbFbEeL0PvYm4pcQ==}
     dependencies:
       undici-types: 5.26.5
 
   /@types/responselike@1.0.3:
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==}
     dependencies:
-      '@types/node': 20.10.5
+      '@types/node': 20.11.0
     dev: false
 
   /acorn-walk@8.2.0:
@@ -165,7 +168,7 @@ packages:
   /axios@1.6.2:
     resolution: {integrity: sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.5
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -239,8 +242,8 @@ packages:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
     dev: false
 
-  /follow-redirects@1.15.2:
-    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
+  /follow-redirects@1.15.5:
+    resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -377,7 +380,7 @@ packages:
       lowercase-keys: 2.0.0
     dev: false
 
-  /ts-node@10.9.2(@types/node@20.10.5)(typescript@5.3.3):
+  /ts-node@10.9.2(@types/node@20.11.0)(typescript@5.3.3):
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
     hasBin: true
     peerDependencies:
@@ -396,7 +399,7 @@ packages:
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': 20.10.5
+      '@types/node': 20.11.0
       acorn: 8.10.0
       acorn-walk: 8.2.0
       arg: 4.1.3
