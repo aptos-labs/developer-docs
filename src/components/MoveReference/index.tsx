@@ -3,6 +3,7 @@ import BrowserOnly from "@docusaurus/BrowserOnly";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import remarkMermaid from "remark-mermaid-plugin";
 import {
   Select,
   Label,
@@ -198,7 +199,7 @@ const Content = ({ branch, page }: ContentProps) => {
         <ReactMarkdown
           children={content}
           rehypePlugins={[rehypeRaw]}
-          remarkPlugins={[remarkGfm]}
+          remarkPlugins={[remarkGfm, remarkMermaid as any]}
           remarkRehypeOptions={{ allowDangerousHtml: true }}
         />
       ) : page ? (
