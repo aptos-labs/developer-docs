@@ -199,7 +199,7 @@ const Content = ({ branch, page }: ContentProps) => {
         <ReactMarkdown
           children={content}
           rehypePlugins={[rehypeRaw]}
-          remarkPlugins={[remarkGfm, remarkMermaid as any]}
+          remarkPlugins={[remarkGfm, [remarkMermaid as any, { theme: "dark" }]]}
           remarkRehypeOptions={{ allowDangerousHtml: true }}
         />
       ) : page ? (
