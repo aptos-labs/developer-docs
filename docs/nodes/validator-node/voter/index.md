@@ -6,7 +6,9 @@ slug: "index"
 import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-# Staking Pool Voter
+# Voter
+
+## Staking Pool Voter
 
 If you are a [staking pool](../../../concepts/staking.md) voter, then we recommend strongly that you do not store your Aptos voter keys with a custodian before the custodian supports this function. Until then, we suggest you store your voter keys in an Aptos wallet like [Petra](https://petra.app/) or [Martian](https://martianwallet.xyz/).
 
@@ -29,7 +31,7 @@ To participate as a voter in the Aptos governance, follow the below steps.
 3. To set up your voter profile run `aptos init`
 4. To vote on a proposal `aptos governance vote --proposal-id <PROPOSAL_ID> --pool-address <POOL_ADDRESS> --url <URL> --profile <profile>`
 
-# Delegation Pool Voter
+## Delegation Pool Voter
 
 If you staked to a [delegation pool](../../../concepts/delegated-staking.md), you can vote proportional to your stake amount in the delegation pool or delegate your votes to another voter address.
 
