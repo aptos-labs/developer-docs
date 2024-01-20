@@ -38,7 +38,7 @@ const preset: Preset.Options = {
 };
 
 const themeConfig: Preset.ThemeConfig = {
-  image: "img/aptos_meta_og_aptos-foundation_docs.jpg",
+  image: "img/meta/og-aptos-docs-default.png",
   colorMode: {
     defaultMode: "dark",
   },

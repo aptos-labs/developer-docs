@@ -1,5 +1,6 @@
 ---
 title: "Aptos Developer Documentation"
+description: Everything you need to build on the Aptos blockchain. This documentation covers basic and advanced concepts, how-to guides, code examples, release notes, more.
 slug: "/"
 hidden: false
 sidebar_position: 0
