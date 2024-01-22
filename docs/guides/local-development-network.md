@@ -118,9 +118,11 @@ From now on you should add `--profile local` to CLI commands to run them against
 In order to interact with the local network using the TypeScript SDK, use the local network URLs when building the client:
 
 ```typescript
-import { Provider, Network } from "aptos";
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
-const provider = new Provider(Network.LOCAL);
+const network = Network.LOCAL;
+const config = new AptosConfig({ network });
+const client = new Aptos(config);
 ```
 
 The provider is a single super client for both the node and indexer APIs.
