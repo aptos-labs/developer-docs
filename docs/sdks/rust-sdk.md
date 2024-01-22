@@ -14,6 +14,7 @@ aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core", branch = "devnet
 
 [patch.crates-io]
 merlin = { git = "https://github.com/aptos-labs/merlin" }
+x25519-dalek = { git = "https://github.com/aptos-labs/x25519-dalek", branch = "zeroize_v1" }
 ```
 
 You must also create a `.cargo/config.toml` file with this content:
