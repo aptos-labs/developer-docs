@@ -19,8 +19,23 @@ To make your validator node and validator fullnode deployment hassle-free, make 
 
 For running an Aptos **validator node and validator fullnode** we recommend the following hardware resources:
 For running a validator and validator fullnode is that your hardware spec should be good enough to achieve a 30k peak
-TPS on mainnet. In order to evaluate that, you can use the command (https://gist.github.com/igor-aptos/298c87c0a5f095bdae4716b526d82520)
-It has two benchmarks, a shorter one (~10m) and a large db one (few hours). Once the script finishes, it will print out a table like: https://gist.github.com/igor-aptos/97d43db4f460ab4b29e4902cb3d31954, and column "t/s" is your achieved "transactions per second". Evaluation criteria is encoded in the script, and will warn you after the table if you've not met any of the criteria.
+TPS on mainnet.
+
+In order to evaluate that, you can use the following commands
+
+```
+# checkout repo and install needed tools (cargo, etc)
+git clone https://github.com/aptos-labs/aptos-core.git
+cd aptos-core/
+./scripts/dev_setup.sh
+
+TABULATE_INSTALL=lib-only pip install tabulate
+
+./run_benchmark.sh --short
+
+```
+
+Once the script finishes, it will print out a table, and column "t/s" is your achieved "transactions per second". Evaluation criteria is encoded in the script, and will warn you after the table if you've not met any of the criteria.
 
 If you don't want to run the benchmark tool for hardware evaluation, you can use the following reference specs
 
