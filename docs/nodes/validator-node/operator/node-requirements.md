@@ -18,23 +18,34 @@ To make your validator node and validator fullnode deployment hassle-free, make 
 ## Hardware requirements
 
 For running an Aptos **validator node and validator fullnode** we recommend the following hardware resources:
+For running a validator and validator fullnode is that your hardware spec should be good enough to achieve a 30k peak
+TPS on mainnet.
 
-- **CPU**:
-  - 8 cores, 16 threads
+In order to evaluate that, checkout aptos-core repo and install requrired dependencies (See [**cloning aptos-core**](https://aptos.dev/guides/building-from-source#clone-the-aptos-core-repo)).
+Use following commands to run the performance benchmark
+
+```
+TABULATE_INSTALL=lib-only pip install tabulate
+./testsuite/performance_benchmark.sh --short
+```
+
+Once the script finishes, it will print out a table, and column "t/s" is your achieved "transactions per second". Evaluation criteria is encoded in the script, and will warn you after the table if you've not met any of the criteria.
+
+If you don't want to run the benchmark tool for hardware evaluation, you can use the following reference specs
+
+- **CPU Requirement Reference**:
+  - 32 cores
   - 2.8GHz, or faster
-  - Intel Xeon Skylake or newer
-- **Memory**: 32GB RAM.
-- **Storage**: 2T SSD with at least 40K IOPS and 200MiB/s bandwidth.
+  - AMD Milan EPYC or Intel(R) Xeon(R) Platinum
+- **Memory**: 64GB RAM.
+- **Storage**: 2T SSD with at least 60K IOPS and 200MiB/s bandwidth.
 - **Networking bandwidth**: 1Gbps
-
-### Example machine types on various clouds
-
-- **AWS**
-  - c6id.8xlarge (if using a local SSD)
-  - c6i.8xlarge + io1/io2 EBS volume with 40K IOPS.
-- **GCP**
-  - n2-standard-16 (if using a local SSD)
-  - n2-standard-32 + pd-ssd with 40K IOPS.
+- **Example machine types on various clouds**:
+  - **AWS**
+    - c6id.16xlarge (if using a local SSD)
+    - c6i.16xlarge + io1/io2 EBS volume with 60K IOPS.
+  - **GCP**
+    - n2-standard-60 + pd-ssd with 60K IOPS.
 
 ### Motivations for hardware requirements
 
