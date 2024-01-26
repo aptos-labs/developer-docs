@@ -51,6 +51,10 @@ This is the processor you want to run. You can see what processors are available
 
 This is the connection string to your PostgreSQL database. It should be in the format `postgresql://<username>:<password>@<host>:<port>/<database>`.
 
+:::caution
+If you're running this from a Docker Desktop environment (which you likely are if you're using MacOS or Windows) you must set `postgres_connection_string` to `postgresql://host.docker.internal:5432/indexer` instead. With Docker Desktop this is how the binary can reach the host network.
+:::
+
 ### `indexer_grpc_data_service_address`
 
 This is the URL for the Transaction Stream Service. If you are using the Labs-Hosted instance you can find the URLs for each network at [this page](../txn-stream/labs-hosted). Make sure to select the correct URL for the network you want to index. If you are running this service locally the value should be `127.0.0.1:50051`.
