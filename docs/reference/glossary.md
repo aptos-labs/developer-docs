@@ -397,7 +397,7 @@ See [Resource accounts](../move/move-on-aptos/resource-accounts.md) for instruct
 
 ### Shoal
 
-- Method for decreasing latency for BFT protocols. <https://arxiv.org/pdf/2306.03058.pdf>
+- Method for decreasing latency for BFT protocols. See [paper](https://arxiv.org/pdf/2306.03058.pdf)
 
 ### Smart Contract
 
