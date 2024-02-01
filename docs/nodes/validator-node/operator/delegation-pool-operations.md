@@ -100,6 +100,24 @@ Delegation pool owners have access to specific methods designed for modifying th
   --args address:<new_operator_address>
   ```
 
+- Set the delegated voter address for the delegation pool:
+
+  ```bash
+  aptos move run --profile delegation_pool_owner \
+  --function-id 0x1::delegation_pool::set_delegated_voter \
+  --args address:<new_operator_address>
+  ```
+
+Delegation pool owners can update the commission percentage for the delegation pool. The commission rate change can be requested at least 7.5 days before the current lockup cycle ends. The new commission percentage takes effect upon any `synchronize_delegation_pool` call after the end of the current lockup cycle. Owners are required to call `synchronize_delegation_pool` as soon as the lockup cycle ends to ensure that the new commission percentage takes effect. Otherwise, the old commission rate will continue to be used until the next `synchronize_delegation_pool` call.
+
+- Update the commission percentage for the delegation pool; `<new_commission_percentage>` has two decimal points precision (e.g., 13.25% is represented as 1325):
+
+  ```bash
+  aptos move run --profile delegation_pool_owner \
+  --function-id 0x1::delegation_pool::update_commission_percentage \
+  --args u64:<new_commission_percentage>
+  ```
+
 ## Set beneficiary addresses for operators
 
 Delegation pool operators can set beneficiary addresses to receive the operator commission earned by the delegation pool.
