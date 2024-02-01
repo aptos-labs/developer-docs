@@ -12,7 +12,9 @@ title: "Aptos Glossary"
 
 ### Account
 
-- An **account** in the Aptos blockchain is a container for an arbitrary number of [Move modules](#move-module) and [Move resources](#move-resources). This essentially means that the state of each [account](../concepts/accounts.md) is composed of both code and data.
+- An **account** in the Aptos blockchain is a container for an arbitrary number of [Move modules](#move-module) and [Move resources](#move-resources).
+- The state of each account is composed of both code and data.
+- Accounts can be of type standard, [resource](#resource-account), or object.
 - The account is identified by [account address](#account-address).
 
 See [Accounts](../concepts/accounts.md) for more information.
@@ -21,13 +23,14 @@ See [Accounts](../concepts/accounts.md) for more information.
 
 - An **account address** is the address of an Aptos account.
 - Account address refers to a specific destination on the Aptos network. The address dictates the destination and source of a specific amount of assets exchanged by two parties on the blockchain.
-- An Aptos address is a 64-character hex string, and sometimes it can be shortened by stripping leading 0s and prefixing `0x`. This makes a hex-encoded 32 byte Aptos account address.
+- Aptos addresses are 64-character hex string (32 bytes). Often times these strings are prefixed with `0x` and for first 16 addresses, the leading 0s are excluded (ex. `0x1`)
 
 See [Accounts](../concepts/accounts.md) for more information.
 
 ### API
 
-- An **Application Programming Interface (API)** is a set of protocols and tools that allow users to interact with Aptos blockchain nodes and client networks via external applications. Aptos offers a REST API for this purpose. See the [Aptos API reference](https://aptos.dev/nodes/aptos-api-spec#/) documentation and [Use the Aptos API](../apis/fullnode-rest-api.md) for more details.
+- An **Application Programming Interface (API)** is a set of protocols and tools that allow users to interact with Aptos blockchain nodes and client networks via external applications. Aptos offers a REST API to communicate with our nodes.
+- Try out the [Aptos API](https://aptos.dev/nodes/aptos-api-spec/) and see [documentation](../apis/fullnode-rest-api.md) for more details.
 
 ### APT
 
@@ -53,7 +56,7 @@ See [Accounts](../concepts/accounts.md) for more information.
 
 ### Aptos-core
 
-**Aptos-core** is the open source technology on which the Aptos Payment Network runs. Aptos-core contains software for
+**Aptos-core** is the [open source technology](https://github.com/aptos-labs/aptos-core/) on which the Aptos Network runs. Aptos-core contains software for
 
 - the Aptos blockchain itself, which generates and stores the immutable ledger of confirmed transactions and
 - the validation process, which implements the consensus algorithm to validate transactions and add them to the Aptos blockchain immutable ledger.
@@ -94,6 +97,10 @@ An **Aptos node** is a peer entity of the Aptos network that tracks the state of
 - See [devnet](#devnet).
 
 ## B
+
+### Blocks
+
+- Batches of [transactions](#transaction) also called “height” in blockchain literature.
 
 ### Byzantine (Validator)
 
@@ -214,10 +221,15 @@ then there is a guarantee that T_N will never be included in the blockchain.
 - The gas required for a transaction depends on the size of the transaction, the computational cost of executing the transaction, and the amount of additional global state created by the transaction (e.g., if new accounts are created).
 - The purpose of gas is regulating demand for the limited computational and storage resources of the validators, including preventing denial of service (DoS) attacks.
 
+See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
+
 ### Gas Unit Price
 
 - Each transaction specifies the **gas unit price** the sender is willing to pay per unit of gas.
 - The price of gas required for a transaction depends on the current demand for usage of the network.
+- Gas price is expressed in Octa. 1 APT = 10^8 Octa
+
+See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 
 ## H
 
@@ -236,6 +248,7 @@ then there is a guarantee that T_N will never be included in the blockchain.
 ### Indexer
 
 - **[Indexer](../indexer/indexer-landing.md)** is the component of Aptos that retrieves, processes, and efficiently stores raw data in the database to provide speedy access to the Aptos blockchain state.
+- It provides a gRPC endpoint to submit GraphQL queries against as well as sample processor code to transform raw blockchain data.
 
 ## L
 
@@ -256,6 +269,8 @@ then there is a guarantee that T_N will never be included in the blockchain.
 - The **Maximum Gas Amount** of a transaction is the maximum amount of gas the sender is ready to pay for the transaction.
 - The gas charged is equal to the gas price multiplied by units of gas required to process this transaction. If the result is less than the max gas amount, the transaction has been successfully executed.
 - If the transaction runs out of gas while it is being executed or the account runs out of balance during execution, then the sender will be charged for gas used and the transaction will fail.
+
+See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 
 ### Mempool
 
@@ -378,7 +393,11 @@ See [Resource accounts](../move/move-on-aptos/resource-accounts.md) for instruct
 ### Sender
 
 - _Alternate name_: Sender address.
-- **Sender** is the address of the originator account for a transaction. A transaction must be signed by the originator.
+- **Sender** is the address of the originator account for a transaction. A transaction must be signed by the originator but can have more than one signer.
+
+### Shoal
+
+- Method for decreasing latency for BFT protocols. <https://arxiv.org/pdf/2306.03058.pdf>
 
 ### Smart Contract
 
@@ -449,8 +468,8 @@ To see example uses of transaction scripts, follow [Move scripts](../move/move-o
 
 ### Version
 
-- A **version** is also called “height” in blockchain literature.
-- A transaction at height 0 is the first transaction (genesis transaction), and a transaction at height 100 is the 101st transaction in the transaction store.
+- A **version** is a sequentially increasing number that increments for every [transaction](#transaction).
+- Transaction version 0 is the first transaction (genesis transaction), and a transaction version 100 is the 101st transaction in the blockchain.
 
 ## W
 
