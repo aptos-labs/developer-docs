@@ -118,7 +118,7 @@ struct BurnRef has drop, store {
 Ref owners can do the following operations depending on the refs they own:
 
 - `MintRef` offers the capability to mint new FA units.
-- `TransferRef` offers the capability to mutate the value of `freeze` in any `FungbibleStore` of the same metadata or transfer FA by ignoring `freeze`.
+- `TransferRef` offers the capability to mutate the value of `freeze` in any `FungibleStore` of the same metadata or transfer FA by ignoring `freeze`.
 - `BurnRef` offers the capability to burn or delete FA units.
 
 The three refs collectively act as the building blocks of various permission control systems as they have `store` so can be passed around and stored anywhere. Please refer to the source file for `mint()`, `mint_to()`, `burn()`, `burn_from()`, `withdraw_with_ref()`, `deposit_with_ref()`, and `transfer_with_ref()`: These functions are used to mint, burn, withdraw, deposit, and transfer FA using the MintRef, BurnRef, and TransferRef.
