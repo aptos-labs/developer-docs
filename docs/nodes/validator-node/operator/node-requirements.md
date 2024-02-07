@@ -45,7 +45,7 @@ If you don't want to run the benchmark tool for hardware evaluation, you can use
     - c6id.16xlarge (if using a local SSD)
     - c6i.16xlarge + io1/io2 EBS volume with 60K IOPS.
   - **GCP**
-    - n2-standard-60 + pd-ssd with 60K IOPS.
+    - t2d-standard-60 + pd-ssd with 60K IOPS.
 
 ### Motivations for hardware requirements
 
