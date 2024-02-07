@@ -14,7 +14,6 @@ title: "Aptos Glossary"
 
 - An **account** in the Aptos blockchain is a container for an arbitrary number of [Move modules](#move-module) and [Move resources](#move-resources).
 - The state of each account is composed of both code and data.
-- Accounts can be of type standard, [resource](#resource-account), or object.
 - The account is identified by [account address](#account-address).
 
 See [Accounts](../concepts/accounts.md) for more information.
@@ -30,7 +29,7 @@ See [Accounts](../concepts/accounts.md) for more information.
 ### API
 
 - An **Application Programming Interface (API)** is a set of protocols and tools that allow users to interact with Aptos blockchain nodes and client networks via external applications. Aptos offers a REST API to communicate with our nodes.
-- Try out the [Aptos API](https://aptos.dev/nodes/aptos-api-spec/) and see [documentation](../apis/fullnode-rest-api.md) for more details.
+- See [documentation](../apis/fullnode-rest-api.md) for more details.
 
 ### APT
 
@@ -56,7 +55,7 @@ See [Accounts](../concepts/accounts.md) for more information.
 
 ### Aptos-core
 
-**Aptos-core** is the [open source technology](https://github.com/aptos-labs/aptos-core/) on which the Aptos Network runs. Aptos-core contains software for
+**Aptos-core** is the [open-source repository](https://github.com/aptos-labs/aptos-core/) containing the code for Aptos Network software. Aptos-core contains software for
 
 - the Aptos blockchain itself, which generates and stores the immutable ledger of confirmed transactions and
 - the validation process, which implements the consensus algorithm to validate transactions and add them to the Aptos blockchain immutable ledger.
@@ -100,7 +99,9 @@ An **Aptos node** is a peer entity of the Aptos network that tracks the state of
 
 ### Blocks
 
-- Batches of [transactions](#transaction) also called “height” in blockchain literature.
+- On Aptos, blocks are a batch of [transactions](#transaction) committed at the same time.
+- Block number is analogous to “block height” in blockchain literature.
+- Transactions are referenced by ledger version rather than by block.
 
 ### Byzantine (Validator)
 
@@ -248,7 +249,7 @@ See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 ### Indexer
 
 - **[Indexer](../indexer/indexer-landing.md)** is the component of Aptos that retrieves, processes, and efficiently stores raw data in the database to provide speedy access to the Aptos blockchain state.
-- It provides a gRPC endpoint to submit GraphQL queries against as well as sample processor code to transform raw blockchain data.
+- At a high level, indexer gets data from a gRPC stream and runs processors to transform raw blockchain data and serve transformed data via GraphQL endpoint.
 
 ## L
 
@@ -393,7 +394,7 @@ See [Resource accounts](../move/move-on-aptos/resource-accounts.md) for instruct
 ### Sender
 
 - _Alternate name_: Sender address.
-- **Sender** is the address of the originator account for a transaction. A transaction must be signed by the originator but can have more than one signer.
+- **Sender** is the address that originates the transaction. A transaction must be signed by the sender but can have more than one signer.
 
 ### Shoal
 
@@ -469,6 +470,7 @@ To see example uses of transaction scripts, follow [Move scripts](../move/move-o
 ### Version
 
 - A **version** is a sequentially increasing number that increments for every [transaction](#transaction).
+- On aptos, transactions are globally ordered and every transaction has a version (often called called “height” in blockchain literature.)
 - Transaction version 0 is the first transaction (genesis transaction), and a transaction version 100 is the 101st transaction in the blockchain.
 
 ## W
