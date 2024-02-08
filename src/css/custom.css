@@ -2927,3 +2927,15 @@ html[data-theme='dark'] .sidebar-divider {
   margin-left:1rem;
   font-size:0.8rem;
 }
+
+.sidebar-banner {
+  a {
+    display:block;
+    margin-top:4rem;
+    &:hover {
+      img {
+        filter: brightness(1.1);
+      }
+    }
+  }
+}
