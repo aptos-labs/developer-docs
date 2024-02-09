@@ -622,8 +622,8 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Rust Coding Guidelines",
       items: [
-      "community/rust-coding-guidelines/rust-coding-guidelines",
-      "community/rust-coding-guidelines/rust-secure-coding-guidelines",
+        "community/rust-coding-guidelines/rust-coding-guidelines",
+        "community/rust-coding-guidelines/rust-secure-coding-guidelines",
       ],
     },
     "community/site-updates",
