@@ -288,10 +288,6 @@ References:
 - [An introduction to property-based testing](https://fsharpforfunandprofit.com/posts/property-based-testing/)
 - [Choosing properties for property-based testing](https://fsharpforfunandprofit.com/posts/property-based-testing-2/)
 
-_Fuzzing_
-
-Aptos contains harnesses for fuzzing crash-prone code like deserializers, using [`libFuzzer`](https://llvm.org/docs/LibFuzzer.html) through [`cargo fuzz`](https://rust-fuzz.github.io/book/cargo-fuzz.html). For more examples, see the `testsuite/aptos_fuzzer` directory.
-
 ### Conditional compilation of tests
 
 Aptos [conditionally

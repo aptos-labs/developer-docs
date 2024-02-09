@@ -158,6 +158,9 @@ Avoid using `std::mem::forget` in secure development, or any other function that
 
 Most memory leaks result in general product reliability problems. If an attacker can intentionally trigger a memory leak, the attacker might be able to launch a denial-of-service attack (by crashing or hanging the program).
 
+### Fuzzing
+Aptos contains harnesses for fuzzing crash-prone code like deserializers, using [`libFuzzer`](https://llvm.org/docs/LibFuzzer.html) through [`cargo fuzz`](https://rust-fuzz.github.io/book/cargo-fuzz.html). For more examples, see the `testsuite/fuzzer` directory where find detailed README.md.
+
 ## Appendix
 
 #### Implementation of Comparison Traits
