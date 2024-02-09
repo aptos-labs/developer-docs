@@ -618,7 +618,14 @@ const sidebars: SidebarsConfig = {
     },
     "community/index",
     "community/external-resources",
-    "community/rust-coding-guidelines",
+    {
+      type: "category",
+      label: "Rust Coding Guidelines",
+      items: [
+      "community/rust-coding-guidelines/rust-coding-guidelines",
+      "community/rust-coding-guidelines/rust-secure-coding-guidelines",
+      ],
+    },
     "community/site-updates",
     "community/aptos-style",
     "community/contributors",
