@@ -126,7 +126,7 @@ Certain data structures, like HashMap and HashSet, do not guarantee a determinis
 
 - **BTreeMap:** It maintains its elements in sorted order by their keys.
 - **BinaryHeap:** It maintains its elements in a heap order, which is a complete binary tree where each parent node is less than or equal to its child nodes.
-- **VEC**: It maintains its elements in the order in which they were inserted. ⚠️
+- **Vec**: It maintains its elements in the order in which they were inserted. ⚠️
 - **LinkedList:** It maintains its elements in the order in which they were inserted. ⚠️
 - **VecDeque:** It maintains its elements in the order in which they were inserted. ⚠️
 
