@@ -13,7 +13,7 @@ Utilize Rustup for managing Rust toolchains. However, keep in mind that, from a 
 
 ### Stable Toolchain
 
-Development of a secure application must be done using a fully stable toolchain, for limiting potential compiler, runtime, or tool bugs [[toolchains considerations]](https://anssi-fr.github.io/rust-guide/02_devenv.html#stable-nightly-and-beta-toolchains).
+Aptos Core leverages Rust stable toolchain to limit potential compiler, runtime, or tooling bugs, or potential supply chain attacks in nightly releases.
 
 ### Cargo
 
