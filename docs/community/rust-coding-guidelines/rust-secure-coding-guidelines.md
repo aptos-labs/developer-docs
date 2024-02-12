@@ -81,7 +81,7 @@ Refer to [coding-guidelines](./rust-coding-guidelines.md#integer-arithmetic).
 
 ### Error Handling
 
-Use `Result<T, E>` and `Option<T>` for error handling instead of _unwrapping_ or _expecting_, to avoid panics [[error handling]](https://anssi-fr.github.io/rust-guide/04_language.html#error-handling) [[panic]](https://anssi-fr.github.io/rust-guide/04_language.html#panics) [[coding-style]](rust-coding-guidelines.md/#error-handling).
+Use `Result<T, E>` and `Option<T>` for error handling instead of _unwrapping_ or _expecting_, to avoid panics [[error handling]](https://anssi-fr.github.io/rust-guide/04_language.html#error-handling) [[panic]](https://anssi-fr.github.io/rust-guide/04_language.html#panics) [[coding-style]](./rust-coding-guidelines.md/#error-handling).
 
 ### Assertions
 
