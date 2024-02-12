@@ -135,13 +135,9 @@ Below is a list of deterministic data structures available in Rust. Please note,
 
 ## Cryptography
 
-### Talk to a cryptographer
-
-If you’re using cryptography in your code and you are **not** a cryptographer, you don’t know what you don’t know (_e.g.,_ small subgroup attacks, malleability attacks, domain-separation attacks, collision resistance versus one-wayness, safe key reuse, correctly using randomness, nonce reuse, CCA security, CPA security, etc). So ask for help from a cryptographer in our team (Alin, Benny, Michael, Rex).
-
 ### No Custom Cryptographic Algorithm
 
-Use exclusively the cryptographic primitives exposed by the `aptos-crypto` crate. This does **not** mean you will be able to use them safely, so [talk to a cryptographer](#talk-to-a-cryptographer)!
+Use exclusively the cryptographic primitives exposed by the `aptos-crypto` crate.
 
 ### Cryptographic Material Management
 
