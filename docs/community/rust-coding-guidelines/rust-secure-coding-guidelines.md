@@ -124,7 +124,7 @@ By utilizing these primitives, Rust programs can manage shared resources among m
 
 Certain data structures, like HashMap and HashSet, do not guarantee a deterministic order for the elements stored within them. This lack of order can lead to problems in operations that require processing elements in a consistent sequence across multiple executions. Below is a list of deterministic data structures available in Rust. Please note, this list may not be exhaustive:
 
-- **BTreeMap:** It maintains its elements in sorted order by their keys.
+- **BTreeMap:** maintains its elements in sorted order by their keys.
 - **BinaryHeap:** It maintains its elements in a heap order, which is a complete binary tree where each parent node is less than or equal to its child nodes.
 - **Vec**: It maintains its elements in the order in which they were inserted. ⚠️
 - **LinkedList:** It maintains its elements in the order in which they were inserted. ⚠️
