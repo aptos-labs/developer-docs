@@ -21,7 +21,7 @@ For running an Aptos **validator node and validator fullnode** we recommend the 
 For running a validator and validator fullnode is that your hardware spec should be good enough to achieve a 30k peak
 TPS on mainnet.
 
-In order to evaluate that, checkout aptos-core repo and install requrired dependencies (See [**cloning aptos-core**](https://aptos.dev/guides/building-from-source#clone-the-aptos-core-repo)).
+In order to evaluate that, checkout aptos-core repo and install required dependencies (See [**cloning aptos-core**](https://aptos.dev/guides/building-from-source#clone-the-aptos-core-repo)).
 Use following commands to run the performance benchmark
 
 ```
