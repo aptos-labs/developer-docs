@@ -56,7 +56,7 @@ Document safety invariants and security considerations in code, especially for p
 
 ### Crate Quality and Security
 
-Assess and monitor the quality and maintenance of used crates, employing tools like `cargo-outdated` and `cargo-audit` for version management and vulnerability checking [[audit lib]](https://anssi-fr.github.io/rust-guide/03_libraries.html#libraries).
+Assess and monitor the quality and maintenance of crates that are being introduced to the codebase, employing tools like `cargo-outdated` and `cargo-audit` for version management and vulnerability checking [[audit lib]](https://anssi-fr.github.io/rust-guide/03_libraries.html#libraries).
 
 - Aptos utilizes **[Dependabot](https://github.com/dependabot)** to continuously monitor libraries. Our policy requires mandatory updates for critical and high-vulnerabilities, or upon impact evaluation given the context for medium and lower.
 - When vetting a new library, it's advisable to utilize deps.dev for evaluation. This site provides an OpenSSF scorecard containing essential information. As a guideline, libraries with an OpenSSF score of 7 or higher are typically safe to import. However, those scoring **below 7** must undergo discussion prior to importation.
