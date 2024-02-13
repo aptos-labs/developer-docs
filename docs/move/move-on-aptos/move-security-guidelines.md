@@ -242,6 +242,31 @@ public fun get_order_by_id(user: &signer order_id: u64): Option<Order> acquires 
 
 It is also advisable to utilize efficient data structures tailored to the specific needs of the operations being performed. For instance, a **`SmartTable`** can be particularly effective in this context.
 
+### Move Abilities
+
+Move's abilities are a set of permissions that control the possible actions on data structures within the language. Smart contract developers must handle these capabilities with care, ensuring they're only assigned where necessary and understanding their implications to prevent security vulnerabilities.
+
+| Ability | Description                                                                                                            |
+| ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| copy    | Permits the duplication of values, allowing them to be used multiple times within the contract.                        |
+| drop    | Allows values to be discarded from memory, which is necessary for controlling resources and preventing leaks.          |
+| store   | Enables data to be saved in the global storage, critical to persist data across transactions.                          |
+| key     | Grants data the ability to serve as a key in global storage operations, important for data retrieval and manipulation. |
+
+[Read more](https://aptos.dev/move/book/abilities/) about abilities.
+
+Incorrect usage of abilities can lead to security issues such as unauthorized copying of sensitive data (`copy`), resource leaks (`drop`), and global storage mishandling (`store`).
+
+#### Example Insecure Code
+
+```rust
+struct Token has copy { }
+struct FlashLoan has drop { }
+```
+
+- `copy` capability for a `Token` allows tokens to be replicated, potentially enabling double-spending and inflation of the token supply, which could devalue the currency.
+- Allowing the `drop` capability in a `FlashLoan` struct could permit borrowers to get out of their loan by destroying it before repayment.
+
 ## Arithmetic Operations
 
 ---
@@ -396,31 +421,6 @@ fun mint_two(sender: &signer, recipient: &signer) {
     object::transfer<Monkey>(sender, monkey_object, signer::address_of(recipient));
 }
 ```
-
-### Move Abilities
-
-Move's abilities are a set of permissions that control the possible actions on data structures within the language. Smart contract developers must handle these capabilities with care, ensuring they're only assigned where necessary and understanding their implications to prevent security vulnerabilities.
-
-| Ability | Description                                                                                                            |
-| ------- | ---------------------------------------------------------------------------------------------------------------------- |
-| copy    | Permits the duplication of values, allowing them to be used multiple times within the contract.                        |
-| drop    | Allows values to be discarded from memory, which is necessary for controlling resources and preventing leaks.          |
-| store   | Enables data to be saved in the global storage, critical to persist data across transactions.                          |
-| key     | Grants data the ability to serve as a key in global storage operations, important for data retrieval and manipulation. |
-
-[Read more](https://aptos.dev/move/book/abilities/) about abilities.
-
-Incorrect usage of abilities can lead to security issues such as unauthorized copying of sensitive data (`copy`), resource leaks (`drop`), and global storage mishandling (`store`).
-
-#### Example Insecure Code
-
-```rust
-struct Token has copy { }
-struct FlashLoan has drop { }
-```
-
-- `copy` capability for a `Token` allows tokens to be replicated, potentially enabling double-spending and inflation of the token supply, which could devalue the currency.
-- Allowing the `drop` capability in a `FlashLoan` struct could permit borrowers to get out of their loan by destroying it before repayment.
 
 ## Business logic
 
