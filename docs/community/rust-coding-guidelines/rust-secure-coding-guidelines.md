@@ -110,7 +110,7 @@ In the majority of scenarios, manual implementation is unnecessary. In Rust, nea
 Ensure the implementation of standard comparison traits respects documented invariants.
 In the context of implementing standard comparison traits (like Eq, PartialEq, Ord, PartialOrd in Rust), respecting documented invariants means that the implementation of these traits should adhere to the properties and expectations defined by those invariants. For instance, if an invariant states that an object's identity is determined by certain fields, comparisons (equality, greater than, less than, etc.) must only consider those fields and ignore others. This ensures consistency, predictability, and correctness in how objects are compared, sorted, or considered equal within the Aptos Core.
 
-> The ANSSI resource extensively covers the matter, an example in [Appendix](#implementation-of-comparison-traits) is provided as a really basic demonstration of implementation.
+> The ANSSI resource extensively covers the matter [Appendix](#Appendix).
 
 ### Enums
 
@@ -166,91 +166,6 @@ Aptos contains harnesses for fuzzing crash-prone code like deserializers, using 
 #### References
 
 - ANSSI's Secure Rust Guidelines: https://anssi-fr.github.io/rust-guide/
-
-#### Implementation of Comparison Traits
-
-```rust
-    use std::cmp::Ordering;
-
-    /// A struct representing a 2D point.
-    #[derive(Debug)]
-    struct Point {
-        x: i32,
-        y: i32,
-    }
-
-    /// Implementing the PartialEq trait for Point.
-    ///
-    /// This implementation respects the documented invariant that for any points a and b,
-    /// a == b if and only if both their x and y coordinates are equal.
-    impl PartialEq for Point {
-        fn eq(&self, other: &Self) -> bool {
-            // Points are considered equal if their x and y coordinates are the same.
-            self.x == other.x && self.y == other.y
-        }
-    }
-
-    /// Implementing the PartialOrd trait for Point.
-    ///
-    /// The documented invariant here is that the points are ordered primarily by their x-coordinate,
-    /// and then by their y-coordinate. This means that for any points a and b,
-    /// a < b if a.x < b.x or if a.x == b.x and a.y < b.y.
-    impl PartialOrd for Point {
-        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-            match (self.x.cmp(&other.x), self.y.cmp(&other.y)) {
-                // If both coordinates are equal, the points are equal.
-                (Ordering::Equal, Ordering::Equal) => Some(Ordering::Equal),
-                // If x coordinates are equal, compare y coordinates.
-                (Ordering::Equal, ord) => Some(ord),
-                // Otherwise, order by x coordinate.
-                (ord, _) => Some(ord),
-            }
-        }
-    }
-
-    #[cfg(test)]
-    mod tests {
-        use super::*;
-
-        #[test]
-        fn test_equality() {
-            let point1 = Point { x: 1, y: 2 };
-            let point2 = Point { x: 1, y: 2 };
-            let point3 = Point { x: 2, y: 3 };
-
-            assert_eq!(point1, point2, "Points with same coordinates should be equal");
-            assert_ne!(point1, point3, "Points with different coordinates should not be equal");
-        }
-
-        #[test]
-        fn test_inequality() {
-            let point1 = Point { x: 1, y: 2 };
-            let point2 = Point { x: 1, y: 3 };
-
-            assert!(point1 != point2, "Points with different y coordinates should not be equal");
-        }
-
-        #[test]
-        fn test_less_than() {
-            let point1 = Point { x: 1, y: 2 };
-            let point2 = Point { x: 1, y: 3 };
-            let point3 = Point { x: 2, y: 1 };
-
-            assert!(point1 < point2, "Point1 should be less than Point2 based on y-coordinate");
-            assert!(point1 < point3, "Point1 should be less than Point3 based on x-coordinate");
-        }
-
-        #[test]
-        fn test_greater_than() {
-            let point1 = Point { x: 1, y: 3 };
-            let point2 = Point { x: 1, y: 2 };
-            let point3 = Point { x: 2, y: 1 };
-
-            assert!(point1 > point2, "Point1 should be greater than Point2 based on y-coordinate");
-            assert!(point3 > point2, "Point3 should be greater than Point2 based on x-coordinate");
-        }
-    }
-```
 
 # Conclusion
 
