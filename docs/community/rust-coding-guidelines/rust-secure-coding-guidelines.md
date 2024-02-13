@@ -66,13 +66,14 @@ Never use `unsafe` blocks unless as a last resort. Justify their use in a commen
       unsafe { *x }
   )
 ```
+
 ```rust
   use std::ptr::NonNull;
   let a = &mut 42;
 
   // SAFETY: references are guaranteed to be non-null.
   let ptr = unsafe { NonNull::new_unchecked(a) };
-````
+```
 
 ### Integer Overflows
 
