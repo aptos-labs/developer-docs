@@ -36,22 +36,6 @@ Apply `rustfix` for compiler warnings and edition transitions, but verify the au
 
 Document safety invariants and security considerations in code, especially for public and `unsafe` functions.
 
-````rust
-  foo(
-      // SAFETY:
-      // This is a valid safety comment
-      unsafe { *x }
-  )
-  ```
-
-  ```rust
-  use std::ptr::NonNull;
-  let a = &mut 42;
-
-  // SAFETY: references are guaranteed to be non-null.
-  let ptr = unsafe { NonNull::new_unchecked(a) };
-````
-
 ## Libraries
 
 ### Crate Quality and Security
@@ -74,6 +58,21 @@ Be aware of Cargo's feature unification process. When multiple dependencies requ
 ### Unsafe Code
 
 Never use `unsafe` blocks unless as a last resort. Justify their use in a comment, detailing how the code is effectively safe to deploy.
+
+```rust
+  foo(
+      // SAFETY:
+      // This is a valid safety comment
+      unsafe { *x }
+  )
+```
+```rust
+  use std::ptr::NonNull;
+  let a = &mut 42;
+
+  // SAFETY: references are guaranteed to be non-null.
+  let ptr = unsafe { NonNull::new_unchecked(a) };
+````
 
 ### Integer Overflows
 
