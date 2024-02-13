@@ -110,7 +110,7 @@ In the majority of scenarios, manual implementation is unnecessary. In Rust, nea
 Ensure the implementation of standard comparison traits respects documented invariants.
 In the context of implementing standard comparison traits (like Eq, PartialEq, Ord, PartialOrd in Rust), respecting documented invariants means that the implementation of these traits should adhere to the properties and expectations defined by those invariants. For instance, if an invariant states that an object's identity is determined by certain fields, comparisons (equality, greater than, less than, etc.) must only consider those fields and ignore others. This ensures consistency, predictability, and correctness in how objects are compared, sorted, or considered equal within the Aptos Core.
 
-> The ANSSI resource extensively covers the matter [Appendix](#Appendix).
+> The ANSSI resource extensively covers the matter [References](#references).
 
 ### Enums
 
