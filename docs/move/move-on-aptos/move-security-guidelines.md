@@ -1,26 +1,26 @@
 ---
-title: "Move Security Guidelines"
+title: "Security"
 ---
 
-# Move Security Guidelines
+## Security Guidelines
 
-# Introduction
+## Introduction
 
 The Move language is designed with security and inherently offers several features including a type system and a linear logic. Despite this, its novelty and the intricacies of some business logic mean that developers might not always be familiar with Move's secure coding patterns, potentially leading to bugs.
 
 This guide addresses this gap by detailing common anti-patterns and their secure alternatives. It provides practical examples to illustrate how security issues can arise and recommends best practices for secure coding. This guide aims to sharpen developers' understanding of Move's security mechanisms and ensure the robust development of smart contracts.
 
-# Access Control
+## Access Control
 
 ---
 
-## Object Access Control
+### Object Access Control
 
 Accepting a `&signer` is not always sufficient for access control purposes. Be sure to assert that the signer is the expected account, especially when performing sensitive operations.
 
 Users without proper authorization can execute privileged actions.
 
-### Example Insecure Code
+#### Example Insecure Code
 
 This code snippet allows any user invoking the `delete` function to remove an `Object`, without verifying that the caller has the necessary permissions.
 
@@ -34,7 +34,7 @@ public fun delete(user: &signer, obj: Object) {
 }
 ```
 
-### Example Secure Code
+#### Example Secure Code
 
 A better alternative is to use the global storage provided by Move, by directly borrowing data off of `signer::address_of(signer)`. This approach ensures robust access control, as it exclusively accesses data contained within the address of the signer of the transaction. This method minimizes the risk of access control errors, ensuring that only the data owned by the `signer` can be manipulated.
 
@@ -48,7 +48,7 @@ public fun delete(user: &signer) {
 }
 ```
 
-## Function visibility
+### Function visibility
 
 Adhere to the principle of least privilege:
 
@@ -111,21 +111,21 @@ public(friend) entry sample_function() { ... }
 
 In this case `sample_function` can be called by both the Aptos CLI/SDK by any module declared as a friend.
 
-### Impact
+#### Impact
 
 Adhering to this principle ensures that functions are not over-exposed, restricting the scope of function access to only what is necessary for the business logic.
 
-# Types and Data Structures
+## Types and Data Structures
 
 ---
 
-## Generics type check
+### Generics type check
 
 Generics can be used to define functions and structs over different input data types. When using them, ensure that the generic types are valid and what’s expected. [Read more](https://aptos.dev/move/book/generics/) about generics.
 
 Unchecked generics can lead to unauthorized actions or transaction aborts, potentially compromising the integrity of the protocol.
 
-### Example Insecure Code
+#### Example Insecure Code
 
 The code below outlines a simplified version of a flash loan.
 
@@ -154,9 +154,9 @@ public fun repay_flash_loan<T>(rec: Receipt, coins: Coin<T>) {
 }
 ```
 
-### Example Secure Code
+#### Example Secure Code
 
-The Aptos Framework sample below creates a key-value table consisting of two generic types `K` and `V` . Its related `add` functions accepts as parameters a `Table<K, V>` object, a `key`, and a `value` of types `K` and `V` . The `phantom` syntax ensures that the key and value types cannot be different than those in the table, preventing type mismatches. [Read more](https://diem.github.io/move/generics.html#phantom-type-parameters) about `phantom` type parameters.
+The Aptos Framework sample below creates a key-value table consisting of two generic types `K` and `V` . Its related `add` functions accepts as parameters a `Table<K, V>` object, a `key`, and a `value` of types `K` and `V` . The `phantom` syntax ensures that the key and value types cannot be different than those in the table, preventing type mismatches. [Read more](https://aptos.dev/move/book/generics/#phantom-type-parameters) about `phantom` type parameters.
 
 ```rust
 struct Table<phantom K: copy + drop, phantom V> has store {
@@ -190,7 +190,7 @@ public fun repay_flash_loan<T>(rec: Receipt<T>, coins: Coin<T>){
 }
 ```
 
-## Resource management and Unbounded Execution
+### Resource management and Unbounded Execution
 
 Effective resource management and unbounded execution prevention are important for maintaining security and gas efficiency in protocol. It's essential to consider these aspects in contract design:
 
@@ -199,11 +199,11 @@ Effective resource management and unbounded execution prevention are important f
 3. Keep module or package-related information within Objects, separate from user data.
 4. Instead of combining all user operations in a single shared global space, separating them by individual users.
 
-### Impact
+#### Impact
 
 The negligence of these aspects allowing an attacker to deplete the gas and abort the transaction. This can block application functionalities.
 
-### Example Insecure Code
+#### Example Insecure Code
 
 The code below shows a loop iterating over every open order and could potentially be blocked by registering many orders:
 
@@ -225,7 +225,7 @@ public fun get_order_by_id(order_id: u64): Option<Order> acquires OrderStore{
 public entry fun create_order(buyer: &signer) { ... }
 ```
 
-### Example Secure Code
+#### Example Secure Code
 
 It's recommended to structure the order management system in a way that each user's orders are stored in their respective account rather than in a single global order store. This approach not only enhances security by isolating user data but also improves scalability by distributing the data load. Instead of using **`borrow_global_mut<OrderStore>(@admin)`** which accesses a global store, the orders should be accessed through the individual user's account.
 
@@ -242,11 +242,11 @@ public fun get_order_by_id(user: &signer order_id: u64): Option<Order> acquires 
 
 It is also advisable to utilize efficient data structures tailored to the specific needs of the operations being performed. For instance, a **`SmartTable`** can be particularly effective in this context.
 
-# Arithmetic Operations
+## Arithmetic Operations
 
 ---
 
-## Division Precision
+### Division Precision
 
 Arithmetic operations that decrease precision by rounding down could lead protocols to underreport the outcome of these computations.
 
@@ -254,7 +254,7 @@ Move includes six unsigned integer data types: `u8`, `u16`, `u32`, `u64`, `u128`
 
 Rounding errors in calculations can have wide-ranging impacts, potentially causing financial imbalances, data inaccuracies, and flawed decision-making processes. These errors can result in a loss of revenue, give undue benefits, or even pose safety risks, depending on the context. Accurate and precise computation is essential to maintain system reliability and user confidence.
 
-### Example Insecure Code
+#### Example Insecure Code
 
 ```rust
 public fun calculate_protocol_fees(size: u64): (u64) {
@@ -264,7 +264,7 @@ public fun calculate_protocol_fees(size: u64): (u64) {
 
 If `size` is less than `10000 / PROTOCOL_FEE_BPS`, the fee will round down to 0, effectively enabling a user to interact with the protocol without incurring any fees.
 
-### Example Secure Code
+#### Example Secure Code
 
 The following examples outlines two distinct strategies to mitigate the issue in the code:
 
@@ -289,7 +289,7 @@ public fun calculate_protocol_fees(size: u64): (u64) {
 }
 ```
 
-## Integer Considerations
+### Integer Considerations
 
 In Move, the security around integer operations is designed to prevent overflow and underflow which can cause unexpected behavior or vulnerabilities. Specifically:
 
@@ -302,15 +302,15 @@ In Move, the security around integer operations is designed to prevent overflow 
 
 Bad operations could unexpectedly alter the correct execution of the smart contract, either by causing an unwanted abort or by calculating inaccurate data.
 
-# Aptos Objects
+## Aptos Objects
 
 ---
 
-## ConstructorRef leak
+### ConstructorRef leak
 
 When creating objects ensure to never expose the object’s `ConstructorRef` as it allows adding resources to an object. A `ConstructorRef` can also be used to generate other capabilities (or "Refs") that are used to alter or transfer the ownership the object. [Read more](https://aptos.dev/standards/aptos-object/#object-capabilities-refs) about Objects capabilities.
 
-### Example Vulnerable code
+#### Example Vulnerable code
 
 For example, if a `mint` function returns the `ConstructorRef` for an NFT, it can be transformed to a `TransferRef` , stored in global storage, and can allow the original owner to transfer the NFT back after it’s being sold.
 
@@ -328,7 +328,7 @@ public fun mint(creator: &signer): ConstructorRef {
 }
 ```
 
-### Example Secure Code
+#### Example Secure Code
 
 Don’t return `CostructorRef` in the `mint` function:
 
@@ -345,13 +345,13 @@ public fun mint(creator: &signer) {
 }
 ```
 
-## Resource Groups
+### Resource Groups
 
 In the Aptos Framework, a Resource Group is designed to cluster related resources at a single address. This approach aims to streamline data handling and improves cost efficiency.
 
 It's important to remember that modifications to one object within a resource group can influence the entire collection. For example, transferring an object implies the transfer of all its group members. [Read more](https://aptos.dev/standards/aptos-object/) about Aptos Objects.
 
-### Example Insecure Code
+#### Example Insecure Code
 
 The `mint_two` function lets `sender` create a `Monkey` for themselves and send a `Toad` to `recipient` . As `Monkey` and `Toad` belong to the same group the result is that both objects’ owers is now the `recipient` .
 
@@ -377,7 +377,7 @@ fun mint_two(sender: &signer, recipient: &signer) {
 }
 ```
 
-### Example Secure Code
+#### Example Secure Code
 
 In this example, a solution could be to not user Resource Groups.
 
@@ -397,7 +397,7 @@ fun mint_two(sender: &signer, recipient: &signer) {
 }
 ```
 
-## Move Abilities
+### Move Abilities
 
 Move's abilities are a set of permissions that control the possible actions on data structures within the language. Smart contract developers must handle these capabilities with care, ensuring they're only assigned where necessary and understanding their implications to prevent security vulnerabilities.
 
@@ -412,7 +412,7 @@ Move's abilities are a set of permissions that control the possible actions on d
 
 Incorrect usage of abilities can lead to security issues such as unauthorized copying of sensitive data (`copy`), resource leaks (`drop`), and global storage mishandling (`store`).
 
-### Example Insecure Code
+#### Example Insecure Code
 
 ```rust
 struct Token has copy { }
@@ -422,17 +422,17 @@ struct FlashLoan has drop { }
 - `copy` capability for a `Token` allows tokens to be replicated, potentially enabling double-spending and inflation of the token supply, which could devalue the currency.
 - Allowing the `drop` capability in a `FlashLoan` struct could permit borrowers to get out of their loan by destroying it before repayment.
 
-# Business logic
+## Business logic
 
 ---
 
-## Front-running
+### Front-running
 
 Front-running involves executing transactions ahead of others by exploiting knowledge of future actions already made by others. This tactic gives front-runners an unfair advantage, as they can anticipate and benefit from the outcomes of these pending transactions.
 
 Front-running can undermine the fairness and integrity of a decentralized application. It can lead to loss of funds, unfair advantages in games, manipulation of market prices, and a general loss of trust in the platform
 
-### Example Insecure Code
+#### Example Insecure Code
 
 In a lottery scenario, users participate by selecting a number from 1 to 100. At a certain point, the game administrator invokes the function `set_winner_number` to set the winning number. Subsequently, in a separate transaction, the administrator reviews all player bets to determine the winner via `evaluate_bets_and_determine_winners`.
 
@@ -470,7 +470,7 @@ public fun evaluate_bets_and_determine_winners(admin: &signer) acquires LotteryI
 }
 ```
 
-### Example Secure Code
+#### Example Secure Code
 
 An effective strategy to avoid front-running could be implementing a `finalize_lottery` function that reveals the answer and concludes the game within a single transaction, and making the other functions private. This approach guarantees that as soon as the answer is disclosed, the system no longer accepts any new answers, thereby eliminating the chance for front-running.
 
@@ -485,25 +485,25 @@ fun set_winning_number(admin: &signer, winning_number: u64) { }
 fun evaluate_bets_and_determine_winners(admin: &signer) acquires LotteryInfo, Bets { }
 ```
 
-## Price Oracle Manipulation
+### Price Oracle Manipulation
 
 In Defi applications, price oracles that utilize the liquidity ratio of tokens in a pair to determine prices for transactions can be vulnerable to manipulation. This susceptibility arises from the fact that the liquidity ratio can be influenced by market participants who hold a significant amount of tokens. When these participants strategically increase or decrease their token holdings, it can impact the liquidity ratio and consequently affect the prices determined by the price oracle, potentially draining the pool.
 
 We recommend to use multiple oracles to determine prices.
 
-### Secure Code Example
+#### Secure Code Example
 
 Thala, for example, utilizes a tiered-oracle design. The system has a primary and a secondary oracle. Should one of the oracles fail, the other one serves as a backup based on a sophisticated switching logic. The system is designed with adversarial situations in mind, and strives to provide highly accurate price feeds with minimal governance interaction all the time.
 
 For more in-depth information, refer to [Thala's documentation](https://docs.thala.fi/thala-protocol-design/move-dollar-mod/oracles).
 
-## Token Identifier Collision
+### Token Identifier Collision
 
 When dealing with tokens, ensure that the method for comparing token structs to establish a deterministic ordering does not lead to collisions. Concatenating the address, module, and struct names into a vector is insufficient, as it does not differentiate between similar names that should be treated as unique.
 
 As a consequence, the protocol may erroneously reject legitimate swap pairs due to collisions in token struct comparisons. This oversight could compromise the integrity of swap operations, leading to a loss of funds.
 
-### Example Insecure Code
+#### Example Insecure Code
 
 The `get_pool_address` function creates a unique address for a liquidity pool associated with trading pairs of fungible assets. It generates and returns an address that serves as a distinct identifier for the liquidity pool of the specified two tokens.
 
@@ -520,7 +520,7 @@ public fun get_pool_address(token_1: Object<Metadata>, token_2: Object<Metadata>
 }
 ```
 
-### Example Secure Code
+#### Example Secure Code
 
 `object::object_address` returns an unique identifier for each `Object<Metadata>`
 
@@ -533,17 +533,17 @@ public fun get_pool_address(token_1: Object<Metadata>, token_2: Object<Metadata>
 }
 ```
 
-# Operations
+## Operations
 
 ---
 
-## Pausing functionality
+### Pausing functionality
 
 Protocols should have the ability to pause operations effectively. For immutable protocols, a built-in pause functionality is necessary. Upgradable protocols can achieve pausing either through smart contract functionality or via protocol upgrades. Teams should be equipped with automation for the quick and efficient execution of this process.
 
 The absence of a pausing mechanism can lead to prolonged exposure to vulnerabilities, potentially resulting in significant losses. An efficient pausing functionality allows for prompt response to security threats, bugs, or other critical issues, minimizing the risk of exploitation and ensuring the safety of user assets and protocol integrity.
 
-### Example Secure Code
+#### Example Secure Code
 
 Example of how to integrate a pause functionality
 
@@ -569,6 +569,6 @@ public fun main(user: &signer) {
 }
 ```
 
-## Smart contract publishing key management
+### Smart contract publishing key management
 
 Using the same account for testnet and mainnet poses a security risk, as testnet private keys, often stored in less secure environments (ex. laptops), can be more easily exposed or leaked. An attacker that can obtain the private key for the the testnet smart contract would be able to upgrade the mainnet one.
