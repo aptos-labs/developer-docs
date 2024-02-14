@@ -5,7 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  follow-redirects: '>=1.15.4'
   semver: '>=7.5.4'
 
 dependencies:
@@ -11975,7 +11974,7 @@ packages:
       mime-format: 2.0.1
       mime-types: 2.1.35
       postman-url-encoder: 3.0.5
-      semver: 7.6.0
+      semver: 7.5.4
       uuid: 8.3.2
     dev: false
 
@@ -12997,6 +12996,14 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       semver: 7.6.0
+    dev: false
+
+  /semver@7.5.4:
+    resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      lru-cache: 6.0.0
     dev: false
 
   /semver@7.6.0:
