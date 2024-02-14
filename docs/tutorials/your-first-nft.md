@@ -31,11 +31,18 @@ Clone the `aptos-ts-sdk` repo:
 ```bash
 git clone git@github.com:aptos-labs/aptos-ts-sdk.git
 ```
+Navigate to the Typescript repo and buiid it:
+
+```bash
+cd aptos-ts-sdk/
+pnpm install
+pnpm build
+```
 
 Navigate to the Typescript SDK examples directory:
 
 ```bash
-cd aptos-ts-sdk/examples/typescript-esm
+cd examples/typescript-esm
 ```
 
 Install the necessary dependencies:
