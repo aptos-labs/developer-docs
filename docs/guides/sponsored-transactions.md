@@ -73,6 +73,6 @@ Prior to framework release 1.8, all signers were required to know the actual fee
 
 These are demonstrations of sponsored transactions:
 
-- The TypeScript SDK has an example in [simple_sponsored_transaction.ts](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/simple_sponsored_transaction.ts)
+- The TypeScript SDK has [several examples](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript-esm/sponsored_transactions)
 - The Python SDK has an example in [fee_payer_transfer_coin.py](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/fee_payer_transfer_coin.py).
 - The Rust SDK has a test case in [the API tests](https://github.com/aptos-labs/aptos-core/blob/0a62e54e13bc5da604ceaf39efed5c012a292078/api/src/tests/transactions_test.rs#L255).

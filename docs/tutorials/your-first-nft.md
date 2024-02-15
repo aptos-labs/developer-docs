@@ -16,7 +16,7 @@ This tutorial describes how to create and transfer non-fungible assets on the Ap
 
 Install your preferred SDK from the below list:
 
-- [TypeScript SDK](../sdks/new-ts-sdk/index.md)
+- [TypeScript SDK](../sdks/ts-sdk/index.md)
 - [Python SDK](../sdks/python-sdk.md)
 
 ---
@@ -688,6 +688,6 @@ console.log(`Bob's digital assets balance: ${bobDigitalAssetsAfter.length}`);
 ## Supporting documentation
 
 - [Account basics](../concepts/accounts.md)
-- [TypeScript SDK](../sdks/new-ts-sdk/index.md)
+- [TypeScript SDK](../sdks/ts-sdk/index.md)
 - [Python SDK](../sdks/python-sdk.md)
 - [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)

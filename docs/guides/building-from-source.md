@@ -135,28 +135,7 @@ If you used `scripts/dev_setup.sh` for macOS or Linux setup, additional tools ar
 
 #### TypeScript
 
-Typically only needed for _developing_ the TypeScript SDK.
-[Using the released SDK can be achieved from npm/pnpm/yarn](../sdks/ts-sdk/index).
-
-```bash
-scripts/dev_setup.sh -J
-```
-
-#### PostgreSQL
-
-Used in the Indexer.
-
-```bash
-scripts/dev_setup.sh -P
-```
-
-#### Move Prover Tools
-
-```bash
-scripts/dev_setup.sh -y -p
-```
-
-Now your basic Aptos development environment is ready. Head over to our [Developer Tutorials](../tutorials/index.md) to get started in Aptos.
+[Using the released SDK can be achieved from npm/pnpm/yarn](/sdks/ts-sdk/index.md).
 
 ## Building Aptos
 

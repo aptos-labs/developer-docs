@@ -82,7 +82,7 @@ Either of these methods will expose a [REST API service](../apis/fullnode-rest-a
 
 Aptos currently provides three SDKs:
 
-1. [Typescript](../sdks/new-ts-sdk/index.md)
+1. [Typescript](../sdks/ts-sdk/index.md)
 2. [Python](../sdks/python-sdk.md)
 3. [Rust](../sdks/rust-sdk.md)
 
