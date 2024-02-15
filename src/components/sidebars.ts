@@ -203,6 +203,7 @@ const sidebars: SidebarsConfig = {
             "move/move-on-aptos/cli",
             "move/move-on-aptos/cryptography",
             "move/move-on-aptos/gas-profiling",
+            "move/move-on-aptos/move-security-guidelines",
           ],
         },
         {
