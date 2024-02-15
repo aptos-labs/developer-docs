@@ -15,7 +15,7 @@ In this guide, we show examples of how to rotate an account's authentication key
 Here are the installation links for the SDKs we will cover in this example:
 
 - [Aptos CLI](../../tools/aptos-cli)
-- [Typescript SDK](../../sdks/ts-sdk/index)
+- [Typescript SDK](/sdks/ts-sdk/index.md)
 - [Python SDK](../../sdks/python-sdk)
 
 :::warning

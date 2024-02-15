@@ -40,7 +40,7 @@ Currently, Aptos supports only a single, unified identifier for an account. Acco
 
 ## Creating an account
 
-When a user requests to create an account, for example by using the [Aptos SDK](https://aptos-labs.github.io/ts-sdk-doc/classes/AptosAccount.html), the following steps are executed:
+When a user requests to create an account, for example by using the [Aptos SDK](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-latest/classes/Account.html), the following steps are executed:
 
 - Select the authentication scheme for managing the user's account, e.g., Ed25519 or Secp256k1 ECDSA.
 - Generate a new private key, public key pair.

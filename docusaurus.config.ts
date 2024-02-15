@@ -386,6 +386,10 @@ const config: Config = {
             from: "/nodes/deployments",
             to: "/nodes/networks",
           },
+          {
+            from: "/sdks/new-ts-sdk",
+            to: "/sdks/ts-sdk",
+          },
         ],
         // Create redirects for all the move pages
         createRedirects(existingPath) {

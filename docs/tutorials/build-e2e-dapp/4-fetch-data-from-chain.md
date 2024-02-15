@@ -26,7 +26,7 @@ import { Aptos } from "@aptos-labs/ts-sdk";
 The TypeScript SDK provides us with a `Aptos` class which is the main entry point into Aptos's API. By initializing `Aptos` we can query the Aptos chain.
 
 :::tip
-Read more about the [`Aptos`](../../sdks/new-ts-sdk/sdk-configuration.md) class in the Aptos TypeScript SDK docs.
+Read more about the [`Aptos`](../../sdks/ts-sdk/sdk-configuration.md) class in the Aptos TypeScript SDK docs.
 :::
 
 1. In the `App.tsx` file, add:

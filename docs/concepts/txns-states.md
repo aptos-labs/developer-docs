@@ -62,7 +62,7 @@ Within a given transaction, the two most common types of payloads include:
 - An entry point
 - [A script (payload)](../move/move-on-aptos/move-scripts)
 
-Currently, the SDKs [Python](https://aptos.dev/sdks/python-sdk) and [Typescript](https://aptos.dev/sdks/ts-sdk/index) support both. This guide points out many of those entry points, such as `coin::transfer` and `aptos_account::create_account`.
+Currently, the SDKs [Python](/sdks/python-sdk.md) and [Typescript](/sdks/ts-sdk/index.md) support both. This guide points out many of those entry points, such as `coin::transfer` and `aptos_account::create_account`.
 
 All operations on the Aptos blockchain should be available via entry point calls. While one could submit multiple transactions calling entry points in series, many such operations may benefit from being called atomically from a single transaction. A script payload transaction can call any entry point or public function defined within any module.
 
