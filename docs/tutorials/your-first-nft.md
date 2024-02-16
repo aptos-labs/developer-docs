@@ -31,6 +31,7 @@ Clone the `aptos-ts-sdk` repo:
 ```bash
 git clone git@github.com:aptos-labs/aptos-ts-sdk.git
 ```
+
 Navigate to the Typescript repo and buiid it:
 
 ```bash
