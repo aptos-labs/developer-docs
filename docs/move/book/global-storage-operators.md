@@ -145,7 +145,7 @@ module m {
 
 If a function touches multiple resources, it needs multiple `acquires`:
 
-```move=
+```move
 address 0x42 {
 module two_resources {
     struct R1 has key { f: u64 }
@@ -160,7 +160,7 @@ module two_resources {
 
 The `acquires` annotation does not take generic type parameters into account:
 
-```move=
+```move
 address 0x42 {
 module m {
     struct R<T> has key { t: T }
@@ -194,7 +194,7 @@ Move prohibits returning global references and requires the `acquires` annotatio
 
 This example illustrates how the Move type system uses `acquires` to prevent a dangling reference:
 
-```move=
+```move
 address 0x42 {
 module dangling {
     struct T has key { f: u64 }
@@ -220,7 +220,7 @@ Fortunately, this cannot happen because the type system will reject this program
 
 The restriction on returning global references prevents a similar, but even more insidious problem:
 
-```move=
+```move
 address 0x42 {
 module m1 {
     struct T has key {}

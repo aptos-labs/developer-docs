@@ -133,7 +133,7 @@ assert!(vector::pop_back(&mut v) == 6, 42);
 assert!(vector::pop_back(&mut v) == 5, 42);
 ```
 
-## Destroying and copying `vector`s
+## Destroying and copying vectors
 
 Some behaviors of `vector<T>` depend on the abilities of the element type, `T`. For example, vectors
 containing elements that do not have `drop` cannot be implicitly discarded like `v` in the example
