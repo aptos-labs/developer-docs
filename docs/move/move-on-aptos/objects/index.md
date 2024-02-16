@@ -6,8 +6,13 @@ import CodeBlock from '@theme/CodeBlock';
 
 # What are objects?
 
-The Object model allows Move to represent a set of resources stored at an
-address with resource control and ownership management.
+The Move language controls access to resources using the store ability and
+accounts. The Object model provides a way to associate a collection of resources
+with a single address, using centralized resource control and ownership
+management. An Object is a container for resources at a single address which can
+be managed and accessed as a group for efficiency. The contract creating an
+Object can define custom behaviors around changes and transfers of those
+resources.
 
 It's simply represented as an `ObjectCore` struct, which keeps track of the
 owner of the `Object` and transfer permissions. Along with the ability to store

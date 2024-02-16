@@ -4,7 +4,7 @@ title: "Configuring objects"
 
 # Configuring objects
 
-At this point, you have an object, but how do you specialize it. Objects must
+At this point, you have an object, but how do you specialize it? Objects must
 be configured for their capabilities at creation time. If they are not
 configured with the correct capabilities at creation time, it will be impossible
 to change later.
