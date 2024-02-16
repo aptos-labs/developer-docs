@@ -266,7 +266,7 @@ const themeConfig: Preset.ThemeConfig = {
   prism: {
     theme: themes.github,
     darkTheme: themes.dracula,
-    additionalLanguages: ["rust"],
+    additionalLanguages: ["rust", "python"],
   },
   algolia: {
     appId: "HM7UY0NMLG",
