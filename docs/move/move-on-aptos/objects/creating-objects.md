@@ -30,7 +30,7 @@ way to make most objects.
 
 ```move
 module my_addr::object_playground {
-  use aptos_framework::signer;
+  use std::signer;
   use aptos_framework::object;
 
   entry fun create_my_object(caller: &signer) {
@@ -56,7 +56,7 @@ easy to later
 
 ```move
 module my_addr::object_playground {
-  use aptos_framework::signer;
+  use std::signer;
   use aptos_framework::object;
 
   /// Seed for my named object, must be globally unique to the creating account
@@ -84,7 +84,7 @@ would want to not be deleted.
 
 ```move
 module my_addr::object_playground {
-  use aptos_framework::signer;
+  use std::signer;
   use aptos_framework::object;
 
   entry fun create_my_object(caller: &signer) {
