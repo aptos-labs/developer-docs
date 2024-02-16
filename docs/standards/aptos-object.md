@@ -11,6 +11,8 @@ The [Object model](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move
 
 In the object model, an NFT or token can place common token data within a Token resource, object data within an ObjectCore resource, and then specialize into additional resources as necessary. For example, a Player object could define a player within a game and be an NFT at the same time. The ObjectCore itself stores both the address of the current owner and the appropriate data for creating event streams.
 
+For more usage based details checkout [Building With Objects](/move/move-on-aptos/objects/index.md).
+
 ## Comparison with the account resources model
 
 The existing Aptos data model emphasizes the use of the store ability within Move. Store allows for a struct to exist within any struct that is stored on-chain. As a result, data can live anywhere within any struct and at any address. While this provides great flexibility it has many limitations:
