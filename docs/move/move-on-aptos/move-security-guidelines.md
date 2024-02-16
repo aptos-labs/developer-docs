@@ -2,8 +2,6 @@
 title: "Security"
 ---
 
-## Security Guidelines
-
 ## Introduction
 
 The Move language is designed with security and inherently offers several features including a type system and a linear logic. Despite this, its novelty and the intricacies of some business logic mean that developers might not always be familiar with Move's secure coding patterns, potentially leading to bugs.
