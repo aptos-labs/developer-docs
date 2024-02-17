@@ -22,7 +22,7 @@ Users without proper authorization can execute privileged actions.
 
 This code snippet allows any user invoking the `delete` function to remove an `Object`, without verifying that the caller has the necessary permissions.
 
-```rust
+```move
 struct Object has key{
 	data: vector<u8>
 }
@@ -36,7 +36,7 @@ public fun delete(user: &signer, obj: Object) {
 
 A better alternative is to use the global storage provided by Move, by directly borrowing data off of `signer::address_of(signer)`. This approach ensures robust access control, as it exclusively accesses data contained within the address of the signer of the transaction. This method minimizes the risk of access control errors, ensuring that only the data owned by the `signer` can be manipulated.
 
-```rust
+```move
 struct Object has key{
 	data: vector<u8>
 }
@@ -59,13 +59,13 @@ Function visibility determines who can call a function. It's a way to enforce ac
 
 - private functions are only callable within the module they are defined in. They're not accessible from other modules or from the CLI/SDK, which prevents unintended interactions with contract internals.
 
-```rust
+```move
 fun sample_function() { ... }
 ```
 
 - `public(friend)` functions expand on this by allowing specified _friends_ modules to call the function, enabling controlled interaction between different contracts while still restricting general access.
 
-```rust
+```move
 friend package::module;
 
 public(friend) fun sample_function() { ... }
@@ -73,20 +73,20 @@ public(friend) fun sample_function() { ... }
 
 - `public` functions are callable by any published module or script.
 
-```rust
+```move
 public fun sample_function() { ... }
 ```
 
 - `#[view]` decorated functions cannot alter storage; they only read data, providing a safe way to access information without risking state modification.
 
-```rust
+```move
 #[view]
 public fun read_only() { ... }
 ```
 
 - The `entry` modifier in Move is used to indicate entry points for transactions. Functions with the `entry` modifier serve as the starting point of execution when a transaction is submitted to the blockchain.
 
-```rust
+```move
 entry fun f(){}
 ```
 
@@ -103,7 +103,7 @@ This layered visibility ensures that only authorized entities can execute certai
 
 Note that it’s possible to combine `entry` with `public` or `public(friend)`
 
-```rust
+```move
 public(friend) entry sample_function() { ... }
 ```
 
@@ -131,7 +131,7 @@ In the `flash_loan<T>` function, a user can borrow a given amount of coins type 
 
 The `repay_flash_loan<T>` function accepts a `Receipt` and a `Coin<T>` as parameters. The function extracts the repayment amount from the `Receipt` and asserts that the value of the returned `Coin<T>` is greater than or equal to the amount specified in the `Receipt`, however there’s no check to ensure that the `Coin<T>` returned is the same as the `Coin<T>`that was initially loaned out, giving the ability to repay the loan with a coin of lesser value.
 
-```rust
+```move
 struct Coin<T> {
     amount: u64
 }
@@ -156,7 +156,7 @@ public fun repay_flash_loan<T>(rec: Receipt, coins: Coin<T>) {
 
 The Aptos Framework sample below creates a key-value table consisting of two generic types `K` and `V` . Its related `add` functions accepts as parameters a `Table<K, V>` object, a `key`, and a `value` of types `K` and `V` . The `phantom` syntax ensures that the key and value types cannot be different than those in the table, preventing type mismatches. [Read more](https://aptos.dev/move/book/generics/#phantom-type-parameters) about `phantom` type parameters.
 
-```rust
+```move
 struct Table<phantom K: copy + drop, phantom V> has store {
     handle: address,
 }
@@ -168,7 +168,7 @@ public fun add<K: copy + drop, V>(table: &mut Table<K, V>, key: K, val: V) {
 
 Given the by-design type checking provided by the Move language, we can refine the code of our flash loan protocol. The code below ensures that the coins passed to `repay_flash_loan` match the originally-loaned coins.
 
-```rust
+```move
 struct Coin<T> {
     amount: u64
 }
@@ -205,7 +205,7 @@ The negligence of these aspects allowing an attacker to deplete the gas and abor
 
 The code below shows a loop iterating over every open order and could potentially be blocked by registering many orders:
 
-```rust
+```move
 public fun get_order_by_id(order_id: u64): Option<Order> acquires OrderStore{
     let order_store = borrow_global_mut<OrderStore>(@admin);
     let i = 0;
@@ -227,7 +227,7 @@ public entry fun create_order(buyer: &signer) { ... }
 
 It's recommended to structure the order management system in a way that each user's orders are stored in their respective account rather than in a single global order store. This approach not only enhances security by isolating user data but also improves scalability by distributing the data load. Instead of using **`borrow_global_mut<OrderStore>(@admin)`** which accesses a global store, the orders should be accessed through the individual user's account.
 
-```rust
+```move
 public fun get_order_by_id(user: &signer order_id: u64): Option<Order> acquires OrderStore{
     let order_store = borrow_global_mut<OrderStore>(signer::address_of(user));
      if (smart_table::contains(&order_store.orders, order_id)) {
@@ -257,7 +257,7 @@ Incorrect usage of abilities can lead to security issues such as unauthorized co
 
 #### Example Insecure Code
 
-```rust
+```move
 struct Token has copy { }
 struct FlashLoan has drop { }
 ```
@@ -279,7 +279,7 @@ Rounding errors in calculations can have wide-ranging impacts, potentially causi
 
 #### Example Insecure Code
 
-```rust
+```move
 public fun calculate_protocol_fees(size: u64): (u64) {
     return size * PROTOCOL_FEE_BPS / 10000
 }
@@ -293,7 +293,7 @@ The following examples outlines two distinct strategies to mitigate the issue in
 
 - Set a minimum order size threshold that is greater than `10000 / PROTOCOL_FEE_BPS`, ensuring that the fee will never round down to zero.
 
-```rust
+```move
 const MIN_ORDER_SIZE: u64 = 10000 / PROTOCOL_FEE_BPS + 1;
 
 public fun calculate_protocol_fees(size: u64): (u64) {
@@ -304,7 +304,7 @@ public fun calculate_protocol_fees(size: u64): (u64) {
 
 - Check that fees are non-zero and handle the situation specifically, for example by set a minimum fee or rejecting the transaction.
 
-```rust
+```move
 public fun calculate_protocol_fees(size: u64): (u64) {
     let fee = size * PROTOCOL_FEE_BPS / 10000;
     assert!(fee > 0, 0);
@@ -337,7 +337,7 @@ When creating objects ensure to never expose the object’s `ConstructorRef` as 
 
 For example, if a `mint` function returns the `ConstructorRef` for an NFT, it can be transformed to a `TransferRef` , stored in global storage, and can allow the original owner to transfer the NFT back after it’s being sold.
 
-```rust
+```move
 public fun mint(creator: &signer): ConstructorRef {
     let constructor_ref = token::create_named_token(
         creator,
@@ -355,7 +355,7 @@ public fun mint(creator: &signer): ConstructorRef {
 
 Don’t return `CostructorRef` in the `mint` function:
 
-```rust
+```move
 public fun mint(creator: &signer) {
     let constructor_ref = token::create_named_token(
         creator,
@@ -378,7 +378,7 @@ It's important to remember that modifications to one object within a resource gr
 
 The `mint_two` function lets `sender` create a `Monkey` for themselves and send a `Toad` to `recipient` . As `Monkey` and `Toad` belong to the same group the result is that both objects’ owers is now the `recipient` .
 
-```rust
+```move
 #[resource_group(scope = global)]
 struct ObjectGroup { }
 
@@ -404,7 +404,7 @@ fun mint_two(sender: &signer, recipient: &signer) {
 
 In this example, a solution could be to not user Resource Groups.
 
-```rust
+```move
 struct Monkey has store, key { }
 struct Toad has store, key { }
 
@@ -436,7 +436,7 @@ In a lottery scenario, users participate by selecting a number from 1 to 100. At
 
 A front-runner observing the winning number set by `set_winner_number` could attempt to submit a late bet or modify an existing bet to match the winning number before `evaluate_bets_and_determine_winners` executes.
 
-```rust
+```move
 struct LotteryInfo {
     winning_number: u8,
     is_winner_set: bool,
@@ -472,7 +472,7 @@ public fun evaluate_bets_and_determine_winners(admin: &signer) acquires LotteryI
 
 An effective strategy to avoid front-running could be implementing a `finalize_lottery` function that reveals the answer and concludes the game within a single transaction, and making the other functions private. This approach guarantees that as soon as the answer is disclosed, the system no longer accepts any new answers, thereby eliminating the chance for front-running.
 
-```rust
+```move
 public fun finalize_lottery(admin: &signer, winning_number: u64) {
     set_winner_number(admin, winning_number);
     evaluate_bets_and_determine_winners(admin);
@@ -507,7 +507,7 @@ The `get_pool_address` function creates a unique address for a liquidity pool as
 
 However, users have the freedom to create an `Object<Metadata>` with any symbol they choose. This flexibility could lead to the creation of `Object<Metadata>` instances that mimic other existing instances. This issue might result in a seed collision, which in turn could cause a collision in the generation of the pool address.
 
-```rust
+```move
 public fun get_pool_address(token_1: Object<Metadata>, token_2: Object<Metadata>): address {
     let token_symbol = string::utf8(b"LP-");
     string::append(&mut token_symbol, fungible_asset::symbol(token_1));
@@ -522,7 +522,7 @@ public fun get_pool_address(token_1: Object<Metadata>, token_2: Object<Metadata>
 
 `object::object_address` returns an unique identifier for each `Object<Metadata>`
 
-```rust
+```move
 public fun get_pool_address(token_1: Object<Metadata>, token_2: Object<Metadata>): address {
     let seeds = vector[];
     vector::append(&mut seeds, bcs::to_bytes(&object::object_address(&token_1)));
@@ -545,7 +545,7 @@ The absence of a pausing mechanism can lead to prolonged exposure to vulnerabili
 
 Example of how to integrate a pause functionality
 
-```rust
+```move
 struct State {
     is_paused: bool,
 }
