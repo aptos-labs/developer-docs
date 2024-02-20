@@ -1,26 +1,17 @@
 ---
-title: "Run a Fullnode"
+title: "Run a Public Fullnode"
 slug: "public-fullnode"
 ---
 
-# Run a Fullnode
+# Run a Public Fullnode
 
-This section explains how to install a public fullnode to connect to the Aptos networks. See also the [external resources](../../community/external-resources.md) offered by your fellow node operators.
+This section explains how to deploy a public fullnode (PFN) to connect to the Aptos networks. You can learn more about
+the different types of nodes in the [Blockchain Deep Dive](../../concepts/blockchain.md) section.
 
-:::tip Default connection to devnet
-If you follow the default setup in this document, then your public fullnode will be connected to the Aptos devnet with a REST endpoint accessible on your computer at localhost:8080.
+:::tip Default connection to mainnet
+If you follow the default setup in this document, then your PFN will be connected to the Aptos mainnet. To connect
+to a different Aptos network, such as devnet or testnet, make sure you have the correct docker image tag, or source
+code branch if you build the binary directly.
 
-To connect to a different Aptos network, such as devnet or testnet, make sure you have the correct version of:
-
-- Docker image tag (e.g. devnet, testnet)
-- Source code branch (if you build the binary directly)
-
-You can find genesis and waypoint here ➜ https://github.com/aptos-labs/aptos-networks.
+You can find the genesis and waypoint files for all the networks, here ➜ https://github.com/aptos-labs/aptos-networks.
 :::
-
-- ### [Fullnode Using Aptos Source or Docker](fullnode-source-code-or-docker.md)
-- ### [Update Fullnode With New Releases](update-fullnode-with-new-releases.md)
-- ### [Network Identity For Fullnode](network-identity-fullnode.md)
-- ### [Fullnode Network Connections](fullnode-network-connections.md)
-- ### [Run a Fullnode on GCP](run-a-fullnode-on-gcp.md)
-- ### [Bootstrap a New Fullnode](bootstrap-fullnode.md)

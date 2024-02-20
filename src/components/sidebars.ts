@@ -499,7 +499,7 @@ const sidebars: SidebarsConfig = {
     "nodes/nodes-landing",
     {
       type: "category",
-      label: "Run a Validator",
+      label: "Run a Validator and VFN",
       link: { type: "doc", id: "nodes/validator-node/index" },
       collapsible: true,
       collapsed: true,
@@ -540,7 +540,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Run a Fullnode",
+      label: "Run a Public Fullnode",
       link: { type: "doc", id: "nodes/full-node/index" },
       collapsible: true,
       collapsed: true,

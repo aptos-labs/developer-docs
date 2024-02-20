@@ -56,7 +56,7 @@ Docker method has only been tested on Linux, Windows, and Intel macOS. If you ar
    Backup your `private-keys.yaml` somewhere safe. These keys are important for you to establish ownership of your node. **Never share private keys with anyone.**
    :::
 
-4. Configure validator information. You need to set up a static IP / DNS address (DNS is much preferred) which can be used by the node, and make sure the network / firewalls are properly configured to accept external connections. See [Network Identity For Fullnode](../../../full-node/network-identity-fullnode.md) for how to do this.
+4. Configure validator information. You need to set up a static IP / DNS address (DNS is much preferred) which can be used by the node, and make sure the network / firewalls are properly configured to accept external connections. See [Network Identity For PFNs](../../../full-node/network-identity-fullnode.md) for how to do this.
 
    ```bash
    cd ~/$WORKSPACE

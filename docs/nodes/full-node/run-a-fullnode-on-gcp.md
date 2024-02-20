@@ -227,7 +227,7 @@ You should see this:
 
 ### Static identity
 
-If you want to configure your node with a static identity, first see the [Network Identity For Fullnode](./network-identity-fullnode.md) for how to generate the keys, and then follow the below instructions to configure your Terraform file.
+If you want to configure your node with a static identity, first see the [Network Identity For PFNs](./network-identity-fullnode.md) for how to generate the keys, and then follow the below instructions to configure your Terraform file.
 
 1. Generate your own private key, and extract peer id, following the guide [Creating a static identity for a fullnode](./network-identity-fullnode.md#creating-a-static-identity-for-a-fullnode).
 

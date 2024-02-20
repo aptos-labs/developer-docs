@@ -9,7 +9,7 @@ When running a fullnode on an Aptos network, you can configure your node's
 network connections for a few different purposes. For example, you can add
 a seed peer to your node's configuration YAML to connect your node to a
 specific peer of your choosing. Or you can create a static network identity
-for your node to allow other nodes to connect to you, as described in [Network Identity For Fullnode](./network-identity-fullnode.md).
+for your node to allow other nodes to connect to you, as described in [Network Identity For PFNs](./network-identity-fullnode.md).
 
 This document describes how to configure the network of your fullnode for
 different networks and requirements, including:
@@ -25,7 +25,7 @@ different networks and requirements, including:
 :::tip Before you proceed
 
 Before allowing other fullnodes to connect to your fullnode,
-be sure to create a fullnode identity. See [Network Identity For Fullnode](./network-identity-fullnode.md).
+be sure to create a fullnode identity. See [Network Identity For PFNs](./network-identity-fullnode.md).
 
 :::
 
