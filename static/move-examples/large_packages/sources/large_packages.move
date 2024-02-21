@@ -1,5 +1,5 @@
 /// This provides a framework for uploading large packages. In each pass, the caller pushes more
-/// code by calling `stage_code`. In the last call, the caller can set the optoinal `publish` and
+/// code by calling `stage_code`. In the last call, the caller can set the optional `publish` and
 /// the package will be published inline, saving an extra transaction and additional storage costs.
 /// Currently this module does not support modules that are larger than 63KB as that is the maximum
 /// that can fit within a transaction and this framework does not split up individual modules.

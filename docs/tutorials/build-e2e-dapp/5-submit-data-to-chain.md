@@ -99,7 +99,7 @@ const transaction:InputTransactionData = {
 - `function`- is built from the module address, module name and the function name.
 - `functionArguments` - the arguments the function expects, in our case it doesn’t expect any arguments.
 
-Next, we submit the transaction payload and wait for its response. The response returned from the `signAndSubmitTransaction` function holds the transaction hash. Since it can take a bit for the transaction to be fully excuted on chain and we also want to make sure it is excuted successfully, we `waitForTransaction`. And only then we can set our local `accountHasList` state to `true`.
+Next, we submit the transaction payload and wait for its response. The response returned from the `signAndSubmitTransaction` function holds the transaction hash. Since it can take a bit for the transaction to be fully executed on chain and we also want to make sure it is executed successfully, we `waitForTransaction`. And only then we can set our local `accountHasList` state to `true`.
 
 6. Before testing our app, let’s tweak our UI a bit and add a Spinner component to show up while we are waiting for the transaction.
    Add a local state to keep track whether a transaction is in progress:

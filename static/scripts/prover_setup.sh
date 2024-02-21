@@ -27,7 +27,7 @@ cd "$SCRIPT_PATH/.." || exit
 function usage {
   echo "Usage:"
   echo "Installs or updates necessary dependencies for the Move prover."
-  echo "-b batch mode, no user interactions and miminal output"
+  echo "-b batch mode, no user interactions and minimal output"
   echo "-p update ${HOME}/.profile"
   echo "-y installs or updates Move prover tools: z3, cvc5, dotnet, boogie"
   echo "-v verbose mode"

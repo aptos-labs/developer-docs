@@ -53,7 +53,7 @@ module resource_account::simple_defi {
         // destroy freeze cap because we aren't using it
         coin::destroy_freeze_cap(freeze_cap);
 
-        // regsiter the resource account with both coins so it has a CoinStore to store those coins
+        // register the resource account with both coins so it has a CoinStore to store those coins
         coin::register<AptosCoin>(account);
         coin::register<ChloesCoin>(account);
     }

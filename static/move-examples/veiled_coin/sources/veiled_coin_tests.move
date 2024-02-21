@@ -324,7 +324,7 @@ module veiled_coin::veiled_coin_tests {
         // TODO: This throws an invariant violation (INTERNAL_TYPE_ERROR (code 2009))
         //print(&recipient);
 
-        // Encrypt the transfered amount `v` under the `recipient`'s PK
+        // Encrypt the transferred amount `v` under the `recipient`'s PK
         let deposit_ct = elgamal::new_ciphertext_with_basepoint(
             &amount_val, &amount_rand, &recipient_pk);
 
@@ -385,7 +385,7 @@ module veiled_coin::veiled_coin_tests {
             &new_new_balance_val, &fresh_new_balance_rand,
             veiled_coin::get_max_bits_in_veiled_coin_value(), veiled_coin::get_veiled_coin_bulletproofs_dst());
 
-        // Compute a pedersen commitment over the same values the range proof is done over to gurantee a binding commitment
+        // Compute a pedersen commitment over the same values the range proof is done over to guarantee a binding commitment
         // to the sender's new balance. A sigma proof demonstrates the commitment and ciphertexts contain the same value and randomness
         let new_curr_balance_ct = elgamal::new_ciphertext_with_basepoint(&new_curr_balance_val, &balance_rand, &sender_pk);
         let new_new_balance_comm = pedersen::new_commitment_for_bulletproof(&new_new_balance_val, &fresh_new_balance_rand);

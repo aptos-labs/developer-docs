@@ -1,7 +1,7 @@
 /// This module can be included in a project to enable internal wrapping and unwrapping of coins into fungible assets.
 /// This allows the project to only have to store and process fungible assets in core data structures, while still be
 /// able to support both native fungible assets and coins. Note that the wrapper fungible assets are INTERNAL ONLY and
-/// are not meant to be released to user's accounts outside of the project. Othwerwise, this would create multiple
+/// are not meant to be released to user's accounts outside of the project. Otherwise, this would create multiple
 /// conflicting fungible asset versions of a specific coin in the ecosystem.
 ///
 /// The flow works as follows:

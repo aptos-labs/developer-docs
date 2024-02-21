@@ -31,7 +31,7 @@ module common_account::common_account {
 
     struct Empty has drop, store {}
 
-    /// Contains the metadata for managing the account, particularly around adminstration.
+    /// Contains the metadata for managing the account, particularly around administration.
     struct Management has key {
         /// Entity that adds and removes entities that can support this account.
         admin: address,

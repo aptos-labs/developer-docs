@@ -209,7 +209,7 @@ const account = Account.fromPrivateKeyAndAddress({
 });
 
 // derive account from derivation path
-const acccount = Account.fromDerivationPath({
+const account = Account.fromDerivationPath({
   path,
   mnemonic,
   scheme: SigningSchemeInput.Ed25519,
