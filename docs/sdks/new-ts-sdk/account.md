@@ -103,7 +103,7 @@ The SDK supports deriving an account from derivation path with `fromDerivationPa
 ```ts
 // to derive an account with a legacy Ed25519 key scheme
 const { mnemonic, address, path } = wallet;
-const acccount = Account.fromDerivationPath({
+const account = Account.fromDerivationPath({
   path,
   mnemonic,
   scheme: SigningSchemeInput.Ed25519,
@@ -111,7 +111,7 @@ const acccount = Account.fromDerivationPath({
 
 // to derive an account with a Single Sender Ed25519 key scheme
 const { mnemonic, address, path } = wallet;
-const acccount = Account.fromDerivationPath({
+const account = Account.fromDerivationPath({
   path,
   mnemonic,
   scheme: SigningSchemeInput.Ed25519,
@@ -120,7 +120,7 @@ const acccount = Account.fromDerivationPath({
 
 // to derive an account with a Single Sender Secp256k1 key scheme
 const { mnemonic, address, path } = wallet;
-const acccount = Account.fromDerivationPath({
+const account = Account.fromDerivationPath({
   path,
   mnemonic,
   scheme: SigningSchemeInput.Secp256k1Ecdsa,

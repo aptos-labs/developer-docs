@@ -53,12 +53,12 @@
     */
 /// - 2.c Check the module we just published on the Aptos Explorer.
 /// Go to https://explorer.aptoslabs.com/. At the top right of the screen, select the network you used (devnet, testnet, etc.).
-/// Search for this transaction by putting the `transaction_hash` in the search box. (You'd need to run throught the above steps
+/// Search for this transaction by putting the `transaction_hash` in the search box. (You'd need to run through the above steps
 /// yourself, and search for the transaction using your own unique transaction hash.)
 /// We can see the changes we made by publishing this module under the `Changes` tab.
 ///
 /// 3. Check out the `delayed_mint_event_ticket()` function below - we are not going to run a command to mint the NFT in this part, because
-/// this function right now asks for two signers and that's inpractical to do using CLI commands.
+/// this function right now asks for two signers and that's impractical to do using CLI commands.
 /// In the next part of this tutorial, we will introduce a way to programmatically sign for transactions, so the module publisher
 /// doesn't need to manually sign transactions, and only needs one signer (the nft receiver's signer) for the `delayed_mint_event_ticket()` function.
 module mint_nft::create_nft {
@@ -158,7 +158,7 @@ module mint_nft::create_nft {
             name,
             0,
             1,
-            // Mutate the properties to record the receiveer's address.
+            // Mutate the properties to record the receiver's address.
             vector<String>[string::utf8(b"given_to")],
             vector<vector<u8>>[bcs::to_bytes(&signer::address_of(receiver))],
             vector<String>[ string::utf8(b"address") ],

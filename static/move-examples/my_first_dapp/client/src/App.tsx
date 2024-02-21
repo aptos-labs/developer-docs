@@ -68,7 +68,7 @@ function App() {
   const addNewList = async () => {
     if (!account) return [];
     setTransactionInProgress(true);
-    // build a transaction payload to be submited
+    // build a transaction payload to be submitted
     const payload = {
       type: "entry_function_payload",
       function: `${moduleAddress}::todolist::create_list`,
@@ -92,7 +92,7 @@ function App() {
     // check for connected account
     if (!account) return;
     setTransactionInProgress(true);
-    // build a transaction payload to be submited
+    // build a transaction payload to be submitted
     const payload = {
       type: "entry_function_payload",
       function: `${moduleAddress}::todolist::create_task`,
@@ -104,7 +104,7 @@ function App() {
     const latestId =
       tasks.length > 0 ? parseInt(tasks[tasks.length - 1].task_id) + 1 : 1;
 
-    // build a newTaskToPush objct into our local state
+    // build a newTaskToPush object into our local state
     const newTaskToPush = {
       address: account.address,
       completed: false,

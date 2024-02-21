@@ -39,7 +39,7 @@ def key_value(indata: str) -> Tuple[str, AccountAddress]:
 
 
 async def main(args: List[str]):
-    parser = argparse.ArgumentParser(description="Aptos Pyton CLI")
+    parser = argparse.ArgumentParser(description="Aptos Python CLI")
     parser.add_argument(
         "command", type=str, help="The command to execute", choices=["publish-package"]
     )

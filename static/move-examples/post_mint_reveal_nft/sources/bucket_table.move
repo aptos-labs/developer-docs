@@ -98,7 +98,7 @@ module post_mint_reveal_nft::bucket_table {
         let to_split = xor(new_bucket_index, (1 << map.level));
         let new_bucket = vector::empty();
         map.num_buckets = new_bucket_index + 1;
-        // if the whole level is splitted once, bump the level.
+        // if the whole level is split once, bump the level.
         if (to_split + 1 == 1 << map.level) {
             map.level = map.level + 1;
         };
@@ -132,7 +132,7 @@ module post_mint_reveal_nft::bucket_table {
             // in existing bucket
             index
         } else {
-            // in unsplitted bucket
+            // in unsplit bucket
             index % (1 << level)
         }
     }

@@ -79,7 +79,7 @@ module drand::lottery {
         // Initialize an AptosCoin coin store there, which is where the lottery bounty will be kept
         coin::register<AptosCoin>(&rsrc_acc_signer);
 
-        // Initialiaze the loterry as 'not started'
+        // Initialize the lottery as 'not started'
         move_to(deployer,
             Lottery {
                 tickets: vector::empty<address>(),
