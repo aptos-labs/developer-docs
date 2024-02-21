@@ -71,12 +71,6 @@ const sidebars: SidebarsConfig = {
     "releases/index",
     "nodes/networks",
     "guides/system-integrators-guide",
-    {
-      type: "html",
-      value:
-        '<a href="https://taikai.network/aptos/hackathons/aptos-random-hack" target="_blank"><img src="/img/APT-Random-Hackathon-Takeover-600x1200.webp" alt="Aptos RaNd0M Hack" /></a>',
-      className: "sidebar-banner",
-    },
   ],
   appSidebar: [
     {
@@ -495,12 +489,6 @@ const sidebars: SidebarsConfig = {
         "guides/account-management/key-rotation",
       ],
     },
-    {
-      type: "html",
-      value:
-        '<a href="https://taikai.network/aptos/hackathons/aptos-random-hack" target="_blank"><img src="/img/APT-Random-Hackathon-Takeover-600x1200.webp" alt="Aptos RaNd0M Hack" /></a>',
-      className: "sidebar-banner",
-    },
   ],
   nodeSidebar: [
     {
@@ -603,12 +591,6 @@ const sidebars: SidebarsConfig = {
         },
       ],
     },
-    {
-      type: "html",
-      value:
-        '<a href="https://taikai.network/aptos/hackathons/aptos-random-hack" target="_blank"><img src="/img/APT-Random-Hackathon-Takeover-600x1200.webp" alt="Aptos RaNd0M Hack" /></a>',
-      className: "sidebar-banner",
-    },
   ],
   refSidebar: [
     {
@@ -620,12 +602,6 @@ const sidebars: SidebarsConfig = {
     "reference/error-codes",
     "reference/move",
     "reference/glossary",
-    {
-      type: "html",
-      value:
-        '<a href="https://taikai.network/aptos/hackathons/aptos-random-hack" target="_blank"><img src="/img/APT-Random-Hackathon-Takeover-600x1200.webp" alt="Aptos RaNd0M Hack" /></a>',
-      className: "sidebar-banner",
-    },
   ],
   comSidebar: [
     {
@@ -639,12 +615,6 @@ const sidebars: SidebarsConfig = {
     "community/site-updates",
     "community/aptos-style",
     "community/contributors",
-    {
-      type: "html",
-      value:
-        '<a href="https://taikai.network/aptos/hackathons/aptos-random-hack" target="_blank"><img src="/img/APT-Random-Hackathon-Takeover-600x1200.webp" alt="Aptos RaNd0M Hack" /></a>',
-      className: "sidebar-banner",
-    },
   ],
 };
 
