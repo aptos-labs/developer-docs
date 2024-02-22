@@ -368,15 +368,21 @@ public fun mint(creator: &signer) {
 }
 ```
 
-### Resource Groups
+### Object Accounts
 
-In the Aptos Framework, a Resource Group is designed to cluster related resources at a single address. This approach aims to streamline data handling and improves cost efficiency.
+In the Aptos Framework, multiple `key`-able resources can be stored at a single object account.
 
-It's important to remember that modifications to one object within a resource group can influence the entire collection. For example, transferring an object implies the transfer of all its group members. [Read more](https://aptos.dev/standards/aptos-object/) about Aptos Objects.
+However, objects should be isolated to different account, otherwise modifications to one object within an account can influence the entire collection.
+
+For example, transferring one resource implies the transfer of all group members, since the transfer function operates on `ObjectCore`, which is essentially a general tag for all resources at the account.
+
+[Read more](https://aptos.dev/standards/aptos-object/) about Aptos Objects.
 
 #### Example Insecure Code
 
-The `mint_two` function lets `sender` create a `Monkey` for themselves and send a `Toad` to `recipient` . As `Monkey` and `Toad` belong to the same group the result is that both objects’ owers is now the `recipient` .
+The `mint_two` function lets `sender` create a `Monkey` for themselves and send a `Toad` to `recipient` .
+
+As `Monkey` and `Toad` belong to the same object account the result is that both objects’ are now owned by the `recipient` .
 
 ```move
 #[resource_group(scope = global)]
@@ -389,7 +395,7 @@ struct Monkey has store, key { }
 struct Toad has store, key { }
 
 fun mint_two(sender: &signer, recipient: &signer) {
-    let constructor_ref = &Object::create_object_from_account(alice);
+    let constructor_ref = &Object::create_object_from_account(sender);
     let sender_object_signer = Object::generate_signer(constructor_ref);
     let sender_object_addr = object::address_from_constructor_ref(constructor_ref);
 
@@ -402,20 +408,33 @@ fun mint_two(sender: &signer, recipient: &signer) {
 
 #### Example Secure Code
 
-In this example, a solution could be to not user Resource Groups.
+In this example, objects should be stored at separate object accounts:
 
 ```move
+#[resource_group(scope = global)]
+struct ObjectGroup { }
+
+#[resource_group_member(group = 0x42::module::ObjectGroup)]
 struct Monkey has store, key { }
+
+#[resource_group_member(group = 0x42::module::ObjectGroup)]
 struct Toad has store, key { }
 
-fun mint_two(sender: &signer, recipient: &signer) {
-    let constructor_ref = &Object::create_object_from_account(alice);
-    let sender_object_signer = Object::generate_signer(constructor_ref);
-    let sender_object_addr = object::address_from_constructor_ref(constructor_ref);
 
-    move_to(sender_object_signer, Monkey{});
-    move_to(sender_object_signer, Toad{});
-    let monkey_object: Object<Monkey> = object::address_to_object<Monkey>(sender_object_addr);
+fun mint_two(sender: &signer, recipient: &signer) {
+    let sender_address = signer::address_of(sender);
+
+    let constructor_ref_monkey = &Object::create_object(sender_address);
+    let constructor_ref_toad = &Object::create_object(sender_address);
+    let object_signer_monkey = Object::generate_signer(&constructor_ref_monkey);
+    let object_signer_toad = Object::generate_signer(&constructor_ref_toad);
+
+    move_to(object_signer_monkey, Monkey{});
+    move_to(object_signer_toad, Toad{});
+
+    let object_address_monkey = signer::address_of(&object_signer_monkey);
+
+    let monkey_object: Object<Monkey> = object::address_to_object<Monkey>(object_address_monkey);
     object::transfer<Monkey>(sender, monkey_object, signer::address_of(recipient));
 }
 ```
