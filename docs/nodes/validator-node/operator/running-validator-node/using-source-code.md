@@ -130,7 +130,9 @@ Follow the below instructions **twice**, i.e., first on one machine to run a val
    aptos-node -f ~/$WORKSPACE/config/validator.yaml
    ```
 
-   Run validator fullnode on **another machine**:
+   Run the VFN on another machine. Note: you should copy the keys and configuration files across to the VFN machine
+   from wherever you generated them. Do not attempt to generate another set of keys or files for the VFN, as these
+   will not be recognized by the network.
 
    ```bash
    cargo clean

@@ -3,12 +3,15 @@ title: "Learn about Nodes"
 hide_table_of_contents: true
 ---
 
-The Aptos network consists of three node types: validator node, validator fullnode and public fullnode. To
-participate in consensus, you are required to run both a validator node and a validator fullnode, and stake.
+The Aptos network consists of three node types: validator nodes, validator fullnodes (VFNs), and public fullnodes (PFNs). To
+participate in consensus, you are required to run a validator node and stake the minimum amount of utility coins. VFNs and PFNs
+are not required to participate in consensus, but they are necessary to distribute blockchain data and enable ecosystem services,
+e.g., indexing, querying, and RESTful API services (see [Aptos APIs](../apis)). You can learn more about the different types
+of nodes in the [Blockchain Deep Dive](../concepts/blockchain.md) section.
 
-Also learn how to run a public fullnode on a local network and connect to either a testnet or a devnet. This section
-describes everything you need to stake and participate in consensus and governance. See also
-the [external resources](../community/external-resources.md) offered by your fellow node operators.
+This section provides detailed, step-by-step instructions on how to deploy and operate Aptos nodes in different
+environments. It also describes everything you need to stake and participate in consensus and governance. You can also
+find additional resources for node operation in the [External Resources](../community/external-resources.md) section.
 
 ## Validator operations
 
@@ -149,7 +152,7 @@ the [external resources](../community/external-resources.md) offered by your fel
           </a>
           <a href="/nodes/full-node/network-identity-fullnode" class="list-group-item">
             <div class="d-flex w-100 justify-content-between">
-              <h4 class="mb-1">Network identity for fullnode</h4>
+              <h4 class="mb-1">Network identity for PFNs</h4>
             </div>
             <small>Create a static network identity for your fullnode.</small>
           </a>
