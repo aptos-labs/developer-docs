@@ -6,13 +6,16 @@ Aptos nodes collect metrics and system information while running. These metrics 
 monitor and inspect the health and performance of the node dynamically, at runtime. Node metrics and system
 information can be queried or exported via an inspection service that runs on each node.
 
-You can configure various aspects of the node inspection service. This document describes how to expose and see the metrics locally, on the respective node. You may also view these metrics remotely by making the port publicly accessible via firewall rules. Generally, validator nodes don't expose these metrics for security, yet fullnodes do so the [health checker](./node-health-checker.md) can verify them.
+You can configure various aspects of the node inspection service. This document describes how to expose and see the metrics locally, on the respective node. You may also view these metrics remotely by making the port accessible via firewall rules.
 
-If you do make the inspection service port publicly accessible on your validator node, we recommend disabling that access when not in use.
+:::danger
+If you do make the inspection service port publicly accessible on your node, we
+recommend disabling access when not in use (to prevent unauthorized access and abuse).
+:::
 
 ## Examining node metrics
 
-If you'd like to examine the metrics of your node (validator or fullnode), start running a
+If you'd like to examine the metrics of your node, start running a
 node and review the inspection service locally by loading this URL in your browser:
 
 ```
@@ -53,7 +56,7 @@ at runtime (i.e., the configuration settings that your node started with).
 By default, the configuration endpoint is disabled as it may expose potentially sensitive
 information about the configuration of your node, e.g., file paths and directories. We
 recommend enabling this endpoint only if the inspection service is not publicly accessible.
-:::`
+:::
 
 To enable this feature, add the following to your node configuration file:
 
@@ -88,7 +91,7 @@ inspection_service:
 The system information displayed here is not guaranteed to be 100% accurate due to limitations
 in the way this information is collected. As a result, we recommend not worrying about any
 inaccuracies and treating the information as an estimate.
-:::`
+:::
 
 ## Understand node metrics
 

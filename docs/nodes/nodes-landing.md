@@ -13,7 +13,7 @@ This section provides detailed, step-by-step instructions on how to deploy and o
 environments. It also describes everything you need to stake and participate in consensus and governance. You can also
 find additional resources for node operation in the [External Resources](../community/external-resources.md) section.
 
-## Validator operations
+## Node Quick Links
 
 <div class="docs-card-container">
   <div class="row row-cols-1 row-cols-md-2a g-4">
@@ -71,7 +71,7 @@ find additional resources for node operation in the [External Resources](../comm
     <div class="col">
       <div class="card-no-border card-body h-100 d-flex flex-column">
         <div class="card-body">
-          <h2 class="card-title">Operator</h2>
+          <h2 class="card-title">Node Operator</h2>
           <p class="card-text">
             A comprehensive guide to deploying nodes, staking operations and participate in consensus.
           </p>
@@ -119,9 +119,9 @@ find additional resources for node operation in the [External Resources](../comm
     <div class="col">
       <div class="card-no-border card-body h-100 d-flex flex-column">
         <div class="card-body">
-          <h2 class="card-title">Fullnode</h2>
+          <h2 class="card-title">Public Fullnode</h2>
           <p class="card-text">
-            A section with detailed, step-by-step instructions on everything related to Aptos fullnode.
+            A section with detailed, step-by-step instructions on everything related to Aptos PFNs.
           </p>
         </div>
         <div class="list-group list-group-flush">
@@ -167,83 +167,6 @@ find additional resources for node operation in the [External Resources](../comm
               <h4 class="mb-1">Bootstrap a new fullnode</h4>
             </div>
             <small>Use data restore to bootstrap a new fullnode.</small>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-## General
-
-<div class="docs-card-container">
-  <div class="row row-cols-1 row-cols-md-3a g-4">
-    <div class="col">
-      <div class="card-no-border card-body h-100 d-flex flex-column">
-        <div class="card-body">
-        </div>
-        <div class="list-group list-group-flush">
-          <a href="/nodes/networks" class="list-group-item">
-            <div class="d-flex w-100 justify-content-between">
-              <h4 class="mb-1">Aptos blockchain networks</h4>
-            </div>
-            <small>See a snapshot of all Aptos networks.</small>
-          </a>
-          <a href="/nodes/identity-and-configuration" class="list-group-item">
-            <div class="d-flex w-100 justify-content-between">
-              <h4 class="mb-1">Identity and configuration</h4>
-            </div>
-            <small>A mental-model of identity and configuration plus a description of the identity YAML files.</small>
-          </a>
-          <a href="/nodes/node-files-all-networks/node-files" class="list-group-item">
-            <div class="d-flex w-100 justify-content-between">
-              <h4 class="mb-1">Node files</h4>
-            </div>
-            <small>All the files you need while deploying nodes, whether on mainnet, testnet or devnet.</small>
-          </a>
-          <a href="/indexer/indexer-landing" class="list-group-item">
-            <div class="d-flex w-100 justify-content-between">
-              <h4 class="mb-1">Indexing</h4>
-            </div>
-            <small>Access Aptos-provided indexer service or build your own custom indexer for the Aptos blockchain.</small>
-          </a>
-          <a href="/guides/state-sync" class="list-group-item">
-            <div class="d-flex w-100 justify-content-between">
-              <h4 class="mb-1">State synchronization</h4>
-            </div>
-            <small>Synchronize your nodes to the latest Aptos blockchain state.</small>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="card-no-border card-body h-100 d-flex flex-column">
-        <div class="card-body">
-        </div>
-        <div class="list-group list-group-flush">
-        <a href="/guides/data-pruning" class="list-group-item">
-            <div class="d-flex w-100 justify-content-between align-items-start">
-              <h4 class="mb-1">Data pruning</h4>
-            </div>
-            <small>Manage your validator node's disk space by controlling the pruning settings. Proceed with caution.</small>
-          </a>
-          <a href="/nodes/measure/node-health-checker" class="list-group-item">
-            <div class="d-flex w-100 justify-content-between align-items-start">
-              <h4 class="mb-1">Node health checker</h4>
-            </div>
-            <small>If you are a node operator, use the NHC service to check if your node is running correctly.</small>
-          </a>
-          <a href="/reference/telemetry/" class="list-group-item">
-            <div class="d-flex w-100 justify-content-between align-items-start">
-              <h4 class="mb-1">Telemetry</h4>
-            </div>
-            <small>Know what telemetry metrics are sent by your node, and control the telemetry settings.</small>
-          </a>
-          <a href="/nodes/leaderboard-metrics" class="list-group-item">
-            <div class="d-flex w-100 justify-content-between align-items-start">
-              <h4 class="mb-1">Leaderboard metrics</h4>
-            </div>
-            <small>A guide to interpret the validator rewards performance, as shown on the leaderboard metrics site.</small>
           </a>
         </div>
       </div>

@@ -1,11 +1,15 @@
 ---
-title: "Run a Public Fullnode on GCP"
+title: "Run a PFN on GCP"
 slug: "run-a-fullnode-on-gcp"
 ---
 
-# Run a Public Fullnode on GCP
+# Run a PFN on GCP
 
-This tutorial explains how to configure and deploy a public fullnode to connect to the Aptos devnet using Google Cloud (GCP). Running a public fullnode in the cloud usually provides better stability and availability compared to running it on your laptop. **If you are looking to deploy a production grade public fullnode, we recommend you to deploy it on the cloud.**
+This tutorial explains how to configure and deploy a public fullnode (PFN) to connect to the Aptos
+devnet using Google Cloud (GCP). Running a public fullnode in the cloud usually provides better
+stability and availability compared to running it on your laptop.
+
+**If you are looking to deploy a production grade public fullnode, we recommend you to deploy it on the cloud.**
 
 :::tip Alternative methods for running a public fullnode
 Read [Public Fullnode](./index.md) if you want other options for deployment. Using cloud comes with a cost, and it varies depending on how you configure it.

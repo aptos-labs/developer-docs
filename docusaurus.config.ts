@@ -149,12 +149,16 @@ const themeConfig: Preset.ThemeConfig = {
             to: "nodes/full-node/public-fullnode",
           },
           {
-            label: "Monitor a Node",
-            to: "nodes/measure/measure-index",
+            label: "Modify a Node",
+            to: "nodes/operations/operations-index",
           },
           {
             label: "Configure a Node",
             to: "nodes/identity-and-configuration",
+          },
+          {
+            label: "Monitor a Node",
+            to: "nodes/measure/measure-index",
           },
         ],
       },
