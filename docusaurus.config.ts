@@ -347,10 +347,6 @@ const config: Config = {
             to: "/indexer/indexer-landing",
           },
           {
-            from: "/tutorials/run-a-fullnode-on-gcp",
-            to: "/nodes/full-node/run-a-fullnode-on-gcp",
-          },
-          {
             from: "/aptos-white-paper/aptos-white-paper-index/",
             to: "/aptos-white-paper",
           },

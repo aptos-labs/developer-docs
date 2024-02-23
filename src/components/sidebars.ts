@@ -546,8 +546,23 @@ const sidebars: SidebarsConfig = {
       collapsible: true,
       collapsed: true,
       items: [
-        "nodes/full-node/fullnode-source-code-or-docker",
-        "nodes/full-node/run-a-fullnode-on-gcp",
+        "nodes/full-node/pfn-requirements",
+        {
+          type: "category",
+          label: "Deploy a PFN",
+          collapsible: true,
+          collapsed: true,
+          link: {
+            type: "doc",
+            id: "nodes/full-node/deployments/index",
+          },
+          items: [
+            "nodes/full-node/deployments/using-source-code",
+            "nodes/full-node/deployments/using-docker",
+            "nodes/full-node/deployments/using-gcp",
+          ],
+        },
+        "nodes/full-node/verify-pfn",
         "nodes/full-node/network-identity-fullnode",
         "nodes/full-node/fullnode-network-connections",
       ],

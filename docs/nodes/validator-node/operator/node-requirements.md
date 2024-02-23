@@ -89,6 +89,7 @@ Generally, the size of the database on each machine is a function of the ledger 
 of transactions in the blockchain history) and the number of on-chain states (e.g., accounts and resources).
 Both the ledger history and the number of on-chain states depend on several additional factors, including the age
 of the blockchain, the average transaction rate over time, and the configuration of the ledger database pruner.
+At the time of writing, we estimate that testnet and mainnet require several 100's of GB of storage.
 
 Note that because archival nodes store the entire history of the blockchain, the database size on archival nodes will
 continue to grow unbounded. As a result, we cannot provide a recommendation for archival node storage sizes.
@@ -147,7 +148,7 @@ Assuming default ports are used, the following should be configured for VFN node
   - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
 
 :::danger Exposing services
-We note that the inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
+The inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
 are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
 port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
 to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to

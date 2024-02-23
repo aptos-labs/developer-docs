@@ -40,4 +40,4 @@ via the [#node-support](https://discord.com/channels/945856774056083548/95342197
 
 To use a snapshot, simply download and copy the files to the location of the storage database for your node.
 This location can be found and updated in the fullnode `yaml` configuration file under `data_dir`.
-See the example tutorial ([Run a PFN](fullnode-source-code-or-docker.md)) for how to configure the data directory.
+See the example tutorial ([Run a PFN](verify-pfn.md)) for how to configure the data directory.

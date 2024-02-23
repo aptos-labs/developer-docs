@@ -1,51 +1,50 @@
 ---
-title: "Fullnode Network Connections"
+title: "PFN Network Connections"
 slug: "fullnode-network-connections"
 ---
 
-# Fullnode Network Connections
+# PFN Network Connections
 
-When running a fullnode on an Aptos network, you can configure your node's
-network connections for a few different purposes. For example, you can add
-a seed peer to your node's configuration YAML to connect your node to a
-specific peer of your choosing. Or you can create a static network identity
-for your node to allow other nodes to connect to you, as described in [Network Identity For PFNs](./network-identity-fullnode.md).
+When running a PFN, you can configure your node's network connections for a few different purposes.
+For example, you can add a seed peer to your node's configuration to connect your node to a specific
+peer of your choosing. Or you can create a static network identity for your PFN to allow other nodes
+to connect to you, as described in [Network Identity For PFNs](./network-identity-fullnode.md).
 
-This document describes how to configure the network of your fullnode for
-different networks and requirements, including:
+This document describes how to configure the network of your PFN for different use cases, including:
 
-- Allowing fullnodes to connect to your node.
-- Connecting your fullnode to an Aptos blockchain deployment.
-- Connecting your fullnode to seed peers.
-- Configuring priority access for other fullnodes.
-- Configuring your fullnode as a private fullnode.
+- Allowing nodes to connect to your PFN.
+- Connecting your PFN to seed peers.
+- Configuring priority access for other PFNs.
+- Configuring your PFN as a private PFN.
 
-## Allowing fullnodes to connect to your node
+## Allowing PFN connections
 
-:::tip Before you proceed
-
-Before allowing other fullnodes to connect to your fullnode,
-be sure to create a fullnode identity. See [Network Identity For PFNs](./network-identity-fullnode.md).
-
+:::tip Generate a static identity
+Before allowing other nodes to connect to your PFN, you will need to create a static identity. See [Network Identity For PFNs](./network-identity-fullnode.md).
 :::
 
-Once you start your fullnode with a static identity you can allow others to connect to your fullnode:
+Once you start your PFN with a static identity you can allow others to connect to your PFN:
+
+:::caution Default port settings
+In the steps below, the port numbers used are for illustration only. You can use your choice of port numbers.
+See [PFN Requirements](./pfn-requirements.md) for more information on port settings.
+:::
+
+- Make sure you open the TCP port of the network you wish to allow external connections on (e.g., `6180` or `6182`).
+  This is required to allow other nodes to connect to your PFN.
+- If you are using Docker, simply add `- "6180:6180"` or `- "6182:6182"` under ports in your `docker-compose.yaml` file.
+- Share your PFN static network identity with others. They can then use it in the `seeds` key of their node's
+  configuration file to connect to your PFN. See the section below.
+- Make sure the port number you put in the `addresses` matches the one you have in the PFN configuration file
+  (for example, `6180` or `6182`).
 
 :::tip
-
-In the below steps, the port numbers used are for illustration only. You can
-use your choice of port numbers. See [Ports and port settings](../validator-node/operator/node-requirements.md#networking-requirements) for an explanation of port settings and how they are used.
-
+You can share your PFN's network identity in our Discord to advertise your node for others to connect to. Note:
+this is optional (and not required!).
 :::
 
-- Make sure you open port `6180` (or `6182`, for example, depending on which port your node is listening to) and that you open your firewall.
-- If you are using Docker, simply add `- "6180:6180"` or `- "6182:6182"` under ports in your `docker-compose.yaml` file.
-- Share your fullnode static network identity with others. They can then use it in the `seeds` key of their `fullnode.yaml` file to connect to your fullnode. See the section below.
-- Make sure the port number you put in the `addresses` matches the one you have in the fullnode configuration file `fullnode.yaml` (for example, `6180` or `6182`).
-
-Share your fullnode static network identity in the following format in our Discord to advertise your node.
-Note, the Discord channel to share your identity may differ depending on the blockchain deployment you're running in.
-See [Aptos Blockchain Networks](../networks.md) for more information.
+The snippets below show the configuration file entries and format for allowing other nodes to connect to your PFN.
+The format of each seed peer entry should have a unique `peer_id`, list of `addresses`, and a `role`:
 
 ```yaml
 <Peer_ID>:
@@ -73,53 +72,18 @@ B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813:
   role: "Upstream"
 ```
 
-:::tip
+## Connecting to seed peers
 
-Peer ID is synonymous with `AccountAddress`.
-
+:::danger Seeds are not required
+Seed peers are not required for your PFN to connect to any Aptos network. All networks (e.g., devnet, testnet
+and mainnet) are automatically discoverable. Adding seed peers should only be done if you wish to
+connect to a specific peer (or set of peers), and are confident that the peers are high quality.
 :::
 
-## Connecting your fullnode to an Aptos blockchain deployment
-
-When running a fullnode on an Aptos blockchain deployment, your node will be
-able to discover other nodes in the network automatically, e.g., using the
-genesis blob or the network addresses of the validators and validator fullnodes
-registered on the blockchain. Be sure to download the correct genesis blob and
-waypoint for your fullnode to ensure your node connects to the correct Aptos
-blockchain deployment. See [Aptos Blockchain Networks](../networks.md)
-for more information.
-
-## Connecting your fullnode to seed peers
-
-All Aptos fullnodes are configured to accept a maximum number of network
-connections. As a result, if the network is experiencing high network
-connection volume, your fullnode might not able to connect to the default
-nodes in the network, and you may see several errors in your node's logs, e.g.,
-`No connected AptosNet peers!` or `Unable to fetch peers to poll!`.
-
-If this happens continuously, you should manually add seed peers to your node's
-configuration file to connect to other nodes.
-
-:::tip
-
-You may see `No connected AptosNet peers!` or `Unable to fetch peers to poll!` in your node's error messages. This is normal when the node is first starting.
-Wait for the node to run for a few minutes to see if it connects to peers. If not, follow the below steps:
-
-:::
-
-See below for a few seed peer addresses you can use in your
-`public_full_node.yaml` file. The peers you choose will differ based on the
-blockchain deployment your node is running in.
-
-:::tip
-
-You can also use the fullnode addresses provided by the Aptos community. Anyone already running a fullnode can provide their address for you to connect. See the Aptos Discord.
-
-:::
-
-### Devnet seed peers
-
-To add seeds to your devnet fullnode, add these to your `public_full_node.yaml` configuration file under your `discovery_method`, as shown in the below example:
+To add seed peers to your PFN, the seed peers' addresses should be added to your PFN configuration file, under
+the `seeds` key in the public network configuration. Each seed peer entry should have a unique `peer_id`, list of
+`addresses`, and a `role` (e.g., `Upstream`). The snippet below shows an example
+of a configuration file with seed peers manually added:
 
 ```yaml
 ---
@@ -141,45 +105,40 @@ full_node_networks:
         role: "Upstream"
 ```
 
-## Configuring priority access for other fullnodes
+## Configuring priority access
 
-To configure your fullnode to allow another fullnode to connect to it even
-when your fullnode has hit the maximum number of available network connections,
-follow this method:
+To configure your PFN to allow other nodes to connect to it even when your PFN has hit the maximum number
+of available network connections, follow this method:
 
-In the configuration file for your fullnode add the other fullnode as a seed
-peer with the `Downstream` role. This will allow the other fullnode to connect
-directly to you with priority access. In your fullnode configuration file, add:
+In the configuration file for your PFN add the other node as a seed peer with the `Downstream` role.
+This will allow the other node to connect directly to you with priority access. For example:
 
 ```yaml
 seeds:
-  <other fullnode account>
+  <other node's peer id>
     addresses:
-    - <address of the other fullnode>
+    - <address of the other node>
     role: Downstream # Allows the node to connect to us
 ```
 
-Similarly, to make the other fullnode connect to yours, add the following to the
-other fullnode's configuration file:
+Similarly, to make the other node dial out to your PFN, add the following to the other node's configuration file:
 
 ```yaml
 seeds:
-  <your fullnode account>
+  <your node's peer id>
     addresses:
-    - <address of your fullnode>
+    - <address of your npde>
     role: PreferredUpstream # Allows the node to connect to the seed peer
 ```
 
-## Configuring your fullnode as a private fullnode
+## Configuring private PFNs
 
-You can also configure your fullnode as a private fullnode should you wish.
-What this means is that your fullnode will not allow unauthenticated
-connections, specifically, any node that is not a validator, validator
-fullnode, or seed peer will be unable to connect to your fullnode.
+You can also configure your PFN as a private PFN should you wish. What this means is that your PFN will
+not allow unauthenticated connections, specifically, any node that is not a validator, VFN or seed peer
+will be unable to connect to your PFN.
 
-To configure your fullnode as a private fullnode, add the following to your
-fullnode configuration file. Note, you should add this to the first network
-entry in the `full_node_networks` configuration:
+To configure your PFN as a private PFN, add the following to your PFN configuration file. Note, you
+should add this to the public network entry in the `full_node_networks` configuration:
 
 ```yaml
 ...

@@ -96,7 +96,7 @@ state_sync:
 
 :::tip Verify node syncing
 While your node is syncing, you'll be able to see the
-[`aptos_state_sync_version{type="synced"}`](../nodes/full-node/fullnode-source-code-or-docker.md#verify-initial-synchronization) metric gradually increase.
+[`aptos_state_sync_version{type="synced"}`](../nodes/full-node/verify-pfn.md) metric gradually increase.
 :::
 
 ### Applying all transaction outputs
@@ -114,7 +114,7 @@ state_sync:
 
 :::tip Verify node syncing
 While your node is syncing, you'll be able to see the
-[`aptos_state_sync_version{type="synced"}`](../nodes/full-node/fullnode-source-code-or-docker.md#verify-initial-synchronization) metric gradually increase.
+[`aptos_state_sync_version{type="synced"}`](../nodes/full-node/verify-pfn.md) metric gradually increase.
 :::
 
 ### Intelligent syncing
@@ -132,7 +132,7 @@ state_sync:
 
 :::tip Verify node syncing
 While your node is syncing, you'll be able to see the
-[`aptos_state_sync_version{type="synced"}`](../nodes/full-node/fullnode-source-code-or-docker.md#verify-initial-synchronization) metric gradually increase.
+[`aptos_state_sync_version{type="synced"}`](../nodes/full-node/verify-pfn.md) metric gradually increase.
 :::
 
 ### Fast syncing
