@@ -154,7 +154,7 @@ const themeConfig: Preset.ThemeConfig = {
           },
           {
             label: "Configure a Node",
-            to: "nodes/identity-and-configuration",
+            to: "nodes/configure/configure-index",
           },
           {
             label: "Monitor a Node",

@@ -2,77 +2,82 @@
 title: "Telemetry"
 ---
 
-When you operate a node on an Aptos network, your node can be set to send telemetry data to Aptos Labs. You can disable telemetry at any point. If telemetry remains enabled, Aptos node binary will send telemetry data in the background.
+When you run a node on an Aptos network, your node will send telemetry data to Aptos Labs. All node types
+(e.g., validators, VFNs and PFNs) send telemetry data. This also occurs for other binaries (e.g., the Aptos CLI).
+If you would prefer not to send telemetry, you can disable telemetry using the instructions below.
 
-The Aptos node binary running on your node collects telemetry data such as software version, operating system information and the IP address of your node. This telemetry data is used to enhance the decentralization of the network.
-
-:::tip No personal information is collected
-The Aptos node binary does **not** collect personal information such as usernames or email addresses.
+:::danger No personal information is collected
+The Aptos node binary does **not** collect any personal information, such as usernames or email addresses.
+It only collects relevant node telemetry, such as software version, node metrics, operating system information and the IP
+address of your node. This data is used to enhance the decentralization and performance of the network.
 :::
 
-## Metrics collected
+## Node telemetry
 
-### Core metrics
+The list below shows the categories of information collected by Aptos node telemetry:
 
-- Core metrics: [https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/core_metrics.rs#L14-L29](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/core_metrics.rs#L14-L29).
+- **Core metrics:** Core metrics are those emitted by the core components of the `aptos-node` binary. These include,
+  state sync, consensus, mempool and storage. You can see the full list of core metrics,
+  [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/core_metrics.rs#L14-L29).
 
-### Node information
+- **Build information**: Rust build information, including the versions of Rust, cargo, the target architecture and
+  the build tag are also collected. You can see the full list of build information, [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20).
 
-The public IP address of the node and core metrics, including node type, synced version and number of network connections.
+- **System information**: System information is also collected by node telemetry. This includes resource information
+  (e.g., CPU, RAM, disk and network specifications) as well as operating system information. You can see the full list of
+  system information, [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/system_information.rs#L14-L32).
 
-- **Node configuration as a mapping of string key to JSON map**: [https://github.com/aptos-labs/aptos-core/blob/main/config/src/config/mod.rs#L63-L97](https://github.com/aptos-labs/aptos-core/blob/main/config/src/config/mod.rs#L63-L97).
+- **Network metrics:**: Network metrics are also collected by node telemetry. These include network information such as
+  the number of connected peers, the number of inbound and outbound messages, and the size of messages sent and received.
+  You can see the full list of network metrics, [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/network_metrics.rs#L12-L17).
 
-### CLI telemetry
+- **Prometheus metrics**: Prometheus metrics are also collected by node telemetry. These include runtime metrics
+  for all the components of the `aptos-node` binary. You can see the full list of Prometheus metrics by visiting the
+  metrics endpoint on your node using the [node inspection service](../nodes/measure/node-inspection-service.md).
 
-The commands and subcommands run by the Aptos CLI tool.
+- **Node logs**: Logs of warn-level and higher are also collected by node telemetry. These are used to monitor the
+  health of the network. You can identify these logs by filtering the logs for the `aptos-node` binary, locally.
 
-- **CLI metrics**: [https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/cli_metrics.rs#L12-L15](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/cli_metrics.rs#L12-L15).
-- **Build information**: [https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20).
+## CLI telemetry
 
-### Network metrics
+The Aptos CLI tool also collects telemetry data. The list below shows the categories of information collected by
+CLI telemetry:
 
-- **Network metrics**: [https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/network_metrics.rs#L12-L17](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/network_metrics.rs#L12-L17).
+- **Command metrics**: Command metrics are those emitted by the CLI when a command is executed. These
+  include the command itself, the latency of the command, and the success or failure of the command. You can see
+  the full list of CLI metrics,
+  [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/cli_metrics.rs#L12-L15).
 
-### Build information
-
-Rust build information including the versions of Rust, cargo, build target architecture and the build tag.
-
-- **Build information**: [https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20)
-
-### System information
-
-System information including operating system information (including versions), hardware information and resource utilization (including CPU, memory and disk).
-
-- **System information**: [https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/system_information.rs#L14-L32](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/system_information.rs#L14-L32).
-
-### Others
-
-- **Metrics**: All the [Prometheus](https://prometheus.io/) metrics that are collected within the node.
-- **Logs**: Logs of warn-level and higher level, with the ability to collect up to debug logs.
+- **Build information**: Rust build information, including the versions of Rust, cargo, the target architecture and
+  the build tag are also collected for the CLI. You can see the full list of build information, [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20).
 
 ## Disabling telemetry
 
-On macOS and Linux, you can set the following environment variables to control the metrics sent by your node. For example, to disable all telemetry, set the `APTOS_DISABLE_TELEMETRY` environment variable to `true` as shown below:
+On macOS and Linux, you can set the `APTOS_DISABLE_TELEMETRY` environment variable to disable the metrics sent by
+both the Aptos node and the Aptos CLI tool. To disable all telemetry, set `APTOS_DISABLE_TELEMETRY` environment to `true`:
 
 ```bash
 export APTOS_DISABLE_TELEMETRY=true
 ```
 
-The above example only disables telemetry for a single session in the current terminal where you ran the above command. To disable it permanently on your node, include it in your startup profile, as below:
+The above command only disables telemetry for a single session in the current terminal where you run the command.
+To disable it permanently across all terminals and Aptos binary invocations, include it in your startup profile.
+For example:
 
 ```bash
 echo "export APTOS_DISABLE_TELEMETRY=true" >> ~/.profile
 source ~/.profile
 ```
 
-:::tip All telemetry is ON by default.
-All the below variables are set by default to `false`, i.e., sending of these telemetry metrics is enabled. Set them to `true` to disable telemetry.
-:::
+## Configuring telemetry
 
-- `APTOS_DISABLE_TELEMETRY`: This disables all telemetry emission from the node including sending to the GA4 service.
-- `APTOS_FORCE_ENABLE_TELEMETRY`: This overrides the chain ID check and forces the node to send telemetry regardless of whether remote service accepts or not.
-- `APTOS_DISABLE_TELEMETRY_PUSH_METRICS`: This disables sending the [Prometheus](https://prometheus.io/) metrics.
-- `APTOS_DISABLE_TELEMETRY_PUSH_LOGS`: This disables sending the logs.
-- `APTOS_DISABLE_TELEMETRY_PUSH_EVENTS`: This disables sending the custom events.
+You can also configure telemetry to disable specific telemetry metrics and collections. The environment variable
+list below shows the variables you can set to configure telemetry for Aptos nodes and the CLI:
+
+- `APTOS_DISABLE_TELEMETRY`: This disables all telemetry emission, including sending telemetry to the Google Analytics service (GA4).
+- `APTOS_FORCE_ENABLE_TELEMETRY`: This overrides the chain ID check and forces the Aptos node to send telemetry regardless of whether the remote service accepts it or not.
+- `APTOS_DISABLE_TELEMETRY_PUSH_METRICS`: This disables sending [Prometheus](https://prometheus.io/) metrics.
+- `APTOS_DISABLE_TELEMETRY_PUSH_LOGS`: This disables sending logs.
+- `APTOS_DISABLE_TELEMETRY_PUSH_EVENTS`: This disables sending custom events.
 - `APTOS_DISABLE_LOG_ENV_POLLING`: This disables the dynamic ability to send verbose logs.
-- `APTOS_DISABLE_PROMETHEUS_NODE_METRICS`: This disables sending the node resource metrics such as system CPU, memory, etc.
+- `APTOS_DISABLE_PROMETHEUS_NODE_METRICS`: This disables sending the Aptos node resource metrics such as system CPU, memory, etc.

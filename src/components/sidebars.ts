@@ -584,17 +584,17 @@ const sidebars: SidebarsConfig = {
       label: "Configure a Node",
       collapsible: true,
       collapsed: true,
-      link: { type: "doc", id: "nodes/identity-and-configuration" },
+      link: { type: "doc", id: "nodes/configure/index" },
       items: [
-        "reference/telemetry",
         "guides/state-sync",
         "guides/data-pruning",
+        "reference/telemetry",
         {
           type: "category",
-          label: "Node Files",
+          label: "Locating Node Files",
           collapsible: true,
           collapsed: true,
-          link: { type: "doc", id: "nodes/node-files-all-networks/node-files" },
+          link: { type: "doc", id: "nodes/node-files-all-networks/index" },
           items: [
             "nodes/node-files-all-networks/node-files",
             "nodes/node-files-all-networks/node-files-testnet",
