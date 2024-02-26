@@ -189,9 +189,10 @@ since the start of the network, i.e., genesis), you should:
 Following these two steps together will ensure that your PFN fetches all data since
 genesis, and continues to synchronize without pruning any data.
 
-:::danger Archival nodes have ever-growing storage
-Running and maintaining archival nodes is likely to be expensive and slow
-as the amount of data being stored on the fullnode will grow unbounded.
+:::danger Archival nodes are deprecated
+Running and maintaining archival nodes is expensive and slow, as the amount of data being stored
+on the node will grow endlessly. As a result, archival nodes have officially been deprecated.
+If you wish to store and maintain the entire blockchain history, we recommend using an [Indexer](../indexer/indexer-landing.md).
 :::
 
 ## Security implications and data integrity

@@ -1,5 +1,5 @@
 ---
-title: "Update Aptos Validator Node"
+title: "Update Nodes"
 slug: "update-validator-node"
 ---
 

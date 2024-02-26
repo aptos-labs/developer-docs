@@ -1,9 +1,9 @@
 ---
-title: "On Azure"
+title: "Using Azure"
 slug: "run-validator-node-using-azure"
 ---
 
-# On Azure
+# Using Azure
 
 This is a step-by-step guide to install an Aptos node on Microsoft Azure. Follow these steps to configure a validator node and a validator fullnode on separate machines.
 

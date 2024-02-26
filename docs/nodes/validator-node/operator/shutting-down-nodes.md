@@ -1,5 +1,5 @@
 ---
-title: "Shutting Down Nodes"
+title: "Shutdown Nodes"
 slug: "shutting-down-nodes"
 ---
 

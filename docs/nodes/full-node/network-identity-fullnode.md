@@ -1,9 +1,9 @@
 ---
-title: "Network Identity For PFNs"
+title: "Generate a PFN Identity"
 slug: "network-identity-fullnode"
 ---
 
-# Network Identity For PFNs
+# Generate a PFN Identity
 
 :::danger
 Validators and VFNs have their identities initialized when first created and their identities are long-lived (immutable).

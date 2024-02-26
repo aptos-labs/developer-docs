@@ -1,9 +1,9 @@
 ---
-title: "On AWS"
+title: "Using AWS"
 slug: "run-validator-node-using-aws"
 ---
 
-# On AWS
+# Using AWS
 
 This is a step-by-step guide to install an Aptos node on Amazon Web Services (AWS). Follow these steps to configure a validator node and a validator fullnode on separate machines.
 

@@ -149,7 +149,7 @@ const themeConfig: Preset.ThemeConfig = {
             to: "nodes/full-node/public-fullnode",
           },
           {
-            label: "Modify a Node",
+            label: "Bootstrap a Node",
             to: "nodes/operations/operations-index",
           },
           {

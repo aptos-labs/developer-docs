@@ -1,16 +1,22 @@
 ---
-title: "PFN Network Connections"
+title: "Customize PFN Networks"
 slug: "fullnode-network-connections"
 ---
 
-# PFN Network Connections
+# Customize PFN Networks
+
+:::danger Advanced customization
+Most PFN operators will not need to customize their PFN's network connections. This is only required
+for advanced use cases, such as connecting to specific peers, or configuring a private PFN. If you do
+not have a relevant use case, you should avoid making changes to your PFN's network connections.
+:::
 
 When running a PFN, you can configure your node's network connections for a few different purposes.
 For example, you can add a seed peer to your node's configuration to connect your node to a specific
-peer of your choosing. Or you can create a static network identity for your PFN to allow other nodes
-to connect to you, as described in [Network Identity For PFNs](./network-identity-fullnode.md).
+peer of your choosing. Or you can leverage a static network identity for your PFN to allow other nodes
+to connect to you, as described in [Generate a PFN Identity](./network-identity-fullnode.md).
 
-This document describes how to configure the network of your PFN for different use cases, including:
+This document outlines how to configure the network of your PFN for different use cases, including:
 
 - Allowing nodes to connect to your PFN.
 - Connecting your PFN to seed peers.
@@ -20,7 +26,7 @@ This document describes how to configure the network of your PFN for different u
 ## Allowing PFN connections
 
 :::tip Generate a static identity
-Before allowing other nodes to connect to your PFN, you will need to create a static identity. See [Network Identity For PFNs](./network-identity-fullnode.md).
+Before allowing other nodes to connect to your PFN, you will need to create a static identity. See [Generate a PFN Identity](./network-identity-fullnode.md).
 :::
 
 Once you start your PFN with a static identity you can allow others to connect to your PFN:

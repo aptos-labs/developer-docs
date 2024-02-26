@@ -240,7 +240,7 @@ You should see this something like this:
 
 ### Static identity
 
-If you want to configure your node with a static identity, first see the [Network Identity For PFNs](../network-identity-fullnode.md) tutorial
+If you want to configure your node with a static identity, first see the [Generate a PFN Identity](../network-identity-fullnode.md) tutorial
 to generate a static identity, and then follow the below instructions to configure your Terraform file.
 
 1. Generate a static identity for your PFN by following the guide: [Creating a static identity for a PFN](../network-identity-fullnode.md#generate-a-static-identity).
@@ -281,7 +281,7 @@ terraform apply
 ### Seed peers
 
 You can add seed peers to allow your PFN to connect to specific nodes. See the guide
-[Network Identity For PFNs](../fullnode-network-connections.md) for more information.
+[Generate a PFN Identity](../fullnode-network-connections.md) for more information.
 
 1. Obtain the seed peer information.
 

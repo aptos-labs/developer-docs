@@ -1,9 +1,9 @@
 ---
-title: "On GCP"
+title: "Using GCP"
 slug: "run-validator-node-using-gcp"
 ---
 
-# On GCP
+# Using GCP
 
 This is a step-by-step guide to install an Aptos node on Google GCP. Follow these steps to configure a validator node and a validator fullnode on separate machines.
 

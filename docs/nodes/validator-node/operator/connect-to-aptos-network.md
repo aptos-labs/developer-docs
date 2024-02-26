@@ -1,9 +1,9 @@
 ---
-title: "Connect to Aptos Network"
+title: "Connect to a Network"
 slug: "connect-to-aptos-network"
 ---
 
-# Connect to Aptos Network
+# Connect to a Network
 
 This document describes how to connect your running validator node and validator fullnode to an Aptos network. Follow these instructions only if your validator has met the minimal [staking](../../../concepts/staking.md) requirement.
 
