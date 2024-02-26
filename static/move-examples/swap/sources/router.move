@@ -349,7 +349,7 @@ module swap::router {
         primary_fungible_store::deposit(recipient, amount_2);
     }
 
-    /// Similiar to `remove_liquidity_entry` but returns the received fungible assets instead of depositing them.
+    /// Similar to `remove_liquidity_entry` but returns the received fungible assets instead of depositing them.
     public fun remove_liquidity(
         lp: &signer,
         token_1: Object<Metadata>,
@@ -380,7 +380,7 @@ module swap::router {
         primary_fungible_store::deposit(recipient, amount_2);
     }
 
-    /// Similiar to `remove_liquidity_coin_entry` but returns the received coins and assets instead of depositing them.
+    /// Similar to `remove_liquidity_coin_entry` but returns the received coins and assets instead of depositing them.
     public fun remove_liquidity_coin<CoinType>(
         lp: &signer,
         token_2: Object<Metadata>,
@@ -412,7 +412,7 @@ module swap::router {
         aptos_account::deposit_coins<CoinType2>(recipient, amount_2);
     }
 
-    /// Similiar to `remove_liquidity_both_coins_entry` but returns the received coins instead of depositing them.
+    /// Similar to `remove_liquidity_both_coins_entry` but returns the received coins instead of depositing them.
     public fun remove_liquidity_both_coins<CoinType1, CoinType2>(
         lp: &signer,
         is_stable: bool,

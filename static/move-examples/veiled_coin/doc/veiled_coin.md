@@ -30,7 +30,7 @@ The only information that an attacker (e.g., an Aptos validator) learns, is that
 <code>v</code> to Bob (including $v=0$), and as a result Alice's veiled balance is in a range [a-v, a] and Bob's veiled balance
 is in [b, b+v]<code>.
 
-As more veiled transfers occur between more veiled accounts, the uncertainity on the balance of each <a href="../../../framework/aptos-framework/doc/account.md#0x1_account">account</a> becomes
+As more veiled transfers occur between more veiled accounts, the uncertainty on the balance of each <a href="../../../framework/aptos-framework/doc/account.md#0x1_account">account</a> becomes
 larger and larger.
 
 Lastly, users can easily withdraw veiled coins back into their <b>public</b> balance via </code>unveil<code>. Or, they can withdraw
@@ -114,7 +114,7 @@ normal <code><a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin_Co
 resource account.
 
 Later on, when someone wants to convert their <code><a href="veiled_coin.md#0x1337_veiled_coin_VeiledCoin">VeiledCoin</a>&lt;T&gt;</code> into a normal <code><a href="../../../framework/aptos-framework/doc/coin.md#0x1_coin_Coin">coin::Coin</a>&lt;T&gt;</code>,
-the resource account can be used to transfer out the normal from its coin store. Transfering out a coin like this
+the resource account can be used to transfer out the normal from its coin store. Transferring out a coin like this
 requires a <code><a href="../../../framework/aptos-framework/../aptos-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a></code> for the resource account, which the <code><a href="veiled_coin.md#0x1337_veiled_coin">veiled_coin</a></code> module can obtain via a <code>SignerCapability</code>.
 
 

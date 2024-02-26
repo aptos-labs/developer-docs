@@ -9,7 +9,7 @@
  * 3. Sponsors can revoke a lock or change lockup (reduce or extend) anytime. This gives flexibility in case of
  * contract violation or special circumstances. If this is not desired, the deployer can remove these functionalities
  * before deploying. If a lock is canceled, the locked coins will be sent back to the withdrawal address. This
- * withdrawal address is set when initilizing the sponsor account and can only be changed when there are no active or
+ * withdrawal address is set when initializing the sponsor account and can only be changed when there are no active or
  * unclaimed locks.
  * 4. Once the lockup has expired, the recipient can call claim to get the unlocked tokens.
  **/

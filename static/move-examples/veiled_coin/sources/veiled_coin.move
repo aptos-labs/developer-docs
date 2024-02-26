@@ -24,7 +24,7 @@
 /// `v` to Bob (including $v=0$), and as a result Alice's veiled balance is in a range [a-v, a] and Bob's veiled balance
 /// is in [b, b+v]`.
 ///
-/// As more veiled transfers occur between more veiled accounts, the uncertainity on the balance of each account becomes
+/// As more veiled transfers occur between more veiled accounts, the uncertainty on the balance of each account becomes
 /// larger and larger.
 ///
 /// Lastly, users can easily withdraw veiled coins back into their public balance via `unveil`. Or, they can withdraw
@@ -97,7 +97,7 @@
 /// resource account.
 ///
 /// Later on, when someone wants to convert their `VeiledCoin<T>` into a normal `coin::Coin<T>`,
-/// the resource account can be used to transfer out the normal from its coin store. Transfering out a coin like this
+/// the resource account can be used to transfer out the normal from its coin store. Transferring out a coin like this
 /// requires a `signer` for the resource account, which the `veiled_coin` module can obtain via a `SignerCapability`.
 ///
 /// ## References
@@ -556,7 +556,7 @@ module veiled_coin::veiled_coin {
         // Create a (not-yet-secure) encryption of `amount`, since `amount` is a public argument here.
         let scalar_amount = ristretto255::new_scalar_from_u32(amount);
 
-        // Verify that `comm_new_balance` is a commitment to the remaing balance after withdrawing `amount`.
+        // Verify that `comm_new_balance` is a commitment to the remaining balance after withdrawing `amount`.
         sigma_protos::verify_withdrawal_subproof(
             &sender_pk,
             &veiled_balance,

@@ -270,7 +270,7 @@ struct GlobalStorage {
 
 The Move resource storage under each address is a map from types to values. (An observant reader might notice that
 this means each address can have only one value of each type.) This conveniently provides us a native mapping indexed
-by addresses, which is by constructionn type-safe. In our `basic_coin` module, we define the following `Balance` resource representing the number of coins
+by addresses, which is by construction type-safe. In our `basic_coin` module, we define the following `Balance` resource representing the number of coins
 each address holds:
 
 ```
@@ -652,7 +652,7 @@ The method deposits the `check` into `addr`. The specification is defined below:
     }
 ```
 
-Here `balance` represents the number of tokens in `addr` before execution, and `check_value` represents the number of tokens to be deposited. The method would abort if 1) `addr` does not have the resource `Balance<CoinType>` or 2) the sum of `balance` and `check_value` is greater than the maxium value of the type `u64`. The functional property checks that the balance is correctly updated after the execution.
+Here `balance` represents the number of tokens in `addr` before execution, and `check_value` represents the number of tokens to be deposited. The method would abort if 1) `addr` does not have the resource `Balance<CoinType>` or 2) the sum of `balance` and `check_value` is greater than the maximum value of the type `u64`. The functional property checks that the balance is correctly updated after the execution.
 
 </details>
 

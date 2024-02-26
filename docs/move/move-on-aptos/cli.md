@@ -139,7 +139,7 @@ The `aptos` CLI can be used to analyze and improve the testing of your Move modu
    ````
    module std::signer {
        // Borrows the address of the signer
-       // Conceptually, you can think of the `signer` as being a struct wrapper arround an
+       // Conceptually, you can think of the `signer` as being a struct wrapper around an
        // address
        // ```
        // struct signer has drop { addr: address }

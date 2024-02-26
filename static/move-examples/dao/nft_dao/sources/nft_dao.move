@@ -18,9 +18,9 @@
 /// 5. Anyone can call the `resolve` to resolve a proposal. A proposal voting duration has to expire and the proposal
 /// should have more votes than the minimal required threshold.
 ///
-/// The DAO plaform also support admin operations. For more details, check readme `Special DAO Admin Functions` section
+/// The DAO platform also support admin operations. For more details, check readme `Special DAO Admin Functions` section
 ///
-/// An example of DAO removal from existing DAO plaform.
+/// An example of DAO removal from existing DAO platform.
 /// 1. The DAO creator can call `reclaim_signer_capability` to remove their DAO from the platform and get back her
 /// resource account's signercapability
 module dao_platform::nft_dao {
@@ -229,7 +229,7 @@ module dao_platform::nft_dao {
         name: String,
         threshold: u64,
         voting_duration: u64,
-        voting_token_collection_creator: address, // this is the creator address of goverance token
+        voting_token_collection_creator: address, // this is the creator address of governance token
         collection_name: String,
         min_required_proposer_voting_power: u64,
     ) {
@@ -242,7 +242,7 @@ module dao_platform::nft_dao {
         name: String,
         threshold: u64,
         voting_duration: u64,
-        voting_token_collection_creator: address, // this is the creator address of goverance token
+        voting_token_collection_creator: address, // this is the creator address of governance token
         collection_name: String,
         min_required_proposer_voting_power: u64,
     ): address {
@@ -256,7 +256,7 @@ module dao_platform::nft_dao {
 
         // register aptos coin
         coin::register<AptosCoin>(&res_signer);
-        // initalize token store and opt-in direct NFT transfer for easy of operation
+        // initialize token store and opt-in direct NFT transfer for easy of operation
         token::initialize_token_store(&res_signer);
         token::opt_in_direct_transfer(&res_signer, true);
 
@@ -305,7 +305,7 @@ module dao_platform::nft_dao {
         dao_addr
     }
 
-    /// Only DAO Goverance token holders can create proposal
+    /// Only DAO Governance token holders can create proposal
     public entry fun create_proposal(
         account: &signer,
         nft_dao: address,// resource account address of the nft dao
@@ -313,7 +313,7 @@ module dao_platform::nft_dao {
         description: String,// description of the proposal
         function_names: vector<String>,// 3 types of functions are supported: (1) "no_op", (2) "transfer_fund" and (3) "offer_nft"
         arg_names: vector<vector<String>>,// name of the arguments of the function to be called. The arg here should be the same as the argument used in the function
-        arg_values: vector<vector<vector<u8>>>,// bcs serailized values of argument values
+        arg_values: vector<vector<vector<u8>>>,// bcs serialized values of argument values
         arg_types:vector<vector<String>>,// types of arguments. currently, we only support string, u8, u64, u128, bool, address.
         start_time_sec: u64,// when the voting starts
         token_names: vector<String>,// The name of the token, the proposer want to use for proposing
@@ -573,7 +573,7 @@ module dao_platform::nft_dao {
         dao_config.admin = @0x0;
     }
 
-    /// Convenient batch update function for the admin to udpate multiple fields in the DAO.
+    /// Convenient batch update function for the admin to update multiple fields in the DAO.
     public entry fun admin_update_dao(
         admin: &signer,
         dao: address,
@@ -720,7 +720,7 @@ module dao_platform::nft_dao {
             assert!(*option::borrow(&resolver) == dao.admin, error::permission_denied(EINVALID_ADMIN_ACCOUNT));
             execute_proposal(proposal, dao);
             proposal.resolution = PROPOSAL_RESOLVED_BY_ADMIN;
-            // return early befor emitting the normal resolve event.
+            // return early before emitting the normal resolve event.
             return
         };
 
@@ -913,7 +913,7 @@ module dao_platform::nft_dao {
         // Test transfer fund proposal
         //
 
-        // intialize with some fund in the DAO resource account
+        // initialize with some fund in the DAO resource account
         let (burn_cap, mint_cap) = aptos_coin::initialize_for_test(aptos_framework);
         let coins = coin::mint(100, &mint_cap);
         coin::register<AptosCoin>(creator);
