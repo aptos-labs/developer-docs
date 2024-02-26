@@ -2,111 +2,154 @@
 title: "Node Requirements"
 ---
 
-To make your validator node and validator fullnode deployment hassle-free, make sure you have the resources specified in this document.
+To ensure that your validator and validator fullnode (VFN) operate smoothly, both nodes should meet the
+requirements specified in this document.
 
-## Validator and validator fullnode
+:::danger Failure to meet requirements
+Failure to meet the requirements outlined in this document will result in your nodes experiencing degradation under load,
+consensus failures, reward losses, and general instability.
+::::
 
-- **Both a validator node and a validator fullnode required:** For the Aptos mainnet, we require that you run a validator node and a validator fullnode. We strongly recommend that you run the validator node and the validator fullnode on two separate and independent machines. Make sure that these machines are well-provisioned and isolated from each other. Guaranteeing the resource isolation between the validator and the validator fullnode will help ensure smooth deployment of these nodes.
-- **Public fullnode is optional:** We recommend that optionally you run a public fullnode also. However, a public fullnode is not required. If you run public fullnode also, then we strongly recommend that you run the public fullnode on a third machine that is separate and independent of either the validator or the validator fullnode machines.
-  :::tip Terraform support
-  For deploying the nodes in cloud we have provided Terraform support on two cloud providers: **GCP** and **AWS**. See [**Running Validator Node**](running-validator-node/index.md).
-  :::
+## Resource isolation
 
-- **Open the network ports:** Make sure that you open the network ports prior to connecting to the network. See [Ports](#ports).
-- **Close the network ports:** Make sure that you close these ports after either being accepted or rejected for the network.
+When running an Aptos validator and VFN, we strongly recommend that the nodes run on two separate and
+independent machines. These machines should be well-provisioned, meet the requirements outlined below and
+be isolated from each other. Maintaining resource isolation between the validator and the VFN is important
+for security and to ensure that the nodes do not encounter performance degradation, instability or failures when
+under load.
+
+:::tip Terraform support
+For deploying the validator and VFN in the cloud, we provide Terraform support on two cloud providers: **GCP** and **AWS**. See [**Running Validator Node**](running-validator-node/index.md).
+:::
 
 ## Hardware requirements
 
-For running an Aptos **validator node and validator fullnode** we recommend the following hardware resources:
-For running a validator and validator fullnode is that your hardware spec should be good enough to achieve a 30k peak
-TPS on mainnet.
+For running an Aptos validator and VFN in mainnet, we recommend that your hardware be performant enough to maintain
+~30,000 transactions per second (TPS). There are two ways to evaluate if your hardware meets this requirement:
 
-In order to evaluate that, checkout aptos-core repo and install required dependencies (See [**cloning aptos-core**](https://aptos.dev/guides/building-from-source#clone-the-aptos-core-repo)).
-Use following commands to run the performance benchmark
+1. Use the reference specs provided below.
+1. Run the performance benchmarking tool provided by Aptos.
 
-```
-TABULATE_INSTALL=lib-only pip install tabulate
-./testsuite/performance_benchmark.sh --short
-```
+Note that both the validator and VFN require sufficient hardware separately (i.e., two separate machines that
+satisfy the requirements outlined below).
 
-Once the script finishes, it will print out a table, and column "t/s" is your achieved "transactions per second". Evaluation criteria is encoded in the script, and will warn you after the table if you've not met any of the criteria.
+### Reference specs
 
-If you don't want to run the benchmark tool for hardware evaluation, you can use the following reference specs
+The reference specs for running an Aptos validator and VFN on mainnet can be seen below:
 
-- **CPU Requirement Reference**:
-  - 32 cores
-  - 2.8GHz, or faster
-  - AMD Milan EPYC or Intel(R) Xeon(R) Platinum
+- **CPU**: 32 cores, 2.8GHz, or faster, AMD Milan EPYC or Intel(R) Xeon(R) Platinum
 - **Memory**: 64GB RAM.
 - **Storage**: 2T SSD with at least 60K IOPS and 200MiB/s bandwidth.
 - **Networking bandwidth**: 1Gbps
-- **Example machine types on various clouds**:
-  - **AWS**
-    - c6id.16xlarge (if using a local SSD)
-    - c6i.16xlarge + io1/io2 EBS volume with 60K IOPS.
-  - **GCP**
-    - t2d-standard-60 + pd-ssd with 60K IOPS.
 
-### Motivations for hardware requirements
+Example machine types that meet the reference specs (on various clouds):
 
-Hardware requirements depend on the transaction rate and storage demands. The amount of data stored by the Aptos blockchain depends on the ledger history (the number of transactions) of the blockchain and the number of on-chain states (e.g., accounts and resources). Ledger history and the number of on-chain states depend on several factors: the age of the blockchain, the average transaction rate, and the configuration of the ledger pruner.
+- **AWS**
+  - c6id.16xlarge (if using a local SSD).
+  - c6i.16xlarge + io2 EBS volume with 60K IOPS.
+- **GCP**
+  - t2d-standard-60 + pd-ssd with 60K IOPS.
 
-The current hardware requirements are set considering the estimated growth over the period ending in Q1-2023. Note that we cannot provide a recommendation for archival node storage size as that is an ever-growing number.
+### Performance benchmarking
+
+If you'd prefer to evaluate your hardware for sufficient performance, you can use the performance benchmarking
+tool. First, clone the `aptos-core` repository and install the required dependencies (see the
+[**Cloning aptos-core**](https://aptos.dev/guides/building-from-source#clone-the-aptos-core-repo) section).
+Then, execute the following commands to run the benchmark:
+
+```
+TABULATE_INSTALL=lib-only pip install tabulate
+
+./testsuite/performance_benchmark.sh --short
+```
+
+Once the benchmark finishes, it will print out a table, with a column `"t/s"`, which shows the TPS achieved by your
+hardware. The evaluation criteria is encoded in the tool, and the tool will display a warning if your hardware does
+not meet the requirements.
 
 **Local SSD vs. network storage**
 
-Cloud deployments require choosing between using local or network storage such as AWS EBS, GCP PD. Local SSD provides lower latency and cost, especially relative to IOPS.
+Cloud deployments require choosing between local storage or network storage, such as, AWS EBS and GCP PD.
+Loosely speaking, a local SSD often provides lower latency and cost, especially relative to IOPS (input/output
+operations per second), while network storage requires CPU support to scale IOPS. However, network
+storage provides better support for backups and offers improved reliability for nodes that stop or fail, thus enabling
+higher availability. The choice between local SSD and network storage depends on your specific requirements and
+constraints.
 
-On the one hand, network storage requires additional CPU support to scale IOPS, but on the other hand, the network storage provides better support for backup snapshots and provide resilience for the nodes in scenarios where the instance is stopped. Network storage makes it easier to support storage needs for high availability.
+### Motivating hardware requirements
 
-## Ports
+Hardware requirements for Aptos nodes depend on: (i) the transaction workload being executed; and (ii) the size of the
+database on each machine. The current hardware requirements have been set using an estimated transaction workload
+(e.g., 30,000 TPS) and an estimated database growth rate for 2024. These may be subject to change. It is also worth
+noting that transaction workloads can change frequently, and thus it is necessary to provision your hardware to meet the
+requirements of the most demanding transaction workloads. This will ensure that your nodes can perform well under
+load and remain stable.
 
-When you are running a validator node, you are required to open network ports on your node to allow other nodes to connect to you. For fullnodes this is optional.
+Generally, the size of the database on each machine is a function of the ledger history (i.e., the number
+of transactions in the blockchain history) and the number of on-chain states (e.g., accounts and resources).
+Both the ledger history and the number of on-chain states depend on several additional factors, including the age
+of the blockchain, the average transaction rate over time, and the configuration of the ledger database pruner.
+
+Note that because archival nodes store the entire history of the blockchain, the database size on archival nodes will
+continue to grow unbounded. As a result, we cannot provide a recommendation for archival node storage sizes.
+
+## Network requirements and ports
+
+When you are running a validator and a VFN, you are required to open network ports on your nodes to allow other
+nodes (i.e., peers) to connect to you. There are different Aptos network types, and each network type uses a different port (see below).
 
 ### Network types
 
-Your node can be configured so that each of these networks can connect using a different port on your node.
-
 There are three types of Aptos networks:
 
-1. **Validator network:** A validator node connects to this network.
-2. **Public network:** A public fullnode connects to this network.
-3. **Validator fullnode network:** A validator fullnode (VFN) connects to this network. The VFN network allows the validator fullnode to connect to a specific validator.
+1. **Validator network:** Validators connect to each other over this network. Validator fullnodes (VFNs) and public fullnodes (PFNs) do not use this network.
+1. **VFN network:** The validator fullnode (VFN) network allows a validator and VFN pair to connect to each other. This network is private between the validator and the VFN.
+1. **Public network:** The public network allows VFNs and public fullnodes (PFNs) to connect to other VFNs and PFNs. This allows public node operators to access the blockchain.
 
-You can configure the port settings on your node using the configuration YAML file. See the [example configuration YAML here](https://github.com/aptos-labs/aptos-core/blob/4ce85456853c7b19b0a751fb645abd2971cc4c0c/docker/compose/aptos-node/fullnode.yaml#L10-L9). With this configuration YAML on your node, the public network connects to your node on port 6182 and the VFN network on 6181. Because these port settings are configurable, we don't explicitly say port X is for network Y.
+Your node can be configured so that each of these networks can operate using a different port on your node. You can configure
+the port settings using the node configuration YAML file. Here is an [example
+configuration file](https://github.com/aptos-labs/aptos-core/blob/4ce85456853c7b19b0a751fb645abd2971cc4c0c/docker/compose/aptos-node/fullnode.yaml#L10) for a VFN node
+that configures the VFN network to use port `6181` and the public network to use port `6182`.
 
 ### Port settings
 
-:::tip Default port settings
-The recommendations described below assume the default port settings used by validators, validator fullnodes and public fullnodes. **We recommend that you do not expose any other ports while operating a node.** If you have changed the default port settings, then you should adjust the recommendations accordingly.
+The recommendations described below assume the default port settings used by validators, VFNs and PFNs. If you have
+changed the default port settings in your configuration file, then you should adjust the recommendations accordingly.
+
+:::caution Exposing ports
+Unless explicitly required, we recommend that you do not expose any other ports while operating a node. This is because
+exposing additional ports can increase the attack surface of your node and make it more vulnerable to adversaries.
 :::
 
-#### For the validator:
+#### Running a validator:
+
+Assuming default ports are used, the following should be configured for validator nodes:
 
 - Open the following TCP ports:
-  - `6180` – Open publicly to enable the validator to connect to other validators in the network.
-  - `6181` – Open privately to only be accessible by your validator fullnode.
+  - `6180` - **Validator network**: Open this port publicly to enable the validator to connect to other validators in the network.
+  - `6181` – **VFN network**: Open this port privately to only be accessible by your VFN.
 - Close the following TCP ports:
-  - `6182` – To prevent public fullnode connections
-  - `9101` – To prevent unauthorized metric inspection
-  - `80/8080` – To prevent unauthorized REST API access
+  - `6182` – **Public network**: Close this port to prevent PFN connections.
+  - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
+  - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
+  - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
 
-#### For the validator fullnode:
+#### Running a VFN:
+
+Assuming default ports are used, the following should be configured for VFN nodes:
 
 - Open the following TCP ports:
-  - `6182` – Open publicly to enable public fullnodes to connect to your validator fullnode.
-  - `6181` – Open privately to only be accessible by your validator.
+  - `6181` – **VFN network**: Open this port privately to only be accessible by your validator.
+  - `6182` – **Public network**: Open this port publicly to enable PFNs to connect to your VFN.
 - Close the following TCP ports:
-  - `9101` – To prevent unauthorized metric inspection
-  - `80/8080` – To prevent unauthorized REST API access
+  - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
+  - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
+  - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
 
-#### For a public fullnode:
-
-- Open the TCP port `6182` publicly to enable other public fullnodes to connect to your node.
-- Close the following TCP ports:
-  - `9101` – To prevent unauthorized metric inspection
-  - `80/8080` – To prevent unauthorized REST API access
-
-:::caution Exposing services
-We note that the inspection port (`9101`) and the REST API port (`80` or `8080`) are likely useful for your internal network, e.g., application development and debugging. However, the inspection port should never be exposed publicly as it can be easily abused. Similarly, if you choose to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to prevent abuse.
+:::danger Exposing services
+We note that the inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
+are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
+port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
+to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to
+prevent abuse.
 :::
