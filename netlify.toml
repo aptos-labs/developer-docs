@@ -1,3 +1,9 @@
+# Build command
+command = "pnpm build"
+
+[build.environment]
+NODE_OPTIONS = "--max_old_space_size=4096"
+
 [build]
 # Ignore the build when nothing in the docs directory has changed.
 # This is a workaround/override for netlify's default ignore behaviour which 
@@ -8,9 +14,5 @@
 # More details can be found here https://docs.netlify.com/configure-builds/ignore-builds/ 
 # and here https://answers.netlify.com/t/builds-cancelled-for-a-new-branch-due-to-no-content-change/17169/4
 ignore = "if [ \"$PULL_REQUEST\" == \"true\" ]; then git diff --quiet main $COMMIT_REF . ; else git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF; fi"
-
-# Build command
-command = "pnpm build"
-
-# Build directory
-publish = "build"
+command = "pnpm run build"
+publish = "./apps/current-docs/build"
