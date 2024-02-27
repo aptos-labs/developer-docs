@@ -271,9 +271,9 @@ pub struct DualAttestationMessage {
 }
 
 impl DualAttestationMessage {
-    pub fn new<M: Into<Vec<u8>>>(metadata: M, reciever: AccountAddress, amount: u64) -> Self {
+    pub fn new<M: Into<Vec<u8>>>(metadata: M, receiver: AccountAddress, amount: u64) -> Self {
         let mut message = metadata.into();
-        bcs::serialize_into(&mut message, &reciever).unwrap();
+        bcs::serialize_into(&mut message, &receiver).unwrap();
         bcs::serialize_into(&mut message, &amount).unwrap();
         message.extend(b"@@$$APTOS_ATTEST$$@@");
 

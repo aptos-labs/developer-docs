@@ -70,7 +70,7 @@ create_proposal(
   description: String,// description of the proposal
   function_names: vector<String>,// 3 types of functions are supported: (1) "no_op", (2) "transfer_fund" and (3) "offer_nft"
   arg_names: vector<vector<String>>,// name of the arguments of the function to be called. The arg here should be the same as the argument used in the function
-  arg_values: vector<vector<vector<u8>>>,// bcs serailized values of argument values
+  arg_values: vector<vector<vector<u8>>>,// bcs serialized values of argument values
   arg_types:vector<vector<String>>,// types of arguments. currently, we only support string, u8, u64, u128, bool, address.
   start_time_sec: u64,// when the voting starts
   token_names: vector<String>,// The name of the token, the proposer want to use for proposing

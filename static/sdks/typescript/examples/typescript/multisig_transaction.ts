@@ -18,7 +18,7 @@ const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptosl
   const client = new AptosClient(NODE_URL);
   const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
 
-  // Genereate 3 key pairs and account instances
+  // Generate 3 key pairs and account instances
   const account1 = new AptosAccount();
   const account2 = new AptosAccount();
   const account3 = new AptosAccount();
@@ -72,7 +72,7 @@ const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptosl
     client.getChainId(),
   ]);
 
-  // See class definiton here
+  // See class definition here
   // https://aptos-labs.github.io/ts-sdk-doc/classes/TxnBuilderTypes.RawTransaction.html#constructor.
   const rawTxn = new TxnBuilderTypes.RawTransaction(
     // Transaction sender account address
