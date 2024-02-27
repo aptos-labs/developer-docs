@@ -1,112 +1,81 @@
-# Developer Documentation
+# Turborepo starter
 
-- [Installation](#installation)
-  - [Requirements](#requirements)
-- [Fork and clone the Aptos repo](#fork-and-clone-the-aptos-repo)
-- [Build and serve the docs locally](#build-and-serve-the-docs-locally)
-- [Build static html files](#build-static-html-files)
-- [Debug/Format files](#debugging)
+This is an official starter Turborepo.
 
-This Aptos Developer Documentation is built using [Docusaurus 2](https://docusaurus.io/) and displayed on https://aptos.dev/. Follow the below steps to build the docs locally and test your contribution.
+## Using this example
 
-We now use [lychee-broken-link-checker](https://github.com/marketplace/actions/lychee-broken-link-checker) to check for broken links in the GitHub Markdown. We use a corresponding link checker for pages on Aptos.dev.
+Run the following command:
 
-With results visible at:
-https://github.com//aptos-labs/developer-docs/actions/workflows/links.yml
-
-## Installation
-
-**IMPORTANT**: These installation steps apply to macOS environment.
-
-### Requirements
-
-Before you proceed, make sure you install the following tools.
-
-- Install [Node.js](https://nodejs.org/en/download/) by executing the below command on your Terminal:
-
-```
-brew install node
+```sh
+npx create-turbo@latest
 ```
 
-- Install the latest [pnpm](https://pnpm.io/installation) by executing the below command on your Terminal:
+## What's inside?
+
+This Turborepo includes the following packages/apps:
+
+### Apps and Packages
+
+- `docs`: a [Next.js](https://nextjs.org/) app
+- `web`: another [Next.js](https://nextjs.org/) app
+- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
+- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+
+### Utilities
+
+This Turborepo has some additional tools already setup for you:
+
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io) for code formatting
+
+### Build
+
+To build all apps and packages, run the following command:
 
 ```
-curl -fsSL https://get.pnpm.io/install.sh | sh -
-```
-
-## Clone the Developer docs repo
-
-```
-git clone https://github.com/aptos-labs/developer-docs.git
-
-```
-
-## Build and serve the docs locally
-
-1. Run `pnpm`.
-
-```
-pnpm install
-```
-
-This step will configure the Docusaurus static site generator.
-
-2. Start the server locally. This will also open the locally built docs in your default browser.
-
-> **NOTE**: This step will not generate static html files, but will render the docs dynamically.
-
-```
-pnpm start
-```
-
-3. See your changes staged at: http://localhost:3000/
-
-4. Create a pull request with your changes as described in our [Contributing](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) README.
-
-## (Optional) Build static html files
-
-Execute the below steps if you want to generate static html documentation files. A `build` directory will be created with the static html files and assets contained in it.
-
-1. Make sure you install dependencies.
-
-```
-pnpm install
-```
-
-2. Build static html files with pnpm.
-
-```
+cd my-turborepo
 pnpm build
 ```
 
-This command generates static html content and places it in the `build` directory.
+### Develop
 
-3. Finally, use the below command to start the documentation server on your localhost.
-
-```
-pnpm run serve
-```
-
-## Debugging
-
-Fix formatting issues by running:
+To develop all apps and packages, run the following command:
 
 ```
-pnpm fmt
+cd my-turborepo
+pnpm dev
 ```
 
-## Regenerating contributors
+### Remote Caching
 
-The src/contributors.json file (which powers the list of Authors at the bottom of doc pages) needs to be manually generated.
+Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
 
-In order to generate the contributor map you must authenticate with GitHub. The best way to do that is using GitHub CLI ([installation guide(https://github.com/cli/cli#installation)]). Once you have the GitHub CLI installed, you can run the following command to authenticate:
-
-```
-gh auth login --scopes read:user,user:email
-```
-
-Once that is done, you can generate the map with this command:
+By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
 
 ```
-pnpm contributors
+cd my-turborepo
+npx turbo login
 ```
+
+This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+
+Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+
+```
+npx turbo link
+```
+
+## Useful Links
+
+Learn more about the power of Turborepo:
+
+- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
+- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
+- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
+- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
+- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
+- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
