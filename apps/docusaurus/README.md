@@ -1,11 +1,13 @@
 # Developer Documentation
 
-- [Installation](#installation)
-  - [Requirements](#requirements)
-- [Fork and clone the Aptos repo](#fork-and-clone-the-aptos-repo)
-- [Build and serve the docs locally](#build-and-serve-the-docs-locally)
-- [Build static html files](#build-static-html-files)
-- [Debug/Format files](#debugging)
+- [Developer Documentation](#developer-documentation)
+  - [Installation](#installation)
+    - [Requirements](#requirements)
+  - [Clone the Developer docs repo](#clone-the-developer-docs-repo)
+  - [Build and serve the docs locally](#build-and-serve-the-docs-locally)
+  - [(Optional) Build static html files](#optional-build-static-html-files)
+  - [Debugging](#debugging)
+  - [Regenerating contributors](#regenerating-contributors)
 
 This Aptos Developer Documentation is built using [Docusaurus 2](https://docusaurus.io/) and displayed on https://aptos.dev/. Follow the below steps to build the docs locally and test your contribution.
 
@@ -26,6 +28,12 @@ Before you proceed, make sure you install the following tools.
 
 ```
 brew install node
+```
+
+- Install [aspell](https://formulae.brew.sh/formula/aspell) by executing the below command on your Terminal:
+
+```
+brew install aspell
 ```
 
 - Install the latest [pnpm](https://pnpm.io/installation) by executing the below command on your Terminal:
