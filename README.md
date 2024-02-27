@@ -2,6 +2,8 @@
 
 This is an official starter Turborepo.
 
+> Visit the `README.md` under `apps/current-docs` for more steps on building / developing in this repo
+
 ## Using this example
 
 Run the following command:
