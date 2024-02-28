@@ -15,4 +15,4 @@ NODE_OPTIONS = "--max_old_space_size=4096"
 # and here https://answers.netlify.com/t/builds-cancelled-for-a-new-branch-due-to-no-content-change/17169/4
 ignore = "if [ \"$PULL_REQUEST\" == \"true\" ]; then git diff --quiet main $COMMIT_REF . ; else git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF; fi"
 command = "pnpm run build"
-publish = "./apps/current-docs/build"
+publish = "./apps/docusaurus/build"
