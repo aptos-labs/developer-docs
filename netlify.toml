@@ -13,4 +13,4 @@ ignore = "if [ \"$PULL_REQUEST\" == \"true\" ]; then git diff --quiet main $COMM
 command = "pnpm build"
 
 # Build directory
-publish = "build"
+publish = "./apps/docusaurus/build"
