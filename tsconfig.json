@@ -1,11 +1,3 @@
 {
-  // This file is not used in compilation. It is here just for a nice editor experience.
-  "extends": "@docusaurus/tsconfig",
-  "exclude": ["node_modules", "static/**/*"],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "moduleResolution": "bundler",
-    "skipLibCheck": true,
-    "target": "ESNext"
-  }
+  "extends": "@repo/typescript-config/base.json"
 }
