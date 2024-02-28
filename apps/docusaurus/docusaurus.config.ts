@@ -390,6 +390,38 @@ const config: Config = {
             from: "/sdks/new-ts-sdk",
             to: "/sdks/ts-sdk",
           },
+          {
+            from: "/sdks/new-ts-sdk/account",
+            to: "/sdks/ts-sdk/account",
+          },
+          {
+            from: "/sdks/new-ts-sdk/fetch-data-from-chain",
+            to: "/sdks/ts-sdk/fetch-data-from-chain",
+          },
+          {
+            from: "/sdks/new-ts-sdk/http-client",
+            to: "/sdks/ts-sdk/http-client",
+          },
+          {
+            from: "/sdks/new-ts-sdk/migration-guide",
+            to: "/sdks/ts-sdk/migration-guide",
+          },
+          {
+            from: "/sdks/new-ts-sdk/move-types",
+            to: "/sdks/ts-sdk/move-types",
+          },
+          {
+            from: "/sdks/new-ts-sdk/sdk-configuration",
+            to: "/sdks/ts-sdk/sdk-configuration",
+          },
+          {
+            from: "/sdks/new-ts-sdk/transaction-builder",
+            to: "/sdks/ts-sdk/transaction-builder",
+          },
+          {
+            from: "/sdks/new-ts-sdk/typescript",
+            to: "/sdks/ts-sdk/typescript",
+          },
         ],
         // Create redirects for all the move pages
         createRedirects(existingPath) {
