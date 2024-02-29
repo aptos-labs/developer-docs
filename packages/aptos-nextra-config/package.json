@@ -1,0 +1,36 @@
+{
+  "name": "@aptos-labs/aptos-nextra-config",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Docs config for Aptos",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup ./src/index.ts"
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.51",
+    "react": "^18.2.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  }
+}
