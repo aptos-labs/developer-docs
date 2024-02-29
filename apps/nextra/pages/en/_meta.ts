@@ -4,6 +4,12 @@ export default {
     type: 'page',
     display: 'hidden'
   },
+  learn: {
+    type: 'page',
+    title: 'Learn ↗',
+    href: 'https://learn.aptoslabs.com/',
+    newWindow: true,
+  },
   build: {
     type: 'menu',
     title: 'Build',
@@ -75,12 +81,14 @@ export default {
   },
   docs: {
     type: 'page',
-    title: 'Docs'
+    title: 'Docs',
+    display: 'hidden'
   },
   nextra_link: {
     type: 'page',
     title: 'Nextra ↗',
     href: 'https://github.com/shuding/nextra',
-    newWindow: true
+    newWindow: true,
+    display: 'hidden'
   },
 };
