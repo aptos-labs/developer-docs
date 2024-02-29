@@ -1,0 +1,45 @@
+---
+title: Analytics
+---
+
+import { FileTree } from 'nextra/components'
+
+## Google Analytics
+
+1. Ask a GCP admin to create a new `property` for you in Google Analytics under `Aptos Labs`. Provide the following
+  1. Website name (e.g., docs.aptos.dev)
+2. Once the `property` is created, ask for the `Measurement ID`
+
+The `Measurement ID` is then used in `pages/_app.tsx`.
+
+<FileTree>
+  <FileTree.Folder name="pages" defaultOpen>
+    <FileTree.File name="_meta.ts" />
+    <FileTree.Folder name="api" />
+    <FileTree.Folder name="en" />
+    <FileTree.File name="_app.tsx" active />
+  </FileTree.Folder>
+</FileTree>
+
+```tsx filename="pages/_app.tsx" /gaId="G-A1B2C3D4E5"/
+export default function App({ Component, pageProps }) {
+  return (
+    <>
+      <GoogleAnalytics gaId="G-A1B2C3D4E5" />
+      <Component {...pageProps} />
+    </>
+  )
+}
+```
+
+
+### GCP Admins (PE)
+
+> Ignore the steps below unless you have Admin access
+
+1. Navigate to [analytics.google.com](analytics.google.com)
+2. In Google Analytics Admin (`Admin` button is the gear icon in the bottom left of the screen), click Create, then select `Property`.
+3. Provide a property name.
+4. For the section on `Choose your business objectives`, select `Generate leads` and `Examine user behavior`
+5. For the section on `Start collecting data`, choose `Web` as the platform
+6. Setup the data stream

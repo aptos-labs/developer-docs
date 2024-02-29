@@ -1,0 +1,50 @@
+{
+  "name": "@aptos-labs/docs-site",
+  "type": "module",
+  "author": "hariria",
+  "private": true,
+  "scripts": {
+    "analyze": "ANALYZE=true pnpm build",
+    "build": "next build",
+    "clean": "rimraf .next .turbo",
+    "debug": "NODE_OPTIONS='--inspect' next dev",
+    "dev": "next",
+    "prebuild": "node nextra-remote-filepaths/fetch.js",
+    "predev": "pnpm prebuild",
+    "start": "next start",
+    "types:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aptos-labs/aptos-docs-config": "workspace:*",
+    "@next/third-parties": "^14.1.0",
+    "@vercel/og": "^0.5.0",
+    "focus-visible": "^5.1.0",
+    "intersection-observer": "^0.10.0",
+    "markdown-to-jsx": "^6.11.4",
+    "next": "^13.5.6",
+    "nextra": "workspace:*",
+    "nextra-theme-docs": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-intersection-observer": "^8.26.2"
+  },
+  "dependenciesMeta": {
+    "nextra": {
+      "injected": true
+    },
+    "nextra-theme-docs": {
+      "injected": true
+    }
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^13.4.19",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1"
+  },
+  "nextBundleAnalysis": {
+    "budget": 358400,
+    "budgetPercentIncreaseRed": 20,
+    "showDetails": true
+  }
+}
