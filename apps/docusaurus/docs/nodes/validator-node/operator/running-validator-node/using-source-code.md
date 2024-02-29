@@ -183,7 +183,15 @@ when you build the binary, and download the correct genesis and waypoint files f
 
     To start your VFN, run the following commands on a separate, dedicated VFN machine. You will need to download the
     `aptos-core` source code and build the binary on the VFN machine. Likewise, you will need to copy across
-    the keys and configuration files from the validator machine. However, your VFN will not do anything until it is part of the active validator set! You can wait to start it after that is completed later. 
+    the keys and configuration files from the validator machine. However, your VFN will not do anything until it is part of the active validator set! You can wait to start it after that is completed later.
+
+    The files to copy are the full contents of your config/ and keys/ folder and should be in corresponding directories. 
+
+        Example: Copying the validator.yaml configuration file from the VN to the VFN might look something like:
+
+```
+ scp /home/$USERNAME/mainnet/config/validator.yaml username@VFN.IP.GOES.HERE:/home/$USERNAME/mainnet/config/validator.yaml
+```
 
     :::danger VFN identity
     You should copy the keys and configuration
@@ -191,11 +199,7 @@ when you build the binary, and download the correct genesis and waypoint files f
     another set of keys or files for the VFN, as these will not be recognized by the network.
     :::
 
-    Example: Copying the validator.yaml configuration file from the VN to the VFN might look something like:
 
-```
- scp /home/apt/mainnet/config/validator.yaml username@VFN.IP.GOES.HERE:/home/apt/mainnet/config/validator.yaml
-```
   Start your VFN by running the following commands, with the paths assuming you are in the root of the `aptos-core` directory:
 
     ```bash
