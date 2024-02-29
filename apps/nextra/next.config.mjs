@@ -2,7 +2,7 @@
 import bundleAnalyzer from '@next/bundle-analyzer'
 import nextra from 'nextra'
 import { i18nConfig } from './docs.config.js';
-import { macros } from '@aptos-labs/aptos-docs-config'
+import { macros } from '@aptos-labs/aptos-nextra-config'
 
 const withNextra = nextra({
   theme: 'nextra-theme-docs',

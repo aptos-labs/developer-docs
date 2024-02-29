@@ -39,39 +39,3 @@ export enum NavigationHeaderCategories {
   DEVELOPER_PLATFORMS = 'developer_platforms',
   NETWORK = 'network'
 }
-
-export const defaultNav: Config = {
-  build: {
-    items: [
-      {
-        title: 'Typescript SDK',
-        subtitle: 'Build web applications',
-        iconUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg',
-        link: 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg'
-      },
-      {
-        title: 'Typescript SDK',
-        subtitle: 'Build web applications',
-        iconUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg',
-        link: 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg'
-      },
-      {
-        title: 'Typescript SDK',
-        subtitle: 'Build web applications',
-        iconUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg',
-        iconSvg: <div>hi</div>,
-        link: 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg'
-      },
-      {
-        title: 'Typescript SDK',
-        subtitle: 'Build web applications',
-        iconUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg',
-        link: 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg'
-      }
-    ]
-  },
-}
