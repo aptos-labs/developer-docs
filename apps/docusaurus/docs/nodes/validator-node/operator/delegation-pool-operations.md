@@ -14,7 +14,7 @@ The operator address will receive the pool commission that was set at the initia
 
 1. [Install](../../../tools/aptos-cli/install-cli/index.md) the Aptos CLI. To initialize the CLI correctly, you will need to set a profile, and import your private key.
 
-After installing the Aptos CLI, configure it like so:
+2. After installing the Aptos CLI, configure it like so:
 First, find your private key. It is the value for `account_private_key`
 ```
 cat ~/$WORKSPACE/keys/private-keys.yaml
@@ -30,7 +30,7 @@ aptos init --profile validator
 > [Paste account private key]
 ```
  
-2. [Initialize local configuration and create an account](../../../tools/aptos-cli/use-cli/use-aptos-cli.md#initialize-local-configuration-and-create-an-account) on the Aptos blockchain.
+
 
 ## Initialize a delegation pool
 
