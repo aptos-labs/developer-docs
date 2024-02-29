@@ -10,7 +10,6 @@
 ignore = "if [ \"$PULL_REQUEST\" == \"true\" ]; then git diff --quiet main $COMMIT_REF . ; else git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF; fi"
 
 # Build command
+base = "apps/docusaurus"
+publish = "build/"
 command = "pnpm build"
-
-# Build directory
-publish = "./apps/docusaurus/build"
