@@ -45,19 +45,17 @@ values in [Aptos Blockchain Networks](../../networks.md) to see how profiles can
 
 ### 1. Initialize the Aptos CLI
 
-First, initialize the Aptos CLI with your operator account private key. This can be found in your `private-keys.yaml` file
-under the entry `account_private_key`.
+First, initialize the Aptos CLI if you have not already done so. This was covered in [Delegation Pool Operations](./delegation-pool-operations.md)
 
-Replace `<operator_account_private_key>` with the value from the file in the command below:
+### 2. Ensure Services are stopped on both VN and VFN
+`sudo systemctl stop aptos-node`
 
-```bash
-aptos init --profile mainnet-operator \
---network mainnet \
---private-key <operator_account_private_key> \
---skip-faucet
-```
+### 3. Ensure the data/ folder is empty, and delete it's contents if it is not
+`ls ~/$WORKSPACE/data`
 
-### 2. Check your account balance
+`sudo rm -r ~/$WORKSPACE/data/*`
+
+### 4. Check your account balance
 
 Next, make sure you have enough funds to pay for transaction gas on the network. You can check this using the CLI, by
 running the command below:
@@ -74,7 +72,7 @@ This will show you the coin balance you have in the validator account. You will 
   }
 ```
 
-### 3. Update on-chain network addresses
+### 5. Update on-chain network addresses
 
 Next, you will need to update the network addresses for your validator and VFN. This is required to ensure that your nodes
 are able to connect to other peers in the network. First, fetch the pool address for your nodes, by running the command below.
@@ -101,7 +99,7 @@ addresses are updated at the end of the current epoch. Before the next epoch, yo
 to other peers in the network.
 :::
 
-### 4. Update on-chain consensus key
+### 6. Update on-chain consensus key
 
 Next, you will need to update the consensus key for your nodes. This is required to ensure that your nodes are able to
 participate in consensus. You can do this by running the command below. Note that it requires the pool address and
@@ -119,7 +117,7 @@ Updating your consensus key on-chain requires waiting for the next epoch to begi
 is updated at the end of the current epoch. Before the next epoch, your nodes will not be able to participate in consensus.
 :::
 
-### 5. Join the validator set
+### 7. Join the validator set
 
 Finally, you will need to join the validator set. You can do this by running the command below:
 
@@ -136,23 +134,7 @@ validator node is able to join the validator set.
 You can identify the next epoch by checking the [Aptos Explorer](https://explorer.aptoslabs.com/validators/all?network=mainnet) or by running the command `aptos node get-stake-pool`.
 :::
 
-### 6. Check the validator set
-
-When you execute the command to join the validator set, your validator will be in a "Pending Active" state until the
-next epoch occurs. You can run the command below to look for your validator in the `pending_active` list.
-
-```bash
-aptos node show-validator-set --profile mainnet-operator | jq -r '.Result.pending_active' | grep <pool_address>
-```
-
-When the next epoch occurs, the node will be moved into `active_validators` list. Run the command
-below to see your validator in the "active_validators" list:
-
-```bash
-aptos node show-validator-set --profile mainnet-operator | jq -r '.Result.active_validators' | grep <pool_address>
-```
-
-## Update identities
+### 6. Change the Validator Identity and Validator Fullnode Identity to be Pool Address
 
 After joining the validator set, you will need to update your node identity configuration files to match the pool address.
 This is required to ensure that your nodes are able to connect to other peers in the network.
@@ -165,15 +147,83 @@ other peers in the network.
 
 Follow the steps below to update your node identity configurations, depending on the deployment method you used.
 
-### Using Source Code
+Using Source Code:
 
 If you used the source code to deploy your nodes, follow these steps:
 
-1. Stop your validator and VFN and remove the data directory from both nodes. Make sure to remove the
+1. Stop your validator and VFN and remove the data directory from both nodes if you have not already done so. Make sure to remove the
    `secure-data.json` file on the validator, too. You can see the location of the `secure-data.json` file in your
    validator's configuration file.
 2. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
-3. Restart the validator and VFN.
+
+
+### 7. Check the validator set
+
+When you execute the command to join the validator set, your validator will be in a "Pending Active" state until the
+next epoch occurs. You can run the command below to look for your validator in the `pending_active` list.
+
+```bash
+aptos node show-validator-set --profile validator | jq -r '.Result.pending_active' | grep <pool_address>
+```
+
+When the next epoch occurs, the node will be moved into `active_validators` list. Run the command
+below to see your validator in the "active_validators" list:
+
+```bash
+aptos node show-validator-set --profile validator | jq -r '.Result.active_validators' | grep <pool_address>
+```
+
+### 8. Start the VFN
+
+Once you have moved into the Active validator set, you begin by starting and syncing your VFN. Do not start your VN until the VFN is fully synced. This can take about one hour to sync. 
+
+`sudo systemctl start aptos-node`
+
+You will begin by monitoring states synchronized:
+`curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_state_sync_version"`
+Will return an output like:
+```
+# HELP aptos_state_sync_version The versions processed by the storage synchronizer operations
+# TYPE aptos_state_sync_version gauge
+aptos_state_sync_version{type="applied_transaction_outputs"} 0
+aptos_state_sync_version{type="executed_transactions"} 0
+aptos_state_sync_version{type="synced"} 0
+aptos_state_sync_version{type="synced_epoch"} 1
+aptos_state_sync_version{type="synced_states"} 15249
+```
+If synced_states is incrementing, it is working. After about 1 hour, you should see the output transition to something more like:
+```
+# HELP aptos_state_sync_version The versions processed by the storage synchronizer operations
+# TYPE aptos_state_sync_version gauge
+aptos_state_sync_version{type="applied_transaction_outputs"} 928968919
+aptos_state_sync_version{type="executed_transactions"} 928762108
+aptos_state_sync_version{type="synced"} 928968919
+aptos_state_sync_version{type="synced_epoch"} 12953
+aptos_state_sync_version{type="synced_states"} 152494265
+```
+That usually means synchronization is done, but you can confirm by comparing the `synced_epoch`
+to the current epoch on a block explorer. 
+You should also run
+```
+curl http://127.0.0.1:8080/v1 | jq
+```
+And compare `epoch` and `block_height` to what is present on the explorer
+```
+{
+  "chain_id": 2,
+  "epoch": "12953",
+  "ledger_version": "928970721",
+  "oldest_ledger_version": "928762108",
+  "ledger_timestamp": "1709234779506176",
+  "node_role": "full_node",
+  "oldest_block_height": "224073978",
+  "block_height": "224155074",
+  "git_hash": "bd02f947bfaee70c58d7131bdc588c25af06eda4"
+}
+```
+### 9. Start the VN
+
+Perform the same steps are you did in step 8, but on the Validator node. 
 
 ### Using Docker
 
