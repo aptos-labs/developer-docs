@@ -1,6 +1,5 @@
 {
   "name": "aptos-docs",
-  "packageManager": "pnpm@8.14.1",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -18,11 +17,6 @@
     "fmt": "prettier --write '**/*.(tsx|ts|jsx|js|json|md|html)'",
     "lint": "pnpm install --frozen-lockfile && prettier --check '**/*.(tsx|ts|jsx|js|json|md|html)'",
     "contributors": "scripts/contributors.js"
-  },
-  "pnpm": {
-    "overrides": {
-      "semver": ">=7.5.4"
-    }
   },
   "dependencies": {
     "@algolia/client-search": "^4.22.1",
