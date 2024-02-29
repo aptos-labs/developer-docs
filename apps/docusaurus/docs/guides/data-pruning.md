@@ -2,35 +2,26 @@
 title: "Data Pruning"
 ---
 
-When a validator node is running, it participates in consensus to execute
-transactions and commit new data to the blockchain. Similarly, when fullnodes
-are running, they sync the new blockchain data through [state synchronization](../guides/state-sync.md).
-As the blockchain grows, storage disk space can be managed by pruning old
-blockchain data. Specifically, by pruning the **ledger history**: which
-contains old transactions. By default, ledger pruning is enabled on all
-nodes with a pruning window that can be configured. This document describes
-how you can configure the pruning behavior.
+All Aptos nodes (e.g., validators, VFNs and PFNs) process transactions and commit new data to the blockchain.
+As the blockchain grows (indefinitely), nodes can manage the amount of storage disk space required by pruning old
+blockchain data. To achieve this, Aptos nodes prune the blockchain **ledger history** in their database, which
+contains the history of all transactions. The ledger history may be **complete** (e.g., if you're operating an archival
+node), or **pruned** to a certain window of transactions (to reduce storage requirements).
 
-:::note
-By default the ledger pruner keeps 150 million recent transactions. The approximate amount of disk space required for every 150M transactions is 200G. Unless
-bootstrapped from the genesis and configured to disable the pruner or a long
-prune window, the node doesn't carry the entirety of the ledger history.
-Majority of the nodes on both the testnet and mainnet have a partial
-history of 150 million transactions according to this configuration.
+By default, ledger pruning is enabled on all nodes, and the pruning window can be configured. This document
+describes how you can configure the behavior of the ledger pruner.
+
+:::tip Default pruning window
+The default configuration of the ledger pruner is to keep only the most recent 150 million transactions.
+This roughly corresponds to around ~200G of disk space, depending on transaction types and outputs.
+Almost all Aptos nodes in testnet and mainnet use the default configuration. If you instead wish to run
+an archival node, follow the instructions, [here](../guides/state-sync.md#archival-pfns).
 :::
 
-To manage these settings, edit the node configuration YAML files,
-for example, `fullnode.yaml` for fullnodes (validator or public) or
-`validator.yaml` for validator nodes, as shown below.
+## Disable the ledger pruner
 
-## Disabling the ledger pruner
-
-Add the following to the node configuration YAML file to disable the
-ledger pruner:
-
-:::caution Proceed with caution
-Disabling the ledger pruner can result in the storage disk filling up very quickly.
-:::
+If you wish to disable the ledger pruner entirely, you can do so by adding the following to the node
+configuration file, e.g., `fullnode.yaml` or `validator.yaml`.
 
 ```yaml
 storage:
@@ -39,21 +30,24 @@ storage:
       enable: false
 ```
 
-## Configuring the ledger pruning window
-
-Add the following to the node configuration YAML file to make the node
-retain, for example, 1 billion transactions and their outputs, including events
-and write sets.
-
-:::caution Proceed with caution
-Setting the pruning window smaller than 100 million can lead to runtime errors and damage the health of the node.
+:::danger Unbounded storage growth
+Be warned that disabling the ledger pruner will result in unbounded storage growth. This can
+lead to the storage disk filling up very quickly.
 :::
+
+## Configure the ledger pruner
+
+If you wish, you can configure the size of the ledger pruning window (i.e., the number of the most recent transactions
+to retain in storage). To do this, add the following to the node configuration file, e.g., `fullnode.yaml` or `validator.yaml`.
 
 ```yaml
 storage:
   storage_pruner_config:
     ledger_pruner_config:
-      prune_window: 1000000000
+      prune_window: 100000000 # 100 million transactions
 ```
 
-See the complete set of storage configuration settings in the [Storage README](https://github.com/aptos-labs/aptos-core/tree/main/storage#configs).
+:::danger Minimum pruning window
+Setting the pruning window smaller than 100 million transactions can lead to runtime errors and damage the
+health of the node.
+:::

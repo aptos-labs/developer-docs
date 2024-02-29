@@ -1,42 +1,51 @@
 ---
-title: "Update Fullnode With New Releases"
+title: "Upgrade your PFN"
 slug: "update-fullnode-with-new-devnet-releases"
 sidebar_position: 11
 ---
 
-# Update Fullnode With New Releases
+# Upgrade your PFN
 
-This document outlines the process for updating your fullnode. For fullnodes running in `devnet`, an additional data wipe step is required as `devnet` is wiped on every release.
+This document outlines the process for updating your PFN with new Aptos releases. All PFNs will need to be updated
+when new releases are available. For PFNs running in `devnet`, an additional data wipe step is required as `devnet`
+is wiped on every new release.
 
-## If you built the fullnode from aptos-core source code
+## Source code deployment
 
-1. Stop your fullnode by running the below command:
+If you run your PFN from the [aptos-core][aptos-labs/aptos-core] source code, you can update your PFN by
+following these steps:
 
-```bash
-cargo stop aptos-node
-```
+1.  Stop your PFN by running the command below (or killing the `aptos-node` process manually):
 
-2. For users of the Rust binary, pull the latest release appropriate for your network (`devnet`, `testnet`, or `mainnet`):
+    ```bash
+    cargo stop aptos-node
+    ```
 
-```bash
-git checkout [network_branch] && git pull
-```
+1.  Fetch the latest release appropriate for your network, e.g., `devnet`, `testnet`, or `mainnet`. Be sure to replace
+    `[network_branch]` with the appropriate branch name below:
 
-Replace `[network_branch]` with `devnet`, `testnet`, or `mainnet` as applicable, and rebuild the binary.
+        ```bash
+        git checkout [network_branch] && git pull
+        ```
 
-3. If your fullnode is running in `devnet`, follow the additional steps in the [Additional data wipe steps for `devnet`](#additional-data-wipe-steps-for-devnet) section below.
+1.  Rebuild the binary as you did during the initial setup.
 
-4. Restart your fullnode by running the same start (`run`) command as before:
+1.  If your PFN is running in `devnet`, follow the additional steps in the [Data Wipe and Reset](#additional-data-wipe-steps-for-devnet) section below.
 
-```bash
-cargo run -p aptos-node --release -- -f ./fullnode.yaml
-```
+1.  Restart your PFN by running the same deployment command as before. For example:
 
-5. See the [Verify initial synchronization](./fullnode-source-code-or-docker.md#verify-initial-synchronization) section for checking if the fullnode is syncing again.
+    ```bash
+    cargo run -p aptos-node --release -- -f ./fullnode.yaml
+    ```
 
-### Additional data wipe steps for `devnet`
+### (Devnet) Data Wipe and Reset
 
-For devnet, follow these additional steps after stopping your fullnode:
+:::danger Devnet only wipe
+Only follow these additional steps if your PFN is running in `devnet`. Other networks (e.g., `testnet` and `mainnet`)
+don't require this step (as data is never wiped)!
+:::
+
+If your PFN is running in `devnet`, follow these additional steps after stopping your PFN (and before restarting it!):
 
 1. Delete the data folder (the directory path is what you specified in the configuration file, e.g., `fullnode.yaml`).
 
@@ -46,39 +55,50 @@ For devnet, follow these additional steps after stopping your fullnode:
 
 3. Download the new [genesis.blob](../node-files-all-networks/node-files.md#genesisblob) file and the new [waypoint](../node-files-all-networks/node-files.md#waypointtxt).
 
-4. Update the configuration file (e.g., `fullnode.yaml`) with the new waypoint (if you configure the waypoint directly there).
+4. Update the configuration file (e.g., `fullnode.yaml`) with the new genesis.blob and waypoint files.
 
-## If you run a fullnode via Docker
+5. Restart your PFN by running the same deployment command as before.
 
-1. Stop your fullnode by running the below command:
+## Docker deployment
+
+If you run your PFN from a Docker image, you can update your PFN by:
+
+1. Stop your PFN by running the command below:
    ```bash
    docker compose down --volumes
    ```
-2. If your fullnode is running in `devnet`, delete the entire directory which holds your fullnode config and data directory.
-3. Re-install and configure those files as during setup.
-4. Restart your fullnode:
+2. (Devnet only!) If your PFN is running in `devnet`, delete the entire directory which holds your PFN config and data directory.
+3. Re-install and configure those files as during the original setup.
+4. Restart your PFN by running the same deployment command as before. For example:
+   ```bash
+   docker compose up -d
+   ```
 
-```bash
-docker compose up -d
-```
+## GCP deployment
 
-## If you run a fullnode on GCP
+If you run your PFN in GCP, follow the steps below to update your PFN. Note: if your PFN is
+running in `devnet`, an additional data wipe step is required.
 
 ### Upgrade with data wipe (devnet only)
 
-Upgrading your node in devnet requires a data wipe, as the network is reset on each deployment. Other networks (e.g., testnet and mainnet) don't require this step and we recommend not wiping your data in these networks.
+:::danger Devnet only wipe
+Only follow these steps if your PFN is running in `devnet`. Other networks don't require this step (as data is never wiped)
+and we recommend not wiping your data in these networks.
+:::
 
-1. You can increase the `era` number in `main.tf` to trigger a new data volume creation, which will start the node on a new DB.
+If you are running a `devnet` PFN, follow these steps to update:
 
-2. Update `image_tag` in `main.tf`.
+1. Increase the `era` number in `main.tf` to trigger a new data volume creation, which will start the PFN on a new DB.
 
-3. Update Terraform module for fullnode, run this in the same directory of your `main.tf` file:
+2. Update the `image_tag` in `main.tf` to contain the new release version.
+
+3. Update the Terraform module for the PFN (run this in the same directory of your `main.tf` file):
 
 ```bash
 terraform get -update
 ```
 
-4. Apply Terraform changes:
+4. Apply the Terraform changes:
 
 ```bash
 terraform apply
@@ -86,19 +106,22 @@ terraform apply
 
 ### Upgrade without data wipe
 
-1. Update `image_tag` in `main.tf`.
+If you are not running a `devnet` PFN, follow these steps to update:
 
-2. Update Terraform module for fullnode, run this in the same directory of your `main.tf` file:
+1. Update the `image_tag` in `main.tf`.
+
+2. Update the Terraform module for the PFN (run this in the same directory of your `main.tf` file):
 
 ```bash
 terraform get -update
 ```
 
-3. Apply Terraform changes:
+3. Apply the Terraform changes:
 
 ```bash
 terraform apply
-# if you didn't update the image tag, terraform will show nothing to change, in this case, force helm update
+
+# If you didn't update the image tag, terraform will show nothing to change, in this case, force a helm update
 terraform apply -var force_helm_update=true
 ```
 

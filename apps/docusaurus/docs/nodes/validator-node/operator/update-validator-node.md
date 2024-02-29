@@ -1,64 +1,80 @@
 ---
-title: "Update Aptos Validator Node"
+title: "Upgrade Nodes"
 slug: "update-validator-node"
 ---
 
-# Update Aptos Validator Node via Failover
+# Upgrade Nodes
 
-You will likely have to upgrade or replace your validator node (VN) at some point, such as for maintenance or outages. Start anew by [creating a new validator fullnode (VFN)](running-validator-node/index.md). To minimize downtime, we recommend you then convert your live validator fullnode to your validator node, and backfill the validator fullnode.
+This section contains tutorials for upgrading your validator and validator fullnode (VFN). Upgrades are a
+common operation for maintaining your nodes. Aptos Labs frequently releases new versions of the
+Aptos node software, and you should keep your nodes up to date to ensure they are secure and reliable.
 
-Since you are already running [a validator node and a validator fullnode](node-requirements.md), you have at your fingertips the means to replace your validator node immediately. Simply convert your validator fullnode to a validator node and then backfill the validator fullnode with either the updated validator node or an entirely new validator fullnode.
+:::danger
+Running old node versions and failing to update your nodes can lead to security vulnerabilities, performance
+degradation, and network instability. It is important to keep your nodes up to date.
+:::
 
-This page explains how to make this swap, which largely amounts to switching out files and configuration settings between the two nodes. For a community-provided version of this document for Docker setup, see [Failover and migrate Validator Nodes for less downtime](https://forum.aptoslabs.com/t/failover-and-migrate-validator-nodes-for-less-downtime/144846).
+There are two primary ways to upgrade your nodes. The first is a **simple** **upgrade** of the node software, and the
+second is a more **complex** **failover** process between your validator and VFN. The failover process is useful for
+minimizing validator downtime when you need to upgrade.
 
-## Prepare
+## Simple Upgrade
 
-First, understand the data is almost identical between the two nodes. The VFN is missing the `consensus_db` and `secure-data.json`, but it is otherwise largely ready for conversion into a validator node.
+To perform a simple node upgrade, you can upgrade the validator and VFN individually, one at a time.
+This process is straightforward and can be repeated for each node. The steps are as follows:
 
-To failover from an outdated or erroneous validator node to an updated and reliable validator fullnode, follow these steps:
+1. First, stop the node manually (e.g., the validator or VFN). To stop the node, it will depend on your deployment method.
+2. Next, update the node software to the latest version. This may require downloading the latest binary or Docker image,
+   or recompiling the source code. Depending on your deployment method, you can perform this step in the background while the node is still running.
+   This should help minimize downtime.
+3. Finally, once you have updated the node software, restart the node using the latest software version and the original
+   commands you used to start the node.
 
-1. Ensure your machine meets the [validator hardware requirements](node-requirements.md#hardware-requirements).
-2. Update your validator fullnode with the latest version of the [Aptos CLI](../../../tools/aptos-cli/install-cli/index.md)
-3. Copy the configuration files between the two nodes. See the files in the [validator setup](running-validator-node/index.md) documentation you used for the full list.
-4. Synchronize data on the validator fullnode:
-   - For mainnet, use [state synchronization](../../../guides/state-sync.md).
-   - For devnet or testnet, [bootstrap a new fullnode from snapshot](../../full-node/bootstrap-fullnode.md).
+   :::tip Repeat for each node
+   You will need to perform the simple upgrade process for each node individually. This means you will need to upgrade
+   the validator and VFN separately.
+   :::
 
-## Configure
+# Upgrade via VFN Failover
 
-Remember to take the normal measures to connect your node to the Aptos network and establish staking pool operations, such as removing the `secure-data.json` file and updating your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool** address.
+To minimize validator downtime, you can perform a failover process between your validator and VFN. This process involves
+upgrading the VFN to the latest version and converting it to the validator. Once the VFN has been converted to the new
+validator, you can then upgrade the original validator and convert it into the new VFN.
 
-See the sections and guides below for full details.
+The benefit of this approach is that it minimizes validator downtime by allowing you to prepare the new
+validator while the original validator is still running. For a community-provided guide using Docker, see this
+[Aptos Community Forum Post](https://forum.aptoslabs.com/t/failover-and-migrate-validator-nodes-for-less-downtime/144846).
 
-### Connect to Aptos network
+:::danger Node differences
+Before you begin the failover process, it is important to understand that the data maintained by the two nodes
+(i.e., validator and VFN) is not identical. The VFN is missing the `consensus_db` and the `secure-data.json`
+file, and both nodes use different configuration files (including identities).
 
-After deploying your nodes, [connect to the Aptos Network](./connect-to-aptos-network.md).
+If you are not comfortable with the failover process, you should consider performing a simple upgrade instead.
+:::
 
-### Set up staking pool operations
+To perform a VFN failover upgrade, you should follow these steps:
 
-After connecting your nodes to the Aptos network, [establish staking pool operations](./staking-pool-operations.md).
+1. Update your DNS to swap the [network addresses](./staking-pool-operations.md#3-update-validator-network-addresses-on-chain) between the validator and VFN.
+2. Stop the VFN and update the node software to the latest version. This may require downloading the latest binary or Docker image,
+   or recompiling the source code. In addition, you will need to copy the `consensus_db` and `secure-data.json` file from the validator to the VFN,
+   as well as the validator configuration file (including validator identities).
+3. Once the VFN is primed to become the new validator, you can stop the old validator, and start the new validator
+   immediately. This will minimize validator downtime.
 
-## Failover
+   :::danger Only one validator at a time
+   It is important to ensure that only a single validator is running at any given time. If you fail to stop
+   the original validator before starting the new validator, you will have two validators running at the same time,
+   and this will lead to consensus failures and performance issues on your nodes.
+   :::
 
-To replace the validator node:
+4. Now, you will have a validator running the new code version. Observe that before DNS changes take effect your new
+   validator will only have outbound connections.
+5. Next, prepare the original validator to become the new VFN. This will involve updating the node software to the latest
+   version, and copying the VFN configuration file (including VFN identities) across.
+6. Once the original validator is ready to become the new VFN, you can start the new VFN.
 
-1. Update DNS to [swap the node network addresses on-chain](./staking-pool-operations.md#3-update-validator-network-addresses-on-chain).
-2. Turn down the validator node and validator fullnode intended to replace the validator.
-3. Restart the former validator fullnode with the validator node configuration.
-4. Observe that before DNS changes take effect that only outbound connections will form.
-5. Either reuse the former validator node or create anew to backfill the validator fullnode.
-6. Start the validator fullnode.
-7. Use [Node Health Checker](../../measure/node-health-checker.md) and follow [Node Liveness Criteria](node-liveness-criteria.md) to ensure the validator node is functioning properly.
-
-## Run multiple validator fullnodes
-
-You may want to have a VFN ready for failover or need access to REST APIs for building without any rate limits. Note you have the ability to run a [local multi-node network](../../../guides/running-a-local-multi-node-network.md) that may be suitable.
-
-With caution, you may also run multiple fullnodes on the Aptos network. Note that it is not currently recommended to run multiple VFNs with the same [network identity](../../identity-and-configuration.md) and connect them to the validator using the `vfn` network, as this may cause issues with node metrics and telemetry.
-
-To run multiple fullnodes and connect them to your validator:
-
-1. Connect only one fullnode using the `vfn` network configuration in the validator configuration `.yaml` file. This will be your single VFN (as registered on-chain) that other Aptos nodes will connect to.
-2. Connect the rest of your fullnodes to the validator using a `public` network configuration _and a different network identity_ in the validator configuration `.yaml` file. These will be your additional VFNs that you can use for other purposes.
-
-Note that because the additional VFNs will not be registered on-chain, other nodes will not know their network addresses and will not be able to connect to them. These would be for your use only.
+:::tip
+Once you have completed the failover process, you should monitor the new validator and VFN to ensure they are running
+correctly, and that your validator is still participating in consensus.
+:::

@@ -1,142 +1,129 @@
 ---
-title: "On AWS"
+title: "Using AWS"
 slug: "run-validator-node-using-aws"
 ---
 
-# On AWS
+# Using AWS
 
-This is a step-by-step guide to install an Aptos node on Amazon Web Services (AWS). Follow these steps to configure a validator node and a validator fullnode on separate machines.
+This is a step-by-step guide to deploy an Aptos validator and validator fullnode (VFN) using Amazon Web Services (AWS). Using this guide,
+the validator and VFN will be deployed on separate machines.
 
-:::caution Did you set up your AWS account?
-This guide assumes that you already have AWS account setup.
+:::caution Prerequisites
+Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.md). Similarly, make sure you have
+installed the [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/index),
+[Terraform](https://www.terraform.io/downloads.html),
+[Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/),
+and [AWS CLI](https://aws.amazon.com/cli/). This guide assumes that you already have an AWS account setup.
 :::
 
-:::danger Do you have stale volumes after bumping your deployment's era?
-`era` is a concept relevant only to Kubernetes deployments of an Aptos node. Changing the `era` provides an easy way to wipe your deployment's state. However, this may lead to dangling persistent volumes on validator fullnodes. Confirm the existence of these volumes with `kubectl get pvc` and delete them manually to minimize costs.
+## Deployment steps
+
+:::tip Default connection to mainnet
+If you follow the default setup in this document, then your validator and VFN will be connected to the Aptos mainnet.
+To connect to a different Aptos network, such as testnet, make sure you download the correct genesis and waypoint
+files for the network you want to connect to. Similarly, you will need to modify the Terraform files to use the
+correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 :::
 
-## Before you proceed
+1.  Create a working directory for your Aptos nodes, and pick a username for your nodes, e.g.,
 
-Make sure you complete these prerequisite steps before you proceed:
+    ```bash
+    export WORKSPACE=mainnet
+    export USERNAME=alice
+    mkdir ~/$WORKSPACE
+    cd ~/$WORKSPACE
+    ```
 
-1. Set up your AWS account.
-2. Make sure the following are installed on your local computer:
-   - **Aptos CLI**: https://aptos.dev/tools/aptos-cli/install-cli/index
-   - **Terraform 1.3.6**: https://www.terraform.io/downloads.html
-   - **Kubernetes CLI**: https://kubernetes.io/docs/tasks/tools/
-   - **AWS CLI**: https://aws.amazon.com/cli/
+2.  Create an S3 storage bucket for storing the Terraform state on AWS. You can do this on the AWS UI or using the
+    command below:
 
-## Install
+    ```bash
+    aws s3 mb s3://<bucket name> --region <region name>
+    ```
 
-:::tip One validator node + one validator fullnode
-Follow the below instructions **twice**, i.e., first on one machine to run a validator node and the second time on another machine to run a validator fullnode.
-:::
+3.  Create a Terraform file called `main.tf` in your working directory:
 
-1. Create a working directory for your node configuration.
+    ```bash
+    cd ~/$WORKSPACE
+    vi main.tf
+    ```
 
-   - Choose a workspace name, for example, `mainnet` for mainnet, or `testnet` for testnet, and so on. **Note**: This defines the Terraform workspace name, which, in turn, is used to form the resource names.
+4.  Modify the `main.tf` file to configure Terraform and create the Terraform module. See the example below:
 
-     ```bash
-     export WORKSPACE=mainnet
-     ```
+    ```
+    terraform {
+      required_version = "~> 1.3.6"
+      backend "s3" {
+        bucket = "terraform.aptos-node"
+        key    = "state/aptos-node"
+        region = <aws region>
+      }
+    }
 
-   - Create a directory for the workspace.
+    provider "aws" {
+      region = <aws region>
+    }
 
-     ```bash
-     mkdir -p ~/$WORKSPACE
-     ```
+    module "aptos-node" {
+      # Download the Terraform module from the aptos-core repository.
+      source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/aws?ref=mainnet"
+      region        = <aws region>  # Specify the AWS region
+      # zone_id     = "<Route53 zone id>"  # Use Route53 if you want to use DNS
+      era           = 1  # Bump the era number to wipe the chain data
+      chain_id      = 1  # Use 1 for mainnet, or different values for other networks.
+      image_tag     = "mainnet" # Specify the image tag to use based on the network
+      validator_name = "<Name of your validator>" # Specify the name of your validator
+    }
+    ```
 
-   - Choose a username for your node, for example `alice`.
+    For all customization options, see:
 
-     ```bash
-     export USERNAME=alice
-     ```
+    - The Terraform variables: [https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf](https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf)
+    - The Helm values: [https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml](https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml).
 
-2. Create an S3 storage bucket for storing the Terraform state on AWS. You can do this on the AWS UI or by the below command:
+5.  Initialize Terraform in the `$WORKSPACE` directory where you created the `main.tf` file.
 
-   ```bash
-   aws s3 mb s3://<bucket name> --region <region name>
-   ```
+    ```bash
+    terraform init
+    ```
 
-3. Create a Terraform file called `main.tf` in your working directory:
+    This will download all the Terraform dependencies into the `.terraform` folder in your current working directory.
 
-   ```bash
-   cd ~/$WORKSPACE
-   vi main.tf
-   ```
+6.  Create a new Terraform workspace to isolate your environments, and see the list of workspaces.
 
-4. Modify the `main.tf` file to configure Terraform and to create Aptos fullnode from the Terraform module. See below example content for `main.tf`:
+    ```bash
+    terraform workspace new $WORKSPACE
 
-   ```
-   terraform {
-     required_version = "~> 1.3.6"
-     backend "s3" {
-       bucket = "terraform.aptos-node"
-       key    = "state/aptos-node"
-       region = <aws region>
-     }
-   }
+    # This command will list all workspaces
+    terraform workspace list
+    ```
 
-   provider "aws" {
-     region = <aws region>
-   }
+7.  Apply the Terraform configuration.
 
-   module "aptos-node" {
-     # Download Terraform module from aptos-labs/aptos-core repo
-     source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/aws?ref=mainnet"
-     region        = <aws region>  # Specify the region
-     # zone_id     = "<Route53 zone id>"  # zone id for Route53 if you want to use DNS
-     era           = 1  # bump era number to wipe the chain
-     chain_id      = 1  # for mainnet. Use different value for testnet or devnet.
-     image_tag     = "mainnet" # Specify the image tag to use
-     validator_name = "<Name of your validator>"
-   }
-   ```
+    ```bash
+    terraform apply
+    ```
 
-   For full customization options, see:
+    This may take a while to finish (e.g., >20 minutes). Terraform will create all the resources on your cloud account.
 
-   - The Terraform variables file [https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf](https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf), and
-   - The values YAML file [https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml](https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml).
+8.  After `terraform apply` finishes, you can check if the resources have been created correctly, by running the following commands:
 
-5. Initialize Terraform in the `$WORKSPACE` directory where you created the `main.tf` file.
+    - `aws eks update-kubeconfig --name aptos-$WORKSPACE`: This command will configure access for your k8s cluster.
+    - `kubectl get pods`: This command will output all pods in the cluster. You should see haproxy, the
+      validator and the VFN (with the validator and VFN pod `pending` due to further action in later steps).
+    - `kubectl get svc`: This command will output all services in the cluster. You should see the
+      `validator-lb` and `fullnode-lb`, with an external IP for network connectivity.
 
-```bash
-terraform init
-```
+9.  Next, we need to inject your node's IP information into your environment. You can do this by running the following commands:
 
-This will download all the Terraform dependencies into the `.terraform` folder in your current working directory.
+    ```bash
+    export VALIDATOR_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-validator-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
 
-6. Create a new Terraform workspace to isolate your environments:
+    export FULLNODE_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-fullnode-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
+    ```
 
-```bash
-terraform workspace new $WORKSPACE
-# This command will list all workspaces
-terraform workspace list
-```
-
-7. Apply the configuration.
-
-```bash
-terraform apply
-```
-
-This may take a while to finish (~20 minutes). Terraform will create all the resources on your AWS cloud account.
-
-8. After `terraform apply` finishes, you can check if those resources are created:
-
-   - `aws eks update-kubeconfig --name aptos-$WORKSPACE`: To configure access for your k8s cluster.
-   - `kubectl get pods`: This should have haproxy, validator and fullnode, with validator and fullnode pod `pending` (require further action in later steps).
-   - `kubectl get svc`: This should have `validator-lb` and `fullnode-lb`, with an external IP you can share later for connectivity.
-
-9. Get your node IP information into your environment:
-
-   ```bash
-   export VALIDATOR_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-validator-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
-
-   export FULLNODE_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-fullnode-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
-   ```
-
-10. Generate the key pairs (node owner, voter, operator key, consensus key and networking key) in your working directory.
+10. Now, generate the key pairs for your nodes in your working directory. You can do this by running
+    the following command with the Aptos CLI:
 
     ```bash
     aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
@@ -144,17 +131,18 @@ This may take a while to finish (~20 minutes). Terraform will create all the res
 
     This will create 4 key files under `~/$WORKSPACE/keys` directory:
 
-    - `public-keys.yaml`
-    - `private-keys.yaml`
-    - `validator-identity.yaml`, and
-    - `validator-full-node-identity.yaml`.
+    - `public-keys.yaml`: This file contains all public keys for your validator and VFN, as well as your account address.
+    - `private-keys.yaml`: This file contains all private keys for your validator and VFN.
+    - `validator-identity.yaml`: This file contains the public and private keys for your validator, as well as your account address.
+    - `validator-full-node-identity.yaml`: This file contains the public and private keys for your VFN, as well as your account address.
 
-    :::danger IMPORTANT
-
-    Backup your `private-keys.yaml` somewhere safe. These keys are important for you to establish ownership of your node. **Never share private keys with anyone.**
+    :::danger Backup your private keys
+    Your private keys are important for you to establish ownership of your nodes. Never share your **private** keys with anyone,
+    and make sure to **backup** `private-keys.yaml` somewhere safe.
     :::
 
-11. Configure the validator information.
+11. Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
+    which may be IP addresses or DNS addresses. This can be done by running the following command:
 
     ```bash
     aptos genesis set-validator-configuration \
@@ -167,28 +155,31 @@ This may take a while to finish (~20 minutes). Terraform will create all the res
 
     ```
 
-    This will create two YAML files in the `~/$WORKSPACE/$USERNAME` directory: `owner.yaml` and `operator.yaml`.
+    Configuring the validator will create two YAML files in the `~/$WORKSPACE/$USERNAME` directory: `owner.yaml` and
+    `operator.yaml`. These will be useful for connecting your nodes to the Aptos network (later).
 
-12. Download the following files by following the download commands on the [Node Files](../../../node-files-all-networks/node-files.md) page:
+12. Download the following files by following the instructions on the [Node Files](../../../node-files-all-networks/index.md) pages.
+    You will need to select the appropriate network (e.g., `mainnet`, `testnet`, `devnet`) and download the following files:
 
     - `genesis.blob`
     - `waypoint.txt`
 
-13. **Summary:** To summarize, in your working directory you should have a list of files:
+13. To recap, in your working directory (`~/$WORKSPACE`), you should have a list of files:
 
-    - `main.tf`: The Terraform files to install the `aptos-node` module (from steps 3 and 4).
+    - `main.tf`: The Terraform files to install the `aptos-node` module.
     - `keys` folder containing:
-      - `public-keys.yaml`: Public keys for the owner account, consensus, networking (from step 10).
-      - `private-keys.yaml`: Private keys for the owner account, consensus, networking (from step 10).
-      - `validator-identity.yaml`: Private keys for setting the Validator identity (from step 10).
-      - `validator-full-node-identity.yaml`: Private keys for setting validator full node identity (from step 10).
-    - `username` folder containing:
-      - `owner.yaml`: Defines owner, operator, and voter mapping.
-      - `operator.yaml`: Node information that will be used for both the validator and the validator fullnode (from step 11).
-    - `waypoint.txt`: The waypoint for the genesis transaction (from step 12).
-    - `genesis.blob` The genesis binary that contains all the information about the framework, validator set, and more (from step 12).
+      - `public-keys.yaml`: Public keys for both nodes.
+      - `private-keys.yaml`: Private keys for both nodes.
+      - `validator-identity.yaml`: Key and account information for the validator.
+      - `validator-full-node-identity.yaml`: Key and account information for the VFN.
+    - `$username` folder containing:
+      - `owner.yaml`: The owner, operator and voter mappings.
+      - `operator.yaml`: Validator and VFN operator information.
+    - `waypoint.txt`: The waypoint for the genesis transaction on the network you are connecting to.
+    - `genesis.blob` The genesis blob for the network you are connecting to.
 
-14. Insert `genesis.blob`, `waypoint.txt` and the identity files as secret into k8s cluster.
+14. Finally, insert the `genesis.blob`, `waypoint.txt` and the identity files as secrets into the k8s cluster,
+    by running the following command:
 
     ```bash
     kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e1 \
@@ -198,23 +189,34 @@ This may take a while to finish (~20 minutes). Terraform will create all the res
         --from-file=validator-full-node-identity.yaml=keys/validator-full-node-identity.yaml
     ```
 
-    :::tip
+    :::danger Era numbers and dangling volumes
+    The `-e1` suffix in the command above refers to the era number. If you changed the `era` number, make sure it matches
+    when creating the secrets.
 
-    The `-e1` suffix refers to the era number. If you changed the era number, make sure it matches when creating the secret.
-
+    The `era` is a concept relevant only to Kubernetes deployments of an Aptos node.
+    Changing the `era` provides an easy way to wipe your deployment's state (e.g., blockchain data). However, this may
+    lead to dangling persistent volumes. Confirm the existence of any dangling volumes with `kubectl get pvc`
+    and delete any dangling volumes manually to minimize costs.
     :::
 
-15. Check that all the pods are running.
+15. Now, we should be able to see that all pods are running, including the validator and VFN. You can check this by
+    executing the following command:
 
-    ```bash
-    kubectl get pods
+        ```bash
+        kubectl get pods
 
-    NAME                                        READY   STATUS    RESTARTS   AGE
-    node1-aptos-node-0-fullnode-e9-0              1/1     Running   0          4h31m
-    node1-aptos-node-0-haproxy-7cc4c5f74c-l4l6n   1/1     Running   0          4h40m
-    node1-aptos-node-0-validator-0                1/1     Running   0          4h30m
-    ```
+        # Example output
+        NAME                                        READY   STATUS    RESTARTS   AGE
+        node1-aptos-node-0-fullnode-e9-0              1/1     Running   0          4h31m
+        node1-aptos-node-0-haproxy-7cc4c5f74c-l4l6n   1/1     Running   0          4h40m
+        node1-aptos-node-0-validator-0                1/1     Running   0          4h30m
+        ```
 
-You have successfully completed setting up your node. Make sure that you have set up one machine to run a validator node and a second machine to run a validator fullnode.
+:::caution Next steps
+You have now completed setting up your validator and VFN using AWS. However, your nodes will not be able to connect
+to the Aptos network just yet.
+:::
 
-Now proceed to [connecting to the Aptos network](../connect-to-aptos-network.md) and [establishing staking pool operations](../staking-pool-operations.md).
+## Connecting to the Aptos Network
+
+You have now completed setting up your validator and VFN using AWS. Proceed to [Connect Nodes](../connect-nodes/index.md) for the next steps.

@@ -5,22 +5,29 @@ slug: "run-validator-node-using-docker"
 
 # Using Docker
 
-This is a step-by-step guide to install an Aptos node using Docker. Follow these steps to configure a validator node and a validator fullnode on separate machines. Use the `fullnode.yaml` to run a validator fullnode. See [Step 11](#docker-vfn).
-
-## Before you proceed
-
-Make sure the following are installed on your local computer:
-
-- **Aptos CLI**: https://aptos.dev/tools/aptos-cli/install-cli/index
-- **Docker and Docker-compose:** https://docs.docker.com/engine/install/
-
-:::caution Note on Apple M1
-
-Docker method has only been tested on Linux, Windows, and Intel macOS. If you are on M1 macOS, use the [Aptos-core source approach](./using-source-code.md).
-
+:::danger Apple M1+ Users
+Docker deployment has only been tested on Linux, Windows, and Intel macOS. If you are on M1+ macOS, you will
+need to deploy using [source code](./using-source-code.md).
 :::
 
-1. Create a directory for your Aptos node composition, and pick a username for your node. e.g.
+This is a step-by-step guide to deploy an Aptos validator and validator fullnode (VFN) using Docker. Using this guide, the validator
+and VFN will be deployed on separate machines.
+
+:::caution Prerequisites
+Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.md). Similarly, make sure you have
+installed the [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/index), and [Docker with Docker Compose](https://docs.docker.com/engine/install/).
+:::
+
+## Deployment steps
+
+:::tip Default connection to mainnet
+If you follow the default setup in this document, then your validator and VFN will be connected to the Aptos mainnet.
+To connect to a different Aptos network, such as testnet, make sure you download the correct genesis and waypoint
+files for the network you want to connect to. Similarly, you will need to modify the docker compose files to use the
+correct docker images by network name.
+:::
+
+1. Create a working directory for your Aptos nodes, and pick a username for your nodes, e.g.,
 
    ```bash
    export WORKSPACE=mainnet
@@ -29,16 +36,8 @@ Docker method has only been tested on Linux, Windows, and Intel macOS. If you ar
    cd ~/$WORKSPACE
    ```
 
-2. Download the following files by following the download commands on the [Node Files](../../../node-files-all-networks/node-files.md) page:
-
-   - `validator.yaml`
-   - `docker-compose.yaml`
-   - `docker-compose-fullnode.yaml`
-   - `haproxy.cfg`
-   - `haproxy-fullnode.cfg`
-   - `blocked.ips`
-
-3. Generate the key pairs (node owner, voter, operator key, consensus key and networking key) in your working directory.
+2. Generate the key pairs for your nodes in your working directory. You can do this by running
+   the following command with the Aptos CLI:
 
    ```bash
    aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
@@ -46,19 +45,31 @@ Docker method has only been tested on Linux, Windows, and Intel macOS. If you ar
 
    This will create 4 key files under `~/$WORKSPACE/keys` directory:
 
-   - `public-keys.yaml`
-   - `private-keys.yaml`
-   - `validator-identity.yaml`, and
-   - `validator-full-node-identity.yaml`.
+   - `public-keys.yaml`: This file contains all public keys for your validator and VFN, as well as your account address.
+   - `private-keys.yaml`: This file contains all private keys for your validator and VFN.
+   - `validator-identity.yaml`: This file contains the public and private keys for your validator, as well as your account address.
+   - `validator-full-node-identity.yaml`: This file contains the public and private keys for your VFN, as well as your account address.
 
-   :::danger IMPORTANT
-
-   Backup your `private-keys.yaml` somewhere safe. These keys are important for you to establish ownership of your node. **Never share private keys with anyone.**
+   :::danger Backup your private keys
+   Your private keys are important for you to establish ownership of your nodes. Never share your **private** keys with anyone,
+   and make sure to **backup** `private-keys.yaml` somewhere safe.
    :::
 
-4. Configure validator information. You need to set up a static IP / DNS address (DNS is much preferred) which can be used by the node, and make sure the network / firewalls are properly configured to accept external connections. See [Network Identity For PFNs](../../../full-node/network-identity-fullnode.md) for how to do this.
+3. Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
+   which may be IP addresses or DNS addresses.
+
+   :::tip DNS addresses
+   Using DNS is recommended over IP addresses, as it enables more efficient node migrations and is more resilient
+   to host changes.
+   :::
+
+   You can set your validator configuration by running the following command with the Aptos CLI:
 
    ```bash
+
+   # Replace <validator node IP / DNS address> and <Full Node IP / DNS address> below,
+   # with the appropriate IP or DNS address for your nodes.
+
    cd ~/$WORKSPACE
    aptos genesis set-validator-configuration \
        --local-repository-dir ~/$WORKSPACE \
@@ -68,7 +79,7 @@ Docker method has only been tested on Linux, Windows, and Intel macOS. If you ar
        --full-node-host <Full Node IP / DNS address>:<Port> \
        --stake-amount 100000000000000
 
-   # for example, with IP:
+   # For example, if you are using IP addresses:
 
    aptos genesis set-validator-configuration \
        --local-repository-dir ~/$WORKSPACE \
@@ -78,7 +89,7 @@ Docker method has only been tested on Linux, Windows, and Intel macOS. If you ar
        --full-node-host 34.135.169.144:6182 \
        --stake-amount 100000000000000
 
-   # For example, with DNS:
+   # Otherwise, if you are using DNS addresses:
 
    aptos genesis set-validator-configuration \
        --local-repository-dir ~/$WORKSPACE \
@@ -89,41 +100,89 @@ Docker method has only been tested on Linux, Windows, and Intel macOS. If you ar
        --stake-amount 100000000000000
    ```
 
-   This will create two YAML files in the `~/$WORKSPACE/$USERNAME` directory: `owner.yaml` and `operator.yaml`.
+   Configuring the validator will create two YAML files in the `~/$WORKSPACE/$USERNAME` directory: `owner.yaml` and
+   `operator.yaml`. These will be useful for connecting your nodes to the Aptos network (later).
 
-5. Download the following files by following the download commands on the [Node Files](../../../node-files-all-networks/node-files.md) page:
+4. Download the following files by following the instructions on the [Node Files](../../../node-files-all-networks/index.md) pages.
+   You will need to select the appropriate network (e.g., `mainnet`, `testnet`, `devnet`) and download the following files:
 
+   - `validator.yaml`
+   - `fullnode.yaml`
+   - `docker-compose.yaml`
+   - `docker-compose-fullnode.yaml`
+   - `haproxy.cfg`
+   - `haproxy-fullnode.cfg`
+   - `blocked.ips`
    - `genesis.blob`
    - `waypoint.txt`
 
-6. <span id="docker-files">To recap, in your working directory, you should have a list of files:</span>
+5. To recap, in your working directory (`~/$WORKSPACE`), you should have a list of files:
 
-   - `docker-compose.yaml` docker compose file to run validator and fullnode
+   - `docker-compose.yaml`: The docker compose file to run the validator.
+   - `docker-compose-fullnode.yaml`: The docker compose file to run the VFN.
    - `keys` folder containing:
-     - `public-keys.yaml`: Public keys for the owner account, consensus, networking (from step 4).
-     - `private-keys.yaml`: Private keys for the owner account, consensus, networking (from step 4).
-     - `validator-identity.yaml`: Private keys for setting the Validator identity (from step 4).
-     - `validator-full-node-identity.yaml`: Private keys for setting validator full node identity (from step 4).
-   - `username` folder containing:
-     - `owner.yaml`: define owner, operator, and voter mapping. They are all the same account in test mode (from step 5).
-     - `operator.yaml`: Node information that will be used for both the Validator and the fullnode (from step 5).
-   - `waypoint.txt`: The waypoint for the genesis transaction (from step 6).
-   - `genesis.blob` The genesis binary that contains all the information about the framework, validator set and more (from step 6).
+     - `public-keys.yaml`: Public keys for both nodes.
+     - `private-keys.yaml`: Private keys for both nodes.
+     - `validator-identity.yaml`: Key and account information for the validator.
+     - `validator-full-node-identity.yaml`: Key and account information for the VFN.
+   - `$username` folder containing:
+     - `owner.yaml`: The owner, operator and voter mappings.
+     - `operator.yaml`: Validator and VFN operator information.
+   - `waypoint.txt`: The waypoint for the genesis transaction on the network you are connecting to.
+   - `genesis.blob` The genesis blob for the network you are connecting to.
 
-7. Run docker-compose: `docker-compose up`. (or `docker compose up` depends on your version)
+6. To start the validator node, run the following command in your working directory:
 
-**Now you have completed setting up your validator node. Next, set up a validator fullnode following the instructions below.**
+   ```bash
+   docker-compose up (or `docker compose up` depends on your version)
+   ```
 
-9. <span id="docker-vfn">Set up a validator fullnode on a different machine. Download the `fullnode.yaml` and `docker-compose-fullnode.yaml` configuration files into the working directory of fullnode machine.</span> See [Node Files](../../../node-files-all-networks/node-files.md) for a full list of files you should download and the download commands.
+   This will start the validator node using the docker compose file and the images specified in the
+   `docker-compose.yaml` file. If you wish to change the network you are connecting to, you will need to modify
+   the file to use the correct docker images by network name.
 
-10. Edit `fullnode.yaml` file to update the IP address for validator node.
+7. Before you can start the VFN, you will need to modify the `fullnode.yaml` file to update the host address for the
+   validator node. For example, if you are using IP addresses, you will need to update the `full_node_networks`
+   `addresses` for the `vfn` network as follows:
 
-11. Copy the `validator-full-node-identity.yaml`, download `genesis.blob` and `waypoint.txt` files into the same working directory on fullnode machine.
+   ```yaml
+   ---
+   addresses:
+     - "/ip4/100.100.100.100/tcp/6181/noise-ik/..." # Set the IP Address of the validator
+   ```
 
-12. Run docker-compose: `docker-compose -f docker-compose-fullnode.yaml up`.
+   Otherwise, if you are using DNS addresses, you will need to update the `addresses` field as follows:
 
-Now you have successfully completed setting up your node.
+   ```yaml
+   ---
+   addresses:
+     - "/dns/example.com/tcp/6181/noise-ik/..." # Set the DNS Address of the validator
+   ```
 
-Now proceed to [connecting to the Aptos network](../connect-to-aptos-network.md) and [establishing staking pool operations](../staking-pool-operations.md).
+8. To start your VFN, run the following commands on a separate, dedicated VFN machine. You will need to copy across
+   the keys, configuration and docker compose files from the validator machine.
 
-<!-- 1.  Optional: if you need to block an ip address simply add it to the bottom of blocked.ips and reload haproxy -->
+   :::danger VFN identity
+   You should copy the keys and configuration
+   files across to the VFN machine from the working location where they were generated. Do not attempt to generate
+   another set of keys or files for the VFN, as these will not be recognized by the network.
+   :::
+
+   To start the VFN, run the following command in your working directory:
+
+   ```bash
+   docker-compose -f docker-compose-fullnode.yaml up
+   ```
+
+   This will start the VFN using the docker compose file and the images specified in the
+   `docker-compose-fullnode.yaml` file. If you wish to change the network you are connecting to, you will need to modify
+   the file to use the correct docker images by network name.
+
+   :::caution Next steps
+   You have now completed setting up your validator and VFN using Docker. However, your nodes will not be able to connect
+   to the Aptos network just yet.
+   :::
+
+## Connecting to the Aptos Network
+
+You have now completed setting up your validator and VFN using Docker. Proceed to [Connect Nodes](../connect-nodes/index.md) for the next steps.

@@ -1,52 +1,59 @@
 ---
-title: "Leaderboard Metrics"
+title: "Validator Leaderboard"
 ---
 
-This document explains how the rewards for validator are evaluated and displayed on the [Aptos Validator Status](https://explorer.aptoslabs.com/validators/all?network=mainnet) page.
+This document explains how the rewards performance for validator nodes are calculated and displayed on
+the [Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet).
 
-## How rewards are calculated
+## Calculating validator rewards
 
-:::tip Staking documentation
-For a backgrounder on staking with explanations of epoch, rewards and how to join and leave validator set, see the [Staking](../concepts/staking.md).
-:::
+Validators are rewarded for participating in consensus. The rewards are calculated based on the number of successful
+proposals made by the validator, and the rewards performance is the percentage of rewards earned by the validator out
+of the maximum reward earning opportunity.
 
-- An epoch starts with a finalized validator set. During the epoch, only validators in this validator set will vote.
-- Epoch value on the mainnet is set by the governance. See [Aptos Blockchain Networks](./networks.md) for epoch values for other Aptos networks.
-- During the epoch, following the process described in [Validation on the Aptos blockchain](../concepts/staking.md#validation-on-the-aptos-blockchain), a validator is selected as a leader to make a proposal. Because the validator set is unchanged during the course of an epoch, this will result in a validator being selected multiple times as a leader in an epoch.
-- On successful proposals, i.e., proposals achieving the quorum consensus, the leaders earn rewards based on their stake and on the reward rate that is configured on-chain. The reward rate is the same for every validator.
-- If all the proposals in an epoch achieve quorum consensus, a validator earns the maximum reward for the epoch. **Rewards are given only to the leader validators, and not to the voters.**
-- On failed proposals, i.e., a proposal that did not achieve the quorum consensus, the leaders do not earn any reward for that proposal.
-- If all the proposals in an epoch fail, a validator earns zero rewards for that epoch.
+During an epoch, only the validators in the validator set can propose and vote. The duration of each epoch is set
+by governance and validators are selected as leaders (in rounds) to make proposals. This occurs multiple
+times in each epoch, meaning that validators can be selected as leaders multiple times in a single epoch.
 
-### Example
+On each successful proposal, the proposing validator earns rewards based on their stake and on the reward rate that is
+configured on-chain. The reward rate is the same for every validator. If all the proposals in an epoch achieve
+quorum consensus, a validator earns the maximum reward for the epoch. If all the proposals in an epoch fail, a
+validator earns zero rewards for that epoch. The reward performance is calculated as a percentage of the
+rewards earned by the validator out of the maximum reward earning opportunity.
 
-:::tip Rewards are given only at the end of the epoch
-Note that the rewards are given only at the end of the epoch, not on every block.
-:::
+Validators are only rewarded for proposing, and not for voting. Rewards are given only at the end of the epoch,
+not on every block.
 
-The reward a leader receives is calculated by multiplying the maximum possible reward with the leader's proposal success rate. For example:
+### Reward calculation example
 
-- A leader with 8 successful and 2 failed proposals will receive 80% of maximum reward.
+The reward a leader receives is calculated by multiplying the maximum possible reward with the leader's proposal
+success rate. For example:
+
+- A leader with 8 successful and 2 failed proposals will receive 80% of maximum reward in the epoch.
 - Similarly, another leader with 80 successful and 20 failed proposal will also receive 80% of maximum reward.
 - Also, two leaders with no failures but one with 10 and another with 100 successful proposals will get the same % of the maximum reward.
 
-:::tip Reward rate is the same
-Note also that the reward rate is the same for every validator. Hence, the maximum reward is directly proportional to the staking amount, i.e., the more a validator stakes, the more the validator can earn in absolute terms.
+:::tip Rewards rate
+Note also that the rewards rate is the same for every validator. Hence, the maximum reward is directly proportional
+to the staking amount, i.e., the more a validator stakes, the more the validator can earn in absolute terms.
 :::
 
-## Rewards performance
+### Rewards performance
 
-- The REWARDS PERFORMANCE column shows the rewards performance of a validator. It is calculated as a % of reward earned by the validator out of the maximum reward earning opportunity i.e., `(rewards earned across the epochs)/(maximum reward opportunity across the epochs)`. **This is a cumulative metric across all the epochs.**
-- A validator can improve their performance by improving their proposal success rate.
+The **REWARDS** **PERFORMANCE** column on the
+[Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet) shows the rewards
+performance of a validator. It is calculated as a percentage of the rewards earned by the validator out of the maximum
+reward earning opportunity. This is a cumulative metric across all the epochs,
+i.e., `(rewards earned across all epochs)/(maximum reward opportunity across all epochs)`
 
-## Last epoch performance
+A validator can improve their rewards performance by improving their proposal success rate.
 
-The LAST EPOCH PERFORMANCE column shown on the leaderboard is reported as `(number of successful proposals)/(number of total proposal opportunities)`.
+### Last epoch performance
 
-- This metric gives you an early indicator if your performance is slowly reducing.
-- You can see the JSON dump (link on the leaderboard) to see the performance across all the epochs.
-- On mouse hover, you can see the last epoch for the validator.
+The **LAST EPOCH PERFORMANCE** column on the
+[Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet) shows the rewards
+performance of a validator in the last epoch. It is calculated as a percentage of the rewards earned by the validator
+in the last epoch out of the maximum reward earning opportunity in the last epoch, i.e., `(rewards earned in the last
+epoch)/(maximum reward opportunity in the last epoch)`.
 
-## Governance votes
-
-The GOVERNANCE VOTES column shown on the leaderboard is reported as `(governance proposals voted on)/(total governance votes)`.
+This metric provides an early indicator to see if a validator is improving their reward performance.

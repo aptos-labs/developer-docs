@@ -1,56 +1,74 @@
 ---
-title: "Bootstrap Fullnode from Backup"
+title: "Bootstrap from a Backup"
 ---
 
-# Bootstrap Fullnode from Backup
+# Bootstrap from a Backup
 
-Since the Aptos mainnet launch in October 2022, the Aptos community has grown rapidly. As of May 2023, Aptos has 743GB and 159GB of data in testnet and mainnet, respectively. We expect the data to increase greatly as more transactions are submitted to the blockchain. Facing such a large amount of data, we want to provide users with a way to achieve two goals:
+This document describes how to bootstrap an Aptos node using a backup. This can be done on all node types, including
+validators, VFNs and PFNs. Bootstrapping using a backup helps node operators achieve two goals:
 
-- Quickly bootstrap a database to start a new or failed node
-- Efficiently recover data from any specific period
+1. Quickly bootstrap a database to start a new or failed node.
+1. Efficiently recover data from any specific period in the blockchain's history (e.g., from genesis to a target version).
 
-Our database restore tool lets you use the existing [public backup files](#public-backup-files) to restore the database (i.e., the transaction history containing events, write sets, key-value pairs, etc.) on your local machine to any historical range or to the latest version. The public backup files are backed by cryptographic proof and stored on both AWS and Google Cloud for an easy download.
+To achieve these goals, the Aptos database restore tool lets you use existing [public backup files](#public-backup-files) to restore
+the database of a node. This includes the transaction history containing events, write sets, and key-value pairs. Using
+the tool, you can restore transactions from any historical range, or restore the database to the latest version in the
+backup. The public backup files are backed by cryptographic proofs and stored on both AWS and Google Cloud for easy
+access.
 
 ## Public backup files
 
-Aptos Labs maintains a few publicly accessible database backups by continuously querying a local fullnode and storing the backup data in remote storage, such as Amazon S3 or Google Cloud Storage.
+Aptos Labs maintains a few publicly accessible database backups by continuously querying a PFN and storing the backup
+data in remote storage, such as Amazon S3 or Google Cloud Storage. The links to this backup data can be seen below:
 
 |         | AWS Backup Data                                                                       | Google Cloud Backup Data                                                        |
 | ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | Testnet | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/s3-public.yaml | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/gcs.yaml |
 | Mainnet | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/s3-public.yaml | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/gcs.yaml |
 
+:::tip
+Backups are only created for `testnet` and `mainnet`. Given that `devnet` is wiped frequently, it is not useful to maintain backups for it.
+:::
+
 The backup files consist of three types of data that can be used to reconstruct the blockchain DB:
 
-- `epoch_ending` – It contains the ledger_info at the ending block of each epoch since the genesis. This data can be used to prove the epoch's provenance from the genesis and validator set of each epoch.
-- `state_snapshot` – It contains a snapshot of the blockchain's state Merkle tree (SMT) and key values at a certain version.
-- `transaction` – It contains the raw transaction metadata, payload, the executed outputs of the transaction after VM, and the cryptographic proof of the transaction in the ledger history.
+- `epoch_ending` – This contains the ledger_info at the ending block of each epoch since the genesis. This data can be used to prove the epoch's provenance from the genesis and validator set of each epoch.
+- `state_snapshot` – This contains a snapshot of the blockchain's state Merkle tree (SMT) and key values at a certain version.
+- `transaction` – This contains the raw transaction metadata, payload, the executed outputs of the transaction after VM, and the cryptographic proofs of the transaction in the ledger history.
 
 Each type of data in the backup storage is organized as follows:
 
 - The metadata file in the metadata folder contains the range of each backup and the relative path to the backup folder.
 - The backup contains a manifest file and all the actual chunked data files.
 
+See the diagram below for a visual representation of the backup data structure:
+
 ![aptos-db-restore.png](../../../static/img/docs/aptos-db-restore.png)
 
-## Restore a DB using the public backup files
+## Restore an Aptos DB
 
-The [Aptos CLI](../../tools/aptos-cli/use-cli/use-aptos-cli.md) supports two kinds of restore operations by reading from the public backup files:
+The [Aptos CLI](../../tools/aptos-cli/use-cli/use-aptos-cli.md) supports two kinds of restore operations for Aptos nodes:
 
-1. Recreating a database with minimal transaction history at a user-specified transaction version (or the latest version the backup has)
+1. Recreating a database with a minimal transaction history at a user-specified transaction version (or the latest version offered by the backup).
 2. Restoring the database over a specific period. In addition to the above, this option ensures that the recreated database carries the ledger history of the user-designated version range.
 
-Aptos CLI 1.0.14 or newer is needed to perform these operations. Additionally, depending on whether you use AWS or Google Cloud, install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) or [gsutil](https://cloud.google.com/storage/docs/gsutil_install).
+:::tip
+Aptos CLI 1.0.14 or newer is needed to perform these operations. Additionally, depending on whether you use AWS or
+Google Cloud, install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) or [gsutil](https://cloud.google.com/storage/docs/gsutil_install).
+:::
 
-### Bootstrap a DB
+The sections below provide examples of how to use the Aptos CLI to restore a database from a backup.
 
-The `aptos node bootstrap-db` command can quickly restore a database from the closest snapshot to a target version, but it does not restore the transaction history prior to the target version.
+### Bootstrap to the latest version
 
-Use the following options:
+The `aptos node bootstrap-db` command can quickly restore a database from the latest snapshot back to a target version,
+but it does not restore the transaction history prior to the target version.
 
-- `target-version` – The sync will begin from this period onwards in the transaction history.
+Use the following options to run the command:
+
+- `target-version` – The sync will begin from this period onwards in the transaction history (towards the latest version).
 - `command-adapter-config` – The path to one of the [YAML configuration files](#public-backup-files) that specifies the location of the public backup files and commands used by our backup and restore tool to interact with the remote storage.
-- `target-db-dir` – The target DB path.
+- `target-db-dir` – The target DB path to write the restored database.
 
 Example command:
 
@@ -61,16 +79,16 @@ aptos node bootstrap-db \
     --target-db-dir /path/to/local/db
 ```
 
-### Restore a DB over a specific time period
+### Restore over a specific time period
 
 The `aptos node bootstrap-db` command can restore the transaction history within a specified period, along with the state Merkle tree at the target version.
 
-Use the following options:
+Use the following options to run the command:
 
-- `ledger-history-start-version` – The version to which the DB will sync.
-- `target-version` – The sync will begin from this period onwards in the transaction history.
+- `ledger-history-start-version` – The sync will begin from this period onwards in the transaction history (towards the target version).
+- `target-version` – The sync will end at this period in the transaction history.
 - `command-adapter-config` – The path to one of the [YAML configuration files](#public-backup-files) that specifies the location of the public backup files and commands used by our backup and restore tool to interact with the remote storage.
-- `target-db-dir` – The target DB path.
+- `target-db-dir` – The target DB path to write the restored database.
 
 Example command:
 
@@ -82,21 +100,22 @@ aptos node bootstrap-db \
     --target-db-dir /path/to/local/db
 ```
 
-### Restore a fullnode with full history from genesis
+### Restore a full history from genesis
 
-**Resource Requirements**
+To restore an Aptos node with the full history from genesis, set `ledger-history-start-version` to 0 and
+disable the pruner by following the instructions in the [disabling the ledger pruner](../../guides/data-pruning.md) section before
+starting the node. Note: performing a full history restore requires a significant amount of resources and time.
+See the resource requirements below.
 
-- Open File Limit: Set the open file limit to 10K.
-- Testnet:
-  - Disk: 1.5TB
-  - RAM: 32GB
-  - Duration: Approximately 10 hours to finish.
-- Mainnet:
-  - Disk: 1TB
-  - RAM: 32GB
-  - Duration: Approximately 5 hours to finish.
-
-To restore a fullnode with full history from genesis, set `ledger-history-start-version` to 0 and disable the pruner by [disabling the ledger pruner](../../guides/data-pruning.md).
+- **Open File Limit**: Set the open file limit to 10K, e.g., using `ulimit -n 10000`.
+- **Testnet**: If you are restoring a testnet node, you will need the following resources:
+  - **Disk**: 1.5TB
+  - **RAM**: 32GB
+  - **Duration**: At least 10 hours are required to complete the restore.
+- **Mainnet**: If you are restoring a mainnet node, you will need the following resources:
+  - **Disk**: 1TB
+  - **RAM**: 32GB
+  - **Duration**: At least 5 hours are required to complete the restore.
 
 Example command:
 
@@ -111,13 +130,3 @@ aptos node bootstrap-db \
 :::tip
 If you don't specify the target_version (via `--target-version`), the tool will use the latest version in the backup as the target version.
 :::
-
-Disable the pruner in the node config to prevent the early history from being pruned when you start the node.
-
-```Yaml
-storage:
- storage_pruner_config:
-  ledger_pruner_config:
-   enable: false
-
-```

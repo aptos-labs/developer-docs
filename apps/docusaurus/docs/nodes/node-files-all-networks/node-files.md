@@ -1,21 +1,20 @@
 ---
-title: "Node Files For Mainnet"
+title: "Files For Mainnet"
 ---
 
-When you are deploying an Aptos node in the **mainnet**, you will need to download the files listed on this page.
+When deploying an Aptos node in **mainnet**, you may need to download the files listed on this page. The files are
+organized by node type.
 
-- **Devnet:** If you are deploying in the devnet, download the files from the [Node Files For Devnet](./node-files-devnet.md) page.
-- **Testnet:** If you are deploying in the testnet, download the files from the [Node Files For Testnet](./node-files-testnet.md) page.
-
----
-
-These files can be downloaded from separate `aptos-labs` repos on GitHub. The `wget` commands provided below will work on macOS and Linux. Open a terminal and paste the `wget` command to download the file.
-
-:::tip Files for the validator node
-Unless specified, all these files are required for validator node. A file with `fullnode` in its filename is required for either a validator fullnode or a public fullnode.
+:::tip file access
+Depending on the type of node your are deploying, and the deployment method, you may need to download some
+or all of the files listed below.
 :::
 
-## docker-compose.yaml
+## Validator Files
+
+All the files listed below are for validator nodes.
+
+### docker-compose.yaml
 
 - **Git repo:** `aptos-core`
 - **Git branch:** `mainnet` on https://github.com/aptos-labs/aptos-core
@@ -24,7 +23,7 @@ Unless specified, all these files are required for validator node. A file with `
   wget -O docker-compose.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/docker-compose.yaml
   ```
 
-## validator.yaml
+### validator.yaml
 
 - **Git repo:** `aptos-core`
 - **Git branch:** `mainnet` on https://github.com/aptos-labs/aptos-core
@@ -33,7 +32,7 @@ Unless specified, all these files are required for validator node. A file with `
   wget -O validator.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/validator.yaml
   ```
 
-## genesis.blob
+### genesis.blob
 
 - **Git repo:** `aptos-networks`
 - **Git branch:** `main` on https://github.com/aptos-labs/aptos-networks
@@ -42,7 +41,7 @@ Unless specified, all these files are required for validator node. A file with `
   wget -O genesis.blob https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/genesis.blob
   ```
 
-## waypoint.txt
+### waypoint.txt
 
 - **Git repo:** `aptos-networks`
 - **Git branch:** `main` on https://github.com/aptos-labs/aptos-networks
@@ -51,7 +50,7 @@ Unless specified, all these files are required for validator node. A file with `
   wget -O waypoint.txt https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/waypoint.txt
   ```
 
-## docker-compose-src.yaml
+### docker-compose-src.yaml
 
 - **Git repo:** `aptos-core`
 - **Git branch:** `mainnet` on https://github.com/aptos-labs/aptos-core
@@ -60,7 +59,7 @@ Unless specified, all these files are required for validator node. A file with `
   wget -O docker-compose-src.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/docker-compose-src.yaml
   ```
 
-## haproxy.cfg
+### haproxy.cfg
 
 - **Git repo:** `aptos-core`
 - **Git branch:** `mainnet` on https://github.com/aptos-labs/aptos-core
@@ -69,7 +68,7 @@ Unless specified, all these files are required for validator node. A file with `
   wget -O haproxy.cfg https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/haproxy.cfg
   ```
 
-## blocked.ips
+### blocked.ips
 
 - **Git repo:** `aptos-core`
 - **Git branch:** `mainnet` on https://github.com/aptos-labs/aptos-core
@@ -78,11 +77,13 @@ Unless specified, all these files are required for validator node. A file with `
   wget -O blocked.ips https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/blocked.ips
   ```
 
-## docker-compose-fullnode.yaml (fullnode only)
+---
 
-:::tip Fullnode
-Fullnode means either a validator fullnode or a public fullnode.
-:::
+## VFN or PFN files
+
+The files listed below are for VFNs or PFNs.
+
+### docker-compose-fullnode.yaml
 
 - **Git repo:** `aptos-core`
 - **Git branch:** `mainnet` on https://github.com/aptos-labs/aptos-core
@@ -91,11 +92,7 @@ Fullnode means either a validator fullnode or a public fullnode.
   wget -O docker-compose-fullnode.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/docker-compose-fullnode.yaml
   ```
 
-## fullnode.yaml (fullnode only)
-
-:::tip Fullnode
-Fullnode means either a validator fullnode or a public fullnode.
-:::
+### fullnode.yaml
 
 - **Git repo:** `aptos-core`
 - **Git branch:** `mainnet` on https://github.com/aptos-labs/aptos-core
@@ -104,7 +101,7 @@ Fullnode means either a validator fullnode or a public fullnode.
   wget -O fullnode.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/fullnode.yaml
   ```
 
-## haproxy-fullnode.cfg (fullnode only)
+### haproxy-fullnode.cfg
 
 - **Git repo:** `aptos-core`
 - **Git branch:** `mainnet` on https://github.com/aptos-labs/aptos-core
