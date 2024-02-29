@@ -29,8 +29,8 @@ export default {
       indexer: {
         title: 'Indexer'
       },
-      aptos_cli: {
-        title: 'Aptos CLI'
+      cli: {
+        title: 'CLI'
       },
       advanced_guides: {
         title: 'Advanced Guides'
@@ -41,14 +41,14 @@ export default {
     type: 'menu',
     title: 'Network',
     items: {
-      aptos_blockchain: {
-        title: 'Aptos Blockchain'
+      blockchain: {
+        title: 'Blockchain'
       },
-      aptos_nodes: {
-        title: 'Aptos Nodes'
+      nodes: {
+        title: 'Nodes'
       },
-      aptos_releases: {
-        title: 'Aptos Releases'
+      releases: {
+        title: 'Releases'
       },
       glossary: {
         title: 'Glossary'
