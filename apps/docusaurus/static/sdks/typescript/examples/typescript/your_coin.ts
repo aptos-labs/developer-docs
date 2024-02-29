@@ -5,7 +5,14 @@ import assert from "assert";
 import fs from "fs";
 import path from "path";
 import { NODE_URL, FAUCET_URL } from "./common";
-import { AptosAccount, AptosClient, TxnBuilderTypes, MaybeHexString, HexString, FaucetClient } from "aptos";
+import {
+  AptosAccount,
+  AptosClient,
+  TxnBuilderTypes,
+  MaybeHexString,
+  HexString,
+  FaucetClient,
+} from "aptos";
 /**
   This example depends on the MoonCoin.move module having already been published to the destination blockchain.
 
@@ -27,7 +34,10 @@ class CoinClient extends AptosClient {
   }
 
   /** Register the receiver account to receive transfers for the new coin. */
-  async registerCoin(coinTypeAddress: HexString, coinReceiver: AptosAccount): Promise<string> {
+  async registerCoin(
+    coinTypeAddress: HexString,
+    coinReceiver: AptosAccount,
+  ): Promise<string> {
     const rawTxn = await this.generateTransaction(coinReceiver.address(), {
       function: "0x1::managed_coin::register",
       type_arguments: [`${coinTypeAddress.hex()}::moon_coin::MoonCoin`],
@@ -41,7 +51,11 @@ class CoinClient extends AptosClient {
   }
 
   /** Transfer the newly created coin to a specified receiver address */
-  async transferCoin(sender: AptosAccount, receiverAddress: HexString, amount: number | bigint): Promise<string> {
+  async transferCoin(
+    sender: AptosAccount,
+    receiverAddress: HexString,
+    amount: number | bigint,
+  ): Promise<string> {
     const rawTxn = await this.generateTransaction(sender.address(), {
       function: "0x1::aptos_account::transfer_coins",
       type_arguments: [`${sender.address()}::moon_coin::MoonCoin`],
@@ -55,7 +69,11 @@ class CoinClient extends AptosClient {
   }
 
   /** Mints the newly created coin to a specified receiver address */
-  async mintCoin(minter: AptosAccount, receiverAddress: HexString, amount: number | bigint): Promise<string> {
+  async mintCoin(
+    minter: AptosAccount,
+    receiverAddress: HexString,
+    amount: number | bigint,
+  ): Promise<string> {
     const rawTxn = await this.generateTransaction(minter.address(), {
       function: "0x1::managed_coin::mint",
       type_arguments: [`${minter.address()}::moon_coin::MoonCoin`],
@@ -69,7 +87,10 @@ class CoinClient extends AptosClient {
   }
 
   /** Return the balance of the newly created coin */
-  async getBalance(accountAddress: MaybeHexString, coinTypeAddress: HexString): Promise<string | number> {
+  async getBalance(
+    accountAddress: MaybeHexString,
+    coinTypeAddress: HexString,
+  ): Promise<string | number> {
     try {
       const resource = await this.getAccountResource(
         accountAddress,
@@ -85,7 +106,10 @@ class CoinClient extends AptosClient {
 
 /** run our demo! */
 async function main() {
-  assert(process.argv.length == 3, "Expecting an argument that points to the moon_coin directory.");
+  assert(
+    process.argv.length == 3,
+    "Expecting an argument that points to the moon_coin directory.",
+  );
 
   const client = new CoinClient();
   const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
@@ -102,24 +126,45 @@ async function main() {
   await faucetClient.fundAccount(bob.address(), 100_000_000);
 
   await new Promise<void>((resolve) => {
-    readline.question("Update the module with Alice's address, compile, and press enter.", () => {
-      resolve();
-      readline.close();
-    });
+    readline.question(
+      "Update the module with Alice's address, compile, and press enter.",
+      () => {
+        resolve();
+        readline.close();
+      },
+    );
   });
 
   // :!:>publish
   const modulePath = process.argv[2];
-  const packageMetadata = fs.readFileSync(path.join(modulePath, "build", "Examples", "package-metadata.bcs"));
-  const moduleData = fs.readFileSync(path.join(modulePath, "build", "Examples", "bytecode_modules", "moon_coin.mv"));
+  const packageMetadata = fs.readFileSync(
+    path.join(modulePath, "build", "Examples", "package-metadata.bcs"),
+  );
+  const moduleData = fs.readFileSync(
+    path.join(
+      modulePath,
+      "build",
+      "Examples",
+      "bytecode_modules",
+      "moon_coin.mv",
+    ),
+  );
 
   console.log("Publishing MoonCoin package.");
-  let txnHash = await client.publishPackage(alice, new HexString(packageMetadata.toString("hex")).toUint8Array(), [
-    new TxnBuilderTypes.Module(new HexString(moduleData.toString("hex")).toUint8Array()),
-  ]);
+  let txnHash = await client.publishPackage(
+    alice,
+    new HexString(packageMetadata.toString("hex")).toUint8Array(),
+    [
+      new TxnBuilderTypes.Module(
+        new HexString(moduleData.toString("hex")).toUint8Array(),
+      ),
+    ],
+  );
   await client.waitForTransaction(txnHash, { checkSuccess: true }); // <:!:publish
 
-  console.log(`Bob's initial MoonCoin balance: ${await client.getBalance(bob.address(), alice.address())}.`);
+  console.log(
+    `Bob's initial MoonCoin balance: ${await client.getBalance(bob.address(), alice.address())}.`,
+  );
   console.log("Alice mints herself some of the new coin.");
   txnHash = await client.registerCoin(alice.address(), alice);
   await client.waitForTransaction(txnHash, { checkSuccess: true });
@@ -129,7 +174,9 @@ async function main() {
   console.log("Alice transfers the newly minted coins to Bob.");
   txnHash = await client.transferCoin(alice, bob.address(), 100);
   await client.waitForTransaction(txnHash, { checkSuccess: true });
-  console.log(`Bob's updated MoonCoin balance: ${await client.getBalance(bob.address(), alice.address())}.`);
+  console.log(
+    `Bob's updated MoonCoin balance: ${await client.getBalance(bob.address(), alice.address())}.`,
+  );
 }
 
 if (require.main === module) {

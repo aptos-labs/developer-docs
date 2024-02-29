@@ -15,10 +15,13 @@ const ED25519_ACCOUNT_SCHEME = 0;
 const MULTI_ED25519_ACCOUNT_SCHEME = 1;
 
 class MultiSigAccountCreationWithAuthKeyRevocationMessage {
-  public readonly moduleAddress: TxnBuilderTypes.AccountAddress = TxnBuilderTypes.AccountAddress.CORE_CODE_ADDRESS;
+  public readonly moduleAddress: TxnBuilderTypes.AccountAddress =
+    TxnBuilderTypes.AccountAddress.CORE_CODE_ADDRESS;
   public readonly moduleName: string = "multisig_account";
-  public readonly structName: string = "MultisigAccountCreationWithAuthKeyRevocationMessage";
-  public readonly functionName: string = "create_with_existing_account_and_revoke_auth_key";
+  public readonly structName: string =
+    "MultisigAccountCreationWithAuthKeyRevocationMessage";
+  public readonly functionName: string =
+    "create_with_existing_account_and_revoke_auth_key";
 
   constructor(
     public readonly chainId: number,
@@ -67,7 +70,10 @@ class MultiSigAccountCreationWithAuthKeyRevocationMessage {
 */
 const main = async () => {
   const provider = new Provider(Network.DEVNET);
-  const faucetClient = new FaucetClient(provider.aptosClient.nodeUrl, "https://faucet.devnet.aptoslabs.com");
+  const faucetClient = new FaucetClient(
+    provider.aptosClient.nodeUrl,
+    "https://faucet.devnet.aptoslabs.com",
+  );
   const NUM_SIGNATURES_REQUIRED = 3;
 
   // Step 1.
@@ -82,22 +88,38 @@ const main = async () => {
   await faucetClient.fundAccount(account3.address(), 100_000_000);
 
   const accounts = [account1, account2, account3];
-  const accountAddresses = accounts.map((acc) => TxnBuilderTypes.AccountAddress.fromHex(acc.address()));
+  const accountAddresses = accounts.map((acc) =>
+    TxnBuilderTypes.AccountAddress.fromHex(acc.address()),
+  );
 
   // If the signing accounts are a subset of the original accounts in the actual e2e flow, we'd use this to track who's actually signing
   const signingAccounts = [account1, account2, account3];
-  const signingAddresses = signingAccounts.map((acc) => TxnBuilderTypes.AccountAddress.fromHex(acc.address()));
+  const signingAddresses = signingAccounts.map((acc) =>
+    TxnBuilderTypes.AccountAddress.fromHex(acc.address()),
+  );
 
   // Step 2.
   // Initialize a MultiEd25519 account with the created accounts as owners and a signature threshold K as NUM_SIGNATURES_REQUIRED
   await initializeMultiEd25519(faucetClient, accounts, NUM_SIGNATURES_REQUIRED);
 
-  const publicKeys = accounts.map((acc) => new TxnBuilderTypes.Ed25519PublicKey(acc.signingKey.publicKey));
-  const multiSigPublicKey = new TxnBuilderTypes.MultiEd25519PublicKey(publicKeys, NUM_SIGNATURES_REQUIRED);
-  const authKey = TxnBuilderTypes.AuthenticationKey.fromMultiEd25519PublicKey(multiSigPublicKey);
-  const multiSigAddress = TxnBuilderTypes.AccountAddress.fromHex(authKey.derivedAddress());
+  const publicKeys = accounts.map(
+    (acc) => new TxnBuilderTypes.Ed25519PublicKey(acc.signingKey.publicKey),
+  );
+  const multiSigPublicKey = new TxnBuilderTypes.MultiEd25519PublicKey(
+    publicKeys,
+    NUM_SIGNATURES_REQUIRED,
+  );
+  const authKey =
+    TxnBuilderTypes.AuthenticationKey.fromMultiEd25519PublicKey(
+      multiSigPublicKey,
+    );
+  const multiSigAddress = TxnBuilderTypes.AccountAddress.fromHex(
+    authKey.derivedAddress(),
+  );
 
-  const sequenceNumber = Number((await provider.getAccount(multiSigAddress.toHexString())).sequence_number);
+  const sequenceNumber = Number(
+    (await provider.getAccount(multiSigAddress.toHexString())).sequence_number,
+  );
   const chainId = Number(await provider.getChainId());
 
   // Step 3.
@@ -117,17 +139,27 @@ const main = async () => {
   const structSig1 = account1.signBuffer(bcsSerializedStruct);
   const structSig2 = account2.signBuffer(bcsSerializedStruct);
   const structSig3 = account3.signBuffer(bcsSerializedStruct);
-  const structSignatures = [structSig1, structSig2, structSig3].map((sig) => sig.toUint8Array());
+  const structSignatures = [structSig1, structSig2, structSig3].map((sig) =>
+    sig.toUint8Array(),
+  );
 
   // Step 5.
   // Assemble a MultiEd25519 signed proof struct with the gathered signatures.
   // This represents the multisig signed struct by all owners. This is used as proof of authentication by the overall MultiEd25519 account, since there's no signer
   // checked in the entry function we're using.
-  const multiSigStruct = createMultiSigStructFromSignedStructs(accountAddresses, signingAddresses, structSignatures);
+  const multiSigStruct = createMultiSigStructFromSignedStructs(
+    accountAddresses,
+    signingAddresses,
+    structSignatures,
+  );
 
   // Create test metadata for the multisig account post-creation
   const metadataKeys = ["key 123", "key 456", "key 789"];
-  const metadataValues = [new Uint8Array([1, 2, 3]), new Uint8Array([4, 5, 6]), new Uint8Array([7, 8, 9])];
+  const metadataValues = [
+    new Uint8Array([1, 2, 3]),
+    new Uint8Array([4, 5, 6]),
+    new Uint8Array([7, 8, 9]),
+  ];
 
   // Pack the signed multi-sig struct into the entry function payload with the number of signatures required + multisig account info
   const entryFunctionPayload = createWithExistingAccountAndRevokeAuthKeyPayload(
@@ -148,16 +180,27 @@ const main = async () => {
   await faucetClient.fundAccount(randomAccount.address(), 100_000_000);
 
   // The sender here is essentially just paying for the gas fees.
-  const txn = await provider.generateSignSubmitTransaction(randomAccount, entryFunctionPayload, {
-    expireTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60),
-  });
+  const txn = await provider.generateSignSubmitTransaction(
+    randomAccount,
+    entryFunctionPayload,
+    {
+      expireTimestamp: BigInt(Math.floor(Date.now() / 1000) + 60),
+    },
+  );
 
   // Step 7.
   // Wait for the transaction to complete, then observe and assert that the authentication key for the original MultiEd25519 account
   // has been rotated and all capabilities revoked.
   const txnInfo = await provider.waitForTransactionWithResult(txn);
   printRelevantTxInfo(txnInfo as Types.UserTransaction);
-  assertChangesAndPrint(provider, multiSigAddress, sequenceNumber, false, metadataKeys, metadataValues);
+  assertChangesAndPrint(
+    provider,
+    multiSigAddress,
+    sequenceNumber,
+    false,
+    metadataKeys,
+    metadataValues,
+  );
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -183,21 +226,31 @@ const initializeMultiEd25519 = async (
   numSignaturesRequired: number,
 ): Promise<Array<string>> => {
   const multiSigPublicKey = new TxnBuilderTypes.MultiEd25519PublicKey(
-    accounts.map((acc) => new TxnBuilderTypes.Ed25519PublicKey(acc.signingKey.publicKey)),
+    accounts.map(
+      (acc) => new TxnBuilderTypes.Ed25519PublicKey(acc.signingKey.publicKey),
+    ),
     numSignaturesRequired,
   );
 
-  const multiSigAuthKey = TxnBuilderTypes.AuthenticationKey.fromMultiEd25519PublicKey(multiSigPublicKey);
+  const multiSigAuthKey =
+    TxnBuilderTypes.AuthenticationKey.fromMultiEd25519PublicKey(
+      multiSigPublicKey,
+    );
   const multiSigAddress = multiSigAuthKey.derivedAddress();
 
   // Note that a MultiEd25519's public and private keys are simply the concatenated corresponding key values of the original owners.
   console.log("\nMultiEd25519 account information:");
   console.log({
     MultiEd25519Address: multiSigAddress.toString(),
-    MultiEd25519PublicKey: HexString.fromUint8Array(multiSigPublicKey.toBytes()).toString(),
+    MultiEd25519PublicKey: HexString.fromUint8Array(
+      multiSigPublicKey.toBytes(),
+    ).toString(),
   });
 
-  return await faucetClient.fundAccount(multiSigAddress.toString(), 100_000_000);
+  return await faucetClient.fundAccount(
+    multiSigAddress.toString(),
+    100_000_000,
+  );
 };
 
 // Helper function to create the bitmap from the difference between the original addresses at creation vs the current signing addresses
@@ -206,7 +259,9 @@ const createBitmapFromDiff = (
   originalAddresses: Array<TxnBuilderTypes.AccountAddress>,
   signingAddresses: Array<TxnBuilderTypes.AccountAddress>,
 ): Uint8Array => {
-  const signersSet = new Set(signingAddresses.map((addr) => addr.toHexString()));
+  const signersSet = new Set(
+    signingAddresses.map((addr) => addr.toHexString()),
+  );
   const bits = originalAddresses
     .map((addr) => addr.toHexString())
     .map((item, index) => (signersSet.has(item) ? index : -1))
@@ -228,7 +283,10 @@ const createWithExistingAccountAndRevokeAuthKeyPayload = (
   metadataKeys: Array<string>,
   metadataValues: Array<Uint8Array>,
 ): TxnBuilderTypes.TransactionPayloadEntryFunction => {
-  assert(metadataKeys.length == metadataValues.length, "Metadata keys and values must be the same length.");
+  assert(
+    metadataKeys.length == metadataValues.length,
+    "Metadata keys and values must be the same length.",
+  );
   return new TxnBuilderTypes.TransactionPayloadEntryFunction(
     TxnBuilderTypes.EntryFunction.natural(
       `0x1::multisig_account`,
@@ -281,21 +339,34 @@ const assertChangesAndPrint = async (
   metadataValues: Array<Uint8Array>,
 ) => {
   // Query the account resources on-chain
-  const accountResource = await provider.getAccountResource(multiEd25519Address.toHexString(), "0x1::account::Account");
+  const accountResource = await provider.getAccountResource(
+    multiEd25519Address.toHexString(),
+    "0x1::account::Account",
+  );
   const data = accountResource?.data as any;
 
   // Check that the authentication key of the original MultiEd25519 account was rotated
   // Normalize the inputs and then convert them to a string for comparison
-  const authKey = TxnBuilderTypes.AccountAddress.fromHex(data.authentication_key).toHexString().toString();
-  const zeroAuthKey = TxnBuilderTypes.AccountAddress.fromHex("0x0").toHexString().toString();
+  const authKey = TxnBuilderTypes.AccountAddress.fromHex(
+    data.authentication_key,
+  )
+    .toHexString()
+    .toString();
+  const zeroAuthKey = TxnBuilderTypes.AccountAddress.fromHex("0x0")
+    .toHexString()
+    .toString();
   const authKeyRotated = authKey === zeroAuthKey;
 
   // Sequence number only increments if MultiEd was the signer
-  const expectedSequenceNumber = submittedAsMultiEd25519 ? sequenceNumber + 1 : sequenceNumber + 0;
+  const expectedSequenceNumber = submittedAsMultiEd25519
+    ? sequenceNumber + 1
+    : sequenceNumber + 0;
 
   // Check the rotation/signer capability offers. They should have been revoked if there were any outstanding offers
-  const rotationCapabilityOffer = data.rotation_capability_offer.for.vec as Array<any>;
-  const signerCapabilityOffer = data.signer_capability_offer.for.vec as Array<any>;
+  const rotationCapabilityOffer = data.rotation_capability_offer.for
+    .vec as Array<any>;
+  const signerCapabilityOffer = data.signer_capability_offer.for
+    .vec as Array<any>;
 
   // Check that the metadata keys and values were correctly stored at the multisig's account address
   const multisigAccountResource = await provider.getAccountResource(
@@ -303,8 +374,11 @@ const assertChangesAndPrint = async (
     "0x1::multisig_account::MultisigAccount",
   );
 
-  const metadata = (multisigAccountResource?.data as any).metadata.data as Array<any>;
-  const onChainMetadataValues = metadata.map((m) => new HexString(m.value).toUint8Array());
+  const metadata = (multisigAccountResource?.data as any).metadata
+    .data as Array<any>;
+  const onChainMetadataValues = metadata.map((m) =>
+    new HexString(m.value).toUint8Array(),
+  );
 
   console.log(`\nMetadata added to MultiSig Account:`);
   console.log(metadata);
@@ -328,11 +402,17 @@ const assertChangesAndPrint = async (
     `Incorrect length. Input ${metadataKeys.length} but on-chain length is ${onChainMetadataKeys.length}`,
   );
   onChainMetadataKeys.forEach((k, i) => {
-    assert(k === metadataKeys[i], `Incorrect key. Input ${metadataKeys[i]} but on-chain key is ${k}`);
+    assert(
+      k === metadataKeys[i],
+      `Incorrect key. Input ${metadataKeys[i]} but on-chain key is ${k}`,
+    );
   });
 
   // Assert our expectations about the account resources
-  assert(Number(data.sequence_number) === expectedSequenceNumber, "Incorrect sequence number.");
+  assert(
+    Number(data.sequence_number) === expectedSequenceNumber,
+    "Incorrect sequence number.",
+  );
   assert(authKeyRotated, "nAuthentication key was not rotated.");
   assert(rotationCapabilityOffer.length == 0);
   assert(signerCapabilityOffer.length == 0);

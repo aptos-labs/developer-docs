@@ -58,12 +58,16 @@ async function main() {
   const funds: Array<Promise<string[]>> = [];
 
   for (let i = 0; i < senders.length; i++) {
-    funds.push(faucet.fundAccount(senders[i].address().noPrefix(), 10000000000));
+    funds.push(
+      faucet.fundAccount(senders[i].address().noPrefix(), 10000000000),
+    );
   }
 
   await Promise.all(funds);
 
-  console.log(`${funds.length} sender accounts funded in ${Date.now() / 1000 - last} seconds`);
+  console.log(
+    `${funds.length} sender accounts funded in ${Date.now() / 1000 - last} seconds`,
+  );
   last = Date.now() / 1000;
 
   // read sender accounts
@@ -73,7 +77,9 @@ async function main() {
   }
   await Promise.all(balances);
 
-  console.log(`${balances.length} sender account balances checked in ${Date.now() / 1000 - last} seconds`);
+  console.log(
+    `${balances.length} sender account balances checked in ${Date.now() / 1000 - last} seconds`,
+  );
   last = Date.now() / 1000;
 
   // create transactions
@@ -87,7 +93,12 @@ async function main() {
           "0x1::aptos_account",
           "transfer",
           [],
-          [BCS.bcsToBytes(TxnBuilderTypes.AccountAddress.fromHex(recipients[i].address())), BCS.bcsSerializeUint64(5)],
+          [
+            BCS.bcsToBytes(
+              TxnBuilderTypes.AccountAddress.fromHex(recipients[i].address()),
+            ),
+            BCS.bcsSerializeUint64(5),
+          ],
         ),
       );
       payloads.push(txn);
@@ -99,7 +110,10 @@ async function main() {
   const promises = senders.map((sender) => batchTransactions(payloads, sender));
   await Promise.all(promises);
 
-  async function batchTransactions(payloads: TxnBuilderTypes.Transaction[], sender: AptosAccount) {
+  async function batchTransactions(
+    payloads: TxnBuilderTypes.Transaction[],
+    sender: AptosAccount,
+  ) {
     const transactionWorker = new TransactionWorker(provider, sender);
 
     transactionWorker.start();
@@ -120,42 +134,58 @@ async function main() {
      * on a success event, is the hash value of the processed transaction
      * on a failure event, is the reason for the failure
      */
-    transactionWorker.on(TransactionWorkerEvents.TransactionSent, async (data) => {
-      // all expected transactions have been sent
-      if (data[0] === totalTransactions) {
-        console.log(`transactions sent in ${Date.now() / 1000 - last} seconds`);
-      }
-    });
+    transactionWorker.on(
+      TransactionWorkerEvents.TransactionSent,
+      async (data) => {
+        // all expected transactions have been sent
+        if (data[0] === totalTransactions) {
+          console.log(
+            `transactions sent in ${Date.now() / 1000 - last} seconds`,
+          );
+        }
+      },
+    );
 
-    transactionWorker.on(TransactionWorkerEvents.TransactionSendFailed, async (data) => {
-      /**
-       * transaction sent failed, up to the user to decide next steps.
-       * whether to stop the worker by transactionWorker.stop() and handle
-       * the error, or simply return the error to the end user.
-       * At this point, we have the failed transaction queue number
-       * and the transaction failure reason
-       */
-      console.log("sentFailed", data);
-    });
+    transactionWorker.on(
+      TransactionWorkerEvents.TransactionSendFailed,
+      async (data) => {
+        /**
+         * transaction sent failed, up to the user to decide next steps.
+         * whether to stop the worker by transactionWorker.stop() and handle
+         * the error, or simply return the error to the end user.
+         * At this point, we have the failed transaction queue number
+         * and the transaction failure reason
+         */
+        console.log("sentFailed", data);
+      },
+    );
 
-    transactionWorker.on(TransactionWorkerEvents.TransactionExecuted, async (data) => {
-      // all expected transactions have been executed
-      if (data[0] === totalTransactions) {
-        console.log(`transactions executed in ${Date.now() / 1000 - last} seconds`);
-        await checkAccounts();
-      }
-    });
+    transactionWorker.on(
+      TransactionWorkerEvents.TransactionExecuted,
+      async (data) => {
+        // all expected transactions have been executed
+        if (data[0] === totalTransactions) {
+          console.log(
+            `transactions executed in ${Date.now() / 1000 - last} seconds`,
+          );
+          await checkAccounts();
+        }
+      },
+    );
 
-    transactionWorker.on(TransactionWorkerEvents.TransactionExecutionFailed, async (data) => {
-      /**
-       * transaction execution failed, up to the user to decide next steps.
-       * whether to stop the worker by transactionWorker.stop() and handle
-       * the error, or simply return the error to the end user.
-       * At this point, we have the failed transaction queue number
-       * and the transaction object data
-       */
-      console.log("executionFailed", data);
-    });
+    transactionWorker.on(
+      TransactionWorkerEvents.TransactionExecutionFailed,
+      async (data) => {
+        /**
+         * transaction execution failed, up to the user to decide next steps.
+         * whether to stop the worker by transactionWorker.stop() and handle
+         * the error, or simply return the error to the end user.
+         * At this point, we have the failed transaction queue number
+         * and the transaction object data
+         */
+        console.log("executionFailed", data);
+      },
+    );
   }
 
   // check for account's sequence numbers
@@ -165,7 +195,9 @@ async function main() {
       waitFor.push(provider.getAccount(senders[i].address()));
     }
     const res = await Promise.all(waitFor);
-    console.log(`transactions verified in  ${Date.now() / 1000 - last}  seconds`);
+    console.log(
+      `transactions verified in  ${Date.now() / 1000 - last}  seconds`,
+    );
     for (const account in res) {
       const currentAccount = res[account] as Types.AccountData;
       console.log(

@@ -3,12 +3,21 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { AptosClient, AptosAccount, FaucetClient, BCS, TransactionBuilderMultiEd25519, TxnBuilderTypes } from "aptos";
+import {
+  AptosClient,
+  AptosAccount,
+  FaucetClient,
+  BCS,
+  TransactionBuilderMultiEd25519,
+  TxnBuilderTypes,
+} from "aptos";
 import { aptosCoinStore } from "./common";
 import assert from "assert";
 
-const NODE_URL = process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
-const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptoslabs.com";
+const NODE_URL =
+  process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
+const FAUCET_URL =
+  process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptoslabs.com";
 
 /**
  * This code example demonstrates the process of moving test coins from one multisig
@@ -38,7 +47,10 @@ const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptosl
 
   // Each Aptos account stores an auth key. Initial account address can be derived from auth key.
   // See https://aptos.dev/concepts/accounts for more details.
-  const authKey = TxnBuilderTypes.AuthenticationKey.fromMultiEd25519PublicKey(multiSigPublicKey);
+  const authKey =
+    TxnBuilderTypes.AuthenticationKey.fromMultiEd25519PublicKey(
+      multiSigPublicKey,
+    );
 
   // Derive the multisig account address and fund the address with 5000 AptosCoin.
   const mutisigAccountAddress = authKey.derivedAddress();
@@ -54,18 +66,24 @@ const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptosl
 
   // TS SDK support 3 types of transaction payloads: `EntryFunction`, `Script` and `Module`.
   // See https://aptos-labs.github.io/ts-sdk-doc/ for the details.
-  const entryFunctionPayload = new TxnBuilderTypes.TransactionPayloadEntryFunction(
-    TxnBuilderTypes.EntryFunction.natural(
-      // Fully qualified module name, `AccountAddress::ModuleName`
-      "0x1::aptos_account",
-      // Module function
-      "transfer",
-      // The coin type to transfer
-      [],
-      // Arguments for function `transfer`: receiver account address and amount to transfer
-      [BCS.bcsToBytes(TxnBuilderTypes.AccountAddress.fromHex(account4.address())), BCS.bcsSerializeUint64(123)],
-    ),
-  );
+  const entryFunctionPayload =
+    new TxnBuilderTypes.TransactionPayloadEntryFunction(
+      TxnBuilderTypes.EntryFunction.natural(
+        // Fully qualified module name, `AccountAddress::ModuleName`
+        "0x1::aptos_account",
+        // Module function
+        "transfer",
+        // The coin type to transfer
+        [],
+        // Arguments for function `transfer`: receiver account address and amount to transfer
+        [
+          BCS.bcsToBytes(
+            TxnBuilderTypes.AccountAddress.fromHex(account4.address()),
+          ),
+          BCS.bcsSerializeUint64(123),
+        ],
+      ),
+    );
 
   const [{ sequence_number: sequenceNumber }, chainId] = await Promise.all([
     client.getAccount(mutisigAccountAddress),
@@ -89,25 +107,28 @@ const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptosl
   );
 
   // account1 and account3 sign the transaction
-  const txnBuilder = new TransactionBuilderMultiEd25519((signingMessage: TxnBuilderTypes.SigningMessage) => {
-    const sigHexStr1 = account1.signBuffer(signingMessage);
-    const sigHexStr3 = account3.signBuffer(signingMessage);
+  const txnBuilder = new TransactionBuilderMultiEd25519(
+    (signingMessage: TxnBuilderTypes.SigningMessage) => {
+      const sigHexStr1 = account1.signBuffer(signingMessage);
+      const sigHexStr3 = account3.signBuffer(signingMessage);
 
-    // Bitmap masks which public key has signed transaction.
-    // See https://aptos-labs.github.io/ts-sdk-doc/classes/TxnBuilderTypes.MultiEd25519Signature.html#createBitmap
-    const bitmap = TxnBuilderTypes.MultiEd25519Signature.createBitmap([0, 2]);
+      // Bitmap masks which public key has signed transaction.
+      // See https://aptos-labs.github.io/ts-sdk-doc/classes/TxnBuilderTypes.MultiEd25519Signature.html#createBitmap
+      const bitmap = TxnBuilderTypes.MultiEd25519Signature.createBitmap([0, 2]);
 
-    // See https://aptos-labs.github.io/ts-sdk-doc/classes/TxnBuilderTypes.MultiEd25519Signature.html#constructor
-    const muliEd25519Sig = new TxnBuilderTypes.MultiEd25519Signature(
-      [
-        new TxnBuilderTypes.Ed25519Signature(sigHexStr1.toUint8Array()),
-        new TxnBuilderTypes.Ed25519Signature(sigHexStr3.toUint8Array()),
-      ],
-      bitmap,
-    );
+      // See https://aptos-labs.github.io/ts-sdk-doc/classes/TxnBuilderTypes.MultiEd25519Signature.html#constructor
+      const muliEd25519Sig = new TxnBuilderTypes.MultiEd25519Signature(
+        [
+          new TxnBuilderTypes.Ed25519Signature(sigHexStr1.toUint8Array()),
+          new TxnBuilderTypes.Ed25519Signature(sigHexStr3.toUint8Array()),
+        ],
+        bitmap,
+      );
 
-    return muliEd25519Sig;
-  }, multiSigPublicKey);
+      return muliEd25519Sig;
+    },
+    multiSigPublicKey,
+  );
 
   const bcsTxn = txnBuilder.sign(rawTxn);
   const transactionRes = await client.submitSignedBCSTransaction(bcsTxn);

@@ -1,10 +1,20 @@
-import { AptosAccount, FaucetClient, Network, Provider, HexString, TxnBuilderTypes, BCS, Types } from "aptos";
+import {
+  AptosAccount,
+  FaucetClient,
+  Network,
+  Provider,
+  HexString,
+  TxnBuilderTypes,
+  BCS,
+  Types,
+} from "aptos";
 import assert from "assert";
 
 const ED25519_ACCOUNT_SCHEME = 0;
 
 class SignerCapabilityOfferProofChallengeV2 {
-  public readonly moduleAddress: TxnBuilderTypes.AccountAddress = TxnBuilderTypes.AccountAddress.CORE_CODE_ADDRESS;
+  public readonly moduleAddress: TxnBuilderTypes.AccountAddress =
+    TxnBuilderTypes.AccountAddress.CORE_CODE_ADDRESS;
   public readonly moduleName: string = "account";
   public readonly structName: string = "SignerCapabilityOfferProofChallengeV2";
   public readonly functionName: string = "offer_signer_capability";
@@ -26,9 +36,11 @@ class SignerCapabilityOfferProofChallengeV2 {
 }
 
 class RotationCapabilityOfferProofChallengeV2 {
-  public readonly moduleAddress: TxnBuilderTypes.AccountAddress = TxnBuilderTypes.AccountAddress.CORE_CODE_ADDRESS;
+  public readonly moduleAddress: TxnBuilderTypes.AccountAddress =
+    TxnBuilderTypes.AccountAddress.CORE_CODE_ADDRESS;
   public readonly moduleName: string = "account";
-  public readonly structName: string = "RotationCapabilityOfferProofChallengeV2";
+  public readonly structName: string =
+    "RotationCapabilityOfferProofChallengeV2";
   public readonly functionName: string = "offer_rotation_capability";
 
   constructor(
@@ -52,7 +64,9 @@ class RotationCapabilityOfferProofChallengeV2 {
 const createAndFundAliceAndBob = async (
   faucetClient: FaucetClient,
 ): Promise<{ alice: AptosAccount; bob: AptosAccount }> => {
-  console.log(`\n---------  Creating and funding new accounts for Bob & Alice  ---------\n`);
+  console.log(
+    `\n---------  Creating and funding new accounts for Bob & Alice  ---------\n`,
+  );
   const alice = new AptosAccount();
   const bob = new AptosAccount();
   await faucetClient.fundAccount(alice.address(), 100_000_000);
@@ -69,12 +83,19 @@ const createAndFundAliceAndBob = async (
 
 (async () => {
   const provider = new Provider(Network.DEVNET);
-  const faucetClient = new FaucetClient(provider.aptosClient.nodeUrl, "https://faucet.devnet.aptoslabs.com");
+  const faucetClient = new FaucetClient(
+    provider.aptosClient.nodeUrl,
+    "https://faucet.devnet.aptoslabs.com",
+  );
   const chainId = await provider.getChainId();
 
   const { alice, bob } = await createAndFundAliceAndBob(faucetClient);
-  const aliceAccountAddress = TxnBuilderTypes.AccountAddress.fromHex(alice.address());
-  const bobAccountAddress = TxnBuilderTypes.AccountAddress.fromHex(bob.address());
+  const aliceAccountAddress = TxnBuilderTypes.AccountAddress.fromHex(
+    alice.address(),
+  );
+  const bobAccountAddress = TxnBuilderTypes.AccountAddress.fromHex(
+    bob.address(),
+  );
 
   // Offer Alice's rotation capability to Bob
   {
@@ -86,10 +107,17 @@ const createAndFundAliceAndBob = async (
       bobAccountAddress,
     );
 
-    console.log(`\n---------------  RotationCapabilityOfferProofChallengeV2 --------------\n`);
+    console.log(
+      `\n---------------  RotationCapabilityOfferProofChallengeV2 --------------\n`,
+    );
 
     // Sign the BCS-serialized struct, submit the transaction, and wait for the result.
-    const res = await signStructAndSubmitTransaction(provider, alice, rotationCapProof, ED25519_ACCOUNT_SCHEME);
+    const res = await signStructAndSubmitTransaction(
+      provider,
+      alice,
+      rotationCapProof,
+      ED25519_ACCOUNT_SCHEME,
+    );
 
     // Print the relevant transaction submission info
     const { hash, version, success, payload } = res;
@@ -97,12 +125,20 @@ const createAndFundAliceAndBob = async (
     console.log({ hash, version, success, payload });
 
     // Query Alice's Account resource on-chain to verify that she has offered the rotation capability to Bob
-    console.log("\nChecking Alice's account resources to verify the rotation capability offer is for Bob...");
-    const { data } = await provider.getAccountResource(alice.address(), "0x1::account::Account");
+    console.log(
+      "\nChecking Alice's account resources to verify the rotation capability offer is for Bob...",
+    );
+    const { data } = await provider.getAccountResource(
+      alice.address(),
+      "0x1::account::Account",
+    );
     const offerFor = (data as any).rotation_capability_offer.for.vec[0];
 
     console.log({ rotation_capability_offer: { for: offerFor } });
-    assert(offerFor.toString() == bob.address().toString(), "Bob's address should be in the rotation capability offer");
+    assert(
+      offerFor.toString() == bob.address().toString(),
+      "Bob's address should be in the rotation capability offer",
+    );
     console.log("...success!\n");
   }
 
@@ -115,10 +151,17 @@ const createAndFundAliceAndBob = async (
       bobAccountAddress,
     );
 
-    console.log(`\n---------------  SignerCapabilityOfferProofChallengeV2 ---------------\n`);
+    console.log(
+      `\n---------------  SignerCapabilityOfferProofChallengeV2 ---------------\n`,
+    );
 
     // Sign the BCS-serialized struct, submit the transaction, and wait for the result.
-    const res = await signStructAndSubmitTransaction(provider, alice, signerCapProof, ED25519_ACCOUNT_SCHEME);
+    const res = await signStructAndSubmitTransaction(
+      provider,
+      alice,
+      signerCapProof,
+      ED25519_ACCOUNT_SCHEME,
+    );
 
     // Print the relevant transaction submission info
     const { hash, version, success, payload } = res;
@@ -126,12 +169,20 @@ const createAndFundAliceAndBob = async (
     console.log({ hash, version, success, payload });
 
     // Query Alice's Account resource on-chain to verify that she has offered the signer capability to Bob
-    console.log("\nChecking Alice's account resources to verify the signer capability offer is for Bob...");
-    const { data } = await provider.getAccountResource(alice.address(), "0x1::account::Account");
+    console.log(
+      "\nChecking Alice's account resources to verify the signer capability offer is for Bob...",
+    );
+    const { data } = await provider.getAccountResource(
+      alice.address(),
+      "0x1::account::Account",
+    );
     const offerFor = (data as any).signer_capability_offer.for.vec[0];
 
     console.log({ signer_capability_offer: { for: offerFor } });
-    assert(offerFor.toString() == bob.address().toString(), "Bob's address should be in the signer capability offer\n");
+    assert(
+      offerFor.toString() == bob.address().toString(),
+      "Bob's address should be in the signer capability offer\n",
+    );
     console.log("...success!\n");
   }
 })();
@@ -139,7 +190,9 @@ const createAndFundAliceAndBob = async (
 const signStructAndSubmitTransaction = async (
   provider: Provider,
   signer: AptosAccount,
-  struct: SignerCapabilityOfferProofChallengeV2 | RotationCapabilityOfferProofChallengeV2,
+  struct:
+    | SignerCapabilityOfferProofChallengeV2
+    | RotationCapabilityOfferProofChallengeV2,
   accountScheme: number = ED25519_ACCOUNT_SCHEME,
 ): Promise<any> => {
   const bcsStruct = BCS.bcsToBytes(struct);
@@ -158,6 +211,9 @@ const signStructAndSubmitTransaction = async (
       ],
     ),
   );
-  const txnResponse = await provider.generateSignSubmitWaitForTransaction(signer, payload);
+  const txnResponse = await provider.generateSignSubmitWaitForTransaction(
+    signer,
+    payload,
+  );
   return txnResponse as Types.UserTransaction;
 };

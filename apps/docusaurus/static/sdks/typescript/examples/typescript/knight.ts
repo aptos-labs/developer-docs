@@ -1,13 +1,24 @@
 // Copyright © Aptos Foundation
 // SPDX-License-Identifier: Apache-2.0
 
-import { AptosAccount, HexString, Provider, Network, Types, FaucetClient, BCS } from "aptos";
+import {
+  AptosAccount,
+  HexString,
+  Provider,
+  Network,
+  Types,
+  FaucetClient,
+  BCS,
+} from "aptos";
 import { NODE_URL, FAUCET_URL } from "./common";
 
 const provider = new Provider(Network.DEVNET);
 const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
 
-async function getTokenAddr(ownerAddr: HexString, tokenName: string): Promise<HexString> {
+async function getTokenAddr(
+  ownerAddr: HexString,
+  tokenName: string,
+): Promise<HexString> {
   const tokenOwnership = await provider.getOwnedTokens(ownerAddr);
   for (const ownership of tokenOwnership.current_token_ownerships_v2) {
     if (ownership.current_token_data.token_name === tokenName) {
@@ -33,7 +44,11 @@ async function waitForEnter() {
 }
 
 class KnightClient {
-  async mintCorn(creator: AptosAccount, receiver: HexString, amount: BCS.AnyNumber): Promise<string> {
+  async mintCorn(
+    creator: AptosAccount,
+    receiver: HexString,
+    amount: BCS.AnyNumber,
+  ): Promise<string> {
     const rawTxn = await provider.generateTransaction(creator.address(), {
       function: `${creator.address()}::food::mint_corn`,
       type_arguments: [],
@@ -46,7 +61,11 @@ class KnightClient {
     return pendingTxn.hash;
   }
 
-  async mintMeat(creator: AptosAccount, receiver: HexString, amount: BCS.AnyNumber): Promise<string> {
+  async mintMeat(
+    creator: AptosAccount,
+    receiver: HexString,
+    amount: BCS.AnyNumber,
+  ): Promise<string> {
     const rawTxn = await provider.generateTransaction(creator.address(), {
       function: `${creator.address()}::food::mint_meat`,
       type_arguments: [],
@@ -59,7 +78,12 @@ class KnightClient {
     return pendingTxn.hash;
   }
 
-  async feedCorn(moduleAddr: HexString, creator: AptosAccount, to: HexString, amount: BCS.AnyNumber): Promise<string> {
+  async feedCorn(
+    moduleAddr: HexString,
+    creator: AptosAccount,
+    to: HexString,
+    amount: BCS.AnyNumber,
+  ): Promise<string> {
     const rawTxn = await provider.generateTransaction(creator.address(), {
       function: `${moduleAddr.hex()}::knight::feed_corn`,
       type_arguments: [],
@@ -72,7 +96,12 @@ class KnightClient {
     return pendingTxn.hash;
   }
 
-  async feedMeat(moduleAddr: HexString, creator: AptosAccount, to: HexString, amount: BCS.AnyNumber): Promise<string> {
+  async feedMeat(
+    moduleAddr: HexString,
+    creator: AptosAccount,
+    to: HexString,
+    amount: BCS.AnyNumber,
+  ): Promise<string> {
     const rawTxn = await provider.generateTransaction(creator.address(), {
       function: `${moduleAddr.hex()}::knight::feed_meat`,
       type_arguments: [],
@@ -104,7 +133,10 @@ class KnightClient {
     return pendingTxn.hash;
   }
 
-  async healthPoint(module_addr: HexString, token_addr: HexString): Promise<bigint> {
+  async healthPoint(
+    module_addr: HexString,
+    token_addr: HexString,
+  ): Promise<bigint> {
     const payload: Types.ViewRequest = {
       function: `${module_addr.hex()}::knight::health_point`,
       type_arguments: [],
@@ -141,7 +173,9 @@ async function main(): Promise<void> {
   console.log("\n=== Addresses ===");
   console.log(`Admin: ${adminAddr} `);
   console.log(`User: ${userAddr} `);
-  console.log(`User's private key: "${user.toPrivateKeyObject().privateKeyHex}"`);
+  console.log(
+    `User's private key: "${user.toPrivateKeyObject().privateKeyHex}"`,
+  );
 
   // -----------------
   // Mint Knight Token
@@ -155,11 +189,15 @@ async function main(): Promise<void> {
   );
   await provider.waitForTransaction(txnHash, { checkSuccess: true });
   console.log("\n=== Knight Token Minted ===");
-  console.log(`Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`);
+  console.log(
+    `Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`,
+  );
   // Get the address of the minted token
   const tokenAddr = await getTokenAddr(userAddr, tokenName);
   console.log(`The address of the minted token: ${tokenAddr}`);
-  console.log(`The health point of the knight token: ${await client.healthPoint(adminAddr, tokenAddr)}`);
+  console.log(
+    `The health point of the knight token: ${await client.healthPoint(adminAddr, tokenAddr)}`,
+  );
   await waitForEnter();
 
   // --------------
@@ -168,7 +206,9 @@ async function main(): Promise<void> {
   txnHash = await client.mintCorn(admin, userAddr, 10);
   await provider.waitForTransaction(txnHash, { checkSuccess: true });
   console.log("\n=== Mint 10 corns ===");
-  console.log(`Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`);
+  console.log(
+    `Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`,
+  );
   await waitForEnter();
 
   // --------------
@@ -177,7 +217,9 @@ async function main(): Promise<void> {
   txnHash = await client.mintMeat(admin, userAddr, 10);
   await provider.waitForTransaction(txnHash, { checkSuccess: true });
   console.log("\n=== Mint 10 meats ===");
-  console.log(`Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`);
+  console.log(
+    `Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`,
+  );
   await waitForEnter();
 
   // -------------
@@ -186,8 +228,12 @@ async function main(): Promise<void> {
   txnHash = await client.feedCorn(adminAddr, user, tokenAddr, 3);
   await provider.waitForTransaction(txnHash, { checkSuccess: true });
   console.log("\n=== Feed 3 corns ===");
-  console.log(`Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`);
-  console.log(`The health point of the knight token: ${await client.healthPoint(adminAddr, tokenAddr)}`);
+  console.log(
+    `Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`,
+  );
+  console.log(
+    `The health point of the knight token: ${await client.healthPoint(adminAddr, tokenAddr)}`,
+  );
   await waitForEnter();
 
   // -------------
@@ -196,8 +242,12 @@ async function main(): Promise<void> {
   txnHash = await client.feedMeat(adminAddr, user, tokenAddr, 3);
   await provider.waitForTransaction(txnHash, { checkSuccess: true });
   console.log("\n=== Feed 3 meats ===");
-  console.log(`Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`);
-  console.log(`The health point of the knight token: ${await client.healthPoint(adminAddr, tokenAddr)}`);
+  console.log(
+    `Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`,
+  );
+  console.log(
+    `The health point of the knight token: ${await client.healthPoint(adminAddr, tokenAddr)}`,
+  );
   await waitForEnter();
 }
 

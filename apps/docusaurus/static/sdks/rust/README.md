@@ -11,12 +11,13 @@ The official Rust SDK for Aptos.
 
 This SDK provides all the necessary components for building on top of the Aptos Blockchain. Some of the important modules are:
 
-* `client` - Includes a [REST client](https://aptos.dev/nodes/aptos-api-spec#/) implementation
-* `crypto` - Types used for signing and verifying
-* `transaction_builder` - Includes helpers for constructing transactions
-* `types` - Includes types for Aptos on-chain data structures
+- `client` - Includes a [REST client](https://aptos.dev/nodes/aptos-api-spec#/) implementation
+- `crypto` - Types used for signing and verifying
+- `transaction_builder` - Includes helpers for constructing transactions
+- `types` - Includes types for Aptos on-chain data structures
 
 ## Installing Rust SDK
+
 Please refer to [Rust SDK Doc](https://aptos.dev/sdks/rust-sdk/) for details on how to install the Rust SDK.
 
 ## License

@@ -3,14 +3,25 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { AptosClient, AptosAccount, FaucetClient, BCS, TxnBuilderTypes } from "aptos";
+import {
+  AptosClient,
+  AptosAccount,
+  FaucetClient,
+  BCS,
+  TxnBuilderTypes,
+} from "aptos";
 import { sha3_256 as sha3Hash } from "@noble/hashes/sha3";
 import { aptosCoinStore, FAUCET_URL, NODE_URL } from "./common";
 import assert from "assert";
 import * as Gen from "../../src/generated";
 
-const { AccountAddress, EntryFunction, MultiSig, MultiSigTransactionPayload, TransactionPayloadMultisig } =
-  TxnBuilderTypes;
+const {
+  AccountAddress,
+  EntryFunction,
+  MultiSig,
+  MultiSigTransactionPayload,
+  TransactionPayloadMultisig,
+} = TxnBuilderTypes;
 
 /**
  * This code example demonstrates the new multisig account module and transaction execution flow.
@@ -47,14 +58,28 @@ const { AccountAddress, EntryFunction, MultiSig, MultiSigTransactionPayload, Tra
   const createMultisig = await client.generateTransaction(owner1.address(), {
     function: "0x1::multisig_account::create_with_owners",
     type_arguments: [],
-    arguments: [[owner2.address().hex(), owner3.address().hex()], 2, ["Shaka"], [BCS.bcsSerializeStr("Bruh")]],
+    arguments: [
+      [owner2.address().hex(), owner3.address().hex()],
+      2,
+      ["Shaka"],
+      [BCS.bcsSerializeStr("Bruh")],
+    ],
   });
-  await client.generateSignSubmitWaitForTransaction(owner1, createMultisig.payload);
+  await client.generateSignSubmitWaitForTransaction(
+    owner1,
+    createMultisig.payload,
+  );
   assert((await getSignatureThreshold(client, multisigAddress)) == 2);
   assert((await getNumberOfOwners(client, multisigAddress)) == 3);
   console.log("Multisig Account Address:", multisigAddress);
-  console.log("Signature Threshold:", await getSignatureThreshold(client, multisigAddress));
-  console.log("Number of Owners:", await getNumberOfOwners(client, multisigAddress));
+  console.log(
+    "Signature Threshold:",
+    await getSignatureThreshold(client, multisigAddress),
+  );
+  console.log(
+    "Number of Owners:",
+    await getNumberOfOwners(client, multisigAddress),
+  );
   console.log();
 
   console.log("Funding the multisig account...");
@@ -77,7 +102,10 @@ const { AccountAddress, EntryFunction, MultiSig, MultiSigTransactionPayload, Tra
       "0x1::aptos_account",
       "transfer",
       [],
-      [BCS.bcsToBytes(AccountAddress.fromHex(recipient.address())), BCS.bcsSerializeUint64(1_000_000)],
+      [
+        BCS.bcsToBytes(AccountAddress.fromHex(recipient.address())),
+        BCS.bcsSerializeUint64(1_000_000),
+      ],
     ),
   );
   const multisigTxExecution = new TransactionPayloadMultisig(
@@ -96,14 +124,23 @@ const { AccountAddress, EntryFunction, MultiSig, MultiSigTransactionPayload, Tra
     type_arguments: [],
     arguments: [multisigAddress, BCS.bcsToBytes(transferTxPayload)],
   });
-  await client.generateSignSubmitWaitForTransaction(owner2, createMultisigTx.payload);
+  await client.generateSignSubmitWaitForTransaction(
+    owner2,
+    createMultisigTx.payload,
+  );
 
   // Owner 1 rejects but owner 3 approves.
   await rejectAndApprove(client, owner1, owner3, multisigAddress, 1);
 
   // Owner 2 can now execute the transactions as it already has 2 approvals (from owners 2 and 3).
-  await client.generateSignSubmitWaitForTransaction(owner2, multisigTxExecution);
-  let accountResource = await client.getAccountResource(recipient.address(), aptosCoinStore);
+  await client.generateSignSubmitWaitForTransaction(
+    owner2,
+    multisigTxExecution,
+  );
+  let accountResource = await client.getAccountResource(
+    recipient.address(),
+    aptosCoinStore,
+  );
   let balance = parseInt((accountResource?.data as any).coin.value);
   assert(balance === 1_000_000);
   console.log("Recipient's balance after transfer:", balance);
@@ -114,19 +151,31 @@ const { AccountAddress, EntryFunction, MultiSig, MultiSigTransactionPayload, Tra
   // ===========================================================================================
   const transferTxPayloadHash = sha3Hash.create();
   transferTxPayloadHash.update(BCS.bcsToBytes(transferTxPayload));
-  const createMultisigTxWithHash = await client.generateTransaction(owner2.address(), {
-    function: "0x1::multisig_account::create_transaction_with_hash",
-    type_arguments: [],
-    arguments: [multisigAddress, transferTxPayloadHash.digest()],
-  });
-  await client.generateSignSubmitWaitForTransaction(owner2, createMultisigTxWithHash.payload);
+  const createMultisigTxWithHash = await client.generateTransaction(
+    owner2.address(),
+    {
+      function: "0x1::multisig_account::create_transaction_with_hash",
+      type_arguments: [],
+      arguments: [multisigAddress, transferTxPayloadHash.digest()],
+    },
+  );
+  await client.generateSignSubmitWaitForTransaction(
+    owner2,
+    createMultisigTxWithHash.payload,
+  );
   await rejectAndApprove(client, owner1, owner3, multisigAddress, 2);
 
   const multisigTxExecution2 = new TransactionPayloadMultisig(
     new MultiSig(AccountAddress.fromHex(multisigAddress), transferTxPayload),
   );
-  await client.generateSignSubmitWaitForTransaction(owner2, multisigTxExecution2);
-  accountResource = await client.getAccountResource(recipient.address(), aptosCoinStore);
+  await client.generateSignSubmitWaitForTransaction(
+    owner2,
+    multisigTxExecution2,
+  );
+  accountResource = await client.getAccountResource(
+    recipient.address(),
+    aptosCoinStore,
+  );
   balance = parseInt((accountResource?.data as any).coin.value);
   assert(balance === 2_000_000);
   console.log("Recipient's balance after second transfer:", balance);
@@ -153,11 +202,16 @@ const { AccountAddress, EntryFunction, MultiSig, MultiSigTransactionPayload, Tra
   await rejectAndApprove(client, owner1, owner3, multisigAddress, 3);
   await client.generateSignSubmitWaitForTransaction(
     owner2,
-    new TransactionPayloadMultisig(new MultiSig(AccountAddress.fromHex(multisigAddress))),
+    new TransactionPayloadMultisig(
+      new MultiSig(AccountAddress.fromHex(multisigAddress)),
+    ),
   );
   // The multisig account should now have 4 owners.
   assert((await getNumberOfOwners(client, multisigAddress)) == 4);
-  console.log("Number of Owners after addition:", await getNumberOfOwners(client, multisigAddress));
+  console.log(
+    "Number of Owners after addition:",
+    await getNumberOfOwners(client, multisigAddress),
+  );
 
   const removeOwnerPayload = new MultiSigTransactionPayload(
     EntryFunction.natural(
@@ -172,37 +226,61 @@ const { AccountAddress, EntryFunction, MultiSig, MultiSigTransactionPayload, Tra
     type_arguments: [],
     arguments: [multisigAddress, BCS.bcsToBytes(removeOwnerPayload)],
   });
-  await client.generateSignSubmitWaitForTransaction(owner2, removeOwnerTx.payload);
+  await client.generateSignSubmitWaitForTransaction(
+    owner2,
+    removeOwnerTx.payload,
+  );
   await rejectAndApprove(client, owner1, owner3, multisigAddress, 4);
   await client.generateSignSubmitWaitForTransaction(
     owner2,
-    new TransactionPayloadMultisig(new MultiSig(AccountAddress.fromHex(multisigAddress))),
+    new TransactionPayloadMultisig(
+      new MultiSig(AccountAddress.fromHex(multisigAddress)),
+    ),
   );
   // The multisig account should now have 3 owners.
   assert((await getNumberOfOwners(client, multisigAddress)) == 3);
-  console.log("Number of Owners after removal:", await getNumberOfOwners(client, multisigAddress));
+  console.log(
+    "Number of Owners after removal:",
+    await getNumberOfOwners(client, multisigAddress),
+  );
   console.log();
 
   console.log("Changing the signature threshold to 3-of-3...");
   // Step 5: Create a multisig transactions to change the signature threshold to 3-of-3.
   // ===========================================================================================
   const changeSigThresholdPayload = new MultiSigTransactionPayload(
-    EntryFunction.natural("0x1::multisig_account", "update_signatures_required", [], [BCS.bcsSerializeUint64(3)]),
+    EntryFunction.natural(
+      "0x1::multisig_account",
+      "update_signatures_required",
+      [],
+      [BCS.bcsSerializeUint64(3)],
+    ),
   );
-  const changeSigThresholdTx = await client.generateTransaction(owner2.address(), {
-    function: "0x1::multisig_account::create_transaction",
-    type_arguments: [],
-    arguments: [multisigAddress, BCS.bcsToBytes(changeSigThresholdPayload)],
-  });
-  await client.generateSignSubmitWaitForTransaction(owner2, changeSigThresholdTx.payload);
+  const changeSigThresholdTx = await client.generateTransaction(
+    owner2.address(),
+    {
+      function: "0x1::multisig_account::create_transaction",
+      type_arguments: [],
+      arguments: [multisigAddress, BCS.bcsToBytes(changeSigThresholdPayload)],
+    },
+  );
+  await client.generateSignSubmitWaitForTransaction(
+    owner2,
+    changeSigThresholdTx.payload,
+  );
   await rejectAndApprove(client, owner1, owner3, multisigAddress, 5);
   await client.generateSignSubmitWaitForTransaction(
     owner2,
-    new TransactionPayloadMultisig(new MultiSig(AccountAddress.fromHex(multisigAddress))),
+    new TransactionPayloadMultisig(
+      new MultiSig(AccountAddress.fromHex(multisigAddress)),
+    ),
   );
   // The multisig account should now be 3-of-3.
   assert((await getSignatureThreshold(client, multisigAddress)) == 3);
-  console.log("New Signature Threshold:", await getSignatureThreshold(client, multisigAddress));
+  console.log(
+    "New Signature Threshold:",
+    await getSignatureThreshold(client, multisigAddress),
+  );
   console.log("Multisig setup and transactions complete.");
 })();
 
@@ -227,7 +305,10 @@ const rejectAndApprove = async (
   await client.generateSignSubmitWaitForTransaction(owner2, approveTx.payload);
 };
 
-const getNumberOfOwners = async (client: AptosClient, multisigAddress: string): Promise<number> => {
+const getNumberOfOwners = async (
+  client: AptosClient,
+  multisigAddress: string,
+): Promise<number> => {
   const multisigAccountResource = await client.getAccountResource(
     multisigAddress,
     "0x1::multisig_account::MultisigAccount",
@@ -235,7 +316,10 @@ const getNumberOfOwners = async (client: AptosClient, multisigAddress: string): 
   return Number((multisigAccountResource.data as any).owners.length);
 };
 
-const getSignatureThreshold = async (client: AptosClient, multisigAddress: string): Promise<number> => {
+const getSignatureThreshold = async (
+  client: AptosClient,
+  multisigAddress: string,
+): Promise<number> => {
   const multisigAccountResource = await client.getAccountResource(
     multisigAddress,
     "0x1::multisig_account::MultisigAccount",

@@ -17,8 +17,13 @@ import { sha3_256 as sha3Hash } from "@noble/hashes/sha3";
 import { FAUCET_URL, NODE_URL, fungibleStore } from "./common";
 import assert from "assert";
 
-const { AccountAddress, EntryFunction, MultiSig, MultiSigTransactionPayload, TransactionPayloadMultisig } =
-  TxnBuilderTypes;
+const {
+  AccountAddress,
+  EntryFunction,
+  MultiSig,
+  MultiSigTransactionPayload,
+  TransactionPayloadMultisig,
+} = TxnBuilderTypes;
 
 // Step 0: After publishing the example code with the example code under any `MODULE_ADDR` using CLI or any sdk.
 const MODULE_ADDR = process.env.MODULE_ADDR;
@@ -28,7 +33,10 @@ const ASSET_SYMBOL = "MEME";
  * This code example demonstrates how to use framework multisig account module to manage fungible asset with example move code.
  */
 (async () => {
-  const client = new Provider({ fullnodeUrl: NODE_URL, indexerUrl: NODE_URL /* not used */ });
+  const client = new Provider({
+    fullnodeUrl: NODE_URL,
+    indexerUrl: NODE_URL /* not used */,
+  });
   const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
   const fa_client = new FungibleAssetClient(client);
 
@@ -59,25 +67,32 @@ const ASSET_SYMBOL = "MEME";
   };
   const multisigAddress = (await client.view(payload))[0] as string;
 
-  const createMultisigManagedCoin = await client.generateTransaction(owner1.address(), {
-    function: `${MODULE_ADDR}::multisig_managed_coin::initialize`,
-    type_arguments: [],
-    arguments: [
-      [owner2.address().hex(), owner3.address().hex()],
-      2,
-      ["description"],
-      [BCS.bcsSerializeStr("The multisig account for Meme")],
-      0,
-      "meme coin",
-      ASSET_SYMBOL,
-      8,
-      "http://meme.xyz/favicon.ico",
-      "http://meme.xyz",
-      [true, true, true],
-    ],
-  });
+  const createMultisigManagedCoin = await client.generateTransaction(
+    owner1.address(),
+    {
+      function: `${MODULE_ADDR}::multisig_managed_coin::initialize`,
+      type_arguments: [],
+      arguments: [
+        [owner2.address().hex(), owner3.address().hex()],
+        2,
+        ["description"],
+        [BCS.bcsSerializeStr("The multisig account for Meme")],
+        0,
+        "meme coin",
+        ASSET_SYMBOL,
+        8,
+        "http://meme.xyz/favicon.ico",
+        "http://meme.xyz",
+        [true, true, true],
+      ],
+    },
+  );
   // <:!:section_2
-  await client.generateSignSubmitWaitForTransaction(owner1, createMultisigManagedCoin.payload, { checkSuccess: true });
+  await client.generateSignSubmitWaitForTransaction(
+    owner1,
+    createMultisigManagedCoin.payload,
+    { checkSuccess: true },
+  );
   assert((await getSignatureThreshold(client, multisigAddress)) == 2);
   assert((await getNumberOfOwners(client, multisigAddress)) == 3);
 
@@ -97,7 +112,10 @@ const ASSET_SYMBOL = "MEME";
     // :!:>section_3
     const recipientsSerializer = new BCS.Serializer();
     BCS.serializeVector(
-      [AccountAddress.fromHex(owner2.address()), AccountAddress.fromHex(owner3.address())],
+      [
+        AccountAddress.fromHex(owner2.address()),
+        AccountAddress.fromHex(owner3.address()),
+      ],
       recipientsSerializer,
     );
     const mintTxPayload = new MultiSigTransactionPayload(
@@ -112,7 +130,9 @@ const ASSET_SYMBOL = "MEME";
         ],
       ),
     );
-    const mintTxExecution = new TransactionPayloadMultisig(new MultiSig(AccountAddress.fromHex(multisigAddress)));
+    const mintTxExecution = new TransactionPayloadMultisig(
+      new MultiSig(AccountAddress.fromHex(multisigAddress)),
+    );
 
     // Create the mint multisig tx on chain.
     const mintTx = await client.generateTransaction(owner2.address(), {
@@ -120,17 +140,31 @@ const ASSET_SYMBOL = "MEME";
       type_arguments: [],
       arguments: [multisigAddress, BCS.bcsToBytes(mintTxPayload)],
     });
-    await client.generateSignSubmitWaitForTransaction(owner2, mintTx.payload, { checkSuccess: true });
+    await client.generateSignSubmitWaitForTransaction(owner2, mintTx.payload, {
+      checkSuccess: true,
+    });
 
     // Owner 3 approves.
     await approve(client, owner3, multisigAddress, 1);
 
     // Owner 2 can now execute the transactions as it already has 2 approvals (from owners 2 and 3).
-    await client.generateSignSubmitWaitForTransaction(owner2, mintTxExecution, { checkSuccess: true });
+    await client.generateSignSubmitWaitForTransaction(owner2, mintTxExecution, {
+      checkSuccess: true,
+    });
     // <:!:section_3
     // Check the primary store balance of owner2 and owner3.
-    assert((await fa_client.getPrimaryBalance(owner2.address(), metadata.toHexString())) === BigInt(1_000));
-    assert((await fa_client.getPrimaryBalance(owner3.address(), metadata.toHexString())) === BigInt(2_000));
+    assert(
+      (await fa_client.getPrimaryBalance(
+        owner2.address(),
+        metadata.toHexString(),
+      )) === BigInt(1_000),
+    );
+    assert(
+      (await fa_client.getPrimaryBalance(
+        owner3.address(),
+        metadata.toHexString(),
+      )) === BigInt(2_000),
+    );
   }
 
   // Step 3: Create another multisig transaction to freeze accounts but use payload hash instead.
@@ -139,7 +173,10 @@ const ASSET_SYMBOL = "MEME";
   {
     // :!:>section_4
     const freezeAccountsSerializer = new BCS.Serializer();
-    BCS.serializeVector([AccountAddress.fromHex(owner1.address())], freezeAccountsSerializer);
+    BCS.serializeVector(
+      [AccountAddress.fromHex(owner1.address())],
+      freezeAccountsSerializer,
+    );
 
     // Create freeze tx payload. The last parameter can be set to `false` to unfreeze.
     const freezeTxPayload = new MultiSigTransactionPayload(
@@ -147,7 +184,11 @@ const ASSET_SYMBOL = "MEME";
         `${MODULE_ADDR}::managed_fungible_asset`,
         "set_primary_stores_frozen_status",
         [],
-        [BCS.bcsToBytes(metadata), freezeAccountsSerializer.getBytes(), BCS.bcsSerializeBool(true)],
+        [
+          BCS.bcsToBytes(metadata),
+          freezeAccountsSerializer.getBytes(),
+          BCS.bcsSerializeBool(true),
+        ],
       ),
     );
     const multisigTxExecution = new TransactionPayloadMultisig(
@@ -156,18 +197,29 @@ const ASSET_SYMBOL = "MEME";
 
     const transferTxPayloadHash = sha3Hash.create();
     transferTxPayloadHash.update(BCS.bcsToBytes(freezeTxPayload));
-    const createMultisigTxWithHash = await client.generateTransaction(owner2.address(), {
-      function: "0x1::multisig_account::create_transaction_with_hash",
-      type_arguments: [],
-      arguments: [multisigAddress, transferTxPayloadHash.digest()],
-    });
-    await client.generateSignSubmitWaitForTransaction(owner2, createMultisigTxWithHash.payload, { checkSuccess: true });
+    const createMultisigTxWithHash = await client.generateTransaction(
+      owner2.address(),
+      {
+        function: "0x1::multisig_account::create_transaction_with_hash",
+        type_arguments: [],
+        arguments: [multisigAddress, transferTxPayloadHash.digest()],
+      },
+    );
+    await client.generateSignSubmitWaitForTransaction(
+      owner2,
+      createMultisigTxWithHash.payload,
+      { checkSuccess: true },
+    );
     await approve(client, owner1, multisigAddress, 2);
 
     const multisigTxExecution2 = new TransactionPayloadMultisig(
       new MultiSig(AccountAddress.fromHex(multisigAddress), freezeTxPayload),
     );
-    await client.generateSignSubmitWaitForTransaction(owner2, multisigTxExecution2, { checkSuccess: true });
+    await client.generateSignSubmitWaitForTransaction(
+      owner2,
+      multisigTxExecution2,
+      { checkSuccess: true },
+    );
     // <:!:section_4
     let frozen = await client.view({
       function: "0x1::primary_fungible_store::is_frozen",
@@ -182,9 +234,15 @@ const ASSET_SYMBOL = "MEME";
   {
     // :!:>section_5
     const transferSendersSerializer = new BCS.Serializer();
-    BCS.serializeVector([AccountAddress.fromHex(owner3.address())], transferSendersSerializer);
+    BCS.serializeVector(
+      [AccountAddress.fromHex(owner3.address())],
+      transferSendersSerializer,
+    );
     const transferRecipentsSerializer = new BCS.Serializer();
-    BCS.serializeVector([AccountAddress.fromHex(owner1.address())], transferRecipentsSerializer);
+    BCS.serializeVector(
+      [AccountAddress.fromHex(owner1.address())],
+      transferRecipentsSerializer,
+    );
     const transferPayload = new MultiSigTransactionPayload(
       EntryFunction.natural(
         `${MODULE_ADDR}::managed_fungible_asset`,
@@ -203,17 +261,33 @@ const ASSET_SYMBOL = "MEME";
       type_arguments: [],
       arguments: [multisigAddress, BCS.bcsToBytes(transferPayload)],
     });
-    await client.generateSignSubmitWaitForTransaction(owner2, transferTx.payload, { checkSuccess: true });
+    await client.generateSignSubmitWaitForTransaction(
+      owner2,
+      transferTx.payload,
+      { checkSuccess: true },
+    );
     await approve(client, owner1, multisigAddress, 3);
     await client.generateSignSubmitWaitForTransaction(
       owner2,
-      new TransactionPayloadMultisig(new MultiSig(AccountAddress.fromHex(multisigAddress))),
+      new TransactionPayloadMultisig(
+        new MultiSig(AccountAddress.fromHex(multisigAddress)),
+      ),
       { checkSuccess: true },
     );
     // <:!:section_5
     // Check the primary store balance of owner1 and owner3.
-    assert((await fa_client.getPrimaryBalance(owner1.address(), metadata.toHexString())) === BigInt(1_000));
-    assert((await fa_client.getPrimaryBalance(owner3.address(), metadata.toHexString())) === BigInt(1_000));
+    assert(
+      (await fa_client.getPrimaryBalance(
+        owner1.address(),
+        metadata.toHexString(),
+      )) === BigInt(1_000),
+    );
+    assert(
+      (await fa_client.getPrimaryBalance(
+        owner3.address(),
+        metadata.toHexString(),
+      )) === BigInt(1_000),
+    );
   }
 
   // Step 5: Create another multisig transaction to burn fungible assets.
@@ -246,32 +320,61 @@ const ASSET_SYMBOL = "MEME";
       type_arguments: [],
       arguments: [multisigAddress, BCS.bcsToBytes(burnPayload)],
     });
-    await client.generateSignSubmitWaitForTransaction(owner2, burnTx.payload, { checkSuccess: true });
+    await client.generateSignSubmitWaitForTransaction(owner2, burnTx.payload, {
+      checkSuccess: true,
+    });
     await approve(client, owner1, multisigAddress, 4);
     await client.generateSignSubmitWaitForTransaction(
       owner2,
-      new TransactionPayloadMultisig(new MultiSig(AccountAddress.fromHex(multisigAddress))),
+      new TransactionPayloadMultisig(
+        new MultiSig(AccountAddress.fromHex(multisigAddress)),
+      ),
       { checkSuccess: true },
     );
     // <:!:section_6
     // Check the primary store balance of owner1, owner2 and owner3.
-    assert((await fa_client.getPrimaryBalance(owner1.address(), metadata.toHexString())) === BigInt(0));
-    assert((await fa_client.getPrimaryBalance(owner2.address(), metadata.toHexString())) === BigInt(0));
-    assert((await fa_client.getPrimaryBalance(owner3.address(), metadata.toHexString())) === BigInt(0));
+    assert(
+      (await fa_client.getPrimaryBalance(
+        owner1.address(),
+        metadata.toHexString(),
+      )) === BigInt(0),
+    );
+    assert(
+      (await fa_client.getPrimaryBalance(
+        owner2.address(),
+        metadata.toHexString(),
+      )) === BigInt(0),
+    );
+    assert(
+      (await fa_client.getPrimaryBalance(
+        owner3.address(),
+        metadata.toHexString(),
+      )) === BigInt(0),
+    );
     console.log("done.");
   }
 })();
 
-const approve = async (client: Provider, owner: AptosAccount, multisigAddress: string, transactionId: number) => {
+const approve = async (
+  client: Provider,
+  owner: AptosAccount,
+  multisigAddress: string,
+  transactionId: number,
+) => {
   let approveTx = await client.generateTransaction(owner.address(), {
     function: "0x1::multisig_account::approve_transaction",
     type_arguments: [],
     arguments: [multisigAddress, transactionId],
   });
-  await client.generateSignSubmitWaitForTransaction(owner, approveTx.payload, { checkSuccess: true });
+  await client.generateSignSubmitWaitForTransaction(owner, approveTx.payload, {
+    checkSuccess: true,
+  });
 };
 
-const getNamedObjectAddress = (owner: AptosAccount, seed: string): TxnBuilderTypes.AccountAddress => {
+const getNamedObjectAddress = (
+  owner: AptosAccount,
+  seed: string,
+): TxnBuilderTypes.AccountAddress => {
   const hash = sha3Hash.create();
   hash.update(BCS.bcsToBytes(AccountAddress.fromHex(owner.address())));
   hash.update(seed);
@@ -279,7 +382,10 @@ const getNamedObjectAddress = (owner: AptosAccount, seed: string): TxnBuilderTyp
   return AccountAddress.fromHex(Buffer.from(hash.digest()).toString("hex"));
 };
 
-const getNumberOfOwners = async (client: Provider, multisigAddress: string): Promise<number> => {
+const getNumberOfOwners = async (
+  client: Provider,
+  multisigAddress: string,
+): Promise<number> => {
   const multisigAccountResource = await client.getAccountResource(
     multisigAddress,
     "0x1::multisig_account::MultisigAccount",
@@ -287,7 +393,10 @@ const getNumberOfOwners = async (client: Provider, multisigAddress: string): Pro
   return Number((multisigAccountResource.data as any).owners.length);
 };
 
-const getSignatureThreshold = async (client: Provider, multisigAddress: string): Promise<number> => {
+const getSignatureThreshold = async (
+  client: Provider,
+  multisigAddress: string,
+): Promise<number> => {
   const multisigAccountResource = await client.getAccountResource(
     multisigAddress,
     "0x1::multisig_account::MultisigAccount",

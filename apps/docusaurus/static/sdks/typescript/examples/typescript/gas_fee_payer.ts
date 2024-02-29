@@ -94,14 +94,28 @@ async function createTokenWithFeePayer(
   };
 
   // Create a fee payer transaction with the sender, transaction payload, and fee payer account
-  const feePayerTxn = await client.generateFeePayerTransaction(account.address().hex(), payload, feePayer.address());
+  const feePayerTxn = await client.generateFeePayerTransaction(
+    account.address().hex(),
+    payload,
+    feePayer.address(),
+  );
 
   // sender and fee payer need to sign the transaction
-  const senderAuthenticator = await client.signMultiTransaction(account, feePayerTxn);
-  const feePayerAuthenticator = await client.signMultiTransaction(feePayer, feePayerTxn);
+  const senderAuthenticator = await client.signMultiTransaction(
+    account,
+    feePayerTxn,
+  );
+  const feePayerAuthenticator = await client.signMultiTransaction(
+    feePayer,
+    feePayerTxn,
+  );
 
   // submit gas fee payer transaction
-  const txn = await client.submitFeePayerTransaction(feePayerTxn, senderAuthenticator, feePayerAuthenticator);
+  const txn = await client.submitFeePayerTransaction(
+    feePayerTxn,
+    senderAuthenticator,
+    feePayerAuthenticator,
+  );
 
   return txn.hash;
 }
@@ -146,7 +160,9 @@ async function main(): Promise<void> {
     "Alice's simple collection",
     "https://aptos.dev",
   );
-  let response = await client.waitForTransactionWithResult(txnHash, { checkSuccess: true });
+  let response = await client.waitForTransactionWithResult(txnHash, {
+    checkSuccess: true,
+  });
   let { gas_used, gas_unit_price } = response as any;
   console.log(`Alice paid the gas fee of ${gas_used * gas_unit_price} octas.`);
   console.log(`Alice's current balance: ${await getBalance(alice)} octas`);
@@ -154,7 +170,9 @@ async function main(): Promise<void> {
   await waitForEnter();
 
   // Create a token on Alice's account while Bob pays the fee.
-  console.log("\n=== Alice sent a transaction to create a token while Bob paid the gas fee ===");
+  console.log(
+    "\n=== Alice sent a transaction to create a token while Bob paid the gas fee ===",
+  );
   const tokenName = "Alice Token";
   txnHash = await createTokenWithFeePayer(
     bob,
@@ -172,7 +190,9 @@ async function main(): Promise<void> {
     ["2"],
     ["u64"],
   );
-  response = await client.waitForTransactionWithResult(txnHash, { checkSuccess: true });
+  response = await client.waitForTransactionWithResult(txnHash, {
+    checkSuccess: true,
+  });
   ({ gas_used, gas_unit_price } = response as any);
   const propertyVersion = 0;
   const tokenId = {
@@ -184,7 +204,10 @@ async function main(): Promise<void> {
     property_version: `${propertyVersion}`,
   };
   await tokenClient.getCollectionData(alice.address().hex(), collectionName);
-  let aliceToken = await tokenClient.getTokenForAccount(alice.address().hex(), tokenId);
+  let aliceToken = await tokenClient.getTokenForAccount(
+    alice.address().hex(),
+    tokenId,
+  );
   console.log(`Alice's token amount: ${aliceToken.amount}`);
   console.log(`Bob paid the gas fee of ${gas_used * gas_unit_price} octas.`);
   console.log(`Alice's current balance: ${await getBalance(alice)} octas`);
@@ -192,7 +215,9 @@ async function main(): Promise<void> {
   await waitForEnter();
 
   // Transfer Token from Alice's Account to Bob's Account with bob paying the fee
-  console.log("\n=== Alice sent a transaction to send the token to Bob while Bob paid the gas fee ===");
+  console.log(
+    "\n=== Alice sent a transaction to send the token to Bob while Bob paid the gas fee ===",
+  );
   txnHash = await tokenClient.directTransferTokenWithFeePayer(
     alice,
     bob,
@@ -204,10 +229,18 @@ async function main(): Promise<void> {
     propertyVersion,
     undefined,
   );
-  response = await client.waitForTransactionWithResult(txnHash, { checkSuccess: true });
+  response = await client.waitForTransactionWithResult(txnHash, {
+    checkSuccess: true,
+  });
   ({ gas_used, gas_unit_price } = response as any);
-  aliceToken = await tokenClient.getTokenForAccount(alice.address().hex(), tokenId);
-  const bobToken = await tokenClient.getTokenForAccount(bob.address().hex(), tokenId);
+  aliceToken = await tokenClient.getTokenForAccount(
+    alice.address().hex(),
+    tokenId,
+  );
+  const bobToken = await tokenClient.getTokenForAccount(
+    bob.address().hex(),
+    tokenId,
+  );
   console.log(`Alice's token amount: ${aliceToken.amount}`);
   console.log(`Bob's token amount: ${bobToken.amount}`);
   // Check that Alice did not pay the fee, but Bob did.

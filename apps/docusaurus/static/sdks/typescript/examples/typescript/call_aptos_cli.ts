@@ -6,13 +6,20 @@ const lib = ffi.Library("../../../../../target/release/libaptos", {
   free_cstring: ["void", ["char *"]], // free the return pointer memory allocated by the aptos CLI
 });
 
-const args_run_local_testnet = ["aptos", "node", "run-local-testnet", "--with-faucet"];
+const args_run_local_testnet = [
+  "aptos",
+  "node",
+  "run-local-testnet",
+  "--with-faucet",
+];
 const args_aptos_info = ["aptos", "info"];
 
 (async () => {
   console.log("Running aptos CLI from Typescript");
   const aptos_info = lib.run_aptos_sync(args_aptos_info.join(" "));
-  const run_local_testnet = lib.run_aptos_async(args_run_local_testnet.join(" "));
+  const run_local_testnet = lib.run_aptos_async(
+    args_run_local_testnet.join(" "),
+  );
   try {
     console.log(`Aptos Info: ${aptos_info.readCString()}`);
     console.log(`Run Local Testnet: ${run_local_testnet.readCString()}`);

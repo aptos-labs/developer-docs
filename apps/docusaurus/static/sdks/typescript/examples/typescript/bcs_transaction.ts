@@ -3,12 +3,20 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { AptosClient, AptosAccount, FaucetClient, BCS, TxnBuilderTypes } from "aptos";
+import {
+  AptosClient,
+  AptosAccount,
+  FaucetClient,
+  BCS,
+  TxnBuilderTypes,
+} from "aptos";
 import { aptosCoinStore } from "./common";
 import assert from "assert";
 
-const NODE_URL = process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
-const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptoslabs.com";
+const NODE_URL =
+  process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
+const FAUCET_URL =
+  process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptoslabs.com";
 
 const {
   AccountAddress,
@@ -45,7 +53,9 @@ const {
   assert(balance === 0);
   console.log(`account2 coins: ${balance}. Should be 0!`);
 
-  const token = new TypeTagStruct(StructTag.fromString("0x1::aptos_coin::AptosCoin"));
+  const token = new TypeTagStruct(
+    StructTag.fromString("0x1::aptos_coin::AptosCoin"),
+  );
 
   // TS SDK support 3 types of transaction payloads: `EntryFunction`, `Script` and `Module`.
   // See https://aptos-labs.github.io/ts-sdk-doc/ for the details.
@@ -58,7 +68,10 @@ const {
       // The coin type to transfer
       [token],
       // Arguments for function `transfer`: receiver account address and amount to transfer
-      [BCS.bcsToBytes(AccountAddress.fromHex(account2.address())), BCS.bcsSerializeUint64(717)],
+      [
+        BCS.bcsToBytes(AccountAddress.fromHex(account2.address())),
+        BCS.bcsSerializeUint64(717),
+      ],
     ),
   );
 

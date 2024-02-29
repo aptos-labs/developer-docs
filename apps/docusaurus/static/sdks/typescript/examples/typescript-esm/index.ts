@@ -1,11 +1,23 @@
 /* eslint-disable no-console */
-import { AptosClient, AptosAccount, FaucetClient, BCS, TxnBuilderTypes, Provider, Network, TokenClient } from "aptos";
+import {
+  AptosClient,
+  AptosAccount,
+  FaucetClient,
+  BCS,
+  TxnBuilderTypes,
+  Provider,
+  Network,
+  TokenClient,
+} from "aptos";
 import assert from "assert";
 
-const NODE_URL = process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
-const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptoslabs.com";
+const NODE_URL =
+  process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
+const FAUCET_URL =
+  process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptoslabs.com";
 
-export const aptosCoinStore = "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>";
+export const aptosCoinStore =
+  "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>";
 
 const {
   AccountAddress,
@@ -47,7 +59,10 @@ const {
       // The coin type to transfer
       [],
       // Arguments for function `transfer`: receiver account address and amount to transfer
-      [BCS.bcsToBytes(AccountAddress.fromHex(account2.address())), BCS.bcsSerializeUint64(717)],
+      [
+        BCS.bcsToBytes(AccountAddress.fromHex(account2.address())),
+        BCS.bcsSerializeUint64(717),
+      ],
     ),
   );
 
@@ -86,7 +101,9 @@ const {
   console.log(`account2 coins: ${balance}. Should be 717!`);
 
   const provider = new Provider(Network.DEVNET);
-  console.log("\n=== Checking if indexer devnet chainId same as fullnode chainId  ===");
+  console.log(
+    "\n=== Checking if indexer devnet chainId same as fullnode chainId  ===",
+  );
   const indexerLedgerInfo = await provider.getIndexerLedgerInfo();
   const fullNodeChainId = await provider.getChainId();
 
@@ -94,7 +111,9 @@ const {
     `\n fullnode chain id is: ${fullNodeChainId}, indexer chain id is: ${indexerLedgerInfo.ledger_infos[0].chain_id}`,
   );
   if (indexerLedgerInfo.ledger_infos[0].chain_id !== fullNodeChainId) {
-    console.log(`\n fullnode chain id and indexer chain id are not synced, skipping rest of tests`);
+    console.log(
+      `\n fullnode chain id and indexer chain id are not synced, skipping rest of tests`,
+    );
     return;
   }
 
@@ -126,5 +145,7 @@ const {
   await client.waitForTransaction(txnHash2, { checkSuccess: true });
 
   const nfts = await provider.getAccountNFTs(account1.address().hex());
-  console.log(`account1 current token ownership: ${nfts.current_token_ownerships[0].amount}. Should be 1`);
+  console.log(
+    `account1 current token ownership: ${nfts.current_token_ownerships[0].amount}. Should be 1`,
+  );
 })();
