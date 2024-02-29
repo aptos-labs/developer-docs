@@ -35,7 +35,7 @@ when you build the binary, and download the correct genesis and waypoint files f
     ```
 
 4.  Generate the key pairs for your nodes in your working directory. You can do this by running
-    the following command with the Aptos CLI:
+    the following command with the Aptos CLI. PLEASE NOTE: If you are looking to deploy a validator and a validator fullnode, you will only run this command once on the validator. You will copy the output keys to the Validator Fullnode later:
 
     ```bash
     aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
@@ -54,7 +54,7 @@ when you build the binary, and download the correct genesis and waypoint files f
     :::
 
 5.  Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
-    which may be IP addresses or DNS addresses.
+    which may be IP addresses or DNS addresses. This command is run one time on one server (the VN) to generate configs for both VN and VFN.
 
     :::tip DNS addresses
     Using DNS is recommended over IP addresses, as it enables more efficient node migrations and is more resilient
@@ -183,7 +183,7 @@ when you build the binary, and download the correct genesis and waypoint files f
 
     To start your VFN, run the following commands on a separate, dedicated VFN machine. You will need to download the
     `aptos-core` source code and build the binary on the VFN machine. Likewise, you will need to copy across
-    the keys and configuration files from the validator machine.
+    the keys and configuration files from the validator machine. However, your VFN will not do anything until it is part of the active validator set! You can wait to start it after that is completed later. 
 
     :::danger VFN identity
     You should copy the keys and configuration
@@ -191,7 +191,12 @@ when you build the binary, and download the correct genesis and waypoint files f
     another set of keys or files for the VFN, as these will not be recognized by the network.
     :::
 
-    Start your VFN by running the following commands, with the paths assuming you are in the root of the `aptos-core` directory:
+    Example: Copying the validator.yaml configuration file from the VN to the VFN might look something like:
+
+```
+ scp /home/apt/mainnet/config/validator.yaml username@VFN.IP.GOES.HERE:/home/apt/mainnet/config/validator.yaml
+```
+  Start your VFN by running the following commands, with the paths assuming you are in the root of the `aptos-core` directory:
 
     ```bash
     cargo clean
@@ -209,7 +214,7 @@ when you build the binary, and download the correct genesis and waypoint files f
 
 If you want to run `aptos-node` as a service, you can set it up to run as a service controlled by `systemctl`.
 This is optional, and can be done using the service template below. You will need to modify the template
-to match your environment and configuration.
+to match your environment and configuration. Specifically, look to change the User, Group, WorkingDirectory, and ExecStart template parameters.
 
 ```bash
 [Unit]
