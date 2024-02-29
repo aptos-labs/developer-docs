@@ -38,7 +38,7 @@ satisfy the requirements outlined below).
 The reference specs for running an Aptos validator and VFN on mainnet can be seen below:
 
 - **CPU**: 32 cores, 2.8GHz, or faster, AMD Milan EPYC or Intel(R) Xeon(R) Platinum
-- **Memory**: 64GB RAM.
+- **Memory**: 64GB RAM. Recommended: 128GB RAM
 - **Storage**: 2T SSD with at least 60K IOPS and 200MiB/s bandwidth.
 - **Networking bandwidth**: 1Gbps
 
@@ -89,7 +89,6 @@ Generally, the size of the database on each machine is a function of the ledger 
 of transactions in the blockchain history) and the number of on-chain states (e.g., accounts and resources).
 Both the ledger history and the number of on-chain states depend on several additional factors, including the age
 of the blockchain, the average transaction rate over time, and the configuration of the ledger database pruner.
-At the time of writing, we estimate that testnet and mainnet require several 100's of GB of storage.
 
 Note that because archival nodes store the entire history of the blockchain, the database size on archival nodes will
 continue to grow unbounded. As a result, we cannot provide a recommendation for archival node storage sizes.
@@ -103,9 +102,14 @@ nodes (i.e., peers) to connect to you. There are different Aptos network types, 
 
 There are three types of Aptos networks:
 
-1. **Validator network:** Validators connect to each other over this network. Validator fullnodes (VFNs) and public fullnodes (PFNs) do not use this network.
-1. **VFN network:** The validator fullnode (VFN) network allows a validator and VFN pair to connect to each other. This network is private between the validator and the VFN.
-1. **Public network:** The public network allows VFNs and public fullnodes (PFNs) to connect to other VFNs and PFNs. This allows public node operators to access the blockchain.
+1. **Validator network:** Validators connect to each other over this network. Applies to only Validators. Validator fullnodes (VFNs) and public fullnodes (PFNs) do not use this network.
+1. **VFN network:** The validator fullnode (VFN) network allows a validator and VFN pair to connect to each other. This network is private between the validator and the VFN, and applies to only Validators and Validator Fullnodes.
+1. **Public network:** The public network allows VFNs and public fullnodes (PFNs) to connect to other VFNs and PFNs. Applies to VFNs and PFNs. This allows public node operators to access the blockchain.
+
+A basic diagram of Communications:
+Public:  VNs    PFNs
+         |       |
+You:     VN <-> VFN
 
 Your node can be configured so that each of these networks can operate using a different port on your node. You can configure
 the port settings using the node configuration YAML file. Here is an [example
@@ -122,6 +126,14 @@ Unless explicitly required, we recommend that you do not expose any other ports 
 exposing additional ports can increase the attack surface of your node and make it more vulnerable to adversaries.
 :::
 
+:::danger Exposing services
+We note that the inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
+are likely useful for your internal network, e.g., server monitoring, application development and debugging. However, 
+the inspection service port and the admin service port should never be exposed publicly as they can be easily abused.
+Similarly, if you choose to expose the REST API endpoint publicly, you should deploy an additional authentication 
+or rate-limiting mechanism to prevent abuse.
+:::
+
 #### Running a validator:
 
 Assuming default ports are used, the following should be configured for validator nodes:
@@ -131,9 +143,9 @@ Assuming default ports are used, the following should be configured for validato
   - `6181` – **VFN network**: Open this port privately to only be accessible by your VFN.
 - Close the following TCP ports:
   - `6182` – **Public network**: Close this port to prevent PFN connections.
-  - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
-  - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
-  - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
+  - `9101` – **Inspection service**: Close this port to the public to prevent unauthorized metric inspection.
+  - `9102` – **Admin service**: Close this port to the public to prevent unauthorized admin service interaction.
+  - `80/8080` **REST API**: Close this port to the public to prevent unauthorized REST API access.
 
 #### Running a VFN:
 
@@ -143,14 +155,6 @@ Assuming default ports are used, the following should be configured for VFN node
   - `6181` – **VFN network**: Open this port privately to only be accessible by your validator.
   - `6182` – **Public network**: Open this port publicly to enable PFNs to connect to your VFN.
 - Close the following TCP ports:
-  - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
-  - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
-  - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
-
-:::danger Exposing services
-The inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
-are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
-port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
-to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to
-prevent abuse.
-:::
+  - `9101` – **Inspection service**: Close this port to the public to prevent unauthorized metric inspection.
+  - `9102` – **Admin service**: Close this port to the public to prevent unauthorized admin service interaction.
+  - `80/8080` **REST API**: Close this port to the public to prevent unauthorized REST API access.
