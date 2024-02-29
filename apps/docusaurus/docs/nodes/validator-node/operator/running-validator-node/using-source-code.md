@@ -171,7 +171,7 @@ when you build the binary, and download the correct genesis and waypoint files f
     - `waypoint.txt`: The waypoint for the genesis transaction on the network you are connecting to.
     - `genesis.blob` The genesis blob for the network you are connecting to.
 
-10. Now that you have set up your configuration files, you can start your validator and VFN.
+10. Now that you have set up your configuration files, you can start your validator and VFN (although you don't actually want to start the Aptos server until you have set it up as a service, created a delegation pool, and joined the active validator set).
     To start your validator, run the following commands, with the paths assuming you are in the root of the `aptos-core` directory:
 
     ```bash
@@ -180,10 +180,9 @@ when you build the binary, and download the correct genesis and waypoint files f
     sudo mv target/release/aptos-node /usr/local/bin
     aptos-node -f ~/$WORKSPACE/config/validator.yaml
     ```
-
-    To start your VFN, run the following commands on a separate, dedicated VFN machine. You will need to download the
-    `aptos-core` source code and build the binary on the VFN machine. Likewise, you will need to copy across
-    the keys and configuration files from the validator machine. However, your VFN will not do anything until it is part of the active validator set! You can wait to start it after that is completed later.
+    If you do not want to start the Aptos server until you have completed the other steps (creating a delegation pool and joining the validator set), complete the above commands except the last one.
+    
+    You will need to copy across the keys and configuration files from the validator machine to the validator fullnode machine. However, neither the VN or VFN will not do anything until it is part of the active validator set! You can wait to start the services after that is completed later.
 
     The files to copy are the full contents of your config/ and keys/ folder and should be in corresponding directories. 
 
