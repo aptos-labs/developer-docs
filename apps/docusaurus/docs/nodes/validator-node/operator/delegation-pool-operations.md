@@ -12,19 +12,40 @@ The operator address will receive the pool commission that was set at the initia
 
 ## Prerequisites
 
-1. [Install](../../../tools/aptos-cli/install-cli/index.md) and [configure](../../../tools/aptos-cli/use-cli/use-aptos-cli.md#configuration-examples) the Aptos CLI. If you are looking to develop on the Aptos blockchain, debug apps, or perform node operations, the Aptos tool offers a command line interface for these purposes.
+1. [Install](../../../tools/aptos-cli/install-cli/index.md) the Aptos CLI. To initialize the CLI correctly, you will need to set a profile, and import your private key.
+
+After installing the Aptos CLI, configure it like so:
+First, find your private key. It is the value for `account_private_key`
+```
+cat ~/$WORKSPACE/keys/private-keys.yaml
+```
+Run
+```
+aptos config set-global-config --config-type global
+```
+Then initialize it with a profile called 'validator'. You will use this profile in subsequent commands. It will ask you to optionally provide a network (mainnet, testnet, preview), and a private key to import (from the file above)
+```
+aptos init --profile validator
+> testnet
+> [Paste account private key]
+```
+ 
 2. [Initialize local configuration and create an account](../../../tools/aptos-cli/use-cli/use-aptos-cli.md#initialize-local-configuration-and-create-an-account) on the Aptos blockchain.
 
 ## Initialize a delegation pool
 
 Before initializing a delegation pool, you need to know the delegation pool address. You can use the following CLI commands to obtain the delegation pool address depending on where you are in the process:
+- Find your owner address (it should match the CLI output from the init command, but without a hex 0x)
+```
+cat ~/testnet/apt/owner.yaml
+```
 
-- Before you create the delegation pool:
+- Before you create the delegation pool, generate a pool address locally:
   ```bash
   aptos account derive-resource-account-address --address <owner_address> --seed "aptos_framework::delegation_pool<SEED>" --seed-encoding utf8
   ```
-  - The `<SEED>` is a number chosen by you to create the resource account address to host the delegation pool resource. Once you choose a seed, you should use the same value for all following usages.
-- After you create the delegation pool:
+  - The `<SEED>` is any number chosen by you (eg, 9 or 14 or 83 or any number) to create the resource account address to host the delegation pool resource. Once you choose a seed, you should use the same value for all following usages.
+- If you have already created a delegation pool:
   ```bash
   aptos account derive-resource-account-address
   ```
