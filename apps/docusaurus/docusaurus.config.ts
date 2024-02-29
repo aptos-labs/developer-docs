@@ -150,12 +150,16 @@ const themeConfig: Preset.ThemeConfig = {
             to: "nodes/full-node/public-fullnode",
           },
           {
-            label: "Monitor a Node",
-            to: "nodes/measure/measure-index",
+            label: "Bootstrap a Node",
+            to: "nodes/operations/operations-index",
           },
           {
             label: "Configure a Node",
-            to: "nodes/identity-and-configuration",
+            to: "nodes/configure/configure-index",
+          },
+          {
+            label: "Monitor a Node",
+            to: "nodes/measure/measure-index",
           },
         ],
       },
@@ -342,10 +346,6 @@ const config: Config = {
           {
             from: "/nodes/indexer-fullnode",
             to: "/indexer/indexer-landing",
-          },
-          {
-            from: "/tutorials/run-a-fullnode-on-gcp",
-            to: "/nodes/full-node/run-a-fullnode-on-gcp",
           },
           {
             from: "/aptos-white-paper/aptos-white-paper-index/",

@@ -1,47 +1,27 @@
 ---
-title: "Running Validator Node"
+title: "Deploy Nodes"
 slug: "running-validator-node"
 ---
 
-# Running Validator Node
+# Deploy Nodes
 
-:::tip Deploying a validator node? Read this first
-If you are deploying a validator node, then make sure to read the [Node Requirements](../node-requirements.md) first.
+Before you can run a validator and validator fullnode (VFN) in an Aptos network, you will need to select a deployment
+method for your nodes. The guides below provide step-by-step instructions for deploying a validator node and VFN
+on various platforms, and across different Aptos networks.
+
+Once your nodes are deployed, you can connect them to an Aptos network by initializing your staking pool and joining
+the validator set. See [Connect Nodes](../connect-nodes/index.md) for more information.
+
+:::caution Node requirements
+Before selecting a deployment method, make sure to read and understand the [Node Requirements](../node-requirements.md) first.
 :::
 
-## Install Validator node
+# Deployment methods
 
-### Deploy
+Select a deployment method for your nodes:
 
-The following guides provide step-by-step instructions for running public fullnode, validator node, and validator fullnode for the Aptos blockchain.
-
-- ### [On AWS](./using-aws.md)
-- ### [On Azure](./using-azure.md)
-- ### [On GCP](./using-gcp.md)
+- ### [Using Source Code](./using-source-code.md)
 - ### [Using Docker](./using-docker.md)
-- ### [Using Aptos Source](./using-source-code.md)
-
-### Configure Validator node
-
-### Connect to Aptos network
-
-After deploying your nodes, [connect to the Aptos Network](../connect-to-aptos-network.md).
-
-## Set up staking and delegation pool operations
-
-After connecting your nodes to the Aptos network, establish [staking pool operations](../staking-pool-operations.md) to add your node to the validator set.
-
-Similarly, conduct [delegation pool operations](../delegation-pool-operations.md) for APT delegated to your validator. Your node will start syncing and participating in consensus.
-
-## Test Validator node
-
-After your nodes are deployed and configured, make sure they meet [node liveness criteria](../node-liveness-criteria.md).
-
-## Install Validator fullnode
-
-Note that many of the same instructions can be used to run a validator fullnode in Aptos:
-
-- If you use the provided reference Kubernetes deployments (i.e. for cloud-managed Kubernetes on AWS, Azure, or GCP), then one validator node and one validator fullnode are deployed by default.
-- When using the Docker or the source code, the `fullnode.yaml` will enable you to run a validator fullnode.
-  - See [Step 11](./using-docker.md#docker-vfn) in the Docker-based instructions.
-  - Similarly, if you use source code, see [Step 9](./using-source-code.md#source-code-vfn) in the source code instructions.
+- ### [Using AWS](./using-aws.md)
+- ### [Using Azure](./using-azure.md)
+- ### [Using GCP](./using-gcp.md)

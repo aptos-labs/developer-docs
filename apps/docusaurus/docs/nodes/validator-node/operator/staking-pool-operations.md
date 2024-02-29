@@ -5,25 +5,32 @@ slug: "staking-pool-operations"
 
 # Staking Pool Operations
 
-This document describes how to perform [staking](../../../concepts/staking.md) pool operations. Note that a staking pool can only accept stake from the stake pool owner. You can stake only when you meet the minimum staking requirement. See also the related [Delegation Pool Operations](./delegation-pool-operations.md) instructions to accept stake from multiple delegators in order to reach the minimum.
+This document describes how to perform [staking](../../../concepts/staking.md) pool operations. Note that a staking pool can only accept stake
+from the stake pool owner. You can stake only when you meet the minimum staking requirement.
 
 :::tip Minimum staking requirement
-The current required minimum for staking is 1 million APT.
+The current minimum staking requirement is 1 million APT.
 :::
 
-:::danger
-Important There is no upgrade mechanism for the staking contract from staking pool to delegation pool. A new delegation pool would have to be created.
-:::
+See also the related
+[Delegation Pool Operations](./delegation-pool-operations.md) instructions to accept stake from multiple delegators in order to reach the minimum
+staking requirement.
 
-:::tip Testnet vs Mainnet
-The below Aptos CLI command examples use mainnet. Change the `--network` value for testnet and devnet. View the values in [Aptos Blockchain Networks](../../networks.md) to see how profiles can be configured based on the network.
+:::danger Pool types are static
+There is no upgrade mechanism for the staking contract to move from a staking pool to a delegation pool. A new
+delegation pool must be created.
 :::
 
 ## Initialize a staking pool
 
-Before initializing a staking pool, ensure that there is an existing owner account with 1M APT.
+:::tip Testnet vs Mainnet
+The Aptos CLI commands below target mainnet. Change the `--network` value for testnet and devnet.
+View the values in [Aptos Blockchain Networks](../../networks.md) to see how profiles can be configured based on the network.
+:::
 
-1. Initialize [Aptos CLI](../../../tools/aptos-cli/index.md) with a private key from an existing account, such as a wallet, or create a new account.
+Before initializing a staking pool, ensure that there is an existing owner account with 1 Million APT.
+
+1. Initialize the [Aptos CLI](../../../tools/aptos-cli/index.md) with a private key from an existing account, such as a wallet, or create a new account.
 
 ```bash
 aptos init --profile mainnet-owner \

@@ -5,8 +5,10 @@ slug: "public-fullnode"
 
 # Run a Public Fullnode
 
-This section explains how to deploy a public fullnode (PFN) to connect to the Aptos networks. You can learn more about
-the different types of nodes in the [Blockchain Deep Dive](../../concepts/blockchain.md) section.
+You can run your own public fullnode (PFN) to synchronize the state of the Aptos blockchain and stay
+up-to-date. PFNs replicate the entire state of the blockchain by syncing from other Aptos VFNs and PFNs. PFNs
+can be run by anyone. This section explains how to deploy a PFN and connect to an Aptos network. You can learn
+more about the different types of nodes in the [Blockchain Deep Dive](../../concepts/blockchain.md) section.
 
 :::tip Default connection to mainnet
 If you follow the default setup in this document, then your PFN will be connected to the Aptos mainnet. To connect
