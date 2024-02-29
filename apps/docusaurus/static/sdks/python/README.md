@@ -1,4 +1,5 @@
 # Aptos Python SDK
+
 [![Discord][discord-image]][discord-url]
 [![PyPI Package Version][pypi-image-version]][pypi-url]
 [![PyPI Package Downloads][pypi-image-downloads]][pypi-url]
@@ -10,6 +11,7 @@ Currently this is still in development and may not be suitable for production pu
 Note: The sync client is deprecated, please only start new projects using the async client. Feature contributions to the sync client will be rejected.
 
 ## Requirements
+
 This SDK uses [Poetry](https://python-poetry.org/docs/#installation) for packaging and dependency management:
 
 ```
@@ -18,15 +20,16 @@ poetry install
 ```
 
 ## Unit testing
+
 ```bash
 make test
 ```
 
 ## E2E testing and Using the Aptos CLI
 
-* Download the [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/).
-* Set the environment variable `APTOS_CLI_PATH` to the full path of the CLI.
-* `make examples_cli`
+- Download the [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/).
+- Set the environment variable `APTOS_CLI_PATH` to the full path of the CLI.
+- `make examples_cli`
 
 We of course allow you to do this a bit more manually by:
 
@@ -52,17 +55,19 @@ make examples
 Note: These end-to-end tests are tested against a node built from the same commit as part of CI, not devnet. For examples tested against devnet, see `static/examples/python/` from the root of the repo.
 
 ## Autoformatting
+
 ```bash
 make fmt
 ```
 
 ## Package Publishing
 
-* Download the [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/).
-* Set the environment variable `APTOS_CLI_PATH` to the full path of the CLI.
-* `poetry run python -m aptos_sdk.cli` and set the appropriate command-line parameters
+- Download the [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/).
+- Set the environment variable `APTOS_CLI_PATH` to the full path of the CLI.
+- `poetry run python -m aptos_sdk.cli` and set the appropriate command-line parameters
 
 ## Generating types
+
 The Python `openapi-python-client` tool cannot parse references. Therefore there are three options:
 
 - Use swagger-cli to dereference, gain a type explosion, and still have missing types
@@ -79,6 +84,7 @@ mv aptos-dev-api-specification-client/aptos_dev_api_specification_client/ aptos_
 ```
 
 ## Semantic versioning
+
 This project follows [semver](https://semver.org/) as closely as possible
 
 [repo]: https://github.com/aptos-labs/aptos-core

@@ -6,7 +6,15 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { AptosClient, AptosAccount, FaucetClient, TokenClient, CoinClient, Network, Provider } from "aptos";
+import {
+  AptosClient,
+  AptosAccount,
+  FaucetClient,
+  TokenClient,
+  CoinClient,
+  Network,
+  Provider,
+} from "aptos";
 import { NODE_URL, FAUCET_URL } from "./common";
 
 (async () => {
@@ -85,7 +93,10 @@ import { NODE_URL, FAUCET_URL } from "./common";
 
   // Print the collection data.
   // :!:>section_6
-  const collectionData = await tokenClient.getCollectionData(alice.address(), collectionName);
+  const collectionData = await tokenClient.getCollectionData(
+    alice.address(),
+    collectionName,
+  );
   console.log(`Alice's collection: ${JSON.stringify(collectionData, null, 4)}`); // <:!:section_6
 
   // Get the token balance.
@@ -100,7 +111,11 @@ import { NODE_URL, FAUCET_URL } from "./common";
 
   // Get the token data.
   // :!:>section_8
-  const tokenData = await tokenClient.getTokenData(alice.address(), collectionName, tokenName);
+  const tokenData = await tokenClient.getTokenData(
+    alice.address(),
+    collectionName,
+    tokenName,
+  );
   console.log(`Alice's token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
 
   // Alice offers one token to Bob.
@@ -136,11 +151,16 @@ import { NODE_URL, FAUCET_URL } from "./common";
     tokenName,
     `${tokenPropertyVersion}`,
   );
-  const bobBalance2 = await tokenClient.getTokenForAccount(bob.address(), tokenId);
+  const bobBalance2 = await tokenClient.getTokenForAccount(
+    bob.address(),
+    tokenId,
+  );
   console.log(`Alice's token balance: ${aliceBalance2["amount"]}`);
   console.log(`Bob's token balance: ${bobBalance2["amount"]}`);
 
-  console.log("\n=== Transferring the token back to Alice using MultiAgent ===");
+  console.log(
+    "\n=== Transferring the token back to Alice using MultiAgent ===",
+  );
   // :!:>section_11
   let txnHash5 = await tokenClient.directTransferToken(
     bob,
@@ -160,12 +180,17 @@ import { NODE_URL, FAUCET_URL } from "./common";
     tokenName,
     `${tokenPropertyVersion}`,
   );
-  const bobBalance3 = await tokenClient.getTokenForAccount(bob.address(), tokenId);
+  const bobBalance3 = await tokenClient.getTokenForAccount(
+    bob.address(),
+    tokenId,
+  );
   console.log(`Alice's token balance: ${aliceBalance3["amount"]}`);
   console.log(`Bob's token balance: ${bobBalance3["amount"]}`);
 
   const provider = new Provider(Network.DEVNET);
-  console.log("\n=== Checking if indexer devnet chainId same as fullnode chainId  ===");
+  console.log(
+    "\n=== Checking if indexer devnet chainId same as fullnode chainId  ===",
+  );
   const indexerLedgerInfo = await provider.getIndexerLedgerInfo();
   const fullNodeChainId = await provider.getChainId();
 
@@ -174,15 +199,21 @@ import { NODE_URL, FAUCET_URL } from "./common";
   );
 
   if (indexerLedgerInfo.ledger_infos[0].chain_id !== fullNodeChainId) {
-    console.log(`\n fullnode chain id and indexer chain id are not synced, skipping rest of tests`);
+    console.log(
+      `\n fullnode chain id and indexer chain id are not synced, skipping rest of tests`,
+    );
     return;
   }
 
   console.log("\n=== Getting Alices's NFTs ===");
   const aliceNfts = await provider.getAccountNFTs(alice.address().hex());
-  console.log(`Alice current token ownership: ${aliceNfts.current_token_ownerships[0].amount}. Should be 1`);
+  console.log(
+    `Alice current token ownership: ${aliceNfts.current_token_ownerships[0].amount}. Should be 1`,
+  );
 
   console.log("\n=== Getting Bob's NFTs ===");
   const bobNfts = await provider.getAccountNFTs(bob.address().hex());
-  console.log(`Bob current token ownership: ${bobNfts.current_token_ownerships.length}. Should be 0`);
+  console.log(
+    `Bob current token ownership: ${bobNfts.current_token_ownerships.length}. Should be 0`,
+  );
 })();

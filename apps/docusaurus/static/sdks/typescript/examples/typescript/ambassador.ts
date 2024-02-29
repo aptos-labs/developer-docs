@@ -1,13 +1,24 @@
 // Copyright © Aptos Foundation
 // SPDX-License-Identifier: Apache-2.0
 
-import { AptosAccount, HexString, Provider, Network, Types, FaucetClient, BCS } from "aptos";
+import {
+  AptosAccount,
+  HexString,
+  Provider,
+  Network,
+  Types,
+  FaucetClient,
+  BCS,
+} from "aptos";
 import { NODE_URL, FAUCET_URL } from "./common";
 
 const provider = new Provider(Network.DEVNET);
 const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
 
-async function getTokenAddr(ownerAddr: HexString, tokenName: string): Promise<HexString> {
+async function getTokenAddr(
+  ownerAddr: HexString,
+  tokenName: string,
+): Promise<HexString> {
   const tokenOwnership = await provider.getOwnedTokens(ownerAddr);
   for (const ownership of tokenOwnership.current_token_ownerships_v2) {
     if (ownership.current_token_data.token_name === tokenName) {
@@ -82,7 +93,10 @@ class AmbassadorClient {
     return pendingTxn.hash;
   }
 
-  async ambassadorLevel(creator_addr: HexString, token_addr: HexString): Promise<bigint> {
+  async ambassadorLevel(
+    creator_addr: HexString,
+    token_addr: HexString,
+  ): Promise<bigint> {
     const payload: Types.ViewRequest = {
       function: `${creator_addr.hex()}::ambassador::ambassador_level`,
       type_arguments: [],
@@ -134,34 +148,48 @@ async function main(): Promise<void> {
   );
   await provider.waitForTransaction(txnHash, { checkSuccess: true });
   console.log("\n=== Ambassador Token Minted ===");
-  console.log(`Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`);
+  console.log(
+    `Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`,
+  );
   // Get the address of the minted token
   const tokenAddr = await getTokenAddr(userAddr, tokenName);
   console.log(`The address of the minted token: ${tokenAddr}`);
-  console.log(`The level of the token: ${await client.ambassadorLevel(adminAddr, tokenAddr)}`);
+  console.log(
+    `The level of the token: ${await client.ambassadorLevel(adminAddr, tokenAddr)}`,
+  );
   await waitForEnter();
 
   // Set Ambassador Level to 15
   txnHash = await client.setAmbassadorLevel(admin, tokenAddr, 15);
   await provider.waitForTransaction(txnHash, { checkSuccess: true });
   console.log("\n=== Level set to 15 ===");
-  console.log(`Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`);
-  console.log(`The level of the token: ${await client.ambassadorLevel(adminAddr, tokenAddr)}`);
+  console.log(
+    `Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`,
+  );
+  console.log(
+    `The level of the token: ${await client.ambassadorLevel(adminAddr, tokenAddr)}`,
+  );
   await waitForEnter();
 
   // Set Ambassador Level to 25
   txnHash = await client.setAmbassadorLevel(admin, tokenAddr, 25);
   await provider.waitForTransaction(txnHash, { checkSuccess: true });
   console.log("\n=== Level set to 25 ===");
-  console.log(`Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`);
-  console.log(`The level of the token: ${await client.ambassadorLevel(adminAddr, tokenAddr)}`);
+  console.log(
+    `Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`,
+  );
+  console.log(
+    `The level of the token: ${await client.ambassadorLevel(adminAddr, tokenAddr)}`,
+  );
   await waitForEnter();
 
   // Burn the token
   txnHash = await client.burn(admin, tokenAddr);
   await provider.waitForTransaction(txnHash, { checkSuccess: true });
   console.log("\n=== Token burned ===");
-  console.log(`Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`);
+  console.log(
+    `Txn: https://explorer.aptoslabs.com/txn/${txnHash}?network=devnet`,
+  );
   await waitForEnter();
 }
 

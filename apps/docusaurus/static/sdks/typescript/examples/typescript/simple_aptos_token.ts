@@ -6,7 +6,15 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { AptosAccount, FaucetClient, AptosToken, CoinClient, Network, Provider, HexString } from "aptos";
+import {
+  AptosAccount,
+  FaucetClient,
+  AptosToken,
+  CoinClient,
+  Network,
+  Provider,
+  HexString,
+} from "aptos";
 import { NODE_URL, FAUCET_URL } from "./common";
 
 (async () => {
@@ -62,7 +70,9 @@ import { NODE_URL, FAUCET_URL } from "./common";
       royaltyDenominator: 100,
     },
   ); // <:!:section_4
-  await provider.aptosClient.waitForTransaction(txnHash1, { checkSuccess: true });
+  await provider.aptosClient.waitForTransaction(txnHash1, {
+    checkSuccess: true,
+  });
 
   // Create a token in that collection.
   // :!:>section_5
@@ -76,7 +86,9 @@ import { NODE_URL, FAUCET_URL } from "./common";
     [],
     [],
   ); // <:!:section_5
-  await provider.aptosClient.waitForTransaction(txnHash2, { checkSuccess: true });
+  await provider.aptosClient.waitForTransaction(txnHash2, {
+    checkSuccess: true,
+  });
 
   const inSync = await ensureIndexerAndNetworkInSync(provider);
   if (!inSync) {
@@ -85,41 +97,67 @@ import { NODE_URL, FAUCET_URL } from "./common";
 
   // Print the collection data.
   // :!:>section_6
-  const collectionData = (await provider.getCollectionData(alice.address(), collectionName)).current_collections_v2[0];
+  const collectionData = (
+    await provider.getCollectionData(alice.address(), collectionName)
+  ).current_collections_v2[0];
   console.log(`Alice's collection: ${JSON.stringify(collectionData, null, 4)}`); // <:!:section_6
 
   // Get the token balance.
   // :!:>section_7
   const collectionAddress = HexString.ensure(collectionData.collection_id);
-  let { tokenAddress, amount: aliceAmount } = await getTokenInfo(provider, alice.address(), collectionAddress);
+  let { tokenAddress, amount: aliceAmount } = await getTokenInfo(
+    provider,
+    alice.address(),
+    collectionAddress,
+  );
   console.log(`Alice's token balance: ${aliceAmount}`); // <:!:section_7
 
   // Get the token data.
   // :!:>section_8
-  const tokenData = (await provider.getTokenData(tokenAddress.toString())).current_token_datas_v2[0];
+  const tokenData = (await provider.getTokenData(tokenAddress.toString()))
+    .current_token_datas_v2[0];
   console.log(`Alice's token data: ${JSON.stringify(tokenData, null, 4)}`); // <:!:section_8
 
   // Alice transfers the token to Bob.
   console.log("\n=== Transferring the token to Bob ===");
   // :!:>section_9
-  const txnHash3 = await aptosTokenClient.transferTokenOwnership(alice, tokenAddress, bob.address()); // <:!:section_9
-  await provider.aptosClient.waitForTransaction(txnHash3, { checkSuccess: true });
+  const txnHash3 = await aptosTokenClient.transferTokenOwnership(
+    alice,
+    tokenAddress,
+    bob.address(),
+  ); // <:!:section_9
+  await provider.aptosClient.waitForTransaction(txnHash3, {
+    checkSuccess: true,
+  });
 
   // Print their balances.
   // :!:>section_10
-  aliceAmount = (await getTokenInfo(provider, alice.address(), collectionAddress)).amount;
-  let bobAmount = (await getTokenInfo(provider, bob.address(), collectionAddress)).amount;
+  aliceAmount = (
+    await getTokenInfo(provider, alice.address(), collectionAddress)
+  ).amount;
+  let bobAmount = (
+    await getTokenInfo(provider, bob.address(), collectionAddress)
+  ).amount;
   console.log(`Alice's token balance: ${aliceAmount}`);
   console.log(`Bob's token balance: ${bobAmount}`); // <:!:section_10
 
   console.log("\n=== Transferring the token back to Alice ===");
   // :!:>section_11
-  let txnHash4 = await aptosTokenClient.transferTokenOwnership(bob, tokenAddress, alice.address()); // <:!:section_11
-  await provider.aptosClient.waitForTransaction(txnHash4, { checkSuccess: true });
+  let txnHash4 = await aptosTokenClient.transferTokenOwnership(
+    bob,
+    tokenAddress,
+    alice.address(),
+  ); // <:!:section_11
+  await provider.aptosClient.waitForTransaction(txnHash4, {
+    checkSuccess: true,
+  });
 
   // :!:>section_12
-  aliceAmount = (await getTokenInfo(provider, alice.address(), collectionAddress)).amount;
-  bobAmount = (await getTokenInfo(provider, bob.address(), collectionAddress)).amount;
+  aliceAmount = (
+    await getTokenInfo(provider, alice.address(), collectionAddress)
+  ).amount;
+  bobAmount = (await getTokenInfo(provider, bob.address(), collectionAddress))
+    .amount;
   console.log(`Alice's token balance: ${aliceAmount}`);
   console.log(`Bob's token balance: ${bobAmount}`); // <:!:section_12
 
@@ -154,7 +192,10 @@ async function getTokenInfo(
   const tokensOwned = tokensOwnedQuery.current_token_ownerships_v2.length;
   if (tokensOwned > 0) {
     return {
-      tokenAddress: HexString.ensure(tokensOwnedQuery.current_token_ownerships_v2[0].current_token_data.token_data_id),
+      tokenAddress: HexString.ensure(
+        tokensOwnedQuery.current_token_ownerships_v2[0].current_token_data
+          .token_data_id,
+      ),
       amount: tokensOwnedQuery.current_token_ownerships_v2[0].amount,
     };
   } else {
@@ -165,11 +206,15 @@ async function getTokenInfo(
   }
 } // <:!:getTokenInfo
 
-async function ensureIndexerAndNetworkInSync(provider: Provider): Promise<boolean> {
+async function ensureIndexerAndNetworkInSync(
+  provider: Provider,
+): Promise<boolean> {
   const indexerLedgerInfo = await provider.getIndexerLedgerInfo();
   const fullNodeChainId = await provider.getChainId();
   if (indexerLedgerInfo.ledger_infos[0].chain_id !== fullNodeChainId) {
-    console.log(`\nERROR: Provider's fullnode chain id and indexer chain id are not synced, skipping rest of tests`);
+    console.log(
+      `\nERROR: Provider's fullnode chain id and indexer chain id are not synced, skipping rest of tests`,
+    );
     return false;
   } else {
     return true;

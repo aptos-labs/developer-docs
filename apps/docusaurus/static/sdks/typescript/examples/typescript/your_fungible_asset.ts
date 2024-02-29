@@ -58,7 +58,11 @@ class AdminClient extends Provider {
   }
 
   /** Admin mint the newly created coin to the specified receiver address */
-  async mintCoin(admin: AptosAccount, receiverAddress: HexString, amount: number | bigint): Promise<string> {
+  async mintCoin(
+    admin: AptosAccount,
+    receiverAddress: HexString,
+    amount: number | bigint,
+  ): Promise<string> {
     const rawTxn = await this.generateTransaction(admin.address(), {
       function: `${admin.address().hex()}::fa_coin::mint`,
       type_arguments: [],
@@ -72,7 +76,11 @@ class AdminClient extends Provider {
   }
 
   /** Admin burns the newly created coin from the specified receiver address */
-  async burnCoin(admin: AptosAccount, fromAddress: HexString, amount: number | bigint): Promise<string> {
+  async burnCoin(
+    admin: AptosAccount,
+    fromAddress: HexString,
+    amount: number | bigint,
+  ): Promise<string> {
     const rawTxn = await this.generateTransaction(admin.address(), {
       function: `${admin.address().hex()}::fa_coin::burn`,
       type_arguments: [],
@@ -100,7 +108,10 @@ class AdminClient extends Provider {
   }
 
   /** Admin unfreezes the primary fungible store of the specified account */
-  async unfreeze(admin: AptosAccount, targetAddress: HexString): Promise<string> {
+  async unfreeze(
+    admin: AptosAccount,
+    targetAddress: HexString,
+  ): Promise<string> {
     const rawTxn = await this.generateTransaction(admin.address(), {
       function: `${admin.address().hex()}::fa_coin::unfreeze_account`,
       type_arguments: [],
@@ -126,9 +137,15 @@ class AdminClient extends Provider {
 
 /** run our demo! */
 async function main() {
-  assert(process.argv.length == 3, "Expecting an argument that points to the fa_coin directory.");
+  assert(
+    process.argv.length == 3,
+    "Expecting an argument that points to the fa_coin directory.",
+  );
 
-  const client = new AdminClient({ fullnodeUrl: NODE_URL, indexerUrl: NODE_URL /* not used */ });
+  const client = new AdminClient({
+    fullnodeUrl: NODE_URL,
+    indexerUrl: NODE_URL /* not used */,
+  });
   const fungibleAssetClient = new FungibleAssetClient(client);
   const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
 
@@ -146,26 +163,47 @@ async function main() {
   await faucetClient.fundAccount(bob.address(), 100_000_000);
 
   await new Promise<void>((resolve) => {
-    readline.question("Update the module with Alice's address, compile, and press enter.", () => {
-      resolve();
-      readline.close();
-    });
+    readline.question(
+      "Update the module with Alice's address, compile, and press enter.",
+      () => {
+        resolve();
+        readline.close();
+      },
+    );
   });
 
   // :!:>publish
   const modulePath = process.argv[2];
-  const packageMetadata = fs.readFileSync(path.join(modulePath, "build", "Examples", "package-metadata.bcs"));
-  const moduleData = fs.readFileSync(path.join(modulePath, "build", "Examples", "bytecode_modules", "fa_coin.mv"));
+  const packageMetadata = fs.readFileSync(
+    path.join(modulePath, "build", "Examples", "package-metadata.bcs"),
+  );
+  const moduleData = fs.readFileSync(
+    path.join(
+      modulePath,
+      "build",
+      "Examples",
+      "bytecode_modules",
+      "fa_coin.mv",
+    ),
+  );
 
   console.log("Publishing FACoin package.\n");
-  let txnHash = await client.publishPackage(alice, new HexString(packageMetadata.toString("hex")).toUint8Array(), [
-    new TxnBuilderTypes.Module(new HexString(moduleData.toString("hex")).toUint8Array()),
-  ]);
+  let txnHash = await client.publishPackage(
+    alice,
+    new HexString(packageMetadata.toString("hex")).toUint8Array(),
+    [
+      new TxnBuilderTypes.Module(
+        new HexString(moduleData.toString("hex")).toUint8Array(),
+      ),
+    ],
+  );
   await client.waitForTransaction(txnHash, { checkSuccess: true }); // <:!:publish
 
   const metadata_addr = await client.getMetadata(alice);
 
-  console.log("All the balances in this example refer to balance in primary fungible stores of each account.");
+  console.log(
+    "All the balances in this example refer to balance in primary fungible stores of each account.",
+  );
   console.log(
     `Alice's initial FACoin balance: ${await fungibleAssetClient.getPrimaryBalance(alice.address(), metadata_addr)}.`,
   );
@@ -192,7 +230,12 @@ async function main() {
   console.log(
     "Alice as the admin forcefully transfers the newly minted coins of Charlie to Bob ignoring that Bob's account is frozen.",
   );
-  txnHash = await client.transferCoin(alice, charlie.address(), bob.address(), 100);
+  txnHash = await client.transferCoin(
+    alice,
+    charlie.address(),
+    bob.address(),
+    100,
+  );
   await client.waitForTransaction(txnHash, { checkSuccess: true });
   console.log(
     `Bob's updated FACoin balance: ${await fungibleAssetClient.getPrimaryBalance(bob.address(), metadata_addr)}.`,
@@ -211,7 +254,12 @@ async function main() {
 
   /// Normal fungible asset transfer between primary stores
   console.log("Bob transfers 10 coins to Alice as the owner.");
-  txnHash = await fungibleAssetClient.transfer(bob, metadata_addr, alice.address(), 10);
+  txnHash = await fungibleAssetClient.transfer(
+    bob,
+    metadata_addr,
+    alice.address(),
+    10,
+  );
   await client.waitForTransaction(txnHash, { checkSuccess: true });
   console.log(
     `Alice's updated FACoin balance: ${await fungibleAssetClient.getPrimaryBalance(alice.address(), metadata_addr)}.`,

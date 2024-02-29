@@ -16,7 +16,8 @@ const preset: Preset.Options = {
     routeBasePath: "/",
     sidebarPath: require.resolve("./src/components/sidebars.ts"),
     sidebarCollapsible: false,
-    editUrl: "https://github.com/aptos-labs/developer-docs/edit/main/apps/docusaurus",
+    editUrl:
+      "https://github.com/aptos-labs/developer-docs/edit/main/apps/docusaurus",
     remarkPlugins: [codeInjector, math],
     path: "docs",
     rehypePlugins: [katex],
