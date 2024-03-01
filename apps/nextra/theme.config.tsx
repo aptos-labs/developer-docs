@@ -24,13 +24,21 @@ function isFullUrl(url: string): boolean {
   return pattern.test(url);
 }
 
+const url = new URL(docsConfig.githubUrl);
+const pathname = url.pathname.endsWith('/') && url.pathname !== '/' ? url.pathname.slice(0, -1) : url.pathname;
+const githubUrl = `${url.protocol}//${url.host}${pathname}${url.search}${url.hash}`;
+
 const config: DocsThemeConfig = {
   darkMode: true,
-  docsRepositoryBase: docsConfig.githubDocsUrl,
+  docsRepositoryBase: docsConfig.githubUrl,
   editLink: {
     content: function useText() {
       const { locale } = useRouter()
       return i18nConfig[locale!].editText
+    },
+    component: ({ children, className, filePath }) => {
+      const href = `${githubUrl}/edit/main${docsConfig.relativeDocsPath}/${filePath}`;
+      return <a className={className} href={href}>{children}</a>
     }
   },
   feedback: {
