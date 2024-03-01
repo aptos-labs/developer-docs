@@ -1,0 +1,101 @@
+---
+title: SEO
+---
+
+import { Callout, Steps, FileTree } from 'nextra/components'
+import { docsConfig } from '@docs-config';
+
+# SEO
+
+To simplify Nextra SEO / Open Graph configuration, Aptos Nextra projects use the 
+`docs.config.js` file for many core Open Graph functionalities.
+
+### Dynamic Open Graph Images
+
+The Aptos Docs template takes advantage of [Next.js' dynamic opengraph images](https://vercel.com/docs/functions/og-image-generation)
+using the edge runtime to ensure low-latency SEO cards and no cold-starts.
+
+<br />
+
+export function DynamicImage({ title }) {
+  const imageUrl = `${docsConfig.origin}/api/og.png?title=${encodeURIComponent(title)}`;
+  
+  return (
+    <img src={imageUrl} alt="Dynamic Image" />
+  );
+}
+
+<DynamicImage title="Dynamic Image" />
+
+The Open Graph Images are generated dynamically at runtime from `React` components, and served as a png image. 
+This is how we are able to include things like the title of the page in the SEO card.
+
+For more details, checkout `/pages/api/og.png.tsx`.
+
+<FileTree>
+  <FileTree.Folder name="pages" defaultOpen>
+    <FileTree.File name="_meta.ts" />
+    <FileTree.Folder name="api">
+      <FileTree.Folder name="og.png.tsx" active />
+    </FileTree.Folder>
+    <FileTree.Folder name="en" />
+    <FileTree.File name="_app.tsx" />
+  </FileTree.Folder>
+  <FileTree.File name="docs.config.js" />
+  <FileTree.File name="theme.config.tsx" />
+  <FileTree.File name="package.json" />
+</FileTree>
+
+> Note: You may be wondering why we use `og.png.tsx` instead of `og.tsx` as the filename. 
+We use `og.png.tsx` because after testing it extensively, we learned that
+Twitter renders opengraph images if their URLs end with the file extension.
+
+### Testing
+
+You can always check the opengraph image by navigating to `/api/og.png`.
+
+(e.g., [`http://localhost:3000/api/og.png`](http://localhost:3000/api/og.png))
+
+### Favicon
+
+<FileTree>
+  <FileTree.Folder name="pages" defaultOpen />
+  <FileTree.Folder name="public" defaultOpen>
+    <FileTree.Folder name="favicon" defaultOpen>
+      <FileTree.File name="favicon.ico" active />
+    </FileTree.Folder>
+  </FileTree.Folder>
+  <FileTree.File name="docs.config.js" />
+  <FileTree.File name="theme.config.tsx" />
+  <FileTree.File name="package.json" />
+</FileTree>
+
+For other assets located in `public/favicon`, you may want to customize the
+website icon. You can do so easily by doing the following:
+
+
+<Steps>
+
+##### Generate Favicon
+
+Navigate to [https://favicon.io/favicon-converter/](https://favicon.io/favicon-converter/).
+Upload an `svg` file with the logo you'd like to generate your favicon for.
+
+##### Copy assets into `public/favicon`
+
+After generating the assets, favicon.ico should return a zip file containing
+
+- `android-chrome-192x192.png`
+- `favicon.ico`
+- ...so on and so forth
+
+Copy all of these and replace the existing files in `public/favicon`
+
+##### Deploy
+
+</Steps>
+
+### Customizing Open Graph
+
+To customize the Open Graph configuration, see `theme.config.tsx`.
+

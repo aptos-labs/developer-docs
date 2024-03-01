@@ -1,0 +1,31 @@
+---
+title: Maintenance
+---
+
+import { FileTree } from 'nextra/components'
+
+## Maintaining dependencies
+
+> More coming soon...
+
+At the root of your folder you'll need to add a dependabot config file `.github/dependabot.yml` like so
+
+<FileTree>
+  <FileTree.Folder name="root" defaultOpen>
+    <FileTree.Folder name=".github" defaultOpen>
+      <FileTree.File name="dependabot.yml" active />
+    </FileTree.Folder>
+    <FileTree.Folder name="...other code" defaultOpen />
+  </FileTree.Folder>
+</FileTree>
+
+```yml filename=".github/dependabot.yml" /dependency-name: "@aptos-labs//
+version: 2
+updates:
+  - package-ecosystem: "pnpm" # Adjust this for your project's ecosystem (e.g., npm, maven)
+    directory: "/" # Directory where package manifests are located
+    schedule:
+      interval: "daily" # How often to check for updates
+    allow:
+      - dependency-name: "@aptos-labs/" # Specify dependency names you want to include
+```
