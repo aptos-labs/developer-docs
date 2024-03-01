@@ -21,13 +21,22 @@ Before initializing a delegation pool, you need to know the delegation pool addr
 
 - Before you create the delegation pool:
   ```bash
-  aptos account derive-resource-account-address --address <owner_address> --seed "aptos_framework::delegation_pool<SEED>" --seed-encoding utf8
+  aptos account derive-resource-account-address --address <owner_account_address> --seed "aptos_framework::delegation_pool<SEED>" --seed-encoding utf8
   ```
   - The `<SEED>` is a number chosen by you to create the resource account address to host the delegation pool resource. Once you choose a seed, you should use the same value for all following usages.
-- After you create the delegation pool:
-  ```bash
-  aptos account derive-resource-account-address
-  ```
+
+The command above will generate an output like this:
+```
+{
+"Result": "<delegation_pool_address>"
+}
+
+```
+
+Now you have to provide the <delegation_pool_address> to someone from Aptos Labs so they'll whitelist you.
+
+
+- After you create the delegation pool and have it whitelisted:
 
 1. Run the command below, substitute in the profile you previously configured during initialization:
 
