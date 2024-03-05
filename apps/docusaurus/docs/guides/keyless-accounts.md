@@ -1,6 +1,8 @@
 ---
-title: "Aptos Keyless Integration Guide"
+title: "Aptos Keyless"
 ---
+
+## Aptos Keyless Integration Guide
 
 Aptos Keyless allows your users to set up an Aptos blockchain account from their existing Google accounts, rather than from a traditional secret key or mnemonic. In a nutshell, with Aptos Keyless, a user’s blockchain account is their Google account. In the future, Aptos Keyless will support many OpenID Connect (OIDC) providers, not just Google.
 
@@ -14,13 +16,13 @@ Keyless accounts are revolutionary to users for the following reasons:
 1. “1-click” account creation via familiar Web2 logins like `Sign In with Google`.
 2. Ability to transact on the Aptos blockchain without needing to navigate away from the application experience to download a wallet.
 3. Requires no secret key management by the user. This means blockchain account access is synonymous with access to one’s OIDC account and Web2-like recovery flows are available to regain access to one’s blockchain account in case the user ever loses access to their OIDC account.
-4. Seamless cross-devices experiences; users log in with their OIDC account no matter what device they are on - no need to download wallet software on each device, import their keys and encrypt them with a password, which must be maintained.
+4. Seamless cross-device experiences; users log in with their OIDC account no matter what device they are on - no need to download wallet software on each device, import their keys and encrypt them with a password, which must be maintained.
 
 :::tip Keyless Account Scoping
-Use of the **_Aptos Keyless Integration Guide_** will allow for the integration of keyless accounts directly into your application. This means that blockchain accounts created on your application are scoped to the domain of your application (logging in with your Google account on dApp A and logging in with your Google account on dApp B will create separate accounts). Stay tuned for more to come on Aptos’ plan to allow Keyless accounts to be used portably across applications.
+Use of the **_Aptos Keyless Integration Guide_** will allow for the integration of keyless accounts directly into your application. This means that blockchain accounts are scoped to your application's domain (logging in with your Google account on dApp A and logging in with your Google account on dApp B will create separate accounts). Stay tuned for more to come on Aptos’ plan to allow Keyless accounts to be used portably across applications.
 :::
 
-_Note: this guide is oriented toward non-wallet applications. If you are a wallet developer and have interest in using Keyless accounts, please reach out to us directly._
+_Note: This guide is oriented toward non-wallet applications. If you are a wallet developer and have interest in using Keyless accounts, please reach out to us directly._
 
 ## Terminology
 
@@ -81,7 +83,7 @@ To support OpenID authentication you will need the **`client_id`** from your pro
 
 ```bash
 # Experimental SDK version with Keyless support.
-npm install @aptos-labs/ts-sdk@zeta
+pnpm install @aptos-labs/ts-sdk@zeta
 ```
 
 :::info SDK is experimental
@@ -103,10 +105,10 @@ Below are the default steps for a client to integrate Keyless Accounts
         const ephemeralKeyPair = EphemeralKeyPair.generate();
         ```
 
-    2. Save the `EphemeralKeyPair` in local storage keyed by its `nonce`.
+    2. Save the `EphemeralKeyPair` in local storage, keyed by its `nonce`.
 
-        ```jsx
-        // This saves the EphemeralKeyPair in local storage keyed by the nonce.
+        ```tsx
+        // This saves the EphemeralKeyPair in local storage keyed, by its nonce.
         storeEphemeralKeyPair(ephemeralKeyPair.nonce, ephemeralKeyPair);
         ```
 
@@ -119,38 +121,38 @@ This implementation is an example of how to store the `EphemeralKeyPair` in loca
 
 ```typescript
 /**
- * Stored ephemeral accounts in localStorage (nonce -> ephemeral account)
+ * Stored ephemeral key pairs in localStorage (nonce -> ephemeralKeyPair)
  */
-export type StoredEphemeralAccounts = { [nonce: string]: EphemeralAccount };
+export type StoredEphemeralKeyPairs = { [nonce: string]: EphemeralKeyPair };
 
 /**
- * Retrieve all ephemeral accounts from localStorage and decode them. The new ephemeral account
+ * Retrieve all ephemeral key pairs from localStorage and decode them. The new ephemeral key pair
  * is then stored in localStorage with the nonce as the key.
  */
-export const storeEphemeralAccount = (
-  ephemeralAccount: EphemeralAccount,
+export const storeEphemeralKeyPair = (
+  ephemeralKeyPair: EphemeralKeyPair,
 ): void => {
-  // Retrieve the current ephemeral accounts from localStorage
-  const accounts = getLocalEphemeralAccounts();
+  // Retrieve the current ephemeral key pairs from localStorage
+  const accounts = getLocalEphemeralKeyPairs();
 
-  // Store the new ephemeral account in localStorage
-  accounts[ephemeralAccount.nonce] = ephemeralAccount;
-  localStorage.setItem("ephemeral-accounts", encodeEphemeralAccounts(accounts));
+  // Store the new ephemeral key pair in localStorage
+  accounts[ephemeralKeyPair.nonce] = ephemeralKeyPair;
+  localStorage.setItem("ephemeral-accounts", encodeEphemeralKeyPairs(accounts));
 };
 
 /**
- * Retrieve all ephemeral accounts from localStorage and decode them.
+ * Retrieve all ephemeral key pairs from localStorage and decode them.
  */
-export const getLocalEphemeralAccounts = (): StoredEphemeralAccounts => {
-  const rawEphemeralAccounts = localStorage.getItem("ephemeral-accounts");
+export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
+  const rawEphemeralKeyPairs = localStorage.getItem("ephemeral-accounts");
   try {
-    return rawEphemeralAccounts
-      ? decodeEphemeralAccounts(rawEphemeralAccounts)
+    return rawEphemeralKeyPairs
+      ? decodeEphemeralKeyPairs(rawEphemeralKeyPairs)
       : {};
   } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(
-      "Failed to decode ephemeral accounts from localStorage",
+      "Failed to decode ephemeral key pairs from localStorage",
       error,
     );
     return {};
@@ -158,17 +160,17 @@ export const getLocalEphemeralAccounts = (): StoredEphemeralAccounts => {
 };
 
 /**
- * Encoding for the EphemeralAccount class to be stored in localStorage
+ * Encoding for the EphemeralKeyPair class to be stored in localStorage
  */
-const EphemeralAccountEncoding = {
+const EphemeralKeyPairEncoding = {
   decode: (e: any) =>
-    new EphemeralAccount({
+    new EphemeralKeyPair({
       blinder: new Uint8Array(e.blinder),
       expiryTimestamp: BigInt(e.expiryTimestamp),
       privateKey: new Ed25519PrivateKey(e.privateKey),
     }),
-  encode: (e: EphemeralAccount) => ({
-    __type: "EphemeralAccount",
+  encode: (e: EphemeralKeyPair) => ({
+    __type: "EphemeralKeyPair",
     blinder: Array.from(e.blinder),
     expiryTimestamp: e.expiryTimestamp.toString(),
     privateKey: e.privateKey.toString(),
@@ -176,54 +178,54 @@ const EphemeralAccountEncoding = {
 };
 
 /**
- * Stringify the ephemeral accounts to be stored in localStorage
+ * Stringify the ephemeral key pairs to be stored in localStorage
  */
-export const encodeEphemeralAccounts = (
-  accounts: StoredEphemeralAccounts,
+export const encodeEphemeralKeyPairs = (
+  keyPairs: StoredEphemeralKeyPairs,
 ): string =>
-  JSON.stringify(accounts, (_, e) => {
+  JSON.stringify(keyPairs, (_, e) => {
     if (typeof e === "bigint") return { __type: "bigint", value: e.toString() };
-    if (e instanceof EphemeralAccount)
-      return EphemeralAccountEncoding.encode(e);
+    if (e instanceof EphemeralKeyPair)
+      return EphemeralKeyPairEncoding.encode(e);
     return e;
   });
 
 /**
- * Parse the ephemeral accounts from a string
+ * Parse the ephemeral key pairs from a string
  */
-export const decodeEphemeralAccounts = (
-  encodedEphemeralAccounts: string,
-): StoredEphemeralAccounts =>
-  JSON.parse(encodedEphemeralAccounts, (_, e) => {
+export const decodeEphemeralKeyPairs = (
+  encodedEphemeralKeyPairs: string,
+): StoredEphemeralKeyPairs =>
+  JSON.parse(encodedEphemeralKeyPairs, (_, e) => {
     if (e && e.__type === "bigint") return BigInt(e.value);
-    if (e && e.__type === "EphemeralAccount")
-      return EphemeralAccountEncoding.decode(e);
+    if (e && e.__type === "EphemeralKeyPair")
+      return EphemeralKeyPairEncoding.decode(e);
     return e;
   });
 ```
 
 </details>
 
-    3. Prepare the URL params of the login URL.  Set the `redirect_uri` and `client_id` to your configured values with the IdP.  Set the `nonce` to the nonce of the `EphemeralKeyPair` from step 1.i.
+    3. Prepare the URL params of the login URL. Set the `redirect_uri` and `client_id` to your configured values with the IdP. Set the `nonce` to the nonce of the `EphemeralKeyPair` from step 1.i.
 
-        ```jsx
+        ```tsx
         const redirectUri = 'https://.../login/callback'
         const clientId = env.IDP_CLIENT_ID
         // Get the nonce associated with ephemeralKeyPair
         const nonce = ephemeralKeyPair.nonce
         ```
 
-    4. Construct the login URL for the user to authenticate with the IdP.  Make sure the `openid` scope is set.  Other scopes such as `email` and `profile` can be set based on your app’s needs.
+    4. Construct the login URL for the user to authenticate with the IdP. Make sure the `openid` scope is set. Other scopes such as `email` and `profile` can be set based on your app’s needs.
 
-        ```jsx
+        ```tsx
         const loginUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=id_token&scope=openid+email+profile&nonce=${nonce}&redirect_uri=${redirectUri}&client_id=${clientId}`
         ```
 
     5. When the user clicks the login button, redirect the user to the `loginUrl` that was created in step 1.iv.
 
-### 2. Handle the callback by parsing the token and create a Keyless account for the user.
+### 2. Handle the callback by parsing the token and create a Keyless account for the user
 
-    1. Once the user completes the login flow, they will be redirected to the `redirect_uri` set in step 1. The JWT will be set in the URL as a search parameter in a URL fragment keyed by `id_token`. Extract the JWT from the `window` by doing the following:
+    1. Once the user completes the login flow, they will be redirected to the `redirect_uri` set in step 1. The JWT will be set in the URL as a search parameter in a URL fragment, keyed by `id_token`. Extract the JWT from the `window` by doing the following:
 
         ```tsx
         const parseJWTFromURL = (url: string): string | null => {
@@ -239,7 +241,7 @@ export const decodeEphemeralAccounts = (
 
     2. Decode the JWT and get the extract the nonce value from the payload.
 
-        ```jsx
+        ```tsx
         import { jwtDecode } from 'jwt-decode';
 
         const payload = jwtDecode<{ nonce: string }>(jwt);
@@ -249,7 +251,7 @@ export const decodeEphemeralAccounts = (
     3. Fetch the `EphemeralKeyPair` stored in step 1.ii with the decoded nonce.
 
 
-        ```jsx
+        ```tsx
         const ephemeralKeyPair = getLocalEphemeralKeyPair(jwtNonce);
         ```
 
@@ -257,44 +259,44 @@ export const decodeEphemeralAccounts = (
 <summary>Example implementation for `getLocalEphemeralKeyPair`</summary>
 
 :::tip
-This implementation is an example of how to retrieve the `EphemeralKeyPair` from local storage using the nonce as the key. Different implementations may be used according to your application's needs. It is important that you validate the expiry timestamp of the ephemeral account to ensure that it is still valid.
+This implementation is an example of how to retrieve the `EphemeralKeyPair` from local storage using the nonce as the key. Different implementations may be used according to your application's needs. It is important that you validate the expiry timestamp of the ephemeral key pair to ensure that it is still valid.
 :::
 
 ```typescript
 /**
- * Stored ephemeral accounts in localStorage (nonce -> ephemeral account)
+ * Stored ephemeral key pairs in localStorage (nonce -> ephemeral key pair)
  */
-export type StoredEphemeralAccounts = { [nonce: string]: EphemeralAccount };
+export type StoredEphemeralKeyPairs = { [nonce: string]: EphemeralKeyPair };
 
 /**
- * Retrieve the ephemeral account with the given nonce from localStorage.
+ * Retrieve the ephemeral key pair with the given nonce from localStorage.
  */
 export const getLocalEphemeralKeyPair = (
   nonce: string,
-): EphemeralAccount | null => {
-  const accounts = getLocalEphemeralAccounts();
+): EphemeralKeyPair | null => {
+  const keyPairs = getLocalEphemeralKeyPairs();
 
-  // Get the account with the given nonce (the generated nonce of the ephemeral account may not match
+  // Get the account with the given nonce (the generated nonce of the ephemeral key pair may not match
   // the nonce in localStorage), so we need to validate it before returning it (implementation specific).
-  const ephemeralAccount = accounts[nonce];
-  if (!ephemeralAccount) return null;
+  const ephemeralKeyPair = keyPairs[nonce];
+  if (!ephemeralKeyPair) return null;
 
   // If the account is valid, return it, otherwise remove it from the device and return null
-  return validateEphemeralAccount(nonce, ephemeralAccount);
+  return validateEphemeralKeyPair(nonce, ephemeralKeyPair);
 };
 
 /**
- * Retrieve all ephemeral accounts from localStorage and decode them.
+ * Retrieve all ephemeral key pairs from localStorage and decode them.
  */
-export const getLocalEphemeralAccounts = (): StoredEphemeralAccounts => {
-  const rawEphemeralAccounts = localStorage.getItem("ephemeral-accounts");
+export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
+  const rawEphemeralKeyPairs = localStorage.getItem("ephemeral-key-pairs");
   try {
-    return rawEphemeralAccounts
-      ? decodeEphemeralAccounts(rawEphemeralAccounts)
+    return rawEphemeralKeyPairs
+      ? decodeEphemeralKeyPairs(rawEphemeralKeyPairs)
       : {};
   } catch (error) {
     console.warn(
-      "Failed to decode ephemeral accounts from localStorage",
+      "Failed to decode ephemeral key pairs from localStorage",
       error,
     );
     return {};
@@ -302,32 +304,35 @@ export const getLocalEphemeralAccounts = (): StoredEphemeralAccounts => {
 };
 
 /**
- * Validate the ephemeral account with the given nonce and the expiry timestamp. If the nonce does not match
- * the generated nonce of the ephemeral account, the ephemeral account is removed from localStorage. This is
+ * Validate the ephemeral key pair with the given nonce and the expiry timestamp. If the nonce does not match
+ * the generated nonce of the ephemeral key pair, the ephemeral key pair is removed from localStorage. This is
  * to validate that the nonce algorithm is the same (e.g. if the nonce algorithm changes).
  */
-export const validateEphemeralAccount = (
+export const validateEphemeralKeyPair = (
   nonce: string,
-  ephemeralAccount: EphemeralAccount,
-): EphemeralAccount | null => {
+  ephemeralKeyPair: EphemeralKeyPair,
+): EphemeralKeyPair | null => {
   // Check the nonce and the expiry timestamp of the account to see if it is valid
   if (
-    nonce === ephemeralAccount.nonce &&
-    ephemeralAccount.expiryTimestamp > BigInt(Math.floor(Date.now() / 1000))
+    nonce === ephemeralKeyPair.nonce &&
+    ephemeralKeyPair.expiryTimestamp > BigInt(Math.floor(Date.now() / 1000))
   ) {
-    return ephemeralAccount;
+    return ephemeralKeyPair;
   }
-  removeEphemeralAccount(nonce);
+  removeEphemeralKeyPair(nonce);
   return null;
 };
 
 /**
- * Remove the ephemeral account with the given nonce from localStorage.
+ * Remove the ephemeral key pair with the given nonce from localStorage.
  */
-export const removeEphemeralAccount = (nonce: string): void => {
-  const accounts = getLocalEphemeralAccounts();
-  delete accounts[nonce];
-  localStorage.setItem("ephemeral-accounts", encodeEphemeralAccounts(accounts));
+export const removeEphemeralKeyPair = (nonce: string): void => {
+  const keyPairs = getLocalEphemeralKeyPairs();
+  delete keyPairs[nonce];
+  localStorage.setItem(
+    "ephemeral-key-pairs",
+    encodeEphemeralKeyPairs(keyPairs),
+  );
 };
 ```
 
@@ -335,7 +340,7 @@ export const removeEphemeralAccount = (nonce: string): void => {
 
     4. Instantiate the user’s `KeylessAccount`
 
-        ```jsx
+        ```tsx
         import {Aptos} from '@aptos-labs/ts-sdk';
 
         const aptos = new Aptos();
@@ -345,11 +350,11 @@ export const removeEphemeralAccount = (nonce: string): void => {
         });
         ```
 
-### 3. Submit transactions to the Aptos blockchain.
+### 3. Submit transactions to the Aptos blockchain
 
     1. Create the transaction you want to submit.  Below is a simple coin transfer transaction for example:
 
-        ```jsx
+        ```tsx
         import {Account} from '@aptos-labs/ts-sdk';
 
         const bob = Account.generate();
@@ -362,12 +367,12 @@ export const removeEphemeralAccount = (nonce: string): void => {
 
     2. Sign and submit the transaction to the chain.
 
-        ```jsx
+        ```tsx
         const committedTxn = await aptos.signAndSubmitTransaction({ signer: keylessAccount, transaction });
         ```
 
     3. Wait for the transaction to be processed on-chain
 
-        ```jsx
+        ```tsx
         const committedTransactionResponse = await aptos.waitForTransaction({ transactionHash: committedTxn.hash });
         ```
