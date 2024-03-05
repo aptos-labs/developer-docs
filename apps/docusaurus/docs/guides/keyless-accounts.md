@@ -49,6 +49,10 @@ _Note: This guide is oriented toward non-wallet applications. If you are a walle
 
 # Keyless Account Integration Steps
 
+:::info Only devnet is supported
+Currently Aptos Keyless is only supported in devnet.  Testnet and mainnet support to come in the following weeks.
+:::
+
 At a high level, there are three steps to follow in order to integrate Keyless Accounts.
 
 1. **Configure your OpenID integration with your IdP.** In this step, the dApp will register with the IdP of choice (e.g. Google) and receive a `client_id`
@@ -57,10 +61,6 @@ At a high level, there are three steps to follow in order to integrate Keyless A
    1. Set up the `“Sign In with [Idp]”` flow for your user.
    2. Instantiate the user’s `KeylessAccount`
    3. Sign and submit transactions via the `KeylessAccount`.
-
-:::info Only devnet is supported
-Currently Aptos Keyless is only supported in devnet.  Testnet and mainnet support to come in the following weeks.
-:::
 
 ## Step 1. Configure your OpenID integration with your IdP
 
@@ -71,6 +71,8 @@ Currently only Google is supported. We will support additional OIDC providers in
 | Identity Provider | Auth URL                                                                                                                                                                       |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Google            | https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=id_token&scope=openid%20email&nonce=${NONCE} |
+
+The impilicit flow (no authorization code exchange) is the preferred method of authentication.  The integration steps assumes use of implicit flow.
 
 ### Google
 
