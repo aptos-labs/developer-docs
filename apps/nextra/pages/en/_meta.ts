@@ -79,11 +79,6 @@ export default {
       }
     }
   },
-  docs: {
-    type: 'page',
-    title: 'Docs',
-    display: 'hidden'
-  },
   nextra_link: {
     type: 'page',
     title: 'Nextra ↗',
