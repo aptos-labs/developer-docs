@@ -20,6 +20,8 @@ Keyless accounts are revolutionary to users for the following reasons:
 
 :::tip Keyless Account Scoping
 Use of the **_Aptos Keyless Integration Guide_** will allow for the integration of keyless accounts directly into your application. This means that blockchain accounts are scoped to your application's domain (logging in with your Google account on dApp A and logging in with your Google account on dApp B will create separate accounts). Stay tuned for more to come on Aptos’ plan to allow Keyless accounts to be used portably across applications.
+
+To provide feedback, get support, or be a design partner as we enhance Aptos Keyless, join us here: https://t.me/+h5CN-W35yUFiYzkx
 :::
 
 _Note: This guide is oriented toward non-wallet applications. If you are a wallet developer and have interest in using Keyless accounts, please reach out to us directly._
@@ -55,6 +57,10 @@ At a high level, there are three steps to follow in order to integrate Keyless A
    1. Set up the `“Sign In with [Idp]”` flow for your user.
    2. Instantiate the user’s `KeylessAccount`
    3. Sign and submit transactions via the `KeylessAccount`.
+
+:::info Only devnet is supported
+Currently Aptos Keyless is only supported in devnet.  Testnet and mainnet support to come in the following weeks.
+:::
 
 ## Step 1. Configure your OpenID integration with your IdP
 
@@ -206,7 +212,7 @@ export const decodeEphemeralKeyPairs = (
 
 </details>
 
-    3. Prepare the URL params of the login URL. Set the `redirect_uri` and `client_id` to your configured values with the IdP. Set the `nonce` to the nonce of the `EphemeralKeyPair` from step 1.i.
+    3. Prepare the URL params of the login URL. Set the `redirect_uri` and `client_id` to your configured values with the IdP. Set the `nonce` to the nonce of the `EphemeralKeyPair` from step 1.1.
 
         ```tsx
         const redirectUri = 'https://.../login/callback'
@@ -221,7 +227,7 @@ export const decodeEphemeralKeyPairs = (
         const loginUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=id_token&scope=openid+email+profile&nonce=${nonce}&redirect_uri=${redirectUri}&client_id=${clientId}`
         ```
 
-    5. When the user clicks the login button, redirect the user to the `loginUrl` that was created in step 1.iv.
+    5. When the user clicks the login button, redirect the user to the `loginUrl` that was created in step 1.4.
 
 ### 2. Handle the callback by parsing the token and create a Keyless account for the user
 
@@ -248,7 +254,7 @@ export const decodeEphemeralKeyPairs = (
         const jwtNonce = payload.nonce
         ```
 
-    3. Fetch the `EphemeralKeyPair` stored in step 1.ii with the decoded nonce.
+    3. Fetch the `EphemeralKeyPair` stored in step 1.2 with the decoded nonce.
 
 
         ```tsx
@@ -341,9 +347,9 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
     4. Instantiate the user’s `KeylessAccount`
 
         ```tsx
-        import {Aptos} from '@aptos-labs/ts-sdk';
+        import {Aptos, Network} from '@aptos-labs/ts-sdk';
 
-        const aptos = new Aptos();
+        const aptos = new Aptos({network: Network.DEVNET});  // Only devnet supported as of now.
         const keylessAccount = await aptos.deriveKeylessAccount({
             jwt,
             ephemeralKeyPair,
