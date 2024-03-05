@@ -8,7 +8,7 @@
     "build": "next build",
     "clean": "rimraf .next .turbo",
     "debug": "NODE_OPTIONS='--inspect' next dev",
-    "dev": "next",
+    "dev": "next -p 3030",
     "prebuild": "node nextra-remote-filepaths/fetch.js",
     "predev": "pnpm prebuild",
     "start": "next start",
