@@ -110,6 +110,100 @@ Below are the default steps for a client to integrate Keyless Accounts
         storeEphemeralKeyPair(ephemeralKeyPair.nonce, ephemeralKeyPair);
         ```
 
+<details>
+<summary>Example implementation for `storeEphemeralKeyPair`</summary>
+
+:::tip
+This implementation is an example of how to store the `EphemeralKeyPair` in local storage using the nonce as the key. Different implementations may be used according to your application's needs.
+:::
+
+```typescript
+/**
+ * Stored ephemeral accounts in localStorage (nonce -> ephemeral account)
+ */
+export type StoredEphemeralAccounts = { [nonce: string]: EphemeralAccount };
+
+/**
+ * Retrieve all ephemeral accounts from localStorage and decode them. The new ephemeral account
+ * is then stored in localStorage with the nonce as the key.
+ */
+export const storeEphemeralAccount = (
+  ephemeralAccount: EphemeralAccount,
+): void => {
+  // Retrieve the current ephemeral accounts from localStorage
+  const accounts = getLocalEphemeralAccounts();
+
+  // Store the new ephemeral account in localStorage
+  accounts[ephemeralAccount.nonce] = ephemeralAccount;
+  localStorage.setItem("ephemeral-accounts", encodeEphemeralAccounts(accounts));
+};
+
+/**
+ * Retrieve all ephemeral accounts from localStorage and decode them.
+ */
+export const getLocalEphemeralAccounts = (): StoredEphemeralAccounts => {
+  const rawEphemeralAccounts = localStorage.getItem("ephemeral-accounts");
+  try {
+    return rawEphemeralAccounts
+      ? decodeEphemeralAccounts(rawEphemeralAccounts)
+      : {};
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "Failed to decode ephemeral accounts from localStorage",
+      error,
+    );
+    return {};
+  }
+};
+
+/**
+ * Encoding for the EphemeralAccount class to be stored in localStorage
+ */
+const EphemeralAccountEncoding = {
+  decode: (e: any) =>
+    new EphemeralAccount({
+      blinder: new Uint8Array(e.blinder),
+      expiryTimestamp: BigInt(e.expiryTimestamp),
+      privateKey: new Ed25519PrivateKey(e.privateKey),
+    }),
+  encode: (e: EphemeralAccount) => ({
+    __type: "EphemeralAccount",
+    blinder: Array.from(e.blinder),
+    expiryTimestamp: e.expiryTimestamp.toString(),
+    privateKey: e.privateKey.toString(),
+  }),
+};
+
+/**
+ * Stringify the ephemeral accounts to be stored in localStorage
+ */
+export const encodeEphemeralAccounts = (
+  accounts: StoredEphemeralAccounts,
+): string =>
+  JSON.stringify(accounts, (_, e) => {
+    if (typeof e === "bigint") return { __type: "bigint", value: e.toString() };
+    if (e instanceof EphemeralAccount)
+      return EphemeralAccountEncoding.encode(e);
+    return e;
+  });
+
+/**
+ * Parse the ephemeral accounts from a string
+ */
+export const decodeEphemeralAccounts = (
+  encodedEphemeralAccounts: string,
+): StoredEphemeralAccounts =>
+  JSON.parse(encodedEphemeralAccounts, (_, e) => {
+    if (e && e.__type === "bigint") return BigInt(e.value);
+    if (e && e.__type === "EphemeralAccount")
+      return EphemeralAccountEncoding.decode(e);
+    return e;
+  });
+```
+
+</details>
+
     3. Prepare the URL params of the login URL.  Set the `redirect_uri` and `client_id` to your configured values with the IdP.  Set the `nonce` to the nonce of the `EphemeralKeyPair` from step 1.i.
 
         ```jsx
@@ -156,8 +250,88 @@ Below are the default steps for a client to integrate Keyless Accounts
 
 
         ```jsx
-        const ephemeralKeyPair = getLocalEphemeralKeyPairt(jwtNonce);
+        const ephemeralKeyPair = getLocalEphemeralKeyPair(jwtNonce);
         ```
+
+<details>
+<summary>Example implementation for `getLocalEphemeralKeyPair`</summary>
+
+:::tip
+This implementation is an example of how to retrieve the `EphemeralKeyPair` from local storage using the nonce as the key. Different implementations may be used according to your application's needs. It is important that you validate the expiry timestamp of the ephemeral account to ensure that it is still valid.
+:::
+
+```typescript
+/**
+ * Stored ephemeral accounts in localStorage (nonce -> ephemeral account)
+ */
+export type StoredEphemeralAccounts = { [nonce: string]: EphemeralAccount };
+
+/**
+ * Retrieve the ephemeral account with the given nonce from localStorage.
+ */
+export const getLocalEphemeralKeyPair = (
+  nonce: string,
+): EphemeralAccount | null => {
+  const accounts = getLocalEphemeralAccounts();
+
+  // Get the account with the given nonce (the generated nonce of the ephemeral account may not match
+  // the nonce in localStorage), so we need to validate it before returning it (implementation specific).
+  const ephemeralAccount = accounts[nonce];
+  if (!ephemeralAccount) return null;
+
+  // If the account is valid, return it, otherwise remove it from the device and return null
+  return validateEphemeralAccount(nonce, ephemeralAccount);
+};
+
+/**
+ * Retrieve all ephemeral accounts from localStorage and decode them.
+ */
+export const getLocalEphemeralAccounts = (): StoredEphemeralAccounts => {
+  const rawEphemeralAccounts = localStorage.getItem("ephemeral-accounts");
+  try {
+    return rawEphemeralAccounts
+      ? decodeEphemeralAccounts(rawEphemeralAccounts)
+      : {};
+  } catch (error) {
+    console.warn(
+      "Failed to decode ephemeral accounts from localStorage",
+      error,
+    );
+    return {};
+  }
+};
+
+/**
+ * Validate the ephemeral account with the given nonce and the expiry timestamp. If the nonce does not match
+ * the generated nonce of the ephemeral account, the ephemeral account is removed from localStorage. This is
+ * to validate that the nonce algorithm is the same (e.g. if the nonce algorithm changes).
+ */
+export const validateEphemeralAccount = (
+  nonce: string,
+  ephemeralAccount: EphemeralAccount,
+): EphemeralAccount | null => {
+  // Check the nonce and the expiry timestamp of the account to see if it is valid
+  if (
+    nonce === ephemeralAccount.nonce &&
+    ephemeralAccount.expiryTimestamp > BigInt(Math.floor(Date.now() / 1000))
+  ) {
+    return ephemeralAccount;
+  }
+  removeEphemeralAccount(nonce);
+  return null;
+};
+
+/**
+ * Remove the ephemeral account with the given nonce from localStorage.
+ */
+export const removeEphemeralAccount = (nonce: string): void => {
+  const accounts = getLocalEphemeralAccounts();
+  delete accounts[nonce];
+  localStorage.setItem("ephemeral-accounts", encodeEphemeralAccounts(accounts));
+};
+```
+
+</details>
 
     4. Instantiate the user’s `KeylessAccount`
 
