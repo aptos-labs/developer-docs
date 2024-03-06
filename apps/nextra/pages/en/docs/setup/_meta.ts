@@ -7,4 +7,5 @@ export default {
   'i18n': 'i18n',
   'maintenance': 'Maintenance',
   'deployment': 'Deployment',
+  'troubleshooting': 'Troubleshooting',
 }

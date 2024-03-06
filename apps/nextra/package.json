@@ -11,7 +11,7 @@
     "dev": "next -p 3030",
     "prebuild": "node nextra-remote-filepaths/fetch.js",
     "predev": "pnpm prebuild",
-    "start": "next start",
+    "start": "next start -p 3030",
     "types:check": "tsc --noEmit"
   },
   "dependencies": {
