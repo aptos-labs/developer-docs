@@ -118,12 +118,16 @@ const themeConfig: Preset.ThemeConfig = {
             to: "apis",
           },
           {
-            label: "Integrate with Aptos",
-            to: "integration",
+            label: "Aptos SDKs",
+            to: "/sdks/index",
           },
           {
-            label: "Configure Your Environment",
-            to: "/category/environment",
+            label: "Aptos CLI",
+            to: "/tools/aptos-cli",
+          },
+          {
+            label: "Integrate with Aptos",
+            to: "integration",
           },
           {
             label: "Build E2E Dapp on Aptos",
