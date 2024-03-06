@@ -1,0 +1,99 @@
+---
+title: Troubleshooting
+---
+
+import { FileTree, Callout } from 'nextra/components'
+
+# Troubleshooting
+
+Unfortunately, there are some issues with Nextra. The goal of this document is to provide guidance on how one can fix these issues.
+Below I'll highlight some problems you may encounter and how you may address them.
+
+## Search
+
+<Callout type="info">
+Note: It is recommended that you do NOT use search when running `pnpm dev` for the Nextra docs site.
+Most of the issues related to Nextra search occur when running `pnpm dev` exclusively. 
+You may find that it miraculously works when you deploy your site
+or test it locally via `pnpm build && pnpm start`. See below for why.
+</Callout>
+
+### How Nextra search works
+
+Nextra v3 relies on [FlexSearch](https://github.com/nextapps-de/flexsearch), an in-memory search library, unlike other 
+documentation templates like Docusaurus which rely on Algolia as a hosted search service. 
+
+When a Nextra docs project is compiled, the `NextraSearchPlugin` (a webpack plugin in Nextra) goes through each file,
+collects the relevent frontmatter and data for each page, adds it to a JSON file `nextra-data-<LOCALE>.json`, 
+keyed by locale (e.g., `nextra-data-en.json`), and adds that JSON file to the `.next` build output folder. 
+
+See below for where you can find that file.
+
+<FileTree>
+  <FileTree.Folder name=".next" defaultOpen>
+    <FileTree.Folder name="static" defaultOpen>
+      <FileTree.Folder name="chunks" defaultOpen>
+        <FileTree.Folder name="pages" defaultOpen>
+          <FileTree.File name="nextra-data-en.json" active />
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree.Folder>
+  </FileTree.Folder>
+  <FileTree.Folder name="pages" defaultOpen>
+    <FileTree.File name="_meta.ts" />
+    <FileTree.File name="index.mdx" />
+  </FileTree.Folder>
+</FileTree>
+
+When users then query for a certain keyword, FlexSearch combs through the indexes to surface the relevant content and pages.
+
+### Problems
+
+#### Content does not appear in search results
+
+When running `pnpm dev` and searching for content, you may notice that you can find content for the current page 
+(or descendents of the current page), but not for other pages.
+
+Unfortunately, Nextra often does not compile indexes correctly when using `pnpm dev`. When running `pnpm dev`, the
+`/_next/static/chunks/nextra-data-en.json` only contains the relevant material for the current page.
+
+#### Error: Rendered more hooks than during the previous render.
+
+This may occur when running `pnpm dev` and selecting the search field.
+
+If you inspect element, this error is typically accompanied with a 
+`404 (Not Found)` for `/_next/static/chunks/nextra-data-en.json`.
+The reason for this error is similar to the `Content does not appear in Search results` 
+error mentioned above. 
+
+When running `pnpm dev`, Nextra's `NextraSearchPlugin` goes to the current page 
+(often `index.mdx` if you're on `localhost:3030/en`) and reads the frontmatter on `index.mdx`. 
+
+You'll notice that there's a `searchable: false` located at the top of the index file, like so:
+
+```mdx
+---
+searchable: false
+---
+```
+
+This causes the `NextraSearchPlugin` to skip the creation of the `nextra-data-en.json`, thus causing the `404 (Not found)`.
+
+#### Caching
+
+When searching, you may sometimes notice that the search results are not up to date or missing recently added changes. 
+This is often because the `nextra-data-en.json` file has been cached and not updated to the latest.
+
+##### Solution
+
+To address this issue, inspect element on the page, and navigate to the `Network` tab. 
+Then click on the `Disable Cache` checkbox right below the `Network` tab
+and refresh the page. 
+
+Alternatively open a new `Incognito` window and navigate to the page. 
+
+### Solutions
+
+Most of the problems mentioned above can be fixed by running `pnpm build && pnpm start`. From this command, the indexes should be compiled for all pages.
+
+In some instances, you may want to also disable caching and force refresh the page (for more info see the `caching` section).
