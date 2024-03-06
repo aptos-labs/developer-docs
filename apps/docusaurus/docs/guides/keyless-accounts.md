@@ -43,7 +43,6 @@ _Note: This guide is oriented toward non-wallet applications. If you are a walle
 - **Ephemeral Key Pair:** a temporary public/private key pair that is used to sign transactions for an Aptos Keyless account. The public key and its expiration date are committed in the JWT token via the `nonce` field.
 - **Keyless Account:** a blockchain account that is directly-derived from (1) a user’s OIDC account (e.g., `alice@gmail.com`) and (2) an associated application’s OAuth client_id (e.g., Notion.so). Users authenticate through the OIDC flow.
 - **JSON Web Key (JWK):** is the cryptographic public key of the OIDC provider. This public key is used to verify the signature on the JWTs that the OIDC provider issues to the client application. This way, the client application can verify the authenticity of the tokens and ensure that they have not been tampered with.
-- **Pepper:** a secret value added to a key before hashing to preserve privacy.
 - **client_id:** the OAuth identifier for your application that you will receive from the IdP after registering your application with them. This will be used in our keyless architecture in the address derivation for your users.
 - **redirect_uri:** the URI of the callback handler once the user successfully authenticates. Needs to be registered with your IdP.
 
@@ -72,7 +71,7 @@ Currently only Google is supported. We will support additional OIDC providers in
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Google            | https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=id_token&scope=openid%20email&nonce=${NONCE} |
 
-The impilicit flow (no authorization code exchange) is the preferred method of authentication.  The integration steps assumes use of implicit flow.
+The implicit flow (no authorization code exchange) is the preferred method of authentication.  The integration steps assume use of implicit flow.
 
 ### Google
 
@@ -384,3 +383,5 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
         ```tsx
         const committedTransactionResponse = await aptos.waitForTransaction({ transactionHash: committedTxn.hash });
         ```
+
+For more details on the design of keyless accounts see [`AIP-61`](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md)
