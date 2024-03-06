@@ -49,7 +49,7 @@ _Note: This guide is oriented toward non-wallet applications. If you are a walle
 # Keyless Account Integration Steps
 
 :::info Only devnet is supported
-Currently Aptos Keyless is only supported in devnet.  Testnet and mainnet support to come in the following weeks.
+Currently Aptos Keyless is only supported in devnet. Testnet and mainnet support to come in the following weeks.
 :::
 
 At a high level, there are three steps to follow in order to integrate Keyless Accounts.
@@ -71,7 +71,7 @@ Currently only Google is supported. We will support additional OIDC providers in
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Google            | https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=id_token&scope=openid%20email&nonce=${NONCE} |
 
-The implicit flow (no authorization code exchange) is the preferred method of authentication.  The integration steps assume use of implicit flow.
+The implicit flow (no authorization code exchange) is the preferred method of authentication. The integration steps assume use of implicit flow.
 
 ### Google
 
