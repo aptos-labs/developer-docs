@@ -409,7 +409,7 @@ const sidebars: SidebarsConfig = {
                 "sdks/ts-sdk/transaction-builder",
                 "sdks/ts-sdk/http-client",
                 "sdks/ts-sdk/move-types",
-                "sdks/ts-sdk/tests",
+                "sdks/ts-sdk/testing",
                 "sdks/ts-sdk/typescript",
               ],
             },
