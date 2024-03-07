@@ -5,7 +5,7 @@ export default defineConfig({
   format: ['esm'],
   splitting: false,
   sourcemap: true,
-  clean: true,
+  clean: false,
   dts: true,
   outExtension({ format }) {
     return {
