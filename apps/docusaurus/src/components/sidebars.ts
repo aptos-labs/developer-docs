@@ -27,10 +27,7 @@ const sidebars: SidebarsConfig = {
       collapsible: true,
       collapsed: true,
       link: { type: "doc", id: "aptos-white-paper/index" },
-      items: [
-        "aptos-white-paper/in-korean",
-        "aptos-white-paper/in-japanese",
-      ],
+      items: ["aptos-white-paper/in-korean", "aptos-white-paper/in-japanese"],
     },
     {
       type: "category",
