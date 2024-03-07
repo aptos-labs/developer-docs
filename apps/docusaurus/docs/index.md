@@ -13,6 +13,10 @@ hide_table_of_contents: true
 Create your own decentralized app with the recently launched Aptos Learn [website](https://learn.aptoslabs.com/)!
 :::
 
+:::info Developer Discussions
+Ask your tech questions and hang out with the Aptos developer community in the new Developer Discussions [website](https://github.com/aptos-labs/aptos-developer-discussions/discussions)!
+:::
+
 Welcome! Aptos is a Layer 1 for everyone. In the [Ohlone language](https://en.wikipedia.org/wiki/Ohlone_languages), ["Aptos"](https://en.wikipedia.org/wiki/Aptos,_California) means "The People."
 
 Our documentation is designed to assist you in developing a [web3 ecosystem project](https://aptosfoundation.org/ecosystem/projects/all) that contributes positively to the global community. We focus on facilitating easier development, ensuring more reliable services, enabling faster transactions, and fostering a supportive, decentralized community.
