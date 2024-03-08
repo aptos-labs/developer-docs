@@ -9,10 +9,6 @@ hide_table_of_contents: true
 
 # Aptos Developer Documentation
 
-:::info Aptos Learn
-Create your own decentralized app with the recently launched Aptos Learn [website](https://learn.aptoslabs.com/)!
-:::
-
 :::info Developer Discussions
 Ask your tech questions and hang out with the Aptos developer community in the new Developer Discussions [website](https://github.com/aptos-labs/aptos-developer-discussions/discussions)!
 :::
