@@ -25,7 +25,7 @@ This documentation will help you develop applications for the Aptos blockchain, 
 
 See the newest Aptos releases in the [Latest Releases](./releases/index.md) list and its subpages.
 
-## Set up your environment and start with the tutorials
+## Start with the tutorials and guides
 
 <div class="docs-card-container">
   <div class="row row-cols-1 row-cols-md-3a g-4">
@@ -36,100 +36,87 @@ See the newest Aptos releases in the [Latest Releases](./releases/index.md) list
       </div>
     </div>
     <div class="col">
-      <div class="card card-body h-100 d-flex flex-column" >
-        <a href="/sdks/index" class="card-title card-link stretched-link"> <h2>SDKs</h2></a>
-        <p class="card-text">Setup SDKs to read data and submit transactions to the blockchain.</p>
-      </div>
-    </div>
-    <div class="col">
-      <div class="card card-body h-100 d-flex flex-column" >
-        <a href="/tools/aptos-cli/index" class="card-title card-link stretched-link"> <h2>Aptos CLI</h2></a>
-        <p class="card-text">Setup the Aptos CLI to compile and publish smart contracts.</p>
+      <div class="card card-body h-100 d-flex flex-column">
+        <a href="move/move-on-aptos" class="card-title card-link stretched-link"> <h2>Learn Move</h2></a>
+        <p class="card-text">Learn about the Move programming language that helps make the Aptos blockchain safe and reliable.</p>
       </div>
     </div>
   </div>
-</div>
-
-## Learn Aptos concepts and follow the guides
-
-<div class="docs-card-container">
-<div class="row row-cols-1 row-cols-md-2a g-4">
-  <div class="col">
-    <div class="card card-body h-100 d-flex flex-column">
-    <a href="concepts" class="card-title card-link stretched-link"> <h2>Concepts</h2></a>
-    <p class="card-text">Learn the key concepts of the Aptos blockchain, including transactions, accounts, gas and transaction fees, nodes, and more. </p>
-    </div>
-  </div>
-  <div class="col">
-    <div class="card card-body h-100 d-flex flex-column">
-    <a href="move/move-on-aptos" class="card-title card-link stretched-link"> <h2>Move on Aptos</h2></a>
-    <p class="card-text">Learn how the Move programming language helps make the Aptos blockchain safe and reliable.</p>
-    </div>
-  </div>
-  <div class="col">
-    <div class="card card-body h-100 d-flex flex-column" >
-    <a href="integration" class="card-title card-link stretched-link"> <h2>How it works</h2></a>
-    <p class="card-text">How to build applications on Aptos.</p>
-    </div>
-  </div>
-</div>
-</div>
-
-## Run an Aptos node
-
-<div class="docs-card-container">
-<div class="row row-cols-1 row-cols-md-2a g-4">
-  <div class="col">
-    <div class="card card-body h-100 d-flex flex-column" >
-    <a href="/nodes/validator-node/validators" class="card-title card-link stretched-link"> <h2>Run a validator node</h2></a>
-    <p class="card-text">Install and run a validator or a fullnode.</p>
-</div>
-</div>
-  <div class="col">
-    <div class="card card-body h-100 d-flex flex-column"  >
-    <a href="/nodes/local-testnet/local-testnet-index" class="card-title card-link stretched-link"> <h2>Run a local testnet</h2></a>
-    <p class="card-text">Run a validator node on your local testnet.</p>
-</div>
-  </div>
-  <div class="col">
-    <div class="card card-body h-100 d-flex flex-column"  >
-    <a href="nodes/full-node/public-fullnode" class="card-title card-link stretched-link"> <h2>Run a public fullnode</h2></a>
-    <p class="card-text">Run a public fullnode and connect to devnet.</p>
-</div>
-  </div>
-  
-</div>
 </div>
 
 ## Develop apps with the SDKs and APIs
 
 <div class="docs-card-container">
-<div class="row row-cols-1 row-cols-md-2a g-4">
-<div class="col">
-    <div class="card h-100" >
-    <div class="card-body d-flex flex-column" >
-    <a href="/tools/aptos-cli/use-cli/use-aptos-cli" class="card-title card-link stretched-link"> <h2>CLI</h2></a>
-    <p class="card-text">CLI for developing and deploying on the Aptos blockchain.</p>
+  <div class="row row-cols-1 row-cols-md-2a g-4">
+    <div class="col">
+      <div class="card h-100" >
+        <div class="card-body d-flex flex-column" >
+          <a href="/tools/aptos-cli/use-cli/use-aptos-cli" class="card-title card-link stretched-link"> <h2>CLI</h2></a>
+          <p class="card-text">CLI for developing and deploying on the Aptos blockchain.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100" >
+        <div class="card-body d-flex flex-column" >
+          <a href="/sdks/index" class="card-title card-link stretched-link"> <h2>SDKs</h2></a>
+          <p class="card-text">SDKs for building on the Aptos blockchain.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100" >
+        <div class="card-body d-flex flex-column"  >
+          <a href="https://aptos.dev/nodes/aptos-api-spec/#/" class="card-title card-link stretched-link"> <h2>REST API</h2></a>
+          <p class="card-text">Reference for the REST API to interact with the Aptos blockchain.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+## Learn Aptos concepts
+
+<div class="docs-card-container">
+  <div class="row row-cols-1 row-cols-md-3a g-4">
+    <div class="col">
+      <div class="card card-body h-100 d-flex flex-column">
+        <a href="concepts" class="card-title card-link stretched-link"> <h2>Concepts</h2></a>
+        <p class="card-text">Learn the key concepts of the Aptos blockchain, including transactions, accounts, gas and transaction fees, nodes, and more. </p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card card-body h-100 d-flex flex-column" >
+        <a href="aptos-white-paper" class="card-title card-link stretched-link"> <h2>Read the Aptos White Paper</h2></a>
+        <p class="card-text">Read vision of Aptos in the White Paper.</p>
+      </div>
+    </div>
+  </div>
 </div>
-</div>
-  <div class="col">
-    <div class="card h-100" >
-    <div class="card-body d-flex flex-column" >
-    <a href="/sdks/index" class="card-title card-link stretched-link"> <h2>SDKs</h2></a>
-    <p class="card-text">SDKs for building on the Aptos blockchain.</p>
-</div>
-</div>
-</div>
-  <div class="col">
-  <div class="card h-100" >
-    <div class="card-body d-flex flex-column"  >
-    <a href="https://aptos.dev/nodes/aptos-api-spec/#/" class="card-title card-link stretched-link"> <h2>REST API</h2></a>
-    <p class="card-text">Reference for the REST API to interact with the Aptos blockchain.</p>
-</div>
-</div>
-</div>
-</div>
+
+## Run an Aptos node
+
+<div class="docs-card-container">
+  <div class="row row-cols-1 row-cols-md-2a g-4">
+    <div class="col">
+      <div class="card card-body h-100 d-flex flex-column" >
+        <a href="/nodes/validator-node/validators" class="card-title card-link stretched-link"> <h2>Run a validator node</h2></a>
+        <p class="card-text">Install and run a validator or a fullnode.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card card-body h-100 d-flex flex-column"  >
+        <a href="/nodes/local-testnet/local-testnet-index" class="card-title card-link stretched-link"> <h2>Run a local testnet</h2></a>
+        <p class="card-text">Run a validator node on your local testnet.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card card-body h-100 d-flex flex-column"  >
+        <a href="nodes/full-node/public-fullnode" class="card-title card-link stretched-link"> <h2>Run a public fullnode</h2></a>
+        <p class="card-text">Run a public fullnode and connect to devnet.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 ## Connect to an Aptos network
@@ -138,8 +125,6 @@ Aptos offers the ability to run a local testnet, as well as provides a shared de
 
 :::tip Aptos Devnet Resets
 The Aptos devnet is reset every Thursday. See the latest updates in the [Aptos Discord](https://discord.gg/aptosnetwork).
-:::info
-
 :::
 
 ## Engage with the community
