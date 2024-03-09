@@ -241,7 +241,7 @@ aptos stake request-commission \
   --profile mainnet-operator
 ```
 
-When you run the `aptos stake request-commission` command before the end of the lockup expiration, the command will initiate unlock for any locked commission earned up until that moment in time. The commission will remain in `pending_inactive` until the end of the lockup period, will continue to earn rewards until the lockup period expires. The commission will not be withdrawable until after the end of the lockup period, when `aptos stake request-commission` is called a second time. 
+When you run the `aptos stake request-commission` command before the end of the lockup expiration, the command will initiate unlock for any locked commission earned up until that moment in time. The commission will remain in `pending_inactive` until the end of the lockup period, will continue to earn rewards until the lockup period expires. The commission will not be withdrawable until after the end of the lockup period, when `aptos stake request-commission` is called a second time.
 
 See example below:
 
@@ -253,7 +253,7 @@ Month 3, Day 29, if you call the commission again, 30 days of commission would b
 
 You can call the command multiple times, and the amount you receive depends on the day when you requested commission unlock previously.
 
-Commission is unlocked when `request-commission` is called, the staker unlocks stake, or the staker switches operator. 
+Commission is unlocked when `request-commission` is called, the staker unlocks stake, or the staker switches operator.
 
 ## Checking your validator performance
 
