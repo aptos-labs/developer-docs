@@ -76,7 +76,7 @@ git clone https://github.com/aptos-labs/aptos-core
 Navigate to the Python SDK directory:
 
 ```bash
-cd ~/aptos-core/ecosystem/python/sdk
+cd aptos-core/ecosystem/python/sdk
 ```
 
 Install the necessary dependencies:
