@@ -25,23 +25,25 @@ Install your preferred SDK from the below list:
 <Tabs groupId="sdk-examples">
   <TabItem value="typescript" label="Typescript">
 
-Clone the `@aptos-labs/ts-sdk` repo:
+Clone the `aptos-ts-sdk` repo and build it:
 
 ```bash
 git clone https://github.com/aptos-labs/aptos-ts-sdk.git
+cd aptos-ts-sdk
+pnpm install
+pnpm build
 ```
 
-Navigate to the Typescript SDK examples directory:
+Navigate to the Typescript examples directory:
 
 ```bash
-cd aptos-ts-sdk/examples/typescript
+cd examples/typescript
 ```
 
 Install the necessary dependencies:
 
 ```bash
 pnpm install
-pnpm build
 ```
 
 Run the [`transfer_coin`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/transfer_coin.ts) example:

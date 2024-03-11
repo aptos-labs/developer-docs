@@ -31,16 +31,19 @@ Install your preferred SDK from the below list:
 <Tabs groupId="examples">
   <TabItem value="typescript" label="Typescript">
 
-Clone the `aptos-ts-sdk` repo:
+Clone the `aptos-ts-sdk` repo and build it:
 
 ```bash
 git clone https://github.com/aptos-labs/aptos-ts-sdk.git
+cd aptos-ts-sdk
+pnpm install
+pnpm build
 ```
 
-Navigate to the TypeScript SDK directory:
+Navigate to the Typescript examples directory:
 
 ```bash
-cd ~/examples/typescript/
+cd examples/typescript/
 ```
 
 Install the necessary dependencies:

@@ -26,21 +26,16 @@ Install your preferred SDK from the below list:
 <Tabs groupId="sdk-examples">
   <TabItem value="typescript" label="Typescript">
 
-Clone the `aptos-ts-sdk` repo:
+Clone the `aptos-ts-sdk` repo and build it:
 
 ```bash
-git clone git@github.com:aptos-labs/aptos-ts-sdk.git
-```
-
-Navigate to the Typescript repo and buiid it:
-
-```bash
-cd aptos-ts-sdk/
+git clone https://github.com/aptos-labs/aptos-ts-sdk.git
+cd aptos-ts-sdk
 pnpm install
 pnpm build
 ```
 
-Navigate to the Typescript SDK examples directory:
+Navigate to the Typescript ESM examples directory:
 
 ```bash
 cd examples/typescript-esm
