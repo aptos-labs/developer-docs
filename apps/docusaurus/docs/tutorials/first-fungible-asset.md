@@ -43,7 +43,7 @@ git clone https://github.com/aptos-labs/aptos-ts-sdk.git
 Navigate to the TypeScript SDK directory:
 
 ```bash
-cd ~/aptos-ts-sdk/examples/typescript
+cd aptos-ts-sdk/examples/typescript
 ```
 
 Install the necessary dependencies:
