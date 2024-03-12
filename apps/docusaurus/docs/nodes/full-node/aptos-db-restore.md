@@ -23,7 +23,7 @@ data in remote storage, such as Amazon S3 or Google Cloud Storage. The links to 
 
 |         | AWS Backup Data                                                                       | Google Cloud Backup Data                                                        |
 | ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Testnet | Discontinued | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/gcs.yaml |
+| Testnet | Discontinued                                                                          | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/gcs.yaml |
 | Mainnet | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/s3-public.yaml | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/gcs.yaml |
 
 :::tip
