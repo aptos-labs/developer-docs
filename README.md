@@ -2,7 +2,7 @@
 
 - [Installation](#installation)
   - [Requirements](#requirements)
-- [Fork and clone the Aptos repo](#fork-and-clone-the-aptos-repo)
+- [Clone the Developer docs repo](#clone-the-developer-docs-repo)
 - [Build and serve the docs locally](#build-and-serve-the-docs-locally)
 - [Build static html files](#build-static-html-files)
 - [Debug/Format files](#debugging)
