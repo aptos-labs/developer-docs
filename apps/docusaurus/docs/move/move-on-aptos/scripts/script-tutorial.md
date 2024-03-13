@@ -65,7 +65,7 @@ Let us run through how to execute a Move script with a step-by-step example usin
        private_key: "0xbd944102bf5b5dfafa7fe865d8fa719da6a1f0eafa3cd600f93385482d2c37a4"
        public_key: "0x47673ec83bb254cc9a8bfdb31846daacd0c96fe41f81855462f5fc5306312b1b"
        account: cb265645385819f3dbe71aac266e319e7f77aed252cacf2930b68102828bf615
-       rest_url: "https://fullnode.devnet.aptoslabs.com"
+       rest_url: "https://api.devnet.aptoslabs.com"
        faucet_url: "https://faucet.devnet.aptoslabs.com"
    ```
 

@@ -3,7 +3,7 @@ title: "IndexerClient Class"
 slug: "typescript-sdk-indexer-client-class"
 ---
 
-The [IndexerClient](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/providers/indexer.ts) is responsible for handling the communication between the client-side application and the blockchain network. It uses the [Hasura framework](https://hasura.io/) to generate a set of [GraphQL queries](https://cloud.hasura.io/public/graphiql?endpoint=https://indexer.mainnet.aptoslabs.com/v1/graphql) that can be used to retrieve data from the blockchain. The queries are optimized for performance and can retrieve data in real-time.
+The [IndexerClient](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/providers/indexer.ts) is responsible for handling the communication between the client-side application and the blockchain network. It uses the [Hasura framework](https://hasura.io/) to generate a set of [GraphQL queries](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) that can be used to retrieve data from the blockchain. The queries are optimized for performance and can retrieve data in real-time.
 
 ## Usage
 
@@ -21,7 +21,7 @@ To initialize the `IndexerClient` class, you will need to pass in the necessary 
 import { IndexerClient } from "aptos";
 
 const client = new IndexerClient(
-  "https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql",
+  "https://api.testnet.aptoslabs.com/v1/graphql",
 );
 ```
 
@@ -71,7 +71,7 @@ Be aware that it queries the network endpoint you passed in when initializing th
 
 ## Generate queries
 
-To generate an Indexer query that can be used within the SDK, we can write a GraphQL query (based on the [Indexer schema](https://cloud.hasura.io/public/graphiql?endpoint=https://indexer.mainnet.aptoslabs.com/v1/graphql)) and use the SDK to generate a TypeScript query.
+To generate an Indexer query that can be used within the SDK, we can write a GraphQL query (based on the [Indexer schema](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql)) and use the SDK to generate a TypeScript query.
 
 ### Write an Indexer query
 
