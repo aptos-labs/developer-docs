@@ -48,6 +48,7 @@ export default withBundleAnalyzer(
         permanent: true
       }
     ],
-    reactStrictMode: true
+    reactStrictMode: true,
+    transpilePackages: ['@aptos-labs/aptos-nextra-config']
   })
 )
