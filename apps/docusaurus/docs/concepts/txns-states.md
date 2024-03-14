@@ -60,7 +60,7 @@ A signed transaction on the blockchain contains the following information:
 Within a given transaction, the two most common types of payloads include:
 
 - An entry point
-- [A script (payload)](../move/move-on-aptos/move-scripts)
+- [A script (payload)](../move/move-on-aptos/scripts/index.md)
 
 Currently, the SDKs [Python](/sdks/python-sdk.md) and [Typescript](/sdks/ts-sdk/index.md) support both. This guide points out many of those entry points, such as `coin::transfer` and `aptos_account::create_account`.
 
