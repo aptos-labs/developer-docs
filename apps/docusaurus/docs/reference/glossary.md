@@ -451,7 +451,7 @@ See [`table.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move
 - A single transaction script can send funds to multiple recipients and invoke procedures from several different modules.
 - A transaction script **is not** stored in the global state and cannot be invoked by other transaction scripts. It is a single-use program.
 
-To see example uses of transaction scripts, follow [Move scripts](../move/move-on-aptos/move-scripts.md) and the [Your First Multisig](../tutorials/first-multisig.md) tutorial.
+To see example uses of transaction scripts, follow [Move scripts](../move/move-on-aptos/scripts/script-tutorial.md) and the [Your First Multisig](../tutorials/first-multisig.md) tutorial.
 
 ## V
 
