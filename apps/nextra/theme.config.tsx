@@ -86,7 +86,7 @@ const config: DocsThemeConfig = {
     const { frontMatter } = config;
     const { locale } = useRouter();
 
-    if (!docsConfig.origin) throw new Error('Origin is not defined in docs.config.js. Ensure it is part of your .env file for your project')
+    if (!docsConfig.origin) throw new Error('Origin is not defined in docs.config.js. Ensure it is part of your .env file for your project by adding something like `NEXT_PUBLIC_ORIGIN="http://localhost:3030"`')
     
     const description = frontMatter.description || docsConfig.defaultDescription
 
