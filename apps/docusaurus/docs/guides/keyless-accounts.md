@@ -144,14 +144,14 @@ export const storeEphemeralKeyPair = (
 
   // Store the new ephemeral key pair in localStorage
   accounts[ephemeralKeyPair.nonce] = ephemeralKeyPair;
-  localStorage.setItem("ephemeral-accounts", encodeEphemeralKeyPairs(accounts));
+  localStorage.setItem("ephemeral-key-pairs", encodeEphemeralKeyPairs(accounts));
 };
 
 /**
  * Retrieve all ephemeral key pairs from localStorage and decode them.
  */
 export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
-  const rawEphemeralKeyPairs = localStorage.getItem("ephemeral-accounts");
+  const rawEphemeralKeyPairs = localStorage.getItem("ephemeral-key-pairs");
   try {
     return rawEphemeralKeyPairs
       ? decodeEphemeralKeyPairs(rawEphemeralKeyPairs)
