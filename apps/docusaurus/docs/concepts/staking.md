@@ -17,7 +17,7 @@ Anyone can participate in the Aptos consensus process, if they stake sufficient 
 Currently, slashing is not implemented.
 :::
 
-The current on-chain data can be found in [`staking_config::StakingConfig`](https://mainnet.aptoslabs.com/v1/accounts/0x1/resource/0x1::staking_config::StakingConfig). The configuration set is defined in [`staking_config.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/configs/staking_config.move).
+The current on-chain data can be found in [`staking_config::StakingConfig`](https://api.mainnet.aptoslabs.com/v1/accounts/0x1/resource/0x1::staking_config::StakingConfig). The configuration set is defined in [`staking_config.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/configs/staking_config.move).
 
 The rest of this document presents how staking works on the Aptos blockchain. See [Supporting documentation](#supporting-documentation) at the bottom for related resources.
 
@@ -288,7 +288,7 @@ When you leave a validator set, you can rejoin by depositing the minimum require
 
 ## Supporting documentation
 
-- [Current on-chain data](https://mainnet.aptoslabs.com/v1/accounts/0x1/resource/0x1::staking_config::StakingConfig)
+- [Current on-chain data](https://api.mainnet.aptoslabs.com/v1/accounts/0x1/resource/0x1::staking_config::StakingConfig)
 - [Staking Pool Operations](../nodes/validator-node/operator/staking-pool-operations.md)
 - [Delegation Pool Operations](../nodes/validator-node/operator/delegation-pool-operations.md)
 - [Configuration file `staking_config.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/configs/staking_config.move)

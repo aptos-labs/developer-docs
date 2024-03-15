@@ -82,9 +82,9 @@ Note: If you would like to initialize a new profile from ledger, please refer to
 ```bash
 $ aptos init
 Configuring for profile default
-Enter your rest endpoint [Current: None | No input: https://fullnode.devnet.aptoslabs.com]
+Enter your rest endpoint [Current: None | No input: https://api.devnet.aptoslabs.com]
 
-No rest url given, using https://fullnode.devnet.aptoslabs.com...
+No rest url given, using https://api.devnet.aptoslabs.com...
 Enter your faucet endpoint [Current: None | No input: https://faucet.devnet.aptoslabs.com]
 
 No faucet url given, using https://faucet.devnet.aptoslabs.com...
@@ -110,9 +110,9 @@ You can also create other profiles for different endpoints and different keys. T
 ```bash
 $ aptos init --profile superuser
 Configuring for profile superuser
-Enter your rest endpoint [Current: None | No input: https://fullnode.devnet.aptoslabs.com]
+Enter your rest endpoint [Current: None | No input: https://api.devnet.aptoslabs.com]
 
-No rest url given, using https://fullnode.devnet.aptoslabs.com...
+No rest url given, using https://api.devnet.aptoslabs.com...
 Enter your faucet endpoint [Current: None | No input: https://faucet.devnet.aptoslabs.com]
 
 No faucet url given, using https://faucet.devnet.aptoslabs.com...

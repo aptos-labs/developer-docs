@@ -27,7 +27,7 @@ To participate as a voter in the Aptos governance, follow these steps:
 ### Using the Aptos CLI
 
 1. Get your stake pool info using: `aptos node get-stake-pool --owner-address <owner-address> --url <REST API for the network>`.
-2. To see the list of proposals, execute: `aptos governance list-proposals --url https://mainnet.aptoslabs.com`.
+2. To see the list of proposals, execute: `aptos governance list-proposals --url https://api.mainnet.aptoslabs.com`.
 3. To set up your voter profile, run: `aptos init`.
 4. To vote on a proposal, execute: `aptos governance vote --proposal-id <PROPOSAL_ID> --pool-address <POOL_ADDRESS> --url <URL> --profile <profile>`.
 
@@ -38,7 +38,7 @@ If you staked to a [delegation pool](../../../concepts/delegated-staking.md), yo
 To participate as a voter, follow the steps below:
 
 1. Get your delegation pool address from the [Aptos Explorer page](https://explorer.aptoslabs.com/validators/delegation?network=mainnet).
-2. To see the list of proposals, execute: `aptos governance list-proposals --url https://mainnet.aptoslabs.com`.
+2. To see the list of proposals, execute: `aptos governance list-proposals --url https://api.mainnet.aptoslabs.com`.
 3. To set up your voter profile, run: `aptos init`.
 4. To vote on a proposal, execute: `aptos move run --function-id 0x1::delegation_pool::vote --args address:<pool-address> u64:<proposal-id> u64:<voting-power> bool:<true or false>`.
 

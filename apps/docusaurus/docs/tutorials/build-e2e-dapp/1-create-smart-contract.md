@@ -40,7 +40,7 @@ An account is needed to publish a Move module. So first we need to create an acc
        private_key: "0xee8f387ef0b4bb0018c4b91d1c0f71776a9b85935b4c6ec2823d6c0022fbf5cb"
        public_key: "0xc6c07218d79a806380ca67761905063ec7a78d41f79619f4562462a0f8b6be11"
        account: cbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018
-       rest_url: "https://fullnode.devnet.aptoslabs.com"
+       rest_url: "https://api.devnet.aptoslabs.com"
        faucet_url: "https://faucet.devnet.aptoslabs.com"
    ```
 

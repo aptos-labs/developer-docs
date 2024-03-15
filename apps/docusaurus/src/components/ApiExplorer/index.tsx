@@ -19,7 +19,7 @@ const ApiExplorer = ({ network, layout }: ApiExplorerProps) => {
       const json = await data.json();
       // Change the `servers` field in the spec file to point to the public
       // API fullnode for that network.
-      json.servers = [{ url: `https://fullnode.${network}.aptoslabs.com/v1` }];
+      json.servers = [{ url: `https://api.${network}.aptoslabs.com/v1` }];
 
       // This removes the `application/x-bcs` content type from the spec file, so it
       // properly shows the JSON response in the API explorer.  Note that, this means it doesn't show in the spec for,
