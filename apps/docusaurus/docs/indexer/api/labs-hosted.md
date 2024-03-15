@@ -10,17 +10,17 @@ import BetaNotice from '../../../src/components/\_indexer_beta_notice.mdx';
 
 When making GraphQL queries to the Labs-Hosted Indexer API, use the following endpoints:
 
-- **Mainnet:** https://indexer.mainnet.aptoslabs.com/v1/graphql
-- **Testnet:** https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql
-- **Devnet:** https://indexer-devnet.staging.gcp.aptosdev.com/v1/graphql
+- **Mainnet:** https://api.mainnet.aptoslabs.com/v1/graphql
+- **Testnet:** https://api.testnet.aptoslabs.com/v1/graphql
+- **Devnet:** https://api.devnet.aptoslabs.com/v1/graphql
 
 ## Hasura Explorer
 
 The following URLs are for the Hasura Explorer for the Labs-Hosted Indexer API:
 
-- **Mainnet:** https://cloud.hasura.io/public/graphiql?endpoint=https://indexer.mainnet.aptoslabs.com/v1/graphql
-- **Testnet:** https://cloud.hasura.io/public/graphiql?endpoint=https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql
-- **Devnet:** https://cloud.hasura.io/public/graphiql?endpoint=https://indexer-devnet.staging.gcp.aptosdev.com/v1/graphql
+- **Mainnet:** https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql
+- **Testnet:** https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql
+- **Devnet:** https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql
 
 ## Rate limits
 
