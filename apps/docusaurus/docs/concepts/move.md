@@ -42,7 +42,7 @@ The Aptos Move adapter features include:
 
 The Aptos framework ships with many useful libraries:
 
-- An [Aptos Token Objects](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-token-objects/sources) standard as defined in [AIP-11](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-1.md) and [AIP-22](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-22.md) that makes it possible to create interoperable NFTs with either lightweight smart contract development or none at all.
+- An [Aptos Token Objects](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-token-objects/sources) standard as defined in [AIP-11](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-11.md) and [AIP-22](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-22.md) that makes it possible to create interoperable NFTs with either lightweight smart contract development or none at all.
 - A [Coin standard](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) that makes it possible to create type-safe Coins by publishing a trivial module.
 - A [Fungible asset standard](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) as defined in [AIP-21](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-21.md) to modernize the coin concept with better programmability and controls.
 - A [staking](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/staking_contract.move) and [delegation](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/delegation_pool.move) framework.
