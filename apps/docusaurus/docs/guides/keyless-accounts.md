@@ -173,13 +173,13 @@ const EphemeralKeyPairEncoding = {
   decode: (e: any) =>
     new EphemeralKeyPair({
       blinder: new Uint8Array(e.blinder),
-      expiryTimestamp: BigInt(e.expiryTimestamp),
+      expiryDateSecs: BigInt(e.expiryDateSecs),
       privateKey: new Ed25519PrivateKey(e.privateKey),
     }),
   encode: (e: EphemeralKeyPair) => ({
     __type: "EphemeralKeyPair",
     blinder: Array.from(e.blinder),
-    expiryTimestamp: e.expiryTimestamp.toString(),
+    expiryDateSecs: e.expiryDateSecs.toString(),
     privateKey: e.privateKey.toString(),
   }),
 };
@@ -322,7 +322,7 @@ export const validateEphemeralKeyPair = (
   // Check the nonce and the expiry timestamp of the account to see if it is valid
   if (
     nonce === ephemeralKeyPair.nonce &&
-    ephemeralKeyPair.expiryTimestamp > BigInt(Math.floor(Date.now() / 1000))
+    ephemeralKeyPair.expiryDateSecs > BigInt(Math.floor(Date.now() / 1000))
   ) {
     return ephemeralKeyPair;
   }
