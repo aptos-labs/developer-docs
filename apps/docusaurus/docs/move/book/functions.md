@@ -128,7 +128,7 @@ For example:
 ```move
 address 0x42 {
 module m {
-    public entry fun foo(): u64 { 0 }
+    public entry fun foo(): {  }
     fun calls_foo(): u64 { foo() } // valid!
 }
 
