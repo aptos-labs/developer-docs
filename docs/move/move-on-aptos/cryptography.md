@@ -149,7 +149,7 @@ The [`aptos_std::crypto_algebra`](https://github.com/aptos-labs/aptos-core/blob/
 As a consequence, Move developers can implement a cryptosystem generically over **any** curve that is or will be supported in the future.
 Compared to fixing a particular curve in the code (e.g., by implementing against the [Ristretto255 module](#ristretto255-arithmetic)), this approach provides more flexibility and lowers development time when migrating to a different curve.
 
-Although currently the `crypto_algebra` module only supports arithmetic over BLS12-381 curves (via the marker types declared in [`aptos_std::bls12381_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381_algebra.move)), more curves will be supported into the future (e.g., BN254, Ristretto255, BLS12-377, BW6-761, secp256k1, secp256r1).
+Currently, the `crypto_algebra` module only supports arithmetic over the BLS12-381 and BN254 curves, but more curves will be supported into the future (e.g., Ristretto255, BLS12-377, BW6-761, secp256k1, secp256r1).
 
 As an example, a Move developer can implement the popular Boneh-Lynn-Shacham (BLS) signature scheme generically over **any** curve by using [type arguments](../../../move/book/functions#type-parameters) for the curve type in their implementation:
 
