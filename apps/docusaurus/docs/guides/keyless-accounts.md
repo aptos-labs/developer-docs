@@ -144,7 +144,10 @@ export const storeEphemeralKeyPair = (
 
   // Store the new ephemeral key pair in localStorage
   accounts[ephemeralKeyPair.nonce] = ephemeralKeyPair;
-  localStorage.setItem("ephemeral-key-pairs", encodeEphemeralKeyPairs(accounts));
+  localStorage.setItem(
+    "ephemeral-key-pairs",
+    encodeEphemeralKeyPairs(accounts),
+  );
 };
 
 /**
