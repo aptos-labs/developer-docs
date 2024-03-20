@@ -31,9 +31,9 @@ In order to get started you'll need to select a network and pick your set of too
 There are four well-supported networks for integrating with the Aptos blockchain:
 
 1. [Local testnet](http://127.0.0.1:8080) -- our standalone tool for local development against a known version of the codebase with no external network.
-2. [Devnet](https://fullnode.devnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data resets weekly, weekly update from aptos-core main branch.
-3. [Testnet](https://fullnode.testnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data will be preserved, network configuration will mimic Mainnet.
-4. [Mainnet](https://fullnode.mainnet.aptoslabs.com/v1/spec#/) -- a production network with real assets.
+2. [Devnet](https://api.devnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data resets weekly, weekly update from aptos-core main branch.
+3. [Testnet](https://api.testnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data will be preserved, network configuration will mimic Mainnet.
+4. [Mainnet](https://api.mainnet.aptoslabs.com/v1/spec#/) -- a production network with real assets.
 
 See [Aptos Blockchain Networks](../nodes/networks.md) for full details on each environment.
 
@@ -51,29 +51,29 @@ Either of these methods will expose a [REST API service](../apis/fullnode-rest-a
 <Tabs groupId="networks">
   <TabItem value="devnet" label="Devnet">
     <ul>
-      <li>REST API: <a href="https://fullnode.devnet.aptoslabs.com/v1">https://fullnode.devnet.aptoslabs.com/v1</a></li>
-      <li>REST API Spec: <a href="https://fullnode.devnet.aptoslabs.com/v1/spec#/">https://fullnode.devnet.aptoslabs.com/v1/spec#/</a></li>
-      <li>Indexer API: <a href="https://indexer-devnet.staging.gcp.aptosdev.com/v1/graphql">https://indexer-devnet.staging.gcp.aptosdev.com/v1/graphql</a></li>
+      <li>REST API: <a href="https://api.devnet.aptoslabs.com/v1">https://api.devnet.aptoslabs.com/v1</a></li>
+      <li>REST API Spec: <a href="https://api.devnet.aptoslabs.com/v1/spec#/">https://api.devnet.aptoslabs.com/v1/spec#/</a></li>
+      <li>Indexer API: <a href="https://api.devnet.aptoslabs.com/v1/graphql">https://api.devnet.aptoslabs.com/v1/graphql</a></li>
       <li>Faucet API: <a href="https://faucet.devnet.aptoslabs.com">https://faucet.devnet.aptoslabs.com</a></li>
-      <li><a href="https://cloud.hasura.io/public/graphiql?endpoint=https://indexer-devnet.staging.gcp.aptosdev.com/v1/graphql">Indexer GraphQL</a></li>
+      <li><a href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">Indexer GraphQL</a></li>
     </ul>
   </TabItem>
   <TabItem value="testnet" label="Testnet">
     <ul>
-      <li>REST API: <a href="https://fullnode.testnet.aptoslabs.com/v1">https://fullnode.testnet.aptoslabs.com/v1</a></li>
-      <li>REST API Spec: <a href="https://fullnode.testnet.aptoslabs.com/v1/spec#/">https://fullnode.testnet.aptoslabs.com/v1/spec#/</a></li>
-      <li>Indexer API: <a href="https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql">https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql</a></li>
+      <li>REST API: <a href="https://api.testnet.aptoslabs.com/v1">https://api.testnet.aptoslabs.com/v1</a></li>
+      <li>REST API Spec: <a href="https://api.testnet.aptoslabs.com/v1/spec#/">https://api.testnet.aptoslabs.com/v1/spec#/</a></li>
+      <li>Indexer API: <a href="https://api.testnet.aptoslabs.com/v1/graphql">https://api.testnet.aptoslabs.com/v1/graphql</a></li>
       <li>Faucet API: <a href="https://faucet.testnet.aptoslabs.com">https://faucet.testnet.aptoslabs.com</a></li>
-      <li><a href="https://cloud.hasura.io/public/graphiql?endpoint=https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql">Indexer GraphQL</a></li>
+      <li><a href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">Indexer GraphQL</a></li>
     </ul>
   </TabItem>
   <TabItem value="mainnet" label="Mainnet">
     <ul>
-      <li>REST API: <a href="https://fullnode.mainnet.aptoslabs.com/v1">https://fullnode.mainnet.aptoslabs.com/v1</a></li>
-      <li>REST API Spec: <a href="https://fullnode.mainnet.aptoslabs.com/v1/spec#/">https://fullnode.mainnet.aptoslabs.com/v1/spec#/</a></li>
-      <li>Indexer API: <a href="https://indexer.mainnet.aptoslabs.com/v1/graphql">https://indexer.mainnet.aptoslabs.com/v1/graphql</a></li>
+      <li>REST API: <a href="https://api.mainnet.aptoslabs.com/v1">https://api.mainnet.aptoslabs.com/v1</a></li>
+      <li>REST API Spec: <a href="https://api.mainnet.aptoslabs.com/v1/spec#/">https://api.mainnet.aptoslabs.com/v1/spec#/</a></li>
+      <li>Indexer API: <a href="https://api.mainnet.aptoslabs.com/v1/graphql">https://api.mainnet.aptoslabs.com/v1/graphql</a></li>
       <li>Faucet: N/A</li>
-      <li><a href="https://cloud.hasura.io/public/graphiql?endpoint=https://indexer.mainnet.aptoslabs.com/v1/graphql">Indexer GraphQL</a></li>
+      <li><a href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">Indexer GraphQL</a></li>
     </ul>
   </TabItem>
 </Tabs>
@@ -124,7 +124,7 @@ BCS-encoded transactions can be submitted to the `/transactions` endpoint but mu
 
 #### JSON-encoded transactions
 
-JSON-encoded transactions can be generated via the [REST API](https://fullnode.devnet.aptoslabs.com/v1/spec#/), following these steps:
+JSON-encoded transactions can be generated via the [REST API](https://api.devnet.aptoslabs.com/v1/spec#/), following these steps:
 
 1. First construct an appropriate JSON payload for the `/transactions/encode_submission` endpoint as demonstrated in the [Python SDK](https://github.com/aptos-labs/aptos-core/blob/b0fe7ea6687e9c180ebdbac8d8eb984d11d7e4d4/ecosystem/python/sdk/aptos_sdk/client.py#L128).
 2. The output of the above contains an object containing a `message` that must be signed with the sender’s private key locally.
@@ -145,7 +145,7 @@ Most basic operations on the Aptos blockchain should be available via entry poin
 
 ### Status of a transaction
 
-Obtain transaction status by querying the API [`/transactions/by_hash/{hash}`](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_hash) with the hash returned during the submission of the transaction.
+Obtain transaction status by querying the API [`/transactions/by_hash/{hash}`](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_hash) with the hash returned during the submission of the transaction.
 
 A reasonable strategy for submitting transactions is to limit their lifetime to 30 to 60 seconds, and polling that API at regular intervals until success or several seconds after that time has elapsed. If there is no commitment on-chain, the transaction was likely discarded.
 
@@ -153,7 +153,7 @@ A reasonable strategy for submitting transactions is to limit their lifetime to 
 
 To facilitate evaluation of transactions as well as gas estimation, Aptos supports a simulation API that does not require and should not contain valid signatures on transactions.
 
-The simulation API is a synchronous API that executes a transaction and returns the output inclusive of gas usage. The simulation API can be accessed by submitting a transaction to [`/transactions/simulate`](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction).
+The simulation API is a synchronous API that executes a transaction and returns the output inclusive of gas usage. The simulation API can be accessed by submitting a transaction to [`/transactions/simulate`](https://api.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction).
 
 Both the [Typescript SDK](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/transactionSubmission/simulate.ts) and [Python SDK](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/simulate_transfer_coin.py) support the simulation API. Note the output and gas used may change based upon the state of the account. For gas estimations, we recommend that the maximum gas amount be larger than the amount quoted by this API.
 
@@ -176,9 +176,9 @@ Events and transactions pruning can be disabled via setting the [`enable_ledger_
 
 The REST API offers querying transactions and events in these ways:
 
-- [Transactions for an account](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/get_account_transactions)
-- [Transaction by version](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_version)
-- [Events by event handle](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)
+- [Transactions for an account](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_account_transactions)
+- [Transaction by version](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_version)
+- [Events by event handle](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)
 
 ## Exchanging and tracking coins
 

@@ -26,8 +26,7 @@ To install from source:
 
 ```bash
 git clone https://github.com/aptos-labs/aptos-core
-cd aptos-core/ecosystem/python/sdk
-python3 setup.py install --user
+pip3 install aptos-core/ecosystem/python/sdk --user
 ```
 
 ### Install by embedding

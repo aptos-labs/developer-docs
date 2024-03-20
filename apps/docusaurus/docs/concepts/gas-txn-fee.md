@@ -159,7 +159,7 @@ In a transaction, for example, transaction A, you are transferring 1000 coins fr
 
 The gas used for a transaction can be estimated by simulating the transaction on chain as described here or locally via the gas profiling feature of the Aptos CLI. The results of the simulated transaction represent the **exact** amount that is needed at the **exact** state of the blockchain at the time of the simulation. These gas units used may change based on the state of the chain. For this reason, any amount coming out of the simulation is only an estimate, and when setting the max gas amount, it should include an appropriate amount of headroom based upon your comfort-level and historical behaviors. Setting the max gas amount too low will result in the transaction aborting and the account being charged for whatever gas was consumed.
 
-To simulate transactions on chain, used the [`SimulateTransaction`](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction) API. This API will run the exact transaction that you plan to run.
+To simulate transactions on chain, used the [`SimulateTransaction`](https://api.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction) API. This API will run the exact transaction that you plan to run.
 
 To simulate the transaction locally, use the gas profiler, which is integrated into the Aptos CLI.
 This will generate a web-based report to help you understand the precise gas usage of your transaction.
@@ -171,7 +171,7 @@ Note that the `Signature` provided on the transaction must be all zeros. This is
 
 To simulate the transaction, there are two flags:
 
-1. `estimate_gas_unit_price`: This flag will estimate the gas unit price in the transaction using the same algorithm as the [`estimate_gas_price`](https://fullnode.devnet.aptoslabs.com/v1/spec#/operations/estimate_gas_price) API.
+1. `estimate_gas_unit_price`: This flag will estimate the gas unit price in the transaction using the same algorithm as the [`estimate_gas_price`](https://api.devnet.aptoslabs.com/v1/spec#/operations/estimate_gas_price) API.
 2. `estimate_max_gas_amount`: This flag will find the maximum possible gas you can use, and it will simulate the transaction to tell you the actual `gas_used`.
 
 ### Simulation steps

@@ -22,7 +22,7 @@ Here is an example of how to initialize an `AptosClient`:
 ```ts
 import { AptosClient } from "aptos";
 
-const client = new AptosClient("https://fullnode.testnet.aptoslabs.com");
+const client = new AptosClient("https://api.testnet.aptoslabs.com");
 ```
 
 ## Making API fetch calls
@@ -53,7 +53,7 @@ const bcsTxn = AptosClient.generateBCSTransaction(alice, rawTxn);
 const transactionRes = await client.submitSignedBCSTransaction(bcsTxn);
 ```
 
-Transaction payload contents:  
+Transaction payload contents:
 `function` – This must be a fully qualified function name and composed of `module address`, `module name` and `function name` separated by `::`.
 `type_arguments` – This is for the case a Move function expects a generic type argument.
 `arguments` – The arguments the function expects.

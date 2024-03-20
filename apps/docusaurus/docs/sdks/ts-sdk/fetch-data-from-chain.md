@@ -6,7 +6,7 @@ title: "Fetch data from chain"
 
 Once we created a new [Aptos instance](./sdk-configuration.md), we get access to all the sdk functionality. We now can query the chain for data.
 
-The SDK provides built in queries to easily query the chain with most used or popular queries. The SDK resolves those queries to Aptos [fullnode](https://fullnode.mainnet.aptoslabs.com/v1/spec#/) or [Indexer](https://cloud.hasura.io/public/graphiql?endpoint=https://indexer.mainnet.aptoslabs.com/v1/graphql) as needed and ease the burden on the developer to know and understand what service they need to query.
+The SDK provides built in queries to easily query the chain with most used or popular queries. The SDK resolves those queries to Aptos [fullnode](https://api.mainnet.aptoslabs.com/v1/spec#/) or [Indexer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) as needed and ease the burden on the developer to know and understand what service they need to query.
 
 ```ts
 const aptos = new Aptos();

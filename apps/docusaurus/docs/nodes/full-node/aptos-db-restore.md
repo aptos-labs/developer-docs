@@ -23,7 +23,7 @@ data in remote storage, such as Amazon S3 or Google Cloud Storage. The links to 
 
 |         | AWS Backup Data                                                                       | Google Cloud Backup Data                                                        |
 | ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Testnet | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/s3-public.yaml | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/gcs.yaml |
+| Testnet | Discontinued                                                                          | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/gcs.yaml |
 | Mainnet | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/s3-public.yaml | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/gcs.yaml |
 
 :::tip
@@ -111,11 +111,9 @@ See the resource requirements below.
 - **Testnet**: If you are restoring a testnet node, you will need the following resources:
   - **Disk**: 1.5TB
   - **RAM**: 32GB
-  - **Duration**: At least 10 hours are required to complete the restore.
 - **Mainnet**: If you are restoring a mainnet node, you will need the following resources:
   - **Disk**: 1TB
   - **RAM**: 32GB
-  - **Duration**: At least 5 hours are required to complete the restore.
 
 Example command:
 

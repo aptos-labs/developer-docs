@@ -144,14 +144,14 @@ export const storeEphemeralKeyPair = (
 
   // Store the new ephemeral key pair in localStorage
   accounts[ephemeralKeyPair.nonce] = ephemeralKeyPair;
-  localStorage.setItem("ephemeral-accounts", encodeEphemeralKeyPairs(accounts));
+  localStorage.setItem("ephemeral-key-pairs", encodeEphemeralKeyPairs(accounts));
 };
 
 /**
  * Retrieve all ephemeral key pairs from localStorage and decode them.
  */
 export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
-  const rawEphemeralKeyPairs = localStorage.getItem("ephemeral-accounts");
+  const rawEphemeralKeyPairs = localStorage.getItem("ephemeral-key-pairs");
   try {
     return rawEphemeralKeyPairs
       ? decodeEphemeralKeyPairs(rawEphemeralKeyPairs)
@@ -173,13 +173,13 @@ const EphemeralKeyPairEncoding = {
   decode: (e: any) =>
     new EphemeralKeyPair({
       blinder: new Uint8Array(e.blinder),
-      expiryTimestamp: BigInt(e.expiryTimestamp),
+      expiryDateSecs: BigInt(e.expiryDateSecs),
       privateKey: new Ed25519PrivateKey(e.privateKey),
     }),
   encode: (e: EphemeralKeyPair) => ({
     __type: "EphemeralKeyPair",
     blinder: Array.from(e.blinder),
-    expiryTimestamp: e.expiryTimestamp.toString(),
+    expiryDateSecs: e.expiryDateSecs.toString(),
     privateKey: e.privateKey.toString(),
   }),
 };
@@ -322,7 +322,7 @@ export const validateEphemeralKeyPair = (
   // Check the nonce and the expiry timestamp of the account to see if it is valid
   if (
     nonce === ephemeralKeyPair.nonce &&
-    ephemeralKeyPair.expiryTimestamp > BigInt(Math.floor(Date.now() / 1000))
+    ephemeralKeyPair.expiryDateSecs > BigInt(Math.floor(Date.now() / 1000))
   ) {
     return ephemeralKeyPair;
   }
