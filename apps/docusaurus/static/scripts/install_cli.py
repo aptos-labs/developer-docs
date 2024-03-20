@@ -29,9 +29,15 @@ from urllib.request import Request, urlopen, urlretrieve
 try:
     from packaging.version import Version
 except ImportError:
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", category=DeprecationWarning)
-        from distutils.version import StrictVersion as Version
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=DeprecationWarning)
+            from distutils.version import StrictVersion as Version
+    except ImportError:
+        print(
+            "Couldn't find distutils or packaging. We cannot check the current version of the CLI. We will install the latest version.",
+        )
+        Version = None
 
 SHELL = os.getenv("SHELL", "")
 WINDOWS = sys.platform.startswith("win") or (sys.platform == "cli" and os.name == "nt")
@@ -424,13 +430,19 @@ class Installer:
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=DeprecationWarning)
-            if current_version and Version(current_version) >= Version(latest_version):
+            if (
+                Version is not None
+                and current_version
+                and Version(current_version) >= Version(latest_version)
+            ):
                 self._write("")
                 self._write(
                     f'The latest version ({colorize("b", latest_version)}) is already installed.'
                 )
 
                 return None, current_version
+            else:
+                self._write(f"Installing {colorize('b', latest_version)}")
 
         return latest_version, current_version
 
@@ -452,10 +464,13 @@ class Installer:
 
         if WINDOWS:
             return "Windows-x86_64"
-        
+
         if MACOS:
             sys.stdout.write(
-                colorize("error", "You are trying to install from macOS. Please use brew to install Aptos CLI instead - [brew install aptos]")
+                colorize(
+                    "error",
+                    "You are trying to install from macOS. Please use brew to install Aptos CLI instead - [brew install aptos]",
+                )
             )
             self._write("")
             sys.exit(1)
