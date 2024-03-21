@@ -132,8 +132,9 @@ The Aptos devnet is reset every Thursday. See the latest updates in the [Aptos D
 We are excited that you are here, and we look forward to getting to know you. Welcome to the Aptos community! Find out more about us and exchange ideas at:
 
 - [Discord](https://discord.gg/aptosnetwork)
+- [Aptos Dev Discussions](https://github.com/aptos-labs/aptos-developer-discussions/discussions)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/aptos)
-- [Forum](https://forum.aptoslabs.com/)
+- [Forum](https://forum.aptosfoundation.org/)
 - [Medium](https://medium.com/aptoslabs)
 - [Telegram](https://t.me/AptosTG)
 - [Twitter](https://twitter.com/Aptos_Network)

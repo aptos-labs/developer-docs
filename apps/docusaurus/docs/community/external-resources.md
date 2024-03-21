@@ -8,7 +8,7 @@ title: "External Resources"
 This page links to third-party contents. Aptos neither endorses nor supports these contributions. Nor can we guarantee their effects.
 :::
 
-This page contains links to external resources supplied by the Aptos community. These may be useful, technical posts to the [Aptos Forum](https://forum.aptoslabs.com/) or links to Aptos-related technologies documented elsewhere.
+This page contains links to external resources supplied by the Aptos community. These may be useful, technical posts to the [Aptos Forum](https://forum.aptosfoundation.org/) or links to Aptos-related technologies documented elsewhere.
 
 To add your own resource, click **Edit this page** at the bottom, add your resource in Markdown, and create a pull request for review.
 

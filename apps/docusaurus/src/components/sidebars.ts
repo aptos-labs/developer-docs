@@ -682,7 +682,6 @@ const sidebars: SidebarsConfig = {
     },
     "community/index",
     "community/external-resources",
-    "community/rust-coding-guidelines",
     "community/site-updates",
     "community/aptos-style",
     "community/contributors",
