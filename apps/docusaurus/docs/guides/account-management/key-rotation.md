@@ -16,7 +16,7 @@ Here are the installation links for the SDKs we will cover in this example:
 
 - [Aptos CLI](../../tools/aptos-cli)
 - [Typescript SDK](/sdks/ts-sdk/index.md)
-- [Python SDK](../../sdks/python-sdk)
+- [Python SDK](../../sdks/python-sdk/index.md)
 
 :::warning
 Some of the following examples use private keys. Do not share your private keys with anyone.

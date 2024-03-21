@@ -18,7 +18,7 @@ This SDK provides all the necessary components for building on top of the Aptos 
 
 ## Installing Rust SDK
 
-Please refer to [Rust SDK Doc](https://aptos.dev/sdks/rust-sdk/) for details on how to install the Rust SDK.
+Please refer to [Rust SDK Doc](https://aptos.dev/sdks/rust-sdk/index) for details on how to install the Rust SDK.
 
 ## License
 

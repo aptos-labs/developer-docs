@@ -12,7 +12,7 @@ This tutorial introduces a practical use case that combines Aptos framework mult
 
 This tutorial was created for the [TypeScript SDK](../sdks/legacy-ts-sdk/index.md).
 
-Other developers are invited to add support for the [Python SDK](../sdks/python-sdk.md), [Rust SDK](../sdks/rust-sdk.md), and [Unity SDK](../sdks/unity-sdk.md)!
+Other developers are invited to add support for the [Python SDK](../sdks/python-sdk/index.md), [Rust SDK](../sdks/rust-sdk/index.md), and [Unity SDK](../sdks/unity-sdk/index.md)!
 
 ## Step 2: Publish the module
 
