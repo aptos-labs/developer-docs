@@ -140,7 +140,7 @@ Note that the path of the compiled script is under `build/run_script/`, not `bui
 
 See the [code](https://github.com/banool/move-examples/tree/main/run_script) used for this document. The full example explains how to use a Move script that relies on a user-created Move module as well.
 
-See also how to do this with the [Rust SDK](https://stackoverflow.com/questions/74452702/how-do-i-execute-a-move-script-on-aptos-using-the-rust-sdk) instead of the Aptos CLI in Stack Overflow.
+See also how to do this with the [Rust SDK](https://github.com/aptos-labs/aptos-developer-discussions/discussions/24) instead of the Aptos CLI in Aptos Developer Discussions.
 
 ## Advanced
 

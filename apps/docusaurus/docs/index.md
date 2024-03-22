@@ -132,11 +132,10 @@ Welcome to the Aptos community! Find out more about us and exchange ideas at:
 
 - [Discord](https://discord.gg/aptosnetwork)
 - [Aptos Dev Discussions](https://github.com/aptos-labs/aptos-developer-discussions/discussions)
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/aptos)
 - [Forum](https://forum.aptosfoundation.org/)
 - [Medium](https://medium.com/aptoslabs)
 - [Telegram](https://t.me/AptosTG)
-- [Twitter](https://twitter.com/Aptos_Network)
+- [Twitter](https://twitter.com/Aptos)
 
 ## Community projects on Aptos
 
