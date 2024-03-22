@@ -23,14 +23,6 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Read the Aptos White Paper",
-      collapsible: true,
-      collapsed: true,
-      link: { type: "doc", id: "aptos-white-paper/index" },
-      items: ["aptos-white-paper/in-korean", "aptos-white-paper/in-japanese"],
-    },
-    {
-      type: "category",
       label: "Learn about Aptos",
       link: { type: "doc", id: "concepts/index" },
       collapsible: true,
@@ -70,7 +62,14 @@ const sidebars: SidebarsConfig = {
     "guides/explore-aptos",
     "releases/index",
     "nodes/networks",
-    "guides/system-integrators-guide",
+    {
+      type: "category",
+      label: "Read the Aptos White Paper",
+      collapsible: true,
+      collapsed: true,
+      link: { type: "doc", id: "aptos-white-paper/index" },
+      items: ["aptos-white-paper/in-korean", "aptos-white-paper/in-japanese"],
+    },
   ],
   appSidebar: [
     {
@@ -447,6 +446,7 @@ const sidebars: SidebarsConfig = {
         },
         "integration/aptos-names-service-package",
         "reference/error-codes",
+        "guides/system-integrators-guide",
       ],
     },
     {

@@ -86,11 +86,6 @@ const themeConfig: Preset.ThemeConfig = {
         position: "left",
         items: [
           {
-            label: "Read the Aptos White Paper",
-            to: "aptos-white-paper",
-            activeBaseRegex: "^/aptos-white-paper$|^/aptos-white-paper$",
-          },
-          {
             label: "Learn about Aptos",
             to: "concepts",
           },
@@ -107,8 +102,9 @@ const themeConfig: Preset.ThemeConfig = {
             to: "nodes/networks",
           },
           {
-            label: "Integrate with Aptos",
-            to: "guides/system-integrators-guide",
+            label: "Read the Aptos White Paper",
+            to: "aptos-white-paper",
+            activeBaseRegex: "^/aptos-white-paper$|^/aptos-white-paper$",
           },
         ],
       },
