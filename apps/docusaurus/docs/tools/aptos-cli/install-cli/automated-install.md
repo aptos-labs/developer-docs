@@ -41,8 +41,13 @@ wget -qO- "https://aptos.dev/scripts/install_cli.py" | python3
 ```
 
 :::tip
-If you receive an error `ModuleNotFoundError: No module named packaging`
-You need to install `packaging` first
+If you see this message:
+
+```
+Couldn't find distutils or packaging. We cannot check the current version of the CLI. We will install the latest version.
+```
+
+Consider installing `packaging` first:
 
 ```Shell
 pip3 install packaging
