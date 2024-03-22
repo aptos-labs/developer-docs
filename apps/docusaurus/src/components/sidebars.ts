@@ -379,9 +379,10 @@ const sidebars: SidebarsConfig = {
             "sdks/legacy-ts-sdk/sdk-tests",
           ],
         },
-        "sdks/python-sdk",
-        "sdks/rust-sdk",
-        "sdks/unity-sdk",
+        // Migrate these to proper folders when more info is there
+        "sdks/python-sdk/index",
+        "sdks/rust-sdk/index",
+        "sdks/unity-sdk/index",
       ],
     },
     {

@@ -260,6 +260,6 @@ Other accounts can reuse the published module by calling the exact same function
 
 - [Account basics](../concepts/accounts.md)
 - [TypeScript SDK](../sdks/ts-sdk/index.md)
-- [Python SDK](../sdks/python-sdk.md)
-- [Rust SDK](../sdks/rust-sdk.md)
+- [Python SDK](../sdks/python-sdk/index.md)
+- [Rust SDK](../sdks/rust-sdk/index.md)
 - [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)

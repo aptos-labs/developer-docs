@@ -81,8 +81,8 @@
 ///
 /// Aptos currently provides three SDKs:
 /// 1. [Typescript](../sdks/ts-sdk/index.md)
-/// 2. [Python](../sdks/python-sdk.md)
-/// 3. [Rust](../sdks/rust-sdk.md)
+/// 2. [Python](../sdks/python-sdk/index.md)
+/// 3. [Rust](../sdks/rust-sdk/index.md)
 ///
 /// Almost all developers will benefit from exploring the CLI. [Using the CLI](../tools/aptos-cli-tool/use-aptos-cli.md) demonstrates how the CLI can be used to which includes creating accounts, transferring coins, and publishing modules.
 ///
