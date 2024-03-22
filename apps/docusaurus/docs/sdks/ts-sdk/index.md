@@ -102,7 +102,7 @@ const pendingTransaction = await aptos.signAndSubmitTransaction({
 const alice: Account = Account.generate();
 
 // create the account on chain
-await aptos.fundAccount({ accountAddress: alice.accountAddress, amount: 1000 });
+await aptos.fundAccount({ accountAddress: alice.accountAddress, amount: 100000000 });
 
 // submit transaction to transfer APT coin from Alice to Bob
 const bobAddress = "0xb0b";
@@ -110,7 +110,7 @@ const bobAddress = "0xb0b";
 const transaction = await aptos.transaction.build.simple({
   sender: alice.accountAddress,
   data: {
-    function: "0x1::coin::transfer",
+    function: "0x1::aptos_account::transfer_coins",
     typeArguments: ["0x1::aptos_coin::AptosCoin"],
     functionArguments: [bobAddress, 100],
   },
