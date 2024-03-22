@@ -316,6 +316,7 @@ const config: Config = {
       crossorigin: "anonymous",
     },
   ],
+
   themeConfig,
   plugins: [
     [
