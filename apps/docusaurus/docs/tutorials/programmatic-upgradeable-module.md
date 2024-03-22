@@ -19,7 +19,7 @@ Typically, a resource account is used for two main purposes:
 
 The first step will go over section 1: **How to publish modules to a resource account.**
 
-## 1. How to publish modules to a resource account
+## How to publish modules to a resource account
 
 Before publishing the module, we want to create a resource account prior, so that the module then gets uploaded to the resource account.
 But first, we must calculate the resource account address. This will be needed in the next steps later.
@@ -87,7 +87,7 @@ check the [**Aptos explorer**](https://explorer.aptoslabs.com/) and search for y
 Click on `Modules` tab and you should see the code/module published onto the account.
 **[Example](https://explorer.aptoslabs.com/account/0x090ad1536fe5cfcb5632b3026f99f8415c55b69ce54b6f17ed8cd7edbcb5edfa/modules/code/user_info?network=devnet)**
 
-## 2. How to upgrade modules in a resource account
+## How to upgrade modules in a resource account
 
 Now that we have published a module onto a resource account, the next step would be attempting to upgrade the module.
 
@@ -258,7 +258,7 @@ You should see the source code with the new function `new_function_added` added.
 
 This concludes the tutorial.
 
-## 3. Appendix
+## Appendix
 
 ### Addresses with Empty Placeholders
 

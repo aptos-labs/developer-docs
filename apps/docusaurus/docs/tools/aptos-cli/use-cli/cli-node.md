@@ -5,7 +5,7 @@ id: "cli-node"
 
 ## Node command examples
 
-For Aptos CLI commands applicable to validator nodes, see the [Owner](../../../nodes/validator-node/operator/staking-pool-operations.md#owner-operations-with-cli) and [Voter](../../../nodes/validator-node/voter/index.md#steps-using-aptos-cli) instructions.
+For Aptos CLI commands applicable to validator nodes, see the [Owner](../../../nodes/validator-node/operator/staking-pool-operations.md#perform-pool-owner-operations) and [Voter](../../../nodes/validator-node/voter/index.md#using-the-aptos-cli) instructions.
 
 ### Running a local testnet
 

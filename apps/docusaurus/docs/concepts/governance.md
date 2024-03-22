@@ -41,9 +41,9 @@ sources={{
 - Voting power is calculated based on the current epoch's active stake of the proposer or voter's backing stake pool. In addition, the stake pool's lockup must be at least as long as the proposal's duration.
 - Verify proposals before voting. Ensure each proposal is linked to its source code, and if there is a corresponding AIP, the AIP is in the title and description.
 
-If you are a [staking pool](/concepts/staking.md) voter, follow the instructions for voting [here](/nodes/validator-node/voter/index#staking-pool-voter).
+If you are a [staking pool](../concepts/staking.md) voter, follow the instructions for voting [here](../nodes/validator-node/voter/index.md#staking-pool-voter).
 
-If you are a [delegated staker](/concepts/delegated-staking.md), follow the instructions for voting [here](/nodes/validator-node/voter/index#delegation-pool-voter).
+If you are a [delegated staker](../concepts/delegated-staking.md), follow the instructions for voting [here](../nodes/validator-node/voter/index.md#delegation-pool-voter).
 
 ## Who can resolve
 

@@ -2,7 +2,7 @@
 title: "Move Specification Language"
 ---
 
-This document describes the _Move specification language (MSL)_, a subset of the [Move](../move-on-aptos.md) language that supports specification of the behavior of Move programs. MSL works together with the [Move Prover](./index.md), a tool that can statically verify the correctness of MSL specifications against Move programs. In contrast to traditional testing, verification of MSL is exhaustive and holds for all possible inputs and global states of a [Move module](../../reference/glossary.md#move-module) or [transaction script](../../reference/glossary.md#transaction-or-move-script). At the same time, this verification of MSL is fast and automated enough that it can be used at a similar place in the developer workflow where tests are typically conducted (for example, for qualification of pull requests in continuous integration).
+This document describes the _Move specification language (MSL)_, a subset of the [Move](../move-on-aptos.md) language that supports specification of the behavior of Move programs. MSL works together with the [Move Prover](./index.md), a tool that can statically verify the correctness of MSL specifications against Move programs. In contrast to traditional testing, verification of MSL is exhaustive and holds for all possible inputs and global states of a [Move module](../../reference/glossary.md#move-module) or [Move script](../../reference/glossary.md#transaction-or-move-script). At the same time, this verification of MSL is fast and automated enough that it can be used at a similar place in the developer workflow where tests are typically conducted (for example, for qualification of pull requests in continuous integration).
 
 While the Move programming language at this point is stable, the subset represented by MSL should be
 considered evolving. This has no impact on platform stability, since MSL is not running in
@@ -536,7 +536,7 @@ spec increment {
 
 <a name="risk-aborts-if-is-partial"></a>
 
-> Note that there is a certain risk in setting `aborts_if_is_partial` to true, and best practice is to avoid it in specifications of public functions and transaction scripts once those are considered finalized. This is because changing the code after finalization of the spec can add new (non-trivial, undesired) abort situations the original specification did not anticipate yet will nevertheless silently pass verification.
+> Note that there is a certain risk in setting `aborts_if_is_partial` to true, and best practice is to avoid it in specifications of public functions and Move scripts once those are considered finalized. This is because changing the code after finalization of the spec can add new (non-trivial, undesired) abort situations the original specification did not anticipate yet will nevertheless silently pass verification.
 
 If no aborts condition is specified for a function, abort behavior is unspecified. The function may
 or may not abort, and verification will not raise any errors, whether `aborts_if_is_partial` is set

@@ -287,6 +287,8 @@ const config: Config = {
   url: "https://aptos.dev",
   baseUrl: "/",
   onBrokenLinks: "throw",
+  onBrokenAnchors: "warn",
+  onDuplicateRoutes: "warn",
   onBrokenMarkdownLinks: "throw",
   favicon: "img/favicon.ico",
   organizationName: "aptos-labs", // Usually your GitHub org/user name.

@@ -5,7 +5,7 @@ slug: "your-first-multisig"
 
 # Your First Multisig
 
-This tutorial introduces assorted [K-of-N multi-signer authentication](../concepts/accounts.md#multi-signer-authentication) operations and supplements content from the following tutorials:
+This tutorial introduces assorted [K-of-N multi-signer authentication](../concepts/accounts.md#multied25519-authentication) operations and supplements content from the following tutorials:
 
 - [Your First Transaction](./first-transaction.md)
 - [Your First Coin](./first-coin.md)

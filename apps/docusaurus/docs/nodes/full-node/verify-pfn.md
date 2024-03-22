@@ -68,7 +68,7 @@ If the number of outbound connections returned is `0`, then it means your node c
 
 1. Update your node to the latest release by following the [Update your Node](./update-fullnode-with-new-releases.md).
 2. Remove any `seed` peers you may have added to your configuration file. The seeds may be preventing you from
-   connecting to the network. Seed peers are discussed in the [Connecting your PFN to seed peers](./fullnode-network-connections.md#connecting-your-fullnode-to-seed-peers) section.
+   connecting to the network. Seed peers are discussed in the [Connecting your PFN to seed peers](./fullnode-network-connections.md#connecting-to-seed-peers) section.
 3. Ensure that you have used the correct `genesis.blob` and `waypoint.txt` files for your network. This is a common error.
 
 ### (Optional) Examine Docker ledger size

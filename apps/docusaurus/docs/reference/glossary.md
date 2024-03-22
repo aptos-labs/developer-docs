@@ -75,7 +75,7 @@ The **Aptos Framework** defines the public API for blockchain updates and the st
 
 ### Aptos Node
 
-An **Aptos node** is a peer entity of the Aptos network that tracks the state of the Aptos blockchain. There are two types of Aptos nodes, [validators](#validator) and [fullnodes](#fullnode).
+An **Aptos node** is a peer entity of the Aptos network that tracks the state of the Aptos blockchain. There are two types of Aptos nodes, [validators](#validator) and [fullnodes](#fullnodes).
 
 ### Aptos Protocol
 
@@ -111,7 +111,7 @@ An **Aptos node** is a peer entity of the Aptos network that tracks the state of
 ### Byzantine Fault Tolerance (BFT)
 
 - **Byzantine Fault Tolerance** (BFT) is the ability of a distributed system to provide safety and liveness guarantees in the presence of faulty, or “[Byzantine](#byzantine-validator),” validators below a certain threshold.
-- The Aptos blockchain uses AptosBFT, a consensus protocol based on [Jolteon](#Jolteon).
+- The Aptos blockchain uses AptosBFT, a consensus protocol based on [Jolteon](#jolteon).
 - BFT algorithms typically operate with a number of entities, collectively holding N votes (which are called “validators” in the Aptos network’s application of the system).
 - N is chosen to withstand some number of validators holding f votes, which might be malicious.
 - In this configuration, N is typically set to 3f+1. Validators holding up to f votes will be allowed to be faulty &mdash; offline, malicious, slow, etc. As long as 2f+1 votes are held by [honest](#honest-validator) validators, they will be able to reach consensus on consistent decisions.
@@ -140,7 +140,7 @@ An **Aptos node** is a peer entity of the Aptos network that tracks the state of
 
 ### Consensus Protocol
 
-- A **consensus protocol** is collectively executed by n validators to accept or reject a transaction and to agree on the ordering of transactions and [execution results](#execution-result).
+- A **consensus protocol** is collectively executed by n validators to accept or reject a transaction and to agree on the ordering of transactions and execution results.
 - See [BFT](#byzantine-fault-tolerance-bft).
 
 ## D
@@ -162,6 +162,10 @@ An **Aptos node** is a peer entity of the Aptos network that tracks the state of
 
 - **Ed25519** is our supported digital signature scheme.
 - More specifically, the Aptos network uses the PureEdDSA scheme over the Ed25519 curve, as defined in RFC 8032.
+
+### Epoch
+
+- An **epoch** is the period of time between reconfigurations of the validator set and other administrative actions by the blockchain. On Aptos mainnet currently, it is every 2 hours.
 
 ### Event
 
@@ -190,8 +194,8 @@ then there is a guarantee that T_N will never be included in the blockchain.
 
 - **Faucet** is a service that mints APT on devnet and testnet. APT on these networks has no real world value, it is only for development purposes.
 - You can use the faucet in a few different ways:
-  - With the [Aptos CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md#fund-an-account-with-the-faucet).
-  - Through a wallet, such as [Petra](https://aptosfoundation.org/ecosystem/project/petra), [Martian](https://aptosfoundation.org/ecosystem/project/martian), or [Pontem](https://aptosfoundation.org/ecosystem/project/pontem-wallet). See full list of [Aptos Wallets](https://aptosfoundation.org/ecosystem/projects/wallets).
+  - With the [Aptos CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md).
+  - Through a wallet, such as [Petra](https://aptosfoundation.org/ecosystem/project/petra) or [Pontem](https://aptosfoundation.org/ecosystem/project/pontem-wallet). See full list of [Aptos Wallets](https://aptosfoundation.org/ecosystem/projects/wallets).
   - Using an SDK, for example by using the `FaucetClient` in the TypeScript SDK.
   - With a direct HTTP request. Learn how to do this [here](guides/system-integrators-guide.md#calling-the-faucet-other-languages).
 
@@ -275,7 +279,7 @@ See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 
 ### Mempool
 
-- **Mempool** is one of the components of the validator. It holds an in-memory buffer of transactions that have been submitted but not yet agreed upon and executed. Mempool receives transactions from [JSON-RPC Service](#json-rpc-service).
+- **Mempool** is one of the components of the validator. It holds an in-memory buffer of transactions that have been submitted but not yet agreed upon and executed. Mempool receives transactions from other [full nodes](#fullnodes).
 - Transactions in the mempool of a validator are added from the JSON-RPC Service of the current node and from the mempool of other Aptos nodes.
 - When the current validator is the leader, its consensus component pulls the transactions from its mempool and proposes the order of the transactions that form a block. The validator quorum then votes on the proposal.
 
@@ -300,19 +304,19 @@ See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 ### Move
 
 - **Move** is a new programming language that implements all the transactions on the Aptos blockchain.
-- It has two different kinds of code &mdash; [transaction scripts](#transaction-script) and [Move modules](#move-module).
+- It has two different kinds of code &mdash; [Move scripts](#transaction-or-move-script) and [Move modules](#move-module).
 - Move is a safe and secure programming language for web3 that emphasizes access control and scarcity. It is the programming language used to build the Aptos blockchain. You can read more about it in [Move on Aptos](../move/move-on-aptos.md).
 
 ### Move Bytecode
 
 - Move programs are compiled into **Move bytecode**.
-- Move bytecode is used to express transaction scripts and Move modules.
+- Move bytecode is used to express Move scripts and Move modules.
 
 ### Move Module
 
 - A **Move module** defines the rules for updating the global state of the Aptos blockchain.
 - In the Aptos protocol, a Move module is a **smart contract**.
-- Each user-submitted transaction includes a transaction script. The transaction script invokes procedures of one or more Move modules to update the global state of the blockchain according to the rules.
+- Each user-submitted transaction includes a Move script. The Move script invokes procedures of one or more Move modules to update the global state of the blockchain according to the rules.
 
 ### Move Resources
 
@@ -321,7 +325,7 @@ See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 
 ### Move Virtual Machine (MVM)
 
-- The **Move virtual machine** executes transaction scripts written in [Move bytecode](#move-bytecode) to produce an [execution result](#execution-result). This result is used to update the blockchain **state**.
+- The **Move virtual machine** executes Move scripts written in [Move bytecode](#move-bytecode) to produce an execution result. This result is used to update the blockchain **state**.
 - The virtual machine is part of a [validator](#validator).
 - The Move virtual machine (MoveVM) processes each validator node that translates transactions along with the current blockchain ledger state to produce a changeset as input or storage delta as output.
 
@@ -330,7 +334,7 @@ See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 ### Node
 
 - A **node** is a peer entity of the Aptos network that tracks the state of the Aptos blockchain.
-- An Aptos node consists of logical components. [Mempool](#mempool), [consensus](#consensus), and the [virtual machine](#virtual-machine) are examples of node components.
+- An Aptos node consists of logical components. [Mempool](#mempool), [consensus](#consensus), and the [Move virtual machine](#move-virtual-machine-mvm) are examples of node components.
 
 ### Nonce
 
@@ -434,24 +438,24 @@ See [`table.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move
 
 - A raw **transaction** contains the following fields:
   - [Sender (account address)](#account-address)
-  - [Transaction script](#transaction-script)
-  - [Gas price](#gas-price)
+  - [Move script](#transaction-or-move-script)
+  - [Gas price](#gas-unit-price)
   - [Maximum gas amount](#maximum-gas-amount)
   - [Sequence number](#sequence-number)
   - [Expiration time](#expiration-time)
 - A signed transaction is a raw transaction with the digital signature.
 - An executed transaction changes the state of the Aptos blockchain.
 
-### Transaction (or Move) Script
+### Transaction or Move Script
 
-- Each transaction submitted by a user includes a **transaction script**.
+- Each transaction submitted by a user includes a **Move script**.
 - These transactions, also known as Move scripts, represent the operations a client submits to a validator.
 - The operation could be a request to move coins from user A to user B, or it could involve interactions with published [Move modules](#move-module) (smart contracts).
-- The transaction script is an arbitrary program that interacts with resources published in the global storage of the Aptos blockchain by calling the procedures of a module. It encodes the logic for a transaction.
-- A single transaction script can send funds to multiple recipients and invoke procedures from several different modules.
-- A transaction script **is not** stored in the global state and cannot be invoked by other transaction scripts. It is a single-use program.
+- The Move script is an arbitrary program that interacts with resources published in the global storage of the Aptos blockchain by calling the procedures of a module. It encodes the logic for a transaction.
+- A single Move script can send funds to multiple recipients and invoke procedures from several different modules.
+- A Move script **is not** stored in the global state and cannot be invoked by other Move scripts. It is a single-use program.
 
-To see example uses of transaction scripts, follow [Move scripts](../move/move-on-aptos/scripts/script-tutorial.md) and the [Your First Multisig](../tutorials/first-multisig.md) tutorial.
+To see example uses of Move scripts, follow [Move scripts](../move/move-on-aptos/scripts/script-tutorial.md) and the [Your First Multisig](../tutorials/first-multisig.md) tutorial.
 
 ## V
 

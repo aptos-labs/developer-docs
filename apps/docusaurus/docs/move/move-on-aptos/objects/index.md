@@ -18,7 +18,7 @@ It's simply represented as an `ObjectCore` struct, which keeps track of the
 owner of the `Object` and transfer permissions. Along with the ability to store
 resources with an `ObjectGroup`. You can find more technical details at the
 [Object standard](/standards/aptos-object.md) page, and view the code at the
-[framework generated object documentation](/reference/move/##?branch=mainnet&page=aptos-framework/doc/object.md).
+[framework generated object documentation](../../../reference/move.md).
 
 An example of creating and transferring an object:
 

@@ -183,7 +183,7 @@
 /// - **Faucet** is a service that mints APT on devnet and testnet. APT on these networks has no real world value, it is only for development purposes.
 /// - You can use the faucet in a few different ways:
 ///   - With the [Aptos CLI](../tools/aptos-cli-tool/use-aptos-cli.md#fund-an-account-with-the-faucet).
-///   - Through a wallet, such as Petra, Martian, or Pontem. You can find a full list [here](https://github.com/aptos-foundation/ecosystem-projects#wallets).
+///   - Through a wallet, such as Petra or Pontem. You can find a full list [here](https://github.com/aptos-foundation/ecosystem-projects#wallets).
 ///   - Using an SDK, for example by using the `FaucetClient` in the TypeScript SDK.
 ///   - With a direct HTTP request. Learn how to do this [here](guides/system-integrators-guide.md#calling-the-faucet-other-languages).
 ///
@@ -285,19 +285,19 @@
 /// ### Move
 ///
 /// - **Move** is a new programming language that implements all the transactions on the Aptos blockchain.
-/// - It has two different kinds of code &mdash; [transaction scripts](#transaction-script) and [Move modules](#move-module).
+/// - It has two different kinds of code &mdash; [Move scripts](#transaction-or-move-script) and [Move modules](#move-module).
 /// - Move is a safe and secure programming language for web3 that emphasizes access control and scarcity. It is the programming language used to build the Aptos blockchain. You can read more about it in [Move on Aptos](../move/move-on-aptos.md).
 ///
 /// ### Move Bytecode
 ///
 /// - Move programs are compiled into **Move bytecode**.
-/// - Move bytecode is used to express transaction scripts and Move modules.
+/// - Move bytecode is used to express Move scripts and Move modules.
 ///
 /// ### Move Module
 ///
 /// - A **Move module** defines the rules for updating the global state of the Aptos blockchain.
 /// - In the Aptos protocol, a Move module is a **smart contract**.
-/// - Each user-submitted transaction includes a transaction script. The transaction script invokes procedures of one or more Move modules to update the global state of the blockchain according to the rules.
+/// - Each user-submitted transaction includes a Move script. The Move script invokes procedures of one or more Move modules to update the global state of the blockchain according to the rules.
 ///
 /// ### Move Resources
 ///
@@ -306,7 +306,7 @@
 ///
 /// ### Move Virtual Machine (MVM)
 ///
-/// - The **Move virtual machine** executes transaction scripts written in [Move bytecode](#move-bytecode) to produce an [execution result](#execution-result). This result is used to update the blockchain **state**.
+/// - The **Move virtual machine** executes Move scripts written in [Move bytecode](#move-bytecode) to produce an [execution result](#execution-result). This result is used to update the blockchain **state**.
 /// - The virtual machine is part of a [validator](#validator).
 /// - The Move virtual machine (MoveVM) processes each validator node that translates transactions along with the current blockchain ledger state to produce a changeset as input or storage delta as output.
 ///
@@ -415,7 +415,7 @@
 ///
 /// - A raw **transaction** contains the following fields:
 ///   - [Sender (account address)](#account-address)
-///   - [Transaction script](#transaction-script)
+///   - [Move script](#transaction-or-move-script)
 ///   - [Gas price](#gas-price)
 ///   - [Maximum gas amount](#maximum-gas-amount)
 ///   - [Sequence number](#sequence-number)
@@ -425,14 +425,14 @@
 ///
 /// ### Transaction (or Move) Script
 ///
-/// - Each transaction submitted by a user includes a **transaction script**.
+/// - Each transaction submitted by a user includes a **Move script**.
 /// - These transactions, also know as Move scripts, represent the operations a client submits to a validator.
 /// - The operation could be a request to move coins from user A to user B, or it could involve interactions with published [Move modules](#move-module) (smart contracts).
-/// - The transaction script is an arbitrary program that interacts with resources published in the global storage of the Aptos blockchain by calling the procedures of a module. It encodes the logic for a transaction.
-/// - A single transaction script can send funds to multiple recipients and invoke procedures from several different modules.
-/// - A transaction script **is not** stored in the global state and cannot be invoked by other transaction scripts. It is a single-use program.
+/// - The Move script is an arbitrary program that interacts with resources published in the global storage of the Aptos blockchain by calling the procedures of a module. It encodes the logic for a transaction.
+/// - A single Move script can send funds to multiple recipients and invoke procedures from several different modules.
+/// - A Move script **is not** stored in the global state and cannot be invoked by other Move scripts. It is a single-use program.
 ///
-/// To see example uses of transaction scripts, follow [Move scripts](../move/move-on-aptos/move-scripts.md) and the [Your First Multisig](../tutorials/first-multisig.md) tutorial.
+/// To see example uses of Move scripts, follow [Move scripts](../move/move-on-aptos/move-scripts.md) and the [Your First Multisig](../tutorials/first-multisig.md) tutorial.
 ///
 /// ## V
 ///

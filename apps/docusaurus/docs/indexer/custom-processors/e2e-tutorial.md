@@ -29,7 +29,7 @@ cd aptos-indexer-processors
 cd python/processors/coin_flip
 ```
 
-Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an authorization token. Follow [this guide](/indexer/txn-stream/labs-hosted#auth-tokens) to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`. Once you're done, you should have a token that looks like this:
+Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an authorization token. Follow [this guide](../txn-stream/labs-hosted.md#authorization-via-api-key) to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`. Once you're done, you should have a token that looks like this:
 
 ```
 aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx

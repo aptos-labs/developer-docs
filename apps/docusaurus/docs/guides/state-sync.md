@@ -183,7 +183,7 @@ since the start of the network, i.e., genesis), you should:
 1. Make sure that your PFN is **not** using fast syncing as the bootstrapping mode.
    Fast syncing will skip the transaction history. Instead, using a mode that syncs from genesis,
    e.g., intelligent syncing from genesis.
-2. Disable the ledger pruner, as described in the [Data Pruning document](data-pruning.md#disabling-the-ledger-pruner).
+2. Disable the ledger pruner, as described in the [Data Pruning document](data-pruning.md#disable-the-ledger-pruner).
    This will ensure that no data is deleted and the PFN contains all blockchain data.
 
 Following these two steps together will ensure that your PFN fetches all data since
