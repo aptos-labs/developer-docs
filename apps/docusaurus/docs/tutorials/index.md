@@ -32,4 +32,4 @@ Learn how to build your first dapp. Focuses on building the user interface for t
 
 ### [Your First Multisig](first-multisig.md)
 
-Learn how to perform assorted operations using [K-of-N multi-signer authentication](../concepts/accounts.md#multi-signer-authentication).
+Learn how to perform assorted operations using [K-of-N multi-signer authentication](../concepts/accounts.md#multied25519-authentication).

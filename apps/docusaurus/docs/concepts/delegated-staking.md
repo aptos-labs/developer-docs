@@ -79,7 +79,7 @@ See [Delegation pool operations](../nodes/validator-node/operator/delegation-poo
 :::
 
 1. [Operator deploys validator node](../nodes/validator-node/operator/running-validator-node/index.md)
-2. [Run command to get delegation pool address](../nodes/validator-node/operator/delegation-pool-operations.md#connect-to-aptos-network)
+2. [Run command to get delegation pool address](../nodes/validator-node/operator/delegation-pool-operations.md#initialize-a-delegation-pool)
 3. [Operator connects to the network using pool address derived in step 2](../nodes/validator-node/operator/connect-to-aptos-network.md)
 4. [Owner initializes the delegation pool and sets operator](../nodes/validator-node/operator/delegation-pool-operations.md#initialize-a-delegation-pool)
 5. Delegators can add stake at any time
@@ -101,7 +101,7 @@ Participating as a delegation validator node on the Aptos network works like thi
 6. Operator must wait until the new epoch starts before their validator becomes active.
 
 :::tip Joining the validator set
-For step-by-step instructions on how to join the validator set, see: [Joining Validator Set](../nodes/validator-node/operator/staking-pool-operations.md#joining-validator-set).
+For step-by-step instructions on how to join the validator set, see: [Joining Validator Set](../nodes/validator-node/operator/connect-to-aptos-network.md#join-the-validator-set).
 :::
 
 ### Automatic lockup duration

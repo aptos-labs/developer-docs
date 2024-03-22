@@ -191,11 +191,11 @@ FAILURE proving 1 modules from package `hello_prover` in 0.067s
 }
 ```
 
-In this case, see [Install the dependencies of Move Prover](../../tools/aptos-cli/install-cli/index.md#step-3-optional-install-the-dependencies-of-move-prover).
+In this case, see [Install the dependencies of Move Prover](../../tools/aptos-cli/install-cli/index.md#optional-installing-the-move-prover).
 
 ## Profiling gas usage
 
-Optionally, you can profile gas usage in the Aptos virtual machine locally rather than [simulating transactions](../../concepts/gas-txn-fee.md#estimating-the-gas-units-via-simulation) at the [fullnode](https://api.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction).
+Optionally, you can profile gas usage in the Aptos virtual machine locally rather than [simulating transactions](../../concepts/gas-txn-fee.md#estimating-gas-consumption-via-simulation) at the [fullnode](https://api.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction).
 This will generate a web-based gas report which you can view with your browser.
 
 To run the gas profiler, simply append the `--profile-gas` option to the Aptos CLI `move publish`, `move run` or `move run-script` command.

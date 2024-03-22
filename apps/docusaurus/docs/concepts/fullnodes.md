@@ -12,7 +12,7 @@ Each Aptos node comprises several logical components:
 - [REST service](../reference/glossary.md#rest-service)
 - [Mempool](./validator-nodes.md#mempool)
 - [Execution](./validator-nodes.md#execution)
-- [Virtual Machine](./validator-nodes.md#virtual-machine)
+- [Virtual Machine](./validator-nodes.md#virtual-machine-vm)
 - [Storage](./validator-nodes.md#storage)
 - [State synchronizer](./validator-nodes.md#state-synchronizer)
 

@@ -11,7 +11,7 @@ To begin your journey in developing Move, we provide the following resources:
 - [The Move tutorial](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial) to cover the basics of programming with Move.
 - [Aptos Move Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples) demonstrating many different aspects of Move especially those unique to Aptos.
 - [Aptos Move Framework](../reference/move.md).
-- [Move language channel](https://discord.com/channels/945856774056083548/955573698868432896) in [Aptos Discord](https://discord.gg/aptosnetwork).
+- [Aptos Dev Discussions](https://github.com/aptos-labs/aptos-developer-discussions/discussions) for Q&A about Move.
 
 There are several IDE plugins available for Aptos and the Move language:
 

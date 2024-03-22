@@ -29,9 +29,9 @@ can initialize, a staking pool or a delegation pool. You can read more about the
 pools in the [Staking](../../../concepts/staking.md) and [Delegated Staking](../../../concepts/delegated-staking.md) sections.
 
 To initialize a staking pool, follow the instructions in
-[staking pool operations](../../../nodes/validator-node/operator/staking-pool-operations.md##initialize-a-staking-pool). Otherwise,
+[staking pool operations](../../../nodes/validator-node/operator/staking-pool-operations.md#initialize-a-staking-pool). Otherwise,
 to initialize a delegation pool, follow the instructions in
-[delegation pool operations](../../../nodes/validator-node/operator/delegation-pool-operations/#initialize-a-delegation-pool).
+[delegation pool operations](../../../nodes/validator-node/operator/delegation-pool-operations.md#initialize-a-delegation-pool).
 
 ## Join the validator set
 

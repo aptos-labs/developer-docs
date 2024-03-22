@@ -74,7 +74,7 @@ The following network metrics are important, for both validators and fullnodes:
    2. If your node is a fullnode, the number of `outbound` connections should be `> 0`. This will ensure your node is
       able to synchronize. Note that the number of `inbound` connections matters only if you want to act as a seed in
       the network and allow other nodes to connect to you as discussed
-      [Fullnode Network Connections](../../nodes/full-node/fullnode-network-connections.md#allowing-fullnodes-to-connect-to-your-node).
+      [Fullnode Network Connections](../../nodes/full-node/fullnode-network-connections.md#allowing-pfn-connections).
 
 ### Mempool
 

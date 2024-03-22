@@ -10,7 +10,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 If you are a [staking pool](../../../concepts/staking.md) voter, then we recommend strongly that you do not store your Aptos voter keys with a
 custodian before the custodian supports this function. Until then, we suggest you store your voter keys in an Aptos
-wallet like [Petra](https://petra.app/) or [Martian](https://martianwallet.xyz/).
+wallet like [Petra](https://petra.app/).
 
 This document describes how to perform staking voter operations while in the Aptos mainnet using an Aptos wallet.
 

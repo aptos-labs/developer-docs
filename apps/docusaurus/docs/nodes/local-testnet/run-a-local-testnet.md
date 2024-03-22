@@ -12,11 +12,7 @@ Running a local testnet with the Aptos CLI is simpler and more fully featured. L
 
 You can run a local testnet of the Aptos blockchain. This local testnet will not be connected to the Aptos devnet. It will run on your local machine, independent of other Aptos networks. You can use this local testnet for testing and development purposes.
 
-You can run a local testnet in two ways:
-
-1. Using the Aptos-core source code. This approach is useful for testing modifications to the Aptos-core codebase or to the Aptos Framework.
-
-2. Using Docker. This is particularly useful for building services on top of the Aptos blockchain or the Aptos Framework, as there is no build overhead and the ledger persists across network restarts (by default).
+You can run a local testnet using the Aptos-core source code. This approach is useful for testing modifications to the Aptos-core codebase or to the Aptos Framework.
 
 The rest of this document describes:
 

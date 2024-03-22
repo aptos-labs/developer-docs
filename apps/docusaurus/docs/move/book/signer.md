@@ -37,7 +37,7 @@ script {
 
 This script will abort with code `0` if the script is sent from any address other than `0x42`.
 
-A transaction script can have an arbitrary number of `signer`s as long as the `signer`s are a prefix
+A Move script can have an arbitrary number of `signer`s as long as the `signer`s are a prefix
 to any other arguments. In other words, all of the `signer` arguments must come first:
 
 ```move

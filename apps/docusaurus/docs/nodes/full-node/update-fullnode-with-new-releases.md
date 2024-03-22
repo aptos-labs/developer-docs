@@ -30,7 +30,7 @@ following these steps:
 
 1.  Rebuild the binary as you did during the initial setup.
 
-1.  If your PFN is running in `devnet`, follow the additional steps in the [Data Wipe and Reset](#additional-data-wipe-steps-for-devnet) section below.
+1.  If your PFN is running in `devnet`, follow the additional steps in the [Data Wipe and Reset](#upgrade-with-data-wipe-devnet-only) section below.
 
 1.  Restart your PFN by running the same deployment command as before. For example:
 
