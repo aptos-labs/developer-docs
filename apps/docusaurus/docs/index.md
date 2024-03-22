@@ -7,6 +7,10 @@ sidebar_position: 0
 hide_table_of_contents: true
 ---
 
+import LoadExternalScript from '@site/src/components/LoadExternalScript';
+
+<LoadExternalScript src="/hotjar.js" />
+
 # Aptos Developer Documentation
 
 :::info Developer Discussions
