@@ -14,20 +14,36 @@ import LoadExternalScript from '@site/src/components/LoadExternalScript';
 # Aptos Developer Documentation
 
 :::info Developer Discussions
-Ask your tech questions and hang out with the Aptos developer community in the new Developer Discussions [website](https://github.com/aptos-labs/aptos-developer-discussions/discussions)!
+Ask your tech questions and hang out with the Aptos developer community in the
+new Developer
+Discussions [website](https://github.com/aptos-labs/aptos-developer-discussions/discussions)!
 :::
 
-Welcome! Aptos is a Layer 1 for everyone. In the [Ohlone language](https://en.wikipedia.org/wiki/Ohlone_languages), ["Aptos"](https://en.wikipedia.org/wiki/Aptos,_California) means "The People."
+Welcome! Aptos is a Layer 1 for everyone. In
+the [Ohlone language](https://en.wikipedia.org/wiki/Ohlone_languages), ["Aptos"](https://en.wikipedia.org/wiki/Aptos,_California)
+means "The People."
 
-Our documentation is designed to assist you in developing a [web3 ecosystem project](https://aptosfoundation.org/ecosystem/projects/all) that contributes positively to the global community. We focus on facilitating easier development, ensuring more reliable services, enabling faster transactions, and fostering a supportive, decentralized community.
+Our documentation is designed to assist you in developing
+a [web3 ecosystem project](https://aptosfoundation.org/ecosystem/projects/all)
+that contributes positively to the global community. We focus on facilitating
+easier development, ensuring more reliable services, enabling faster
+transactions, and fostering a supportive, decentralized community.
 
-This documentation will help you develop applications for the Aptos blockchain, run nodes, and be a part of the blossoming Aptos community. This documentation covers both basic and advanced topics. Here you will find concepts, how-to guides, tutorials, API references, code examples, release notes, and more.
+This documentation will help you develop applications for the Aptos blockchain,
+run nodes, and be a part of the blossoming Aptos community. This documentation
+covers both basic and advanced topics. Here you will find concepts, how-to
+guides, tutorials, API references, code examples, release notes, and more.
 
-> Please note, this site is built from the `main` upstream branch of GitHub and so reflects the latest changes to Aptos. If you have checked out [another branch](https://github.com/aptos-labs/aptos-core/branches) to use a [specific network](guides/system-integrators-guide.md#choose-a-network), the code may not yet have all the features described here.
+> Please note, this site is built from the `main` upstream branch of GitHub and
+> so reflects the latest changes to Aptos. If you have checked
+> out [another branch](https://github.com/aptos-labs/aptos-core/branches) to use
+> a [specific network](guides/system-integrators-guide.md#choose-a-network), the
+> code may not yet have all the features described here.
 
 ## Find the latest releases
 
-See the newest Aptos releases in the [Latest Releases](./releases/index.md) list and its subpages.
+See the newest Aptos releases in the [Latest Releases](./releases/index.md) list
+and its subpages.
 
 ## Start with the tutorials and guides
 
@@ -125,15 +141,20 @@ See the newest Aptos releases in the [Latest Releases](./releases/index.md) list
 
 ## Connect to an Aptos network
 
-Aptos offers the ability to run a local testnet, as well as provides a shared devnet and testnet. See the [System Integrators Guide](guides/system-integrators-guide.md#choose-a-network) for a summary of the available networks and the means to connect to them.
+Aptos offers the ability to run a local testnet, as well as provides a shared
+devnet and testnet. See
+the [System Integrators Guide](guides/system-integrators-guide.md#choose-a-network)
+for a summary of the available networks and the means to connect to them.
 
 :::tip Aptos Devnet Resets
-The Aptos devnet is reset every Thursday. See the latest updates in the [Aptos Discord](https://discord.gg/aptosnetwork).
+The Aptos devnet is reset every Thursday. See the latest updates in
+the [Aptos Discord](https://discord.gg/aptosnetwork).
 :::
 
 ## Engage with the community
 
-We are excited that you are here, and we look forward to getting to know you. Welcome to the Aptos community! Find out more about us and exchange ideas at:
+We are excited that you are here, and we look forward to getting to know you.
+Welcome to the Aptos community! Find out more about us and exchange ideas at:
 
 - [Discord](https://discord.gg/aptosnetwork)
 - [Aptos Dev Discussions](https://github.com/aptos-labs/aptos-developer-discussions/discussions)
@@ -145,7 +166,8 @@ We are excited that you are here, and we look forward to getting to know you. We
 
 ## Community projects on Aptos
 
-Visit [Aptos Ecosystem Projects](https://aptosfoundation.org/ecosystem/projects/all) to discover live projects built on Aptos:
+Visit [Aptos Ecosystem Projects](https://aptosfoundation.org/ecosystem/projects/all)
+to discover live projects built on Aptos:
 
 - [DeFi](https://aptosfoundation.org/ecosystem/projects/defi)
 - [NFT Tooling](https://aptosfoundation.org/ecosystem/projects/nft-tooling)
@@ -161,6 +183,9 @@ Visit [Aptos Ecosystem Projects](https://aptosfoundation.org/ecosystem/projects/
 - [Bridges](https://aptosfoundation.org/ecosystem/projects/bridges)
 - [Social](https://aptosfoundation.org/ecosystem/projects/social)
 
-If you would like to showcase your project, please make your submission from the directory.
+If you would like to showcase your project, please make your submission from the
+directory.
 
-Want to pitch in on smaller tasks, such as doc updates and code fixes? See our [Community](./community/index.md) list for opportunities to help the Aptos ecosystem.
+Want to pitch in on smaller tasks, such as doc updates and code fixes? See
+our [Community](./community/index.md) list for opportunities to help the Aptos
+ecosystem.
