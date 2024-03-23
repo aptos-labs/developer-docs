@@ -26,4 +26,3 @@ The following external resources exist to further your education:
 - [IMCODING Move Tutorials](https://www.imcoding.online/tutorials?tag=Aptos)
 - [Pontem Move Playground](https://playground.pontem.network/)
 - [Collection of nestable Move resources](https://github.com/taoheorg/taohe)
-- [Move-Lang tag on Stack Overflow](https://stackoverflow.com/questions/tagged/move-lang)

@@ -1,5 +1,5 @@
 ---
-title: "Integrate with Aptos"
+title: "Application Integration Guide"
 ---
 
 import Tabs from '@theme/Tabs';
