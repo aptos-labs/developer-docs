@@ -99,6 +99,8 @@ Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b
 }
 ```
 
+Note: Enter the private key from your validator if you're going to initialize a staking pool, I.e the value of account_private_key from keys/private-keys.yaml
+
 ### Step 2: Changing the configuration
 
 To change the configuration, you can either run the command `aptos init` or you can manually edit the `.aptos/config.yaml` that is in your current working directory.
