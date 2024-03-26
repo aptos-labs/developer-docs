@@ -1,0 +1,249 @@
+---
+title: "Connect to a Network"
+slug: "connect-to-aptos-network"
+---
+
+# Connect to a Network
+
+This document describes how to connect your validator and validator fullnode (VFN) to an Aptos network.
+
+:::caution Minimum staking requirements
+You should only follow these instructions if your validator is able to meet the minimum
+[staking requirements](../../../concepts/staking.md) for the network. The current required minimum staking
+requirement is 1 Million APT tokens.
+:::
+
+At a high-level, there are four steps required to connect your nodes to an Aptos network:
+
+1. **Initialize stake pool:** First, you will need to initialize the stake pool.
+2. **Join validator set:** Second, you will need to join the validator set.
+3. **Update identities:** Third, you will need to update your node identity configurations to match the pool address.
+4. **Bootstrap your nodes:** Finally, you will need to bootstrap your nodes, so they can connect to the network and start syncing.
+
+We will go through each of these steps in detail below.
+
+## Initialize the stake pool
+
+To begin, you will need to initialize the staking pool for your nodes. There are two types of pools you
+can initialize, a staking pool or a delegation pool. You can read more about the differences between these
+pools in the [Staking](../../../concepts/staking.md) and [Delegated Staking](../../../concepts/delegated-staking.md) sections.
+
+To initialize a staking pool, follow the instructions in
+[staking pool operations](../../../nodes/validator-node/operator/staking-pool-operations.md#initialize-a-staking-pool). Otherwise,
+to initialize a delegation pool, follow the instructions in
+[delegation pool operations](../../../nodes/validator-node/operator/delegation-pool-operations.md#initialize-a-delegation-pool).
+
+## Join the validator set
+
+Next, you will need to join the validator set. Follow the steps below:
+
+:::danger Mainnet vs Testnet
+The commands shown below are for the Aptos mainnet. If you are connecting to a different
+network, you will need to change the `--network` value in the commands accordingly. You can view the
+values in [Aptos Blockchain Networks](../../networks.md) to see how profiles can be configured based on the network.
+:::
+
+### 1. Initialize the Aptos CLI
+
+First, initialize the Aptos CLI with your operator account private key. This can be found in your `private-keys.yaml` file
+under the entry `account_private_key`.
+
+Replace `<operator_account_private_key>` with the value from the file in the command below:
+
+```bash
+aptos init --profile mainnet-operator \
+--network mainnet \
+--private-key <operator_account_private_key> \
+--skip-faucet
+```
+
+### 2. Check your account balance
+
+Next, make sure you have enough funds to pay for transaction gas on the network. You can check this using the CLI, by
+running the command below:
+
+```bash
+aptos account list --profile mainnet-operator
+```
+
+This will show you the coin balance you have in the validator account. You will see an output like below:
+
+```json
+"coin": {
+    "value": "5000"
+  }
+```
+
+### 3. Update on-chain network addresses
+
+Next, you will need to update the network addresses for your validator and VFN. This is required to ensure that your nodes
+are able to connect to other peers in the network. First, fetch the pool address for your nodes, by running the command below.
+Note: the owner address is the address of the account that owns the stake pool, and was used to initialize the stake pool.
+
+```bash
+aptos node get-stake-pool --owner-address <owner_address>
+```
+
+Using the pool address from the command above, you will need to update the network addresses for your nodes. You can
+do this by running the command below. Note that it requires the `operator.yaml` file, which was created when you first
+deployed your nodes.
+
+```bash
+aptos node update-validator-network-addresses  \
+  --pool-address <pool-address> \
+  --operator-config-file ~/$WORKSPACE/$USERNAME/operator.yaml \
+  --profile mainnet-operator
+```
+
+:::tip Updating the network addresses
+Updating your network addresses on-chain requires waiting for the next epoch to begin. This is because the network
+addresses are updated at the end of the current epoch. Before the next epoch, your nodes will not be able to connect
+to other peers in the network.
+:::
+
+### 4. Update on-chain consensus key
+
+Next, you will need to update the consensus key for your nodes. This is required to ensure that your nodes are able to
+participate in consensus. You can do this by running the command below. Note that it requires the pool address and
+the `operator.yaml` file (similar to above).
+
+```bash
+aptos node update-consensus-key  \
+  --pool-address <pool-address> \
+  --operator-config-file ~/$WORKSPACE/$USERNAME/operator.yaml \
+  --profile mainnet-operator
+```
+
+:::tip Updating the consensus key
+Updating your consensus key on-chain requires waiting for the next epoch to begin. This is because the consensus key
+is updated at the end of the current epoch. Before the next epoch, your nodes will not be able to participate in consensus.
+:::
+
+### 5. Join the validator set
+
+Finally, you will need to join the validator set. You can do this by running the command below:
+
+```bash
+aptos node join-validator-set \
+  --pool-address <pool-address> \
+  --profile mainnet-operator
+```
+
+The validator set is updated at the end of every epoch. You will need to wait for the next epoch to begin before your
+validator node is able to join the validator set.
+
+:::tip Identifying the next epoch
+You can identify the next epoch by checking the [Aptos Explorer](https://explorer.aptoslabs.com/validators/all?network=mainnet) or by running the command `aptos node get-stake-pool`.
+:::
+
+### 6. Check the validator set
+
+When you execute the command to join the validator set, your validator will be in a "Pending Active" state until the
+next epoch occurs. You can run the command below to look for your validator in the `pending_active` list.
+
+```bash
+aptos node show-validator-set --profile mainnet-operator | jq -r '.Result.pending_active' | grep <pool_address>
+```
+
+When the next epoch occurs, the node will be moved into `active_validators` list. Run the command
+below to see your validator in the "active_validators" list:
+
+```bash
+aptos node show-validator-set --profile mainnet-operator | jq -r '.Result.active_validators' | grep <pool_address>
+```
+
+## Update identities
+
+After joining the validator set, you will need to update your node identity configuration files to match the pool address.
+This is required to ensure that your nodes are able to connect to other peers in the network.
+
+:::danger Updating the pool address
+It is a common error to forget to update the pool address in the node identity configurations. If you do not
+update the pool address for **both your validator and VFN identity files**, your nodes will not be able to connect to
+other peers in the network.
+:::
+
+Follow the steps below to update your node identity configurations, depending on the deployment method you used.
+
+### Using Source Code
+
+If you used the source code to deploy your nodes, follow these steps:
+
+1. Stop your validator and VFN and remove the data directory from both nodes. Make sure to remove the
+   `secure-data.json` file on the validator, too. You can see the location of the `secure-data.json` file in your
+   validator's configuration file.
+2. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
+3. Restart the validator and VFN.
+
+### Using Docker
+
+If you used Docker to deploy your nodes, follow these steps:
+
+1. Stop your node and remove the data volumes: `docker compose down --volumes`. Make sure to remove the
+   `secure-data.json` file on the validator, too. You can see the location of the `secure-data.json` file in your
+   validator's configuration file.
+2. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**.
+   Do not change anything else.
+3. Restart the nodes with: `docker compose up`
+
+### Using Terraform
+
+If you used Terraform to deploy your nodes (e.g., for AWS, Azure or GCP), follow these steps:
+
+1. Increase the `era` number in your Terraform configuration. When this configuration is applied, it will wipe the data.
+
+2. Set the `enable_monitoring` variable in your terraform module. For example:
+
+   ```rust
+   module "aptos-node" {
+     ...
+     enable_monitoring           = true
+     utility_instance_num        = 3  # this will add one more utility instance to run monitoring component
+   }
+   ```
+
+3. Apply the changes with: `terraform apply` You will see a new pod getting created. Run `kubectl get pods` to check.
+
+4. Find the IP/DNS for the monitoring load balancer, using:
+
+   ```bash
+   kubectl get svc ${WORKSPACE}-mon-aptos-monitoring --output jsonpath='{.status.loadBalancer.ingress[0]}'
+   ```
+
+   You will be able to access the Terraform dashboard on `http://<ip/DNS>`.
+
+5. Pull the latest of the terraform module `terraform get -update`, and then apply the Terraform: `terraform apply`.
+6. Download the `genesis.blob` and `waypoint.txt` files for your network. See [Node Files](../../node-files-all-networks/node-files.md) for locations and commands to download these files.
+7. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
+8. Recreate the secrets. Make sure the secret name matches your `era` number, e.g. if you have `era = 3`, then you should replace the secret name to be:
+
+```bash
+${WORKSPACE}-aptos-node-0-genesis-e3
+```
+
+```bash
+export WORKSPACE=<your workspace name>
+
+kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e2 \
+    --from-file=genesis.blob=genesis.blob \
+    --from-file=waypoint.txt=waypoint.txt \
+    --from-file=validator-identity.yaml=keys/validator-identity.yaml \
+    --from-file=validator-full-node-identity.yaml=keys/validator-full-node-identity.yaml
+```
+
+## Bootstrap your nodes
+
+After joining the validator set and updating your node identity configurations to match the pool address,
+you will need to bootstrap your nodes to connect to the network. To do this, follow the steps below:
+
+1. Start the VFN. The VFN will connect to the network and start syncing. See [State Synchronization](./../../../guides/state-sync.md) for more information.
+2. Once the VFN is synced, restart the validator. It will sync from the VFN and then connect to other validators
+   in the network and start participating in consensus.
+
+Once both of these steps are complete, your nodes will be connected to the network and participating in consensus.
+
+## Next steps
+
+Congratulations! You have successfully connected your nodes to the Aptos network. To verify that your nodes are running
+correctly, visit the [Node Health](./node-liveness-criteria.md) document. This document describes how you can verify and
+monitor the health of your validator and VFN, including an initial node verification section.
