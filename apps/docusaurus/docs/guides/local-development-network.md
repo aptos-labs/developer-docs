@@ -278,6 +278,21 @@ Note: As mentioned above, if you're on macOS or Windows, we recommend you use Do
 
 If the CLI seems to sit there and do nothing when you are using `--with-indexer-api`, consider quitting and restarting Docker. Sometimes Docker gets in a bad state. Note that Docker is only required if you are using `--with-indexer-api`.
 
+### I get a `Too many open files` error on startup
+
+If you see something like this on startup:
+
+```
+panicked at crates/aptos/src/node/local_testnet/logging.rs:64:10:
+called `Result::unwrap()` on an `Err` value: Os { code: 24, kind: Uncategorized, message: \"Too many open files\" }"""
+```
+
+Try increasing the maximum number of open files on your system. On many Unix systems you can put something like this in your `.bashrc`:
+
+```sh
+ulimit -n 32768
+```
+
 ### How do I use the Postgres on my host machine?
 
 By default, when using `--with-indexer-api` the CLI will run a Postgres instance in Docker. If you have Postgres running on your host machine and would like to use that instead, you can do so with the `--use-host-postgres` flag. There are also flags for specifying how it should connect to the host Postgres. Here is an example invocation:
