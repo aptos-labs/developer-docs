@@ -2,6 +2,8 @@
 title: "Delegation Pool Operations"
 ---
 
+## Delegation Pool Operations
+
 > Beta: This documentation is in experimental, beta mode. Supply feedback by [requesting document changes](../../../community/site-updates.md#request-docs-changes). See also the related [Staking Pool Operations](./staking-pool-operations.md) instructions.
 
 Validator operators should follow these instructions to carry out delegation pool operations for [delegated staking](../../../concepts/delegated-staking.md). You may delegate as little as 10 APT plus a small add stake fee that will be mostly refunded as rewards at the end of the current epoch. You might notice that some UIs might use 11 APT as the minimum for a round number. Note that your validator will become part of the _Active Validator Set_ only when the delegation pool satisfies the minimum cumulative [staking requirement of 1 million APT](./staking-pool-operations.md).
@@ -20,21 +22,21 @@ The operator address will receive the pool commission that was set at the initia
 Before initializing a delegation pool, you need to know the delegation pool address. You can use the following CLI commands to obtain the delegation pool address depending on where you are in the process:
 
 - Before you create the delegation pool:
-  ```bash
+  ```bash filename="Terminal" 
   aptos account derive-resource-account-address --address <owner_address> --seed "aptos_framework::delegation_pool<SEED>" --seed-encoding utf8
   ```
   - The `<SEED>` is a number chosen by you to create the resource account address to host the delegation pool resource. Once you choose a seed, you should use the same value for all following usages.
 - After you create the delegation pool:
-  ```bash
+  ```bash filename="Terminal"
   aptos account derive-resource-account-address
   ```
 
 1. Run the command below, substitute in the profile you previously configured during initialization:
 
-   ```bash
+   ```bash filename="Terminal"
    aptos move run --profile <your-profile> \
-   --function-id 0x1::delegation_pool::initialize_delegation_pool \
-   --args u64:1000 string:00
+      --function-id 0x1::delegation_pool::initialize_delegation_pool \
+      --args u64:1000 string:00
    ```
 
    Where `--args`:
@@ -58,34 +60,34 @@ This section describes the available operations that can be performed on this re
 
 - Add `amount` of coins to the delegation pool `pool_address` using the public entry method `add_stake(delegator: &signer, pool_address: address, amount u64)` and substituting your values into the command below before running it:
 
-  ```bash
+  ```bash filename="Terminal"
   aptos move run --profile delegator \
-  --function-id 0x1::delegation_pool::add_stake \
-  --args address:<pool_address> u64:<amount>
+    --function-id 0x1::delegation_pool::add_stake \
+    --args address:<pool_address> u64:<amount>
   ```
 
 - Undelegate (unlock) the amount of funds from the delegator's active and pending active stake up to the limit of the active stake in the stake pool using public entry method `unlock(delegator: &signer, pool_address: address, amount: u64)` and substituting your values into the command below before running it:
 
-  ```bash
+  ```bash filename="Terminal"
   aptos move run --profile delegator \
-  --function-id 0x1::delegation_pool::unlock \
-  --args address:<pool_address> u64:<amount>
+    --function-id 0x1::delegation_pool::unlock \
+    --args address:<pool_address> u64:<amount>
   ```
 
 - Cancel undelegate (reactivate stake) `amount` of coins from `pending_inactive` state to `active state` using public entry method `reactivate_stake(delegator: &signer, pool_address: address, amount: u64)` with the command and your values:
 
-  ```bash
+  ```bash filename="Terminal"
   aptos move run --profile delegator \
-  --function-id 0x1::delegation_pool::reactivate_stake \
-  --args address:<pool_address> u64:<amount>
+    --function-id 0x1::delegation_pool::reactivate_stake \
+    --args address:<pool_address> u64:<amount>
   ```
 
 - Withdraw `amount` of owned inactive stake from the delegation pool at `pool_address` using the public entry method ` withdraw(delegator: &signer, pool_address: address, amount: u64)` and the command:
 
-  ```bash
+  ```bash filename="Terminal"
   aptos move run --profile delegator \
-  --function-id 0x1::delegation_pool::withdraw \
-  --args address:<pool_address> u64:<amount>
+    --function-id 0x1::delegation_pool::withdraw \
+    --args address:<pool_address> u64:<amount>
   ```
 
 ## Perform pool owner operations
@@ -94,28 +96,28 @@ Delegation pool owners have access to specific methods designed for modifying th
 
 - Set the operator address for the delegation pool:
 
-  ```bash
+  ```bash filename="Terminal"
   aptos move run --profile delegation_pool_owner \
-  --function-id 0x1::delegation_pool::set_operator \
-  --args address:<new_operator_address>
+    --function-id 0x1::delegation_pool::set_operator \
+    --args address:<new_operator_address>
   ```
 
 - Set the delegated voter address for the delegation pool:
 
-  ```bash
+  ```bash filename="Terminal"
   aptos move run --profile delegation_pool_owner \
-  --function-id 0x1::delegation_pool::set_delegated_voter \
-  --args address:<new_operator_address>
+    --function-id 0x1::delegation_pool::set_delegated_voter \
+    --args address:<new_operator_address>
   ```
 
 Delegation pool owners can update the commission percentage for the delegation pool. The commission rate change can be requested at least 7.5 days before the current lockup cycle ends. The new commission percentage takes effect upon any `synchronize_delegation_pool` call after the end of the current lockup cycle. Owners are required to call `synchronize_delegation_pool` as soon as the lockup cycle ends to ensure that the new commission percentage takes effect. Otherwise, the old commission rate will continue to be used until the next `synchronize_delegation_pool` call.
 
 - Update the commission percentage for the delegation pool; `<new_commission_percentage>` has two decimal points precision (e.g., 13.25% is represented as 1325):
 
-  ```bash
+  ```bash filename="Terminal"
   aptos move run --profile delegation_pool_owner \
-  --function-id 0x1::delegation_pool::update_commission_percentage \
-  --args u64:<new_commission_percentage>
+    --function-id 0x1::delegation_pool::update_commission_percentage \
+    --args u64:<new_commission_percentage>
   ```
 
 ## Set beneficiary addresses for operators
@@ -124,17 +126,17 @@ Delegation pool operators can set beneficiary addresses to receive the operator 
 
 - The beneficiary addresses can be set by the operator using the following command:
 
-  ```bash
+  ```bash filename="Terminal"
   aptos move run --profile delegation_pool_operator \
-  --function-id 0x1::delegation_pool::set_beneficiary_for_operator \
-  --args address:<new_beneficiary_address>
+    --function-id 0x1::delegation_pool::set_beneficiary_for_operator \
+    --args address:<new_beneficiary_address>
   ```
 
 - To view the beneficiary address set for the operator, use the following command:
-  ```bash
+  ```bash filename="Terminal"
   aptos move view --url <REST API for the network> \
-  --function-id 0x1::delegation_pool::beneficiary_for_operator \
-  --args address:<operator_address>
+    --function-id 0x1::delegation_pool::beneficiary_for_operator \
+    --args address:<operator_address>
   ```
 
 Any existing unpaid commission rewards will be paid to the new beneficiary. To ensures payment to the current beneficiary, one should first call `synchronize_delegation_pool` before switching the beneficiary. In case an operator operates multiple delegation pools, the operator can only set one beneficiary for all the delegation pools, not a separate one for each pool.
@@ -163,7 +165,7 @@ Until the delegation pool has received 1 million APT and the validator has been 
 
 In the [Aptos TypeScript SDK](../../../sdks/ts-sdk/index.md), a View function request would resemble:
 
-```ts
+```ts filename="view_function.ts"
 import { Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
 
 const NODE_URL = "https://aptos-testnet.public.blastapi.io";
@@ -181,8 +183,8 @@ const NODE_URL = "https://aptos-testnet.public.blastapi.io";
 
 Alternatively, you can use Aptos CLI to call View functions.
 
-```bash
- aptos move view [OPTIONS] --function-id <FUNCTION_ID>
+```bash filename="Terminal"
+aptos move view [OPTIONS] --function-id <FUNCTION_ID>
 ```
 
 To discover the available options and the process for making an `aptos move view` call, access the help information with `aptos move view --help`. This will display the required arguments for invoking the view functions.
