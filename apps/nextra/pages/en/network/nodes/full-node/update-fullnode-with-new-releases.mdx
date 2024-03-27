@@ -17,14 +17,14 @@ following these steps:
 
 1.  Stop your PFN by running the command below (or killing the `aptos-node` process manually):
 
-    ```bash
+    ```bash filename="Terminal"
     cargo stop aptos-node
     ```
 
 1.  Fetch the latest release appropriate for your network, e.g., `devnet`, `testnet`, or `mainnet`. Be sure to replace
     `[network_branch]` with the appropriate branch name below:
 
-        ```bash
+        ```bash filename="Terminal"
         git checkout [network_branch] && git pull
         ```
 
@@ -34,7 +34,7 @@ following these steps:
 
 1.  Restart your PFN by running the same deployment command as before. For example:
 
-    ```bash
+    ```bash filename="Terminal"
     cargo run -p aptos-node --release -- -f ./fullnode.yaml
     ```
 
@@ -64,13 +64,13 @@ If your PFN is running in `devnet`, follow these additional steps after stopping
 If you run your PFN from a Docker image, you can update your PFN by:
 
 1. Stop your PFN by running the command below:
-   ```bash
+   ```bash filename="Terminal"
    docker compose down --volumes
    ```
 2. (Devnet only!) If your PFN is running in `devnet`, delete the entire directory which holds your PFN config and data directory.
 3. Re-install and configure those files as during the original setup.
 4. Restart your PFN by running the same deployment command as before. For example:
-   ```bash
+   ```bash filename="Terminal"
    docker compose up -d
    ```
 
@@ -94,13 +94,13 @@ If you are running a `devnet` PFN, follow these steps to update:
 
 3. Update the Terraform module for the PFN (run this in the same directory of your `main.tf` file):
 
-```bash
+```bash filename="Terminal"
 terraform get -update
 ```
 
 4. Apply the Terraform changes:
 
-```bash
+```bash filename="Terminal"
 terraform apply
 ```
 
@@ -112,13 +112,13 @@ If you are not running a `devnet` PFN, follow these steps to update:
 
 2. Update the Terraform module for the PFN (run this in the same directory of your `main.tf` file):
 
-```bash
+```bash filename="Terminal"
 terraform get -update
 ```
 
 3. Apply the Terraform changes:
 
-```bash
+```bash filename="Terminal"
 terraform apply
 
 # If you didn't update the image tag, terraform will show nothing to change, in this case, force a helm update

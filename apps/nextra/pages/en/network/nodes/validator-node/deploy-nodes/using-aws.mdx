@@ -27,7 +27,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 
 1.  Create a working directory for your Aptos nodes, and pick a username for your nodes, e.g.,
 
-    ```bash
+    ```bash filename="Terminal"
     export WORKSPACE=mainnet
     export USERNAME=alice
     mkdir ~/$WORKSPACE
@@ -37,13 +37,13 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 2.  Create an S3 storage bucket for storing the Terraform state on AWS. You can do this on the AWS UI or using the
     command below:
 
-    ```bash
+    ```bash filename="Terminal"
     aws s3 mb s3://<bucket name> --region <region name>
     ```
 
 3.  Create a Terraform file called `main.tf` in your working directory:
 
-    ```bash
+    ```bash filename="Terminal"
     cd ~/$WORKSPACE
     vi main.tf
     ```
@@ -83,7 +83,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 
 5.  Initialize Terraform in the `$WORKSPACE` directory where you created the `main.tf` file.
 
-    ```bash
+    ```bash filename="Terminal"
     terraform init
     ```
 
@@ -91,7 +91,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 
 6.  Create a new Terraform workspace to isolate your environments, and see the list of workspaces.
 
-    ```bash
+    ```bash filename="Terminal"
     terraform workspace new $WORKSPACE
 
     # This command will list all workspaces
@@ -100,7 +100,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 
 7.  Apply the Terraform configuration.
 
-    ```bash
+    ```bash filename="Terminal"
     terraform apply
     ```
 
@@ -116,7 +116,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 
 9.  Next, we need to inject your node's IP information into your environment. You can do this by running the following commands:
 
-    ```bash
+    ```bash filename="Terminal"
     export VALIDATOR_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-validator-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
 
     export FULLNODE_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-fullnode-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
@@ -125,7 +125,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 10. Now, generate the key pairs for your nodes in your working directory. You can do this by running
     the following command with the Aptos CLI:
 
-    ```bash
+    ```bash filename="Terminal"
     aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
     ```
 
@@ -144,7 +144,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 11. Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
     which may be IP addresses or DNS addresses. This can be done by running the following command:
 
-    ```bash
+    ```bash filename="Terminal"
     aptos genesis set-validator-configuration \
       --local-repository-dir ~/$WORKSPACE \
       --username $USERNAME \
@@ -181,7 +181,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 14. Finally, insert the `genesis.blob`, `waypoint.txt` and the identity files as secrets into the k8s cluster,
     by running the following command:
 
-    ```bash
+    ```bash filename="Terminal"
     kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e1 \
         --from-file=genesis.blob=genesis.blob \
         --from-file=waypoint.txt=waypoint.txt \
@@ -202,7 +202,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 15. Now, we should be able to see that all pods are running, including the validator and VFN. You can check this by
     executing the following command:
 
-        ```bash
+        ```bash filename="Terminal"
         kubectl get pods
 
         # Example output

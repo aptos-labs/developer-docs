@@ -2,6 +2,10 @@
 title: "Node Health"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
+# Node Health
+
 This document describes how you can verify and monitor the health of your validator and validator fullnode (VFN) in the
 Aptos network. Many of the methods described here rely on the runtime metrics that your nodes collect and report. These
 metrics are collected by the Aptos node binary and are exposed via a Prometheus metrics endpoint. For a detailed
@@ -13,35 +17,37 @@ description of the important metrics, see the [Node Inspection Service](../../me
 After deploying your nodes and connecting them to the Aptos network, you should verify that your nodes are running
 correctly.
 
-:::tip First time?
+<Callout type="info">
+**FIRST TIME?**<br />
 In some environments, e.g., `mainnet` and `testnet`, your VFN will begin syncing first (before your validator is able to sync).
 This is normal behaviour. Once your VFN has finished syncing, your validator node will start syncing and eventually start participating in consensus.
-:::
+</Callout>
 
 You can verify the correctness of your nodes by inspecting several simple metrics. Follow these steps:
 
 1. Check if your nodes are state syncing by running this command:
 
-   ```bash
+   ```bash filename="Terminal"
    curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_state_sync_version"
    ```
 
    You should expect to see the `synced` or `synced_states` versions increasing. The versions should start increasing
    for your VFN first, then eventually your validator node will start syncing.
 
-   :::tip Cloud deployment?
+   <Callout type="info">
+   **CLOUD DEPLOYMENT?**<br />
    You may need to replace `127.0.0.1` with your validator or VFN IP/DNS if deployed on the cloud.
-   :::
+   </Callout>
 
 2. Verify that your validator is connecting to other peers on the network.
 
-   ```bash
+   ```bash filename="Terminal"
    curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_connections{.*\"Validator\".*}"
    ```
 
    The command will output the number of inbound and outbound connections of your validator node. For example:
 
-   ```bash
+   ```bash filename="Terminal"
    aptos_connections{direction="inbound",network_id="Validator",peer_id="f326fd30",role_type="validator"} 5
    aptos_connections{direction="outbound",network_id="Validator",peer_id="f326fd30",role_type="validator"} 2
    ```
@@ -52,7 +58,7 @@ You can verify the correctness of your nodes by inspecting several simple metric
 
 3. After your node syncs to the latest version, you can also check if consensus is making progress, and your node is proposing.
 
-   ```bash
+   ```bash filename="Terminal"
    curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_consensus_current_round"
 
    curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_consensus_proposals_count"
