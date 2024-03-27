@@ -42,7 +42,7 @@ If you use the `aptos-core` source code to run your PFN, follow these steps:
 First, use the [Aptos CLI](../../tools/aptos-cli/use-cli/use-aptos-cli.md) (`aptos`) to produce a hex encoded static
 x25519 private key. This will be the private key for your network identity. Run the following `aptos` CLI command:
 
-```bash
+```bash filename="Terminal"
 aptos key generate --key-type x25519 --output-file /path/to/private-key.txt
 ```
 
@@ -50,7 +50,7 @@ This command will create a file `private-key.txt` with the private key in it, an
 `private-key.txt.pub` file with the public key in it. An example `private-key.txt` file and
 `private-key.txt.pub` file are shown below:
 
-    ```bash
+    ```bash filename="Terminal"
     cat ~/private-key.txt
     C83110913CBE4583F820FABEB7514293624E46862FAE1FD339B923F0CACC647D%
 
@@ -64,7 +64,7 @@ Next, retrieve the peer identity from the public key using the `aptos` CLI. The 
 the command will provide the host information to output a network address for your PFN. Run the following command
 (be sure to update the `--host` flag with your actual host information):
 
-```bash
+```bash filename="Terminal"
 aptos key extract-peer --host example.com:6180 \
     --public-network-key-file private-key.txt.pub \
     --output-file peer-info.yaml
@@ -127,7 +127,7 @@ If you use Docker to run your PFN, follow these steps:
 
 First, `cd` into the directory for your local PFN and start a Docker container with the latest tools, for example:
 
-```bash
+```bash filename="Terminal"
 cd ~/my-full-node
 docker run -it aptoslabs/tools:devnet /bin/bash
 ```
@@ -139,7 +139,7 @@ Next, follow the remaining steps from inside the `aptoslabs/tools` Docker contai
 Open a new terminal and `cd` into the directory where you started the Docker container for your PFN. Making
 sure to provide the **full path** to where you want the private key file to be stored, run the command:
 
-```bash
+```bash filename="Terminal"
 aptos key generate \
     --key-type x25519 \
     --output-file /path/to/private-key.txt
@@ -151,7 +151,7 @@ Next, retrieve the peer identity from the public key using the `aptos` CLI. The 
 the command will provide the host information to output a network address for your PFN. Run the following command
 (be sure to update the `--host` flag with your actual host information):
 
-```bash
+```bash filename="Terminal"
 aptos key extract-peer --host example.com:6180 \
     --public-network-key-file private-key.txt.pub \
     --output-file peer-info.yaml

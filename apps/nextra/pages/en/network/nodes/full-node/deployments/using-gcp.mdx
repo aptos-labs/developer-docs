@@ -29,7 +29,7 @@ you need to install:
 
 After you have installed the gcloud CLI, [log into GCP using gcloud](https://cloud.google.com/sdk/gcloud/reference/auth/login):
 
-```bash
+```bash filename="Terminal"
 gcloud auth login --update-adc
 ```
 
@@ -76,13 +76,13 @@ You can deploy a PFN on GCP by using the Aptos Terraform module.
    - Choose a workspace name e.g. `devnet`. **Note**: This defines the Terraform workspace name, which in turn is used
      to form resource names. Feel free to choose a different name if you are connecting to a different network.
 
-   ```bash
+   ```bash filename="Terminal"
    export WORKSPACE=devnet
    ```
 
    - Create a directory for the workspace
 
-   ```bash
+   ```bash filename="Terminal"
    mkdir -p ~/$WORKSPACE
    ```
 
@@ -90,7 +90,7 @@ You can deploy a PFN on GCP by using the Aptos Terraform module.
    to create the bucket. The name of the bucket must be unique. See the Google Cloud Storage documentation,
    [here](https://cloud.google.com/storage/docs/creating-buckets#prereq-cli).
 
-```bash
+```bash filename="Terminal"
 gsutil mb gs://BUCKET_NAME
 # for example
 gsutil mb gs://<project-name>-aptos-terraform-dev
@@ -98,7 +98,7 @@ gsutil mb gs://<project-name>-aptos-terraform-dev
 
 3. Create Terraform file called `main.tf` in your working directory:
 
-```bash
+```bash filename="Terminal"
 cd ~/$WORKSPACE
 touch main.tf
 ```
@@ -139,7 +139,7 @@ module "fullnode" {
 
 5. Initialize Terraform in the same directory of your `main.tf` file:
 
-```bash
+```bash filename="Terminal"
 terraform init
 ```
 
@@ -147,7 +147,7 @@ This will download all the Terraform dependencies into the `.terraform` folder.
 
 6. Create a new Terraform workspace to isolate your environments:
 
-```bash
+```bash filename="Terminal"
 terraform workspace new $WORKSPACE
 # This command will list all workspaces
 terraform workspace list
@@ -155,7 +155,7 @@ terraform workspace list
 
 7. Apply the configuration:
 
-```bash
+```bash filename="Terminal"
 terraform apply
 ```
 
@@ -167,7 +167,7 @@ Once Terraform apply finishes, you can follow this section to validate your depl
 
 1. Configure your Kubernetes client to access the cluster you just deployed:
 
-```bash
+```bash filename="Terminal"
 gcloud container clusters get-credentials aptos-$WORKSPACE --zone <region_zone_name> --project <project_name>
 # for example:
 gcloud container clusters get-credentials aptos-devnet --zone us-central1-a --project aptos-fullnode
@@ -175,7 +175,7 @@ gcloud container clusters get-credentials aptos-devnet --zone us-central1-a --pr
 
 2. Check that your PFN pods are now running (this may take a few minutes):
 
-```bash
+```bash filename="Terminal"
 kubectl get pods -n aptos
 ```
 
@@ -188,7 +188,7 @@ devnet0-aptos-fullnode-0   1/1     Running   0          56s
 
 3. Get your PFN IP:
 
-```bash
+```bash filename="Terminal"
 kubectl get svc -o custom-columns=IP:status.loadBalancer.ingress -n aptos
 ```
 
@@ -200,7 +200,7 @@ You should see something like this:
 
 4. Check the REST API, make sure that the ledger version is increasing:
 
-```bash
+```bash filename="Terminal"
 curl http://<IP>/v1
 # Example command syntax: curl http://104.198.36.142/v1
 ```
@@ -220,7 +220,7 @@ You should see this something like this:
 
    - Set up the port-forwarding to the aptos-fullnode pod. Use `kubectl get pods -n aptos` to get the name of the pod:
 
-     ```bash
+     ```bash filename="Terminal"
      kubectl port-forward -n aptos <pod-name> 9101:9101
      # for example:
      kubectl port-forward -n aptos devnet0-aptos-fullnode-0 9101:9101
@@ -228,7 +228,7 @@ You should see this something like this:
 
    - Open a new ssh terminal. Execute the following curl calls to verify the correctness:
 
-     ```bash
+     ```bash filename="Terminal"
      curl -v http://0:9101/metrics 2> /dev/null | grep "aptos_state_sync_version{type=\"synced\"}"
 
      curl -v http://0:9101/metrics 2> /dev/null | grep "aptos_connections{direction=\"outbound\""
@@ -274,7 +274,7 @@ module "fullnode" {
 
 3. Apply Terraform changes:
 
-```bash
+```bash filename="Terminal"
 terraform apply
 ```
 
@@ -323,7 +323,7 @@ module "fullnode" {
 
 3. Apply Terraform changes:
 
-```bash
+```bash filename="Terminal"
 terraform apply
 ```
 
@@ -331,7 +331,7 @@ terraform apply
 
 To check the logs of the pod, use the following commands:
 
-```bash
+```bash filename="Terminal"
 # Get a list of the pods
 kubectl get pods -n aptos
 

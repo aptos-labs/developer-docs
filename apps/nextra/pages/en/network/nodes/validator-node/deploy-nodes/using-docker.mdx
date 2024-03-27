@@ -29,7 +29,7 @@ correct docker images by network name.
 
 1. Create a working directory for your Aptos nodes, and pick a username for your nodes, e.g.,
 
-   ```bash
+   ```bash filename="Terminal"
    export WORKSPACE=mainnet
    export USERNAME=alice
    mkdir ~/$WORKSPACE
@@ -39,7 +39,7 @@ correct docker images by network name.
 2. Generate the key pairs for your nodes in your working directory. You can do this by running
    the following command with the Aptos CLI:
 
-   ```bash
+   ```bash filename="Terminal"
    aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
    ```
 
@@ -65,7 +65,7 @@ correct docker images by network name.
 
    You can set your validator configuration by running the following command with the Aptos CLI:
 
-   ```bash
+   ```bash filename="Terminal"
 
    # Replace <validator node IP / DNS address> and <Full Node IP / DNS address> below,
    # with the appropriate IP or DNS address for your nodes.
@@ -133,7 +133,7 @@ correct docker images by network name.
 
 6. To start the validator node, run the following command in your working directory:
 
-   ```bash
+   ```bash filename="Terminal"
    docker-compose up (or `docker compose up` depends on your version)
    ```
 
@@ -170,7 +170,7 @@ correct docker images by network name.
 
    To start the VFN, run the following command in your working directory:
 
-   ```bash
+   ```bash filename="Terminal"
    docker-compose -f docker-compose-fullnode.yaml up
    ```
 

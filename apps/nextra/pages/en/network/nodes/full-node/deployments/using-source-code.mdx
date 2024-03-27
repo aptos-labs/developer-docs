@@ -15,12 +15,12 @@ on how to download the `aptos-core` repository and build the binary. Then, follo
 
    - Run this command to download the genesis blob (for mainnet):
 
-     ```bash
+     ```bash filename="Terminal"
      curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/genesis.blob
      ```
 
    - Run this command to download the waypoint file (for mainnet):
-     ```bash
+     ```bash filename="Terminal"
      curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/waypoint.txt
      ```
 
@@ -31,7 +31,7 @@ on how to download the `aptos-core` repository and build the binary. Then, follo
    :::
 
 1. Next, run the command below to create a copy of the PFN configuration YAML template:
-   ```bash
+   ```bash filename="Terminal"
    cp config/src/config/test_data/public_full_node.yaml fullnode.yaml
    ```
 1. Finally, edit the `fullnode.yaml` configuration file to ensure that your PFN: (i) contains the genesis blob
@@ -57,7 +57,7 @@ on how to download the `aptos-core` repository and build the binary. Then, follo
 
 1. Start your local public fullnode by running the below command:
 
-```bash
+```bash filename="Terminal"
 cargo run -p aptos-node --release -- -f ./fullnode.yaml
 ```
 

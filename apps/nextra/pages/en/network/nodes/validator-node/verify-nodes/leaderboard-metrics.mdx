@@ -2,6 +2,10 @@
 title: "Validator Leaderboard"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
+# Validator Leaderboard
+
 This document explains how the rewards performance for validator nodes are calculated and displayed on
 the [Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet).
 
@@ -33,10 +37,11 @@ success rate. For example:
 - Similarly, another leader with 80 successful and 20 failed proposal will also receive 80% of maximum reward.
 - Also, two leaders with no failures but one with 10 and another with 100 successful proposals will get the same % of the maximum reward.
 
-:::tip Rewards rate
+<Callout type="info">
+**REWARDS RATE**<br />
 Note also that the rewards rate is the same for every validator. Hence, the maximum reward is directly proportional
 to the staking amount, i.e., the more a validator stakes, the more the validator can earn in absolute terms.
-:::
+</Callout>
 
 ### Rewards performance
 

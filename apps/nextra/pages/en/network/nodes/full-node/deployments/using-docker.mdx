@@ -18,7 +18,7 @@ issue: https://github.com/aptos-labs/aptos-core/issues/1412
    download the `fullnode.yaml` configuration file, the `genesis.blob` and `waypoint.txt` files for your PFN, and
    create a `data` directory to store the blockchain database:
 
-```bash
+```bash filename="Terminal"
 mkdir mainnet && cd mainnet
 mkdir data && \
 curl -O https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/fullnode.yaml && \
@@ -61,7 +61,7 @@ Override the following if you do not want other PFNs connecting to yours: `liste
 
 4. Next, run the following `docker` command:
 
-```bash
+```bash filename="Terminal"
 docker run --pull=always \
     --rm -p 8080:8080 \
     -p 9101:9101 -p 6180:6180 \
