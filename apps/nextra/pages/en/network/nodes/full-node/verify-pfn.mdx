@@ -18,13 +18,13 @@ sync works in the [state sync](../../guides/state-sync.md) guide). You can monit
 by querying the metrics port to see what version your node is currently synced to. Run the following example
 command to see the currently synced version of your node:
 
-```bash
+```bash filename="Terminal"
 curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_state_sync_version{.*\"synced\"}" | awk '{print $2}'
 ```
 
 The command will output the current synced version of your node. For example:
 
-```bash
+```bash filename="Terminal"
 71000
 ```
 
@@ -37,7 +37,7 @@ nodes may sync with some variance.
 If your node is fast syncing, the command may show `0` until it has finally caught up. To verify that the node is
 fast syncing, run the following command:
 
-```bash
+```bash filename="Terminal"
 curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_state_sync_version{.*\"synced_states\"}" | awk '{print $2}'
 ```
 
@@ -53,13 +53,13 @@ You can read more about fast syncing here: [State sync bootstrapping](../../guid
 If you wish, you can also check the outbound network connections for your PFN. The number of outbound network
 connections should be more than `0` for healthy PFNs. Run the following command:
 
-```bash
+```bash filename="Terminal"
 curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_connections{direction=\"outbound\""
 ```
 
 The above command will output the number of outbound network connections for your node. For example:
 
-```bash
+```bash filename="Terminal"
 curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_connections{direction=\"outbound\""
 aptos_connections{direction="outbound",network_id="Public",peer_id="aabd651f",role_type="full_node"} 3
 ```
@@ -79,7 +79,7 @@ container and checking the size. This will allow you to see how much storage the
 - First, run `docker container ls` on your terminal and copy the NAME field output. This will be a string similar to `public_full_node_fullnode_1`.
 - Next, run these commands to check the storage size consumed by the ledger, using the NAME field you copied over in place of `public_full_node_fullnode_1`:
 
-```bash
+```bash filename="Terminal"
 # Obtain the container ID:
 id=$(docker container ls | grep public_full_node_fullnode_1 | grep -oE "^[0-9a-zA-Z]+")
 
