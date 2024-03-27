@@ -3,36 +3,41 @@ title: "Staking Pool Operations"
 slug: "staking-pool-operations"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
 # Staking Pool Operations
 
 This document describes how to perform [staking](../../../concepts/staking.md) pool operations. Note that a staking pool can only accept stake
 from the stake pool owner. You can stake only when you meet the minimum staking requirement.
 
-:::tip Minimum staking requirement
+<Callout type="info">
+**MINIMUM STAKING REQUIREMENT**<br/>
 The current minimum staking requirement is 1 million APT.
-:::
+</Callout>
 
 See also the related
 [Delegation Pool Operations](./delegation-pool-operations.md) instructions to accept stake from multiple delegators in order to reach the minimum
 staking requirement.
 
-:::danger Pool types are static
+<Callout type="warning">
+**POOL TYPES ARE STATIC**<br/>
 There is no upgrade mechanism for the staking contract to move from a staking pool to a delegation pool. A new
 delegation pool must be created.
-:::
+</Callout>
 
 ## Initialize a staking pool
 
-:::tip Testnet vs Mainnet
+<Callout type="info">
+**TESTNET VS MAINNET**<br/>
 The Aptos CLI commands below target mainnet. Change the `--network` value for testnet and devnet.
 View the values in [Aptos Blockchain Networks](../../networks.md) to see how profiles can be configured based on the network.
-:::
+</Callout>
 
 Before initializing a staking pool, ensure that there is an existing owner account with 1 Million APT.
 
 1. Initialize the [Aptos CLI](../../../tools/aptos-cli/index.md) with a private key from an existing account, such as a wallet, or create a new account.
 
-```bash
+```bash filename="Terminal"
 aptos init --profile mainnet-owner \
   --network mainnet
 ```
@@ -41,13 +46,13 @@ You can either enter the private key from an existing wallet, or create new wall
 
 2. Run the following command to initialize the staking pool:
 
-```bash
+```bash filename="Terminal"
 aptos stake create-staking-contract \
---operator <operator-address> \
---voter <voter-address> \
---amount 100000000000000 \
---commission-percentage 10 \
---profile mainnet-owner
+  --operator <operator-address> \
+  --voter <voter-address> \
+  --amount 100000000000000 \
+  --commission-percentage 10 \
+  --profile mainnet-owner
 ```
 
 3. Once the staking pool has been initialized, you can proceed to [connect to the Aptos Network](./connect-to-aptos-network.md).
@@ -56,7 +61,7 @@ aptos stake create-staking-contract \
 
 ### Transfer coin between accounts
 
-```bash
+```bash filename="Terminal"
 aptos account transfer \
   --account <operator-address> \
   --amount <amount> \
@@ -65,7 +70,7 @@ aptos account transfer \
 
 ### Switch operator
 
-```bash
+```bash filename="Terminal"
 aptos stake set-operator \
   --operator-address <new-operator-address> \
   --profile mainnet-owner
@@ -73,7 +78,7 @@ aptos stake set-operator \
 
 ### Switch voter
 
-```bash
+```bash filename="Terminal"
 aptos stake set-delegated-voter \
   --voter-address <new-voter-address> \
   --profile mainnet-owner
@@ -81,7 +86,7 @@ aptos stake set-delegated-voter \
 
 ### Add stake
 
-```bash
+```bash filename="Terminal"
 aptos stake add-stake \
   --amount <amount> \
   --profile mainnet-owner
@@ -89,13 +94,13 @@ aptos stake add-stake \
 
 ### Increase stake lockup
 
-```bash
+```bash filename="Terminal"
 aptos stake increase-lockup --profile mainnet-owner
 ```
 
 ### Unlock stake
 
-```bash
+```bash filename="Terminal"
 aptos stake unlock-stake \
   --amount <amount> \
   --profile mainnet-owner
@@ -103,7 +108,7 @@ aptos stake unlock-stake \
 
 ### Withdraw stake
 
-```bash
+```bash filename="Terminal"
 aptos stake withdraw-stake \
   --amount <amount> \
   --profile mainnet-owner
@@ -111,10 +116,10 @@ aptos stake withdraw-stake \
 
 ### Update commission
 
-```bash
+```bash filename="Terminal"
 aptos move run --function-id 0x1::staking_contract::update_commision \
---args address:<operator_address> u64:<commission_percentage> \
---profile mainnet-owner
+  --args address:<operator_address> u64:<commission_percentage> \
+  --profile mainnet-owner
 ```
 
 ## Set beneficiary addresses for operators
@@ -123,17 +128,17 @@ Staking pool operators can set beneficiary addresses to receive the operator com
 
 - The beneficiary addresses can be set by the operator using the following command:
 
-  ```bash
+  ```bash filename="Terminal"
   aptos move run --profile mainnet_operator \
-  --function-id 0x1::staking_contract::set_beneficiary_for_operator \
-  --args address:<new_beneficiary_address>
+    --function-id 0x1::staking_contract::set_beneficiary_for_operator \
+    --args address:<new_beneficiary_address>
   ```
 
 - To view the beneficiary address set for the operator, use the following command:
-  ```bash
+  ```bash filename="Terminal"
   aptos move view --url <REST API for the network> \
-  --function-id 0x1::staking_contract::beneficiary_for_operator \
-  --args address:<operator_address>
+    --function-id 0x1::staking_contract::beneficiary_for_operator \
+    --args address:<operator_address>
   ```
 
 Any existing unpaid commission rewards will be paid to the new beneficiary. To ensures payment to the current beneficiary, one should first call `distribute` before switching the beneficiary. In case an operator operates multiple staking pools, the operator can set one beneficiary for all the staking pools, not a separate one for each pool.
@@ -142,19 +147,19 @@ Once the beneficiary address is set, the beneficiary can claim the operator comm
 
 ## Checking your stake pool information
 
-:::tip How validation works
+<Callout type="info">
 Before you proceed, see [Validation on the Aptos blockchain](../../../concepts/staking.md#validation-on-the-aptos-blockchain) for a brief overview.
-:::
+</Callout>
 
 To check the details of your stake pool, run the below CLI command with the `get-stake-pool` option by providing the `--owner-address` and `--url` fields.
 
 The below command is for an example owner address `e7be097a90c18f6bdd53efe0e74bf34393cac2f0ae941523ea196a47b6859edb`.
 
-:::tip
+<Callout type="info">
 For testnet or devnet `--url` field values, see [Aptos Blockchain Networks](../../networks.md).
-:::
+</Callout>
 
-```bash
+```bash filename="Terminal"
 aptos node get-stake-pool \
   --owner-address e7be097a90c18f6bdd53efe0e74bf34393cac2f0ae941523ea196a47b6859edb \
   --profile mainnet-operator
@@ -214,9 +219,10 @@ Example output:
 
   For example, in a scenario with a lock-up of one month, you call `aptos stake request-commission` every month. This will pay out the commission that was accrued during the previous month but only when unlocked at the end of the previous month. Regardless of how often you run `aptos stake request-commission` during the month, the commission is only paid out upon the completion of `lockup_expiration_utc_time`.
 
-  :::tip Compounding
+  <Callout type="info">
+  **COMPOUNDING**<br/>
   Note that if you do not request commission for multiple months, your commission will accrue more due to compounding of the **commission_percentage** during these months.
-  :::
+  </Callout>
 
 **commission_not_yet_unlocked**
 
@@ -234,7 +240,7 @@ Example output:
 
 Either an owner, an operator or the beneficiary of the operator can request commission. You must request commission **twice**, once before the end of the lockup period and a second time after the lockup period ends, i.e., at the end of **lockup_expiration_utc_time**, by running the `aptos stake request-commission` command. Make sure to provide the operator and the owner addresses. See an example command below:
 
-```bash
+```bash filename="Terminal"
 aptos stake request-commission \
   --operator-address 0x3bec5a529b023449dfc86e9a6b5b51bf75cec4a62bf21c15bbbef08a75f7038f \
   --owner-address 0xe7be097a90c18f6bdd53efe0e74bf34393cac2f0ae941523ea196a47b6859edb \
@@ -259,7 +265,7 @@ Commission is unlocked when `request-commission` is called, the staker unlocks s
 
 To see your validator performance in the current and past epochs and the rewards earned, run the below command. The output will show the validator's performance in block proposals, and in governance voting and governance proposals. Default values are used in the below command. Type `aptos node get-performance --help` to see default values used.
 
-```bash
+```bash filename="Terminal"
 aptos node get-performance \
   --pool-address <pool address> \
   --profile mainnet-operator
@@ -318,7 +324,7 @@ Example output:
 
 To check the performance of all the epochs since the genesis, run the below command. You can filter the results for your pool address with `grep`, as shown below:
 
-```bash
+```bash filename="Terminal"
 aptos node analyze-validator-performance \
   --analyze-mode detailed-epoch-table \
   --profile mainnet-operator \
