@@ -3,23 +3,27 @@ title: "Using Source Code"
 slug: "run-validator-node-using-source"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
 # Using Source Code
 
 This is a step-by-step guide to deploy an Aptos validator and validator fullnode (VFN) using source code. Using this guide, the validator
 and VFN will be deployed on separate machines.
 
-:::caution Prerequisites
+<Callout type="warning">
+Prerequisites
 Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.md). Similarly, make sure you have
 installed the [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/index), as you will need it to setup your nodes.
-:::
+</Callout>
 
 ## Deployment Steps
 
-:::tip Default connection to mainnet
+<Callout type="info">
+**Default connection to mainnet**<br />
 If you follow the default setup in this document, then your validator and VFN will be connected to the Aptos mainnet.
 To connect to a different Aptos network, such as testnet, make sure you select the appropriate source code branch
 when you build the binary, and download the correct genesis and waypoint files for the network you want to connect to.
-:::
+</Callout>
 
 1.  Follow the steps in [Building Aptos From Source](../../../../guides/building-from-source.md) to download the `aptos-core` repository and source code.
 
@@ -48,18 +52,20 @@ when you build the binary, and download the correct genesis and waypoint files f
     - `validator-identity.yaml`: This file contains the public and private keys for your validator, as well as your account address.
     - `validator-full-node-identity.yaml`: This file contains the public and private keys for your VFN, as well as your account address.
 
-    :::danger Backup your private keys
+    <Callout type="warning">
+    **Backup your private keys** <br />
     Your private keys are important for you to establish ownership of your nodes. Never share your **private** keys with anyone,
     and make sure to **backup** `private-keys.yaml` somewhere safe.
-    :::
+    </Callout>
 
 5.  Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
     which may be IP addresses or DNS addresses.
 
-    :::tip DNS addresses
+    <Callout type="tip">
+    **DNS addresses** <br />
     Using DNS is recommended over IP addresses, as it enables more efficient node migrations and is more resilient
     to host changes.
-    :::
+    </Callout>
 
     You can set your validator configuration by running the following command with the Aptos CLI:
 
@@ -141,7 +147,7 @@ when you build the binary, and download the correct genesis and waypoint files f
       file location. - The `vfn` network will need to be updated with the correct IP address or DNS address of the validator.
       For example, if you are using IP addresses, you will need to update the `addresses` field as follows:
 
-      ```yaml
+      ```yaml filename="fullnode.yaml"
       ---
       addresses:
         - "/ip4/100.100.100.100/tcp/6181/noise-ik/..." # Set the IP Address of the validator
@@ -149,7 +155,7 @@ when you build the binary, and download the correct genesis and waypoint files f
 
       Otherwise, if you are using DNS addresses, you will need to update the `addresses` field as follows:
 
-      ```yaml
+      ```yaml filename="fullnode.yaml"
       ---
       addresses:
         - "/dns/example.com/tcp/6181/noise-ik/..." # Set the DNS Address of the validator
@@ -185,11 +191,12 @@ when you build the binary, and download the correct genesis and waypoint files f
     `aptos-core` source code and build the binary on the VFN machine. Likewise, you will need to copy across
     the keys and configuration files from the validator machine.
 
-    :::danger VFN identity
+    <Callout type="warning">
+    **VFN identity** <br />
     You should copy the keys and configuration
     files across to the VFN machine from the working location where they were generated. Do not attempt to generate
     another set of keys or files for the VFN, as these will not be recognized by the network.
-    :::
+    </Callout>
 
     Start your VFN by running the following commands, with the paths assuming you are in the root of the `aptos-core` directory:
 
@@ -200,10 +207,11 @@ when you build the binary, and download the correct genesis and waypoint files f
     aptos-node -f ~/$WORKSPACE/config/fullnode.yaml
     ```
 
-    :::caution Next steps
+    <Callout type="warning">
+    **Next steps** <br />
     You have now completed setting up your validator and VFN using source code. However, your nodes will not be able to connect
     to the Aptos network just yet.
-    :::
+    </Callout>
 
 ### (Optional) Running as a Service
 
@@ -238,5 +246,5 @@ WantedBy=multi-user.target
 
 ## Connecting to the Aptos Network
 
-You have now completed setting up your validator and VFN using source code. Proceed to [Connect Nodes](../connect-nodes/index.md)
+You have now completed setting up your validator and VFN using source code. Proceed to [Connect Nodes](../connect-nodes.mdx)
 for the next steps.
