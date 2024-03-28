@@ -2,9 +2,6 @@
 title: "Identity and Configuration"
 ---
 
-import ThemedImage from '@theme/ThemedImage';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
 # Node Identity and Configuration
 
 When installing a node on an Aptos network, the installation steps require you to work with identities and configurations. This document describes how to interpret the terms **identity** and **configuration**, and presents a description of the identity YAML files.
@@ -68,13 +65,13 @@ aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
 
 See below a diagram that shows how the identities for the validator node and validator fullnode are derived from the private and public keys:
 
-<ThemedImage
+{/* <ThemedImage
 alt="Signed Transaction Flow"
 sources={{
     light: useBaseUrl('/img/docs/key-yamls.svg'),
     dark: useBaseUrl('/img/docs/key-yamls-dark.svg'),
   }}
-/>
+/> */}
 
 ### public-keys.yaml
 
