@@ -41,3 +41,112 @@ If your wallet provides functionality that is not included, you should open a pu
 ### Add your name to the wallets list
 
 Once the package is published, create a pull request against the [aptos-wallet-adapter](https://github.com/aptos-labs/aptos-wallet-adapter) package and add your wallet name to the [supported wallet list](https://github.com/aptos-labs/aptos-wallet-adapter#supported-wallet-packages) on the README file as a URL to your NPM package.
+
+## AIP-62 Wallet Standard
+
+The AIP-62 Wallet Standard is a chain-agnostic set of interfaces and conventions that aim to improve how applications interact with injected wallets. Read more about it [here](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md).
+
+### Why integrating with the AIP-62 wallet standard?
+
+:::note
+In the near future and as wallets onboard to the new standard, the wallet adapter will deprecate the legacy standard and keep only the AIP-62 wallet standard support.
+:::
+
+The AIP-62 wallet standard eliminates the current issues wallets have:
+
+- Relying solely on a dapp detecting process logic can create a race condition risk in the case the dapp loads before a wallet and the dapp is not aware of the new wallets
+- The legacy standard is deeply integrated within the Aptos wallet adapter, and any change can cause breaking changes for dApps and wallets, creating endless maintenance work by requiring a dApp or wallet to implement these changes.
+- The legacy standard supports only the legacy TS SDK input, types, and logic. That means that it doesn't enjoy the features and enhancements of the new TS SDK. In addition, the legacy TS SDK does not receive any more support or new features.
+
+In addition, a wallet can benefit from onboarding with the AIP-62 wallet standard by:
+
+- Wallet owns and controls its own interface and can easily update and provide new features without introducing any breaking change to the dapp
+- The wallet integration code lives in the wallet codebase and does not require a wallet to create and maintain another wallet package
+- Wallets dont need to rely on dapps to install and maintain its wallet package
+- The AIP-62 wallet standard provides better validation and error handling support, and uses the new TS SDK which is more reliable, fast and actively maintained and developed with new features (the legacy sdk, i.e aptos, is no longer actively maintained and developed).
+
+## How to integrate with the AIP-62 wallet standard?
+
+:::tip
+Aptos provides a [@aptos-labs/wallet-standard](https://github.com/aptos-labs/wallet-standard) packages that holds the standard interface and class a wallet should implement. In addition, it provides helper functions to detect Aptos compatible wallets.
+:::
+
+Integrating with the AIP-62 wallet standard is pretty simple and straightforward, can refer to [this example](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/utils/standardWallet.ts) of a wallet integration with the new standard
+
+:::note
+To be compatible with AIP-62 wallet standard and for be able to be detected by dapps, wallets must implement and support [required features](https://github.com/aptos-labs/wallet-standard/blob/main/src/detect.ts#L16)
+:::
+
+### AptosWallet interface implementation
+
+A wallet must implement a AptosWallet interface with the wallet provider info and features:
+
+```js
+import { AptosWallet } from "@aptos-labs/wallet-standard"
+
+class MyWallet implements AptosWallet {
+  url: string;
+  version: "1.0.0";
+  name: string;
+  icon:
+    | `data:image/svg+xml;base64,${string}`
+    | `data:image/webp;base64,${string}`
+    | `data:image/png;base64,${string}`
+    | `data:image/gif;base64,${string}`;
+  chains: AptosChain;
+  features: AptosFeatures;
+  accounts: readonly AptosWalletAccount[];
+}
+```
+
+### AptosWalletAccount interface implementation
+
+A wallet must implement a AptosWalletAccount interface that represents the accounts that have been authorized by the dapp.
+
+```js
+import { AptosWalletAccount, IdentifierArray } from "@aptos-labs/wallet-standard";
+import { SigningScheme } from "@aptos-labs/ts-sdk";
+
+class MyWalletAccount implements AptosWalletAccount {
+  address: string;
+
+  publicKey: Uint8Array;
+
+  chains: IdentifierArray;
+
+  features: IdentifierArray;
+
+  signingScheme: SigningScheme;
+
+  label?: string;
+
+  icon?:
+    | `data:image/svg+xml;base64,${string}`
+    | `data:image/webp;base64,${string}`
+    | `data:image/png;base64,${string}`
+    | `data:image/gif;base64,${string}`
+    | undefined;
+
+  constructor(account: Account) {
+    this.address = account.accountAddress.toString();
+    this.publicKey = account.publicKey.toUint8Array();
+    this.chains = APTOS_CHAINS;
+    this.features = ["aptos:connect"];
+    this.signingScheme = SigningScheme.Ed25519;
+  }
+}
+```
+
+### Register Wallet
+
+#### Web extension wallet
+
+A wallet registers itself using the registerWallet method to notify the dapp it is ready to be registered.
+
+```js
+import { registerWallet } from "@aptos-labs/wallet-standard";
+
+const myWallet = new MyWallet();
+
+registerWallet(myWallet);
+```

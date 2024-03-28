@@ -13,9 +13,6 @@ transactions. The Aptos Wallet Adapter allows for a single interface for apps an
 
 ## Implementing the Aptos Wallet Adapter
 
-For the best user experience, we suggest that dapps offer multiple wallets, to allow users to choose their preferred
-wallet.
-
 Implementing wallet integration can be difficult for dapps in:
 
 1. Support and test all edge cases
@@ -26,8 +23,8 @@ Implementing wallet integration can be difficult for dapps in:
 In addition, creating and implementing a wallet is also not an easy task,
 
 1. Provide a wallet that follows a known standard, so it is easy to integrate with
-2. Getting visibility and exposure in the ecosystem among all the other wallets
-3. Dapp projects need to dedicate time and resource to integrate the wallet within their app
+2. Dapp projects need to dedicate time and resource to integrate the wallet within their app
+3. Wallets require to rely solely on a dapp integration
 
 When we started building a wallet adapter, we wanted to provide an adapter that can be easy enough for wallets to integrate with and for dapps to use and implement.
 
@@ -51,6 +48,10 @@ This structure offers the following benefits:
   - Prevents build failures in case of any bugs/bad implementation/wrong config files/etc.
 - Simplicity - keeps the Provider package very light and small as the major logic is implemented in the core package.
 - Flexibility - for wallets in creating and implementing custom functions.
+
+:::note
+Following the new [Wallet Standard AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md) the wallet adapter supports both standards while the ecosystem is onboarding to the new standard. Dapps can follow the integration guide [here](./wallet-adapter-for-dapp.md#aip-62-wallet-standard) and Wallets can follow the integration guide [here](./wallet-adapter-for-wallets.md#aip-62-wallet-standard)
+:::
 
 ### Adapter Core package
 
