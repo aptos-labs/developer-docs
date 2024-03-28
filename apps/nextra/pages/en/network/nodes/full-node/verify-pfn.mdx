@@ -1,15 +1,17 @@
 ---
 title: "Verify a PFN"
-slug: "verify-pfn"
-sidebar_position: 10
 ---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Verify a PFN
 
 After deploying your PFN, you can verify that it is operating correctly by checking several of the PFN's metrics.
 This document describes the common types of checks that you might wish to perform.
 
-:::tip
+<Callout type="info">
 You can learn more about Aptos metrics in the [Node Inspection Service](../measure/node-inspection-service.md) documents.
-:::
+</Callout>
 
 ### Verify synchronization
 
@@ -33,7 +35,8 @@ Compare the synced version returned by this command (e.g., `71000`) with the hig
 version, it is synchronizing correctly. It is fine if the explorer page differs by a few versions, as the explorer
 nodes may sync with some variance.
 
-:::caution Using fast sync?
+<Callout type="warning">
+**Using fast sync?**<br />
 If your node is fast syncing, the command may show `0` until it has finally caught up. To verify that the node is
 fast syncing, run the following command:
 
@@ -46,7 +49,7 @@ latest version. Eventually, once fast syncing is complete, the `aptos_state_sync
 return the current synced version of your node.
 
 You can read more about fast syncing here: [State sync bootstrapping](../../guides/state-sync.md#bootstrapping-phase).
-:::
+</Callout>
 
 ### (Optional) Verify outbound network connections
 

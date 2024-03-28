@@ -2,16 +2,20 @@
 title: "Node Health Checker"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
+# Node Health Checker 
+
 The Aptos Node Health Checker (NHC) service can be used to check the health of any Aptos fullnodes (VFNs or PFNs).
 If you are a node operator, use the NHC service to check if your node is running correctly. The NHC service evaluates
 your node's health by comparing against a baseline node configuration, and outputs the evaluation results.
 
 This document describes how to run NHC locally when you are operating a node.
 
-:::tip
+<Callout type="info">
 If you don't want to run the NHC service yourself, you can use the
 [publicly available NHC service](https://nodetools.aptosfoundation.org/#/node_checker) run by the Aptos Foundation.
-:::
+</Callout>
 
 ## Quickstart
 
@@ -19,35 +23,37 @@ Before you get into the details of how NHC works, you can run the below steps to
 
 **Important**: If your local node is not a devnet fullnode, you must use a different baseline config. See [the configuration examples in aptos-core](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples) for other such example configs.
 
-### Step 1: Download the baseline configuration YAML
+<Steps>
+
+### Download the baseline configuration YAML
 
 Download a baseline configuration YAML file for a devnet fullnode. The below command will download the `devnet_fullnode.yaml` configuration file:
 
-```
+```bash filename="Terminal"
 mkdir /tmp/nhc
 cd /tmp/nhc
 wget https://raw.githubusercontent.com/aptos-labs/aptos-core/main/ecosystem/node-checker/configuration_examples/devnet_fullnode.yaml
 ```
 
-### Step 2: Start the NHC service
+### Start the NHC service
 
 Start the NHC service by providing the above-downloaded `devnet_fullnode.yaml` baseline configuration YAML file:
 
-```
+```bash filename="Terminal"
 docker run -v /tmp/nhc:/nhc -p 20121:20121 -t aptoslabs/node-checker:nightly /usr/local/bin/aptos-node-checker server run --baseline-config-paths /nhc/devnet_fullnode.yaml
 ```
 
-### Step 3: Send a request to NHC service
+### Send a request to NHC service
 
 Finally, send a request to the NHC service you started above. The following command runs health checks of your node that is at `node_url=http://mynode.mysite.com` and compares these results with the node configured in the baseline configuration `devnet_fullnode`:
 
-```
+```bash filename="Terminal"
 curl 'http://localhost:20121/check?node_url=http://mynode.mysite.com&api_port=80&baseline_configuration_id=devnet_fullnode'
 ```
 
 You will see output similar to this:
 
-```
+```json filename="Terminal"
 {
   "check_results": [
     {
@@ -77,6 +83,8 @@ You will see output similar to this:
 }
 ```
 
+</Steps>
+
 ## How NHC works
 
 The NHC runs as a service. When you want to run a health check of your node, you send the HTTP requests to this service.
@@ -95,7 +103,7 @@ You will download the baseline configuration YAML before running the NHC service
 
 When you send requests to the NHC service, you must include a baseline configuration. For example, a request to NHC to use `devnet_fullnode` as the baseline configuration will look like this:
 
-```
+```bash filename="Terminal"
 curl 'http://nhc.aptoslabs.com/check?node_url=http://myfullnode.mysite.com&baseline_configuration_id=devnet_fullnode'
 ```
 
@@ -109,7 +117,7 @@ You can find a few [example baseline configuration YAML files](https://github.co
 
 Next, download these configuration YAML files into the `/etc/nhc` folder in your host system. For example:
 
-```
+```bash filename="Terminal"
 mkdir /tmp/nhc
 cd /tmp/nhc
 configs=(devnet_fullnode testnet_fullnode mainnet_fullnode); for c in ${configs[@]}; do wget https://raw.githubusercontent.com/aptos-labs/aptos-core/main/ecosystem/node-checker/configuration_examples/$c.yaml; done
@@ -123,25 +131,25 @@ For some NHC configurations, you will need accompanying files, e.g. `mint.key` t
 
 ## Running NHC: Docker
 
-:::tip
+<Callout type="info">
 While the Aptos team hosts our own instances of this service, we encourage node operators to run their own instances.
-:::
+</Callout>
 
 When you are ready with baseline configuration YAML and the required files, you can run the NHC server with a command like this, for example, with Docker:
 
-```
+```bash filename="Terminal"
 docker run -v /etc/nhc:/etc/nhc -p 20121:20121 -t aptoslabs/node-checker:nightly /usr/local/bin/aptos-node-checker server run --baseline-config-paths /tmp/nhc/devnet_fullnode.yaml /tmp/nhc/testnet_fullnode.yaml /tmp/nhc/mainnet/fullnode.yaml
 ```
 
-:::tip
+<Callout type="info">
 You may want to include other environment variables such as `RUST_LOG=info`. As you can see, by default NHC runs on port 20121. Make sure to publish it from the container, as shown in the above command, and ensure the port is open on your host. You may change the port NHC runs on with `--listen-port`.
-:::
+</Callout>
 
 ## Running NHC: Source
 
 First, check out the source:
 
-```
+```bash filename="Terminal"
 git clone git@github.com:aptos-labs/aptos-core.git
 cd aptos-core
 ```
@@ -150,7 +158,7 @@ Depending on your setup, you may want to check out a particular branch, to ensur
 
 Run NHC:
 
-```
+```bash filename="Terminal"
 cargo run -p aptos-node-checker --release -- server run --baseline-config-paths /tmp/nhc/devnet_fullnode.yaml
 ```
 
@@ -158,7 +166,7 @@ cargo run -p aptos-node-checker --release -- server run --baseline-config-paths 
 
 To generate the OpenAPI specs, run the following commands from `ecosystem/node-checker`:
 
-```
+```bash filename="Terminal"
 cargo run -- server generate-openapi -f yaml > doc/spec.yaml
 cargo run -- server generate-openapi -f json > doc/spec.json
 ```

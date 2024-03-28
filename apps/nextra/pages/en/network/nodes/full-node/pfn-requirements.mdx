@@ -2,6 +2,8 @@
 title: "PFN Requirements"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
 To ensure that your public fullnode (PFN) operates smoothly, it should meet the requirements specified in this document.
 
 ## Hardware requirements
@@ -15,10 +17,11 @@ used in production as it will experience degradation under load. Example lower h
 - **CPU**: 8 cores, 16 threads (Intel Xeon Skylake or newer).
 - **Memory**: 32GB RAM.
 
-:::danger Minimum hardware requirements
+<Callout type="warning"> 
+**Minimum hardware requirements**<br />
 Failing to meet the minimum hardware requirements for a production-grade PFN mean that your
 PFN will likely experience degradation under load and general instability in production environments.
-:::
+</Callout>
 
 ## Network requirements and ports
 
@@ -36,10 +39,11 @@ that configures the public network to use port `6180`.
 The recommendations described below assume the default port settings used by PFNs. If you have
 changed the default port settings in your configuration file, then you should adjust the recommendations accordingly.
 
-:::caution Exposing ports
+<Callout type="warning"> 
+**Exposing ports**<br />
 Unless explicitly required, we recommend that you do not expose any other ports while operating a PFN. This is because
 exposing additional ports can increase the attack surface of your node and make it more vulnerable to adversaries.
-:::
+</Callout>
 
 #### Running a PFN:
 
@@ -50,15 +54,16 @@ Assuming default ports are used, the following should be configured for PFNs:
 - Close the following TCP ports:
   - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
   - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
-  - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
+  - `80/8080` - **REST API**: Close this port to prevent unauthorized REST API access.
 
-:::danger Exposing services
+<Callout type="warning"> 
+**Exposing services**<br />
 The inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
 are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
 port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
 to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to
 prevent abuse.
-:::
+</Callout>
 
 ## Storage requirements
 
@@ -71,7 +76,8 @@ that testnet and mainnet PFNs require several 100's of GB of storage.
 Note that because archival nodes store the entire history of the blockchain, the database size on archival nodes
 will continue to grow unbounded. As a result, we cannot provide a recommendation for archival node storage sizes.
 
-:::tip Devnet blockchain storage
+<Callout type="info"> 
+**Devnet blockchain storage**<br />
 The Aptos devnet is currently reset on a weekly basis. If you are deploying a devnet PFN, this means that the storage
 will be reset (i.e., wiped) every week. See the `#devnet-release` channel on the Aptos Discord.
-:::
+</Callout>

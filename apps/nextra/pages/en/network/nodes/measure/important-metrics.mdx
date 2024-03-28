@@ -2,16 +2,21 @@
 title: "Important Node Metrics"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
+# Important Node Metrics
+
 When you visit the metrics endpoint (see [Node Inspection Service](./node-inspection-service.md)), you will notice that
 there are a large number of metrics and counters being produced by your node. Most of these metrics and counters are
 useful only for blockchain development and diagnosing hard-to-find issues. As a result, we recommend that node
 operators ignore most metrics and pay attention to only the key metrics presented below:
 
-:::caution Metric instability
+<Callout type="info">
+**Metric instability**<br />
 As Aptos continues to grow and develop the blockchain software, many metrics will come and go.
 As a result, we recommend relying on the presence of only the metrics explicitly mentioned below.
 All other metrics should be considered unstable and may be changed/removed without warning.
-:::
+</Callout>
 
 ### Consensus
 
@@ -56,9 +61,9 @@ state), the following [state sync](../../guides/state-sync.md) metrics are impor
    facing issues syncing (or is seeing transient failures), these metrics will increase each time an error occurs.
    The `error_label` inside these metrics will display the error type.
 
-:::tip
+<Callout type="info">
 Compare the synced version shown by `aptos_state_sync_version{type="synced"}` with the highest version shown on the [Aptos Explorer](https://explorer.aptoslabs.com/?network=mainnet) to see how far behind the latest blockchain version your node is. Remember to select the correct network that your node is syncing to (e.g., `mainnet`).
-:::
+</Callout>
 
 ### Networking
 

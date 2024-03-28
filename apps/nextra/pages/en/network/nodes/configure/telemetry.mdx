@@ -2,15 +2,20 @@
 title: "Telemetry"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
+# Telemetry
+
 When you run a node on an Aptos network, your node will send telemetry data to Aptos Labs. All node types
 (e.g., validators, VFNs and PFNs) send telemetry data. This also occurs for other binaries (e.g., the Aptos CLI).
 If you would prefer not to send telemetry, you can disable telemetry using the instructions below.
 
-:::danger No personal information is collected
+<Callout type="info">
+**No personal information is collected**<br />
 The Aptos node binary does **not** collect any personal information, such as usernames or email addresses.
 It only collects relevant node telemetry, such as software version, node metrics, operating system information and the IP
 address of your node. This data is used to enhance the decentralization and performance of the network.
-:::
+</Callout>
 
 ## Node telemetry
 
@@ -56,7 +61,7 @@ CLI telemetry:
 On macOS and Linux, you can set the `APTOS_DISABLE_TELEMETRY` environment variable to disable the metrics sent by
 both the Aptos node and the Aptos CLI tool. To disable all telemetry, set `APTOS_DISABLE_TELEMETRY` environment to `true`:
 
-```bash
+```bash filename="Terminal"
 export APTOS_DISABLE_TELEMETRY=true
 ```
 
@@ -64,7 +69,7 @@ The above command only disables telemetry for a single session in the current te
 To disable it permanently across all terminals and Aptos binary invocations, include it in your startup profile.
 For example:
 
-```bash
+```bash filename="Terminal"
 echo "export APTOS_DISABLE_TELEMETRY=true" >> ~/.profile
 source ~/.profile
 ```
