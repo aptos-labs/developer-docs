@@ -115,7 +115,7 @@ tag for that network and replace all references to it.
 
 Example content for `main.tf`:
 
-```rust
+```terraform filename="main.tf"
 terraform {
   required_version = "~> 1.3.6"
   backend "gcs" {
@@ -180,7 +180,7 @@ kubectl get pods -n aptos
 
 You should see this:
 
-```
+```text
 NAME                       READY   STATUS    RESTARTS   AGE
 devnet0-aptos-fullnode-0   1/1     Running   0          56s
 ```
@@ -206,8 +206,17 @@ curl http://<IP>/v1
 
 You should see this something like this:
 
-```
-{"chain_id":25,"epoch":"22","ledger_version":"9019844","oldest_ledger_version":"0","ledger_timestamp":"1661620200131348","node_role":"full_node","oldest_block_height":"0","block_height":"1825467"}
+```json filename="Terminal"
+{
+  "chain_id": 25,
+  "epoch": "22",
+  "ledger_version": "9019844",
+  "oldest_ledger_version": "0",
+  "ledger_timestamp": "1661620200131348",
+  "node_role": "full_node",
+  "oldest_block_height": "0",
+  "block_height": "1825467"
+}
 ```
 
 5. To verify the correctness of your PFN, you will need to:

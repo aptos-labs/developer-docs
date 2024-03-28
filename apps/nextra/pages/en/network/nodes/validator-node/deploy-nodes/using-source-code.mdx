@@ -11,8 +11,8 @@ This is a step-by-step guide to deploy an Aptos validator and validator fullnode
 and VFN will be deployed on separate machines.
 
 <Callout type="warning">
-Prerequisites
-Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.md). Similarly, make sure you have
+**Prerequisites**<br />
+Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.mdx). Similarly, make sure you have
 installed the [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/index), as you will need it to setup your nodes.
 </Callout>
 
@@ -61,7 +61,7 @@ when you build the binary, and download the correct genesis and waypoint files f
 5.  Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
     which may be IP addresses or DNS addresses.
 
-    <Callout type="tip">
+    <Callout type="info">
     **DNS addresses** <br />
     Using DNS is recommended over IP addresses, as it enables more efficient node migrations and is more resilient
     to host changes.
@@ -107,7 +107,7 @@ when you build the binary, and download the correct genesis and waypoint files f
     Configuring the validator will create two YAML files in the `~/$WORKSPACE/$USERNAME` directory: `owner.yaml` and
     `operator.yaml`. These will be useful for connecting your nodes to the Aptos network (later).
 
-6.  Download the following files by following the instructions on the [Node Files](../../../node-files-all-networks/index.md) pages.
+6.  Download the following files by following the instructions on the [Node Files](../../configure/node-files-all-networks.mdx) pages.
     You will need to select the appropriate network (e.g., `mainnet`, `testnet`, `devnet`) and download the following files:
 
     - `validator.yaml`
@@ -219,7 +219,7 @@ If you want to run `aptos-node` as a service, you can set it up to run as a serv
 This is optional, and can be done using the service template below. You will need to modify the template
 to match your environment and configuration.
 
-```bash filename="Terminal"
+```bash filename="/etc/systemd/system/aptos-node.service"
 [Unit]
 Description=Aptos Node Service
 
