@@ -2,6 +2,10 @@
 title: "Node Health Checker FAQ"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
+# Node Health Checker FAQ
+
 The Aptos Node Health Checker (NHC) service can be used to check the health of your node(s). See [Node Health Checker](./node-health-checker.md) for full documentation on the NHC.
 
 The purpose of this FAQ is to help you understand why your node did not pass a particular health check when you ran NHC for it. If you didn't find the information you wanted in this FAQ, [open an issue](https://github.com/aptos-labs/aptos-core/issues/new/choose), or [open a PR](https://github.com/aptos-labs/aptos-core/pulls) and add the information yourself.
@@ -10,7 +14,7 @@ The purpose of this FAQ is to help you understand why your node did not pass a p
 
 You are likely here because you were given an NHC evaluation result like this:
 
-```
+```bash filename="Terminal"
 Average latency too high: The average latency was 1216ms, which is higher than the maximum allowed latency of 1000ms.
 ```
 

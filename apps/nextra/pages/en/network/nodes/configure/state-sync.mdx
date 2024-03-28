@@ -11,11 +11,12 @@ The [state synchronization](https://medium.com/aptoslabs/the-evolution-of-state-
 identifies and fetches new blockchain data from the peers, validates the data and persists it to local storage. This
 document explains how state sync works and how to configure it.
 
-:::danger Manual configuration
+<Callout type="warning">
+**Manual configuration**<br />
 Most users should not need to configure state sync. State sync will automatically select the
 best configuration for your node. You should only manually configure state sync if you have a specific use case
 that requires it. Selecting the wrong configuration will lead to slower syncing times and degraded performance.
-:::
+</Callout>
 
 ## State sync
 
@@ -23,13 +24,14 @@ At a high-level, state sync operates in two phases. First, all nodes will bootst
 This allows the node to catch up to the latest state in the Aptos blockchain. Next, the node will stay up-to-date with the blockchain
 by continuously syncing (in the **continuous syncing phase**). Each of these phases has different modes of operation.
 
-:::tip Need to start a node quickly?
+<Callout type="info">
+Need to start a node quickly?
 If you need to start a node quickly, here's what we recommend by network and use case:
 
 - **Devnet**: To sync the entire blockchain history, use [intelligent syncing](state-sync.md#intelligent-syncing). Otherwise, use [fast sync](state-sync.md#fast-syncing).
 - **Testnet**: To sync the entire blockchain history, restore from a [backup](../nodes/full-node/aptos-db-restore.md). Otherwise, download [a snapshot](../nodes/full-node/bootstrap-fullnode.md) or use [fast sync](state-sync.md#fast-syncing).
 - **Mainnet**: To sync the entire blockchain history, restore from a [backup](../nodes/full-node/aptos-db-restore.md). Otherwise, use [fast sync](state-sync.md#fast-syncing).
-  :::
+</Callout>
 
 ### Bootstrapping phase
 
@@ -51,14 +53,15 @@ bootstrapping modes:
   the latest blockchain state directly. As a result, the node will not have the historical transaction data, but it will
   be able to catch up to the Aptos network much more rapidly. This mode is the default mode for testnet and mainnet.
 
-:::tip Bootstrapping defaults?
+<Callout type="info">
+**Bootstrapping defaults?** <br />
 The default bootstrapping mode depends on the network type:
 
 - **Testnet and Mainnet**: The default bootstrapping mode is fast sync, because these networks are long-lived
   and have a large amount of historical data.
 - **Devnet and other networks**: The default bootstrapping mode is intelligent syncing, because these networks are
   typically short-lived and have a small amount of historical data.
-  :::
+</Callout>
 
 ### Continuous syncing phase
 
@@ -73,19 +76,21 @@ the continuous syncing phase to stay up-to-date with the blockchain. There are s
   the transaction outputs, depending on whichever is faster, per data chunk. This allows the node to adapt to CPU and
   network resource constraints more efficiently. This is the default mode for all environments.
 
-:::tip Continuous syncing defaults?
+<Callout type="info">
+**Continuous syncing defaults?**<br />
 The default continuous syncing mode is always intelligent syncing, because this mode is the most performant.
-:::
+</Callout>
 
 ## Configuring state sync
 
 The snippets below provide instructions for configuring state sync on your nodes for different use cases.
 These configurations can be added to your node's configuration file, e.g., `fullnode.yaml` or `validator.yaml`.
 
-:::danger Manual configuration
+<Callout type="warning">
+**Manual configuration**<br />
 You should only manually configure state sync if you have a specific use case that requires it. Selecting the wrong
 configuration will lead to slower syncing times and degraded performance.
-:::
+</Callout>
 
 ### Executing all transactions
 
@@ -93,17 +98,18 @@ To execute all the transactions since genesis and continue to execute new
 transactions as they are committed, add the following to your node
 configuration file (for example,`fullnode.yaml` or `validator.yaml`):
 
-```yaml
+```yaml filename="fullnode.yaml"
 state_sync:
   state_sync_driver:
     bootstrapping_mode: ExecuteTransactionsFromGenesis
     continuous_syncing_mode: ExecuteTransactions
 ```
 
-:::tip Verify node syncing
+<Callout type="warning">
+**Verify node syncing**<br />
 While your node is syncing, you'll be able to see the
 [`aptos_state_sync_version{type="synced"}`](../nodes/full-node/verify-pfn.md) metric gradually increase.
-:::
+</Callout>
 
 ### Applying all transaction outputs
 
@@ -111,17 +117,18 @@ To apply all transaction outputs since genesis and continue to apply new
 transaction outputs as transactions are committed, add the following to your
 node configuration file:
 
-```yaml
+```yaml filename="fullnode.yaml"
 state_sync:
   state_sync_driver:
     bootstrapping_mode: ApplyTransactionOutputsFromGenesis
     continuous_syncing_mode: ApplyTransactionOutputs
 ```
 
-:::tip Verify node syncing
+<Callout type="info">
+**Verify node syncing**<br />
 While your node is syncing, you'll be able to see the
 [`aptos_state_sync_version{type="synced"}`](../nodes/full-node/verify-pfn.md) metric gradually increase.
-:::
+</Callout>
 
 ### Intelligent syncing
 
@@ -129,39 +136,42 @@ To execute or apply all transactions and outputs since genesis (and continue to
 do the same as new transactions are committed), add the following to your node
 configuration file:
 
-```yaml
+```yaml filename="fullnode.yaml"
 state_sync:
   state_sync_driver:
     bootstrapping_mode: ExecuteOrApplyFromGenesis
     continuous_syncing_mode: ExecuteTransactionsOrApplyOutputs
 ```
 
-:::tip Verify node syncing
+<Callout type="info">
+**Verify node syncing**<br />
 While your node is syncing, you'll be able to see the
 [`aptos_state_sync_version{type="synced"}`](../nodes/full-node/verify-pfn.md) metric gradually increase.
-:::
+</Callout>
 
 ### Fast syncing
 
-:::caution Proceed with caution
+<Callout type="warning">
+**Proceed with caution**<br />
 Fast sync should only be used as a last resort for validators and VFNs. This is because fast sync skips the
 blockchain history, and: (i) reduces data availability in the network (as the blockchain history is truncated on
 the fast synced nodes); and (ii) hinders validator consensus performance (if too much data has been skipped).
 Validators that fast sync may require additional running time before they are eligible to participate in consensus.
-:::
+</Callout>
 
 To download the latest blockchain state and continue to process new
 transactions as they are committed, add the following to your
 node configuration file:
 
-```yaml
+```yaml filename="fullnode.yaml"
 state_sync:
   state_sync_driver:
     bootstrapping_mode: DownloadLatestStates
     continuous_syncing_mode: ExecuteTransactionsOrApplyOutputs
 ```
 
-:::tip Verify node syncing
+<Callout type="warning">
+**Verify node syncing**<br />
 While your node is syncing, you'll be able to see the
 `aptos_state_sync_version{type="synced_states"}` metric gradually increase.
 However, `aptos_state_sync_version{type="synced"}` will only increase once
@@ -174,7 +184,7 @@ increase then do the following:
 1. Double-check the node configuration file has correctly been updated.
 2. Make sure that the node is starting up with an empty storage database
    (i.e., that it has not synced any state previously).
-   :::
+</Callout>
 
 ## Archival PFNs
 
@@ -190,11 +200,12 @@ since the start of the network, i.e., genesis), you should:
 Following these two steps together will ensure that your PFN fetches all data since
 genesis, and continues to synchronize without pruning any data.
 
-:::danger Archival nodes are deprecated
+<Callout type="warning">
+**Archival nodes are deprecated**<br />
 Running and maintaining archival nodes is expensive and slow, as the amount of data being stored
 on the node will grow endlessly. As a result, archival nodes have officially been deprecated.
 If you wish to store and maintain the entire blockchain history, we recommend using an [Indexer](../indexer/indexer-landing.md).
-:::
+</Callout>
 
 ## Security implications and data integrity
 

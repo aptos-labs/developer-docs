@@ -1,8 +1,8 @@
 ---
 title: "Run a PFN from Source or Docker"
-slug: "fullnode-source-code-or-docker"
-sidebar_position: 10
 ---
+
+import { Callout, Steps } from 'nextra/components';
 
 # Run a PFN from Source Code or Docker
 
@@ -10,21 +10,23 @@ You can run your own public fullnode (PFN) to synchronize the state of the Aptos
 up-to-date. PFNs replicate the entire state of the blockchain by syncing from other Aptos VFNs and PFNs. PFNs
 can be run by anyone. This tutorial explains how to deploy a PFN and connect to an Aptos network.
 
-:::tip Do I have to run a PFN?
+<Callout type="info">
+**Do I have to run a PFN?**<br />
 If you do not wish to run a PFN, but still want to interact with the Aptos blockchain, you can use the REST API
 provided by the Aptos Labs' PFNs (see [Aptos APIs](../../apis)). Note, however, that Aptos Labs-provided PFNs have rate
 limits, which can impede your development. If you want to avoid such rate limits, you can deploy your own PFN
 and synchronize with the Aptos blockchain directly.
-:::
+</Callout>
 
-:::caution Choose a network
+<Callout type="warning" >
+**Choose a network**<br />
 This document describes how to start a public fullnode in the Aptos mainnet network, but it can easily be used to do
 the same in the devnet or testnet networks. To do so, check out the desired network branch and use
 the `genesis.blob` and `waypoint.txt` node files for the respective branches:
-[mainnet](../node-files-all-networks/node-files.md),
-[devnet](../node-files-all-networks/node-files-devnet.md), and
-[testnet](../node-files-all-networks/node-files-testnet.md).
-:::
+[mainnet](../configure/node-files-all-networks/node-files-mainnet.mdx),
+[devnet](../configure/node-files-all-networks/node-files-devnet.mdx), and
+[testnet](../configure/node-files-all-networks/node-files-testnet.mdx).
+</Callout>
 
 ## Hardware requirements
 
@@ -37,10 +39,11 @@ used in production. For example:
 - **CPU**: 8 cores, 16 threads (Intel Xeon Skylake or newer).
 - **Memory**: 32GB RAM.
 
-:::danger Minimum hardware requirements
+<Callout type="warning" >
+**Minimum hardware requirements**<br />
 Failing to meet the minimum hardware requirements for a production-grade PFN mean that your
 PFN will likely experience degradation under load and general instability in production environments.
-:::
+</Callout>
 
 ## Network requirements and ports
 
@@ -58,10 +61,11 @@ that configures the public network to use port `6180`.
 The recommendations described below assume the default port settings used by PFNs. If you have
 changed the default port settings in your configuration file, then you should adjust the recommendations accordingly.
 
-:::caution Exposing ports
+<Callout type="warning" >
+**Exposing ports**<br />
 Unless explicitly required, we recommend that you do not expose any other ports while operating a PFN. This is because
 exposing additional ports can increase the attack surface of your node and make it more vulnerable to adversaries.
-:::
+</Callout>
 
 #### Running a PFN:
 
@@ -74,17 +78,19 @@ Assuming default ports are used, the following should be configured for PFNs:
   - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
   - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
 
-:::danger Exposing services
+<Callout type="warning" >
+**Exposing services**<br />
 We note that the inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
 are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
 port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
 to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to
 prevent abuse.
-:::
+</Callout>
 
-:::info Default network settings
+<Callout type="info" >
+**Default network settings**<br />
 You may also need to update the 127.0.0.1 with 0.0.0.0 in the `fullnode.yaml` for the fields `listen_address` and `address` field in the `api` list.
-:::
+</Callout>
 
 ### Storage requirements
 
@@ -96,10 +102,11 @@ rate over time, and the configuration of the ledger database pruner.
 Note that because archival nodes store the entire history of the blockchain, the database size on archival nodes
 will continue to grow unbounded. As a result, we cannot provide a recommendation for archival node storage sizes.
 
-:::tip Devnet blockchain storage
+<Callout type="info" >
+**Devnet blockchain storage**<br />
 The Aptos devnet is currently reset on a weekly basis. If you are deploying a devnet PFN, this means that the storage
 will be reset (i.e., wiped) every week. See the `#devnet-release` channel on the Aptos Discord.
-:::
+</Callout>
 
 ## Deploying a PFN
 
@@ -128,11 +135,12 @@ Then, follow the steps below:
      curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/waypoint.txt
      ```
 
-   :::caution Don't want to connect to mainnet?
+   <Callout type="warning">
+   **Don't want to connect to mainnet?**<br />
    To connect to other networks (e.g., `devnet` and `testnet`), you can find the genesis and waypoint here ➜ https://github.com/aptos-labs/aptos-networks.
    Be sure to download the `genesis.blob` and `waypoint.txt` for those networks, instead of using the genesis
    and waypoint pointed to by the `curl` commands above.
-   :::
+   </Callout>
 
 1. Next, run the command below to create a copy of the PFN configuration YAML template:
    ```bash filename="Terminal"
@@ -143,18 +151,18 @@ Then, follow the steps below:
    choice (on your local machine). To do this:
 
    1. Specify the correct path to the `genesis.blob` file you just downloaded by editing `execution.genesis_file_location` in the `fullnode.yaml` configuration. By default, it points to `genesis.blob` in the current working directory.
-      ```yaml
+      ```yaml filename="fullnode.yaml"
       execution:
         genesis_file_location: "./genesis.blob"
       ```
    1. Specify the correct path to the `waypoint.txt` file you just downloaded by editing `base.waypoint.from_file` in the `fullnode.yaml` configuration. By default, it points to `waypoint.txt` in the current working directory. For example:
-      ```yaml
+      ```yaml filename="fullnode.yaml"
       base:
         waypoint:
           from_file: "./waypoint.txt"
       ```
    1. Specify the directory on your local machine that you want to store the blockchain database by editing the `base.data_dir` in the `fullnode.yaml` configuration. For example, you can create a directory `my-full-node/data` in your home directory and specify it as:
-      ```yaml
+      ```yaml filename="fullnode.yaml"
       base:
         data_dir: "</path/to/my/homedir/my-full-node/data>"
       ```
@@ -167,11 +175,12 @@ cargo run -p aptos-node --release -- -f ./fullnode.yaml
 
 You have now successfully configured and started running a PFN in the Aptos mainnet.
 
-:::tip Debugging?
+<Callout type="info" >
+**Debugging?**<br />
 The command above will build a release binary for `aptos-node` at: `aptos-core/target/release/aptos-node`. The release
 binaries tend to be substantially faster than debug binaries but lack debugging information useful for development.
 To build a debug binary, omit the `--release` flag from the command above.
-:::
+</Callout>
 
 ---
 
@@ -179,11 +188,12 @@ To build a debug binary, omit the `--release` flag from the command above.
 
 This section describes how to configure and run your PFN using Docker.
 
-:::danger Supported only on x86-64 CPUs
+<Callout type="warning">
+**Supported only on x86-64 CPUs**<br />
 Running aptos-core via Docker is currently only supported on x86-64 CPUs. If you have an Apple M1/M2 (ARM64) Mac, use
 the aptos-core source code approach (above). If M1/M2 support is important to you, comment on this
 issue: https://github.com/aptos-labs/aptos-core/issues/1412
-:::
+</Callout>
 
 1. First, install [Docker](https://docs.docker.com/get-docker/).
 2. Next, run the following script to prepare your local configuration and data directory for mainnet. This will
@@ -198,16 +208,17 @@ curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet
 curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/genesis.blob
 ```
 
-:::caution Don't want to connect to mainnet?
+<Callout type="warning">
+**Don't want to connect to mainnet?**<br />
 To connect to other networks (e.g., `devnet` and `testnet`), you can find the genesis and waypoint here ➜ https://github.com/aptos-labs/aptos-networks.
 Be sure to download the `genesis.blob` and `waypoint.txt` for those networks, instead of using the genesis
 and waypoint pointed to by the `curl` commands above.
-:::
+</Callout>
 
 3. Next, make sure that the `fullnode.yaml` configuration file that you downloaded above contains only the following content.
    This will ensure that this configuration is for a PFN and not for another node type (e.g., validator or VFN):
 
-```yaml
+```yaml filename="fullnode.yaml"
 base:
   role: "full_node"
   data_dir: "/opt/aptos/data"
@@ -227,9 +238,10 @@ api:
   address: "0.0.0.0:8080"
 ```
 
-:::caution Don't want to allow inbound connections?
+<Callout type="warning">
+**Don't want to allow inbound connections?**<br />
 Override the following if you do not want other PFNs connecting to yours: `listen_address: "/ip4/127.0.0.1/tcp/6182"`. Also see the note, below.
-:::
+</Callout>
 
 4. Next, run the following `docker` command:
 
@@ -243,14 +255,16 @@ docker run --pull=always \
     -f /opt/aptos/etc/fullnode.yaml
 ```
 
-:::caution Sudo access
+<Callout type="warning">
+**Sudo access**<br />
 Note: you may need to prefix the docker command with `sudo` depending on your configuration.
-:::
+</Callout>
 
-:::info Docker tags
+<Callout type="info">
+Docker tags
 The `mainnet` tag always refers to the latest official Docker image tag. You can find the latest hash for comparison at:
 https://github.com/aptos-labs/aptos-networks/tree/main/mainnet
-:::
+</Callout>
 
 ## Verify the correctness of your PFN
 
@@ -276,7 +290,8 @@ Compare the synced version returned by this command (e.g., `71000`) with the hig
 version, it is synchronizing correctly. It is fine if the explorer page differs by a few versions, as the explorer
 nodes may sync with some variance.
 
-:::caution Using fast sync?
+<Callout type="warning">
+**Using fast sync?**<br />
 If your node is fast syncing, the command may show `0` until it has finally caught up. To verify that the node is
 fast syncing, run the following command:
 
@@ -289,7 +304,7 @@ latest version. Eventually, once fast syncing is complete, the `aptos_state_sync
 return the current synced version of your node.
 
 You can read more about fast syncing here: [State sync bootstrapping](../../guides/state-sync.md#bootstrapping-phase).
-:::
+</Callout>
 
 ### (Optional) Verify outbound network connections
 

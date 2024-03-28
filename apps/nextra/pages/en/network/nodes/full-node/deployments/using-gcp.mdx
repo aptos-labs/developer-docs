@@ -2,15 +2,18 @@
 title: "Using GCP"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
 # Deploy a PFN using GCP
 
 This tutorial explains how to configure and deploy a PFN using Google Cloud (GCP). Running a PFN in the cloud
 usually provides better stability and availability compared to running it on your laptop.
 
-:::caution Don't want to connect to devnet?
+<Callout type="warning">
+**Don't want to connect to devnet?**<br />
 This tutorial defaults to deploying a PFN in the Aptos `devnet` network. To connect to other networks
 (e.g., `mainnet` and `testnet`), replace all instances of `devnet` with the appropriate network name.
-:::
+</Callout>
 
 ## Prerequisites
 
@@ -32,10 +35,11 @@ After you have installed the gcloud CLI, [log into GCP using gcloud](https://clo
 gcloud auth login --update-adc
 ```
 
-:::tip Already have a GCP account set up?
+<Callout type="info">
+**Already have a GCP account set up?**<br />
 If you already have a GCP account setup, skip to [Getting Started](#getting-started). If you do not have a GCP account, then follow
 the below sections to create and configure your GCP account.
-:::
+</Callout>
 
 ### GCP setup
 
@@ -63,10 +67,11 @@ to check out some of their [guides](https://cloud.google.com/docs/get-started/qu
 
 ## Getting started
 
-:::tip Before you proceed
+<Callout type="info">
+**Before you proceed**<br />
 From here on, this guide assumes that you have already set up your GCP account, and have created a new project for
 deploying an Aptos PFN.
-:::
+</Callout>
 
 You can deploy a PFN on GCP by using the Aptos Terraform module.
 
@@ -108,10 +113,11 @@ touch main.tf
 
 You can find the Docker image tag for `devnet` on the [Aptos Docker Hub](https://hub.docker.com/r/aptoslabs/validator/tags?page=1&ordering=last_updated&name=devnet).
 
-:::caution Want to connect to a different network?
+<Callout type="warning">
+**Want to connect to a different network?**<br />
 If you wish to connect to a different network than `devnet`, you will need to find the appropriate Docker image
 tag for that network and replace all references to it.
-:::
+</Callout>
 
 Example content for `main.tf`:
 
@@ -180,7 +186,7 @@ kubectl get pods -n aptos
 
 You should see this:
 
-```text
+```bash filename="Terminal"
 NAME                       READY   STATUS    RESTARTS   AGE
 devnet0-aptos-fullnode-0   1/1     Running   0          56s
 ```
@@ -251,12 +257,12 @@ You should see this something like this:
 If you want to configure your node with a static identity, first see the [Generate a PFN Identity](../network-identity-fullnode.md) tutorial
 to generate a static identity, and then follow the below instructions to configure your Terraform file.
 
-1. Generate a static identity for your PFN by following the guide: [Creating a static identity for a PFN](../network-identity-fullnode.md#generate-a-static-identity).
+1. Generate a static identity for your PFN by following the guide: [Creating a static identity for a PFN](../modify/network-identity-fullnode.mdx#generate-a-static-identity).
 
 2. Modify the `main.tf` to add `fullnode_identity` entries in `fullnode_helm_values`. This will configure the identity
    for the PFN. Insert the correct values for your PFN's identity attributes. For example:
 
-```rust
+```terraform filename="main.tf"
 module "fullnode" {
   # download Terraform module from aptos-labs/aptos-core repo
   source        = "github.com/aptos-labs/aptos-core.git//terraform/fullnode/gcp?ref=main"
@@ -289,44 +295,44 @@ terraform apply
 ### Seed peers
 
 You can add seed peers to allow your PFN to connect to specific nodes. See the guide
-[Generate a PFN Identity](../fullnode-network-connections.md) for more information.
+[Generate a PFN Identity](../modify/fullnode-network-connections.mdx) for more information.
 
 1. Obtain the seed peer information.
 
 2. Modify the `main.tf` to add the seed peers in `fullnode_helm_values`. This will configure the seeds for the PFN. For example:
 
-```rust
+```terraform filename="main.tf"
 module "fullnode" {
-    # download Terraform module from aptos-labs/aptos-core repo
-    source        = "github.com/aptos-labs/aptos-core.git//terraform/fullnode/gcp?ref=main"
-    region        = "us-central1"  # Specify the region
-    zone          = "c"            # Specify the zone suffix
-    project       = "gcp-fullnode" # Specify your GCP project name
-    era           = 1              # bump era number to wipe the chain
-    image_tag     = "dev_5b525691" # Specify the docker image tag to use
+  # download Terraform module from aptos-labs/aptos-core repo
+  source        = "github.com/aptos-labs/aptos-core.git//terraform/fullnode/gcp?ref=main"
+  region        = "us-central1"  # Specify the region
+  zone          = "c"            # Specify the zone suffix
+  project       = "gcp-fullnode" # Specify your GCP project name
+  era           = 1              # bump era number to wipe the chain
+  image_tag     = "dev_5b525691" # Specify the docker image tag to use
 
-    fullnode_helm_values = {
-      # add a list of peers as upstream
-      aptos_chains = {
-        devnet = {
-          seeds = {
-            "bb14af025d226288a3488b4433cf5cb54d6a710365a2d95ac6ffbd9b9198a86a" = {
-            addresses = ["/dns4/pfn0.node.devnet.aptoslabs.com/tcp/6182/noise-ik/bb14af025d226288a3488b4433cf5cb54d6a710365a2d95ac6ffbd9b9198a86a/handshake/0"]
-            role = "Upstream"
-            },
-            "7fe8523388084607cdf78ff40e3e717652173b436ae1809df4a5fcfc67f8fc61" = {
-            addresses = ["/dns4/pfn1.node.devnet.aptoslabs.com/tcp/6182/noise-ik/7fe8523388084607cdf78ff40e3e717652173b436ae1809df4a5fcfc67f8fc61/handshake/0"]
-            role = "Upstream"
-            },
-            "f6b135a59591677afc98168791551a0a476222516fdc55869d2b649c614d965b" = {
-            addresses = ["/dns4/pfn2.node.devnet.aptoslabs.com/tcp/6182/noise-ik/f6b135a59591677afc98168791551a0a476222516fdc55869d2b649c614d965b/handshake/0"]
-            role = "Upstream"
-            }
+  fullnode_helm_values = {
+    # add a list of peers as upstream
+    aptos_chains = {
+      devnet = {
+        seeds = {
+          "bb14af025d226288a3488b4433cf5cb54d6a710365a2d95ac6ffbd9b9198a86a" = {
+          addresses = ["/dns4/pfn0.node.devnet.aptoslabs.com/tcp/6182/noise-ik/bb14af025d226288a3488b4433cf5cb54d6a710365a2d95ac6ffbd9b9198a86a/handshake/0"]
+          role = "Upstream"
+          },
+          "7fe8523388084607cdf78ff40e3e717652173b436ae1809df4a5fcfc67f8fc61" = {
+          addresses = ["/dns4/pfn1.node.devnet.aptoslabs.com/tcp/6182/noise-ik/7fe8523388084607cdf78ff40e3e717652173b436ae1809df4a5fcfc67f8fc61/handshake/0"]
+          role = "Upstream"
+          },
+          "f6b135a59591677afc98168791551a0a476222516fdc55869d2b649c614d965b" = {
+          addresses = ["/dns4/pfn2.node.devnet.aptoslabs.com/tcp/6182/noise-ik/f6b135a59591677afc98168791551a0a476222516fdc55869d2b649c614d965b/handshake/0"]
+          role = "Upstream"
           }
         }
       }
     }
   }
+}
 ```
 
 3. Apply Terraform changes:
@@ -383,6 +389,7 @@ Click the `View in Cloud Monitoring` link at the top to view the built-in GKE [d
 
 Google Cloud [Monitoring](https://cloud.google.com/monitoring) has many other features to easily monitor the cluster and pods. You can configure [uptime checks](https://cloud.google.com/monitoring/uptime-checks/introduction) for the services and configure [alerts](https://cloud.google.com/monitoring/alerts/using-alerting-ui) for when the metrics reach a certain [threshold](https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/sli-metrics/overview).
 
-:::tip Verify your PFN
-If you want to verify that your PFN is running correctly, you can follow the instructions in the [Verify a PFN](../verify-pfn.md) guide.
-:::
+<Callout type="info">
+**Verify your PFN**<br />
+If you want to verify that your PFN is running correctly, you can follow the instructions in the [Verify a PFN](../verify-pfn.mdx) guide.
+</Callout>
