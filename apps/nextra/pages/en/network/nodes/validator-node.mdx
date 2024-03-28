@@ -26,26 +26,33 @@ Use the documents within this section to run an Aptos validator and a VFN. At a 
 ### Understand the requirements and deployment types.
 
 Read the node requirements and select a deployment method (e.g., on-premises or cloud services).
+Start by reading the node requirements to get to know the compute, memory, networking and storage resources you need. 
+Also, select a method to deploy your nodes, i.e., use cloud managed Kubernetes, Docker, or source code.
 
 ### Generate identities for your nodes.
 
 Create your public/private keypairs and account addresses for the validator and VFN.
+Remember to keep your private keys confidential!
 
 ### Configure your validator and VFN.
 
 Configure your nodes to use the generated keys and identities.
+Using YAML files, configure your nodes with the keys and identities generated in the previous step. 
+This is required to allow your nodes to connect to other nodes (i.e., peers) securely.
 
 ### Download genesis and a waypoint for your nodes.
 
 Bootstrap the nodes with a genesis and waypoint, and prepare them for startup.
+With the nodes configured correctly, install the binaries and download the genesis blob and waypoint files. 
+These will give your nodes the information they need to start syncing with other peers.
 
 ### Join the validator set and start participating.
 
 Initialize the staking pool, join the validator set and start validating to earn rewards.
-</Steps>
+Before other peers will accept connections from your nodes, you will need to join the validator set. 
+To do this, you must initialize a staking pool and delegate to operators and voters. 
+Once your staking pool has been setup, you can join the validator set. 
+At this point your nodes will begin to sync with the network and your validator will be able to start participating in consensus. 
+This is when you can start earning rewards.
 
-1. **Requirements and deployments**: Start by reading the node requirements to get to know the compute, memory, networking and storage resources you need. Also, select a method to deploy your nodes, i.e., use cloud managed Kubernetes, Docker, or source code.
-2. **Generate identities**: Generate public/private keypairs and identities for the validator and VFN. Remember to keep your private keys confidential!
-3. **Configure nodes**: Using YAML files, configure your nodes with the keys and identities generated in the previous step. This is required to allow your nodes to connect to other nodes (i.e., peers) securely.
-4. **Genesis and waypoint**: With the nodes configured correctly, install the binaries and download the genesis blob and waypoint files. These will give your nodes the information they need to start syncing with other peers.
-5. **Join the validator set**: Before other peers will accept connections from your nodes, you will need to join the validator set. To do this, you must initialize a staking pool and delegate to operators and voters. Once your staking pool has been setup, you can join the validator set. At this point your nodes will begin to sync with the network and your validator will be able to start participating in consensus. This is when you can start earning rewards.
+</Steps>
