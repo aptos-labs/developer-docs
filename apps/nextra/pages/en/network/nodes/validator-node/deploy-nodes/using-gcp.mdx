@@ -3,19 +3,22 @@ title: "Using GCP"
 slug: "run-validator-node-using-gcp"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
 # Using GCP
 
 This is a step-by-step guide to deploy an Aptos validator and validator fullnode (VFN) using Google Cloud Platform Services (GCP).
 Using this guide, the validator and VFN will be deployed on separate machines.
 
-:::caution Prerequisites
+<Callout type="warning">
+**Prerequisites** <br />
 Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.md). Similarly, make sure you have
 installed the [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/index),
 [Terraform](https://www.terraform.io/downloads.html),
 [Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/),
 and [Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk). This guide assumes that you already have a GCP
 account setup, and have created a new project for deploying your nodes.
-:::
+</Callout>
 
 ## Deployment steps
 
@@ -29,10 +32,11 @@ account setup, and have created a new project for deploying your nodes.
    ```
 
 2. Create a storage bucket for storing the Terraform state on Google Cloud Storage.
-   :::caution Storage bucket name
+   <Callout type="warning">
+   **Storage bucket name**<br />
    The name of the Google Cloud storage bucket must be unique.
    See the Google Cloud Storage documentation, [here](https://cloud.google.com/storage/docs/creating-buckets#prereq-cli).
-   :::
+   </Callout>
 
    Use the GCP UI or Google Cloud Storage command to create the bucket:
 
@@ -52,7 +56,7 @@ account setup, and have created a new project for deploying your nodes.
 
 4. Modify the `main.tf` file to configure Terraform and create the Terraform module. See the example below:
 
-   ```
+   ```terraform filename="main.tf"
    terraform {
      required_version = "~> 1.3.6"
      backend "gcs" {
@@ -134,10 +138,11 @@ account setup, and have created a new project for deploying your nodes.
     - `validator-identity.yaml`: This file contains the public and private keys for your validator, as well as your account address.
     - `validator-full-node-identity.yaml`: This file contains the public and private keys for your VFN, as well as your account address.
 
-    :::danger Backup your private keys
+    <Callout type="warning">
+    **Backup your private keys**<br />
     Your private keys are important for you to establish ownership of your nodes. Never share your **private** keys with anyone,
     and make sure to **backup** `private-keys.yaml` somewhere safe.
-    :::
+    </Callout>
 
 11. Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
     which may be IP addresses or DNS addresses. This can be done by running the following command:
@@ -187,7 +192,8 @@ account setup, and have created a new project for deploying your nodes.
         --from-file=validator-full-node-identity.yaml=keys/validator-full-node-identity.yaml
     ```
 
-    :::danger Era numbers and dangling volumes
+    <Callout type="warning">
+    **Era numbers and dangling volumes** <br />
     The `-e1` suffix in the command above refers to the era number. If you changed the `era` number, make sure it matches
     when creating the secrets.
 
@@ -195,7 +201,7 @@ account setup, and have created a new project for deploying your nodes.
     Changing the `era` provides an easy way to wipe your deployment's state (e.g., blockchain data). However, this may
     lead to dangling persistent volumes. Confirm the existence of any dangling volumes with `kubectl get pvc`
     and delete any dangling volumes manually to minimize costs.
-    :::
+    </Callout>
 
 15. Now, we should be able to see that all pods are running, including the validator and VFN. You can check this by
     executing the following command:
@@ -210,11 +216,12 @@ account setup, and have created a new project for deploying your nodes.
     node1-aptos-node-0-validator-0                1/1     Running   0          4h30m
     ```
 
-:::caution Next steps
+<Callout type="warning">
+**Next steps** <br />
 You have now completed setting up your validator and VFN using GCP. However, your nodes will not be able to connect
 to the Aptos network just yet.
-:::
+</Callout>
 
 ## Connecting to the Aptos Network
 
-You have now completed setting up your validator and VFN using AWS. Proceed to [Connect Nodes](../connect-nodes/index.md) for the next steps.
+You have now completed setting up your validator and VFN using AWS. Proceed to [Connect Nodes](../connect-nodes.mdx) for the next steps.
