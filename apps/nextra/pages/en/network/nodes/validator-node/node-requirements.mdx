@@ -2,13 +2,18 @@
 title: "Node Requirements"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
+# Node Requirements
+
 To ensure that your validator and validator fullnode (VFN) operate smoothly, both nodes should meet the
 requirements specified in this document.
 
-:::danger Failure to meet requirements
+<Callout type="warning">
+**Failure to meet requirements**<br />
 Failure to meet the requirements outlined in this document will result in your nodes experiencing degradation under load,
 consensus failures, reward losses, and general instability.
-::::
+</Callout>
 
 ## Resource isolation
 
@@ -18,9 +23,9 @@ be isolated from each other. Maintaining resource isolation between the validato
 for security and to ensure that the nodes do not encounter performance degradation, instability or failures when
 under load.
 
-:::tip Terraform support
+<Callout type="info">
 For deploying the validator and VFN in the cloud, we provide Terraform support on two cloud providers: **GCP** and **AWS**. See [**Running Validator Node**](running-validator-node/index.md).
-:::
+</Callout>
 
 ## Hardware requirements
 
@@ -57,7 +62,7 @@ tool. First, clone the `aptos-core` repository and install the required dependen
 [**Cloning aptos-core**](https://aptos.dev/guides/building-from-source#clone-the-aptos-core-repo) section).
 Then, execute the following commands to run the benchmark:
 
-```
+```bash filename="Terminal"
 TABULATE_INSTALL=lib-only pip install tabulate
 
 ./testsuite/performance_benchmark.sh --short
@@ -117,10 +122,11 @@ that configures the VFN network to use port `6181` and the public network to use
 The recommendations described below assume the default port settings used by validators, VFNs and PFNs. If you have
 changed the default port settings in your configuration file, then you should adjust the recommendations accordingly.
 
-:::caution Exposing ports
+<Callout type="warning">
+**Exposing ports**<br />
 Unless explicitly required, we recommend that you do not expose any other ports while operating a node. This is because
 exposing additional ports can increase the attack surface of your node and make it more vulnerable to adversaries.
-:::
+</Callout>
 
 #### Running a validator:
 
@@ -147,10 +153,11 @@ Assuming default ports are used, the following should be configured for VFN node
   - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
   - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
 
-:::danger Exposing services
+<Callout type="warning">
+**Exposing services**<br />
 The inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
 are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
 port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
 to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to
 prevent abuse.
-:::
+</Callout>
