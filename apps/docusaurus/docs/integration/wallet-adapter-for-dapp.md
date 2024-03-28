@@ -104,9 +104,9 @@ The AIP-62 wallet standard eliminates the current issues dapps have:
 
 In addition, the new wallet standard described in AIP-62 provides many benefits to dApps:
 
-- Support legacy wallet standard and AIP-62 wallet standard out-of-the-box
-- The wallet adapter handles the maintenance and installation of wallet packages instead of the dApp
-- The new adapter version provides better validation and error handling support, and uses the new TS SDK which is more reliable, fast, and is actively maintained and updated with new features (the legacy sdk, i.e `npm i aptos`, is no longer actively maintained and developed)
+- The wallet adapter handles the maintenance and installation of wallet packages instead of the dApp which prevents potential supply chain attacks
+- The new adapter version provides better validation and error handling support
+- The new adapter version uses the new TS SDK which is more reliable, fast, and is actively maintained and updated with new features (the legacy sdk, i.e `npm i aptos`, is no longer actively maintained and developed)
 
 ### How to integrate with the AIP-62 wallet standard?
 

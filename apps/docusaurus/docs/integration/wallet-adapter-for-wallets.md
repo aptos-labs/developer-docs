@@ -58,7 +58,7 @@ The AIP-62 wallet standard eliminates the current issues wallets have:
 - The legacy standard is deeply integrated within the Aptos wallet adapter, and any change can cause breaking changes for dApps and wallets, creating endless maintenance work by requiring a dApp or wallet to implement these changes.
 - The legacy standard supports only the legacy TS SDK input, types, and logic. That means that it doesn't enjoy the features and enhancements of the new TS SDK. In addition, the legacy TS SDK does not receive any more support or new features.
 
-In addition, a wallet can benefit from onboarding with the AIP-62 wallet standard by:
+In addition, the new wallet standard described in AIP-62 provides many benefits to wallets:
 
 - Wallet owns and controls its own interface and can easily update and provide new features without introducing any breaking change to the dapp
 - The wallet integration code lives in the wallet codebase and does not require a wallet to create and maintain another wallet package

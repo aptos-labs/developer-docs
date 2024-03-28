@@ -24,7 +24,7 @@ In addition, creating and implementing a wallet is also not an easy task,
 
 1. Provide a wallet that follows a known standard, so it is easy to integrate with
 2. Dapp projects need to dedicate time and resources to integrate the wallet within their app
-3. Wallets require to rely solely on a dapp integration
+3. Wallets required to rely solely on a dapp integration effort
 
 When we started building a wallet adapter, we wanted to provide an adapter that can be easy enough for wallets to integrate with and for dapps to use and implement.
 
