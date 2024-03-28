@@ -68,10 +68,10 @@ In addition, a wallet can benefit from onboarding with the AIP-62 wallet standar
 ## How to integrate with the AIP-62 wallet standard?
 
 :::tip
-Aptos provides a [@aptos-labs/wallet-standard](https://github.com/aptos-labs/wallet-standard) packages that holds the standard interface and class a wallet should implement. In addition, it provides helper functions to detect Aptos compatible wallets.
+Aptos provides a [@aptos-labs/wallet-standard](https://github.com/aptos-labs/wallet-standard) package that holds the standard interface and class a wallet should implement. In addition, it provides helper functions to detect Aptos compatible wallets.
 :::
 
-Integrating with the AIP-62 wallet standard is pretty simple and straightforward, can refer to [this example](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/utils/standardWallet.ts) of a wallet integration with the new standard
+Integrating with the AIP-62 wallet standard is pretty simple and straightforward. For more information, users can refer to [this example](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/utils/standardWallet.ts) to learn how to integrate with the new wallet standard.
 
 :::note
 To be compatible with AIP-62 wallet standard and for be able to be detected by dapps, wallets must implement and support [required features](https://github.com/aptos-labs/wallet-standard/blob/main/src/detect.ts#L16)
@@ -79,10 +79,10 @@ To be compatible with AIP-62 wallet standard and for be able to be detected by d
 
 ### AptosWallet interface implementation
 
-A wallet must implement a AptosWallet interface with the wallet provider info and features:
+A wallet must implement an `AptosWallet` interface with the wallet provider info and features:
 
-```js
-import { AptosWallet } from "@aptos-labs/wallet-standard"
+```ts
+import { AptosWallet } from "@aptos-labs/wallet-standard";
 
 class MyWallet implements AptosWallet {
   url: string;
@@ -103,8 +103,11 @@ class MyWallet implements AptosWallet {
 
 A wallet must implement a AptosWalletAccount interface that represents the accounts that have been authorized by the dapp.
 
-```js
-import { AptosWalletAccount, IdentifierArray } from "@aptos-labs/wallet-standard";
+```ts
+import {
+  AptosWalletAccount,
+  IdentifierArray,
+} from "@aptos-labs/wallet-standard";
 import { SigningScheme } from "@aptos-labs/ts-sdk";
 
 class MyWalletAccount implements AptosWalletAccount {
@@ -143,7 +146,7 @@ class MyWalletAccount implements AptosWalletAccount {
 
 A wallet registers itself using the registerWallet method to notify the dapp it is ready to be registered.
 
-```js
+```ts
 import { registerWallet } from "@aptos-labs/wallet-standard";
 
 const myWallet = new MyWallet();

@@ -102,25 +102,25 @@ The AIP-62 wallet standard eliminates the current issues dapps have:
 - The legacy standard is deeply integrated within the Aptos wallet adapter, and any change can cause breaking changes for dApps and wallets, creating endless maintenance work by requiring a dApp or wallet to implement these changes.
 - The legacy standard supports only the legacy TS SDK input, types, and logic. That means that it doesn't enjoy the features and enhancements of the new TS SDK. In addition, the legacy TS SDK does not receive any more support or new features.
 
-In addition, a dapp can benefit from upgrading to the latest wallet adapter version by:
+In addition, the new wallet standard described in AIP-62 provides many benefits to dApps:
 
 - Support legacy wallet standard and AIP-62 wallet standard out-of-the-box
-- Dapps dont need to explicitly install and maintain a wallet package but it would be handled by the wallet adapter
-- The new adapter version provides better validation and error handling support, and uses the new TS SDK which is more reliable, fast and actively maintained and developed with new features (the legacy sdk, i.e aptos, is no longer actively maintained and developed).
+- The wallet adapter handles the maintenance and installation of wallet packages instead of the dApp
+- The new adapter version provides better validation and error handling support, and uses the new TS SDK which is more reliable, fast, and is actively maintained and updated with new features (the legacy sdk, i.e `npm i aptos`, is no longer actively maintained and developed)
 
 ### How to integrate with the AIP-62 wallet standard?
 
 The latest version of the wallet adapter supports AIP-62 Wallet Standard integration by resolving wallets that support both standards.
 
-Since the AIP-62 wallet standard uses event communication between a dapp and a wallet, the dapp does not need to install, maintain and pass to the wallet adapter multiple wallet plugins (packages), and for any wallet that compatible with the AIP-62 wallet standard, the wallet adapter will detect the wallet by default.
+Since the AIP-62 wallet standard uses event communication between a dapp and a wallet, the dapp does not need to install, maintain, and pass to the wallet adapter multiple wallet plugins (packages). Furthermore, for any wallet that compatible with the AIP-62 wallet standard, the wallet adapter will detect the wallet by default.
 
 #### Support only AIP-62 wallet standard
 
 :::tip
-If you already use the wallet adapter with the legacy standard, uninstall and remove any AIP-62 wallet standard compatible wallet dependency.
+If you already use the wallet adapter with the legacy standard, uninstall and remove any AIP-62 wallet standard compatible wallet dependencies.
 :::
 
-To support only AIP-62 wallet standard, dapp should not include the `plugins` prop in the React provider
+To only support the AIP-62 wallet standard, dapp should not include the `plugins` prop in the React provider
 
 ```js
 <AptosWalletAdapterProvider autoConnect={true}>

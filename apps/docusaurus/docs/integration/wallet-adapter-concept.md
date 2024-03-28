@@ -23,7 +23,7 @@ Implementing wallet integration can be difficult for dapps in:
 In addition, creating and implementing a wallet is also not an easy task,
 
 1. Provide a wallet that follows a known standard, so it is easy to integrate with
-2. Dapp projects need to dedicate time and resource to integrate the wallet within their app
+2. Dapp projects need to dedicate time and resources to integrate the wallet within their app
 3. Wallets require to rely solely on a dapp integration
 
 When we started building a wallet adapter, we wanted to provide an adapter that can be easy enough for wallets to integrate with and for dapps to use and implement.
@@ -50,7 +50,7 @@ This structure offers the following benefits:
 - Flexibility - for wallets in creating and implementing custom functions.
 
 :::note
-Following the new [Wallet Standard AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md) the wallet adapter supports both standards while the ecosystem is onboarding to the new standard. Dapps can follow the integration guide [here](./wallet-adapter-for-dapp.md#aip-62-wallet-standard) and Wallets can follow the integration guide [here](./wallet-adapter-for-wallets.md#aip-62-wallet-standard)
+Following the new [Wallet Standard AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md) the wallet adapter supports the old wallet adapter standard and the new wallet standard described in AIP-62 while the ecosystem is onboarding to the new standard. Dapps can follow the integration guide [here](./wallet-adapter-for-dapp.md#aip-62-wallet-standard) and Wallets can follow the integration guide [here](./wallet-adapter-for-wallets.md#aip-62-wallet-standard)
 :::
 
 ### Adapter Core package
