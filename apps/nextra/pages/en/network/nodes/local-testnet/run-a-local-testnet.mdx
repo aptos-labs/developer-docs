@@ -2,11 +2,14 @@
 title: "Run a Local Testnet with Validator"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
 # Run a Local Testnet with Validator
 
-:::tip Using the CLI to run a local development network
+<Callout type="info">
+**Using the CLI to run a local development network** <br />
 Running a local testnet with the Aptos CLI is simpler and more fully featured. Learn how by following this guide: [Run a Local Development Network with the CLI](../../guides/local-development-network.md).
-:::
+</Callout>
 
 You can run a local testnet of the Aptos blockchain. This local testnet will not be connected to the Aptos devnet. It will run on your local machine, independent of other Aptos networks. You can use this local testnet for testing and development purposes.
 
@@ -23,21 +26,21 @@ The rest of this document describes:
 
 2. With your development environment ready, now you can start your testnet network. Before you proceed, make a note of the following:
 
-   :::tip
-
+   <Callout type="info">
+   **NOTE**
    - When you run the below command to start the local testnet, your terminal will enter into an interactive mode, with a message `Aptos is running, press ctrl-c to exit`. Hence, you will need to open another shell terminal for the subsequent steps described in this section.
    - After the below command runs, copy the `Test dir` information from the terminal output for the next step.
-     :::
+   </Callout>
 
    To start your testnet locally, run the following command:
 
-   ```
+   ```bash filename="Terminal"
    CARGO_NET_GIT_FETCH_WITH_CLI=true cargo run -p aptos-node -- --test
    ```
 
    See below for an example of the partial output. Make a note of the `Test dir` from the output.
 
-   ```
+   ```bash filename="Terminal"
    ...
    ...
    ...
@@ -55,7 +58,7 @@ The rest of this document describes:
 
 **NOTE**: The above command starts a local testnet with a single validator node. The command runs `aptos-node` from a genesis-only ledger state. If you want to reuse the ledger state produced by a previous run of `aptos-node`, then use:
 
-```
+```bash filename="Terminal"
 cargo run -p aptos-node -- --test --config <config-path>
 ```
 
@@ -68,7 +71,7 @@ Faucets are stateless services that can be run in parallel with the testnet. A F
 3. Copy the _Aptos root key path_ from your terminal where you started the testnet, and use it to replace the `mint-key-file-path` in the below command.
 4. Run the following command to start a Faucet:
 
-```
+```bash filename="Terminal"
 cargo run --package aptos-faucet-service -- run-simple --key-file-path "/tmp/694173aa3bbe019499bbd5cf3fe0e2fc/mint.key" --node-url http://127.0.0.1:8080 --chain-id TESTING
 ```
 
@@ -78,7 +81,7 @@ This will start a Faucet running locally without any restrictions to tokens that
 
 After starting your local testnet, you will see the following:
 
-```
+```bash filename="Terminal"
 Entering test mode, this should never be used in production!
 Completed generating configuration:
         Log file: "/tmp/694173aa3bbe019499bbd5cf3fe0e2fc/validator.log"
