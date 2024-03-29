@@ -41,10 +41,11 @@ Navigate to the Typescript ESM examples directory:
 cd examples/typescript-esm
 ```
 
-Install the necessary dependencies:
+Install the necessary dependencies and build it:
 
 ```bash
 pnpm install
+pnpm build
 ```
 
 Run the Typescript [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) example:
