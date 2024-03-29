@@ -507,7 +507,7 @@ console.log(`Alice's collection: ${JSON.stringify(alicesCollection, null, 4)}`);
 To read an owned token's metadata:
 
 ```ts
-const alicesDigitalAsset = await aptos.getOwnedTokens({
+const alicesDigitalAsset = await aptos.getOwnedDigitalAssets({
   ownerAddress: alice.accountAddress,
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
@@ -545,7 +545,7 @@ Each object created from the `aptos_token.move` contract is a distinct asset. Th
   <TabItem value="typescript" label="Typescript">
 
 ```ts
-const alicesDigitalAsset = await aptos.getOwnedTokens({
+const alicesDigitalAsset = await aptos.getOwnedDigitalAssets({
   ownerAddress: alice.accountAddress,
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
@@ -556,7 +556,7 @@ console.log(
 ```
 
 ```ts title="Making the query to get the data"
-export async function getOwnedTokens(args: {
+export async function getOwnedDigitalAssets(args: {
   aptosConfig: AptosConfig;
   ownerAddress: AccountAddressInput;
   options?: PaginationArgs & OrderByArg<GetTokenActivityResponse[0]>;
@@ -581,7 +581,7 @@ export async function getOwnedTokens(args: {
   const data = await queryIndexer<GetCurrentTokenOwnershipQuery>({
     aptosConfig,
     query: graphqlQuery,
-    originMethod: "getOwnedTokens",
+    originMethod: "getOwnedDigitalAssets",
   });
 
   return data.current_token_ownerships_v2;
@@ -612,7 +612,7 @@ Each object created from the `aptos_token.move` contract is a distinct asset. Th
   <TabItem value="typescript" label="Typescript">
 
 ```ts
-const alicesDigitalAsset = await aptos.getOwnedTokens({
+const alicesDigitalAsset = await aptos.getOwnedDigitalAssets({
   ownerAddress: alice.accountAddress,
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
@@ -638,7 +638,7 @@ const pendingTxn = await aptos.waitForTransaction({
 ```
 
 ```ts title="Print each user's queried token amount"
-const alicesDigitalAssetsAfter = await aptos.getOwnedTokens({
+const alicesDigitalAssetsAfter = await aptos.getOwnedDigitalAssets({
   ownerAddress: alice.accountAddress,
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
@@ -646,7 +646,7 @@ console.log(
   `Alices's digital assets balance: ${alicesDigitalAssetsAfter.length}`,
 );
 
-const bobDigitalAssetsAfter = await aptos.getOwnedTokens({
+const bobDigitalAssetsAfter = await aptos.getOwnedDigitalAssets({
   ownerAddress: bob.accountAddress,
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
