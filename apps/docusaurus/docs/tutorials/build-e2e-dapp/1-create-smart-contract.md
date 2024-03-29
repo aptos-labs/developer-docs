@@ -341,7 +341,7 @@ public entry fun create_task(account: &signer, content: String) acquires TodoLis
 }
 ```
 
-1. Add a check to the `complete_task` function to make sure the:
+2. Add a check to the `complete_task` function to make sure the:
    - signer has created a list.
    - task exists.
    - task is not completed.
