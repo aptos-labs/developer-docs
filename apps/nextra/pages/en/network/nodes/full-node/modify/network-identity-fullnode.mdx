@@ -2,13 +2,15 @@
 title: "Generate a PFN Identity"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
 # Generate a PFN Identity
 
-:::danger
+<Callout type="warning">
 Validators and VFNs have their identities initialized when first created and their identities are long-lived (immutable).
 PFN identities are more ephemeral and can be regenerated on demand. As such, generating an identity using this
 guide **should only be done for PFNs**, and not for validators or VFNs.
-:::
+</Callout>
 
 Public fullnodes (PFNs) will automatically start up with a randomly generated (ephemeral) network identity. This works well for
 regular PFNs. However, you may want to generate and assign a static network identity to your PFN. This is useful when:
@@ -19,9 +21,9 @@ regular PFNs. However, you may want to generate and assign a static network iden
 
 This guide will show you how to generate a static network identity and start your PFN with this identity.
 
-:::caution
-Before you proceed, make sure that you already know how to start your local PFN. See [Run a PFN](./index.md) for detailed documentation.
-:::
+<Callout type="warning">
+Before you proceed, make sure that you already know how to start your local PFN. See [Run a PFN](../../full-node.mdx) for detailed documentation.
+</Callout>
 
 ## Generate a static identity
 
@@ -94,7 +96,7 @@ In this example, `B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F8
 After extracting the peer identity from the public key, you can start your PFN with the identity using the
 public key in the `peer_id` field of the configuration file (e.g., `fullnode.yaml`). For example:
 
-```yaml
+```yaml filename="fullnode.yaml"
 full_node_networks:
   - network_id: "public"
 discovery_method: "onchain"
@@ -106,7 +108,7 @@ identity:
 
 In our example (from above), the configuration file (`fullnode.yaml`) should now have the following information:
 
-```yaml
+```yaml filename="fullnode.yaml"
 full_node_networks:
   - network_id: "public"
     discovery_method: "onchain"

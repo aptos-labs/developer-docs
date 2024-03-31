@@ -1,15 +1,17 @@
 ---
 title: "Customize PFN Networks"
-slug: "fullnode-network-connections"
 ---
+
+import { Callout, Steps } from 'nextra/components';
 
 # Customize PFN Networks
 
-:::danger Advanced customization
+<Callout type="warning">
+**Advanced customization**<br />
 Most PFN operators will not need to customize their PFN's network connections. This is only required
 for advanced use cases, such as connecting to specific peers, or configuring a private PFN. If you do
 not have a relevant use case, you should avoid making changes to your PFN's network connections.
-:::
+</Callout>
 
 When running a PFN, you can configure your node's network connections for a few different purposes.
 For example, you can add a seed peer to your node's configuration to connect your node to a specific
@@ -25,16 +27,18 @@ This document outlines how to configure the network of your PFN for different us
 
 ## Allowing PFN connections
 
-:::tip Generate a static identity
+<Callout type="info">
+**Generate a static identity**<br />
 Before allowing other nodes to connect to your PFN, you will need to create a static identity. See [Generate a PFN Identity](./network-identity-fullnode.md).
-:::
+</Callout>
 
 Once you start your PFN with a static identity you can allow others to connect to your PFN:
 
-:::caution Default port settings
+<Callout type="info">
+**Default port settings**<br />
 In the steps below, the port numbers used are for illustration only. You can use your choice of port numbers.
 See [PFN Requirements](./pfn-requirements.md) for more information on port settings.
-:::
+</Callout>
 
 - Make sure you open the TCP port of the network you wish to allow external connections on (e.g., `6180` or `6182`).
   This is required to allow other nodes to connect to your PFN.
@@ -44,15 +48,15 @@ See [PFN Requirements](./pfn-requirements.md) for more information on port setti
 - Make sure the port number you put in the `addresses` matches the one you have in the PFN configuration file
   (for example, `6180` or `6182`).
 
-:::tip
+<Callout type="info">
 You can share your PFN's network identity in our Discord to advertise your node for others to connect to. Note:
 this is optional (and not required!).
-:::
+</Callout>
 
 The snippets below show the configuration file entries and format for allowing other nodes to connect to your PFN.
 The format of each seed peer entry should have a unique `peer_id`, list of `addresses`, and a `role`:
 
-```yaml
+```yaml filename="docker-compose.yaml"
 <Peer_ID>:
   addresses:
   # with DNS
@@ -67,7 +71,7 @@ The format of each seed peer entry should have a unique `peer_id`, list of `addr
 
 For example:
 
-```yaml
+```yaml filename="docker-compose.yaml"
 B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813:
   addresses:
   - "/dns4/pfn0.node.devnet.aptoslabs.com/tcp/6182/noise-ik/B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813/handshake/0"
@@ -80,11 +84,12 @@ B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813:
 
 ## Connecting to seed peers
 
-:::danger Seeds are not required
+<Callout type="warning">
+**Seeds are not required**<br />
 Seed peers are not required for your PFN to connect to any Aptos network. All networks (e.g., devnet, testnet
 and mainnet) are automatically discoverable. Adding seed peers should only be done if you wish to
 connect to a specific peer (or set of peers), and are confident that the peers are high quality.
-:::
+</Callout>
 
 To add seed peers to your PFN, the seed peers' addresses should be added to your PFN configuration file, under
 the `seeds` key in the public network configuration. Each seed peer entry should have a unique `peer_id`, list of
@@ -92,7 +97,6 @@ the `seeds` key in the public network configuration. Each seed peer entry should
 of a configuration file with seed peers manually added:
 
 ```yaml
----
 full_node_networks:
   - discovery_method: "onchain"
     listen_address: ...

@@ -1,8 +1,9 @@
 ---
 title: "Upgrade your PFN"
 slug: "update-fullnode-with-new-devnet-releases"
-sidebar_position: 11
 ---
+
+import { Callout, Steps } from 'nextra/components';
 
 # Upgrade your PFN
 
@@ -40,10 +41,11 @@ following these steps:
 
 ### (Devnet) Data Wipe and Reset
 
-:::danger Devnet only wipe
+<Callout type="warning"> 
+**Devnet only wipe**<br />
 Only follow these additional steps if your PFN is running in `devnet`. Other networks (e.g., `testnet` and `mainnet`)
 don't require this step (as data is never wiped)!
-:::
+</Callout>
 
 If your PFN is running in `devnet`, follow these additional steps after stopping your PFN (and before restarting it!):
 
@@ -53,7 +55,7 @@ If your PFN is running in `devnet`, follow these additional steps after stopping
 
 2. Delete the `genesis.blob` file and `waypoint.txt` file (depending on how you configured it, you might not have this file and may instead have a `waypoint` directly in your configuration file).
 
-3. Download the new [genesis.blob](../node-files-all-networks/node-files.md#genesisblob) file and the new [waypoint](../node-files-all-networks/node-files.md#waypointtxt).
+3. Download the new [genesis.blob](../../configure/node-files-all-networks/node-files-mainnet.mdx#genesisblob) file and the new [waypoint](../../configure/node-files-all-networks/node-files-mainnet.mdx#waypointtxt).
 
 4. Update the configuration file (e.g., `fullnode.yaml`) with the new genesis.blob and waypoint files.
 
@@ -81,10 +83,11 @@ running in `devnet`, an additional data wipe step is required.
 
 ### Upgrade with data wipe (devnet only)
 
-:::danger Devnet only wipe
+<Callout type="warning"> 
+**Devnet only wipe**<br />
 Only follow these steps if your PFN is running in `devnet`. Other networks don't require this step (as data is never wiped)
 and we recommend not wiping your data in these networks.
-:::
+</Callout>
 
 If you are running a `devnet` PFN, follow these steps to update:
 
