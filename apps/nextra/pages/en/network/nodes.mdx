@@ -1,9 +1,11 @@
 ---
 title: "Learn about Nodes"
 hide_table_of_contents: true
-sidebar: false
 toc: false
 ---
+
+import Card, { Cards } from '@components/card/Card'
+
 
 # Learn about Nodes
 
@@ -19,158 +21,105 @@ find additional resources for node operation in the [External Resources](../comm
 
 ## Quick Links
 
-<div className="docs-card-container">
-  <div className="row row-cols-1 row-cols-md-2a g-4">
-    <div className="col">
-      <div className="card-no-border card-body h-100 d-flex flex-column align-items-start">
-        <div className="card-body">
-          <h2 className="card-title">Validation on Aptos</h2>
-          <div className="card-text">
-            Everything you need to know about how validation, staking and governance works on Aptos.
-          </div>
-        </div>
-        <div className="list-group list-group-flush">
-          <a href="/concepts/staking#validation-on-the-aptos-blockchain" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">How validation works</h4>
-            </div>
-            <small>Validator-leader proposes and earns rewards on success.</small>
-          </a>
-          <a href="/concepts/staking#validator-state-and-stake-state" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Validator states</h4>
-            </div>
-            <small>Learn how a validator gets into a validator set.</small>
-          </a>
-          <div className="card-body">
-          <h2 className="card-title">Staking</h2>
-          </div>
-          <a href="/concepts/staking" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Staking on Aptos</h4>
-            </div>
-            <small>A comprehensive guide to how staking works on Aptos.</small>
-          </a>
-          <a href="/concepts/governance" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Governance</h4>
-            </div>
-            <small>Who can propose, who can vote, and how an AIP is resolved.</small>
-          </a>
-          <a href="/nodes/validator-node/operator/staking-pool-operations#perform-pool-owner-operations" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Owner</h4>
-            </div>
-            <small>Describes the owner operations performed for staking.</small>
-          </a>
-          <a href="/nodes/validator-node/voter/index" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Voter</h4>
-            </div>
-            <small>Describes the voter operations performed for staking.</small>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div className="col">
-      <div className="card-no-border card-body h-100 d-flex flex-column">
-        <div className="card-body">
-          <h2 className="card-title">Validators and VFNs</h2>
-          <div className="card-text">
-            A comprehensive guide to deploying nodes, staking operations and participate in consensus.
-          </div>
-        </div>
-        <div className="list-group list-group-flush">
-          <a href="/nodes/validator-node/operator/node-requirements" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Node requirements</h4>
-            </div>
-            <small>Details the compute and storage resources you need. Read this first before anything.</small>
-          </a>
-          <a href="/nodes/validator-node/operator/running-validator-node/running-validator-node" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Running validator node</h4>
-            </div>
-            <small>In the cloud or on-premises, Docker or source, you will read step-by-step instructions here.</small>
-          </a>
-          <a href="/nodes/validator-node/operator/node-liveness-criteria" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Node health</h4>
-            </div>
-            <small>You can verify your node health using several options.</small>
-          </a>
-          <a href="/nodes/validator-node/operator/connect-to-aptos-network" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Connecting to Aptos network</h4>
-            </div>
-            <small>Steps to connect your nodes to an Aptos network. </small>
-          </a>
-          <a href="/nodes/validator-node/operator/staking-pool-operations" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Staking pool operations</h4>
-            </div>
-            <small>Step-by-step guide for how to perform staking pool operations. </small>
-          </a>
-          <a href="/nodes/validator-node/operator/shutting-down-nodes" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Shutting down nodes</h4>
-            </div>
-            <small>Leave the validator set first, and then shut down your node. </small>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div className="col">
-      <div className="card-no-border card-body h-100 d-flex flex-column">
-        <div className="card-body">
-          <h2 className="card-title">Public Fullnodes (PFNs)</h2>
-          <div className="card-text">
-            A section with detailed, step-by-step instructions on everything related to Aptos PFNs.
-          </div>
-        </div>
-        <div className="list-group list-group-flush">
-          <a href="/nodes/full-node/public-fullnode" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Deploy a PFN</h4>
-            </div>
-            <small>Follow this section to deploy a PFN.</small>
-          </a>
-          <a href="/indexer/legacy/indexer-fullnode" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Indexer PFN</h4>
-            </div>
-            <small
-              >Describes how to run an indexer PFN on the Aptos network. </small>
-          </a>
-          <div className="card-body">
-          <h2 className="card-title">Common Operations</h2>
-          </div>
-          <a href="/nodes/local-testnet/local-testnet-index" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Local development testnet</h4>
-            </div>
-            <small>Run a local testnet for development (including validator nodes).</small>
-          </a>
-          <a href="/nodes/full-node/update-fullnode-with-new-devnet-releases" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Upgrade a node</h4>
-            </div>
-            <small>Upgrade your node with new releases.</small>
-          </a>
-          <a href="/nodes/full-node/bootstrap-fullnode" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Bootstrap from a snapshot</h4>
-            </div>
-            <small>Use a snapshot to bootstrap a new node.</small>
-          </a>
-          <a href="/nodes/full-node/bootstrap-fullnode" className="list-group-item">
-            <div className="d-flex w-100 justify-content-between">
-              <h4 className="mb-1">Bootstrap from a backup</h4>
-            </div>
-            <small>Use data restore to bootstrap a new node.</small>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+### Validation on Aptos
+
+Everything you need to know about how validation, staking and governance works on Aptos.
+
+<Cards>
+  <Card href="/concepts/staking#validation-on-the-aptos-blockchain">
+    <Card.Title>How validation works</Card.Title>
+    <Card.Description>Validator-leader proposes and earns rewards on success.</Card.Description>
+  </Card>
+  <Card href="/concepts/staking#validator-state-and-stake-state">
+    <Card.Title>Validator states</Card.Title>
+    <Card.Description>Learn how a validator gets into a validator set.</Card.Description>
+  </Card>
+</Cards>
+
+### Staking
+
+<Cards>
+  <Card href="/concepts/staking">
+    <Card.Title>Staking on Aptos</Card.Title>
+    <Card.Description>A comprehensive guide to how staking works on Aptos.</Card.Description>
+  </Card>
+  <Card href="/concepts/governance">
+    <Card.Title>Governance</Card.Title>
+    <Card.Description>Who can propose, who can vote, and how an AIP is resolved.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-operations">
+    <Card.Title>Owner</Card.Title>
+    <Card.Description>Describes the owner operations performed for staking.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-voter">
+    <Card.Title>Voter</Card.Title>
+    <Card.Description>Describes the voter operations performed for staking.</Card.Description>
+  </Card>
+</Cards>
+
+### Validators and VFNs
+
+A comprehensive guide to deploying nodes, staking operations and participate in consensus.
+
+<Cards>
+  <Card href="./nodes/validator-node/node-requirements">
+    <Card.Title>Node requirements</Card.Title>
+    <Card.Description>Details the compute and storage resources you need. Read this first before anything.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/deploy-nodes">
+    <Card.Title>Running validator node</Card.Title>
+    <Card.Description>In the cloud or on-premises, Docker or source, you will read step-by-step instructions here.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/verify-nodes/node-liveness-criteria">
+    <Card.Title>Node health</Card.Title>
+    <Card.Description>You can verify your node health using several options.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/connect-to-aptos-network">
+    <Card.Title>Connecting to Aptos network</Card.Title>
+    <Card.Description>Steps to connect your nodes to an Aptos network.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-operations">
+    <Card.Title>Staking pool operations</Card.Title>
+    <Card.Description>Step-by-step guide for how to perform staking pool operations.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/modify-nodes/shutting-down-nodes">
+    <Card.Title>Shutting down nodes</Card.Title>
+    <Card.Description>Leave the validator set first, and then shut down your node.</Card.Description>
+  </Card>
+</Cards>
+
+### Public Fullnodes (PFNs)
+
+A section with detailed, step-by-step instructions on everything related to Aptos PFNs.
+
+<Cards>
+  <Card href="./nodes/full-node/deployments">
+    <Card.Title>Deploy a PFN</Card.Title>
+    <Card.Description>Follow this section to deploy a PFN.</Card.Description>
+  </Card>
+  <Card href="/indexer/legacy/indexer-fullnode">
+    <Card.Title>Indexer PFN</Card.Title>
+    <Card.Description>Describes how to run an indexer PFN on the Aptos network.</Card.Description>
+  </Card>
+</Cards>
+
+### Common Operations
+
+<Cards>
+  <Card href="./nodes/local-testnet">
+    <Card.Title>Develop with local testnet</Card.Title>
+    <Card.Description>Run a local testnet for development (including validator nodes).</Card.Description>
+  </Card>
+  <Card href="./nodes/full-node/modify/update-fullnode-with-new-releases">
+    <Card.Title>Upgrade your PFN</Card.Title>
+    <Card.Description>Upgrade your node with new releases.</Card.Description>
+  </Card>
+  <Card href="./nodes/bootstrap-fullnode/bootstrap-fullnode">
+    <Card.Title>Bootstrap from a snapshot</Card.Title>
+    <Card.Description>Use a snapshot to bootstrap a new node.</Card.Description>
+  </Card>
+  <Card href="./nodes/bootstrap-fullnode/aptos-db-restore">
+    <Card.Title>Bootstrap from a backup</Card.Title>
+    <Card.Description>Use data restore to bootstrap a new node.</Card.Description>
+  </Card>
+</Cards>
