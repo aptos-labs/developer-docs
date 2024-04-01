@@ -12,7 +12,7 @@ Choose which operating system to install the Aptos CLI on:
 
 Or, if you would like to install a specific version of the Aptos CLI, follow these advanced steps:
 
-1. [Install a Specific Version (Advanced)](install-cli-specific-version.md)
+4. [Install a Specific Version (Advanced)](install-cli-specific-version.md)
 
 To zoom out and see the ways you can use the Aptos CLI, go to the [top-level documentation](../index.md).
 

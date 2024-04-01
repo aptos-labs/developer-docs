@@ -1,6 +1,5 @@
 ---
 title: "CLI Configuration"
-id: "cli-configuration" # TODO: Investigate what this id does
 ---
 
 # Setup CLI Initial Configuration
@@ -37,12 +36,12 @@ Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b
 }
 ```
 
-1. Later, if you want to update these settings, you can do so by running `aptos init` again.
-2. The rest of these configuration steps are optional / quality of life. To continue to use the CLI for your specific use case, follow the [usage guide here](use-cli/use-aptos-cli.md).
+2. Later, if you want to update these settings, you can do so by running `aptos init` again.
+3. The rest of these configuration steps are optional / quality of life. To continue to use the CLI for your specific use case, follow the [usage guide here](use-cli/use-aptos-cli.md).
 
-## (Optional) Creating Multiple Named Configurations (AKA Profiles)
+## (Optional) Creating Named Configurations (Profiles)
 
-For testing more complicated scenarios, you will often want multiple accounts on-chain. One way to do this is to create multiple named configurations, which we will call profiles. 
+For testing more complicated scenarios, you will often want multiple accounts on-chain. One way to do this is to create a named configuration which we will call a profile. 
 
 To create a profile, run `aptos init --profile <name_of_profile>`. The configuration you generate will be usable when calling CLI commands as replacements for arguments. 
 

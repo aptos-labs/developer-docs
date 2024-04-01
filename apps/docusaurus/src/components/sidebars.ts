@@ -405,6 +405,7 @@ const sidebars: SidebarsConfig = {
             "tools/aptos-cli/install-cli/install-move-prover",
           ],
         },
+        "tools/aptos-cli/cli-configuration",
         {
           type: "category",
           label: "Use Aptos CLI",

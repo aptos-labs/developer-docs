@@ -31,7 +31,7 @@ Note: If you are using an ARM architecture, you will have to install using the s
     :::
 
 3. (Optional) It can be helpful to add the Aptos CLI to a folder in your PATH, or to add it to your PATH directly. The steps to add a folder to your PATH are shell dependent.
-    1. You can run `echo $SHELL` to print the default shell for your machine, then google specific steps to add a folder to your PATH for that shell.  
+    1. You can run `echo $SHELL` to print the default shell for your machine, then google specific steps to add a folder to your PATH for that shell.
 4. Verify the script is installed by opening a new terminal and running `aptos help`
     1. You should see a list of commands you can run using the CLI. 
     2. In the future, this is a helpful resource to learn exactly how each command works. 

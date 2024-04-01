@@ -16,7 +16,7 @@ For mac, the easiest way to install the Aptos CLI is with the package manager `b
     brew install aptos
 ```
 
-1. Open another terminal and run `aptos help` to verify the CLI is installed.
+3. Open another terminal and run `aptos help` to verify the CLI is installed.
 
 ```zsh
    aptos help
