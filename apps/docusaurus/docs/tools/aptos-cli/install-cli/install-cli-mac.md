@@ -4,7 +4,7 @@ title: "Install On Mac"
 
 # Install the Aptos CLI on Mac
 
-For mac, the easiest way to install the Aptos CLI is with the package manager `brew`.
+For Mac, the easiest way to install the Aptos CLI is with the package manager `brew`.
 
 # Installation
 
