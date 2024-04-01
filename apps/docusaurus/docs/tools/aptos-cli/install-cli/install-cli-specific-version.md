@@ -4,7 +4,7 @@ title: "Install Specific Versions (Advanced)"
 
 # Install Specific Aptos CLI Versions (Advanced)
 
-If you need a specific version of the Aptos CLI, you can build it directly from the Aptos source code. This installation method is primarily used to interact with specific features on Devnet which may not have made it to Testnet / Mainnet yet. You may also want to follow these steps if you are running architecture which does not play well with the existing releases / pre-compiled binaries.
+If you need a specific version of the Aptos CLI, you can build it directly from the Aptos source code. This installation method is primarily used to interact with specific features on Devnet which may not have made it to Testnet / Mainnet yet. You may also want to follow these steps if you are running an architecture which does not play well with the existing releases / pre-compiled binaries.
 
 If you do not need this advanced method, you can find the normal install steps [here](./index.md).
 
