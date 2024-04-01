@@ -443,7 +443,7 @@ const config: Config = {
             from: "/move/move-on-aptos/move-scripts",
             to: "/move/move-on-aptos/scripts/script-tutorial",
           },
-          // CLI Docs Rewrite
+          // CLI Docs Rewrite April 2024
           {
             from: "/tools/aptos-cli/install-cli/install-from-brew",
             to: "/tools/aptos-cli/install-cli/install-cli-mac",
