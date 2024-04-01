@@ -50,7 +50,7 @@ Let us run through how to execute a Move script with a step-by-step example usin
    cd testing
    ```
 
-2. Set up the Aptos CLI and [create an account](../../../tools/aptos-cli/use-cli/use-aptos-cli.md#use-the-aptos-cli):
+2. Set up the Aptos CLI and [create an account](../../../tools/aptos-cli/use-cli/use-aptos-cli.md):
 
    ```sh
    aptos init --network devnet

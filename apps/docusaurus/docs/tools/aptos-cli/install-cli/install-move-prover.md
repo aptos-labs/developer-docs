@@ -1,6 +1,7 @@
 ---
 title: "Install the Move Prover"
 ---
+<!-- TODO: Move this under the Work with Move contracts page. -->
 
 # Install the Move Prover
 

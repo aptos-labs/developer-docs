@@ -443,6 +443,23 @@ const config: Config = {
             from: "/move/move-on-aptos/move-scripts",
             to: "/move/move-on-aptos/scripts/script-tutorial",
           },
+          // CLI Docs Rewrite
+          {
+            from: "/tools/aptos-cli/install-cli/install-from-brew",
+            to: "/tools/aptos-cli/install-cli/install-cli-mac",
+          },
+          {
+            from: "/tools/aptos-cli/install-cli/automated-install", 
+            to: "/tools/aptos-cli",
+          },
+          {
+            from: "/tools/aptos-cli/install-cli/download-cli-binaries",
+            to: "/tools/aptos-cli",
+          },
+          {
+            from: "/tools/aptos-cli/install-cli/build-from-source",
+            to: "/tools/aptos-cli/install-cli/install-cli-specific-version",
+          },
         ],
         // Create redirects for all the move pages
         createRedirects(existingPath) {

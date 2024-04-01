@@ -6,8 +6,19 @@ hidden: false
 
 # Aptos CLI
 
-The `aptos` tool is a command line interface (CLI) for developing on the Aptos blockchain, debugging, and for node operations. Please refer to the following documentation for more information:
+The Aptos command line interface (CLI) is a tool to help you compile and test Move contracts and quickly play with Aptos features on-chain. 
 
-- ### [Install Aptos CLI](install-cli/index.md)
+For more advanced users, the CLI can also be used to run a private Aptos network (to help test code locally) and can be helpful managing a network node. 
 
-- ### [Use Aptos CLI](use-cli/use-aptos-cli.md)
+If you run into problems installing or using the CLI, feel free to search or post in Aptos’s [GitHub Discussions](https://github.com/aptos-labs/aptos-developer-discussions/discussions).
+
+You can install and learn how to use the tool by following these steps:
+
+1. Install the Aptos CLI 
+    1. [Mac](install-cli/install-cli-mac.md)
+    2. [Windows](install-cli/install-cli-windows.md)
+    3. [Linux](install-cli/install-cli-linux.md)
+    4. [Advanced (Install Specific Versions)](install-cli/install-cli-specific-version.md)
+2. [Setup CLI configuration](cli-configuration.md)
+3. Explore a use case by looking at the [Using Aptos CLI guide](use-cli/use-aptos-cli.md)
+    <!-- TODO: Revise the 3rd bullet above to break out use cases. -->
