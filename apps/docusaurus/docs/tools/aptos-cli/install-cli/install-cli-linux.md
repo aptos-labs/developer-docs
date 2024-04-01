@@ -45,13 +45,13 @@ If you would like to update the Aptos CLI to the latest version, you can run `ap
 1. Go to the [Aptos CLI release page](https://github.com/aptos-labs/aptos-core/releases?q=cli&expanded=true).
 2. Click the ”Assets” expandable menu for the latest release to see the pre-compiled binaries.
 3. Download the zip file for Linux. 
-    1. It’ll have a name like: `aptos-cli-<version>-Ubuntu-x86_64.zip`
+    1. It’ll have a name like: `aptos-cli-<version>-Ubuntu-x86_64.zip`.
     2. Make sure you choose the right zip file for your computer architecture.
     3. You will likely have to dismiss warnings that this is a suspicious file when downloading.
 4. Unzip the downloaded file.
 5. Move the extracted Aptos binary file into your preferred folder.
 6. Open a terminal and navigate to your preferred folder.
-7. Make `~/aptos` an executable by running `chmod +x ~/aptos`
+7. Make `~/aptos` an executable by running `chmod +x ~/aptos`.
 8. Verify that this installed version works by running `~/aptos help`. 
     1. You should see instructions for how to use all CLI commands. These can be helpful in the future when you are trying to understand how to use specific commands.
 9. (Optional) It can be helpful to add the Aptos CLI to a folder in your PATH, or to add it to your PATH directly. The steps to add a folder to your PATH are shell dependent.
