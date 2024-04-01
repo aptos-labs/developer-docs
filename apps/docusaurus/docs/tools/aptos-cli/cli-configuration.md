@@ -4,7 +4,7 @@ title: "CLI Configuration"
 
 # Setup CLI Initial Configuration
 
-If you are using the CLI to try things out on-chain, you will need to configure the network, faucet, and credentials you want the CLI to use. 
+If you are using the CLI to try things out on-chain, you will need to configure the network, faucet, and credentials you want the CLI to use.
 
 This makes using the CLI easier and more secure as you will not be forced to repeatedly copy addresses or private keys.
 
@@ -13,7 +13,7 @@ If you still need to install the CLI, follow these steps: [Aptos CLI (Top-Level 
 :::
 
 1. Run `aptos init` and follow the instructions in the command line.
-    1. To use default settings, you can provide no input and just press “Enter”. 
+   1. To use default settings, you can provide no input and just press “Enter”.
 
 ```zsh
 aptos init
@@ -41,9 +41,9 @@ Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b
 
 ## (Optional) Creating Named Configurations (Profiles)
 
-For testing more complicated scenarios, you will often want multiple accounts on-chain. One way to do this is to create a named configuration which we will call a profile. 
+For testing more complicated scenarios, you will often want multiple accounts on-chain. One way to do this is to create a named configuration which we will call a profile.
 
-To create a profile, run `aptos init --profile <name_of_profile>`. The configuration you generate will be usable when calling CLI commands as replacements for arguments. 
+To create a profile, run `aptos init --profile <name_of_profile>`. The configuration you generate will be usable when calling CLI commands as replacements for arguments.
 
 For example:
 
@@ -58,7 +58,7 @@ aptos account fund-with-faucet --profile bob
 
 ## (Optional) Setting Up Shell Completion
 
-One quality of life feature you can enable is shell auto-completions. 
+One quality of life feature you can enable is shell auto-completions.
 
 1. Determine which shell you are using (you can run `echo $SHELL` if you are unsure).
 2. Look up where configuration files for shell completions go for that shell (it varies from shell to shell). The supported shells are `[bash, zsh, fish, PowerShell, elvish]`.

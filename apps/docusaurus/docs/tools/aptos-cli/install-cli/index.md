@@ -17,4 +17,5 @@ Or, if you would like to install a specific version of the Aptos CLI, follow the
 To zoom out and see the ways you can use the Aptos CLI, go to the [top-level documentation](../index.md).
 
 <!-- TODO: Remove the below Move Prover step once we've migrated it to be linked from the Work With Move page. -->
+
 If you would like to install the Move Prover, you can do that by following [these steps](install-move-prover.md).

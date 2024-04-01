@@ -4,7 +4,7 @@ title: "Install On Mac"
 
 # Install the Aptos CLI on Mac
 
-For mac, the easiest way to install the Aptos CLI is with the package manager `brew`. 
+For mac, the easiest way to install the Aptos CLI is with the package manager `brew`.
 
 # Installation
 
@@ -12,7 +12,7 @@ For mac, the easiest way to install the Aptos CLI is with the package manager `b
 2. Open a new terminal and enter the following commands.
 
 ```zsh
-    brew update 
+    brew update
     brew install aptos
 ```
 
@@ -31,6 +31,6 @@ If `brew` does not work for you, you can also use the steps here: [Install Speci
 Upgrading the CLI with brew just takes 2 commands:
 
 ```zsh
-  brew update        
+  brew update
   brew upgrade aptos
 ```

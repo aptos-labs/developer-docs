@@ -449,7 +449,7 @@ const config: Config = {
             to: "/tools/aptos-cli/install-cli/install-cli-mac",
           },
           {
-            from: "/tools/aptos-cli/install-cli/automated-install", 
+            from: "/tools/aptos-cli/install-cli/automated-install",
             to: "/tools/aptos-cli",
           },
           {
