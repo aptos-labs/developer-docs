@@ -9,7 +9,7 @@ If you are using the CLI to try things out on-chain, you will need to configure 
 This makes using the CLI easier and more secure as you will not be forced to repeatedly copy addresses or private keys.
 
 :::caution
-If you still need to install the CLI, follow these steps: [Aptos CLI (Top-Level of Draft Content)](install-cli/install-cli-specific-version.md)
+If you still need to install the CLI, follow [these steps](install-cli/install-cli-specific-version.md).
 :::
 
 1. Run `aptos init` and follow the instructions in the command line.
@@ -76,7 +76,7 @@ aptos config generate-shell-completions --shell zsh --output-file ~/.oh-my-zsh/c
 
 ## (Optional) Global Config
 
-By default, the configuration is set to use a local file (`.aptos/config.yaml`) per workspace. If you would like to use one shared configuration for all workspaces, you can follow these steps.
+By default, the CLI will look for a configuration is set to use a file in the workspace directory (`.aptos/config.yaml`) per workspace. If you would like to use one shared configuration for all workspaces, you can follow these steps.
 
 1. Create a folder in your home directory called `.aptos` (it will have the path `~/.aptos`).
 2. Create a yaml file inside `.aptos` called `global_config.yaml`.
