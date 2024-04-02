@@ -12,7 +12,7 @@ This document describes how to connect your validator and validator fullnode (VF
 <Callout type="warning">
 **MINIMUM STAKING REQUIREMENTS**<br />
 You should only follow these instructions if your validator is able to meet the minimum
-[staking requirements](../../../concepts/staking.md) for the network. The current required minimum staking
+[staking requirements](../../../) for the network. The current required minimum staking
 requirement is 1 Million APT tokens.
 </Callout>
 
@@ -44,12 +44,12 @@ We will go through each of these steps in detail below.
 
 To begin, you will need to initialize the staking pool for your nodes. There are two types of pools you
 can initialize, a staking pool or a delegation pool. You can read more about the differences between these
-pools in the [Staking](../../../concepts/staking.md) and [Delegated Staking](../../../concepts/delegated-staking.md) sections.
+pools in the [Staking](../../../blockchain/learn-about-aptos/staking.mdx) and [Delegated Staking](../../../blockchain/learn-about-aptos/delegated-staking.mdx) sections.
 
 To initialize a staking pool, follow the instructions in
-[staking pool operations](../../../nodes/validator-node/operator/staking-pool-operations.md#initialize-a-staking-pool). Otherwise,
+[staking pool operations](../../../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#initialize-a-staking-pool). Otherwise,
 to initialize a delegation pool, follow the instructions in
-[delegation pool operations](../../../nodes/validator-node/operator/delegation-pool-operations.md#initialize-a-delegation-pool).
+[delegation pool operations](../../../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx#initialize-a-delegation-pool).
 
 ## Join the validator set
 
@@ -59,7 +59,7 @@ Next, you will need to join the validator set. Follow the steps below:
 **MAINNET VS TESTNET**<br />
 The commands shown below are for the Aptos mainnet. If you are connecting to a different
 network, you will need to change the `--network` value in the commands accordingly. You can view the
-values in [Aptos Blockchain Networks](../../networks.md) to see how profiles can be configured based on the network.
+values in [Aptos Blockchain Networks](../../networks.mdx) to see how profiles can be configured based on the network.
 </Callout>
 
 ### 1. Initialize the Aptos CLI
@@ -236,7 +236,7 @@ If you used Terraform to deploy your nodes (e.g., for AWS, Azure or GCP), follow
    You will be able to access the Terraform dashboard on `http://<ip/DNS>`.
 
 5. Pull the latest of the terraform module `terraform get -update`, and then apply the Terraform: `terraform apply`.
-6. Download the `genesis.blob` and `waypoint.txt` files for your network. See [Node Files](../../node-files-all-networks/node-files.md) for locations and commands to download these files.
+6. Download the `genesis.blob` and `waypoint.txt` files for your network. See [Node Files](../../configure/node-files-all-networks.mdx) for locations and commands to download these files.
 7. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
 8. Recreate the secrets. Make sure the secret name matches your `era` number, e.g. if you have `era = 3`, then you should replace the secret name to be:
 
@@ -259,7 +259,7 @@ kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e2 \
 After joining the validator set and updating your node identity configurations to match the pool address,
 you will need to bootstrap your nodes to connect to the network. To do this, follow the steps below:
 
-1. Start the VFN. The VFN will connect to the network and start syncing. See [State Synchronization](./../../../guides/state-sync.md) for more information.
+1. Start the VFN. The VFN will connect to the network and start syncing. See [State Synchronization](./../../configure/state-sync.mdx) for more information.
 2. Once the VFN is synced, restart the validator. It will sync from the VFN and then connect to other validators
    in the network and start participating in consensus.
 
@@ -268,5 +268,5 @@ Once both of these steps are complete, your nodes will be connected to the netwo
 ## Next steps
 
 Congratulations! You have successfully connected your nodes to the Aptos network. To verify that your nodes are running
-correctly, visit the [Node Health](./node-liveness-criteria.md) document. This document describes how you can verify and
+correctly, visit the [Node Health](../../validator-node/verify-nodes/node-liveness-criteria.mdx) document. This document describes how you can verify and
 monitor the health of your validator and VFN, including an initial node verification section.
