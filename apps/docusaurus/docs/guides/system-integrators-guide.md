@@ -101,7 +101,7 @@ At creation, an [Aptos account](https://github.com/aptos-labs/aptos-core/blob/88
 - An [event handle](../concepts/events.md) for all new types of coins added to the account.
 - An event handle for all key rotations for the account.
 
-Read more about [Accounts](../concepts/accounts.md) and [set one up](../tools/aptos-cli/use-cli/use-aptos-cli.md#initialize-local-configuration-and-create-an-account).
+Read more about [Accounts](../concepts/accounts.md) and [set one up](../tools/aptos-cli/use-cli/cli-account.md).
 
 ## Transactions
 
@@ -510,7 +510,7 @@ To learn more about coin creation, make ["Your First Coin"](../tutorials/first-c
 
 ## Integrating with the faucet
 
-This tutorial is for SDK and wallet developers who want to integrate with the [Aptos Faucet](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos-faucet). If you are a dapp developer, you should access the faucet through an existing [SDK](../tutorials/first-transaction.md) or [CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md#initialize-local-configuration-and-create-an-account) instead.
+This tutorial is for SDK and wallet developers who want to integrate with the [Aptos Faucet](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos-faucet). If you are a dapp developer, you should access the faucet through an existing [SDK](../tutorials/first-transaction.md) or [CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md) instead.
 
 ### Differences between devnet and testnet
 

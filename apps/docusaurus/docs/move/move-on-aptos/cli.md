@@ -191,7 +191,7 @@ FAILURE proving 1 modules from package `hello_prover` in 0.067s
 }
 ```
 
-In this case, see [Install the dependencies of Move Prover](../../tools/aptos-cli/install-cli/index.md#optional-installing-the-move-prover).
+In this case, see [Install the dependencies of Move Prover](../../tools/aptos-cli/install-cli/install-move-prover.md).
 
 ## Profiling gas usage
 

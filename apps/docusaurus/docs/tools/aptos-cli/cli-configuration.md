@@ -1,0 +1,97 @@
+---
+title: "CLI Configuration"
+---
+
+# Setup CLI Initial Configuration
+
+If you are using the CLI to try things out on-chain, you will need to configure the network, faucet, and credentials you want the CLI to use.
+
+This makes using the CLI easier and more secure as you will not be forced to repeatedly copy addresses or private keys.
+
+:::caution
+If you still need to install the CLI, follow these steps: [Aptos CLI (Top-Level of Draft Content)](install-cli/install-cli-specific-version.md)
+:::
+
+1. Run `aptos init` and follow the instructions in the command line.
+   1. To use default settings, you can provide no input and just press “Enter”.
+
+```zsh
+aptos init
+
+Configuring for profile default
+Enter your rest endpoint [Current: None | No input: https://api.devnet.aptoslabs.com]
+
+No rest url given, using https://api.devnet.aptoslabs.com...
+Enter your faucet endpoint [Current: None | No input: https://faucet.devnet.aptoslabs.com]
+
+No faucet url given, using https://faucet.devnet.aptoslabs.com...
+Enter your private key as a hex literal (0x...) [Current: None | No input: Generate new key (or keep one if present)]
+
+No key given, generating key...
+Account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696 doesn't exist, creating it and funding it with 10000 coins
+Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696!  Run `aptos help` for more information about commands
+
+{
+  "Result": "Success"
+}
+```
+
+2. Later, if you want to update these settings, you can do so by running `aptos init` again.
+3. The rest of these configuration steps are optional / quality of life. To continue to use the CLI for your specific use case, follow the [usage guide here](use-cli/use-aptos-cli.md).
+
+## (Optional) Creating Named Configurations (Profiles)
+
+For testing more complicated scenarios, you will often want multiple accounts on-chain. One way to do this is to create a named configuration which we will call a profile.
+
+To create a profile, run `aptos init --profile <name_of_profile>`. The configuration you generate will be usable when calling CLI commands as replacements for arguments.
+
+For example:
+
+```zsh
+aptos init --profile bob
+...
+aptos account fund-with-faucet --profile bob
+{
+  "Result": "Added 100000000 Octas to account 0x63169727b08fc137b8720e451f7a90584ccce04c301e151daeadc7b8191fdfad"
+}
+```
+
+## (Optional) Setting Up Shell Completion
+
+One quality of life feature you can enable is shell auto-completions.
+
+1. Determine which shell you are using (you can run `echo $SHELL` if you are unsure).
+2. Look up where configuration files for shell completions go for that shell (it varies from shell to shell). The supported shells are `[bash, zsh, fish, PowerShell, elvish]`.
+3. Run the following command with your specific shell and the output file for completions using your shell:
+
+```zsh
+aptos config generate-shell-completions --shell <YOUR_SHELL_HERE> --output-file <OUTPUT_DESTINATION_FOR_YOUR_SHELL>
+```
+
+Example command for [`oh my zsh`](https://ohmyz.sh/):
+
+```zsh
+aptos config generate-shell-completions --shell zsh --output-file ~/.oh-my-zsh/completions/_aptos
+```
+
+## (Optional) Global Config
+
+By default, the configuration is set to use a local file (`.aptos/config.yaml`) per workspace. If you would like to use one shared configuration for all workspaces, you can follow these steps.
+
+1. Create a folder in your home directory called `.aptos` (it will have the path `~/.aptos`).
+2. Create a yaml file inside `.aptos` called `global_config.yaml`.
+3. Run the command:
+
+```zsh
+aptos config set-global-config --config-type global
+```
+
+You should see:
+
+```json
+{
+  "Result": {
+    "config_type": "Global"
+  }
+}
+```

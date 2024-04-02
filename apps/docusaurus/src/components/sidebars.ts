@@ -398,13 +398,14 @@ const sidebars: SidebarsConfig = {
           collapsible: true,
           collapsed: true,
           items: [
-            "tools/aptos-cli/install-cli/automated-install",
-            "tools/aptos-cli/install-cli/download-cli-binaries",
-            "tools/aptos-cli/install-cli/install-from-brew",
-            "tools/aptos-cli/install-cli/build-from-source",
+            "tools/aptos-cli/install-cli/install-cli-mac",
+            "tools/aptos-cli/install-cli/install-cli-windows",
+            "tools/aptos-cli/install-cli/install-cli-linux",
+            "tools/aptos-cli/install-cli/install-cli-specific-version",
             "tools/aptos-cli/install-cli/install-move-prover",
           ],
         },
+        "tools/aptos-cli/cli-configuration",
         {
           type: "category",
           label: "Use Aptos CLI",
