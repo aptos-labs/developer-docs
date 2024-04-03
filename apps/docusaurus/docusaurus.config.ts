@@ -465,6 +465,11 @@ const config: Config = {
             from: "/tools/aptos-cli/install-cli/build-from-source",
             to: "/tools/aptos-cli/install-cli/install-cli-specific-version",
           },
+          // TODO: Add the redirects for the CLI Use Cases (and adjacent pages)
+          // {
+          //   from: "/tools/aptos-cli/",
+          //   to: "/tools/aptos-cli/",
+          // }
         ],
         // Create redirects for all the move pages
         createRedirects(existingPath) {
