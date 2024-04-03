@@ -8,7 +8,7 @@ You can install the Aptos CLI by following [these steps](../../install-cli/index
 
 In general, to make a new account on-chain, you will need to generate keys then fund the account. On test networks we can accomplish that by asking a “faucet” account which has a large amount of test Aptos tokens to send them to our new account.
 
-Using the CLI, you can generate and fund a test account using `aptos init --profile <your-profile-name>` then following the prompts. 
+Using the CLI, you can generate and fund a test account using `aptos init --profile <your-profile-name>` then following the prompts.
 
 These steps can also be done independently though via `aptos key generate` if you want more control over what your generated credentials look like. (You can generate keys with vanity prefixes like `0xace` with the `--vanity-prefix` option)
 

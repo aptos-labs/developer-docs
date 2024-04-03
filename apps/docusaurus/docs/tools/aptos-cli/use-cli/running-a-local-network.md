@@ -14,8 +14,8 @@ When you are developing on Aptos it can be helpful to run a private network to t
 
 1. Ensure you have the Aptos CLI installed. You can install it by following [this guide](../install-cli/index.md).
 2. Ensure you have Docker installed. You can install it from their website [here](https://docs.docker.com/get-docker/).
-    1. This is exclusively needed for running the `Indexer` api which is needed for a production-like private network as many downstream tools such as the Aptos SDK depend on it.
-    2. Docker recommends that you install via Docker Desktop to get automatic updates.
+   1. This is exclusively needed for running the `Indexer` api which is needed for a production-like private network as many downstream tools such as the Aptos SDK depend on it.
+   2. Docker recommends that you install via Docker Desktop to get automatic updates.
 3. Start Docker.
 4. Run the following command in a new terminal to start the private network:
 
@@ -100,7 +100,7 @@ If you successfully started the local network, skip to Using The Local Network.
 panicked at 'error binding to 0.0.0.0:8080: error creating server listener: Address already in use (os error 48)
 ```
 
-This means one of the ports needed by the local network is already in use by another process. 
+This means one of the ports needed by the local network is already in use by another process.
 
 To fix this on Unix systems, you can:
 
@@ -131,8 +131,8 @@ To debug this:
 1. Make sure you have docker installed by running `docker --version`.
 2. Ensure the Docker daemon is running by running `docker info` (if this errors saying `Cannot connect to the Docker daemon` Docker is NOT running)
 3. Make sure the socket for connecting to Docker is present on your machine in the default location. For example, on Unix systems `/var/run/docker.sock` should exist.
-    1. If that file does not exist, open Docker Desktop and enable `Settings -> Advanced -> Allow the default Docker socket to be used.`
-    2. Or, you can find where the Docker socket is by running `docker context inspect | grep Host`, then symlink that location to the default location by running `sudo ln -s /Users/dport/.docker/run/docker.sock /var/run/docker.sock`
+   1. If that file does not exist, open Docker Desktop and enable `Settings -> Advanced -> Allow the default Docker socket to be used.`
+   2. Or, you can find where the Docker socket is by running `docker context inspect | grep Host`, then symlink that location to the default location by running `sudo ln -s /Users/dport/.docker/run/docker.sock /var/run/docker.sock`
 
 ## Using The Local Network
 
