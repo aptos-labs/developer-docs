@@ -1,25 +1,26 @@
-
 ---
 title: "Multisig Governance Tutorial"
 ---
+
+import CodeBlock from '@theme/CodeBlock';
 
 # Multisig Governance Tutorial
 
 ## Background
 
-This section builds upon the [Arguments in JSON tutorial](./arguments-in-json.md). If you have not done that, please complete that tutorial first.
+This section builds upon the [Arguments in JSON tutorial](./arguments-in-json-tutorial.md). If you have not done that, please complete that tutorial first.
 
 This tutorial likewise references the [`CliArgs` example package](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args).
 
 :::tip
-If you would like to follow along, start by completing the [Arguments in JSON](./arguments-in-json.md) tutorial steps!
+If you would like to follow along, start by completing the [Arguments in JSON](./arguments-in-json-tutorial.md) tutorial steps!
 :::
 
 For this example, Ace and Bee will conduct governance operations from a 2-of-2 "multisig v2" account (an on-chain multisig account per [`multisig_account.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/multisig_account.move))
 
 ## Account creation
 
-Since Ace's account was created during the [Arguments in JSON](./arguments-in-json.md) tutorial, start by mining a vanity address account for Bee too:
+Since Ace's account was created during the [Arguments in JSON](./arguments-in-json-tutorial.md) tutorial, start by mining a vanity address account for Bee too:
 
 ```bash title=Command
 aptos key generate \

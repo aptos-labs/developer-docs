@@ -374,11 +374,11 @@ const config: Config = {
           },
           {
             from: "/guides/local-testnet-dev-flow",
-            to: "/guides/local-development-network",
+            to: "/tools/aptos-cli/use-cli/running-a-local-network",
           },
           {
             from: "/nodes/local-testnet/using-cli-to-run-a-local-testnet",
-            to: "/guides/local-development-network",
+            to: "/tools/aptos-cli/use-cli/running-a-local-network",
           },
           {
             from: "/guides/getting-started",
@@ -466,10 +466,10 @@ const config: Config = {
             to: "/tools/aptos-cli/install-cli/install-cli-specific-version",
           },
           // TODO: Add the redirects for the CLI Use Cases (and adjacent pages)
-          // {
-          //   from: "/tools/aptos-cli/",
-          //   to: "/tools/aptos-cli/",
-          // }
+          {
+            from: "/tools/aptos-cli/use-cli/use-aptos-cli",
+            to: "/tools/aptos-cli/use-cli",
+          },
         ],
         // Create redirects for all the move pages
         createRedirects(existingPath) {

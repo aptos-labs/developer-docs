@@ -7,7 +7,7 @@ sidebar_position: 9
 # Run a Local Testnet with Validator
 
 :::tip Using the CLI to run a local development network
-Running a local testnet with the Aptos CLI is simpler and more fully featured. Learn how by following this guide: [Run a Local Development Network with the CLI](../../guides/local-development-network.md).
+Running a local testnet with the Aptos CLI is simpler and more fully featured. Learn how by following this guide: [Run a Local Development Network with the CLI](../../tools/aptos-cli/use-cli/running-a-local-network.md).
 :::
 
 You can run a local testnet of the Aptos blockchain. This local testnet will not be connected to the Aptos devnet. It will run on your local machine, independent of other Aptos networks. You can use this local testnet for testing and development purposes.
@@ -94,7 +94,7 @@ Completed generating configuration:
 Aptos is running, press ctrl-c to exit
 ```
 
-Use the [Aptos CLI tool](../../tools/aptos-cli/install-cli/index.md) to interact with your local testnet. The above output contains information you will use for starting the [Aptos CLI tool](../../tools/aptos-cli/use-cli/use-aptos-cli.md):
+Use the [Aptos CLI tool](../../tools/aptos-cli/install-cli/index.md) to interact with your local testnet. The above output contains information you will use for starting the [Aptos CLI tool](../../tools/aptos-cli/use-cli/index.md):
 
 - `Aptos root key path`: The root key (also known as the mint or faucet key) controls the account that can mint tokens. Available in the docker compose folder under `aptos_root_key`.
 - `Waypoint`: A verifiable checkpoint of the blockchain (available in the docker compose folder under waypoint.txt)

@@ -150,7 +150,7 @@ If you installed the Move Prover Tools above then you don't need to skip the pro
 
 Other documentation of specific tools has recommended patterns for `cargo build` and `cargo run`
 
-- [Run a Local Development Network](../guides/local-development-network.md)
+- [Run a Local Development Network](../tools/aptos-cli/use-cli/running-a-local-network.md)
 - [Indexer](../indexer/legacy/indexer-fullnode.md)
 - [Node Health Checker](../nodes/measure/node-health-checker.md)
 - [Running a Local Multi-node Network](running-a-local-multi-node-network.md)

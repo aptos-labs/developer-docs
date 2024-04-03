@@ -29,7 +29,7 @@ The `aptos` tool supports bootstrapping new blockchains through what is known as
 
 ### Prepare aptos-core
 
-The following sections rely on tools from the Aptos source. See [Building Aptos From Source](../../../guides/building-from-source.md) for setup.
+The following sections rely on tools from the Aptos source. See [Building Aptos From Source](../../../../guides/building-from-source.md) for setup.
 
 ### The `layout` file
 
