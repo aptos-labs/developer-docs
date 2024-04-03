@@ -20,5 +20,8 @@ You can install and learn how to use the tool by following these steps:
    3. [Linux](install-cli/install-cli-linux.md)
    4. [Advanced (Install Specific Versions)](install-cli/install-cli-specific-version.md)
 2. [Setup CLI configuration](cli-configuration.md)
-3. Explore a use case by looking at the [Using Aptos CLI guide](use-cli/use-aptos-cli.md)
-<!-- TODO: Revise the 3rd bullet above to break out use cases. -->
+3. Explore a use case:
+   1. [Working With Move Contracts](./use-cli/working-with-move-contracts.md)
+   2. [Trying Things On-Chain](./use-cli/trying-things-on-chain.md)
+   3. [Running a Local Network](./use-cli/running-a-local-network.md)
+   4. [Managing a Network Node](./use-cli/managing-a-network-node.md)
