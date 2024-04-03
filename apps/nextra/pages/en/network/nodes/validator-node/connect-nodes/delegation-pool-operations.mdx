@@ -145,7 +145,7 @@ Once the beneficiary address is set, the operator commission earned by the deleg
 
 ## Check delegation pool information
 
-Until the delegation pool has received 1 million APT and the validator has been added to the set of active validators, there will be no rewards to track during each cycle. In order to obtain information about a delegation pool, use the Aptos [View function](../../../apis/fullnode-rest-api.md#reading-state-with-the-view-function).
+Until the delegation pool has received 1 million APT and the validator has been added to the set of active validators, there will be no rewards to track during each cycle. In order to obtain information about a delegation pool, use the Aptos [View function](../../aptos-api-spec.mdx#reading-state-with-the-view-function).
 
 - `get_owned_pool_address(owner: address): address` - Returns the address of the delegation pool belonging to the owner, or produces an error if there is no delegation pool associated with the owner.
 
@@ -163,7 +163,7 @@ Until the delegation pool has received 1 million APT and the validator has been 
 
 - `can_withdraw_pending_inactive(pool_address: address): bool` - Returns whether `pending_inactive` stake can be directly withdrawn from the delegation pool, implicitly its stake pool, in the special case the validator had gone inactive before its lockup expired.
 
-In the [Aptos TypeScript SDK](../../../sdks/ts-sdk/index.md), a View function request would resemble:
+In the [Aptos TypeScript SDK](../../../../build/sdks/index.mdx), a View function request would resemble:
 
 ```ts filename="view_function.ts"
 import { Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
