@@ -4,7 +4,7 @@ title: "Use the Aptos CLI"
 
 # Use the Aptos CLI
 
-The Aptos command line interface (CLI) is a tool to help you compile and test Move contracts and quickly play with Aptos features on-chain. 
+The Aptos command line interface (CLI) is a tool to help you compile and test Move contracts and quickly play with Aptos features on-chain.
 
 You can explore each of the use-cases here:
 

@@ -12,7 +12,7 @@ The most common way to specify what accounts you want to interact with is throug
 aptos init --profile <your-profile-name>
 ```
 
-If any command takes an account, you can pass in the name of a profile instead. If a command implicitly uses the default profile, it will usually have an optional parameter to use a specified profile instead which you can find by running `aptos <your-command> --help`. 
+If any command takes an account, you can pass in the name of a profile instead. If a command implicitly uses the default profile, it will usually have an optional parameter to use a specified profile instead which you can find by running `aptos <your-command> --help`.
 
 With that, the three main things you can use the CLI to do on-chain include:
 

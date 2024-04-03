@@ -428,7 +428,7 @@ const sidebars: SidebarsConfig = {
               items: [
                 "tools/aptos-cli/use-cli/move-tutorials/arguments-in-json-tutorial",
                 "tools/aptos-cli/use-cli/move-tutorials/multi-signature-tutorial",
-              ]
+              ],
             },
             {
               type: "category",
@@ -442,8 +442,8 @@ const sidebars: SidebarsConfig = {
               items: [
                 "tools/aptos-cli/use-cli/on-chain/looking-up-account-info",
                 "tools/aptos-cli/use-cli/on-chain/create-test-accounts",
-                "tools/aptos-cli/use-cli/on-chain/ledger"
-              ]
+                "tools/aptos-cli/use-cli/on-chain/ledger",
+              ],
             },
             {
               type: "category",
@@ -456,7 +456,7 @@ const sidebars: SidebarsConfig = {
               collapsed: true,
               items: [
                 "tools/aptos-cli/use-cli/public-network/run-public-network",
-              ]
+              ],
             },
             "tools/aptos-cli/use-cli/managing-a-network-node",
           ],

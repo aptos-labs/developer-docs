@@ -35,14 +35,14 @@ The package directory is the folder which contains the `Move.toml` file.
 
 Based on the settings in your `Move.toml` file, you may need to pass in additional information to that compile command.
 
-For example, if you look at the [hello_blockchain example Move contract](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain), in the `Move.toml` file it specifies a variable named address called `hello_blockchain`. 
+For example, if you look at the [hello_blockchain example Move contract](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain), in the `Move.toml` file it specifies a variable named address called `hello_blockchain`.
 
 ```
 [addresses]
 hello_blockchain = "_"
 ```
 
-So, to compile this, you will need to pass in the value for `hello_blockchain` with the `--named-addresses` parameter. 
+So, to compile this, you will need to pass in the value for `hello_blockchain` with the `--named-addresses` parameter.
 
 ```zsh
 aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=superuser
@@ -58,13 +58,13 @@ The Aptos CLI can also be used to compile and run unit tests locally by runnin
 aptos move test --package-dir <your-package-directory>
 ```
 
-This command both compiles and runs tests, so it needs all the same optional parameters you use when compiling. 
+This command both compiles and runs tests, so it needs all the same optional parameters you use when compiling.
 
 You can learn more about the optional parameters for testing move contracts by running `aptos move test --help`.
 
 ### Printing Debugging Information
 
-When writing tests, it can be helpful to print out debug information or stack traces. You can do that by using `debug::print` and `debug::print_stack_trace` to print information when you use `aptos move test`. See an example of how they are used in  [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move).
+When writing tests, it can be helpful to print out debug information or stack traces. You can do that by using `debug::print` and `debug::print_stack_trace` to print information when you use `aptos move test`. See an example of how they are used in [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move).
 
 To see the output of testing [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move)’s package:
 

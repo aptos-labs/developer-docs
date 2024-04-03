@@ -16,51 +16,52 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
 
 1. Ensure you have the Aptos CLI installed. You can install the Aptos CLI by following [these steps](../../install-cli/index.md) if you have not done so already.
 2. Ensure you have done the basic setup for your Ledger device.
-    1. You can find those steps on Ledger’s website. For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
+   1. You can find those steps on Ledger’s website. For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
 3. Plug your Ledger device into your computer.
 4. Install the Aptos App on your Ledger device using Ledger Live following the steps in [this guide](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true).
 5. Unlock your Ledger device and open the Aptos app.
-    
-    <aside>
-    ⭐ Whenever you want to sign using your Ledger you will need to plug it in, unlock it, and open the Aptos app before running any CLI commands.
-    
-    </aside>
-    
+
+   <aside>
+   ⭐ Whenever you want to sign using your Ledger you will need to plug it in, unlock it, and open the Aptos app before running any CLI commands.
+
+   </aside>
+
 6. Create a new Ledger profile in the Aptos CLI and choose which key to use by running:
-    
-    ```zsh
-    $ aptos init --profile <your-profile> --ledger
-    
-    Configuring for profile <your-profile>
-    Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
-    
-    No network given, using devnet...
-    Please choose an index from the following 5 ledger accounts, or choose an arbitrary index that you want to use:
-    [0] Derivation path: m/44'/637'/0'/0'/0' (Address: 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb)
-    [1] Derivation path: m/44'/637'/1'/0'/0' (Address: 21563230cf6d69ee72a51d21920430d844ee48235e708edbafbc69708075a86e)
-    [2] Derivation path: m/44'/637'/2'/0'/0' (Address: 667446181b3b980ef29f5145a7a2cc34d433fc3ee8c97fc044fd978435f2cb8d)
-    [3] Derivation path: m/44'/637'/3'/0'/0' (Address: 2dcf037a9f31d93e202c074229a1b69ea8ee4d2f2d63323476001c65b0ec4f31)
-    [4] Derivation path: m/44'/637'/4'/0'/0' (Address: 23c579a9bdde1a59f1c9d36d8d379aeefe7a5997b5b58bd5a5b0c12a4f170431)
-    
-    $ 0
-    Account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb has been already found on-chain
-    
-    ---
-    Aptos CLI is now set up for account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb as profile <your-profile>!  Run `aptos --help` for more information about commands
-    {
-      "Result": "Success"
-    }
-    ```
-    
-    In the example, they chose to use the first ledger account by entering `0` after the `aptos init` command. You can choose whichever account you want.
-    
-    **Common errors:**
-    
-    1. If you see the error `Device Not Found`, make sure to unlock your Ledger then try this step again.
-    2. If you see the error `Aptos ledger app is not opened`, make sure to open the Aptos app on your Ledger, then try this step again.
+
+   ```zsh
+   $ aptos init --profile <your-profile> --ledger
+
+   Configuring for profile <your-profile>
+   Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
+
+   No network given, using devnet...
+   Please choose an index from the following 5 ledger accounts, or choose an arbitrary index that you want to use:
+   [0] Derivation path: m/44'/637'/0'/0'/0' (Address: 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb)
+   [1] Derivation path: m/44'/637'/1'/0'/0' (Address: 21563230cf6d69ee72a51d21920430d844ee48235e708edbafbc69708075a86e)
+   [2] Derivation path: m/44'/637'/2'/0'/0' (Address: 667446181b3b980ef29f5145a7a2cc34d433fc3ee8c97fc044fd978435f2cb8d)
+   [3] Derivation path: m/44'/637'/3'/0'/0' (Address: 2dcf037a9f31d93e202c074229a1b69ea8ee4d2f2d63323476001c65b0ec4f31)
+   [4] Derivation path: m/44'/637'/4'/0'/0' (Address: 23c579a9bdde1a59f1c9d36d8d379aeefe7a5997b5b58bd5a5b0c12a4f170431)
+
+   $ 0
+   Account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb has been already found on-chain
+
+   ---
+   Aptos CLI is now set up for account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb as profile <your-profile>!  Run `aptos --help` for more information about commands
+   {
+     "Result": "Success"
+   }
+   ```
+
+   In the example, they chose to use the first ledger account by entering `0` after the `aptos init` command. You can choose whichever account you want.
+
+   **Common errors:**
+
+   1. If you see the error `Device Not Found`, make sure to unlock your Ledger then try this step again.
+   2. If you see the error `Aptos ledger app is not opened`, make sure to open the Aptos app on your Ledger, then try this step again.
+
 7. Finally, you will need to enable blind signing on your Ledger device by following [these steps](https://medium.com/@DavidLehman24/how-to-enable-disable-blind-signing-on-ledger-wallet-99113a85cdad).
-    1. Blind signing allows you to confirm a smart contract interaction you cannot verify through a human-readable language.
-    2. This is needed to execute transactions without limitation as some payloads are too big to display.
+   1. Blind signing allows you to confirm a smart contract interaction you cannot verify through a human-readable language.
+   2. This is needed to execute transactions without limitation as some payloads are too big to display.
 
 ## Signing Using Ledger
 
