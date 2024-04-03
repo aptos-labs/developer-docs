@@ -224,7 +224,7 @@ const sidebars: SidebarsConfig = {
             },
             "move/move-on-aptos/resource-accounts",
             "move/move-on-aptos/modules-on-aptos",
-            "move/move-on-aptos/cli",
+            "tools/aptos-cli/use-cli/working-with-move-contracts",
             "move/move-on-aptos/cryptography",
             "move/move-on-aptos/gas-profiling",
             "move/move-on-aptos/move-security-guidelines",
@@ -411,17 +411,54 @@ const sidebars: SidebarsConfig = {
           label: "Use Aptos CLI",
           link: {
             type: "doc",
-            id: "tools/aptos-cli/use-cli/use-aptos-cli",
+            id: "tools/aptos-cli/use-cli/index",
           },
           collapsible: true,
           collapsed: true,
           items: [
-            "tools/aptos-cli/use-cli/cli-configuration",
-            "tools/aptos-cli/use-cli/cli-account",
-            "tools/aptos-cli/use-cli/cli-key",
-            "tools/aptos-cli/use-cli/cli-node",
-            "tools/aptos-cli/use-cli/cli-genesis",
-            "tools/aptos-cli/use-cli/use-aptos-ledger",
+            {
+              type: "category",
+              label: "Working With Move Contracts",
+              link: {
+                type: "doc",
+                id: "tools/aptos-cli/use-cli/working-with-move-contracts",
+              },
+              collapsible: true,
+              collapsed: true,
+              items: [
+                "tools/aptos-cli/use-cli/move-tutorials/arguments-in-json-tutorial",
+                "tools/aptos-cli/use-cli/move-tutorials/multi-signature-tutorial",
+              ]
+            },
+            {
+              type: "category",
+              label: "Trying Things On-Chain",
+              link: {
+                type: "doc",
+                id: "tools/aptos-cli/use-cli/trying-things-on-chain",
+              },
+              collapsible: true,
+              collapsed: true,
+              items: [
+                "tools/aptos-cli/use-cli/on-chain/looking-up-account-info",
+                "tools/aptos-cli/use-cli/on-chain/create-test-accounts",
+                "tools/aptos-cli/use-cli/on-chain/ledger"
+              ]
+            },
+            {
+              type: "category",
+              label: "Running A Local Network",
+              link: {
+                type: "doc",
+                id: "tools/aptos-cli/use-cli/running-a-local-network",
+              },
+              collapsible: true,
+              collapsed: true,
+              items: [
+                "tools/aptos-cli/use-cli/public-network/run-public-network",
+              ]
+            },
+            "tools/aptos-cli/use-cli/managing-a-network-node",
           ],
         },
       ],
@@ -485,7 +522,7 @@ const sidebars: SidebarsConfig = {
           collapsible: true,
           collapsed: true,
           items: [
-            "guides/local-development-network",
+            "tools/aptos-cli/use-cli/running-a-local-network",
             "nodes/local-testnet/run-a-local-testnet",
             "guides/running-a-local-multi-node-network",
           ],
