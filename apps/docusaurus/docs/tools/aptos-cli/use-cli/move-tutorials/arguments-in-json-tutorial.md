@@ -2,13 +2,15 @@
 title: "Arguments in JSON Tutorial"
 ---
 
+import CodeBlock from '@theme/CodeBlock';
+
 # Arguments in JSON Tutorial
 
 ## Package info
 
 This section references the [`CliArgs` example package](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args), which contains the following manifest:
 
-import move_toml from '!!raw-loader!../../../static/move-examples/cli_args/Move.toml';
+import move_toml from '!!raw-loader!../../../../../static/move-examples/cli_args/Move.toml';
 
 <CodeBlock language="toml" title="Move.toml">{move_toml}</CodeBlock>
 
@@ -165,7 +167,7 @@ aptos move run \
 
 The function ID, type arguments, and arguments can alternatively be specified in a JSON file:
 
-import entry_json_file from '!!raw-loader!../../../static/move-examples/cli_args/entry_function_arguments.json';
+import entry_json_file from '!!raw-loader!../../../../../static/move-examples/cli_args/entry_function_arguments.json';
 
 <CodeBlock language="json" title="entry_function_arguments.json">{entry_json_file}</CodeBlock>
 
@@ -230,7 +232,7 @@ aptos move view --json-file view_function_arguments.json
 If you are trying to run the example yourself don't forget to substitute Ace's actual address for `<test_account>` in `view_function_arguments.json` (twice)!
 :::
 
-import view_json_file from '!!raw-loader!../../../static/move-examples//cli_args/view_function_arguments.json';
+import view_json_file from '!!raw-loader!../../../../../static/move-examples//cli_args/view_function_arguments.json';
 
 <CodeBlock language="json" title="view_function_arguments.json">{view_json_file}</CodeBlock>
 
@@ -359,7 +361,7 @@ aptos move run-script \
 
 </details>
 
-import script_json_file from '!!raw-loader!../../../static/move-examples/cli_args/script_function_arguments.json';
+import script_json_file from '!!raw-loader!../../../../../static/move-examples/cli_args/script_function_arguments.json';
 
 <CodeBlock language="json" title="script_function_arguments.json">{script_json_file}</CodeBlock>
 

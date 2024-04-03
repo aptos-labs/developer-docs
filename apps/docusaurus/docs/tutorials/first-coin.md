@@ -367,7 +367,7 @@ There are two separate withdraw and deposit events instead of a single transfer 
 
 ## Supporting documentation
 
-- [Aptos CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md)
+- [Aptos CLI](../tools/aptos-cli/use-cli/index.md)
 - [TypeScript SDK](../sdks/ts-sdk/index.md)
 - [Python SDK](../sdks/python-sdk/index.md)
 - [Rust SDK](../sdks/rust-sdk/index.md)

@@ -23,7 +23,7 @@ $ cd aptos-move/move-examples/hello_blockchain
 
 Then, we can simulate module publishing with the extra option `--profile-gas`.
 
-Notice that you do need to have your CLI profile set up properly and bind the named addresses correctly. Please refer to [CLI Configuration](../../../tools/aptos-cli/use-cli/cli-configuration#initialize-local-configuration-and-create-an-account) for more details.
+Notice that you do need to have your CLI profile set up properly and bind the named addresses correctly. Please refer to [CLI Configuration](../../tools/aptos-cli/cli-configuration.md) for more details.
 
 ```bash
 $ aptos move publish --named-addresses hello_blockchain=default --profile-gas

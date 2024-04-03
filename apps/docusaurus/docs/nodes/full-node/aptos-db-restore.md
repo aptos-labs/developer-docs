@@ -47,7 +47,7 @@ See the diagram below for a visual representation of the backup data structure:
 
 ## Restore an Aptos DB
 
-The [Aptos CLI](../../tools/aptos-cli/use-cli/use-aptos-cli.md) supports two kinds of restore operations for Aptos nodes:
+The [Aptos CLI](../../tools/aptos-cli/use-cli/index.md) supports two kinds of restore operations for Aptos nodes:
 
 1. Recreating a database with a minimal transaction history at a user-specified transaction version (or the latest version offered by the backup).
 2. Restoring the database over a specific period. In addition to the above, this option ensures that the recreated database carries the ledger history of the user-designated version range.

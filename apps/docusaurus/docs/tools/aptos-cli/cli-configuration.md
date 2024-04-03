@@ -37,7 +37,7 @@ Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b
 ```
 
 2. Later, if you want to update these settings, you can do so by running `aptos init` again.
-3. The rest of these configuration steps are optional / quality of life. To continue to use the CLI for your specific use case, follow the [usage guide here](use-cli/use-aptos-cli.md).
+3. The rest of these configuration steps are optional / quality of life. To continue to use the CLI for your specific use case, follow the [usage guide here](use-cli/index.md).
 
 ## (Optional) Creating Named Configurations (Profiles)
 

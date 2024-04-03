@@ -10,7 +10,7 @@ This guide describes how to run a local network with multiple validator nodes an
 :::tip Use only for test networks
 The method described in this guide should be used only for test networks of multi-node local networks. Do not use this guide for deploying in production environments. Currently, this is the only guide for multi-node networks.
 
-For deploying a local network with a single node, see [Run a Local Development Network with the CLI](../guides/local-development-network.md).
+For deploying a local network with a single node, see [Run a Local Development Network with the CLI](../tools/aptos-cli/use-cli/running-a-local-network.md).
 :::
 
 ## Before you proceed
@@ -82,7 +82,7 @@ cargo run -p aptos-faucet-cli -- --amount 10 --accounts <account_address> --key 
 :::tip Faucet and Aptos CLI
 See more on how the faucet works in the [README](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos-faucet).
 
-Also see how to use the [Aptos CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md) with an existing faucet.
+Also see how to use the [Aptos CLI](../tools/aptos-cli/use-cli/index.md) with an existing faucet.
 :::
 
 ## Validator fullnodes

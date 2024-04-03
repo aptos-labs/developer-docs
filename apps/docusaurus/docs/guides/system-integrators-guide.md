@@ -41,7 +41,7 @@ See [Aptos Blockchain Networks](../nodes/networks.md) for full details on each e
 
 There are two options for running a local testnet:
 
-- [Install the Aptos CLI](../tools/aptos-cli/install-cli/index.md) and 2) run a [local development network](./local-development-network.md). This path is useful for developing on the Aptos blockchain, debugging Move contracts, and testing node operations. Using the CLI you will have a fully featured local development environment including a single node network, the node API, indexer API, and a faucet.
+- [Install the Aptos CLI](../tools/aptos-cli/install-cli/index.md) and 2) run a [local development network](../tools/aptos-cli/use-cli/running-a-local-network.md). This path is useful for developing on the Aptos blockchain, debugging Move contracts, and testing node operations. Using the CLI you will have a fully featured local development environment including a single node network, the node API, indexer API, and a faucet.
 - Directly [run a local testnet](../nodes/local-testnet/run-a-local-testnet.md) using either the [Aptos-core source code](../nodes/local-testnet/run-a-local-testnet.md#using-the-aptos-core-source-code). These paths are useful for testing changes to the Aptos-core codebase or framework, or for building services on top of the Aptos blockchain, respectively.
 
 Either of these methods will expose a [REST API service](../apis/fullnode-rest-api.md) at `http://127.0.0.1:8080` and a Faucet API service at `http://127.0.0.1:8000` for option 1 run a local testnet or `http://127.0.0.1:8081` for option 2 install the Aptos CLI. The applications will output the location of the services.
@@ -86,7 +86,7 @@ Aptos currently provides three SDKs:
 2. [Python](../sdks/python-sdk/index.md)
 3. [Rust](../sdks/rust-sdk/index.md)
 
-Almost all developers will benefit from exploring the CLI. [Using the CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md) demonstrates how the CLI can be used to which includes creating accounts, transferring coins, and publishing modules.
+Almost all developers will benefit from exploring the CLI. [Using the CLI](../tools/aptos-cli/use-cli/index.md) demonstrates how the CLI can be used to which includes creating accounts, transferring coins, and publishing modules.
 
 ## Accounts on Aptos
 
@@ -101,7 +101,7 @@ At creation, an [Aptos account](https://github.com/aptos-labs/aptos-core/blob/88
 - An [event handle](../concepts/events.md) for all new types of coins added to the account.
 - An event handle for all key rotations for the account.
 
-Read more about [Accounts](../concepts/accounts.md) and [set one up](../tools/aptos-cli/use-cli/cli-account.md).
+Read more about [Accounts](../concepts/accounts.md) and [set one up](../tools/aptos-cli/cli-configuration.md).
 
 ## Transactions
 
@@ -510,7 +510,7 @@ To learn more about coin creation, make ["Your First Coin"](../tutorials/first-c
 
 ## Integrating with the faucet
 
-This tutorial is for SDK and wallet developers who want to integrate with the [Aptos Faucet](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos-faucet). If you are a dapp developer, you should access the faucet through an existing [SDK](../tutorials/first-transaction.md) or [CLI](../tools/aptos-cli/use-cli/use-aptos-cli.md) instead.
+This tutorial is for SDK and wallet developers who want to integrate with the [Aptos Faucet](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos-faucet). If you are a dapp developer, you should access the faucet through an existing [SDK](../tutorials/first-transaction.md) or [CLI](../tools/aptos-cli/use-cli/index.md) instead.
 
 ### Differences between devnet and testnet
 
