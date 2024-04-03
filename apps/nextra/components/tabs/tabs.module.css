@@ -1,0 +1,77 @@
+.tabs {
+  position: relative;
+  min-height: 175px;
+  clear: both;
+  margin: 25px 0;
+}
+
+.tab {
+  float: left;
+}
+
+.tabLabel {
+  background: inherit;
+  padding-bottom: 9.5px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-bottom: 2px solid transparent;
+  margin-left: -4px;
+  position: relative;
+  left: 1px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.radioInput {
+  opacity: 0;
+}
+
+.content {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  background: inherit;
+  right: 0;
+  bottom: 0;
+  padding-top: 16px;
+  border-top: 2px solid #ccc;
+  overflow: hidden;
+  margin-top: 3px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.contentChild {
+  opacity: 0;
+  display: block;
+}
+
+/* .radioInput:focus ~ .tabLabel {
+  outline: 2px solid blue;
+} */
+
+.radioInput:checked~.tabLabel {
+  border-bottom: 2px solid #3d82ea;
+  color: #3d82ea;
+  z-index: 2;
+  transition-duration: .15s;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+  transform: all;
+}
+
+@media (prefers-color-scheme: dark) {
+  .radioInput:checked~.tabLabel {
+    border-bottom: 2px solid #0089e6;
+    color: #0089e6;
+  }
+}
+
+.radioInput:checked~.tabLabel~.content {
+  z-index: 1;
+  overflow-y: auto;
+}
+
+.radioInput:checked~.tabLabel~.content>.contentChild {
+  opacity: 1;
+  transform: translateX(0);
+}
