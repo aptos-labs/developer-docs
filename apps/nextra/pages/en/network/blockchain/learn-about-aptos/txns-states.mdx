@@ -3,6 +3,7 @@ title: "Transactions and States"
 ---
 
 import { Callout } from 'nextra/components'
+import { ThemedImage } from '@components/index'
 
 # Transaction and States
 
@@ -103,14 +104,13 @@ The ledger state is versioned using an unsigned 64-bit integer corresponding to 
 
 ## Transactions change ledger state
 
-![](/docs/transactions-and-state.svg)
-{/* <ThemedImage
-alt="Signed Transaction Flow"
-sources={{
-    light: useBaseUrl('/img/docs/transactions-and-state.svg'),
-    dark: useBaseUrl('/img/docs/transactions-and-state-dark.svg'),
+<ThemedImage
+  alt="Signed Transaction Flow"
+  sources={{
+    light: '/docs/transactions-and-state.svg',
+    dark: '/docs/transactions-and-state-dark.svg',
   }}
-/> */}
+/>
 
 The above figure shows how executing transaction T<sub>_i_</sub> changes the state of the Aptos blockchain from S<sub>_i-1_</sub> to S<sub>_i_</sub>.
 

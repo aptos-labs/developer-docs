@@ -3,6 +3,7 @@ title: "Staking"
 ---
 
 import { Callout } from "nextra/components";
+import { ThemedImage } from '@components/index'
 
 # Staking
 
@@ -26,15 +27,13 @@ The rest of this document presents how staking works on the Aptos blockchain. Se
 
 Below is a summary flow diagram of how staking on the Aptos blockchain works. The sections following the summary describe it in detail.
 
-
-![](/docs/staking-light.svg)
-{/* <ThemedImage
+<ThemedImage
   alt="Staking Flow"
   sources={{
-    light: useBaseUrl('/img/docs/staking-light.svg'),
-    dark: useBaseUrl('/img/docs/staking-dark.svg'),
+    light: '/docs/staking-light.svg',
+    dark: '/docs/staking-dark.svg',
   }}
-/> */}
+/>
 
 The Aptos staking module defines a capability that represents ownership.
 
@@ -114,14 +113,13 @@ States are defined for a validator and the stake.
 
 ### Validator states
 
-![](/docs/validator-state.svg)
-{/* <ThemedImage
-alt="Signed Transaction Flow"
-sources={{
-    light: useBaseUrl('/img/docs/validator-state.svg'),
-    dark: useBaseUrl('/img/docs/validator-state-dark.svg'),
+<ThemedImage
+  alt="Signed Transaction Flow"
+  sources={{
+    light: '/docs/validator-state.svg',
+    dark: '/docs/validator-state-dark.svg',
   }}
-/> */}
+/>
 
 There are two edge cases to call out:
 
@@ -132,14 +130,13 @@ There are two edge cases to call out:
 
 The state of stake has more granularity than that of the validator; additional stake can be added and a portion of stake removed from an active validator.
 
-![](/docs/stake-state.svg)
-{/* <ThemedImage
-alt="Signed Transaction Flow"
-sources={{
-    light: useBaseUrl('/img/docs/stake-state.svg'),
-    dark: useBaseUrl('/img/docs/stake-state-dark.svg'),
+<ThemedImage
+  alt="Signed Transaction Flow"
+  sources={{
+    light: '/docs/stake-state.svg',
+    dark: '/docs/stake-state-dark.svg',
   }}
-/> */}
+/>
 
 ### Validator rules
 
