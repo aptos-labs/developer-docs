@@ -2,6 +2,8 @@
 title: "Governance"
 ---
 
+import { ThemedImage } from '@components/themed-image'
+
 # Governance
 
 The Aptos on-chain governance is a process by which the Aptos community members can create and vote on proposals that minimize the cost of blockchain upgrades. The following describes the scope of these proposals for the Aptos on-chain governance:
@@ -15,15 +17,13 @@ The Aptos on-chain governance is a process by which the Aptos community members 
 
 See below for a summary description of how a proposal comes to exist and when it becomes ready to be resolved:
 
-![](/docs/voting-resolution-flow.svg)
-
-{/* <ThemedImage
-alt="Proposal voting flow"
-sources={{
-    light: useBaseUrl('/img/docs/voting-resolution-flow.svg'),
-    dark: useBaseUrl('/img/docs/voting-resolution-flow-dark.svg'),
+<ThemedImage
+  alt="Proposal voting flow"
+  sources={{
+    light: '/docs/voting-resolution-flow.svg',
+    dark: '/docs/voting-resolution-flow-dark.svg',
   }}
-/> */}
+/>
 
 - The Aptos community can suggest an Aptos Improvement Proposal (AIP) in the [Aptos Foundation AIP GitHub](https://github.com/aptos-foundation/AIPs).
 - When appropriate, an on-chain proposal can be created for the AIP via the `aptos_governance` module.
