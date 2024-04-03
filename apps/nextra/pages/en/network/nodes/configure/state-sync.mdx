@@ -28,9 +28,9 @@ by continuously syncing (in the **continuous syncing phase**). Each of these pha
 Need to start a node quickly?
 If you need to start a node quickly, here's what we recommend by network and use case:
 
-- **Devnet**: To sync the entire blockchain history, use [intelligent syncing](state-sync.mdx#intelligent-syncing). Otherwise, use [fast sync](state-sync.mdx#fast-syncing).
-- **Testnet**: To sync the entire blockchain history, restore from a [backup](../nodes/full-node/aptos-db-restore.md). Otherwise, download [a snapshot](../nodes/full-node/bootstrap-fullnode.md) or use [fast sync](state-sync.md#fast-syncing).
-- **Mainnet**: To sync the entire blockchain history, restore from a [backup](../nodes/full-node/aptos-db-restore.md). Otherwise, use [fast sync](state-sync.md#fast-syncing).
+- **Devnet**: To sync the entire blockchain history, use [intelligent syncing](./state-sync.mdx#intelligent-syncing). Otherwise, use [fast sync](./state-sync.mdx#fast-syncing).
+- **Testnet**: To sync the entire blockchain history, restore from a [backup](../bootstrap-fullnode/aptos-db-restore.mdx). Otherwise, download [a snapshot](../bootstrap-fullnode/bootstrap-fullnode.mdx) or use [fast sync](./state-sync.mdx#fast-syncing).
+- **Mainnet**: To sync the entire blockchain history, restore from a [backup](../bootstrap-fullnode/aptos-db-restore.mdx). Otherwise, use [fast sync](./state-sync.mdx#fast-syncing).
 </Callout>
 
 ### Bootstrapping phase
@@ -108,7 +108,7 @@ state_sync:
 <Callout type="warning">
 **Verify node syncing**<br />
 While your node is syncing, you'll be able to see the
-[`aptos_state_sync_version{type="synced"}`](../nodes/full-node/verify-pfn.md) metric gradually increase.
+[`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) metric gradually increase.
 </Callout>
 
 ### Applying all transaction outputs
@@ -127,7 +127,7 @@ state_sync:
 <Callout type="info">
 **Verify node syncing**<br />
 While your node is syncing, you'll be able to see the
-[`aptos_state_sync_version{type="synced"}`](../nodes/full-node/verify-pfn.md) metric gradually increase.
+[`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) metric gradually increase.
 </Callout>
 
 ### Intelligent syncing
@@ -146,7 +146,7 @@ state_sync:
 <Callout type="info">
 **Verify node syncing**<br />
 While your node is syncing, you'll be able to see the
-[`aptos_state_sync_version{type="synced"}`](../nodes/full-node/verify-pfn.md) metric gradually increase.
+[`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) metric gradually increase.
 </Callout>
 
 ### Fast syncing
@@ -194,7 +194,7 @@ since the start of the network, i.e., genesis), you should:
 1. Make sure that your PFN is **not** using fast syncing as the bootstrapping mode.
    Fast syncing will skip the transaction history. Instead, using a mode that syncs from genesis,
    e.g., intelligent syncing from genesis.
-2. Disable the ledger pruner, as described in the [Data Pruning document](data-pruning.md#disable-the-ledger-pruner).
+2. Disable the ledger pruner, as described in the [Data Pruning document](./data-pruning.mdx#disable-the-ledger-pruner).
    This will ensure that no data is deleted and the PFN contains all blockchain data.
 
 Following these two steps together will ensure that your PFN fetches all data since
@@ -204,7 +204,7 @@ genesis, and continues to synchronize without pruning any data.
 **Archival nodes are deprecated**<br />
 Running and maintaining archival nodes is expensive and slow, as the amount of data being stored
 on the node will grow endlessly. As a result, archival nodes have officially been deprecated.
-If you wish to store and maintain the entire blockchain history, we recommend using an [Indexer](../indexer/indexer-landing.md).
+If you wish to store and maintain the entire blockchain history, we recommend using an [Indexer](../../../build/indexer/index.mdx).
 </Callout>
 
 ## Security implications and data integrity

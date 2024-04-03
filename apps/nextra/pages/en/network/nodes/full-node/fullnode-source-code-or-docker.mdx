@@ -31,7 +31,7 @@ the `genesis.blob` and `waypoint.txt` node files for the respective branches:
 ## Hardware requirements
 
 For running a production-grade PFN, we recommend that your hardware meet the same requirements as a
-validator or VFN. You can see the hardware requirements for these nodes, here: [validator and VFN hardware requirements](../validator-node/operator/node-requirements.md#hardware-requirements).
+validator or VFN. You can see the hardware requirements for these nodes, here: [validator and VFN hardware requirements](../validator-node/node-requirements.mdx#hardware-requirements).
 
 If you wish to run a PFN for development or testing only, lower hardware specs can be used. But, it should not be
 used in production. For example:
@@ -116,7 +116,7 @@ how to deploy your PFN using both methods.
 
 ### Method 1: Building and running from source
 
-First, see [Building Aptos From Source](../../guides/building-from-source.md) for instructions on how to download the `aptos-core` repository and build the binary.
+First, see [Building Aptos From Source](../building-from-source.mdx) for instructions on how to download the `aptos-core` repository and build the binary.
 Then, follow the steps below:
 
 1. Make sure your current working directory is `aptos-core`.
@@ -271,7 +271,7 @@ https://github.com/aptos-labs/aptos-networks/tree/main/mainnet
 ### Verify initial synchronization
 
 During the initial synchronization of your PFN, there may be a lot of data to transfer (read more about how state
-sync works in the [state sync](../../guides/state-sync.md) guide). You can monitor state sync progress
+sync works in the [state sync](../configure/state-sync.mdx) guide). You can monitor state sync progress
 by querying the metrics port to see what version your node is currently synced to. Run the following example
 command to see the currently synced version of your node:
 
@@ -303,7 +303,7 @@ This should show an increasing number of synced states. It may take several hour
 latest version. Eventually, once fast syncing is complete, the `aptos_state_sync_version{.*"synced"}` command will
 return the current synced version of your node.
 
-You can read more about fast syncing here: [State sync bootstrapping](../../guides/state-sync.md#bootstrapping-phase).
+You can read more about fast syncing here: [State sync bootstrapping](../configure/state-sync.mdx#bootstrapping-phase).
 </Callout>
 
 ### (Optional) Verify outbound network connections
@@ -324,9 +324,9 @@ aptos_connections{direction="outbound",network_id="Public",peer_id="aabd651f",ro
 
 If the number of outbound connections returned is `0`, then it means your node cannot connect to the Aptos blockchain. If this happens to you, follow these steps to resolve the issue:
 
-1. Update your node to the latest release by following the [Update Fullnode With New Releases](./update-fullnode-with-new-releases.md).
+1. Update your node to the latest release by following the [Update Fullnode With New Releases](./modify/update-fullnode-with-new-releases.mdx).
 2. Remove any `seed` peers you may have added to your configuration file. The seeds may be preventing you from
-   connecting to the network. Seed peers are discussed in the [Connecting your fullnode to seed peers](./fullnode-network-connections.md#connecting-your-fullnode-to-seed-peers) section.
+   connecting to the network. Seed peers are discussed in the [Connecting your fullnode to seed peers](../full-node/modify/fullnode-network-connections.mdx#connecting-your-fullnode-to-seed-peers) section.
 3. Ensure that you have used the correct `genesis.blob` and `waypoint.txt` files for your network. This is a common error.
 
 ### (Optional) Examine Docker ledger size

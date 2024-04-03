@@ -48,7 +48,7 @@ This should show an increasing number of synced states. It may take several hour
 latest version. Eventually, once fast syncing is complete, the `aptos_state_sync_version{.*"synced"}` command will
 return the current synced version of your node.
 
-You can read more about fast syncing here: [State sync bootstrapping](../../guides/state-sync.md#bootstrapping-phase).
+You can read more about fast syncing here: [State sync bootstrapping](../configure/state-sync.mdx#bootstrapping-phase).
 </Callout>
 
 ### (Optional) Verify outbound network connections
@@ -69,9 +69,9 @@ aptos_connections{direction="outbound",network_id="Public",peer_id="aabd651f",ro
 
 If the number of outbound connections returned is `0`, then it means your node cannot connect to the Aptos blockchain. If this happens to you, follow these steps to resolve the issue:
 
-1. Update your node to the latest release by following the [Update your Node](./update-fullnode-with-new-releases.md).
+1. Update your node to the latest release by following the [Update your Node](../full-node/modify/update-fullnode-with-new-releases.mdx).
 2. Remove any `seed` peers you may have added to your configuration file. The seeds may be preventing you from
-   connecting to the network. Seed peers are discussed in the [Connecting your PFN to seed peers](./fullnode-network-connections.md#connecting-to-seed-peers) section.
+   connecting to the network. Seed peers are discussed in the [Connecting your PFN to seed peers](../full-node/modify/fullnode-network-connections.mdx#connecting-to-seed-peers) section.
 3. Ensure that you have used the correct `genesis.blob` and `waypoint.txt` files for your network. This is a common error.
 
 ### (Optional) Examine Docker ledger size
