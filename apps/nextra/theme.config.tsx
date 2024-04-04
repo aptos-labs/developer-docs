@@ -1,22 +1,24 @@
 /* eslint sort-keys: error */
-import type { DocsThemeConfig } from 'nextra-theme-docs'
-import { useConfig } from 'nextra-theme-docs'
-import { useRouter } from 'nextra/hooks'
-import { docsConfig, i18nConfig } from '@docs-config'
+import type { DocsThemeConfig } from "nextra-theme-docs";
+import { useConfig } from "nextra-theme-docs";
+import { useRouter } from "nextra/hooks";
+import { docsConfig, i18nConfig } from "@docs-config";
 
-interface FrontmatterConfig { 
-  description?: string; 
-  image?: string; 
-  title?: string 
+interface FrontmatterConfig {
+  description?: string;
+  image?: string;
+  title?: string;
 }
 
-const i18nLocales = Object.entries(i18nConfig).map(([locale, { direction, name }]) => {
-  return {
-    direction: (direction as 'ltr' | 'rtl' | undefined) || undefined,
-    locale,
-    name,
-  }
-})
+const i18nLocales = Object.entries(i18nConfig).map(
+  ([locale, { direction, name }]) => {
+    return {
+      direction: (direction as "ltr" | "rtl" | undefined) || undefined,
+      locale,
+      name,
+    };
+  },
+);
 
 function isFullUrl(url: string): boolean {
   // This regex checks for strings that start with a scheme like http:// or https://
@@ -25,7 +27,10 @@ function isFullUrl(url: string): boolean {
 }
 
 const url = new URL(docsConfig.githubUrl);
-const pathname = url.pathname.endsWith('/') && url.pathname !== '/' ? url.pathname.slice(0, -1) : url.pathname;
+const pathname =
+  url.pathname.endsWith("/") && url.pathname !== "/"
+    ? url.pathname.slice(0, -1)
+    : url.pathname;
 const githubUrl = `${url.protocol}//${url.host}${pathname}${url.search}${url.hash}`;
 
 const config: DocsThemeConfig = {
@@ -33,27 +38,31 @@ const config: DocsThemeConfig = {
   docsRepositoryBase: docsConfig.githubUrl,
   editLink: {
     content: function useText() {
-      const { locale } = useRouter()
-      return i18nConfig[locale!].editText
+      const { locale } = useRouter();
+      return i18nConfig[locale!].editText;
     },
     component: ({ children, className, filePath }) => {
       const href = `${githubUrl}/edit/main${docsConfig.relativeDocsPath}/${filePath}`;
-      return <a className={className} href={href}>{children}</a>
-    }
+      return (
+        <a className={className} href={href}>
+          {children}
+        </a>
+      );
+    },
   },
   feedback: {
     content: function useFeedback() {
       const { locale } = useRouter();
       return i18nConfig[locale!].feedbackText;
     },
-    labels: 'feedback',
+    labels: "feedback",
     useLink() {
-      return docsConfig.githubNewIssueUrl
-    }
+      return docsConfig.githubNewIssueUrl;
+    },
   },
   footer: {
     content: function useText() {
-      const { locale } = useRouter()
+      const { locale } = useRouter();
       return (
         <a
           rel="noreferrer"
@@ -63,32 +72,36 @@ const config: DocsThemeConfig = {
         >
           {i18nConfig[locale!].footerLinkElement}
         </a>
-      )
-    }
+      );
+    },
   },
   gitTimestamp: function GitTimestamp({ timestamp }) {
-    const { locale } = useRouter()
+    const { locale } = useRouter();
     return (
       <>
-        {i18nConfig[locale!].lastUpdatedOn + ' '}
+        {i18nConfig[locale!].lastUpdatedOn + " "}
         <time dateTime={timestamp.toISOString()}>
           {timestamp.toLocaleDateString(locale, {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
+            day: "numeric",
+            month: "long",
+            year: "numeric",
           })}
         </time>
       </>
-    )
+    );
   },
   head: function useHead() {
     const config = useConfig<FrontmatterConfig>();
     const { frontMatter } = config;
     const { locale } = useRouter();
 
-    if (!docsConfig.origin) throw new Error('Origin is not defined in docs.config.js. Ensure it is part of your .env file for your project by adding something like `NEXT_PUBLIC_ORIGIN="http://localhost:3030"`')
-    
-    const description = frontMatter.description || docsConfig.defaultDescription
+    if (!docsConfig.origin)
+      throw new Error(
+        'Origin is not defined in docs.config.js. Ensure it is part of your .env file for your project by adding something like `NEXT_PUBLIC_ORIGIN="http://localhost:3030"`',
+      );
+
+    const description =
+      frontMatter.description || docsConfig.defaultDescription;
 
     /**
      * Why this is separated:
@@ -98,10 +111,9 @@ const config: DocsThemeConfig = {
      */
     let ogImage: string;
     let twitterImage: string;
-    const url = new URL(docsConfig.origin)
-    const imagePath = frontMatter.image || '/api/og.png';
-    const title = `${frontMatter.title || config.title} | ${docsConfig.defaultTitle} (${locale})`
-
+    const url = new URL(docsConfig.origin);
+    const imagePath = frontMatter.image || "/api/og.png";
+    const title = `${frontMatter.title || config.title} | ${docsConfig.defaultTitle} (${locale})`;
 
     if (frontMatter.image && isFullUrl(imagePath)) {
       ogImage = imagePath; // Use the full URL if it is indeed a full URL
@@ -110,7 +122,7 @@ const config: DocsThemeConfig = {
       url.pathname = imagePath; // Modify pathname to the imagePath or default
       twitterImage = url.toString();
 
-      url.searchParams.append('title', title)
+      url.searchParams.append("title", title);
       ogImage = url.toString();
     }
 
@@ -157,7 +169,7 @@ const config: DocsThemeConfig = {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-        <meta name="twitter:image:title" content={title + ' OG Image'} />
+        <meta name="twitter:image:title" content={title + " OG Image"} />
         <meta name="twitter:image" content={twitterImage} />
         <meta name="twitter:image:width" content="2400" />
         <meta name="twitter:image:height" content="1256" />
@@ -165,29 +177,46 @@ const config: DocsThemeConfig = {
         <meta name="twitter:image:content_type" content="image/png" />
 
         {/* Apple */}
-        <meta name="apple-mobile-web-app-title" content={docsConfig.defaultTitle} />
+        <meta
+          name="apple-mobile-web-app-title"
+          content={docsConfig.defaultTitle}
+        />
       </>
-    )
+    );
   },
   i18n: i18nLocales,
   logo: function Logo() {
-    const { locale } = useRouter()
+    const { locale } = useRouter();
     return (
       <>
         <span
-          className="select-none font-extrabold ltr:ml-2 rtl:mr-2"
-          title={`${docsConfig.defaultTitle}: ${i18nConfig[locale!].title || ''}`}
+          className="select-none font-semibold uppercase ltr:ml-2 rtl:mr-2 gap-3 flex items-center"
+          title={`${docsConfig.defaultTitle}: ${i18nConfig[locale!].title || ""}`}
         >
-          {docsConfig.defaultTitle}
+          <img
+            src="/docs/aptos-black.svg"
+            className="block dark:hidden"
+            alt="Aptos White Logo"
+            loading="eager"
+            width="32px"
+          />
+          <img
+            src="/docs/aptos-white.svg"
+            className="hidden dark:block"
+            alt="Aptos Black Logo"
+            loading="eager"
+            width="32px"
+          />
+          Developers
         </span>
       </>
-    )
+    );
   },
   nextThemes: {
-    defaultTheme: 'light'
+    defaultTheme: "light",
   },
   project: {
-    link: docsConfig.githubUrl
+    link: docsConfig.githubUrl,
   },
   search: {
     emptyResult: function useEmptyResult() {
@@ -196,29 +225,29 @@ const config: DocsThemeConfig = {
         <span className="_block _select-none _p-8 _text-center _text-sm _text-gray-400">
           {i18nConfig[locale!].searchEmptyText}
         </span>
-      )
+      );
     },
     error: function useError() {
       const { locale } = useRouter();
       return i18nConfig[locale!].searchErrorText;
     },
     loading: function useLoading() {
-      const { locale } = useRouter()
+      const { locale } = useRouter();
       return i18nConfig[locale!].searchEmptyText;
     },
     placeholder: function usePlaceholder() {
-      const { locale } = useRouter()
+      const { locale } = useRouter();
       return i18nConfig[locale!].searchPlaceholderText;
-    }
+    },
   },
   sidebar: {
     autoCollapse: true,
     defaultMenuCollapseLevel: 1,
-    toggleButton: true
+    toggleButton: true,
   },
   toc: {
-    float: true
-  }
-}
+    float: true,
+  },
+};
 
-export default config
+export default config;
