@@ -81,7 +81,6 @@ export default {
   },
   docs: {
     type: 'page',
-    title: 'Docs',
-    display: 'hidden'
+    title: 'Help',
   },
 };

@@ -10,9 +10,9 @@ export const Title = ({ children, ...props }) => (
 );
 
 export const Description = ({ children, ...props }) => (
-  <p className="card-description" {...props}>
+  <span className="card-description" {...props}>
     {children}
-  </p>
+  </span>
 );
 
 export interface CardProps {

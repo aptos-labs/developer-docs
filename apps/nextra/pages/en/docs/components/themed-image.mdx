@@ -1,0 +1,86 @@
+---
+title: "Themed Image"
+---
+
+import { FileTree, Steps, Callout } from 'nextra/components'
+import { ThemedImage } from '@components/index'
+
+# Themed Image
+
+`<ThemedImage />` is designed to show different images based on the theme of the docs site 
+(i.e., one image explicitly for dark mode, another for light mode)
+
+## Usage
+
+Here is an example of a `<ThemedImage />`. When toggling dark mode, you'll notice that the image is different
+for light mode and dark mode.
+
+<ThemedImage
+  alt="Staking Flow"
+  sources={{
+    light: '/docs/staking-light.svg',
+    dark: '/docs/staking-dark.svg',
+  }}
+/>
+
+To accomplish this, do the following:
+
+<Steps>
+
+### Acquire `sources` for `<ThemedImage />`
+
+Image `sources` can be local from the `public` folder or external images.
+
+<Callout>
+**Local Images**<br />
+Local image paths should always start with `/` and images should be 
+placed in the `public` folder. i.e., `/docs/staking-light.svg`
+</Callout>
+
+<FileTree>
+  <FileTree.Folder name="pages">
+    <FileTree.File name="_meta.tsx" />
+    <FileTree.File name="..." />
+  </FileTree.Folder>
+  <FileTree.Folder name="public" defaultOpen>
+    <FileTree.Folder name="docs" defaultOpen>
+      <FileTree.File name="staking-light.svg" active />
+      <FileTree.File name="staking-dark.svg" active />
+    </FileTree.Folder>
+    <FileTree.Folder name="favicon" />
+  </FileTree.Folder>
+</FileTree>
+
+### Add ThemedImage Component
+
+```mdx filename="staking.mdx"
+import { ThemedImage } from '@components/index'
+
+...
+
+<ThemedImage
+  alt="Staking Flow"
+  sources={{
+    light: '/docs/staking-light.svg',
+    dark: '/docs/staking-dark.svg',
+  }}
+/>
+```
+
+</Steps>
+
+## API
+
+The `ThemedImage` component takes the following props:
+
+### `alt`
+
+A description of the image.
+
+- Type: `string`
+
+### `sources`
+
+Light and dark sources
+
+- Type: `Record<'light' | 'dark', string>`

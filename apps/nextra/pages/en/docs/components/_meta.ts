@@ -4,4 +4,5 @@ export default {
   npm2yarn: 'Npm2Yarn',
   latex: 'LaTeX',
   table: 'Rendering Tables',
+  'themed-image': 'Themed Image',
 }

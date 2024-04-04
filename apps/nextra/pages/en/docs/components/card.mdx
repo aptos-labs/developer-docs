@@ -1,0 +1,56 @@
+---
+title: Card
+---
+
+import { Card, Cards } from '@components/index'
+
+# Card
+
+`<Card />` components are typically structured with a title, description, and a link
+that references another part of the docs. They enable you to highlight areas where readers may want to
+learn more and are often used for things like links for quickstart / summary pages. 
+
+## Usage
+
+Suppose you want to mimic the following `<Card />` layout. 
+
+<Cards>
+  <Card href="./docs/setup/organize-files">
+    <Card.Title>Organize Files</Card.Title>
+    <Card.Description>How file-based routing works with Nextra.</Card.Description>
+  </Card>
+  <Card href="./docs/setup/organize-files-advanced">
+    <Card.Title>Organize Files (Advanced)</Card.Title>
+    <Card.Description>How to customize file routing, use `_meta.tsx` files, hide routes, and more</Card.Description>
+  </Card>
+</Cards>
+
+To do so you can do the following:
+
+
+```mdx filename="index.mdx"
+import { Card, Cards } from '@components/index'
+
+...
+
+<Cards>
+  <Card href="./docs/setup/organize-files">
+    <Card.Title>Organize Files</Card.Title>
+    <Card.Description>How file-based routing works with Nextra.</Card.Description>
+  </Card>
+  <Card href="./docs/setup/organize-files-advanced">
+    <Card.Title>Organize Files (Advanced)</Card.Title>
+    <Card.Description>How to customize file routing, use `_meta.tsx` files, hide routes, and more</Card.Description>
+  </Card>
+</Cards>
+```
+
+## API
+
+The `Card` component takes the following props:
+
+### `href`
+
+The href of the Card.
+
+- Type: `string`
