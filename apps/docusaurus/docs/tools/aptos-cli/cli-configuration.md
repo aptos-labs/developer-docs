@@ -13,35 +13,35 @@ If you still need to install the CLI, follow [these steps](install-cli/install-c
 :::
 
 1. Run `aptos init` and follow the instructions in the command line.
-   1. To use default settings, you can provide no input and just press “Enter”.
+   1. To use default settings, you can provide no input and just press “Enter”. For example:
 
-```zsh
-aptos init
+    ```zsh
+    aptos init
 
-Configuring for profile default
-Enter your rest endpoint [Current: None | No input: https://api.devnet.aptoslabs.com]
+    Configuring for profile default
+    Enter your rest endpoint [Current: None | No input: https://api.devnet.aptoslabs.com]
 
-No rest url given, using https://api.devnet.aptoslabs.com...
-Enter your faucet endpoint [Current: None | No input: https://faucet.devnet.aptoslabs.com]
+    No rest url given, using https://api.devnet.aptoslabs.com...
+    Enter your faucet endpoint [Current: None | No input: https://faucet.devnet.aptoslabs.com]
 
-No faucet url given, using https://faucet.devnet.aptoslabs.com...
-Enter your private key as a hex literal (0x...) [Current: None | No input: Generate new key (or keep one if present)]
+    No faucet url given, using https://faucet.devnet.aptoslabs.com...
+    Enter your private key as a hex literal (0x...) [Current: None | No input: Generate new key (or keep one if present)]
 
-No key given, generating key...
-Account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696 doesn't exist, creating it and funding it with 10000 coins
-Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696!  Run `aptos help` for more information about commands
+    No key given, generating key...
+    Account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696 doesn't exist, creating it and funding it with 10000 coins
+    Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696!  Run `aptos help` for more information about commands
 
-{
-  "Result": "Success"
-}
-```
+    {
+      "Result": "Success"
+    }
+    ```
 
 2. Later, if you want to update these settings, you can do so by running `aptos init` again.
 3. The rest of these configuration steps are optional / quality of life. To continue to use the CLI for your specific use case, follow the [usage guide here](use-cli/index.md).
 
 ## (Optional) Creating Named Configurations (Profiles)
 
-For testing more complicated scenarios, you will often want multiple accounts on-chain. One way to do this is to create a named configuration which we will call a profile.
+For testing more complicated scenarios, you will often want multiple accounts on-chain. One way to do this is to create a named configuration which we call a profile.
 
 To create a profile, run `aptos init --profile <name_of_profile>`. The configuration you generate will be usable when calling CLI commands as replacements for arguments.
 
@@ -76,9 +76,9 @@ aptos config generate-shell-completions --shell zsh --output-file ~/.oh-my-zsh/c
 
 ## (Optional) Global Config
 
-By default, the CLI will look for a configuration is set to use a file in the workspace directory (`.aptos/config.yaml`) per workspace. If you would like to use one shared configuration for all workspaces, you can follow these steps.
+By default, the CLI will look for a configuration in `.aptos/config.yaml` in each workspace directory. If you would like to use a shared configuration for all workspaces, you can follow these steps:
 
-1. Create a folder in your home directory called `.aptos` (it will have the path `~/.aptos`).
+1. Create a folder in your home directory called `.aptos` (so it has the path `~/.aptos`).
 2. Create a yaml file inside `.aptos` called `global_config.yaml`.
 3. Run the command:
 
