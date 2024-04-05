@@ -4,7 +4,7 @@ title: "Running a Local Network"
 
 # Running a Local Network via Aptos CLI
 
-When you are developing on Aptos it can be helpful to run a private network to test your code. Private networks are not connected to any production Aptos networks (ex. mainnet). This can be helpful because local private networks have:
+Local networks can be helpful when testing your code. They are not connected to any production Aptos networks like mainnet, but they are useful for three main reasons:
 
 1. **No rate limits:** You can interact with hosted services like the Node API, Indexer API, and faucet with no rate-limits to speed up testing.
 2. **Reproducibility:** You can set up specific on-chain scenarios and restart the network from scratch at any point to return to a clean slate.
@@ -12,10 +12,10 @@ When you are developing on Aptos it can be helpful to run a private network to t
 
 # Starting A Local Network
 
-1. Ensure you have the Aptos CLI installed. You can install it by following [this guide](../install-cli/index.md).
-2. Ensure you have Docker installed. You can install it from their website [here](https://docs.docker.com/get-docker/).
-   1. This is exclusively needed for running the `Indexer` api which is needed for a production-like private network as many downstream tools such as the Aptos SDK depend on it.
-   2. Docker recommends that you install via Docker Desktop to get automatic updates.
+1. Ensure you have the [Aptos CLI](../install-cli/index.md) installed.
+2. Ensure you have [Docker](https://docs.docker.com/get-docker/) installed.
+   1. This is exclusively needed for making a production-like environment by running the Indexer API. Many downstream tools such as the Aptos SDK depend on the Indexer API.
+   2. Docker recommends that you install via [Docker Desktop](https://www.docker.com/products/docker-desktop/) to get automatic updates.
 3. Start Docker.
 4. Run the following command in a new terminal to start the private network:
 
@@ -27,7 +27,7 @@ aptos node run-local-testnet --with-indexer-api
 Note: Despite the name (`local-testnet`), this has nothing to do with the Aptos testnet, it will run a network entirely local to your machine.
 :::
 
-You should expect to see output similar to this:
+You should expect to see an output similar to this:
 
 ```
 Readiness endpoint: http://0.0.0.0:8070/
@@ -62,20 +62,18 @@ Applying post startup steps...
 Setup is complete, you can now use the local testnet!
 ```
 
-Once you see this final line, you know the local testnet is ready to use:
+5. Wait for the final line `Setup is complete, you can now use the local testnet!`
 
-```
-Setup is complete, you can now use the local testnet!
-```
+   :::caution
+   If you ran into an error, jump to the [Common Errors](#common-errors-on-network-startup) section below.
+   :::
 
-If you ran into an error, jump to the [Common Errors](#common-errors-on-network-startup) section below.
-
-As you can see from the output, once the local network is running, you have access to the following services:
+As you can see from the above example output, once the local network is running, you have access to the following services:
 
 - [Node API](../../../nodes/aptos-api-spec.md): This is a REST API that runs directly on the node. It enables core write functionality such as transaction submission and a limited set of read functionality, such as reading account resources or Move module information.
 - [Indexer API](../../../indexer/api/index.md): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
-- [Transaction Stream Service](../../../indexer/txn-stream/index.md): This is a gRPC stream of transactions. This is relevant to you if you are developing a [custom processor](../../../indexer/custom-processors/index.md).
-- [Postgres](https://www.postgresql.org/): This is the database that the indexer processors write to. The Indexer API reads from this database.
+- [Transaction Stream Service](../../../indexer/txn-stream/index.md): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing a [custom processor](../../../indexer/custom-processors/index.md).
+- [Postgres](https://www.postgresql.org/): This is the database that the Indexer processors write to. The Indexer API reads from this database.
 - [Faucet](../../../reference/glossary.md#faucet): You can use this to fund accounts on your local network.
 
 If you do not want to run any of these sub-components of a network, there are flags to disable them.
@@ -91,7 +89,7 @@ aptos node run-local-testnet --help
 ## Common Errors On Network Startup
 
 :::tip
-If you successfully started the local network, skip to Using The Local Network.
+If you successfully started the local network, skip to [Using The Local Network](#using-the-local-network).
 :::
 
 ### Address Already In Use
@@ -126,7 +124,7 @@ ulimit -n 32768
 Unexpected error: Failed to apply pre-run steps for Postgres: Docker is not available, confirm it is installed and running. On Linux you may need to use sudo
 ```
 
-To debug this:
+To debug this, try the below fixes:
 
 1. Make sure you have docker installed by running `docker --version`.
 2. Ensure the Docker daemon is running by running `docker info` (if this errors saying `Cannot connect to the Docker daemon` Docker is NOT running)
@@ -144,7 +142,7 @@ So, you can create a local profile like this:
 aptos init --profile <your-profile-name> --network local
 ```
 
-You can then use that profile for any commands you want to use going forward. For example, if you wanted to publish a Move module to your local network you could run:
+You can then use that profile for any commands you want to use going forward. For example, if you wanted to publish a Move module like the [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) package to your local network you could run:
 
 ```zsh
 aptos move publish --profile <your-profile-name> --package-dir /opt/git/aptos-core/aptos-move/move-examples/hello_blockchain --named-addresses HelloBlockchain=local
