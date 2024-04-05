@@ -41,7 +41,7 @@ See [Aptos Blockchain Networks](../nodes/networks.md) for full details on each e
 
 There are two options for running a local testnet:
 
-- [Install the Aptos CLI](../tools/aptos-cli/install-cli/index.md) and 2) run a [local development network](../tools/aptos-cli/use-cli/running-a-local-network.md). This path is useful for developing on the Aptos blockchain, debugging Move contracts, and testing node operations. Using the CLI you will have a fully featured local development environment including a single node network, the node API, indexer API, and a faucet.
+- [Install the Aptos CLI](../tools/aptos-cli/install-cli/index.md) and 2) run a [local development network](../tools/aptos-cli/use-cli/running-a-local-network.md). This path is useful for developing on the Aptos blockchain, debugging Move contracts, and testing node operations. This will provide a fully featured local development environment including a single node network, a node REST API, an Indexer API, and a faucet.
 - Directly [run a local testnet](../nodes/local-testnet/run-a-local-testnet.md) using either the [Aptos-core source code](../nodes/local-testnet/run-a-local-testnet.md#using-the-aptos-core-source-code). These paths are useful for testing changes to the Aptos-core codebase or framework, or for building services on top of the Aptos blockchain, respectively.
 
 Either of these methods will expose a [REST API service](../apis/fullnode-rest-api.md) at `http://127.0.0.1:8080` and a Faucet API service at `http://127.0.0.1:8000` for option 1 run a local testnet or `http://127.0.0.1:8081` for option 2 install the Aptos CLI. The applications will output the location of the services.
