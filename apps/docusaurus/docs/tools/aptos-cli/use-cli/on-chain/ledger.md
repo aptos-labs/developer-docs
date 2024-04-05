@@ -16,21 +16,24 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
 
 1. Ensure you have the Aptos CLI installed. You can install the Aptos CLI by following [these steps](../../install-cli/index.md) if you have not done so already.
 2. Ensure you have done the basic setup for your Ledger device.
-   1. You can find those steps on Ledger’s website. For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
+   1. You can find those steps on [Ledger’s website](https://www.ledger.com/). For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
 3. Plug your Ledger device into your computer.
-4. Install the Aptos App on your Ledger device using Ledger Live following the steps in [this guide](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true).
+4. Install the Aptos App on your Ledger device by following [this guide](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true).
 5. Unlock your Ledger device and open the Aptos app.
 
-   <aside>
-   ⭐ Whenever you want to sign using your Ledger you will need to plug it in, unlock it, and open the Aptos app before running any CLI commands.
-
-   </aside>
+   :::info
+   Whenever you want to sign using your Ledger you will need to plug it in, unlock it, and open the Aptos app before running any CLI commands.
+   :::
 
 6. Create a new Ledger profile in the Aptos CLI and choose which key to use by running:
 
    ```zsh
-   $ aptos init --profile <your-profile> --ledger
+   aptos init --profile <your-profile> --ledger
+   ```
 
+   Then follow the terminal prompts like so:
+
+   ```
    Configuring for profile <your-profile>
    Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
 
@@ -42,7 +45,7 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
    [3] Derivation path: m/44'/637'/3'/0'/0' (Address: 2dcf037a9f31d93e202c074229a1b69ea8ee4d2f2d63323476001c65b0ec4f31)
    [4] Derivation path: m/44'/637'/4'/0'/0' (Address: 23c579a9bdde1a59f1c9d36d8d379aeefe7a5997b5b58bd5a5b0c12a4f170431)
 
-   $ 0
+   0
    Account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb has been already found on-chain
 
    ---
@@ -52,7 +55,7 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
    }
    ```
 
-   In the example, they chose to use the first ledger account by entering `0` after the `aptos init` command. You can choose whichever account you want.
+   In the example, they chose to use the first ledger account by entering `0` after the `aptos init` command. You may choose whichever account you want.
 
    **Common errors:**
 
@@ -80,7 +83,10 @@ For example, if you wanted to publish a Move package like the `[hello_blockchain
 
 ```zsh
 aptos move publish --profile <your-ledger-profile-name> --named-addresses hello_blockchain=<your-ledger-profile-name>
+```
 
+You should see a response like:
+```zsh
 Compiling, may take a little while to download git dependencies...
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib
