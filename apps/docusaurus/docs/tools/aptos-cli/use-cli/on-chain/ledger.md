@@ -86,8 +86,8 @@ aptos move publish --profile <your-ledger-profile-name> --named-addresses hello_
 ```
 
 You should see a response like:
+
 ```bash
-```zsh
 Compiling, may take a little while to download git dependencies...
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib

@@ -10,7 +10,7 @@ You can install the Aptos CLI by following [these steps](../../install-cli/index
 
 You can look up resources and data an account has on-chain by running the following command:
 
-```zsh
+```bash
 aptos account list --account <your-profile-name-or-account-address>
 ```
 
