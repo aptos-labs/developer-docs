@@ -75,8 +75,13 @@ const themeConfig: Preset.ThemeConfig = {
     },
     items: [
       {
+        href: "https://learn.aptoslabs.com/",
+        label: "Learn",
+        position: "right",
+      },
+      {
         href: "https://github.com/aptos-labs/aptos-developer-discussions/discussions",
-        label: "Aptos Dev Discussions",
+        label: "Dev Discussions",
         position: "right",
       },
       {
