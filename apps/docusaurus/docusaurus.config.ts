@@ -486,10 +486,6 @@ const config: Config = {
           },
           {
             from: "/tools/aptos-cli/use-cli/cli-genesis",
-            to: "",
-          },
-          {
-            from: "/tools/aptos-cli/use-cli/cli-genesis",
             to: "/tools/aptos-cli/use-cli/public-network/run-public-network",
           },
           {
