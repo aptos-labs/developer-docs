@@ -86,7 +86,7 @@ Aptos currently provides three SDKs:
 2. [Python](../sdks/python-sdk/index.md)
 3. [Rust](../sdks/rust-sdk/index.md)
 
-Almost all developers will benefit from exploring the CLI. [Using the CLI](../tools/aptos-cli/use-cli/index.md) demonstrates how the CLI can be used to which includes creating accounts, transferring coins, and publishing modules.
+Almost all developers will benefit from exploring the CLI. [Using the CLI](../tools/aptos-cli/use-cli/index.md) demonstrates how the CLI can be used to create accounts, transfer coins, publish Move modules, and more.
 
 ## Accounts on Aptos
 
