@@ -460,10 +460,41 @@ const config: Config = {
             from: "/tools/aptos-cli/install-cli/build-from-source",
             to: "/tools/aptos-cli/install-cli/install-cli-specific-version",
           },
-          // TODO: Add the redirects for the CLI Use Cases (and adjacent pages)
           {
             from: "/tools/aptos-cli/use-cli/use-aptos-cli",
             to: "/tools/aptos-cli/use-cli",
+          },
+          {
+            from: "/guides/local-development-network",
+            to: "/tools/aptos-cli/use-cli/running-a-local-network",
+          },
+          {
+            from: "/tools/aptos-cli/use-cli/cli-account",
+            to: "/tools/aptos-cli/cli-configuration",
+          },
+          {
+            from: "/tools/aptos-cli/use-cli/cli-key",
+            to: "/tools/aptos-cli/use-cli/on-chain/create-test-accounts",
+          },
+          {
+            from: "/tools/aptos-cli/use-cli/cli-node",
+            to: "/tools/aptos-cli/use-cli/managing-a-network-node",
+          },
+          {
+            from: "/move/move-on-aptos/cli",
+            to: "/tools/aptos-cli/use-cli/working-with-move-contracts",
+          },
+          {
+            from: "/tools/aptos-cli/use-cli/cli-genesis",
+            to: "",
+          },
+          {
+            from: "/tools/aptos-cli/use-cli/cli-genesis",
+            to: "/tools/aptos-cli/use-cli/public-network/run-public-network",
+          },
+          {
+            from: "/tools/aptos-cli/use-cli/cli-configuration",
+            to: "/tools/aptos-cli/cli-configuration",
           },
         ],
         // Create redirects for all the move pages
