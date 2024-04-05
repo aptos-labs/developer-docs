@@ -15,8 +15,8 @@ If you still need to install the CLI, follow [these steps](install-cli/install-c
 1. Run `aptos init` and follow the instructions in the command line.
 
    1. To use default settings, you can provide no input and just press “Enter”. For example:
-```bash
-   ```zsh
+
+   ```bash
    aptos init
 
    Configuring for profile default
@@ -48,7 +48,6 @@ To create a profile, run `aptos init --profile <name_of_profile>`. The configura
 
 For example:
 ```bash
-```zsh
 aptos init --profile bob
 ...
 aptos account fund-with-faucet --profile bob
@@ -64,14 +63,14 @@ One quality of life feature you can enable is shell auto-completions.
 1. Determine which shell you are using (you can run `echo $SHELL` if you are unsure).
 2. Look up where configuration files for shell completions go for that shell (it varies from shell to shell). The supported shells are `[bash, zsh, fish, PowerShell, elvish]`.
 3. Run the following command with your specific shell and the output file for completions using your shell:
+
 ```bash
-```zsh
 aptos config generate-shell-completions --shell <YOUR_SHELL_HERE> --output-file <OUTPUT_DESTINATION_FOR_YOUR_SHELL>
 ```
 
 Example command for [`oh my zsh`](https://ohmyz.sh/):
+
 ```bash
-```zsh
 aptos config generate-shell-completions --shell zsh --output-file ~/.oh-my-zsh/completions/_aptos
 ```
 
@@ -82,8 +81,8 @@ By default, the CLI will look for a configuration in `.aptos/config.yaml` in eac
 1. Create a folder in your home directory called `.aptos` (so it has the path `~/.aptos`).
 2. Create a yaml file inside `.aptos` called `global_config.yaml`.
 3. Run the command:
+
 ```bash
-```zsh
 aptos config set-global-config --config-type global
 ```
 

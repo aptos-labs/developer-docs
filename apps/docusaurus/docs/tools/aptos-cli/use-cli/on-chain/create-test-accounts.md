@@ -18,7 +18,7 @@ aptos init --profile <your-profile-name>
 
 Once you have a funded account you can send coins between accounts with the `transfer` command like this:
 
-```zsh
+```bash
 aptos account transfer --account superuser --amount 100
 ```
 
