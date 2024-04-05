@@ -13,6 +13,6 @@ Specifically, you can use the CLI to:
 
 Beyond that, you can run this help command to see more specialized commands the CLI can do relating to operating your node:
 
-```zsh
+```bash
 aptos node --help
 ```

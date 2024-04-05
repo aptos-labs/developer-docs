@@ -19,7 +19,7 @@ Local networks can be helpful when testing your code. They are not connected to 
 3. Start Docker.
 4. Run the following command in a new terminal to start the private network:
 
-```zsh
+```bash
 aptos node run-local-testnet --with-indexer-api
 ```
 
@@ -82,7 +82,7 @@ If you are writing a script and would like to wait for the local network to come
 
 For more information on different flags you can pass when starting your local network, or configuration settings such as changing which port certain services run on, run the help command:
 
-```zsh
+```bash
 aptos node run-local-testnet --help
 ```
 
@@ -94,7 +94,7 @@ If you successfully started the local network, skip to [Using The Local Network]
 
 ### Address Already In Use
 
-```zsh
+```bash
 panicked at 'error binding to 0.0.0.0:8080: error creating server listener: Address already in use (os error 48)
 ```
 
@@ -107,14 +107,14 @@ To fix this on Unix systems, you can:
 
 ### Too many open files error
 
-```zsh
+```bash
 panicked at crates/aptos/src/node/local_testnet/logging.rs:64:10:
 called `Result::unwrap()` on an `Err` value: Os { code: 24, kind: Uncategorized, message: \"Too many open files\" }"""
 ```
 
 This means there were too many open files on your system. On many Unix systems you can increase the maximum number of open files by adding something like this to your `.zshrc`:
 
-```zsh
+```bash
 ulimit -n 32768
 ```
 
@@ -138,13 +138,13 @@ Now that the network is running, you can use it like you would any other network
 
 So, you can create a local profile like this:
 
-```zsh
+```bash
 aptos init --profile <your-profile-name> --network local
 ```
 
 You can then use that profile for any commands you want to use going forward. For example, if you wanted to publish a Move module like the [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) package to your local network you could run:
 
-```zsh
+```bash
 aptos move publish --profile <your-profile-name> --package-dir /opt/git/aptos-core/aptos-move/move-examples/hello_blockchain --named-addresses HelloBlockchain=local
 ```
 
@@ -170,20 +170,20 @@ Sometimes while developing it is helpful to reset the local network back to its 
 
 To start with a brand new local network, use the `--force-restart` flag:
 
-```zsh
+```bash
 aptos node run-local-testnet --force-restart
 
 ```
 
 It will then prompt you if you really want to restart the chain, to ensure that you do not delete your work by accident.
 
-```zsh
+```bash
 Are you sure you want to delete the existing chain? [yes/no]
 > yes
 ```
 
 If you do not want to be prompted, include `--assume-yes` as well:
 
-```zsh
+```bash
 aptos node run-local-testnet --force-restart --assume-yes
 ```

@@ -8,7 +8,7 @@ The CLI can be a convenient tool for quickly looking up on-chain data and sendin
 
 The most common way to specify what accounts you want to interact with is through profiles. You can create a new profile on the cli by running the following command:
 
-```zsh
+```bash
 aptos init --profile <your-profile-name>
 ```
 

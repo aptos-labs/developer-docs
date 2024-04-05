@@ -7,7 +7,7 @@ import CodeBlock from '@theme/CodeBlock';
 # How can I compile Move Scripts?
 
 Move scripts can be compiled with the already existing Aptos Move compiler in
-the Aptos CLI. For more on how to install and use the Aptos CLI with Move contracts, go to the [Working With Move Contracts](../../../tools/aptos-cli/use-cli/working-with-move-contracts.md) page. 
+the Aptos CLI. For more on how to install and use the Aptos CLI with Move contracts, go to the [Working With Move Contracts](../../../tools/aptos-cli/use-cli/working-with-move-contracts.md) page.
 
 Once you have the Aptos CLI installed, you can compile a script by running the following command from within the script package:
 

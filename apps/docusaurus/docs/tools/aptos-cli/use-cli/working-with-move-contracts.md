@@ -25,7 +25,7 @@ Throughout this document there are parts of commands you will have to modify to 
 
 You can compile a Move package by running:
 
-```zsh
+```bash
 aptos move compile --package-dir <your-package-directory>
 ```
 
@@ -44,7 +44,7 @@ hello_blockchain = "_"
 
 So, to compile this, you will need to pass in the value for `hello_blockchain` with the `--named-addresses` parameter.
 
-```zsh
+```bash
 aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=superuser
 ```
 
@@ -54,7 +54,7 @@ You can learn more about optional parameters when compiling Move contracts by ru
 
 The Aptos CLI can also be used to compile and run unit tests locally by running:
 
-```zsh
+```bash
 aptos move test --package-dir <your-package-directory>
 ```
 
@@ -102,7 +102,7 @@ The Aptos CLI can be used to analyze and improve the testing of your Move modu
 
 To see the code coverage of your tests run the following command from your Move package’s directory:
 
-```zsh
+```bash
 aptos move test --coverage
 ```
 
@@ -116,7 +116,7 @@ You can learn more about optional parameters for test coverage by running `aptos
 
 To publish a Move contract, you will need to run:
 
-```zsh
+```bash
 aptos move publish --package-dir <your-package-directory>
 ```
 
@@ -148,7 +148,7 @@ You can then pass in args by using the `--args` parameter.
 
 As an example, if you were to have published the [hello_blockchain example package](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) to an account with an address `b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb` you could run its `set_message` function via the following command:
 
-```zsh
+```bash
 aptos move run --function-id 0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb::message::set_message --args string:hello!
 ```
 
@@ -238,7 +238,7 @@ You can install the Move Prover by following [these steps](../install-cli/instal
 
 Once you have installed the Move Prover, you can use it from the Aptos CLI by running:
 
-```zsh
+```bash
 aptos move prove --package-dir <your-package-directory>
 ```
 

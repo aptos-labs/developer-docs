@@ -12,7 +12,7 @@ For Windows, the easiest way to install the Aptos CLI tool is via Python script.
    1. If python3 is not installed, you can find installation instructions on [python.org](http://python.org).
 2. In PowerShell, run the install script:
 
-   ```zsh
+   ```bash
    iwr "https://aptos.dev/scripts/install_cli.py" -useb | Select-Object -ExpandProperty Content | python3
    ```
 
