@@ -4,7 +4,9 @@ title: "Look Up On-Chain Account Info"
 
 # Look Up On-Chain Account Info Using Aptos CLI
 
+:::tip
 You can install the Aptos CLI by following [these steps](../../install-cli/index.md) if you have not done so already.
+:::
 
 You can look up resources and data an account has on-chain by running the following command:
 
@@ -51,7 +53,7 @@ If you’re interested in a specific type of account data, you can specify that 
 - `modules` - see the Move contracts that are published on this account.
 - `resources` - this is what the default command does with no query specified.
 
-Here’s an example of what calling with the `--query modules` argument looks like:
+Here’s an example of what calling with the `--query modules` parameter looks like:
 
 ```json
 aptos account list --query modules
