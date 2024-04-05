@@ -12,9 +12,7 @@ You can look up resources and data an account has on-chain by running the follow
 aptos account list --account <your-profile-name-or-account-address>
 ```
 
-This will show all resources that an account has, which can be a lot of information to parse through.
-
-Here’s an example of what an `aptos account list` response looks like:
+This will show all resources that an account has. For example:
 
 ```json
 {
@@ -53,7 +51,7 @@ If you’re interested in a specific type of account data, you can specify that 
 - `modules` - see the Move contracts that are published on this account.
 - `resources` - this is what the default command does with no query specified.
 
-Here’s an example of what calling with the `modules` query looks like:
+Here’s an example of what calling with the `--query modules` argument looks like:
 
 ```json
 aptos account list --query modules
