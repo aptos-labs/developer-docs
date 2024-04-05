@@ -8,9 +8,9 @@ title: "Create Test Accounts"
 You can install the Aptos CLI by following [these steps](../../install-cli/index.md) if you have not done so already.
 :::
 
-In general, to make a new account on-chain, you will need to generate keys and then fund the account. On test networks, you can fund a new account by asking a "faucet" account with test Aptos tokens to send them to your account. 
+In general, to make a new account on-chain, you will need to generate keys and then fund the account. On test networks, you can fund a new account by asking a "faucet" account with test Aptos tokens to send them to your account.
 
-Using the CLI, you can generate and fund a test account using: 
+Using the CLI, you can generate and fund a test account using:
 
 ```
 aptos init --profile <your-profile-name>
@@ -23,6 +23,7 @@ aptos account transfer --account superuser --amount 100
 ```
 
 You should see a result like:
+
 ```json
 {
   "Result": {
@@ -86,11 +87,10 @@ You should see a result like:
 This can be useful for manual testing of Move contracts or just to try seeing how the chain works in practice.
 
 :::tip
-If you want more control over what your generated credentials look like, instead of `aptos init`, you can use: 
+If you want more control over what your generated credentials look like, instead of `aptos init`, you can use:
 
 1. `aptos key generate --vanity-prefix 0x<your-prefix>`
 2. `aptos account fund-with-faucet --account <your-newly-generated-account-address>`
 
 Note however that addresses are different than keys.
 :::
-

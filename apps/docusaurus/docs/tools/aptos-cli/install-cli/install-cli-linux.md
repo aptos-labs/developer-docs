@@ -16,13 +16,13 @@ Note: If you are using an ARM architecture, you will have to install using the s
    1. If python3 is not installed, you can find installation instructions on [python.org](http://python.org).
 2. In the terminal, either use this `curl` command:
 
-   ```zsh
+   ```bash
    curl -fsSL "https://aptos.dev/scripts/install_cli.py" | python3
    ```
 
    Or use the equivalent `wget` command:
 
-   ```zsh
+   ```bash
    wget -qO- "https://aptos.dev/scripts/install_cli.py" | python3
    ```
 

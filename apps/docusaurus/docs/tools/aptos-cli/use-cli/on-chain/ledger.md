@@ -27,7 +27,7 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
 
 6. Create a new Ledger profile in the Aptos CLI and choose which key to use by running:
 
-   ```zsh
+   ```bash
    aptos init --profile <your-profile> --ledger
    ```
 
@@ -81,11 +81,12 @@ This process works for any command that requires a signature, whether that’s t
 
 For example, if you wanted to publish a Move package like the `[hello_blockchain](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)` demo contract you could follow the above steps then run:
 
-```zsh
+```bash
 aptos move publish --profile <your-ledger-profile-name> --named-addresses hello_blockchain=<your-ledger-profile-name>
 ```
 
 You should see a response like:
+```bash
 ```zsh
 Compiling, may take a little while to download git dependencies...
 INCLUDING DEPENDENCY AptosFramework
