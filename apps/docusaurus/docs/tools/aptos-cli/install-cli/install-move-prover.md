@@ -31,7 +31,7 @@ If you want to use the [Move Prover](../../../move/prover/index.md), install the
 
    </details>
 
-3. You can now run the Move Prover to prove an example:
+3. You can now run the Move Prover to prove an [example](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_prover):
    ```bash
    aptos move prove --package-dir aptos-move/move-examples/hello_prover/
    ```
