@@ -67,7 +67,7 @@ Aptos development community.
     <div class="col">
       <div class="card h-100" >
         <div class="card-body d-flex flex-column" >
-          <a href="/tools/aptos-cli/use-cli/use-aptos-cli" class="card-title card-link stretched-link"> <h2>CLI</h2></a>
+          <a href="/tools/aptos-cli/index" class="card-title card-link stretched-link"> <h2>CLI</h2></a>
           <p class="card-text">Command line interface for developing and deploying smart contracts.</p>
         </div>
       </div>
@@ -101,7 +101,7 @@ Aptos development community.
     </div>
     <div class="col">
       <div class="card card-body h-100 d-flex flex-column"  >
-        <a href="guides/local-development-network" class="card-title card-link stretched-link"> <h2>Run a local dev network</h2></a>
+        <a href="tools/aptos-cli/use-cli/running-a-local-network" class="card-title card-link stretched-link"> <h2>Run a local dev network</h2></a>
         <p class="card-text">Run a local network for rapid development.</p>
       </div>
     </div>
