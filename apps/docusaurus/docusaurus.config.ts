@@ -497,6 +497,10 @@ const config: Config = {
             from: "/tools/aptos-cli/use-cli/cli-configuration",
             to: "/tools/aptos-cli/cli-configuration",
           },
+          {
+            from: "/guides/local-development-network",
+            to: "/tools/aptos-cli/use-cli/running-a-local-network",
+          },
         ],
         // Create redirects for all the move pages
         createRedirects(existingPath) {
