@@ -35,3 +35,21 @@ If you want to use the [Move Prover](../../../move/prover/index.md), install the
    ```bash
    aptos move prove --package-dir aptos-move/move-examples/hello_prover/
    ```
+
+## Troubleshooting
+
+If you encounter errors like the one below when running the command, double-check your Aptos CLI version or verify that you're using the correct `aptos` tool, especially if you have multiple versions installed.
+
+```zsh title=Output
+error: unexpected token
+    ┌─ ~/.move/https___github_com_aptos-labs_aptos-core_git_main/aptos-move/framework/aptos-framework/sources/randomness.move:515:16
+    │
+515 │         for (i in 0..n) {
+    │             -  ^ Expected ')'
+    │             │
+    │             To match this '('
+
+{
+  "Error": "Move Prover failed: exiting with model building errors"
+}
+```
