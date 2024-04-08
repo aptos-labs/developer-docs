@@ -222,7 +222,6 @@ const sidebars: SidebarsConfig = {
                 "move/move-on-aptos/scripts/script-tutorial",
               ],
             },
-            "move/move-on-aptos/compiling-and-testing",
             "move/move-on-aptos/resource-accounts",
             "move/move-on-aptos/modules-on-aptos",
             "move/move-on-aptos/cryptography",
