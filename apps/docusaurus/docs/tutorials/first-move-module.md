@@ -213,44 +213,15 @@ After the first execution, this should contain:
 {
   "type": "0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder",
   "data": {
-    "message": "hello, blockchain",
-    "message_change_events": {
-      "counter": "0",
-      "guid": {
-        "id": {
-          "addr": "0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a",
-          "creation_num": "3"
-        }
-      }
-    }
+    "message": "hello, blockchain", 
   }
 }
 ```
 
 Notice that the `message` field contains `hello, blockchain`.
 
-Each successful call to `set_message` after the first call results in an update to `message_change_events`. The `message_change_events` for a given account can be accessed via the REST API:
+Each succesful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](https://aptos.dev/concepts/events/#module-events). Module Events for a given account can be accessed via the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
 
-```bash
-https://api.devnet.aptoslabs.com/v1/accounts/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a/events/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder/message_change_events
-```
-
-where, after a call to set the message to `hello, blockchain, again`, the event stream would contain the following:
-
-```json
-[
-  {
-    "version": "8556",
-    "key": "0x0300000000000000a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a",
-    "sequence_number": "0",
-    "type": "0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageChangeEvent",
-    "data": {
-      "from_message": "hello, blockchain",
-      "to_message": "hello, blockchain, again"
-    }
-  }
-]
-```
 
 :::tip
 Other accounts can reuse the published module by calling the exact same function as in this example. It is left as an exercise to the reader.
