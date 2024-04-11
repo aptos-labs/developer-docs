@@ -53,7 +53,7 @@ public fun was_event_emitted<T: drop + store>(msg: & T): bool
 
 ## API Access
 
-There is [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access) support to query both module events and EventHandle events.
+There is support for querying both module events and EventHandle events using the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
 
 # Event-Handle Events (Deprecated)
 

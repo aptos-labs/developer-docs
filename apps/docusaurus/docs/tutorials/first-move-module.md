@@ -213,7 +213,7 @@ After the first execution, this should contain:
 {
   "type": "0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder",
   "data": {
-    "message": "hello, blockchain", 
+    "message": "hello, blockchain"
   }
 }
 ```
@@ -221,7 +221,6 @@ After the first execution, this should contain:
 Notice that the `message` field contains `hello, blockchain`.
 
 Each succesful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](https://aptos.dev/concepts/events/#module-events). Module Events for a given account can be accessed via the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
-
 
 :::tip
 Other accounts can reuse the published module by calling the exact same function as in this example. It is left as an exercise to the reader.
