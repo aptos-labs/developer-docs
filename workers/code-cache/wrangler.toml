@@ -1,0 +1,17 @@
+name = "code-cache"
+main = "src/index.ts"
+compatibility_date = "2022-11-07"
+# node_compat = true
+compatibility_flags = ["nodejs_compat"]
+
+[[ d1_databases ]]
+binding = "DB"
+database_name = "db"
+database_id = "db-code-cache"
+migrations_dir = "./drizzle"
+
+[vars]
+ENVIRONMENT = "dev"
+
+[env.production.vars]
+ENVIRONMENT = "production"
