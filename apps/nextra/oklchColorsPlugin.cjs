@@ -13,6 +13,10 @@ const oklch = (lightness, chroma, hue, alpha) => ({
  * Semantic colors contain theme-based representations of colors that describe a specific purpose
  * ie. `background: { base: "white", dark: "black" }`
  * 
+ * All color values must be defined using the provided oklch function.
+ * You can convert Hex, RGBA, or HSL colors to OKLCH using this online tool:
+ * https://oklch.com/
+ * 
  * @returns
  * themeColors - A colors object to be passed to the `theme.colors` key of your Tailwind config.
  * 
