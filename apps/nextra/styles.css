@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  @font-face {
+    font-family: 'Satoshi';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: fallback;
+    src: url(./public/fonts/Satoshi-Variable.woff2) format('woff2');
+  }
+}
+
 body {
   font-feature-settings:
     'rlig' 1,
