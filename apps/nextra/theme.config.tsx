@@ -213,7 +213,7 @@ const config: DocsThemeConfig = {
     );
   },
   nextThemes: {
-    defaultTheme: "light",
+    defaultTheme: "system",
   },
   project: {
     link: docsConfig.githubUrl,

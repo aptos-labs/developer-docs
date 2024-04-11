@@ -1,86 +1,89 @@
 export default {
   index: {
-    title: 'Introduction',
-    type: 'page',
-    display: 'hidden'
+    title: "Introduction",
+    type: "page",
+    display: "hidden",
+    theme: {
+      layout: "raw",
+    },
   },
   learn: {
-    type: 'page',
-    title: 'Learn ↗',
-    href: 'https://learn.aptoslabs.com/',
+    type: "page",
+    title: "Learn ↗",
+    href: "https://learn.aptoslabs.com/",
     newWindow: true,
   },
   build: {
-    type: 'menu',
-    title: 'Build',
+    type: "menu",
+    title: "Build",
     items: {
       quick_start: {
-        title: 'Quick Start'
+        title: "Quick Start",
       },
       smart_contracts: {
-        title: 'Smart Contracts'
+        title: "Smart Contracts",
       },
       apis: {
-        title: 'APIs',
+        title: "APIs",
       },
       sdks: {
-        title: 'SDKs'
+        title: "SDKs",
       },
       indexer: {
-        title: 'Indexer'
+        title: "Indexer",
       },
       cli: {
-        title: 'CLI'
+        title: "CLI",
       },
       advanced_guides: {
-        title: 'Advanced Guides'
-      }
-    }
+        title: "Advanced Guides",
+      },
+    },
   },
   network: {
-    type: 'menu',
-    title: 'Network',
+    type: "menu",
+    title: "Network",
     items: {
       blockchain: {
-        title: 'Blockchain'
+        title: "Blockchain",
       },
       nodes: {
-        title: 'Nodes'
+        title: "Nodes",
       },
       releases: {
-        title: 'Releases'
+        title: "Releases",
       },
       glossary: {
-        title: 'Glossary'
-      }
-    }
+        title: "Glossary",
+      },
+    },
   },
   developer_platforms: {
-    type: 'menu',
-    title: 'Developer Platforms',
+    type: "menu",
+    title: "Developer Platforms",
     items: {
       forum: {
-        title: 'Forum ↗',
-        href: 'https://forum.aptoslabs.com/',
+        title: "Forum ↗",
+        href: "https://forum.aptoslabs.com/",
         newWindow: true,
-        type: 'page'
+        type: "page",
       },
       api_gateway: {
-        title: 'API Gateway ↗',
-        href: 'https://developers.aptoslabs.com/',
+        title: "API Gateway ↗",
+        href: "https://developers.aptoslabs.com/",
         newWindow: true,
-        type: 'page'
+        type: "page",
       },
       token_hub: {
-        title: 'Token Hub ↗',
-        href: '',
+        title: "Token Hub ↗",
+        href: "",
         newWindow: true,
-        type: 'page'
-      }
-    }
+        type: "page",
+      },
+    },
   },
   docs: {
-    type: 'page',
-    title: 'Help',
+    type: "page",
+    title: "Help",
   },
 };

@@ -2,10 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  @font-face {
+    font-family: "Satoshi";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: fallback;
+    src: url(./public/fonts/Satoshi-Variable.woff2) format("woff2");
+  }
+}
+
 body {
   font-feature-settings:
-    'rlig' 1,
-    'calt' 1;
+    "rlig" 1,
+    "calt" 1;
+}
+
+/* Styles to apply when the current page is the landing page */
+:root *:has(.landing-page) {
+  background-color: var(--background-primary);
 }
 
 .home-content p {
