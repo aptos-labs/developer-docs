@@ -1,10 +1,7 @@
 import { Link } from "nextra-theme-docs";
 
 export const Title = ({ children, ...props }) => (
-  <h2
-    className="font-semibold items-start gap-2"
-    {...props}
-  >
+  <h2 className="font-semibold items-start gap-2" {...props}>
     {children}
   </h2>
 );
@@ -34,7 +31,7 @@ export function Card({ children, href }: CardProps) {
         dark:text-neutral-200 dark:hover:text-neutral-50
         gap-2
       "
-      style={{ cursor: href ? 'pointer' : undefined }}
+      style={{ cursor: href ? "pointer" : undefined }}
     >
       {children}
     </Link>
@@ -46,7 +43,11 @@ export interface CardsProps {
 }
 
 export function Cards({ children }: CardsProps) {
-  return <div className="cards mt-4 gap-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 ">{children}</div>;
+  return (
+    <div className="cards mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {children}
+    </div>
+  );
 }
 
 Card.Title = Title;
