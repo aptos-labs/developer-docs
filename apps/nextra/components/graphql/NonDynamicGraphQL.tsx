@@ -1056,13 +1056,13 @@ export interface GraphQLEditorProps {
 
 /**
  * Non Dynamic GraphQLEditor
- * 
+ *
  * Custom GraphQLEditor designed to work with Aptos Nextra Docs
  * - Includes a network selection component for easy endpoint changes + form provider for state
  * - Dark / Light mode work seamlessly with Nextra / Tailwind dark and light mode
  *   thanks to MutationObserver on <GraphiQLInterface />
  * - Restructured layout of many components and custom styling
- * 
+ *
  * @see `DynamicGraphQL` for the Next.js compatible component
  */
 export const GraphQLEditor = ({
