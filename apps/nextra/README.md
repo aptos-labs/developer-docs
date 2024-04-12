@@ -8,11 +8,12 @@ the local dev server:
 ### Development
 
 1. From the root of the `developer-docs` directory, run:
+
 ```sh
 pnpm i && pnpm build
 ```
 
-2. Navigate back to `netra` 
+2. Navigate back to `netra`
 
 Create a `.env` file in the root of `nextra` with the following
 
@@ -21,6 +22,7 @@ NEXT_PUBLIC_ORIGIN="http://localhost:3030"
 ```
 
 3. Then run
+
 ```bash
 pnpm dev
 ```
@@ -45,7 +47,7 @@ pnpm build
 
 from inside the `nextra` directory.
 
-2. Navigate back to `netra` 
+2. Navigate back to `netra`
 
 3. Then run
 
@@ -55,5 +57,5 @@ pnpm start
 
 ### Troubleshooting
 
-There are some known issues with Nextra, such as search not working in development. These are further described in 
+There are some known issues with Nextra, such as search not working in development. These are further described in
 [troubleshooting.mdx](./pages/en/docs/setup/troubleshooting.mdx)
