@@ -1,3 +1,3 @@
 export default {
-  pairings: 'Pairings or Bilinear Maps',
-}
+  pairings: "Pairings or Bilinear Maps",
+};

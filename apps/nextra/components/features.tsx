@@ -1,59 +1,59 @@
-import { useRouter } from 'nextra/hooks'
-import styles from './features.module.css'
+import { useRouter } from "nextra/hooks";
+import styles from "./features.module.css";
 
 const Feature = ({ text, icon }) => (
   <div className={styles.feature}>
     {icon}
     <h4>{text}</h4>
   </div>
-)
+);
 
 const TITLE_WITH_TRANSLATIONS = {
-  en: 'Blockchain docs have never been this easy',
-  es: 'Los documentos de blockchain nunca han sido tan fáciles.',
-  ru: 'Документация по блокчейну никогда не была такой простой'
-}
+  en: "Blockchain docs have never been this easy",
+  es: "Los documentos de blockchain nunca han sido tan fáciles.",
+  ru: "Документация по блокчейну никогда не была такой простой",
+};
 
 // Translations for Features
 const FEATURES_WITH_TRANSLATIONS = {
   en: {
-    lightweight: 'Lightweight',
-    darkMode: 'Dark Mode',
-    latex: 'LaTeX',
-    pagination: 'Pagination',
-    i18n: 'i18n',
-    renderingStrategies: 'SSR / SSG Ready',
-    typescript: 'TypeScript Ready',
-    mermaid: 'Mermaid'
+    lightweight: "Lightweight",
+    darkMode: "Dark Mode",
+    latex: "LaTeX",
+    pagination: "Pagination",
+    i18n: "i18n",
+    renderingStrategies: "SSR / SSG Ready",
+    typescript: "TypeScript Ready",
+    mermaid: "Mermaid",
   },
   es: {
-    lightweight: 'Ligero',
-    darkMode: 'Modo Oscuro',
-    latex: 'LaTeX',
-    pagination: 'Paginación',
-    i18n: 'i18n',
-    renderingStrategies: 'Preparado para SSR / SSG',
-    typescript: 'Listo para TypeScript',
-    mermaid: 'Mermaid'
+    lightweight: "Ligero",
+    darkMode: "Modo Oscuro",
+    latex: "LaTeX",
+    pagination: "Paginación",
+    i18n: "i18n",
+    renderingStrategies: "Preparado para SSR / SSG",
+    typescript: "Listo para TypeScript",
+    mermaid: "Mermaid",
   },
   ru: {
-    lightweight: 'Лёгкий',
-    darkMode: 'Тёмный режим',
-    latex: 'LaTeX',
-    pagination: 'Пагинация',
-    i18n: 'i18n',
-    renderingStrategies: 'Готово к SSR / SSG',
-    typescript: 'Поддержка TypeScript',
-    mermaid: 'Mermaid'
-  }
-}
+    lightweight: "Лёгкий",
+    darkMode: "Тёмный режим",
+    latex: "LaTeX",
+    pagination: "Пагинация",
+    i18n: "i18n",
+    renderingStrategies: "Готово к SSR / SSG",
+    typescript: "Поддержка TypeScript",
+    mermaid: "Mermaid",
+  },
+};
 
 export default function Features() {
-  const { locale, defaultLocale } = useRouter()
+  const { locale, defaultLocale } = useRouter();
 
-  const featureText = key =>
+  const featureText = (key) =>
     FEATURES_WITH_TRANSLATIONS[locale!]?.[key] ??
-    FEATURES_WITH_TRANSLATIONS[defaultLocale!][key] // Fallback for missing translations
+    FEATURES_WITH_TRANSLATIONS[defaultLocale!][key]; // Fallback for missing translations
 
   return (
     <div className="mx-auto mb-10 w-[880px] max-w-full px-4 text-center">
@@ -64,7 +64,7 @@ export default function Features() {
       <br />
       <div className={styles.features}>
         <Feature
-          text={featureText('lightweight')}
+          text={featureText("lightweight")}
           icon={
             <svg
               viewBox="0 0 24 24"
@@ -83,7 +83,7 @@ export default function Features() {
           }
         />
         <Feature
-          text={featureText('darkMode')}
+          text={featureText("darkMode")}
           icon={
             <svg
               width="24"
@@ -101,7 +101,7 @@ export default function Features() {
           }
         />
         <Feature
-          text={featureText('latex')}
+          text={featureText("latex")}
           icon={
             <svg
               viewBox="0 0 24 24"
@@ -120,7 +120,7 @@ export default function Features() {
           }
         />
         <Feature
-          text={featureText('pagination')}
+          text={featureText("pagination")}
           icon={
             <svg
               viewBox="0 0 24 24"
@@ -139,7 +139,7 @@ export default function Features() {
           }
         />
         <Feature
-          text={featureText('i18n')}
+          text={featureText("i18n")}
           icon={
             <svg
               stroke="currentColor"
@@ -156,7 +156,7 @@ export default function Features() {
           }
         />
         <Feature
-          text={featureText('renderingStrategies')}
+          text={featureText("renderingStrategies")}
           icon={
             <svg
               width="24"
@@ -174,7 +174,7 @@ export default function Features() {
           }
         />
         <Feature
-          text={featureText('typescript')}
+          text={featureText("typescript")}
           icon={
             <svg
               width="24"
@@ -193,7 +193,7 @@ export default function Features() {
           }
         />
         <Feature
-          text={featureText('mermaid')}
+          text={featureText("mermaid")}
           icon={
             <svg
               width="24"
@@ -209,5 +209,5 @@ export default function Features() {
         />
       </div>
     </div>
-  )
+  );
 }
