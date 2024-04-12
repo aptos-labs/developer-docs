@@ -271,8 +271,9 @@ See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 
 ### Maximum Gas Amount
 
-- The **Maximum Gas Amount** of a transaction is the maximum amount of gas the sender is ready to pay for the transaction.
-- The gas charged is equal to the gas price multiplied by units of gas required to process this transaction. If the result is less than the max gas amount, the transaction has been successfully executed.
+- The **Maximum Gas Amount** of a transaction is the maximum gas amount in gas units that the sender is ready to pay for the transaction.
+- The transaction can be successfully executed only if the gas used does not exceed the maximum gas amount.
+- The gas charged is equal to the gas price multiplied by units of gas required to process this transaction.
 - If the transaction runs out of gas while it is being executed or the account runs out of balance during execution, then the sender will be charged for gas used and the transaction will fail.
 
 See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
