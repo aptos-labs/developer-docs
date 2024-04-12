@@ -29,7 +29,7 @@ export const GraphQLIcon = ({ className }: GraphQLIconProps) => {
 
 /**
  * Skeleton Component for GraphQLEditor
- * 
+ *
  * GraphQLEditor must be rendered client-side. During loading, this Skeleton is rendered.
  */
 export const GraphQLSkeleton = () => {

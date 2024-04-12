@@ -5,5 +5,5 @@ export default {
   latex: "LaTeX",
   table: "Rendering Tables",
   "themed-image": "Themed Image",
-  'graphql-editor': "GraphQL Editor"
+  "graphql-editor": "GraphQL Editor",
 };
