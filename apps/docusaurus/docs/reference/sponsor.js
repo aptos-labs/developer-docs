@@ -11,10 +11,10 @@ const {
 } = require("@aptos-labs/ts-sdk");
 
 const example = async () => {
-    console.log("This example will create two accounts (Alice and Bob) and send a transaction transfering APT to Bob's account.");
+    console.log("This example will create two accounts (Alice and Bob) and send a transaction transfering APT to Carol's account.");
 
     // 0. Setup the client and test accounts
-    const config = new AptosConfig({ network: Network.TESTNET });
+    const config = new AptosConfig({ network: Network.DEVNET });
     const aptos = new Aptos(config);
 
     let alice = Account.generate();
@@ -29,11 +29,11 @@ const example = async () => {
     console.log("\n=== Funding accounts ===\n");
     await aptos.fundAccount({
         accountAddress: alice.accountAddress,
-        amount: 100_000_000,
+        amount: 500_000_000_000_000,
     });  
     await aptos.fundAccount({
         accountAddress: bob.accountAddress,
-        amount: 100_000_000,
+        amount: 500_000_000_000_000,
     });
     await aptos.fundAccount({
         accountAddress: carol.accountAddress,
@@ -43,9 +43,9 @@ const example = async () => {
 
     // 1. Build
     console.log("\n=== 1. Building the transaction ===\n");
-    const transaction = await aptos.transaction.build.multiAgent({
+    const transaction = await aptos.transaction.build.simple({
         sender: alice.accountAddress,
-        secondarySignerAddresses: [bob.accountAddress],
+        withFeePayer: true,
         data: {
             // All transactions on Aptos are implemented via smart contracts.
             function: "0x1::coin::transfer",
@@ -57,9 +57,9 @@ const example = async () => {
 
     // 2. Simulate (Optional)
     console.log("\n === 2. Simulating Response (Optional) === \n")
-    const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent({
+    const [userTransactionResponse] = await aptos.transaction.simulate.simple({
         signerPublicKey: alice.publicKey,
-        secondarySignersPublicKeys: [bob.publicKey],
+        feePayerPublicKey: bob.publicKey,
         transaction,
     });
     console.log(userTransactionResponse)
@@ -79,14 +79,12 @@ const example = async () => {
 
     // 4. Submit
     console.log("\n=== 4. Submitting transaction ===\n");
-    const committedTransaction = await aptos.transaction.submit.multiAgent({
+    const committedTransaction = await aptos.transaction.submit.simple({
         transaction,
         senderAuthenticator: aliceSenderAuthenticator,
-        additionalSignersAuthenticators: [bobSenderAuthenticator],
+        feePayerAuthenticator: bobSenderAuthenticator,
     });
-    console.log("Submitted transaction.");
-
-
+    console.log("Submitted Transaction");
 
     // 5. Wait for results
     console.log("\n=== 5. Waiting for result of transaction ===\n");

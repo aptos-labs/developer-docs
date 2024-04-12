@@ -90,7 +90,6 @@ const {
   
     console.log("\n=== Transfer transaction ===\n");
     let committedTxn = await client.signAndSubmitTransaction({ signer: alice, transaction: txn });
-    console.log(`Committed transaction: ${committedTxn.hash}`);
     await client.waitForTransaction({ transactionHash: committedTxn.hash });
   
     console.log("\n=== Balances after transfer ===\n");
