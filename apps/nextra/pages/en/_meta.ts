@@ -63,8 +63,14 @@ export default {
     title: "Developer Platforms",
     items: {
       forum: {
-        title: "Forum ↗",
-        href: "https://forum.aptoslabs.com/",
+        title: "Community Forum ↗",
+        href: "https://forum.aptosfoundation.org/",
+        newWindow: true,
+        type: "page",
+      },
+      discussions: {
+        title: "Developer Discussions ↗",
+        href: "https://github.com/aptos-labs/aptos-developer-discussions/discussions",
         newWindow: true,
         type: "page",
       },
