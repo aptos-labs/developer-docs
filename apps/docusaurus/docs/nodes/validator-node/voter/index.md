@@ -57,4 +57,4 @@ To delegate your voting power, follow these steps:
 1. Get your delegation pool address from the [Aptos Explorer page](https://explorer.aptoslabs.com/validators/delegation?network=mainnet).
 2. To set up your voter profile, run: `aptos init`.
 3. To delegate voting power, run: `aptos move run --function-id 0x1::delegation_pool::delegate_voting_power --args address:<pool-address> address:<delegated-voter-address>`.
-4. The new delegated voter will take effect in the next lockup cycle after the current lockup cycle ends.
+4. The new delegated voter will take effect in the next lockup cycle after the current lockup cycle ends. To view delegated voter, run `aptos move view --profile delegator --function-id 0x1::delegation_pool::calculate_and_update_delegator_voter --args address:<pool-address> address:<delegator-address>`.
