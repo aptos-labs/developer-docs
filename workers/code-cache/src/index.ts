@@ -5,11 +5,11 @@ import type { Request as IttyRequest, Route } from "itty-router";
 import { Router } from "itty-router";
 import { codecache } from "./schema";
 import { fetchCodeSnippetFromGithub, unifiedReturn } from "./github";
-import { setCORSHeaders, wrap } from "./utils";
+import { checkApiKey, setCORSHeaders, wrap } from "./utils";
 
 export interface Env {
   DB: D1Database;
-  API_TOKEN: string;
+  API_KEY: string;
   ENVIRONMENT: string;
 }
 
@@ -29,9 +29,20 @@ type GithubPermalinks = { github_permalinks: string[] };
  * Middleware
  *
  * 1. Inject DB
+ * 2. Set CORS Headers
  */
 async function middleware(request: WorkersRequest, env: Env) {
-  setCORSHeaders(request, env);
+  try {
+    setCORSHeaders(request, env);
+    checkApiKey(request, env);
+  } catch (err) {
+    return wrap({
+      data: null,
+      status_code: 400,
+      message: `${(err as any).message}`,
+    });
+  }
+
   // Drizzle doesn't support adding schema to sqlite
   const db = drizzle(env.DB);
   request.db = db;
@@ -46,9 +57,17 @@ const router = Router<WorkersRequest, Methods>({ base: "/" });
  * snippet information
  */
 router.get("/codecache", middleware, async (req: WorkersRequest, env: Env) => {
-  const query = req.db.select().from(codecache);
-  const response = await query.all();
-  return wrap({ data: unifiedReturn(response), status_code: 200 });
+  try {
+    const query = req.db.select().from(codecache);
+    const response = await query.all();
+    return wrap({ data: unifiedReturn(response), status_code: 200 });
+  } catch (err) {
+    return wrap({
+      data: null,
+      status_code: 400,
+      message: `${(err as any).message}`,
+    });
+  }
 });
 
 /**
@@ -62,26 +81,38 @@ router.post(
   "/codecache/code",
   middleware,
   async (req: WorkersRequest, env: Env) => {
-    const { github_permalink } = await req.json!();
+    try {
+      const { github_permalink } = await req.json!();
 
-    if (!github_permalink) {
-      throw new Error("github_permalink was not found in request body");
-    }
+      if (!github_permalink) {
+        throw new Error("github_permalink was not found in request body");
+      }
 
-    const result = await req.db
-      .select()
-      .from(codecache)
-      .where(eq(codecache.github_permalink, github_permalink))
-      .get();
+      const result = await req.db
+        .select()
+        .from(codecache)
+        .where(eq(codecache.github_permalink, github_permalink))
+        .get();
 
-    if (result) {
+      if (result) {
+        return wrap({
+          data: unifiedReturn([result]),
+          status_code: 200,
+        });
+      }
+
       return wrap({
-        data: unifiedReturn([result]),
-        status_code: 200,
+        data: null,
+        message: "Error: not found",
+        status_code: 400,
+      });
+    } catch (err) {
+      return wrap({
+        data: null,
+        status_code: 400,
+        message: `${(err as any).message}`,
       });
     }
-
-    return wrap({ data: null, message: "Error: not found", status_code: 400 });
   },
 );
 

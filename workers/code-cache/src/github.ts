@@ -21,7 +21,15 @@ export function parsePermalink(permalink: string) {
   const [, owner, repo, commitSha, path, startLine, , endLine] = match;
   const filePath = path?.replace(/\/blob\/[^\/]+\//, "");
 
+  // Extract the file name from the filePath
+  const segments = filePath?.split("/");
+  let filename: undefined | string = undefined;
+  if (segments) {
+    filename = segments[segments.length - 1]; // This gets the last segment of the path, which is the file name
+  }
+
   return {
+    filename,
     owner,
     repo,
     commitSha,
@@ -158,10 +166,19 @@ export type DBData = {
 
 export function unifiedReturn(dbData: DBData) {
   const permalinks = dbData.map((data) => {
-    const { ...props } = parsePermalink(data.github_permalink);
+    // Convert to snake case
+    const {
+      commitSha: commit_sha,
+      filePath: file_path,
+      startLine: start_line,
+      endLine: end_line,
+      ...props
+    } = parsePermalink(data.github_permalink);
     return {
       ...props,
-      file_path: props.filePath,
+      commit_sha,
+      end_line,
+      start_line,
       code: data.code,
       github_permalink: data.github_permalink,
     };
