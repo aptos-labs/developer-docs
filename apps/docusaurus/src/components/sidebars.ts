@@ -340,7 +340,6 @@ const sidebars: SidebarsConfig = {
           collapsible: true,
           collapsed: true,
           items: [
-            "sdks/ts-sdk/migration-guide",
             "sdks/ts-sdk/account",
             "sdks/ts-sdk/sdk-configuration",
             "sdks/ts-sdk/fetch-data-from-chain",
@@ -349,33 +348,34 @@ const sidebars: SidebarsConfig = {
             "sdks/ts-sdk/move-types",
             "sdks/ts-sdk/testing",
             "sdks/ts-sdk/typescript",
-          ],
-        },
-        {
-          type: "category",
-          label: "Legacy TypeScript SDK",
-          link: { type: "doc", id: "sdks/legacy-ts-sdk/index" },
-          collapsible: true,
-          collapsed: true,
-          items: [
-            "sdks/legacy-ts-sdk/typescript-sdk-overview",
             {
               type: "category",
-              label: "API Client Layer",
-              link: {
-                type: "doc",
-                id: "sdks/legacy-ts-sdk/sdk-client-layer",
-              },
+              label: "Legacy TypeScript SDK",
+              link: { type: "doc", id: "sdks/ts-sdk/legacy-ts-sdk/index" },
               collapsible: true,
               collapsed: true,
               items: [
-                "sdks/legacy-ts-sdk/aptos-client",
-                "sdks/legacy-ts-sdk/indexer-client",
+                "sdks/ts-sdk/legacy-ts-sdk/migration-guide",
+                "sdks/ts-sdk/legacy-ts-sdk/typescript-sdk-overview",
+                {
+                  type: "category",
+                  label: "API Client Layer",
+                  link: {
+                    type: "doc",
+                    id: "sdks/ts-sdk/legacy-ts-sdk/sdk-client-layer",
+                  },
+                  collapsible: true,
+                  collapsed: true,
+                  items: [
+                    "sdks/ts-sdk/legacy-ts-sdk/aptos-client",
+                    "sdks/ts-sdk/legacy-ts-sdk/indexer-client",
+                  ],
+                },
+                "sdks/ts-sdk/legacy-ts-sdk/sdk-core-layer",
+                "sdks/ts-sdk/legacy-ts-sdk/sdk-plugins-layer",
+                "sdks/ts-sdk/legacy-ts-sdk/sdk-tests",
               ],
             },
-            "sdks/legacy-ts-sdk/sdk-core-layer",
-            "sdks/legacy-ts-sdk/sdk-plugins-layer",
-            "sdks/legacy-ts-sdk/sdk-tests",
           ],
         },
         // Migrate these to proper folders when more info is there

@@ -63,7 +63,7 @@ const tokenClient = new TokenClient(aptosClient);
 
 **V2**
 :::tip
-Read more about it [here](./sdk-configuration.md)
+Read more about it [here](../sdk-configuration.md)
 :::
 
 ```ts
@@ -133,7 +133,7 @@ const txn = await client.submitSignedBCSTransaction(signedTransaction);
 
 **V2**
 :::tip
-Read more about it [here](./transaction-builder.md)
+Read more about it [here](../transaction-builder.md)
 :::
 
 ```ts
@@ -187,7 +187,7 @@ const account = AptosAccount.fromDerivePath(..)
 **V2**
 
 :::tip
-Read more about it [here](./account.md)
+Read more about it [here](../account.md)
 :::
 
 ```ts

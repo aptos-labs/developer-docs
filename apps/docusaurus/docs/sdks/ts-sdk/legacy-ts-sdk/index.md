@@ -7,14 +7,14 @@ hidden: false
 # Legacy TypeScript SDK
 
 :::note
-This documentation is for the **legacy TypeScript SDK**, aka `aptos`. For a more robust and better SDK support, we recommend upgrading to the **new TypeScript SDK** [@aptos-labs/ts-sdk](https://github.com/aptos-labs/aptos-ts-sdk). Take a look at the [documentation](../ts-sdk/index.md) and the [migration guide](../ts-sdk/migration-guide.md)
+This documentation is for the **legacy TypeScript SDK**, aka `aptos`. For a more robust and better SDK support, we recommend upgrading to the **new TypeScript SDK** [@aptos-labs/ts-sdk](https://github.com/aptos-labs/aptos-ts-sdk). Take a look at the [documentation](../index.md) and the [migration guide](./migration-guide.md)
 :::
 
 Aptos provides a fully supported TypeScript SDK with the source code in the [Aptos-core GitHub](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/typescript/sdk) repository.
 
 ## Installing the Legacy TypeScript SDK
 
-1. Make sure you [downloaded the latest precompiled binary for the Aptos CLI](../../tools/aptos-cli/install-cli/index.md).
+1. Make sure you [downloaded the latest precompiled binary for the Aptos CLI](../../../tools/aptos-cli/install-cli/index.md).
 2. On a terminal run the below command to install the Legacy TypeScript SDK from [npmjs](https://www.npmjs.com/package/aptos):
 
    ```bash
@@ -34,12 +34,12 @@ Aptos provides a fully supported TypeScript SDK with the source code in the [Apt
    ```
 
    :::tip
-   The above command installs the Legacy TS SDK and should not be confused as installing the Aptos CLI.
+   The above command installs the Legacy TypeScript SDK and should not be confused as installing the Aptos CLI.
    :::
 
 ## Using the TypeScript SDK
 
-See the [Developer Tutorials](../../tutorials/index.md) for code examples showing how to use the Typescript SDK.
+See the [Developer Tutorials](../../../tutorials/index.md) for code examples showing how to use the Typescript SDK.
 
 ## TypeScript SDK Architecture
 

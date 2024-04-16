@@ -10,7 +10,7 @@ This tutorial introduces a practical use case that combines Aptos framework mult
 
 ## Step 1: Pick an SDK
 
-This tutorial was created for the [TypeScript SDK](../sdks/legacy-ts-sdk/index.md).
+This tutorial was created for the [Legacy TypeScript SDK](../sdks/ts-sdk/legacy-ts-sdk/index.md).
 
 Other developers are invited to add support for the [Python SDK](../sdks/python-sdk/index.md), [Rust SDK](../sdks/rust-sdk/index.md), and [Unity SDK](../sdks/unity-sdk/index.md)!
 
