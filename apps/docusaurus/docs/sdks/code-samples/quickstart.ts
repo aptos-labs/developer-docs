@@ -7,8 +7,6 @@ import {
   Aptos,
   AptosConfig,
   Network,
-  AccountAddress,
-  U64,
 } from "@aptos-labs/ts-sdk";
 
 const APTOS_COIN = "0x1::aptos_coin::AptosCoin";
@@ -63,12 +61,14 @@ async function example() {
     data: {
       // All transactions on Aptos are implemented via smart contracts.
       function: "0x1::aptos_account::transfer",
-      functionArguments: [AccountAddress.from(bob.accountAddress), new U64(100)],
+      functionArguments: [bob.accountAddress, 100],
     },
   });
 
   console.log("\n=== Transfer transaction ===\n");
+  // Both signs and submits
   const committedTxn = await aptos.signAndSubmitTransaction({ signer: alice, transaction: txn });
+  // Waits for Aptos to verify and execute the transaction
   const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTxn.hash });
   console.log("Transaction hash:", executedTransaction.hash)
 

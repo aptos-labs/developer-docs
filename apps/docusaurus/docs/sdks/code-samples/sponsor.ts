@@ -1,5 +1,5 @@
 /**
- * This example shows how to use the Aptos SDK to send a transaction.
+ * This example shows how to use the Aptos SDK to send a transaction with a sponsor.
  */
 
 import {
@@ -10,7 +10,7 @@ import {
 } from "@aptos-labs/ts-sdk";
 
 async function example() {
-    console.log("This example will create two accounts (Alice and Bob) and send a transaction transfering APT to Carol's account.");
+    console.log("This example will send a sponsored transaction from Alice to Carol.");
 
     // 0. Setup the client and test accounts
     const config = new AptosConfig({ network: Network.TESTNET });
@@ -28,11 +28,11 @@ async function example() {
     console.log("\n=== Funding accounts ===\n");
     await aptos.fundAccount({
         accountAddress: alice.accountAddress,
-        amount: 500_000_000_000_000,
+        amount: 500_000_000,
     });  
     await aptos.fundAccount({
         accountAddress: bob.accountAddress,
-        amount: 500_000_000_000_000,
+        amount: 500_000_000,
     });
     await aptos.fundAccount({
         accountAddress: carol.accountAddress,
