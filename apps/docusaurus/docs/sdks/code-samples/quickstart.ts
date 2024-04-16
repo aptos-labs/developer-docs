@@ -2,12 +2,7 @@
  * This example shows how to use the Aptos client to create accounts, fund them, and transfer between them.
  */
 
-import {
-  Account,
-  Aptos,
-  AptosConfig,
-  Network,
-} from "@aptos-labs/ts-sdk";
+import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
 const APTOS_COIN = "0x1::aptos_coin::AptosCoin";
 const COIN_STORE = `0x1::coin::CoinStore<${APTOS_COIN}>`;
@@ -16,7 +11,9 @@ const BOB_INITIAL_BALANCE = 100;
 const TRANSFER_AMOUNT = 100;
 
 async function example() {
-  console.log("This example will create two accounts (Alice and Bob), fund them, and transfer between them.");
+  console.log(
+    "This example will create two accounts (Alice and Bob), fund them, and transfer between them.",
+  );
 
   // Setup the client
   const config = new AptosConfig({ network: Network.TESTNET });
@@ -43,15 +40,21 @@ async function example() {
     accountAddress: bob.accountAddress,
     amount: BOB_INITIAL_BALANCE,
   });
-  console.log("Alice and Bob's accounts have been funded!")
+  console.log("Alice and Bob's accounts have been funded!");
 
   // Look up the newly funded account's balances
   console.log("\n=== Balances ===\n");
-  const aliceAccountBalance = await aptos.getAccountResource({ accountAddress: alice.accountAddress, resourceType: COIN_STORE });
+  const aliceAccountBalance = await aptos.getAccountResource({
+    accountAddress: alice.accountAddress,
+    resourceType: COIN_STORE,
+  });
   const aliceBalance = Number(aliceAccountBalance.coin.value);
   console.log(`Alice's balance is: ${aliceBalance}`);
 
-  const bobAccountBalance = await aptos.getAccountResource({ accountAddress: bob.accountAddress, resourceType: COIN_STORE });
+  const bobAccountBalance = await aptos.getAccountResource({
+    accountAddress: bob.accountAddress,
+    resourceType: COIN_STORE,
+  });
   const bobBalance = Number(bobAccountBalance.coin.value);
   console.log(`Bob's balance is: ${bobBalance}`);
 
@@ -67,17 +70,28 @@ async function example() {
 
   console.log("\n=== Transfer transaction ===\n");
   // Both signs and submits
-  const committedTxn = await aptos.signAndSubmitTransaction({ signer: alice, transaction: txn });
+  const committedTxn = await aptos.signAndSubmitTransaction({
+    signer: alice,
+    transaction: txn,
+  });
   // Waits for Aptos to verify and execute the transaction
-  const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTxn.hash });
-  console.log("Transaction hash:", executedTransaction.hash)
+  const executedTransaction = await aptos.waitForTransaction({
+    transactionHash: committedTxn.hash,
+  });
+  console.log("Transaction hash:", executedTransaction.hash);
 
   console.log("\n=== Balances after transfer ===\n");
-  const newAliceAccountBalance = await aptos.getAccountResource({ accountAddress: alice.accountAddress, resourceType: COIN_STORE });
+  const newAliceAccountBalance = await aptos.getAccountResource({
+    accountAddress: alice.accountAddress,
+    resourceType: COIN_STORE,
+  });
   const newAliceBalance = Number(newAliceAccountBalance.coin.value);
   console.log(`Alice's balance is: ${newAliceBalance}`);
 
-  const newBobAccountBalance = await aptos.getAccountResource({ accountAddress: bob.accountAddress, resourceType: COIN_STORE });
+  const newBobAccountBalance = await aptos.getAccountResource({
+    accountAddress: bob.accountAddress,
+    resourceType: COIN_STORE,
+  });
   const newBobBalance = Number(newBobAccountBalance.coin.value);
   console.log(`Bob's balance is: ${newBobBalance}`);
 
@@ -88,6 +102,6 @@ async function example() {
   // Alice should have the remainder minus gas
   if (newAliceBalance >= ALICE_INITIAL_BALANCE - TRANSFER_AMOUNT)
     throw new Error("Alice's balance after transfer is incorrect");
-};
+}
 
 example();
