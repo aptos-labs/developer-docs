@@ -6,7 +6,6 @@ const {
     Account,
     Aptos,
     AptosConfig,
-    parseTypeTag,
     Network,
 } = require("@aptos-labs/ts-sdk");
 
@@ -48,8 +47,7 @@ const example = async () => {
         secondarySignerAddresses: [bob.accountAddress],
         data: {
             // All transactions on Aptos are implemented via smart contracts.
-            function: "0x1::coin::transfer",
-            typeArguments: [parseTypeTag("0x1::aptos_coin::AptosCoin")],
+            function: "0x1::aptos_account::transfer",
             functionArguments: [carol.accountAddress, 100],
         },
     });
@@ -84,14 +82,12 @@ const example = async () => {
         senderAuthenticator: aliceSenderAuthenticator,
         additionalSignersAuthenticators: [bobSenderAuthenticator],
     });
-    console.log("Submitted transaction.");
-
-
+    console.log("Submitted transaction hash:", committedTransaction.hash);
 
     // 5. Wait for results
     console.log("\n=== 5. Waiting for result of transaction ===\n");
-    const result = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
-    console.log(result)
+    const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
+    console.log(executedTransaction)
 };
 
 example();
