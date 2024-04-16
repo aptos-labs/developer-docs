@@ -3,7 +3,7 @@ title: "Plugins Layer"
 slug: "typescript-sdk-plugins-layer"
 ---
 
-A plugin is a component that can be added to the TypeScript SDK to extend or enhance its functionality. Plugins are meant to be built to support popular applications on the Aptos network and can be used to add new features, ease the use of the application operations and to customize the user experience.
+A plugin is a component that can be added to the Legacy TypeScript SDK to extend or enhance its functionality. Plugins are meant to be built to support popular applications on the Aptos network and can be used to add new features, ease the use of the application operations and to customize the user experience.
 
 ## AptosToken class
 

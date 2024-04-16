@@ -12,10 +12,10 @@ This documentation is for the **legacy TypeScript SDK**, aka `aptos`. For a more
 
 Aptos provides a fully supported TypeScript SDK with the source code in the [Aptos-core GitHub](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/typescript/sdk) repository.
 
-## Installing the TypeScript SDK
+## Installing the Legacy TypeScript SDK
 
 1. Make sure you [downloaded the latest precompiled binary for the Aptos CLI](../../tools/aptos-cli/install-cli/index.md).
-2. On a terminal run the below command to install the TypeScript SDK from [npmjs](https://www.npmjs.com/package/aptos):
+2. On a terminal run the below command to install the Legacy TypeScript SDK from [npmjs](https://www.npmjs.com/package/aptos):
 
    ```bash
    npm i aptos
@@ -34,7 +34,7 @@ Aptos provides a fully supported TypeScript SDK with the source code in the [Apt
    ```
 
    :::tip
-   The above command installs the TS SDK and should not be confused as installing the Aptos CLI.
+   The above command installs the Legacy TS SDK and should not be confused as installing the Aptos CLI.
    :::
 
 ## Using the TypeScript SDK
@@ -43,11 +43,11 @@ See the [Developer Tutorials](../../tutorials/index.md) for code examples showin
 
 ## TypeScript SDK Architecture
 
-See the [TypeScript SDK Architecture](./typescript-sdk-overview.md) for the components that make up the TypeScript SDK.
+See the [Legacy TypeScript SDK Architecture](./typescript-sdk-overview.md) for the components that make up the TypeScript SDK.
 
 ## Additional information
 
-- ### [TypeScript SDK Source code](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/typescript/sdk)
-- ### [TypeScript SDK at NPM](https://www.npmjs.com/package/aptos)
-- ### [TypeScript SDK Reference](https://aptos-labs.github.io/ts-sdk-doc/)
-- ### [TypeScript SDK Reference Source](https://github.com/aptos-labs/ts-sdk-doc)
+- ### [Legacy TypeScript SDK Source code](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/typescript/sdk)
+- ### [Legacy TypeScript SDK at NPM](https://www.npmjs.com/package/aptos)
+- ### [Legacy TypeScript SDK Reference](https://aptos-labs.github.io/ts-sdk-doc/)
+- ### [Legacy TypeScript SDK Reference Source](https://github.com/aptos-labs/ts-sdk-doc)
