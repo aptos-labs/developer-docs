@@ -6,8 +6,6 @@ const {
     Account,
     Aptos,
     AptosConfig,
-    parseTypeTag,
-    NetworkToNetworkName,
     Network,
     AccountAddress,
     U64,
@@ -19,29 +17,12 @@ const {
   const BOB_INITIAL_BALANCE = 100;
   const TRANSFER_AMOUNT = 100;
   
-  /**
-   * Prints the balance of an account
-   * @param aptos
-   * @param name
-   * @param address
-   * @returns {Promise<*>}
-   *
-   */
-  const balance = async (client, name, address) => {
-    let balance = await client.getAccountResource({ accountAddress: address, resourceType: COIN_STORE });
-  
-    let amount = Number(balance.coin.value);
-  
-    console.log(`${name}'s balance is: ${amount}`);
-    return amount;
-  };
-  
   const example = async () => {
     console.log("This example will create two accounts (Alice and Bob), fund them, and transfer between them.");
   
     // Setup the client
     const config = new AptosConfig({ network: Network.TESTNET });
-    const client = new Aptos(config);
+    const aptos = new Aptos(config);
   
     // Generate two account credentials
     // Each account has a private key, a public key, and an address
@@ -55,46 +36,50 @@ const {
     // Fund the accounts using a faucet
     console.log("\n=== Funding accounts ===\n");
   
-    const aliceFundTxn = await client.fundAccount({
+    await aptos.fundAccount({
       accountAddress: alice.accountAddress,
       amount: ALICE_INITIAL_BALANCE,
     });
-    console.log("Alice's fund transaction: ", aliceFundTxn);
   
-    const bobFundTxn = await client.fundAccount({
+    await aptos.fundAccount({
       accountAddress: bob.accountAddress,
       amount: BOB_INITIAL_BALANCE,
     });
-    console.log("Bob's fund transaction: ", bobFundTxn);
+    console.log("Alice and Bob's accounts have been funded!")
   
     // Look up the newly funded account's balances
     console.log("\n=== Balances ===\n");
-    let aliceAccountBalance = await client.getAccountResource({ accountAddress: alice.accountAddress, resourceType: COIN_STORE });
+    let aliceAccountBalance = await aptos.getAccountResource({ accountAddress: alice.accountAddress, resourceType: COIN_STORE });
     let aliceBalance = Number(aliceAccountBalance.coin.value);
     console.log(`Alice's balance is: ${aliceBalance}`);
 
-    let bobAccountBalance = await client.getAccountResource({ accountAddress: bob.accountAddress, resourceType: COIN_STORE });
+    let bobAccountBalance = await aptos.getAccountResource({ accountAddress: bob.accountAddress, resourceType: COIN_STORE });
     let bobBalance = Number(bobAccountBalance.coin.value);
     console.log(`Bob's balance is: ${bobBalance}`);
   
     // Send a transaction from Alice's account to Bob's account
-    const txn = await client.transaction.build.simple({
+    const txn = await aptos.transaction.build.simple({
       sender: alice.accountAddress,
       data: {
         // All transactions on Aptos are implemented via smart contracts.
-        function: "0x1::coin::transfer",
-        typeArguments: [parseTypeTag("0x1::aptos_coin::AptosCoin")],
+        function: "0x1::aptos_account::transfer",
         functionArguments: [AccountAddress.from(bob.accountAddress), new U64(100)],
       },
     });
   
     console.log("\n=== Transfer transaction ===\n");
-    let committedTxn = await client.signAndSubmitTransaction({ signer: alice, transaction: txn });
-    await client.waitForTransaction({ transactionHash: committedTxn.hash });
-  
+    let committedTxn = await aptos.signAndSubmitTransaction({ signer: alice, transaction: txn });
+    const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTxn.hash });
+    console.log("Transaction hash:", executedTransaction.hash)
+
     console.log("\n=== Balances after transfer ===\n");
-    let newAliceBalance = await balance(client, "Alice", alice.accountAddress);
-    let newBobBalance = await balance(client, "Bob", bob.accountAddress);
+    const newAliceAccountBalance = await aptos.getAccountResource({ accountAddress: alice.accountAddress, resourceType: COIN_STORE });
+    const newAliceBalance = Number(newAliceAccountBalance.coin.value);
+    console.log(`Alice's balance is: ${newAliceBalance}`);
+
+    const newBobAccountBalance = await aptos.getAccountResource({ accountAddress: bob.accountAddress, resourceType: COIN_STORE });
+    const newBobBalance = Number(newBobAccountBalance.coin.value);
+    console.log(`Bob's balance is: ${newBobBalance}`);
   
     // Bob should have the transfer amount
     if (newBobBalance !== TRANSFER_AMOUNT + BOB_INITIAL_BALANCE)
