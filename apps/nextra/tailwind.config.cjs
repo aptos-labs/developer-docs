@@ -59,7 +59,7 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
     text: {
       primary: { base: "general-black", dark: "general-white" },
       secondary: { base: oklch(90, 0, 0), dark: oklch(90, 0, 0) },
-      muted: { base: oklch(24, 0.02, 219), dark: oklch(66, 0.02, 219) },
+      muted: { base: oklch(35, 0.02, 219), dark: oklch(66, 0.02, 219) },
       link: {
         DEFAULT: { base: "brand-blue", dark: "brand-blue" },
         hover: { base: "brand-lightBlue", dark: "brand-lightBlue" },
@@ -68,10 +68,10 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
       success: { base: "spectral-green-800", dark: "spectral-green-800" },
       error: { base: "spectral-red-800", dark: "spectral-red-800" },
       warning: { base: "spectral-orange-800", dark: "spectral-orange-800" },
-      disabled: { base: "general-black/20", dark: "general-white/20" },
+      disabled: { base: "general-white/20" },
     },
     background: {
-      primary: { base: "general-white", dark: oklch(18, 0.02, 221) },
+      primary: { base: oklch(96, 0.01, 214), dark: oklch(18, 0.02, 221) },
       secondary: { base: oklch(22, 0.03, 216), dark: oklch(22, 0.03, 216) },
       tertiary: { base: oklch(24, 0.03, 214), dark: oklch(24, 0.03, 214) },
       elevated: { base: oklch(21, 0.03, 219), dark: oklch(21, 0.03, 219) },
@@ -96,6 +96,55 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
       primary: { base: "general-black", dark: "general-white" },
       secondary: { base: oklch(10, 0, 0), dark: oklch(90, 0, 0) },
       tertiary: { base: oklch(66, 0.02, 219), dark: oklch(66, 0.02, 219) },
+    },
+    nav: {
+      background: {
+        base: oklch(96, 0.01, 214, 70),
+        dark: oklch(18, 0.02, 221, 70),
+      },
+    },
+    button: {
+      primary: {
+        DEFAULT: {
+          background: { base: "general-white" },
+          text: { base: "general-black" },
+          border: { base: oklch(66, 0.02, 219) },
+        },
+        hovered: {
+          background: { base: "brand-blue" },
+          text: { base: "general-black" },
+        },
+        pressed: {
+          background: { base: "brand-lightBlue" },
+          text: { base: "general-black" },
+        },
+        disabled: {
+          background: { base: oklch(33, 0.02, 220) },
+          text: { base: "general-white/20" },
+        },
+      },
+      secondary: {
+        DEFAULT: {
+          background: { base: "general-transparent" },
+          text: { base: "general-black", dark: "general-white" },
+          border: { base: "general-black", dark: "general-white" },
+        },
+        hovered: {
+          background: { base: "general-transparent" },
+          text: { base: "brand-blue" },
+          border: { base: "brand-blue" },
+        },
+        pressed: {
+          background: { base: "general-transparent" },
+          text: { base: "brand-lightBlue" },
+          border: { base: "brand-lightBlue" },
+        },
+        disabled: {
+          background: { base: oklch(33, 0.02, 220) },
+          text: { base: "general-white/20" },
+          border: { base: oklch(33, 0.02, 220) },
+        },
+      },
     },
   },
 }));

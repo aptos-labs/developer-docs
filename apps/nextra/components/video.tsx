@@ -4,7 +4,7 @@ import "intersection-observer";
 
 export default function Video({ src, caption, ratio }) {
   const [inViewRef, inView] = useInView({ threshold: 1 });
-  const videoRef = useRef();
+  const videoRef = useRef<HTMLVideoElement>();
 
   const setRefs = useCallback(
     (node) => {

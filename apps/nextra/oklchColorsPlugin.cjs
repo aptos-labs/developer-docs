@@ -74,7 +74,7 @@ const createOklchColors = (colorsFn) => {
           ? `oklch(${value.colorValues} / <alpha-value>)`
           : value.oklchValue;
       } else {
-        traverseColors(value, [...path, key]);
+        traverseColors(value, key === "DEFAULT" ? path : [...path, key]);
       }
     });
   }
@@ -125,7 +125,10 @@ const createOklchColors = (colorsFn) => {
           darkCssVars[`--${finalPath}`] = darkColor;
         }
       } else {
-        traverseSemanticColors(value, [...path, key]);
+        traverseSemanticColors(
+          value,
+          key === "DEFAULT" ? path : [...path, key],
+        );
       }
     });
   }
