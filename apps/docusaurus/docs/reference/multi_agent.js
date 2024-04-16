@@ -13,7 +13,7 @@ const example = async () => {
     console.log("This example will create two accounts (Alice and Bob) and send a transaction transfering APT to Bob's account.");
 
     // 0. Setup the client and test accounts
-    const config = new AptosConfig({ network: Network.TESTNET });
+    const config = new AptosConfig({ network: Network.DEVNET });
     const aptos = new Aptos(config);
 
     let alice = Account.generate();
@@ -36,9 +36,9 @@ const example = async () => {
     });
     await aptos.fundAccount({
         accountAddress: carol.accountAddress,
-        amount: 100,
+        amount: 100_000_000,
     });
-    console.log("Done funding accounts.")
+    console.log("Done funding Alice, Bob, and Carol's accounts.")
 
     // 1. Build
     console.log("\n=== 1. Building the transaction ===\n");
@@ -46,9 +46,9 @@ const example = async () => {
         sender: alice.accountAddress,
         secondarySignerAddresses: [bob.accountAddress],
         data: {
-            // All transactions on Aptos are implemented via smart contracts.
-            function: "0x1::aptos_account::transfer",
-            functionArguments: [carol.accountAddress, 100],
+            // REPLACE WITH YOUR MULTI-AGENT FUNCTION HERE
+            function: "<REPLACE WITH YOUR MULTI AGENT MOVE ENTRY FUNCTION>",
+            functionArguments: [],
         },
     });
     console.log("Transaction:", transaction)
