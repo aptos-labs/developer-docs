@@ -20,7 +20,21 @@ body {
 
 /* Styles to apply when the current page is the landing page */
 :root *:has(.landing-page) {
+  /* Style document background */
   background-color: var(--background-primary);
+
+  /* Style nav bar */
+  .nextra-nav-container-blur {
+    background-color: var(--nav-background);
+  }
+
+  /* Style footer */
+  footer {
+    background-color: var(--background-primary);
+    hr {
+      border-color: var(--border-divider);
+    }
+  }
 }
 
 .home-content p {

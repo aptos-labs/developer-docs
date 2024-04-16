@@ -357,7 +357,7 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
       })}
       <Tooltip label="Select Network">
         <Select
-          placeholder="Select Network"
+          aria-placeholder="Select Network"
           className="rounded-lg px-1 py-1"
           {...register("network")}
         >

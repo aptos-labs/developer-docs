@@ -16,6 +16,23 @@ export const i18nConfig = Object.freeze({
     searchEmptyText: "No results found.",
     searchErrorText: "Failed to load search index.",
     lastUpdatedOn: "Last updated on",
+
+    // Landing Page
+    headline: "Build the Future of Web3 on Aptos",
+    subHeading:
+      "Everything you need to build the best-in-class Web3 developer experience.",
+    quickStartBtnLabel: "Quick Start",
+    learnBtnLabel: "Learn",
+    moveSectionHeadline:
+      "Craft safe and high-performance smart contracts with Move",
+    moveExamplesHeadline: "Get started with these Move examples",
+    coinsExampleLabel: "Coins",
+    coinsExampleDescription: "Simple, type-safe, and fungible assets",
+    objectsExampleLabel: "Objects",
+    objectsExampleDescription: "Composable containers for resources",
+    fungibleTokensExampleLabel: "Fungible Tokens",
+    fungibleTokensExampleDescription:
+      "Highly expressive, fungible, digital assets",
   },
 });
 

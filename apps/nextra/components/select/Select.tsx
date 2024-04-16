@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 
 export interface OptionProps {
   children: JSX.Element | string;
-  selected: boolean;
+  selected?: boolean;
   value: string;
 }
 
@@ -22,21 +22,20 @@ interface GenericSelectProps
  *
  * @example
  * ```tsx
- * <Select placeholder="Network" onChange={selectOnChange}>
+ * <Select aria-placeholder="Network" onChange={selectOnChange}>
  *  <Option value="Mainnet">Mainnet</Option>
  *  <Option value="Testnet">Testnet</Option>
  *  <Option value="Devnet">Devnet</Option>
  * </Select>
  * ```
  */
-export const Select = forwardRef<HTMLSelectElement, GenericSelectProps>(
+const SelectRoot = forwardRef<HTMLSelectElement, GenericSelectProps>(
   ({ children, defaultValue, ...props }, ref) => (
     <select defaultValue={defaultValue} ref={ref} {...props}>
       {children}
     </select>
   ),
 );
+SelectRoot.displayName = "Select";
 
-Select.Option = Option;
-
-export default Select;
+export const Select = Object.assign(SelectRoot, { Option });
