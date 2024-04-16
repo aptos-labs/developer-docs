@@ -2,18 +2,18 @@
  * This example shows how to use the Aptos SDK to send a transaction.
  */
 
-const {
+import {
     Account,
     Aptos,
     AptosConfig,
     Network,
-} = require("@aptos-labs/ts-sdk");
+} from "@aptos-labs/ts-sdk";
 
-const example = async () => {
+async function example() {
     console.log("This example will create two accounts (Alice and Bob) and send a transaction transfering APT to Bob's account.");
 
     // 0. Setup the client and test accounts
-    const config = new AptosConfig({ network: Network.DEVNET });
+    const config = new AptosConfig({ network: Network.TESTNET });
     const aptos = new Aptos(config);
 
     let alice = Account.generate();
