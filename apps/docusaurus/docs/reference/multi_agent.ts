@@ -2,14 +2,14 @@
  * This example shows how to use the Aptos SDK to send a transaction.
  */
 
-const {
+import {
     Account,
     Aptos,
     AptosConfig,
     Network,
-} = require("@aptos-labs/ts-sdk");
+} from "@aptos-labs/ts-sdk";
 
-const example = async () => {
+async function example() {
     console.log("This example will create two accounts (Alice and Bob) and send a transaction transfering APT to Bob's account.");
 
     // 0. Setup the client and test accounts
@@ -47,7 +47,7 @@ const example = async () => {
         secondarySignerAddresses: [bob.accountAddress],
         data: {
             // REPLACE WITH YOUR MULTI-AGENT FUNCTION HERE
-            function: "<REPLACE WITH YOUR MULTI AGENT MOVE ENTRY FUNCTION>",
+            function: "<REPLACE WITH YOUR MULTI AGENT MOVE ENTRY FUNCTION> (Syntax {address}::{module}::{function})",
             functionArguments: [],
         },
     });
