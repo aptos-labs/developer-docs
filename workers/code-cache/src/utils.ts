@@ -26,28 +26,17 @@ export async function getSha256Digest(message: string) {
 }
 
 /**
- * Check API Key Hash
+ * Check API Key
  *
- * Remove later lol, this doesn't solve the problem
- *
- * User should submit the SHA256(API_KEY) in requests as a hex string
- * Check to see if the correct API keys is set
+ * Check to see if the correct API key is set
  */
-export async function checkApiKeyHash(request: IttyRequest, env: Env) {
-  if (!request.query) {
-    throw new Error("No query parameters set");
+export function checkApiKey(request: WorkersRequest, env: Env) {
+  let apiKey = request.headers.get("x-api-key");
+  
+  if (!apiKey || apiKey !== env.API_KEY) {
+    throw new Error("Incorrect API Key set in request headers [x-api-key]");
   }
-  if (!request.query["apiKeyHash"]) {
-    throw new Error("No API Key Hash set");
-  }
-
-  const apiKeyHash = request.query["apiKeyHash"];
-  const expectedApiKeyHash = await getSha256Digest(env.API_TOKEN);
-
-  if (apiKeyHash !== expectedApiKeyHash) {
-    throw new Error("Incorrect API Key Hash set");
-  }
-
+  
   return;
 }
 
@@ -89,11 +78,11 @@ export function setCORSHeaders(request: WorkersRequest, env: Env) {
   let headers = new Headers();
 
   // Define allowed origins based on the environment
-  const allowedOrigins = ["https://aptos.dev"];
-  console.log(env.ENVIRONMENT);
-  if (env.ENVIRONMENT === "dev") {
-    allowedOrigins.push("http://localhost");
-  }
+  const allowedOrigins = [
+    "*.aptos.dev",
+    "*.vercel.app",
+    "http://localhost",
+  ];
 
   // Check if the origin is allowed
   const isAllowedOrigin = allowedOrigins.some((allowedOrigin) => {
@@ -108,8 +97,6 @@ export function setCORSHeaders(request: WorkersRequest, env: Env) {
     );
     headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
     headers.set("Access-Control-Allow-Credentials", "true");
-
-    return headers;
   } else {
     throw new Error("Error: Invalid origin");
   }
