@@ -12,11 +12,11 @@ The Move Prover is invoked via the [Aptos CLI](../../tools/aptos-cli/use-cli/ind
 Once the package exists, call the Move Prover from the directory to be tested or by supplying its path to the `--package-dir` argument:
 
 - Prove the sources of the package in the current directory:
-  ```shell
+  ```bash filename="Terminal"
   aptos move prove
   ```
 - Prove the sources of the package in a specific directlry:
-  ```shell
+  ```bash filename="Terminal"
   aptos move prove --package-dir <path>
   ```
 See example output and other available options in the [Proving Move](../../tools/aptos-cli/use-cli/working-with-move-contracts.md#6-optional-formally-verifying-move-scripts) section of Use Aptos CLI.
@@ -26,7 +26,7 @@ See example output and other available options in the [Proving Move](../../tools
 By default, the `aptos move prove` command verifies all files of a package. During iterative development of larger packages, it is often more effective to focus verification on particular files with the
 `-f` (`--filter`) option, like so:
 
-```shell
+```bash filename="Terminal"
 aptos move prove -f coin
 ```
 
@@ -40,7 +40,7 @@ In general, if the string provided to the `-f` option is contained somewhere in 
 
 The Move Prover has a number of options (such as the filter option above) that you pass with an invocation of: `aptos move prove <options>`. The most commonly used option is the `-t` (`--trace`) option that causes the Move Prover to produce richer diagnosis when it encounters errors:
 
-```shell script
+```bash filename="Terminal"
 aptos move prove -f coin -t
 ```
 
@@ -93,13 +93,13 @@ When the Move Prover finds a verification error, it prints diagnosis to standard
 
 ```move
 module 0x42::m {
-  struct Counter has key { 
+  struct Counter has key {
     value: u8,
   }
 
-  public fun increment(a: address) acquires Counter { 
+  public fun increment(a: address) acquires Counter {
     let r = borrow_global_mut<Counter>(a);
-    r.value = r.value + 1; 
+    r.value = r.value + 1;
   }
 
   spec increment {
@@ -115,7 +115,7 @@ We will modify this example as we demonstrate different types of diagnoses.
 
 If we run the Move Prover on the example immediately above, we get the following error:
 
-```shell
+```bash filename="Terminal"
 error: abort not covered by any of the `aborts_if` clauses
    ┌─ m.move:11:5
    │
@@ -169,7 +169,7 @@ module 0x42::m {
 
 With this, the Move Prover will produce the following diagnosis:
 
-```shell
+```bash filename="Terminal"
 error: post-condition does not hold
    ┌─ m.move:14:9
    │

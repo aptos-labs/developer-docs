@@ -84,7 +84,7 @@ export default function App() {
 
 Running scripts with the CLI can be run with the command
 
-```shell
+```bash filename="Terminal"
 aptos move run-script
 ```
 
@@ -94,12 +94,12 @@ script in-place similar to the compile step.
 If you already have a compiled script, you can run it
 with `--compiled-script-path` like the example below:
 
-```shell
+```bash filename="Terminal"
 aptos move run-script --compiled-script-path /opt/git/developer-docs/apps/docusaurus/static/move-examples/scripts/transfer_half/script.mv
 ```
 
 Similarly, if it's not compiled, just use `--script-path`
 
-```shell
+```bash filename="Terminal"
 aptos move run-script --script-path ./sources/transfer_half.move
 ```

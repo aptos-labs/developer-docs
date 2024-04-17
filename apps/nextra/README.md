@@ -9,7 +9,7 @@ the local dev server:
 
 1. From the root of the `developer-docs` directory, run:
 
-```sh
+```bash filename="Terminal"
 pnpm i && pnpm build
 ```
 
@@ -17,13 +17,13 @@ pnpm i && pnpm build
 
 Create a `.env` file in the root of `nextra` with the following
 
-```sh
+```bash filename="Terminal"
 NEXT_PUBLIC_ORIGIN="http://localhost:3030"
 ```
 
 3. Then run
 
-```bash
+```bash filename="Terminal"
 pnpm dev
 ```
 
@@ -33,7 +33,7 @@ And visit `localhost:3030` to preview your changes.
 
 1. From the root of the `developer-docs` directory run:
 
-```sh
+```bash filename="Terminal"
 npx turbo run build --filter={apps/nextra}...
 ```
 
@@ -41,7 +41,7 @@ Note: This guarantees that all dependencies are built properly, in addition to `
 
 If there are no changes to other packages, you can just do
 
-```sh
+```bash filename="Terminal"
 pnpm build
 ```
 
@@ -51,7 +51,7 @@ from inside the `nextra` directory.
 
 3. Then run
 
-```sh
+```bash filename="Terminal"
 pnpm start
 ```
 
