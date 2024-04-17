@@ -3,11 +3,7 @@ export default {
     title: "Introduction",
   },
   book: {
-    title: "Move Book",
-    theme: {
-      toc: false,
-      layout: "full",
-    },
+    title: "Move Book"
   },
   "move-on-aptos": {
     title: "Move on Aptos",

@@ -58,7 +58,7 @@ script {
 
 ### Typing with references
 
-When comparing [references](./references.md), the type of the reference (immutable or mutable) does
+When comparing [references](./references.mdx), the type of the reference (immutable or mutable) does
 not matter. This means that you can compare an immutable `&` reference with a mutable one `&mut` of
 the same underlying type.
 
@@ -109,11 +109,11 @@ script {
 ## Restrictions
 
 Both `==` and `!=` consume the value when comparing them. As a result, the type system enforces that
-the type must have [`drop`](./abilities.md). Recall that without the
-[`drop` ability](./abilities.md), ownership must be transferred by the end of the function, and such
+the type must have [`drop`](./abilities.mdx). Recall that without the
+[`drop` ability](./abilities.mdx), ownership must be transferred by the end of the function, and such
 values can only be explicitly destroyed within their declaring module. If these were used directly
 with either equality `==` or non-equality `!=`, the value would be destroyed which would break
-[`drop` ability](./abilities.md) safety guarantees!
+[`drop` ability](./abilities.mdx) safety guarantees!
 
 ```move
 module 0x42::example {
@@ -126,7 +126,7 @@ module 0x42::example {
 ```
 
 But, a programmer can _always_ borrow the value first instead of directly comparing the value, and
-reference types have the [`drop` ability](./abilities.md). For example
+reference types have the [`drop` ability](./abilities.mdx). For example
 
 ```move
 module 0x42::example {
@@ -140,7 +140,7 @@ module 0x42::example {
 
 ## Avoid Extra Copies
 
-While a programmer _can_ compare any value whose type has [`drop`](./abilities.md), a programmer
+While a programmer _can_ compare any value whose type has [`drop`](./abilities.mdx), a programmer
 should often compare by reference to avoid expensive copies.
 
 ```move
@@ -161,7 +161,7 @@ script {
 }
 ```
 
-This code is perfectly acceptable (assuming `Foo` has [`drop`](./abilities.md)), just not efficient.
+This code is perfectly acceptable (assuming `Foo` has [`drop`](./abilities.mdx)), just not efficient.
 The highlighted copies can be removed and replaced with borrows
 
 ```move

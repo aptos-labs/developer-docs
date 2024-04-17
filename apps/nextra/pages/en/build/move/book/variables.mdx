@@ -176,8 +176,8 @@ script {
 ```
 
 In a rarer case, the type system might not be able to infer a type for divergent code (where all the
-following code is unreachable). Both `return` and [`abort`](./abort-and-assert.md) are expressions
-and can have any type. A [`loop`](./loops.md) has type `()` if it has a `break`, but if there is no
+following code is unreachable). Both `return` and [`abort`](./abort-and-assert.mdx) are expressions
+and can have any type. A [`loop`](./loops.mdx) has type `()` if it has a `break`, but if there is no
 break out of the `loop`, it could have any type. If these types cannot be inferred, a type
 annotation is required. For example, this code:
 
@@ -617,7 +617,7 @@ script {
 }
 ```
 
-For more details, see [Move references](./references.md).
+For more details, see [Move references](./references.mdx).
 
 ## Scopes
 
@@ -723,9 +723,9 @@ script {
   }
 ```
 
-But! If the expression contains a resource (a value without the `drop` [ability](./abilities.md)),
+But! If the expression contains a resource (a value without the `drop` [ability](./abilities.mdx)),
 you will get an error. This is because Move's type system guarantees that any value that is dropped
-has the `drop` [ability](./abilities.md). (Ownership must be transferred or the value must be
+has the `drop` [ability](./abilities.mdx). (Ownership must be transferred or the value must be
 explicitly destroyed within its declaring module.)
 
 ```move
@@ -817,7 +817,7 @@ script {
 
 After a local is shadowed, the value stored in the local still exists, but will no longer be
 accessible. This is important to keep in mind with values of types without the
-[`drop` ability](./abilities.md), as ownership of the value must be transferred by the end of the
+[`drop` ability](./abilities.mdx), as ownership of the value must be transferred by the end of the
 function.
 
 ```move
@@ -888,7 +888,7 @@ script {
 }
 ```
 
-Any value with the `copy` [ability](./abilities.md) can be copied in this way.
+Any value with the `copy` [ability](./abilities.mdx) can be copied in this way.
 
 `move` takes the value out of the local variable _without_ copying the data. After a `move` occurs,
 the local variable is unavailable.
