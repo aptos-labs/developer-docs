@@ -1,6 +1,6 @@
 import type { DrizzleD1Database } from "drizzle-orm/d1";
 import { drizzle } from "drizzle-orm/d1";
-import { eq, inArray } from "drizzle-orm/expressions";
+import { eq, inArray, like, and } from "drizzle-orm/expressions";
 import type { Request as IttyRequest, Route } from "itty-router";
 import { Router } from "itty-router";
 import { codecache } from "./schema";
@@ -69,6 +69,50 @@ router.get("/codecache", middleware, async (req: WorkersRequest, env: Env) => {
     });
   }
 });
+
+/**
+ * GET /codecache/repos?github_repo={}
+ *
+ * Gets all of the permalinks corresponding to a repo
+ * snippet information
+ *
+ * This is primarily to determine if certain permalinks
+ * are out of date
+ */
+router.get(
+  "/codecache/repos",
+  middleware,
+  async (req: WorkersRequest, env: Env) => {
+    try {
+      if (req.query) {
+        const github_repo = req.query["github_repo"];
+        const response = await req.db
+          .select()
+          .from(codecache)
+          .where(
+            and(
+              like(codecache.github_permalink, `%${github_repo}%`),
+              eq(codecache.used_in_latest_docs, true),
+            ),
+          )
+          .all();
+        return wrap({
+          data: unifiedReturn(response),
+          status_code: 200,
+        });
+      }
+      const query = req.db.select().from(codecache);
+      const response = await query.all();
+      return wrap({ data: unifiedReturn(response), status_code: 200 });
+    } catch (err) {
+      return wrap({
+        data: null,
+        status_code: 400,
+        message: `${(err as any).message}`,
+      });
+    }
+  },
+);
 
 /**
  * POST /codecache/code

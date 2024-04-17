@@ -29,6 +29,7 @@ describe("Github Functions", () => {
       startLine: "5",
       endLine: undefined,
       filePath: "codecov.yml",
+      filename: "codecov.yml",
     };
     expect(actualResult).toMatchObject(expectedResult);
 
@@ -43,6 +44,7 @@ describe("Github Functions", () => {
       startLine: "5",
       endLine: "8",
       filePath: "codecov.yml",
+      filename: "codecov.yml",
     };
     expect(actualResult).toMatchObject(expectedResult);
   });
@@ -50,11 +52,8 @@ describe("Github Functions", () => {
   it("Fetch code snippet from Github", async () => {
     let codesnippet = await fetchCodeSnippetFromGithub(singleLinePermalink);
     let expectedResult: FetchCodeSnippetFromGithubReturnType = {
-      codeSnippet: "coverage:",
-      fileName: "codecov.yml",
-      fileExtension: "yml",
-      startLine: "5",
-      endLine: undefined,
+      code: "coverage:",
+      github_permalink: singleLinePermalink,
     };
     expect(codesnippet).toMatchObject(expectedResult);
   });
