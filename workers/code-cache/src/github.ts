@@ -162,6 +162,8 @@ export type FetchCodeSnippetFromGithubReturnType = Awaited<
 export type DBData = {
   github_permalink: string;
   code: string | null;
+  used_in_latest_docs: boolean | null;
+  updated_at: string;
 }[];
 
 export function unifiedReturn(dbData: DBData) {
@@ -181,6 +183,8 @@ export function unifiedReturn(dbData: DBData) {
       start_line,
       code: data.code,
       github_permalink: data.github_permalink,
+      used_in_latest_docs: data.used_in_latest_docs,
+      updated_at: data.updated_at,
     };
   });
 
