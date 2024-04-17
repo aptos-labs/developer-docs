@@ -1,0 +1,9 @@
+---
+title: "Compiling and Testing"
+---
+
+# Compiling and Testing
+
+Move Contracts can be compiled, tested, and formally verified using the Aptos CLI.
+
+To learn how to install and use the Aptos CLI with Move Contracts, go to the [Working With Move Contracts](../../tools/aptos-cli/use-cli/working-with-move-contracts.md) page.
