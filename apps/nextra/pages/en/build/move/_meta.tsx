@@ -1,5 +1,5 @@
 export default {
-  learn: {
+  index: {
     title: "Introduction",
   },
   book: {
