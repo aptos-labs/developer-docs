@@ -1,0 +1,23 @@
+---
+title: "Indexer GraphQL API"
+---
+
+import { GraphQLEditor } from '@components/index'
+
+# Indexer GraphQL API
+
+<GraphQLEditor
+query={`query MyQuery {
+  current_coin_balances(
+    where: { 
+      owner_address: {
+        _eq: "0x239589c5cfb0cc96f76fa59165a7cbb6ef99ad50d0acc34cf3a2585d861511be"
+      }
+    }
+  ) {
+    owner_address
+    amount
+  }
+}
+`}
+/>

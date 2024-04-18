@@ -1,11 +1,11 @@
 export interface PrimaryOutlineButtonProps {
-  href: string
-  children: React.ReactNode
+  href: string;
+  children: React.ReactNode;
 }
 
 export function PrimaryOutlineButton({
   children,
-  href
+  href,
 }: PrimaryOutlineButtonProps) {
   return (
     <a
@@ -18,5 +18,5 @@ export function PrimaryOutlineButton({
     >
       {children}
     </a>
-  )
+  );
 }

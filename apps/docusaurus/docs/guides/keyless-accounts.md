@@ -24,8 +24,6 @@ Use of the **_Aptos Keyless Integration Guide_** will allow for the integration 
 To provide feedback, get support, or be a design partner as we enhance Aptos Keyless, join us here: https://t.me/+h5CN-W35yUFiYzkx
 :::
 
-_Note: This guide is oriented toward non-wallet applications. If you are a wallet developer and have interest in using Keyless accounts, please reach out to us directly._
-
 ## Terminology
 
 - **OpenID Connect (OIDC)**: is the identity authentication protocol used to enable federated identity verification. This protocol is what is used when a user goes through the “Sign in with Google” flow for example.
