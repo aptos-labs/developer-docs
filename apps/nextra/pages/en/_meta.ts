@@ -20,8 +20,8 @@ export default {
       quick_start: {
         title: "Quick Start",
       },
-      smart_contracts: {
-        title: "Smart Contracts",
+      move: {
+        title: "Move",
       },
       apis: {
         title: "APIs",

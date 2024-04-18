@@ -85,8 +85,8 @@ First, the pairing is defined so that $e(g_1, g_2) = r$.
 This way, the pairing satisfies _non-degeneracy_.
 <br />
 
-Second, given $(u,v)\in \Gr\_1 \times \Gr\_2$, an algorithm could spend 
-exponential time $O(2^\lambda)$ to compute the discrete logs $x = \log_{g_1}(u)$ 
+Second, given $(u,v)\in \Gr\_1 \times \Gr\_2$, an algorithm could spend
+exponential time $O(2^\lambda)$ to compute the discrete logs $x = \log_{g_1}(u)$
 and $y = \log_{g_2}{(v)}$ and return $e(u, v) = e(g_1^x, g_2^y) = r^{xy}$.
 This way, the pairing satisfies _bilinearity_ because:
 
@@ -123,12 +123,12 @@ And this extra effort is what made today's pairing-based cryptography possible[^
 Funnily, Weil's time in jail was so productive that he began wondering if he should spend a few months there every year.
 Even better, Weil contemplated if he should **recommend to the relevant authorities that every mathematician spend some amount of time in jail.**
 Weil writes:
- 
+
  > I'm beginning to think that nothing is more conducive to the abstract sciences than prison.
  >
  > [...]
  >
- > My mathematics work is proceeding beyond my wildest hopes, and I am even a bit worried - if it's only in prison that I work so well, will I have to arrange to spend two or three months locked up every year? 
+ > My mathematics work is proceeding beyond my wildest hopes, and I am even a bit worried - if it's only in prison that I work so well, will I have to arrange to spend two or three months locked up every year?
  >
  > In the meantime, I am contemplating writing a report to the proper authorities, as follows: _"To the Director of Scientific Research: Having recently been in a position to discover through personal experience the considerable advantages afforded to pure and disinterested research by a stay in the establishments of the Penitentiary System, I take the liberty of, etc. etc."_
 
@@ -136,7 +136,7 @@ You can read all of this and more in his fascinating autobiography, written from
 
 ### From breaking cryptography to building cryptography
 
-Weil's work was the foundation. 
+Weil's work was the foundation.
 But three more developments were needed for pairing-based cryptography to rise.
 
 #### First development: Miller's algorithm
@@ -170,7 +170,7 @@ Since the target group was a subgroup of a finite field $\mathbb{F}_q^{k}$, this
 </Callout>
 
 #### Third development: Joux's tripartite Diffie-Hellman
-So far, pairings only seemed useful for **cryptanalysis.** 
+So far, pairings only seemed useful for **cryptanalysis.**
 No one knew how to use them for building (instead of breaking) cryptography.
 
 This changed in 2000, when **Joux**[^Joux00] used pairings to implement a 1-round key-exchange protocol between three parties, or [tripartite Diffie-Hellman](#tripartite-diffie-hellman).
@@ -224,7 +224,7 @@ e(u, v\cdot w) = e(u, v)\cdot e(u, w)
 Then, we have:
 ```math
 \begin{aligned}
-e(u, v\cdot w) 
+e(u, v\cdot w)
     &= e(u, g_2^y \cdot g_2^z)\\
     &= e(u, g_2^{y + z})\\
     &= e(u, g_2)^{y + z}\\
@@ -250,12 +250,12 @@ e(u, v / w) = \frac{e(u, v)}{e(u, w)}
 We have three parties Alice, Bob and Charles with secret keys $a, b$, and $c$ (respectively).
 They send each other their public keys $g^a, g^b, g^c$ and agree on a shared secret key $k = e(g, g)^{abc}$.[^dhe]
 
-How? 
+How?
 
 Consider Alice's point of view.
-She gets $g^b$ and $g^c$ from Bob and Charles. 
-First, she can use her secret $a$ to compute $g^{ab}$. 
-Second, she can use the pairing to compute $e(g^{ab}, g^c) = e(g, g)^{abc} = k$. 
+She gets $g^b$ and $g^c$ from Bob and Charles.
+First, she can use her secret $a$ to compute $g^{ab}$.
+Second, she can use the pairing to compute $e(g^{ab}, g^c) = e(g, g)^{abc} = k$.
 
 By symmetry, all other players can do the same and agree on the same $k$.
 
@@ -289,11 +289,11 @@ See the BLS paper[^BLS01] for how to prove that no attacker can forge BLS signat
 
 BLS signatures are quite amazing:
 
-1. They are one of the **simplest** schemes to implement, given access to an elliptic-curve library. 
-1. One can **aggregate** many signatures from different public keys on the same message $m$ into a single _multi-signature_ that continues to verify using just 2 pairings. 
+1. They are one of the **simplest** schemes to implement, given access to an elliptic-curve library.
+1. One can **aggregate** many signatures from different public keys on the same message $m$ into a single _multi-signature_ that continues to verify using just 2 pairings.
 1. One can even **aggregate** such signatures across different messages into a single _aggregate signature_.
-    + However, such aggregate signatures take $n+1$ pairings to verify. 
-1. One can easily and efficiently[^TCZplus20] build a **threshold** BLS signature scheme, where any subset of $\ge t$ out of $n$ signers can collaborate to sign a message $m$ but no less than $t$ can ever produce a valid signature. 
+    + However, such aggregate signatures take $n+1$ pairings to verify.
+1. One can easily and efficiently[^TCZplus20] build a **threshold** BLS signature scheme, where any subset of $\ge t$ out of $n$ signers can collaborate to sign a message $m$ but no less than $t$ can ever produce a valid signature.
     + Even better, BLS threshold signatures are **deterministic** and give rise to _threshold verifiable random functions (VRFs)_ which are useful for generating randomness on chain.
 1. One can define very-efficient **blind**-variants of BLS signatures, where the signer can sign a message $m$ without learning the message $m$.
 1. BLS signatures are very **efficient** in practice.
@@ -334,7 +334,7 @@ To encrypt an $n$-bit message $m$ to a user with email address $id$, one compute
 ```
 
 To decrypt, the user with email address $id$ must first obtain their **decryption secret key** $\dsk_{id}$ from the PKG.
-For this, we assume the PKG has a way of authenticating the user, before handing them their secret key. 
+For this, we assume the PKG has a way of authenticating the user, before handing them their secret key.
 For example this could be done via email.
 
 The PKG computes the user's decryption secret key as:
@@ -373,7 +373,7 @@ How come?
 Well, I never really needed to know.
 And that's the beauty of pairings: one can use them in a black-box fashion, with zero awareness of their internals.
 
-Still, let's take a small peek inside this black box. 
+Still, let's take a small peek inside this black box.
 Let us consider the popular pairing-friendly _BLS12-381_ curve[^Edgi22], from the family of BLS curves characterized by Barreto, Lynn and Scott[^BLS02e].
 
 <Callout type="warning">
@@ -423,7 +423,7 @@ These microbenchmarks were run on a 10-core 2021 Apple M1 Max using `cargo bench
 
 #### Pairing computation times
 
-```sh filename="Terminal" {3-6}
+```bash filename="Terminal" filename="Terminal" {3-6}
 alinush@MacBook [~/repos/blstrs] (master %) $ cargo +nightly bench -- pairing_
 running 4 tests
 test bls12_381::bench_pairing_final_exponentiation     ... bench:     276,809 ns/iter (+/- 1,911)
@@ -449,11 +449,11 @@ The $\Gr_T$ microbenchmarks were done by slightly-modifying the `blstrs` benchma
 </Callout>
 
  - $\Gr_1$ exponentiations are the fastest
-    - 72 microseconds 
+    - 72 microseconds
  - $\Gr_2$ exponentiations are around 2$\times$ slower
     - 136 microseconds
  - $\Gr_T$ exponentiations are around 3.5$\times$ slower than in $\Gr_2$
-    - 500 microseconds 
+    - 500 microseconds
 
 <Callout type="info">
 **Note:** These benchmarks pick the exponentiated base randomly and do **not** perform any precomputation on it, which would speed up these times by $2\times$-$4\times$.
@@ -467,7 +467,7 @@ Specifically, many libraries allow you to compute a product $\prod_{0 < i < k} \
 
 For example, [blstrs](https://github.com/filecoin-project/blstrs) seems to be incredibly fast in this regard:
 
-```sh filename="Terminal" {2-5}
+```bash filename="Terminal" filename="Terminal" {2-5}
 running 4 tests
 test bls12_381::bench_g1_multi_exp                     ... bench:     760,554 ns/iter (+/- 47,355)
 test bls12_381::bench_g1_multi_exp_naive               ... bench:  18,575,716 ns/iter (+/- 42,688)
@@ -520,7 +520,7 @@ When compared to an elliptic curve that does not admit pairings, pairing-friendl
 
 For example, the popular prime-order elliptic curve group [Ristretto255](https://ristretto.group/) offers:
 
-```sh filename="Terminal"
+```bash filename="Terminal" filename="Terminal"
 ristretto255/basepoint_mul
                         time:   [10.259 µs 10.263 µs 10.267 µs]
 
@@ -561,7 +561,7 @@ I would like to thank Dan Boneh for helping me clarify and contextualize the his
 Big thanks to:
 
  - [Lúcás Meier](https://twitter.com/cronokirby), [Pratyush Mishra](https://twitter.com/zkproofs), [Ariel Gabizon](https://twitter.com/rel_zeta_tech) and [Dario Fiore](https://twitter.com/dariofiore0) for their enlightening points on what "succinct" (S) stands for in **S**NARKs[^GW10] and for reminding me that SNARKs with $O(1)$ group elements proof size exist from RSA assumptions[^LM18].
- - [Sergey Vasilyev](https://twitter.com/swasilyev) for pointing out typos in the BLS12-381 elliptic curve definitions. 
+ - [Sergey Vasilyev](https://twitter.com/swasilyev) for pointing out typos in the BLS12-381 elliptic curve definitions.
  - [@BlakeMScurr](https://twitter.com/BlakeMScurr) for pointing out an incorrect reference to Joux's work[^Joux00].
  - [Conrado Guovea](https://twitter.com/conradoplg) for pointing me to Victor Miller's account of how he developed his algorithm for evaluating the Weil pairing (discussed [here](#first-development-millers-algorithm)).
  - [Chris Peikert](https://twitter.com/ChrisPeikert) for pointing out that there are plenty-fast IBE schemes out there that do not rely on pairings[^DLP14e].
