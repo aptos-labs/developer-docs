@@ -131,7 +131,7 @@ A test will be marked as timing out if it exceeds the maximum number of instruct
 
 There are also a number of options that can be passed to the unit testing binary to fine-tune testing and to help debug failing tests. These can be found using the help flag:
 
-```bash
+```bash filename="Terminal"
 $ aptos move test -h
 ```
 
@@ -141,7 +141,7 @@ A simple module using some of the unit testing features is shown in the followin
 
 First create an empty package inside an empty directory:
 
-```bash
+```bash filename="Terminal"
 $ aptos move init --name TestExample
 ```
 
@@ -203,7 +203,7 @@ module 0x1::my_module {
 
 You can then run these tests with the `aptos move test` command:
 
-```bash
+```bash filename="Terminal"
 $ aptos move test
 BUILDING MoveStdlib
 BUILDING TestExample
@@ -220,7 +220,7 @@ Test result: OK. Total tests: 3; passed: 3; failed: 0
 
 This will only run tests whose fully qualified name contains `<str>`. For example if we wanted to only run tests with `"zero_coin"` in their name:
 
-```bash
+```bash filename="Terminal"
 $ aptos move test -f zero_coin
 CACHED MoveStdlib
 BUILDING TestExample
@@ -234,7 +234,7 @@ Test result: OK. Total tests: 2; passed: 2; failed: 0
 
 This will compute code being covered by test cases and generate coverage summary.
 
-```bash
+```bash filename="Terminal"
 $ aptos move test --coverage
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib
@@ -258,6 +258,6 @@ Please use `aptos move coverage -h` for more detailed source or bytecode test co
 
 Then by running `aptos move coverage`, we can get more detailed coverage information. These can be found using the help flag:
 
-```bash
+```bash filename="Terminal"
 $ aptos move coverage -h
 ```

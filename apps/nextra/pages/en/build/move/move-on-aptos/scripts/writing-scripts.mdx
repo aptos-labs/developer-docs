@@ -1,6 +1,4 @@
----
-title: "Writing Move Scripts"
----
+import { FileTree } from "nextra/components";
 
 # How can I write Move Scripts?
 
@@ -14,13 +12,14 @@ The package needs a Move.toml and a sources directory, similar to code modules.
 
 For example, we may have a directory layout like:
 
-```text
-my_project/
-├── Move.toml
-└── sources/
-    └── my_script.move
-
-```
+<FileTree>
+  <FileTree.Folder name="my_project" defaultOpen>
+    <FileTree.File name="Move.toml"/>
+    <FileTree.Folder name="sources" defaultOpen>
+      <FileTree.File name="my_script.move"/>
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
 
 ## Script syntax
 

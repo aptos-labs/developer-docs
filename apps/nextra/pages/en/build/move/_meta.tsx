@@ -3,7 +3,7 @@ export default {
     title: "Introduction",
   },
   book: {
-    title: "Move Book"
+    title: "Move Book",
   },
   "move-on-aptos": {
     title: "Move on Aptos",

@@ -1,4 +1,4 @@
-# Packages
+import { FileTree } from "nextra/components";
 
 Packages allow Move programmers to more easily re-use code and share it
 across projects. The Move package system allows programmers to easily do the following:
@@ -14,15 +14,19 @@ across projects. The Move package system allows programmers to easily do the fol
 A Move package source directory contains a `Move.toml` package manifest
 file along with a set of subdirectories:
 
-```text
-a_move_package
-├── Move.toml      (required)
-├── sources        (required)
-├── examples       (optional, test & dev mode)
-├── scripts        (optional)
-├── doc_templates  (optional)
-└── tests          (optional, test mode)
-```
+<FileTree>
+  <FileTree.Folder name="a_move_package" defaultOpen>
+    <FileTree.File name="Move.toml" />
+    <FileTree.Folder name="sources (required)" defaultOpen>
+      <FileTree.File name="module.move" />
+      <FileTree.File name="*.move" />
+    </FileTree.Folder>
+    <FileTree.Folder name="examples (optional, test & dev mode)" />
+    <FileTree.Folder name="scripts (optional, can also put in sources)" />
+    <FileTree.Folder name="doc_templates (optional)" />
+    <FileTree.Folder name="tests (optional, test mode)" />
+  </FileTree.Folder>
+</FileTree>
 
 The directories marked `required` _must_ be present in order for the directory
 to be considered a Move package and to be compiled. Optional directories can
@@ -48,7 +52,7 @@ The Move package manifest is defined within the `Move.toml` file and has the
 following syntax. Optional fields are marked with `*`, `+` denotes
 one or more elements:
 
-```toml
+```toml filename="Move.toml"
 [package]
 name = <string>                  # e.g., "MoveStdlib"
 version = "<uint>.<uint>.<uint>" # e.g., "0.1.1"
@@ -166,9 +170,9 @@ With these two different declaration methods, there are two ways that
 information about named addresses can flow in the package graph:
 
 - The former ("unassigned named addresses") allows named address values to flow
-  from the importation site to the declaration site.
+from the importation site to the declaration site.
 - The latter ("assigned named addresses") allows named address values to flow
-  from the declaration site upwards in the package graph to usage sites.
+from the declaration site upwards in the package graph to usage sites.
 
 With these two methods for flowing named address information throughout the
 package graph the rules around scoping and renaming become important to
@@ -180,8 +184,8 @@ A named address `N` in a package `P` is in scope if:
 
 1. It declares a named address `N`; or
 2. A package in one of `P`'s transitive dependencies declares the named address
-   `N` and there is a dependency path in the package graph between `P` and the
-   declaring package of `N` with no renaming of `N`.
+`N` and there is a dependency path in the package graph between `P` and the
+declaring package of `N` with no renaming of `N`.
 
 Additionally, every named address in a package is exported. Because of this and
 the above scoping rules each package can be viewed as coming with a set of
@@ -266,30 +270,41 @@ artifacts (source maps, documentation, ABIs) in memory. This `CompiledPackage`
 can be converted to an `OnDiskPackage` and vice versa -- the latter being the data of
 the `CompiledPackage` laid out in the file system in the following format:
 
-```text
-a_move_package
-├── Move.toml
-...
-└── build
-    ├── <dep_pkg_name>
-    │   ├── BuildInfo.yaml
-    │   ├── bytecode_modules
-    │   │   └── *.mv
-    │   ├── source_maps
-    │   │   └── *.mvsm
-    │   ├── bytecode_scripts
-    │   │   └── *.mv
-    │   ├── abis
-    │   │   ├── *.abi
-    │   │   └── <module_name>/*.abi
-    │   └── sources
-    │       └── *.move
-    ...
-    └── <dep_pkg_name>
-        ├── BuildInfo.yaml
-        ...
-        └── sources
-```
+<FileTree>
+  <FileTree.Folder name="a_move_package" defaultOpen>
+    <FileTree.Folder name="..." />
+    <FileTree.Folder name="build" defaultOpen>
+      <FileTree.Folder name="dependency_name" defaultOpen>
+        <FileTree.File name="BuildInfo.yaml" />
+        <FileTree.Folder name="bytecode_modules" defaultOpen>
+          <FileTree.File name="module_name.mv" />
+          <FileTree.File name="*.mv" />
+        </FileTree.Folder>
+        <FileTree.Folder name="source_maps" defaultOpen>
+          <FileTree.File name="module_name.mvsm" />
+          <FileTree.File name="*.mvsm" />
+        </FileTree.Folder>
+        <FileTree.Folder name="bytecode_scripts" defaultOpen>
+          <FileTree.File name="script_name.mv" />
+          <FileTree.File name="*.mv" />
+        </FileTree.Folder>
+        <FileTree.Folder name="abis" defaultOpen>
+          <FileTree.File name="script_name.abi" />
+          <FileTree.File name="*.abi" />
+          <FileTree.Folder name="module_name" defaultOpen>
+            <FileTree.File name="function_name.abi" />
+            <FileTree.File name="*.abi" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+        <FileTree.Folder name="sources" defaultOpen>
+          <FileTree.File name="module_name.move" />
+        </FileTree.Folder>
+      </FileTree.Folder>
+      <FileTree.Folder name="dependency_name2 ..." defaultOpen />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
 
 See the `move-package` crate for more information on these data structures and
 how to use the Move package system as a Rust library.
@@ -308,16 +323,19 @@ Note, both `aptos move prove` and `aptos move test` commands, currently, do not 
 
 We use an example to illustrate the development flow of using this feature. Suppose we want to compile the package `A`. The package layout is:
 
-```text
-./A
-├── Move.toml
-├── sources
-  ├ AModule.move
-```
+<FileTree>
+  <FileTree.Folder name="A" defaultOpen>
+    <FileTree.File name="Move.toml" />
+    <FileTree.Folder name="sources" defaultOpen>
+      <FileTree.File name="AModule.move" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
 
 `A.move` is defined below, depending on the modules `Bar` and `Foo`:
 
-```move
+```move filename="A/AModule.move"
 module A::AModule {
     use B::Bar;
     use C::Foo;
@@ -331,42 +349,62 @@ Suppose the source of `Bar` and `Foo` are not available but the corresponding by
 
 Specify `Move.toml` for `Bar` and `Foo`. Note that named addresses are already instantiated with the actual address in the bytecode. In our example, the actual address for `C` is already bound to `0x3`. As a result, `[addresses]` must be specified `C` as `0x3`, as shown below:
 
-```toml
+```toml filename="workspace/C/Move.toml"
 [package]
 name = "Foo"
 version = "0.0.0"
+
 [addresses]
 C = "0x3"
 ```
 
 Place the bytecode file and the corresponding `Move.toml` file in the same directory with the bytecode in a `build` subdirectory. Note an empty `sources` directory is **required**. For instance, the layout of the folder `B` (for the package `Bar`) and `C` (for the package `Foo`) would resemble:
 
-```text
-./B
-├── Move.toml
-├── sources
-├── build
- ├ Bar.mv
-```
+<FileTree>
+  <FileTree.Folder name="workspace" defaultOpen>
+    <FileTree.Folder name="A">
+      <FileTree.File name="Move.toml" />
+      <FileTree.Folder name="sources" defaultOpen>
+        <FileTree.File name="AModule.move" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+    <FileTree.Folder name="B" defaultOpen>
+      <FileTree.File name="Move.toml" />
+      <FileTree.Folder name="sources">
+      </FileTree.Folder>
+      <FileTree.Folder name="build" defaultOpen>
+        <FileTree.File name="Bar.mv" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+    <FileTree.Folder name="C" defaultOpen>
+      <FileTree.File name="Move.toml" />
+      <FileTree.Folder name="sources">
+      </FileTree.Folder>
+      <FileTree.Folder name="build" defaultOpen>
+        <FileTree.Folder name="Foo" defaultOpen>
+          <FileTree.Folder name="bytecode_modules" defaultOpen>
+            <FileTree.File name="Foo.mv" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
 
-```text
-./C
-├── Move.toml
-├── sources
-├── build
-  ├── Foo
-   ├──bytecode_modules
-     ├ Foo.mv
-```
+<FileTree>
+
+</FileTree>
 
 Specify `[dependencies]` in the `Move.toml` of the target (first) package with the location of the dependent (secondary) packages. For instance, assuming all three package directories are at the same level, `Move.toml` of `A` would resemble:
 
-```toml
+```toml filename="workspace/A/Move.toml"
 [package]
 name = "A"
 version = "0.0.0"
+
 [addresses]
 A = "0x2"
+
 [dependencies]
 Bar = { local = "../B" }
 Foo = { local = "../C" }

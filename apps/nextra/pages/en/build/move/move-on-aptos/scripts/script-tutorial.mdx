@@ -1,6 +1,7 @@
 ---
 title: "Move Scripts Tutorial"
 ---
+import { FileTree } from "nextra/components";
 
 # Move Scripts
 
@@ -85,13 +86,15 @@ Let us run through how to execute a Move script with a step-by-step example usin
 
    This results in the following file structure:
 
-   ```text
-   testing/
-      Move.toml
-      sources/
-         my_script.move
-         my_module.move
-   ```
+ <FileTree>
+   <FileTree.Folder name="testing" defaultOpen>
+     <FileTree.File name="Move.toml"/>
+     <FileTree.Folder name="sources" defaultOpen>
+       <FileTree.File name="my_script.move"/>
+       <FileTree.File name="my_module.move"/>
+     </FileTree.Folder>
+   </FileTree.Folder>
+ </FileTree>
 
 5. Compile the script:
 

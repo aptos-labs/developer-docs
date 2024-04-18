@@ -1,6 +1,4 @@
----
-title: "Gas Profiling"
----
+import { FileTree } from "nextra/components";
 
 # Gas Profiling
 
@@ -15,7 +13,7 @@ The gas profiler can be invoked by appending the `--profile-gas` option to Aptos
 
 Here is an example using the [hello_blockchain package from move examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain). First, `cd` into the package directory.
 
-```bash
+```bash filename="Terminal"
 $ cd aptos-move/move-examples/hello_blockchain
 ```
 
@@ -23,13 +21,13 @@ Then, we can simulate module publishing with the extra option `--profile-gas`.
 
 Notice that you do need to have your CLI profile set up properly and bind the named addresses correctly. Please refer to [CLI Configuration](../../tools/aptos-cli/cli-configuration.md) for more details.
 
-```bash
+```bash filename="Terminal"
 $ aptos move publish --named-addresses hello_blockchain=default --profile-gas
 ```
 
 This will result in some terminal output that looks like this:
 
-```bash
+```bash filename="Terminal"
 Compiling, may take a little while to download git dependencies...
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib
@@ -55,15 +53,19 @@ Again, it should be emphasized that even though the live chain-state is being us
 
 You can then find the generated gas report in the directory `gas-profiling`:
 
-```text
-- hello_blockchain
-  - gas-profiling
-    - txn-xxxxxxxx-0x1-code-publish_package_txn
-      - assets
-      - index.html
-  - sources
-  - Move.toml
-```
+<FileTree>
+  <FileTree.Folder name="my_project" defaultOpen>
+    <FileTree.File name="Move.toml" />
+    <FileTree.Folder name="sources" />
+    <FileTree.Folder name="gas-profiling" defaultOpen>
+      <FileTree.Folder name="txn-xxxxxxxx-0x1-code-publish_package_txn"
+                       defaultOpen>
+        <FileTree.Folder name="assets" defaultOpen />
+        <FileTree.File name="index.html" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
 
 index.html is the main page of the report, and you can view it in your web browser.
 
@@ -100,7 +102,7 @@ The percentage here is relative to the total cost of the belonging category (Exe
 
 The final section of the gas report is the full execution trace of the transaction that looks like this:
 
-```text
+```text filename="Example gas report"
 execution & IO (gas unit, full trace)                        106.45206    100.00%
     intrinsic                                                3.94         3.70%
     0x1::code::publish_package_txn                           100.02706    93.96%
