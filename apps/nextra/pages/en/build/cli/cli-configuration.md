@@ -1,7 +1,3 @@
----
-title: "CLI Configuration"
----
-
 # Setup CLI Initial Configuration
 
 If you are using the CLI to try things out on-chain, you will need to configure the network, faucet, and credentials you want the CLI to use.
