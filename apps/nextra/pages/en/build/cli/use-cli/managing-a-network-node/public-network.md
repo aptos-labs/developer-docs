@@ -1,7 +1,3 @@
----
-title: "Running a Public Network"
----
-
 # Running a Public Network
 
 :::caution

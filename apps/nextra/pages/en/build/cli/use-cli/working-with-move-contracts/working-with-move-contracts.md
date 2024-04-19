@@ -11,7 +11,7 @@ You can jump to sections here:
 5. [Running Published Contracts](#5-running-published-contracts)
 6. [(Optional) Formally Verifying Move Scripts](#6-optional-formally-verifying-move-scripts)
 
-To see how to chain together Move contracts on-chain using the CLI, you can follow this [“CLI Arguments” tutorial](./move-tutorials/arguments-in-json-tutorial.md).
+To see how to chain together Move contracts on-chain using the CLI, you can follow this [“CLI Arguments” tutorial](./arguments-in-json-tutorial.md).
 
 :::tip
 Throughout this document there are parts of commands you will have to modify to fit your situation. Those variables will be wrapped in triangle brackets `<like this>`.
@@ -122,7 +122,7 @@ The package will be published to your default profile in the CLI. You can overri
 
 Please also note that when publishing Move modules, if multiple modules are in one package, then all modules in that package must use the same account. If they use different accounts, then the publishing will fail at the transaction level.
 
-You can estimate the gas fees associated with publishing your Move contract by using the [Gas Profiler](../../move/move-on-aptos/gas-profiling.md).
+You can estimate the gas fees associated with publishing your Move contract by using the [Gas Profiler](../../../move/move-on-aptos/gas-profiling.md).
 
 :::caution
 By default Move contracts publish their source code. To avoid publishing with source code, publish with the `--included-artifacts none` argument.
@@ -228,9 +228,9 @@ Which should result in:
 
 ## 6. (Optional) Formally Verifying Move Scripts
 
-For cases where you want to guarantee that your code works as expected beyond unit testing, you can use the [Move Prover](../../move/prover/index.md) to formally verify your Move contract code.
+For cases where you want to guarantee that your code works as expected beyond unit testing, you can use the [Move Prover](../../../move/prover/index.md) to formally verify your Move contract code.
 
-You can install the Move Prover by following [these steps](../aptos-cli/install-cli/install-move-prover.md).
+You can install the Move Prover by following [these steps](../../aptos-cli/install-cli/install-move-prover.md).
 
 Once you have installed the Move Prover, you can use it from the Aptos CLI by running:
 

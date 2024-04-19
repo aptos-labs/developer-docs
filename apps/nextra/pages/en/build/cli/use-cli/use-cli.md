@@ -4,7 +4,7 @@ The Aptos command line interface (CLI) is a tool to help you compile and test Mo
 
 You can explore each of the use-cases here:
 
-1. [Working with Move Contracts](./working-with-move-contracts.md)
-2. [Trying things on-chain](./trying-things-on-chain.md)
+1. [Working with Move Contracts](./working-with-move-contracts/working-with-move-contracts.md)
+2. [Trying things on-chain](./trying-things-on-chain/trying-things-on-chain.md)
 3. [Running a local Aptos network](./running-a-local-network.md)
-4. [Managing a network node](./managing-a-network-node.md)
+4. [Managing a network node](./managing-a-network-node/managing-a-network-node.md)
