@@ -40,7 +40,8 @@ aptos key generate \
 ```
 
 
-### Output
+<details>
+<summary>Output</summary>
 
 ```bash filename="Output"
 {
@@ -52,11 +53,10 @@ aptos key generate \
 }
 ```
 
-
-
 <Callout type="info" emoji="ℹ️">
 The exact account address should vary for each run, though the vanity prefix should not.
 </Callout>
+</details>
 
 Store Ace's address in a shell variable, so you can call it inline later on:
 
@@ -72,7 +72,8 @@ aptos account fund-with-faucet --account $ace_addr
 ```
 
 
-### Output
+<details>
+<summary>Output</summary>
 
 ```bash
 {
@@ -80,7 +81,7 @@ aptos account fund-with-faucet --account $ace_addr
 }
 ```
 
-
+</details>
 
 Now publish the package under Ace's account:
 
@@ -92,7 +93,8 @@ aptos move publish \
 ```
 
 
-### Output
+<details>
+<summary>Output</summary>
 
 ```json
 {
@@ -109,6 +111,7 @@ aptos move publish \
   }
 }
 ```
+</details>
 
 ## Entry functions
 
@@ -182,7 +185,8 @@ aptos move run \
 ```
 
 
-### Output
+<details>
+<summary>Output</summary>
 
 ```json
 {
@@ -199,8 +203,7 @@ aptos move run \
   }
 }
 ```
-
-
+</details>
 
 The function ID, type arguments, and arguments can alternatively be specified in a JSON file:
 
@@ -260,7 +263,8 @@ aptos move run \
 ```
 
 
-### Output
+<details>
+<summary>Output</summary>
 
 ```json
 {
@@ -278,7 +282,7 @@ aptos move run \
 }
 ```
 
-
+</details>
 
 <Callout type="info" emoji="ℹ️">
 If you are trying to run the example yourself don't forget to substitute Ace's actual address for `<test_account>` in `entry_function_arguments.json`!
@@ -421,7 +425,8 @@ aptos move compile --named-addresses test_account=$ace_addr
 ```
 
 
-### Output
+<details>
+<summary>Output</summary>
 
 ```json
 {
@@ -431,7 +436,7 @@ aptos move compile --named-addresses test_account=$ace_addr
 }
 ```
 
-
+</details>
 
 Next, run `aptos move run-script`:
 
@@ -452,7 +457,8 @@ aptos move run-script \
 ```
 
 
-### Output
+<details>
+<summary>Output</summary>
 
 ```json
 {
@@ -470,7 +476,7 @@ aptos move run-script \
 }
 ```
 
-
+</details>
 
 ```bash filename="Arguments via JSON file"
 aptos move run-script \
@@ -481,7 +487,8 @@ aptos move run-script \
 ```
 
 
-### Output
+<details>
+<summary>Output</summary>
 
 ```json
 {
@@ -499,7 +506,7 @@ aptos move run-script \
 }
 ```
 
-
+</details>
 
 ```json filename="script_function_arguments.json"
 {
