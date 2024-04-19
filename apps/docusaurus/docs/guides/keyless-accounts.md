@@ -114,7 +114,7 @@ Below are the default steps for a client to integrate Keyless Accounts
 
         ```tsx
         // This saves the EphemeralKeyPair in local storage keyed, by its nonce.
-        storeEphemeralKeyPair(ephemeralKeyPair.nonce, ephemeralKeyPair);
+        storeEphemeralKeyPair(ephemeralKeyPair);
         ```
 
 <details>
@@ -349,9 +349,9 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
     4. Instantiate the user’s `KeylessAccount`
 
         ```tsx
-        import {Aptos, Network} from '@aptos-labs/ts-sdk';
+        import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
-        const aptos = new Aptos({network: Network.DEVNET});  // Only devnet supported as of now.
+        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET}));  // Only devnet supported as of now.
         const keylessAccount = await aptos.deriveKeylessAccount({
             jwt,
             ephemeralKeyPair,
