@@ -19,6 +19,7 @@ Create a `.env` file in the root of `nextra` with the following
 
 ```bash filename="Terminal"
 NEXT_PUBLIC_ORIGIN="http://localhost:3030"
+NEXT_PUBLIC_CODECACHE_API_KEY="<API_KEY>"
 ```
 
 Note: There is an example at `apps/nextra/.env.example` that
