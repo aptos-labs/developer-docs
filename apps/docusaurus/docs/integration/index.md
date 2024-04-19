@@ -10,3 +10,4 @@ Follow these guides to work with the Aptos blockchain.
 - ### [Integrate with Aptos Names Service](aptos-name-service-connector.md)
 - ### [Integrate with the Aptos Faucet](../guides/system-integrators-guide.md#integrating-with-the-faucet)
 - ### [Error Codes in Aptos](../reference/error-codes.md)
+- ### [Application Integration Guide](../guides/system-integrators-guide.md)
