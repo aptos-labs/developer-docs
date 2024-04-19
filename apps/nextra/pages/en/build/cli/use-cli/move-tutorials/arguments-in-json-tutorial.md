@@ -1,7 +1,3 @@
----
-title: "Arguments in JSON Tutorial"
----
-
 import CodeBlock from '@theme/CodeBlock';
 
 # Arguments in JSON Tutorial

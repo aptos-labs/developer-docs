@@ -1,7 +1,3 @@
----
-title: "Multisig Governance Tutorial"
----
-
 import CodeBlock from '@theme/CodeBlock';
 
 # Multisig Governance Tutorial
