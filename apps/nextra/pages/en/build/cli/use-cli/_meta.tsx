@@ -1,4 +1,7 @@
 export default {
+    "index": {
+        title: "Use the Aptos CLI",
+    },
     "working-with-move-contracts": {
         title: "Working With Move Contracts",
     },

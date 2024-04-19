@@ -1,4 +1,7 @@
 export default {
+    "index": {
+        title: "Trying Things On Chain",
+    },
     "looking-up-account-info": {
         title: "Look Up On-Chain Account Info",
     },
