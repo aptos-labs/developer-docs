@@ -1,7 +1,3 @@
----
-title: "Look Up On-Chain Account Info"
----
-
 # Look Up On-Chain Account Info Using Aptos CLI
 
 :::tip

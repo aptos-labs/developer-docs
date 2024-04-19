@@ -1,7 +1,3 @@
----
-title: "Create Test Accounts"
----
-
 # Create Test Accounts and Send Transactions From Aptos CLI
 
 :::tip
