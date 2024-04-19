@@ -1,7 +1,3 @@
----
-title: "Use Hardware Ledger"
----
-
 # Use Hardware Ledger via the Aptos CLI
 
 Using a hardware wallet like Ledger is the most secure way to sign transactions on `mainnet` as your private key never leaves your device.

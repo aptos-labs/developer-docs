@@ -5,7 +5,7 @@ title: "Running a Public Network"
 # Running a Public Network
 
 :::caution
-If you just want to run your own local network for testing, you can learn how to do that [here](./../running-a-local-network.md).
+If you just want to run your own local network for testing, you can learn how to do that [here](../running-a-local-network.md).
 :::
 
 ## Genesis ceremonies
