@@ -1,7 +1,3 @@
----
-title: "Install On Linux"
----
-
 # Install the Aptos CLI on Linux
 
 For Linux, the easiest way to install the Aptos CLI tool is via Python script, although if that does not work, you can also install manually via downloading pre-compiled binaries. The pre-compiled binaries approach is not generally recommended as updating is very manual.

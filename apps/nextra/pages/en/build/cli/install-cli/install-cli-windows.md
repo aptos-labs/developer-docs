@@ -1,7 +1,3 @@
----
-title: "Install On Windows"
----
-
 # Install the Aptos CLI on Windows
 
 For Windows, the easiest way to install the Aptos CLI tool is via Python script. If that does not work, you can also install manually via pre-compiled binaries. The pre-compiled binaries approach is not generally recommended as updating is very manual.

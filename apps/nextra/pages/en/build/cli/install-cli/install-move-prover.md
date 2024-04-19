@@ -1,9 +1,3 @@
----
-title: "Install the Move Prover"
----
-
-<!-- TODO: Move this under the Work with Move contracts page. -->
-
 # Install the Move Prover
 
 If you want to use the [Move Prover](../../move/prover/index.md), install the Move Prover dependencies after [installing the CLI binary](.).
