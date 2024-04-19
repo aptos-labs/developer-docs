@@ -6,6 +6,8 @@
 		"test:types": "tsc --noEmit",
 		"dev": "wrangler dev",
 		"migrate": "wrangler d1 execute db --local --file=./drizzle/0000_short_lockheed.sql",
+		"worker:deploy": "wrangler deploy",
+		"db:deploy": "wrangler d1 execute db --remote --file=./drizzle/0000_short_lockheed.sql",
 		"generate": "drizzle-kit generate:sqlite",
 		"up": "drizzle-kit up:sqlite",
 		"test": "vitest"

@@ -114,6 +114,57 @@ router.get(
   },
 );
 
+// Maybe revisit this if performance is an issue
+const updateAllPermalinksSql = `
+UPDATE codecache
+SET used_in_latest_docs = CASE
+  WHEN github_permalink IN ('permalink1', 'permalink2', 'permalink3') THEN 1
+  ELSE 0
+END;
+`;
+
+/**
+ * POST /codecache/used-in-latest-docs
+ *
+ * Body includes array of strings `github_permalinks` (permalinks that should be updated)
+ *
+ * If a github_permalink is not included in the array, it will be marked as
+ * `used_in_latest_docs` false, else, true
+ *
+ * This is primarily to determine if certain permalinks in the docs
+ * are out of date
+ */
+router.post(
+  "/codecache/used-in-latest-docs",
+  middleware,
+  async (req: WorkersRequest, env: Env) => {
+    try {
+      const { github_permalinks }: GithubPermalinks = await req.json!();
+
+      await req.db
+        .update(codecache)
+        .set({ used_in_latest_docs: false })
+        .returning()
+        .all();
+
+      const result = await req.db
+        .update(codecache)
+        .set({ used_in_latest_docs: true })
+        .where(inArray(codecache.github_permalink, github_permalinks))
+        .returning()
+        .all();
+
+      return wrap({ data: unifiedReturn(result), status_code: 200 });
+    } catch (err) {
+      return wrap({
+        data: null,
+        status_code: 400,
+        message: `${(err as any).message}`,
+      });
+    }
+  },
+);
+
 /**
  * POST /codecache/code
  *
