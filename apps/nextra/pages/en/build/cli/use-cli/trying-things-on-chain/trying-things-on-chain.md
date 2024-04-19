@@ -12,6 +12,6 @@ If any command takes an account, you can pass in the name of a profile instead. 
 
 With that, the three main things you can use the CLI to do on-chain include:
 
-1. [Looking Up On-Chain Account Info](./on-chain/looking-up-account-info.md)
-2. [Creating test accounts and sending transactions](./on-chain/create-test-accounts.md)
-3. [Securely interacting on-chain via a Hardware Ledger](./on-chain/ledger.md)
+1. [Looking Up On-Chain Account Info](./looking-up-account-info.md)
+2. [Creating test accounts and sending transactions](./create-test-accounts.md)
+3. [Securely interacting on-chain via a Hardware Ledger](./ledger.md)
