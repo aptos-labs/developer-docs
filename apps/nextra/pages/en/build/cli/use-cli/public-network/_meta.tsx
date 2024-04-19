@@ -1,5 +1,5 @@
 export default {
-    "index": {
+    "public-network": {
         title: "Running a Public Network",
     },
 };
