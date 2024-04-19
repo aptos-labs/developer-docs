@@ -13,7 +13,7 @@ the local dev server:
 pnpm i && pnpm build
 ```
 
-2. Navigate back to `netra`
+2. Navigate back to `nextra`
 
 Create a `.env` file in the root of `nextra` with the following
 
@@ -47,7 +47,7 @@ pnpm build
 
 from inside the `nextra` directory.
 
-2. Navigate back to `netra`
+2. Navigate back to `nextra`
 
 3. Then run
 
