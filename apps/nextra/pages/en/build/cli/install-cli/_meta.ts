@@ -1,7 +1,4 @@
 export default {
-    "index": {
-        title: "Install the Aptos CLI"
-    },
     "install-cli-mac": {
         title: "Install On Mac",
     },
