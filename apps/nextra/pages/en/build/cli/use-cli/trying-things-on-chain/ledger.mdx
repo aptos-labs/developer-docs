@@ -1,10 +1,12 @@
+import { Callout } from 'nextra/components'
+
 # Use Hardware Ledger via the Aptos CLI
 
 Using a hardware wallet like Ledger is the most secure way to sign transactions on `mainnet` as your private key never leaves your device.
 
-:::caution
+<Callout type="warning" emoji="⚠️">
 The `Ledger Nano S` has limited memory and may not be able to sign many transactions on Aptos. If you are trying to sign a transaction that is too big for your device to handle, you will get the error `Wrong raw transaction length`.
-:::
+</Callout>
 
 ## Initial Setup
 
@@ -17,9 +19,9 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
 4. Install the Aptos App on your Ledger device by following [this guide](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true).
 5. Unlock your Ledger device and open the Aptos app.
 
-   :::info
+   <Callout type="info" emoji="ℹ️">
    Whenever you want to sign using your Ledger you will need to plug it in, unlock it, and open the Aptos app before running any CLI commands.
-   :::
+   </Callout>
 
 6. Create a new Ledger profile in the Aptos CLI and choose which key to use by running:
 
@@ -71,9 +73,9 @@ After doing the initial setup, you can sign transactions by following these step
 3. Open the Aptos app.
 4. Run the Aptos CLI command which requires a signature.
 
-:::tip
+<Callout type="info" emoji="ℹ️">
 This process works for any command that requires a signature, whether that’s to transfer coins, publish a Move contract, interact with a contract, etc.
-:::
+</Callout>
 
 For example, if you wanted to publish a Move package like the `[hello_blockchain](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)` demo contract you could follow the above steps then run:
 

@@ -14,4 +14,7 @@ export default {
     "managing-a-network-node": {
         title: "Managing a Network Node",
     },
+    "public-network": {
+        title: "Running a Public Network",
+    }
 };

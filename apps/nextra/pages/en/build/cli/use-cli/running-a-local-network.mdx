@@ -1,3 +1,5 @@
+import { Callout } from 'nextra/components'
+
 # Running a Local Network via Aptos CLI
 
 Local networks can be helpful when testing your code. They are not connected to any production Aptos networks like mainnet, but they are useful for three main reasons:
@@ -19,9 +21,9 @@ Local networks can be helpful when testing your code. They are not connected to 
 aptos node run-local-testnet --with-indexer-api
 ```
 
-:::caution
+<Callout type="warning" emoji="⚠️">
 Note: Despite the name (`local-testnet`), this has nothing to do with the Aptos testnet, it will run a network entirely local to your machine.
-:::
+</Callout>
 
 You should expect to see an output similar to this:
 
@@ -60,9 +62,9 @@ Setup is complete, you can now use the local testnet!
 
 5. Wait for the final line `Setup is complete, you can now use the local testnet!`
 
-   :::caution
+   <Callout type="warning" emoji="⚠️">
    If you ran into an error, jump to the [Common Errors](#common-errors-on-network-startup) section below.
-   :::
+   </Callout>
 
 As you can see from the above example output, once the local network is running, you have access to the following services:
 
@@ -84,9 +86,9 @@ aptos node run-local-testnet --help
 
 ## Common Errors On Network Startup
 
-:::tip
+<Callout type="info" emoji="ℹ️">
 If you successfully started the local network, skip to [Using The Local Network](#using-the-local-network).
-:::
+</Callout>
 
 ### Address Already In Use
 

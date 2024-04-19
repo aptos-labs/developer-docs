@@ -1,10 +1,12 @@
+import { Callout } from 'nextra/components'
+
 # Install the Aptos CLI on Linux
 
 For Linux, the easiest way to install the Aptos CLI tool is via Python script, although if that does not work, you can also install manually via downloading pre-compiled binaries. The pre-compiled binaries approach is not generally recommended as updating is very manual.
 
-:::caution
+<Callout type="warning" emoji="⚠️">
 Note: If you are using an ARM architecture, you will have to install using the steps here: [Install Specific Aptos CLI Versions (Advanced)](install-cli-specific-version.mdx)
-:::
+</Callout>
 
 # Install via Python Script
 
@@ -22,9 +24,9 @@ Note: If you are using an ARM architecture, you will have to install using the s
    wget -qO- "https://aptos.dev/scripts/install_cli.py" | python3
    ```
 
-   :::caution
+   <Callout type="warning" emoji="⚠️">
    If you receive the error `Couldn't find distutils or packaging. We cannot check the current version of the CLI. We will install the latest version.` you can fix it by running `pip3 install packaging` then repeating this step.
-   :::
+   </Callout>
 
 3. (Optional) It can be helpful to add the Aptos CLI to a folder in your PATH, or to add it to your PATH directly. The steps to add a folder to your PATH are shell dependent.
    1. You can run `echo $SHELL` to print the default shell for your machine, then google specific steps to add a folder to your PATH for that shell.
