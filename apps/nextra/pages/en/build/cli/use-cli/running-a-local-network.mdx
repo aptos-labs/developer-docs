@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout, Steps } from 'nextra/components'
 
 # Running a Local Network via Aptos CLI
 
@@ -10,24 +10,25 @@ Local networks can be helpful when testing your code. They are not connected to 
 
 # Starting A Local Network
 
-1. Ensure you have the [Aptos CLI](../install-cli.mdx) installed.
-2. Ensure you have [Docker](https://docs.docker.com/get-docker/) installed.
+<Steps>
+### Ensure you have the [Aptos CLI](../install-cli.mdx) installed.
+### Ensure you have [Docker](https://docs.docker.com/get-docker/) installed.
    1. This is exclusively needed for making a production-like environment by running the Indexer API. Many downstream tools such as the Aptos SDK depend on the Indexer API.
    2. Docker recommends that you install via [Docker Desktop](https://www.docker.com/products/docker-desktop/) to get automatic updates.
-3. Start Docker.
-4. Run the following command in a new terminal to start the private network:
+### Start Docker.
+### Run the following command in a new terminal to start the private network:
 
 ```bash
 aptos node run-local-testnet --with-indexer-api
 ```
 
 <Callout type="warning" emoji="⚠️">
-Note: Despite the name (`local-testnet`), this has nothing to do with the Aptos testnet, it will run a network entirely local to your machine.
+Note: Despite the name (`local-testnet`), this has nothing to do with the Aptos testnet, it will run a network entirely local to your machine.
 </Callout>
 
 You should expect to see an output similar to this:
 
-```
+```bash
 Readiness endpoint: http://0.0.0.0:8070/
 
 Indexer API is starting, please wait...
@@ -60,35 +61,16 @@ Applying post startup steps...
 Setup is complete, you can now use the local testnet!
 ```
 
-5. Wait for the final line `Setup is complete, you can now use the local testnet!`
+### Wait for the network to start
+
+Once the terminal says `Setup is complete, you can now use the local testnet!` the local network will be running.
 
    <Callout type="warning" emoji="⚠️">
-   If you ran into an error, jump to the [Common Errors](#common-errors-on-network-startup) section below.
+   If you ran into an error, look at the common errors below to debug.
    </Callout>
 
-As you can see from the above example output, once the local network is running, you have access to the following services:
-
-- [Node API](../../nodes/aptos-api-spec.mdx): This is a REST API that runs directly on the node. It enables core write functionality such as transaction submission and a limited set of read functionality, such as reading account resources or Move module information.
-- [Indexer API](../../indexer/api/index.mdx): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
-- [Transaction Stream Service](../../indexer/txn-stream/index.mdx): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing a [custom processor](../../indexer/custom-processors/index.mdx).
-- [Postgres](https://www.postgresql.org/): This is the database that the Indexer processors write to. The Indexer API reads from this database.
-- [Faucet](../../reference/glossary.mdx#faucet): You can use this to fund accounts on your local network.
-
-If you do not want to run any of these sub-components of a network, there are flags to disable them.
-
-If you are writing a script and would like to wait for the local network to come up with all services, you can make a GET request to `http://127.0.0.1:8070`. At first this will return http code [503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503). When it returns [200](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200) it means all the services are ready.
-
-For more information on different flags you can pass when starting your local network, or configuration settings such as changing which port certain services run on, run the help command:
-
-```bash
-aptos node run-local-testnet --help
-```
-
-## Common Errors On Network Startup
-
-<Callout type="info" emoji="ℹ️">
-If you successfully started the local network, skip to [Using The Local Network](#using-the-local-network).
-</Callout>
+<details>
+<summary>Common Errors On Network Startup</summary>
 
 ### Address Already In Use
 
@@ -118,7 +100,7 @@ ulimit -n 32768
 
 ### Docker is not available
 
-```
+```bash
 Unexpected error: Failed to apply pre-run steps for Postgres: Docker is not available, confirm it is installed and running. On Linux you may need to use sudo
 ```
 
@@ -129,6 +111,26 @@ To debug this, try the below fixes:
 3. Make sure the socket for connecting to Docker is present on your machine in the default location. For example, on Unix systems `/var/run/docker.sock` should exist.
    1. If that file does not exist, open Docker Desktop and enable `Settings -> Advanced -> Allow the default Docker socket to be used.`
    2. Or, you can find where the Docker socket is by running `docker context inspect | grep Host`, then symlink that location to the default location by running `sudo ln -s /Users/dport/.docker/run/docker.sock /var/run/docker.sock`
+</details>
+
+As you can see from the example output in step 4, once the local network is running, you have access to the following services:
+
+- [Node API](../../nodes/aptos-api-spec.mdx): This is a REST API that runs directly on the node. It enables core write functionality such as transaction submission and a limited set of read functionality, such as reading account resources or Move module information.
+- [Indexer API](../../indexer/api/index.mdx): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
+- [Transaction Stream Service](../../indexer/txn-stream/index.mdx): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing a [custom processor](../../indexer/custom-processors/index.mdx).
+- [Postgres](https://www.postgresql.org/): This is the database that the Indexer processors write to. The Indexer API reads from this database.
+- [Faucet](../../reference/glossary.mdx#faucet): You can use this to fund accounts on your local network.
+
+If you do not want to run any of these sub-components of a network, there are flags to disable them.
+
+If you are writing a script and would like to wait for the local network to come up with all services, you can make a GET request to `http://127.0.0.1:8070`. At first this will return http code [503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503). When it returns [200](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200) it means all the services are ready.
+
+For more information on different flags you can pass when starting your local network, or configuration settings such as changing which port certain services run on, run the help command:
+
+```bash
+aptos node run-local-testnet --help
+```
+</Steps>
 
 ## Using The Local Network
 
@@ -163,14 +165,13 @@ const client = new Aptos(config);
 Sometimes while developing it is helpful to reset the local network back to its initial state, for example:
 
 - You made backwards incompatible changes to a Move module, and you'd like to redeploy it without renaming it or using a new account.
-- You are building a [custom indexer processor](https://aptos.dev/indexer/custom-processors/) and would like to index using a fresh network.
+- You are building a [custom indexer processor](https://aptos.dev/indexer/custom-processors/) and would like to index using a fresh network.
 - You want to clear all on chain state, e.g. accounts, objects, etc.
 
-To start with a brand new local network, use the `--force-restart` flag:
+To start with a brand new local network, use the `--force-restart` flag:
 
 ```bash
 aptos node run-local-testnet --force-restart
-
 ```
 
 It will then prompt you if you really want to restart the chain, to ensure that you do not delete your work by accident.
@@ -180,7 +181,7 @@ Are you sure you want to delete the existing chain? [yes/no]
 > yes
 ```
 
-If you do not want to be prompted, include `--assume-yes` as well:
+If you do not want to be prompted, include `--assume-yes` as well:
 
 ```bash
 aptos node run-local-testnet --force-restart --assume-yes
