@@ -1,7 +1,4 @@
 export default {
-    "index": {
-        title: "Aptos CLI",
-    },
     "install-cli": {
         title: "Installation Methods",
     },
