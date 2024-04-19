@@ -93,7 +93,7 @@ If you successfully started the local network, skip to [Using The Local Network]
 ### Address Already In Use
 
 ```bash
-panicked at 'error binding to 0.0.0.0:8080: error creating server listener: Address already in use (os error 48)
+panicked at 'error binding to 0.0.0.0:8080: error creating server listener: Address already in use (os error 48)'
 ```
 
 This means one of the ports needed by the local network is already in use by another process.
@@ -107,7 +107,7 @@ To fix this on Unix systems, you can:
 
 ```bash
 panicked at crates/aptos/src/node/local_testnet/logging.rs:64:10:
-called `Result::unwrap()` on an `Err` value: Os { code: 24, kind: Uncategorized, message: \"Too many open files\" }"""
+called \`Result::unwrap()\` on an \`Err\` value: Os { code: 24, kind: Uncategorized, message: \"Too many open files\" }
 ```
 
 This means there were too many open files on your system. On many Unix systems you can increase the maximum number of open files by adding something like this to your `.zshrc`:
