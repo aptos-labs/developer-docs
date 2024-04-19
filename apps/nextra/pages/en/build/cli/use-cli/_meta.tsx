@@ -12,6 +12,6 @@ export default {
     title: "Managing a Network Node",
   },
   "public-network": {
-    title: "Running a Public Network",
+    title: "Running a Public Network (Advanced)",
   },
 };
