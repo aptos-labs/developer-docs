@@ -1,7 +1,3 @@
----
-title: "Install the Aptos CLI"
----
-
 # Install the Aptos CLI
 
 Choose which operating system to install the Aptos CLI on:
