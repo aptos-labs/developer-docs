@@ -1,6 +1,6 @@
 import { Callout } from 'nextra/components'
 
-# Running a Public Network
+# Running a Public Network (Advanced)
 
 <Callout type="warning" emoji="⚠️">
 If you just want to run your own local network for testing, you can learn how to do that [here](running-a-local-network.mdx).
@@ -39,7 +39,7 @@ The layout file contains:
 
 An example:
 
-```
+```yaml
 root_key: "0xca3579457555c80fc7bb39964eb298c414fd60f81a2f8eedb0244ec07a26e575"
 users:
   - alice
@@ -51,7 +51,7 @@ chain_id: 8
 
 From your Aptos-core repository, build the framework and package it:
 
-```
+```bash
 cargo run --package framework
 mkdir aptos-framework-release
 cp aptos-framework/releases/artifacts/current/build/**/bytecode_modules/* aptos-framework-release
@@ -73,7 +73,7 @@ The `ValidatorConfiguration` file contains:
 
 An example:
 
-```
+```yaml
 account_address: ccd49f3ea764365ac21e99f029ca63a9b0fbfab1c8d8d5482900e4fa32c5448a
 consensus_key: "0xa05b8f41057ac72f9ca99f5e3b1b787930f03ba5e448661f2a1fac98371775ee"
 account_key: "0x3d15ab64c8b14c9aab95287fd0eb894aad0b4bd929a5581bcc8225b5688f053b"
@@ -91,13 +91,13 @@ To generate this using the `aptos` CLI:
 
 1. Generate your validator's keys:
 
-```
+```bash
 cargo run --package aptos -- genesis generate-keys --output-dir bobs
 ```
 
 2. Generate your `ValidatorConfiguration`:
 
-```
+```bash
 cargo run --package aptos -- \\
     genesis set-validator-configuration \\
     --keys-dir bobs \\
@@ -121,7 +121,7 @@ To generate the `genesis.blob` and waypoint:
 - Make a `framework` directory within the `genesiss` directory and place the framework release `.mv` files into the `framework` directory.
 - Use the `aptos` CLI to generate genesis and waypoint:
 
-```
+```bash
 cargo run --package aptos -- genesis generate-genesis --local-repository-dir genesis
 ```
 
