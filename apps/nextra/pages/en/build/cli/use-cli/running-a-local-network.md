@@ -1,7 +1,3 @@
----
-title: "Running a Local Network"
----
-
 # Running a Local Network via Aptos CLI
 
 Local networks can be helpful when testing your code. They are not connected to any production Aptos networks like mainnet, but they are useful for three main reasons:

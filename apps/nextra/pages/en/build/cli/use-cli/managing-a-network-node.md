@@ -1,7 +1,3 @@
----
-title: "Managing a Network Node"
----
-
 # Managing a Network Node via Aptos CLI
 
 If you are running a [validator node or validator full node (VFN)](../../nodes/validator-node/index.md), you can use the CLI to interact with your node.

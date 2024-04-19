@@ -1,7 +1,3 @@
----
-title: "Trying Things On-Chain"
----
-
 # Trying Things On-Chain With Aptos CLI
 
 The CLI can be a convenient tool for quickly looking up on-chain data and sending transactions from your accounts.
