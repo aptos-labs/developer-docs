@@ -1,7 +1,3 @@
----
-title: "Working With Move Contracts"
----
-
 # Working With Move Contracts
 
 The Aptos CLI is mostly used to compile, test, and formally verify Move contracts. If you have not installed the Aptos CLI yet, you can do so by following the steps here [Install the Aptos CLI (In-between Page)](https://www.notion.so/Install-the-Aptos-CLI-In-between-Page-9b923ca3507c4ffd8291f905ba621b95?pvs=21).
