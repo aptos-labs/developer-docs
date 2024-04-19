@@ -3,7 +3,7 @@ import { Callout } from 'nextra/components'
 # Look Up On-Chain Account Info Using Aptos CLI
 
 <Callout type="info" emoji="ℹ️">
-You can install the Aptos CLI by following [these steps](../../cli/install-cli/index.mdx) if you have not done so already.
+You can install the Aptos CLI by following [these steps](../../install-cli.mdx) if you have not done so already.
 </Callout>
 
 You can look up resources and data an account has on-chain by running the following command:
@@ -14,7 +14,7 @@ aptos account list --account <your-profile-name-or-account-address>
 
 This will show all resources that an account has. For example:
 
-```json
+```json filename="Output"
 {
   "Result": [
     {
@@ -53,7 +53,7 @@ If you’re interested in a specific type of account data, you can specify that 
 
 Here’s an example of what calling with the `--query modules` parameter looks like:
 
-```json
+```json filename="Output"
 aptos account list --query modules
 
 {

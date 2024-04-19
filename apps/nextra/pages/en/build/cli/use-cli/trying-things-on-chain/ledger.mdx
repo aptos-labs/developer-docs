@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout, Steps } from 'nextra/components'
 
 # Use Hardware Ledger via the Aptos CLI
 
@@ -11,19 +11,20 @@ The `Ledger Nano S` has limited memory and may not be able to sign many transact
 ## Initial Setup
 
 You will need to do a few steps of configuration for the Aptos CLI and your Ledger device to sign transactions.
-
-1. Ensure you have the Aptos CLI installed. You can install the Aptos CLI by following [these steps](../../cli/install-cli/install-cli.mdx) if you have not done so already.
-2. Ensure you have done the basic setup for your Ledger device.
-   1. You can find those steps on [Ledger’s website](https://www.ledger.com/). For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
-3. Plug your Ledger device into your computer.
-4. Install the Aptos App on your Ledger device by following [this guide](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true).
-5. Unlock your Ledger device and open the Aptos app.
+<Steps>
+### Ensure you have the Aptos CLI installed. 
+   You can install the Aptos CLI by following [these steps](../../install-cli.mdx) if you have not done so already.
+### Ensure you have done the basic setup for your Ledger device.
+   You can find those steps on [Ledger’s website](https://www.ledger.com/). For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
+### Plug your Ledger device into your computer.
+### Install the Aptos App on your Ledger device by following [this guide](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true).
+### Unlock your Ledger device and open the Aptos app.
 
    <Callout type="info" emoji="ℹ️">
    Whenever you want to sign using your Ledger you will need to plug it in, unlock it, and open the Aptos app before running any CLI commands.
    </Callout>
 
-6. Create a new Ledger profile in the Aptos CLI and choose which key to use by running:
+### Create a new Ledger profile in the Aptos CLI
 
    ```bash
    aptos init --profile <your-profile> --ledger
@@ -31,7 +32,7 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
 
    Then follow the terminal prompts like so:
 
-   ```
+   ```bash
    Configuring for profile <your-profile>
    Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
 
@@ -60,9 +61,10 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
    1. If you see the error `Device Not Found`, make sure to unlock your Ledger then try this step again.
    2. If you see the error `Aptos ledger app is not opened`, make sure to open the Aptos app on your Ledger, then try this step again.
 
-7. Finally, you will need to enable blind signing on your Ledger device by following [these steps](https://medium.com/@DavidLehman24/how-to-enable-disable-blind-signing-on-ledger-wallet-99113a85cdad).
+### Finally, you will need to enable blind signing on your Ledger device by following [these steps](https://medium.com/@DavidLehman24/how-to-enable-disable-blind-signing-on-ledger-wallet-99113a85cdad).
    1. Blind signing allows you to confirm a smart contract interaction you cannot verify through a human-readable language.
    2. This is needed to execute transactions without limitation as some payloads are too big to display.
+</Steps>
 
 ## Signing Using Ledger
 
