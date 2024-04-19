@@ -1,4 +1,4 @@
-import { Callout } from 'nextra/components'
+import { Callout, Steps } from 'nextra/components'
 
 # Install the Aptos CLI on Mac
 
@@ -6,22 +6,24 @@ For Mac, the easiest way to install the Aptos CLI is with the package manager `b
 
 # Installation
 
-1. Ensure you have `brew` installed https://brew.sh/.
-2. Open a new terminal and enter the following commands.
+<Steps>
+### Ensure you have `brew` installed https://brew.sh/.
+### Open a new terminal and enter the following commands.
 
 ```bash
     brew update
     brew install aptos
 ```
 
-3. Open another terminal and run `aptos help` to verify the CLI is installed.
+### Open another terminal and run `aptos help` to verify the CLI is installed.
 
 ```bash
    aptos help
 ```
+</Steps>
 
-<Callout type="info" emoji="ℹ️">
-If `brew` does not work for you, you can also use the steps here: [Install Specific Aptos CLI Versions (Advanced)](install-cli-specific-version.mdx)
+<Callout type="warning" emoji="⚠️">
+If `brew` does not work for you, you can try the steps here: [Install Specific Aptos CLI Versions (Advanced)](install-cli-specific-version.mdx)
 </Callout>
 
 # Upgrading the CLI
