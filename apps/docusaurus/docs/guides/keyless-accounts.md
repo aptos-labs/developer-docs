@@ -37,7 +37,7 @@ To provide feedback, get support, or be a design partner as we enhance Aptos Key
   - `email`, some providers might also expose the user’s email as one of the fields (e.g., Google)
     - in addition, an `email_verified` field will be exposed to indicate if the provider has verified that the user owns this email address
   - `nonce`, arbitrary data that the application wants the OIDC provider to sign over
-  - `iat`, the time the the JWT was issued at.
+  - `iat`, the time the JWT was issued at.
 - **Ephemeral Key Pair:** a temporary public/private key pair that is used to sign transactions for an Aptos Keyless account. The public key and its expiration date are committed in the JWT token via the `nonce` field.
 - **Keyless Account:** a blockchain account that is directly-derived from (1) a user’s OIDC account (e.g., `alice@gmail.com`) and (2) an associated application’s OAuth client_id (e.g., Notion.so). Users authenticate through the OIDC flow.
 - **JSON Web Key (JWK):** is the cryptographic public key of the OIDC provider. This public key is used to verify the signature on the JWTs that the OIDC provider issues to the client application. This way, the client application can verify the authenticity of the tokens and ensure that they have not been tampered with.
