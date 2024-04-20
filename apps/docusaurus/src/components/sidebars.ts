@@ -55,7 +55,14 @@ const sidebars: SidebarsConfig = {
           collapsible: true,
           collapsed: true,
           items: [
-            "concepts/delegated-staking",
+            {
+              type: "category",
+              label: "Delegated Staking",
+              link: { type: "doc", id: "concepts/delegated-staking" },
+              collapsible: true,
+              collapsed: true,
+              items: ["concepts/delegated-staking/in-japanese"],
+            },
             "concepts/staking/in-japanese"
           ],
         },
