@@ -69,7 +69,14 @@ const sidebars: SidebarsConfig = {
         "concepts/governance",
       ],
     },
-    "guides/explore-aptos",
+    {
+      type: "category",
+      label: "Explore Aptos",
+      collapsible: true,
+      collapsed: true,
+      link: { type: "doc", id: "guides/explore-aptos" },
+      items: ["guides/explore-aptos/in-japanese"],
+    },
     "releases/index",
     "nodes/networks",
     {
