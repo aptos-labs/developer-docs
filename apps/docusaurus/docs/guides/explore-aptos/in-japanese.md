@@ -177,7 +177,6 @@ sources={{
 
 #### トークンの詳細
 
-
 <div style={{textAlign:"center"}}>
 <ThemedImage
 alt="Aptos Explorer Token Activities tab"
@@ -217,6 +216,7 @@ sources={{
 ブロックページには、Aptos ブロックチェーンにコミットされる最新のブロックの実行リストが表示されます。
 
     <div style={{textAlign:"center"}}>
+
 <ThemedImage
 alt="Aptos Explorer Latest Blocks page"
 sources={{
@@ -224,6 +224,7 @@ sources={{
     dark: useBaseUrl('/img/docs/7-explorer-latest-blocks-dark.png'),
   }}
 />
+
 </div>
 
 次の個所をクリックして機能を使えます。

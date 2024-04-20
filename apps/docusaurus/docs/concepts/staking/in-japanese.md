@@ -32,7 +32,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 Aptos ステーキングモジュールは、所有権を表現する能力を定義します。
 
 :::tip 所有権
- [stake.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/stake.move) で `OwnerCapability` の定義を参照してください。
+[stake.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/stake.move) で `OwnerCapability` の定義を参照してください。
 :::
 
 OwnerCapability リソースを使用して、ステークプールをコントロールできます。以下の 3 つの役割がサポートされています。
@@ -91,18 +91,17 @@ OwnerCapability リソースを使用して、ステークプールをコント�
 状態はバリデータとステークに対して定義されます。
 
 - **バリデータの状態:** バリデータは、次の 4 つの状態のいずれかです。 さらに、バリデータは、inactive (バリデータセットにはない) 状態から、他の 3 つの状態のいずれかに移行できます。
-    - 非アクティブ (inactive)
-    - 保留中のアクティブ (pending_active)
-    - アクティブ (active)
-    - 保留中の非アクティブ (pending_inactive)
+  - 非アクティブ (inactive)
+  - 保留中のアクティブ (pending_active)
+  - アクティブ (active)
+  - 保留中の非アクティブ (pending_inactive)
 - **ステーク状態:** pending_inactive または active 状態のバリデータは、次の 4 つの状態のいずれかでステークを持つことができます。
-    - 非アクティブ (inactive)
-    - 保留中のアクティブ (pending_active)
-    - アクティブ (active)
-    - 保留中の非アクティブ (pending_inactive)
-    
-    これらのステーク状態は、ステークを追加または削除するバリデータセット内の既存のバリデータに適用されます。
-    
+  - 非アクティブ (inactive)
+  - 保留中のアクティブ (pending_active)
+  - アクティブ (active)
+  - 保留中の非アクティブ (pending_inactive)
+  これらのステーク状態は、ステークを追加または削除するバリデータセット内の既存のバリデータに適用されます。
+
 ### バリデータ状態
 
 <ThemedImage
@@ -112,7 +111,6 @@ sources={{
     dark: useBaseUrl('/img/docs/validator-state-dark.svg'),
   }}
 />
-    
 
 There are two edge cases to call out:
 
@@ -132,7 +130,6 @@ sources={{
     dark: useBaseUrl('/img/docs/stake-state-dark.svg'),
   }}
 />
-
 
 ### バリデータのルール
 
@@ -174,7 +171,6 @@ sources={{
 :::tip バリデータセットへの参加
 バリデーター セットに参加する方法の詳細な手順については、 [Joining Validator Set](../../nodes/validator-node/operator/connect-to-aptos-network.md#join-the-validator-set) を参照してください。
 :::
-
 
 ### ステークの最小値・最大値
 
@@ -276,8 +272,8 @@ Move 言語の Aptos ステークモジュール [stake.move](https://github.com
 :::
 
 - 次の一連の関数を呼び出して、いつでもバリデータセットから脱退することができます。
-    - `Stake::unlock` を呼び出してステーク額のロックを解除する。
-    - `Stake::withdraw`を呼び出して次のエポックで賭け金を引き出すか、`Stake::leave_validator_set`を呼び出す。
+  - `Stake::unlock` を呼び出してステーク額のロックを解除する。
+  - `Stake::withdraw`を呼び出して次のエポックで賭け金を引き出すか、`Stake::leave_validator_set`を呼び出す。
 
 ## バリデータセットへの再参加
 

@@ -63,7 +63,7 @@ const sidebars: SidebarsConfig = {
               collapsed: true,
               items: ["concepts/delegated-staking/in-japanese"],
             },
-            "concepts/staking/in-japanese"
+            "concepts/staking/in-japanese",
           ],
         },
         "concepts/governance",
