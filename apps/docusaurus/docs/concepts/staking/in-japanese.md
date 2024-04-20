@@ -7,8 +7,6 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # ステーキング
 
-# コンセンサス
-
 :::tip コンセンサス
 読み進める前に [Aptos Blockchain Deep Dive](../blockchain.md#consensus) のコンセンサスセクションを読むことを強くお勧めします。
 :::
@@ -100,7 +98,7 @@ OwnerCapability リソースを使用して、ステークプールをコント�
   - 保留中のアクティブ (pending_active)
   - アクティブ (active)
   - 保留中の非アクティブ (pending_inactive)
-  これらのステーク状態は、ステークを追加または削除するバリデータセット内の既存のバリデータに適用されます。
+    これらのステーク状態は、ステークを追加または削除するバリデータセット内の既存のバリデータに適用されます。
 
 ### バリデータ状態
 
