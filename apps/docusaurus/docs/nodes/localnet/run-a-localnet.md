@@ -1,23 +1,22 @@
 ---
-title: "Run a Local Testnet with Validator"
-slug: "run-a-local-testnet"
+title: "Run a Localnet with Validator"
 sidebar_position: 9
 ---
 
-# Run a Local Testnet with Validator
+# Run a Localnet with Validator
 
 :::tip Using the CLI to run a local development network
-Running a local testnet with the Aptos CLI is simpler and more fully featured. Learn how by following this guide: [Run a Local Development Network with the CLI](../../tools/aptos-cli/use-cli/running-a-local-network.md).
+Running a localnet with the Aptos CLI is simpler and more fully featured. Learn how by following this guide: [Run a Local Development Network with the CLI](../../tools/aptos-cli/use-cli/running-a-local-network.md).
 :::
 
-You can run a local testnet of the Aptos blockchain. This local testnet will not be connected to the Aptos devnet. It will run on your local machine, independent of other Aptos networks. You can use this local testnet for testing and development purposes.
+You can run a localnet of the Aptos blockchain. This localnet will not be connected to the Aptos devnet. It will run on your local machine, independent of other Aptos networks. You can use this localnet for testing and development purposes.
 
-You can run a local testnet using the Aptos-core source code. This approach is useful for testing modifications to the Aptos-core codebase or to the Aptos Framework.
+You can run a localnet using the Aptos-core source code. This approach is useful for testing modifications to the Aptos-core codebase or to the Aptos Framework.
 
 The rest of this document describes:
 
-- How to start your local testnet with a single validator node, and
-- How to start a Faucet service and attach it to your local testnet.
+- How to start your localnet with a single validator node, and
+- How to start a Faucet service and attach it to your localnet.
 
 ## Using the Aptos-core source code
 
@@ -27,7 +26,7 @@ The rest of this document describes:
 
    :::tip
 
-   - When you run the below command to start the local testnet, your terminal will enter into an interactive mode, with a message `Aptos is running, press ctrl-c to exit`. Hence, you will need to open another shell terminal for the subsequent steps described in this section.
+   - When you run the below command to start the localnet, your terminal will enter into an interactive mode, with a message `Aptos is running, press ctrl-c to exit`. Hence, you will need to open another shell terminal for the subsequent steps described in this section.
    - After the below command runs, copy the `Test dir` information from the terminal output for the next step.
      :::
 
@@ -55,7 +54,7 @@ The rest of this document describes:
    Aptos is running, press ctrl-c to exit
    ```
 
-**NOTE**: The above command starts a local testnet with a single validator node. The command runs `aptos-node` from a genesis-only ledger state. If you want to reuse the ledger state produced by a previous run of `aptos-node`, then use:
+**NOTE**: The above command starts a localnet with a single validator node. The command runs `aptos-node` from a genesis-only ledger state. If you want to reuse the ledger state produced by a previous run of `aptos-node`, then use:
 
 ```
 cargo run -p aptos-node -- --test --config <config-path>
@@ -65,7 +64,7 @@ cargo run -p aptos-node -- --test --config <config-path>
 
 Faucets are stateless services that can be run in parallel with the testnet. A Faucet is a way to create Aptos test coins with no real-world value. You can use the Faucet by sending a request to create coins and transfer them into a given account on your behalf.
 
-1. Make sure that you started your local testnet as described in Step 5 above.
+1. Make sure that you started your localnet as described in Step 5 above.
 2. Open a new shell terminal.
 3. Copy the _Aptos root key path_ from your terminal where you started the testnet, and use it to replace the `mint-key-file-path` in the below command.
 4. Run the following command to start a Faucet:
@@ -78,7 +77,7 @@ This will start a Faucet running locally without any restrictions to tokens that
 
 ## Interacting with the local test testnet
 
-After starting your local testnet, you will see the following:
+After starting your localnet, you will see the following:
 
 ```
 Entering test mode, this should never be used in production!
@@ -94,7 +93,7 @@ Completed generating configuration:
 Aptos is running, press ctrl-c to exit
 ```
 
-Use the [Aptos CLI tool](../../tools/aptos-cli/install-cli/index.md) to interact with your local testnet. The above output contains information you will use for starting the [Aptos CLI tool](../../tools/aptos-cli/use-cli/index.md):
+Use the [Aptos CLI tool](../../tools/aptos-cli/install-cli/index.md) to interact with your localnet. The above output contains information you will use for starting the [Aptos CLI tool](../../tools/aptos-cli/use-cli/index.md):
 
 - `Aptos root key path`: The root key (also known as the mint or faucet key) controls the account that can mint tokens. Available in the docker compose folder under `aptos_root_key`.
 - `Waypoint`: A verifiable checkpoint of the blockchain (available in the docker compose folder under waypoint.txt)

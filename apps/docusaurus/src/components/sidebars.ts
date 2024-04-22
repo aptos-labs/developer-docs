@@ -517,12 +517,12 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Develop Locally",
-          link: { type: "doc", id: "nodes/local-testnet/index" },
+          link: { type: "doc", id: "nodes/localnet/index" },
           collapsible: true,
           collapsed: true,
           items: [
             "tools/aptos-cli/use-cli/running-a-local-network",
-            "nodes/local-testnet/run-a-local-testnet",
+            "nodes/localnet/run-a-localnet",
             "guides/running-a-local-multi-node-network",
           ],
         },

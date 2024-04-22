@@ -59,7 +59,7 @@ MODULE_ADDR=${DEFAULT_ACCOUNT_ADDRESS} pnpm run multisig_managed_coin
 :::tip
 This example uses the Aptos devnet, which has historically been reset each Thursday.
 Make sure devnet is live when you try running the example!
-if you are running local-testnet with faucet, you can run the following command instead:
+if you are running localnet with faucet, you can run the following command instead:
 
 ```bash
 APTOS_NODE_URL=http://0.0.0.0:8080 APTOS_FAUCET_URL=http://0.0.0.0:8081 MODULE_ADDR=${DEFAULT_ACCOUNT_ADDRESS}  pnpm run multisig_managed_coin
