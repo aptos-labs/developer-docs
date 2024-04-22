@@ -30,21 +30,21 @@ In order to get started you'll need to select a network and pick your set of too
 
 There are four well-supported networks for integrating with the Aptos blockchain:
 
-1. [Local testnet](http://127.0.0.1:8080) -- our standalone tool for local development against a known version of the codebase with no external network.
+1. [Localnet](http://127.0.0.1:8080) -- our standalone tool for local development against a known version of the codebase with no external network.
 2. [Devnet](https://api.devnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data resets weekly, weekly update from aptos-core main branch.
 3. [Testnet](https://api.testnet.aptoslabs.com/v1/spec#/) -- a shared resource for the community, data will be preserved, network configuration will mimic Mainnet.
 4. [Mainnet](https://api.mainnet.aptoslabs.com/v1/spec#/) -- a production network with real assets.
 
 See [Aptos Blockchain Networks](../nodes/networks.md) for full details on each environment.
 
-### Run a local testnet
+### Run a localnet
 
-There are two options for running a local testnet:
+There are two options for running a localnet:
 
 - [Install the Aptos CLI](../tools/aptos-cli/install-cli/index.md) and 2) run a [local development network](../tools/aptos-cli/use-cli/running-a-local-network.md). This path is useful for developing on the Aptos blockchain, debugging Move contracts, and testing node operations. This will provide a fully featured local development environment including a single node network, a node REST API, an Indexer API, and a faucet.
-- Directly [run a local testnet](../nodes/local-testnet/run-a-local-testnet.md) using either the [Aptos-core source code](../nodes/local-testnet/run-a-local-testnet.md#using-the-aptos-core-source-code). These paths are useful for testing changes to the Aptos-core codebase or framework, or for building services on top of the Aptos blockchain, respectively.
+- Directly [run a localnet](../nodes/localnet/run-a-localnet.md) using either the [Aptos-core source code](../nodes/localnet/run-a-localnet.md#using-the-aptos-core-source-code). These paths are useful for testing changes to the Aptos-core codebase or framework, or for building services on top of the Aptos blockchain, respectively.
 
-Either of these methods will expose a [REST API service](../apis/fullnode-rest-api.md) at `http://127.0.0.1:8080` and a Faucet API service at `http://127.0.0.1:8000` for option 1 run a local testnet or `http://127.0.0.1:8081` for option 2 install the Aptos CLI. The applications will output the location of the services.
+Either of these methods will expose a [REST API service](../apis/fullnode-rest-api.md) at `http://127.0.0.1:8080` and a Faucet API service at `http://127.0.0.1:8000` for option 1 run a localnet or `http://127.0.0.1:8081` for option 2 install the Aptos CLI. The applications will output the location of the services.
 
 ### Production network access
 

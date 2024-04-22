@@ -90,7 +90,7 @@ poetry run python indexer_grpc_local.py stop
 
 ### Wiping the data
 
-When you start, stop, and start the service again, it will re-use the same local testnet data. If you wish to wipe the local testnet and start from scratch you can run the following command:
+When you start, stop, and start the service again, it will re-use the same localnet data. If you wish to wipe the locnet and start from scratch you can run the following command:
 
 ```
 poetry run python indexer_grpc_local.py wipe

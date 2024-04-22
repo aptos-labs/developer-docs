@@ -141,11 +141,11 @@ find additional resources for node operation in the [External Resources](../comm
           <div class="card-body">
           <h2 class="card-title">Common Operations</h2>
           </div>
-          <a href="/nodes/local-testnet/local-testnet-index" class="list-group-item">
+          <a href="/nodes/localnet" class="list-group-item">
             <div class="d-flex w-100 justify-content-between">
               <h4 class="mb-1">Local development testnet</h4>
             </div>
-            <small>Run a local testnet for development (including validator nodes).</small>
+            <small>Run a localnet for development (including validator nodes).</small>
           </a>
           <a href="/nodes/full-node/update-fullnode-with-new-devnet-releases" class="list-group-item">
             <div class="d-flex w-100 justify-content-between">

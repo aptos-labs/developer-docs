@@ -68,13 +68,13 @@ Faucet is ready. Endpoint: http://127.0.0.1:8081/
 
 Applying post startup steps...
 
-Setup is complete, you can now use the local testnet!
+Setup is complete, you can now use the localnet!
 ```
 
-Once you see this final line, you know the local testnet is ready to use:
+Once you see this final line, you know the localnet is ready to use:
 
 ```bash filename="Terminal"
-Setup is complete, you can now use the local testnet!
+Setup is complete, you can now use the localnet!
 ```
 
 As you can see from the output, once the local network is running, you have access to the following services:
@@ -206,7 +206,7 @@ The help output tells you which ports services use by default.
 - Opt out of running a faucet with `--no-faucet`.
 - Opt out of running a Transaction Stream Service with `--no-txn-stream`.
 
-### How do I publish Move modules to the local testnet?
+### How do I publish Move modules to the localnet?
 
 If you set up a profile called `local` above, you can run any command by adding the `--profile local` flag. In this case, we also use `local` as the named address in the `HelloBlockchain` example. The CLI will replace `local` with the account address for that profile.
 
@@ -310,7 +310,7 @@ aptos node run-local-testnet --with-indexer-api --use-host-postgres --postgres-u
 When running the CLI interactively, you can see if the network is alive by waiting for this message:
 
 ```bash filename="Terminal"
-Setup is complete, you can now use the local testnet!
+Setup is complete, you can now use the localnet!
 ```
 
 If you are writing a script and would like to wait for the local network to come up, you can make a GET request to `http://127.0.0.1:8070`. At first this will return [503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503). When it returns [200](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200) it means all the services are ready.

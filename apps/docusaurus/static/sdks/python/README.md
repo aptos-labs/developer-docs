@@ -33,7 +33,7 @@ make test
 
 We of course allow you to do this a bit more manually by:
 
-First, run a local testnet (run this from the root of aptos-core):
+First, run a localnet (run this from the root of aptos-core):
 
 ```bash
 cargo run -p aptos -- node run-local-testnet --force-restart --assume-yes

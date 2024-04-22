@@ -1,5 +1,5 @@
 export default {
-  "local-testnet": "Develop with Local Testnet",
+  "localnet": "Develop with Localnet",
   "validator-node": "Run a Validator and VFN",
   "full-node": "Run a Public Fullnode",
   "bootstrap-fullnode": "Bootstrap a Node",
