@@ -24,7 +24,7 @@ The rest of this document describes:
 
 1. Follow steps in [Building Aptos From Source](../building-from-source.mdx)
 
-2. With your development environment ready, now you can start your testnet network. Before you proceed, make a note of the following:
+2. With your development environment ready, now you can start your localnet. Before you proceed, make a note of the following:
 
    <Callout type="info">
    **NOTE**
@@ -32,7 +32,7 @@ The rest of this document describes:
    - After the below command runs, copy the `Test dir` information from the terminal output for the next step.
    </Callout>
 
-   To start your testnet locally, run the following command:
+   To start your localnet, run the following command:
 
    ```bash filename="Terminal"
    CARGO_NET_GIT_FETCH_WITH_CLI=true cargo run -p aptos-node -- --test
@@ -62,22 +62,22 @@ The rest of this document describes:
 cargo run -p aptos-node -- --test --config <config-path>
 ```
 
-### Attaching a Faucet to your testnet
+### Attaching a Faucet to your localnet
 
-Faucets are stateless services that can be run in parallel with the testnet. A Faucet is a way to create Aptos test coins with no real-world value. You can use the Faucet by sending a request to create coins and transfer them into a given account on your behalf.
+Faucets are stateless services that can be run in parallel with the localnet. A Faucet is a way to create Aptos test coins with no real-world value. You can use the Faucet by sending a request to create coins and transfer them into a given account on your behalf.
 
 1. Make sure that you started your localnet as described in Step 5 above.
 2. Open a new shell terminal.
-3. Copy the _Aptos root key path_ from your terminal where you started the testnet, and use it to replace the `mint-key-file-path` in the below command.
+3. Copy the _Aptos root key path_ from your terminal where you started the localnet, and use it to replace the `mint-key-file-path` in the below command.
 4. Run the following command to start a Faucet:
 
 ```bash filename="Terminal"
 cargo run --package aptos-faucet-service -- run-simple --key-file-path "/tmp/694173aa3bbe019499bbd5cf3fe0e2fc/mint.key" --node-url http://127.0.0.1:8080 --chain-id TESTING
 ```
 
-This will start a Faucet running locally without any restrictions to tokens that can be claimed and minted. This Faucet service will be as accessible as the testnet you started above.
+This will start a Faucet running locally without any restrictions to tokens that can be claimed and minted. This Faucet service will be as accessible as the localnet you started above.
 
-## Interacting with the local test testnet
+## Interacting with the localnet
 
 After starting your localnet, you will see the following:
 
