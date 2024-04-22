@@ -180,6 +180,37 @@ The REST API offers querying transactions and events in these ways:
 - [Transaction by version](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_version)
 - [Events by event handle](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)
 
+## Exchanging and tracking fungible assets
+
+Aptos has a standard [Fungible Asset](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move). Different types of fungible asset (FA) can be represented in this standard through the use of distinct metadata object.
+
+A user's FA is stored in `FungibleStore` objects owned by them. For each type of FA, every account has one primary store for that FA and
+optional multiple secondary stores. The difference between primary and secondary stores is the address of primary store
+is deterministic based on the addresses of user account and metadata object.
+
+### Transferring FAs between users
+
+FAs, including APT, can be transferred between users' primary stores via the [`primary_fungible_store::transfer`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/primary_fungible_store.move#L142) function.
+For any `FungibleStore`s, [`fungible_asset::transfer`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move#L347) would be invoked with `FungibleStore` object addresses.
+
+### Current balance for a coin
+
+The current balance for a APT FA of `FungibleStore` is available at the account resources URL: `https://{rest_api_server}/accounts/{fungible_store_object_address}/resource/0x1::fungible_asset::FungibleStore`. The balance is stored as `balance`. The resource also contains `metadata` object of the FA type and the `frozen` status.
+The address of the primary fungible store could be calculated as `sha3(32-byte account address | 32-byte metadata object address | 0xFC)`.
+
+```
+{
+    type:"0x1::fungible_asset::FungibleStore"
+    data:{
+        balance:"233910778869"
+        frozen:false
+        metadata:{
+            inner:"0xedc2704f2cef417a06d1756a04a16a9fa6faaed13af469be9cdfcac5a21a8e2e"
+        }
+    }
+}
+```
+
 ## Exchanging and tracking coins
 
 Aptos has a standard [Coin type](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move). Different types of coins can be represented in this type through the use of distinct structs that represent the type parameter or generic for `Coin<T>`.
