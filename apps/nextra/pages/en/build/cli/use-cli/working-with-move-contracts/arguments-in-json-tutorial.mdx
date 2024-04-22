@@ -24,7 +24,7 @@ Here, the package is deployed under the named address `test_account`.
 <Callout type="info" emoji="ℹ️">
 Set your working directory to [`aptos-move/move-examples/cli_args`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args) to follow along:
 
-```bash
+```bash filename="Terminal"
 cd <aptos-core-parent-directory>/aptos-core/aptos-move/move-examples/cli_args
 ```
 </Callout>
@@ -33,7 +33,7 @@ cd <aptos-core-parent-directory>/aptos-core/aptos-move/move-examples/cli_args
 
 Start by mining a vanity address for Ace, who will deploy the package:
 
-```bash filename=Command
+```bash filename="Terminal"
 aptos key generate \
     --vanity-prefix 0xace \
     --output-file ace.key
@@ -43,7 +43,7 @@ aptos key generate \
 <details>
 <summary>Output</summary>
 
-```bash filename="Output"
+```bash filename="Terminal"
 {
   "Result": {
     "Account Address:": "0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
@@ -60,14 +60,14 @@ The exact account address should vary for each run, though the vanity prefix sho
 
 Store Ace's address in a shell variable, so you can call it inline later on:
 
-```bash
+```bash filename="Terminal"
 # Your exact address will vary
 ace_addr=0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46
 ```
 
 Fund Ace's account with the faucet (either devnet or testnet):
 
-```bash filename=Command
+```bash filename="Terminal"
 aptos account fund-with-faucet --account $ace_addr
 ```
 
@@ -75,7 +75,7 @@ aptos account fund-with-faucet --account $ace_addr
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": "Added 100000000 Octas to account acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46"
 }
@@ -85,7 +85,7 @@ aptos account fund-with-faucet --account $ace_addr
 
 Now publish the package under Ace's account:
 
-```bash filename=Command
+```bash filename="Terminal"
 aptos move publish \
     --named-addresses test_account=$ace_addr \
     --private-key-file ace.key \
@@ -96,7 +96,7 @@ aptos move publish \
 <details>
 <summary>Output</summary>
 
-```json
+```json filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x1d7b074dd95724c5459a1c30fe4cb3875e7b0478cc90c87c8e3f21381625bec1",
@@ -188,7 +188,7 @@ aptos move run \
 <details>
 <summary>Output</summary>
 
-```json
+```json filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x5e141dc6c28e86fa9f5594de93d07a014264ebadfb99be6db922a929eb1da24f",
@@ -266,7 +266,7 @@ aptos move run \
 <details>
 <summary>Output</summary>
 
-```json
+```json filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x60a32315bb48bf6d31629332f6b1a3471dd0cb016fdee8d0bb7dcd0be9833e60",
@@ -359,7 +359,7 @@ If you are trying to run the example yourself don't forget to substitute Ace's a
 }
 ```
 
-```bash filename="Output"
+```bash filename="Terminal"
 {
   "Result": [
     {
@@ -428,7 +428,7 @@ aptos move compile --named-addresses test_account=$ace_addr
 <details>
 <summary>Output</summary>
 
-```json
+```json filename="Terminal"
 {
   "Result": [
     "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46::cli_args"
@@ -460,7 +460,7 @@ aptos move run-script \
 <details>
 <summary>Output</summary>
 
-```json
+```json filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x1d644eba8187843cc43919469112339bc2c435a49a733ac813b7bc6c79770152",
@@ -490,7 +490,7 @@ aptos move run-script \
 <details>
 <summary>Output</summary>
 
-```json
+```json filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x840e2d6a5ab80d5a570effb3665f775f1755e0fd8d76e52bfa7241aaade883d7",

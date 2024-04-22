@@ -8,13 +8,13 @@ You can install the Aptos CLI by following [these steps](../../install-cli.mdx) 
 
 You can look up resources and data an account has on-chain by running the following command:
 
-```bash
+```bash filename="Terminal"
 aptos account list --account <your-profile-name-or-account-address>
 ```
 
 This will show all resources that an account has. For example:
 
-```json filename="Output"
+```json filename="Terminal"
 {
   "Result": [
     {
@@ -53,7 +53,7 @@ If you’re interested in a specific type of account data, you can specify that 
 
 Here’s an example of what calling with the `--query modules` parameter looks like:
 
-```json filename="Output"
+```json filename="Terminal"
 aptos account list --query modules
 
 {

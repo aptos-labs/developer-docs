@@ -26,13 +26,13 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
 
 ### Create a new Ledger profile in the Aptos CLI
 
-   ```bash
+   ```bash filename="Terminal"
    aptos init --profile <your-profile> --ledger
    ```
 
    Then follow the terminal prompts like so:
 
-   ```bash
+   ```bash filename="Terminal"
    Configuring for profile <your-profile>
    Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
 
@@ -81,13 +81,13 @@ This process works for any command that requires a signature, whether that’s t
 
 For example, if you wanted to publish a Move package like the `[hello_blockchain](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)` demo contract you could follow the above steps then run:
 
-```bash
+```bash filename="Terminal"
 aptos move publish --profile <your-ledger-profile-name> --named-addresses hello_blockchain=<your-ledger-profile-name>
 ```
 
 You should see a response like:
 
-```bash
+```bash filename="Terminal"
 Compiling, may take a little while to download git dependencies...
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib
