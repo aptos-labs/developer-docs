@@ -4,14 +4,7 @@ import { Callout } from 'nextra/components'
 
 The Aptos CLI is mostly used to compile, test, and formally verify Move contracts. If you have not installed the Aptos CLI yet, you can do so by following the steps here [Install the Aptos CLI](../install-cli.mdx).
 
-You can jump to sections here:
-
-1. [Compiling Move](#1-compiling-move)
-2. [Unit Testing Move Contracts](#2-unit-testing-move-contracts)
-3. [Generating Test Coverage Reports](#3-generating-test-coverage-reports)
-4. [Publishing Move Contracts](#4-publishing-move-contracts)
-5. [Running Published Contracts](#5-running-published-contracts)
-6. [(Optional) Formally Verifying Move Scripts](#6-optional-formally-verifying-move-scripts)
+You can jump to specific sections by using the table of contents on the right.
 
 To see how to chain together Move contracts on-chain using the CLI, you can follow this [“CLI Arguments” tutorial](./working-with-move-contracts/arguments-in-json-tutorial.mdx).
 
@@ -35,7 +28,7 @@ Based on the settings in your `Move.toml` file, you may need to pass in addition
 
 For example, if you look at the [hello_blockchain example Move contract](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain), in the `Move.toml` file it specifies a variable named address called `hello_blockchain`.
 
-```
+```toml filename="Move.toml"
 [addresses]
 hello_blockchain = "_"
 ```
