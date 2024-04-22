@@ -18,7 +18,7 @@ For this example, Ace and Bee will conduct governance operations from a 2-of-2 "
 
 Since Ace's account was created during the [Arguments in JSON](./arguments-in-json-tutorial.mdx) tutorial, start by mining a vanity address account for Bee too:
 
-```bash filename=Command
+```bash filename="Terminal"
 aptos key generate \
     --vanity-prefix 0xbee \
     --output-file bee.key
@@ -27,7 +27,7 @@ aptos key generate \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": {
     "PublicKey Path": "bee.key.pub",
@@ -45,21 +45,21 @@ The exact account address should vary for each run, though the vanity prefix sho
 
 Store Bee's address in a shell variable, so you can call it inline later on:
 
-```bash
+```bash filename="Terminal"
 # Your exact address should vary
 bee_addr=0xbeec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc
 ```
 
 Fund Bee's account using the faucet:
 
-```bash filename=Command
+```bash filename="Terminal"
 aptos account fund-with-faucet --account $bee_addr
 ```
 
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": "Added 100000000 Octas to account beec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc"
 }
@@ -69,7 +69,7 @@ aptos account fund-with-faucet --account $bee_addr
 
 Ace can now create a multisig account:
 
-```bash filename=Command
+```bash filename="Terminal"
 aptos multisig create \
     --additional-owners $bee_addr \
     --num-signatures-required 2 \
@@ -80,7 +80,7 @@ aptos multisig create \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": {
     "multisig_address": "57478da34604655c68b1dcb89e4f4a9124b6c0ecc1c59a0931d58cc4e60ac5c5",
@@ -101,7 +101,7 @@ aptos multisig create \
 
 Store the multisig address in a shell variable:
 
-```bash
+```bash filename="Terminal"
 # Your address should vary
 multisig_addr=0x57478da34604655c68b1dcb89e4f4a9124b6c0ecc1c59a0931d58cc4e60ac5c5
 ```
@@ -120,7 +120,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     "2"
@@ -140,7 +140,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     [
@@ -163,7 +163,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     "0"
@@ -183,7 +183,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     "1"
@@ -208,7 +208,7 @@ aptos move build-publish-payload \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": "Publication payload entry function JSON file saved to publication.json"
 }
@@ -230,7 +230,7 @@ aptos multisig create-transaction \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x70c75903f8e1b1c0069f1e84ef9583ad8000f24124b33a746c88d2b031f7fe2c",
@@ -260,7 +260,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     "0"
@@ -282,7 +282,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     "2"
@@ -305,7 +305,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     {
@@ -358,7 +358,7 @@ aptos multisig create-transaction \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0xd0a348072d5bfc5a2e5d444f92f0ecc10b978dad720b174303bc6d91342f27ec",
@@ -388,7 +388,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     "3"
@@ -410,7 +410,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     [
@@ -476,7 +476,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     false
@@ -498,7 +498,7 @@ aptos multisig verify-proposal \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": {
     "Status": "Transaction match",
@@ -541,7 +541,7 @@ aptos multisig approve \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0xa5fb49f1077de6aa6d976e6bcc05e4c50c6cd061f1c87e8f1ea74e7a04a06bd1",
@@ -572,7 +572,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     true
@@ -619,7 +619,7 @@ aptos move view \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": [
     false
@@ -648,7 +648,7 @@ aptos multisig verify-proposal \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": {
     "Status": "Transaction match",
@@ -697,7 +697,7 @@ aptos multisig verify-proposal \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Error": "Unexpected error: Transaction mismatch: The transaction you provided has a payload hash of 0xe494b0072d6f940317344967cf0e818c80082375833708c773b0275f3ad07e51, but the on-chain transaction proposal you specified has a payload hash of 0x070ed7c3f812f25f585461305d507b96a4e756f784e01c8c59901871267a1580. For more info, see https://aptos.dev/move/move-on-aptos/cli#multisig-governance"
 }
@@ -718,7 +718,7 @@ aptos multisig approve \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x233427d95832234fa13dddad5e0b225d40168b4c2c6b84f5255eecc3e68401bf",
@@ -749,7 +749,7 @@ aptos multisig execute \
 <details>
 <summary>Output</summary>
 
-```bash
+```bash filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0xbc99f929708a1058b223aa880d04607a78ebe503367ec4dab23af4a3bdb541b2",
