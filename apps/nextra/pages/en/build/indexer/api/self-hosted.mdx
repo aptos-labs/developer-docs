@@ -2,7 +2,7 @@
 title: "Self-Hosted Indexer API"
 ---
 
-import BetaNotice from '../../../src/components/\_indexer_beta_notice.mdx';
+import BetaNotice from '@components/IndexerBetaNotice';
 
 <BetaNotice />
 
@@ -90,14 +90,14 @@ cargo run --release -- -c config.yaml
 
 ## Run with Docker
 
-<!--
+{/* <!--
 This doesn't actually work this very moment because:
 
 1. We don't yet publish the image as indexer-processor-rust
 2. We don't tag it as latest.
 
 We'll do that soon though: https://aptos-org.slack.com/archives/C04PRP1K1FZ/p1692732083583659
--->
+--> */}
 
 To run the service with Docker, use the following command:
 
