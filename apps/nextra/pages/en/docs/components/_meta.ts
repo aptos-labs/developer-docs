@@ -6,4 +6,5 @@ export default {
   table: "Rendering Tables",
   "themed-image": "Themed Image",
   "graphql-editor": "GraphQL Editor",
+  "remote-codeblock": "Remote Codeblock",
 };

@@ -1,0 +1,20 @@
+---
+title: "Remote Codeblock"
+---
+
+import { permalinkFetch, RemoteCodeblock } from '@components/index'
+import { useData } from 'nextra/hooks'
+
+# Remote Codeblock
+
+Custom Remote Codeblock component.
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/runelite/runelite/blob/2253b25197fe92aed4b6f26b44925842fd3f0dfd/.gitignore#L10'
+  ])
+}
+
+<RemoteCodeblock 
+  permalink="https://github.com/runelite/runelite/blob/2253b25197fe92aed4b6f26b44925842fd3f0dfd/.gitignore#L10" 
+/>
