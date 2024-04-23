@@ -23,7 +23,7 @@ export function MoveCodeBlock({
   return (
     <div
       className={cn(
-        "px-px pt-px [background-image:linear-gradient(to_bottom,transparent,var(--background-primary)),radial-gradient(#C97E64_0%,_#D8A679_8%,_#97D9D7_70%,_#E99E52_110%)]",
+        "flex flex-col px-px pt-px [background-image:linear-gradient(to_bottom,transparent,var(--background-primary)),radial-gradient(#C97E64_0%,_#D8A679_8%,_#97D9D7_70%,_#E99E52_110%)]",
         className,
       )}
     >
@@ -43,7 +43,8 @@ export function MoveCodeBlock({
         ref={codeContainerRef}
         dangerouslySetInnerHTML={{ __html: codeSnippet }}
         className="
-          px-6 py-10 xl:px-8 xl:py-12 bg-[#F0FAFA] dark:bg-[linear-gradient(0deg,_#051419_-26.89%,_#0D262E_100%)]
+          flex-1 px-2 py-6 md:px-6 md:py-10 xl:px-8 xl:py-12 overflow-auto
+          bg-[#F0FAFA] dark:bg-[linear-gradient(0deg,_#051419_-26.89%,_#0D262E_100%)]
           [&_span]:text-[8px] md:[&_span]:text-12 xl:[&_span]:text-14 [&_span]:text-[var(--shiki-light)] dark:[&_span]:text-[var(--shiki-dark)]
         "
       />

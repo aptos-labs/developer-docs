@@ -9,27 +9,18 @@ import {
   fungibleAssetsCodeSnippet,
   objectsCodeSnippet
 } from "@components/landing/codeSnippets";
-import { codeToHtml } from "shiki";
+import { highlightCode } from "utils/highlightCode";
 
 export const getStaticProps = async () => {
-  const highlight = (codeSnippet) => {
-    return codeToHtml(codeSnippet, {
-      lang: "move",
-      themes: {
-        light: "github-light",
-        dark: "github-dark",
-      },
-      defaultColor: false,
-    })
-  }
+  const codeSnippets = {
+    coinsCodeSnippet: await highlightCode(coinsCodeSnippet),
+    objectsCodeSnippet: await highlightCode(objectsCodeSnippet),
+    fungibleAssetsCodeSnippet: await highlightCode(fungibleAssetsCodeSnippet),
+  };
 
   return {
     props: {
-      ssg: {
-        coinsCodeSnippet: await highlight(coinsCodeSnippet),
-        objectsCodeSnippet: await highlight(objectsCodeSnippet),
-        fungibleAssetsCodeSnippet: await highlight(fungibleAssetsCodeSnippet),
-      },
+      ssg: codeSnippets,
     }
   }
 }

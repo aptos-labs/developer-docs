@@ -85,6 +85,7 @@ export function MoveSection() {
         <div className="flex max-w-full px-8 lg:px-0">
           <MoveCodeBlock
             codeSnippet={moveExamples[activeExample].codeSnippet}
+            className="md:w-[666px] xl:w-[780px] max-md:h-[415px] lg:h-[635px] xl:h-[735px]"
           />
         </div>
         <Carousel

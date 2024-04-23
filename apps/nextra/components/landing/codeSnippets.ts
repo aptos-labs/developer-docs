@@ -28,18 +28,13 @@ module 0xCAFE::BasicCoin {
 `.trim();
 
 export const objectsCodeSnippet = `
-module 0xCAFE:BasicObject {
+module 0xCAFE::BasicObject {
   /// Sets up the object, and returns the signer for simplicity
   fun setup_object(constructor_ref: &ConstructorRef, can_transfer: bool) {
-      // -- Generate references --
-      // These references let you control what is possible with an object
-
       // Lets you get a signer of the object to do anything with it
       let extend_ref = object::generate_extend_ref(constructor_ref);
 
       // Lets you gate the ability to transfer the object
-      //
-      // In this case, we allow for "soulbound" or non-transferring objects
       let transfer_ref = if (can_transfer) {
           option::some(object::generate_transfer_ref(constructor_ref))
       } else {
@@ -47,7 +42,6 @@ module 0xCAFE:BasicObject {
       };
 
       // Lets you delete this object, if possible
-      // Sticky objects and named objects can't be deleted
       let delete_ref = if (object::can_generate_delete_ref(constructor_ref)) {
           option::some(object::generate_delete_ref(constructor_ref))
       } else {
@@ -56,13 +50,7 @@ module 0xCAFE:BasicObject {
 
       // -- Store references --
       // A creator of the object can choose which of these to save, and move them
-      // into any object alongside. In this case, we'll save all of them so we
-      // can illustrate what you can do with them.
-      //
-      // If any of the references are not created and stored during object creation,
-      // they cannot be added later.
-
-      // Move the References to be stored at the object address
+      // into any object.
       let object_signer = object::generate_signer(constructor_ref);
 
       move_to(&object_signer, ObjectController {
@@ -75,21 +63,15 @@ module 0xCAFE:BasicObject {
 `;
 
 export const fungibleAssetsCodeSnippet = `
-module 0xCAFE:BasicFungibleAsset {
-  /// Swaps \`from\` for the other token in the pool.
+module 0xCAFE::BasicFungibleAsset {
+  /// Swaps between two tokens in the pool
   /// This is friend-only as the returned fungible assets might be of an internal
   /// wrapper type. If this is not the case, this function can be made public.
   public(friend) fun swap(
       pool: Object<LiquidityPool>,
       from: FungibleAsset,
   ): FungibleAsset acquires FeesAccounting, LiquidityPool, LiquidityPoolConfigs {
-      assert!(!safe_liquidity_pool_configs().is_paused, ESWAPS_ARE_PAUSED);
-      // Calculate the amount of tokens to return to the user and the amount of
-      // fees_accounting to extract.
-      let from_token = fungible_asset::metadata_from_asset(&from);
-      let amount_in = fungible_asset::amount(&from);
-      let (amount_out, fees_amount) = get_amount_out(pool, from_token, amount_in);
-      let fees = fungible_asset::extract(&mut from, fees_amount);
+      // ...
 
       // Deposits and withdraws.
       let pool_data = liquidity_pool_data(&pool);
@@ -113,11 +95,7 @@ module 0xCAFE:BasicFungibleAsset {
           fungible_asset::withdraw(swap_signer, store_1, amount_out)
       };
 
-      let k_after = calculate_constant_k(pool_data);
-      assert!(k_before <= k_after, EK_BEFORE_SWAP_GREATER_THAN_EK_AFTER_SWAP);
-
-      event::emit(Swap { pool: object::object_address(&pool), from_token, amount_in }, );
-      out
+      // ...
   }
 }
 `;
