@@ -49,7 +49,7 @@ export function Accordion({
               </AccordionPrimitive.Trigger>
             </HeadingLevel>
           </AccordionPrimitive.Header>
-          <AccordionPrimitive.Content className="overflow-hidden data-[state=open]:animate-accordionOpen data-[state=closed]:animate-accordionClose">
+          <AccordionPrimitive.Content className="data-[state=open]:animate-accordionOpen data-[state=closed]:animate-accordionClose">
             <div className="flex flex-col gap-3 p-3 pt-0">
               <p className="body-200 text-text-muted -mt-1.5">
                 {item.description}
