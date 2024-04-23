@@ -5,102 +5,135 @@ const createOklchColors = require("./oklchColorsPlugin");
 const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
   colors: {
     general: {
-      white: oklch(100, 0, 0),
-      black: oklch(0, 0, 0),
-      transparent: oklch(0, 0, 0, 0),
-      red: oklch(78, 0.13, 25),
-      aqua: oklch(78, 0.13, 184),
-      green: oklch(78, 0.13, 139),
+      white: oklch(100, 0, 0), // #FFF
+      black: oklch(0, 0, 0), // #000
+      transparent: oklch(0, 0, 0, 0), // #FFFFFF00
+      red: oklch(78.11, 0.1275, 25.03), // #FF968E
+      aqua: oklch(78.11, 0.134, 184.44), // #1ED3C2
+      green: oklch(78.05, 0.134, 138.9), // #8ACC77
     },
     brand: {
-      blue: oklch(78, 0.13, 192),
-      lightBlue: oklch(92, 0.13, 193),
+      blue: oklch(78.07, 0.1339, 192.33), // #00D2CE
+      lightBlue: oklch(91.54, 0.134, 193.32), // #5BFFFC
     },
     spectral: {
       red: {
-        200: oklch(84, 0.02, 30),
-        500: oklch(84, 0.08, 30),
-        800: oklch(72, 0.15, 30),
-        900: oklch(40, 0.1, 30),
+        200: oklch(83.97, 0.02, 29.56), // #D7C6C3
+        500: oklch(84.04, 0.079, 30.42), // #FAB8AC
+        800: oklch(71.97, 0.15, 29.58), // #F47C6B
+        900: oklch(40.02, 0.1, 30.37), // #742F25
       },
       yellow: {
-        200: oklch(84, 0.02, 100),
-        500: oklch(84, 0.08, 100),
-        800: oklch(72, 0.15, 100),
-        900: oklch(40, 0.1, 100),
+        200: oklch(83.96, 0.021, 100.64), // #CDCBBC
+        500: oklch(83.9, 0.08, 99.98), // #D6CC8F
+        800: oklch(71.91, 0.149, 99.69), // #BBA500
+        900: oklch(39.94, 0.083, 100.25), // #524800
       },
       orange: {
-        200: oklch(84, 0.02, 65),
-        500: oklch(84, 0.08, 65),
-        800: oklch(72, 0.15, 65),
-        900: oklch(40, 0.1, 65),
+        200: oklch(83.95, 0.02, 65.1), // #D4C8BD
+        500: oklch(83.88, 0.08, 65.14), // #EFC093
+        800: oklch(72.06, 0.15, 64.8), // #E48E26
+        900: oklch(40.08, 0.0896, 65.41), // #683C00
       },
       green: {
-        200: oklch(84, 0.02, 170),
-        500: oklch(84, 0.08, 170),
-        800: oklch(72, 0.15, 170),
-        900: oklch(40, 0.1, 170),
+        200: oklch(84.03, 0.02, 167.83), // #BFCFC8
+        500: oklch(84.04, 0.08, 170.28), // #95DCC3
+        800: oklch(72.12, 0.1429, 169.91), // #00C197
+        900: oklch(39.98, 0.079, 170), // #005541
       },
       blue: {
-        200: oklch(84, 0.02, 240),
-        500: oklch(84, 0.08, 240),
-        800: oklch(72, 0.15, 240),
-        900: oklch(40, 0.1, 240),
+        200: oklch(84.07, 0.021, 238.72), // #BFCDD7
+        500: oklch(83.99, 0.08, 240.46), // #9BD2FA
+        800: oklch(71.99, 0.15, 239.95), // #30AFF8
+        900: oklch(40.08, 0.0919, 240.09), // #004D74
       },
       violet: {
-        200: oklch(84, 0.02, 310),
-        500: oklch(84, 0.08, 310),
-        800: oklch(72, 0.15, 310),
-        900: oklch(40, 0.1, 310),
+        200: oklch(83.95, 0.021, 308.19), // #CEC7D5
+        500: oklch(84.11, 0.079, 310.24), // #DBBDF2
+        800: oklch(72, 0.149, 309.88), // #C188EA
+        900: oklch(39.95, 0.1, 310.14), // #58366F
       },
     },
   },
   semanticColors: {
     text: {
-      primary: { base: "general-black", dark: "general-white" },
-      secondary: { base: oklch(90, 0, 0), dark: oklch(90, 0, 0) },
-      muted: { base: oklch(35, 0.02, 219), dark: oklch(66, 0.02, 219) },
+      primary: {
+        base: oklch(18.01, 0.024, 220.99), // #051419
+        dark: oklch(92.05, 0.007, 106.53), // #E5E5E0
+      },
+      secondary: {
+        base: oklch(18.01, 0.024, 220.99), // #051419
+        dark: oklch(65.68, 0.023, 218.74), // #82959B
+      },
+      muted: {
+        base: oklch(34.81, 0.022, 218.94), // #2D3D42
+        dark: oklch(65.68, 0.023, 218.74), // #82959B
+      },
       link: {
         DEFAULT: { base: "brand-blue", dark: "brand-blue" },
         hover: { base: "brand-lightBlue", dark: "brand-lightBlue" },
       },
-      label: { base: oklch(10, 0, 0), dark: oklch(90, 0, 0) },
+      label: {
+        base: oklch(90.06, 0, 0), // #DEDEDE
+      },
       success: { base: "spectral-green-800", dark: "spectral-green-800" },
       error: { base: "spectral-red-800", dark: "spectral-red-800" },
       warning: { base: "spectral-orange-800", dark: "spectral-orange-800" },
       disabled: { base: "general-white/20" },
     },
     background: {
-      primary: { base: oklch(96, 0.01, 214), dark: oklch(18, 0.02, 221) },
-      secondary: { base: oklch(22, 0.03, 216), dark: oklch(22, 0.03, 216) },
-      tertiary: { base: oklch(24, 0.03, 214), dark: oklch(24, 0.03, 214) },
-      elevated: { base: oklch(21, 0.03, 219), dark: oklch(21, 0.03, 219) },
-      disabled: { base: oklch(37, 0.02, 222), dark: oklch(37, 0.02, 222) },
+      primary: {
+        base: oklch(95.87, 0.009, 214.34), // #EBF3F5
+        dark: oklch(18.01, 0.024, 220.99), // #051419
+      },
+      secondary: {
+        base: oklch(21.61, 0.028, 215.56), // #081D22
+      },
+      tertiary: {
+        base: oklch(24.01, 0.03, 213.84), // #0C2328
+      },
+      elevated: {
+        base: oklch(98.86, 0.0088, 214.34), // #F5FDFF
+        dark: oklch(20.56, 0.025, 219.19), // #091A1F
+      },
+      disabled: {
+        base: oklch(37.45, 0.016, 221.78), // #384347
+      },
     },
     border: {
       primary: { base: "general-black/15", dark: "general-white/15" },
-      secondary: { base: oklch(66, 0.02, 219), dark: oklch(66, 0.02, 219) },
+      secondary: {
+        base: oklch(65.68, 0.023, 218.74), // #82959B
+      },
       success: { base: "spectral-green-800", dark: "spectral-green-800" },
       error: { base: "spectral-red-800", dark: "spectral-red-800" },
       warning: { base: "spectral-orange-800", dark: "spectral-orange-800" },
       interactive: {
-        DEFAULT: { base: oklch(33, 0.02, 220), dark: oklch(33, 0.02, 220) },
-        hover: { base: oklch(33, 0.02, 220), dark: oklch(33, 0.02, 220) },
-        active: { base: oklch(33, 0.02, 220), dark: oklch(33, 0.02, 220) },
-        disabled: { base: oklch(33, 0.02, 220), dark: oklch(33, 0.02, 220) },
-        focus: { base: oklch(51, 0.08, 195), dark: oklch(51, 0.08, 195) },
+        DEFAULT: {
+          base: oklch(32.75, 0.018, 220.08), // #2B373B
+        },
+        focus: {
+          base: oklch(50.67, 0.079, 194.96), // #1B7373
+        },
       },
-      divider: { base: "general-black/5", dark: "general-white/5" },
+      divider: {
+        base: oklch(18.01, 0.024, 220.99, 30), // #051419 @ 30%
+        dark: "general-white/5",
+      },
     },
     icon: {
       primary: { base: "general-black", dark: "general-white" },
-      secondary: { base: oklch(10, 0, 0), dark: oklch(90, 0, 0) },
-      tertiary: { base: oklch(66, 0.02, 219), dark: oklch(66, 0.02, 219) },
+      secondary: {
+        base: oklch(90.06, 0, 0), // #DEDEDE
+      },
+      tertiary: {
+        base: oklch(65.68, 0.023, 218.74), // #82959B
+      },
     },
     nav: {
       background: {
-        base: oklch(96, 0.01, 214, 70),
-        dark: oklch(18, 0.02, 221, 70),
+        base: oklch(95.87, 0.009, 214.34, 70), // #EBF3F5 @ 70%
+        dark: oklch(18.01, 0.024, 220.99, 70), // #051419 @ 70%
       },
     },
     button: {
@@ -108,7 +141,9 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         DEFAULT: {
           background: { base: "general-white" },
           text: { base: "general-black" },
-          border: { base: oklch(66, 0.02, 219) },
+          border: {
+            base: oklch(65.68, 0.023, 218.74), // #82959B
+          },
         },
         hovered: {
           background: { base: "brand-blue" },
@@ -119,7 +154,9 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
           text: { base: "general-black" },
         },
         disabled: {
-          background: { base: oklch(33, 0.02, 220) },
+          background: {
+            base: oklch(37.45, 0.016, 221.78), // #384347
+          },
           text: { base: "general-white/20" },
         },
       },
@@ -140,9 +177,41 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
           border: { base: "brand-lightBlue" },
         },
         disabled: {
-          background: { base: oklch(33, 0.02, 220) },
+          background: {
+            base: oklch(37.45, 0.016, 221.78), // #384347
+          },
           text: { base: "general-white/20" },
-          border: { base: oklch(33, 0.02, 220) },
+          border: {
+            base: oklch(37.45, 0.016, 221.78), // #384347
+          },
+        },
+      },
+    },
+    codeBlock: {
+      border: {
+        left: {
+          base: oklch(66.61, 0.101, 39.85), // #C97E64
+        },
+        right: {
+          base: oklch(75.89, 0.128, 64.03), // #E99E52
+        },
+      },
+      fileName: {
+        base: oklch(18.01, 0.024, 220.99), // #051419
+      },
+      copyButton: {
+        base: oklch(34.81, 0.022, 218.94), // #2D3D42
+      },
+    },
+    carousel: {
+      progressDot: {
+        DEFAULT: {
+          base: oklch(76.78, 0.022, 223.09), // #A5B7BE
+          dark: oklch(28.64, 0.04, 219.85), // #102F38
+        },
+        active: {
+          base: oklch(65.72, 0.024, 221.98), // #82959C
+          dark: oklch(50.66, 0.078, 221.71), // #266F85
         },
       },
     },
@@ -167,7 +236,9 @@ module.exports = {
         14: "0.875rem",
         16: "1rem",
         18: "1.125rem",
+        20: "1.25rem",
         24: "1.5rem",
+        26: "1.625rem",
         30: "1.875rem",
         39: "2.4375rem",
         51: "3.1875rem",
@@ -181,6 +252,7 @@ module.exports = {
         22: "1.375rem",
         24: "1.5rem",
         26: "1.625rem",
+        32: "2rem",
         34: "2.125rem",
         42: "2.625rem",
         52: "3.25rem",
@@ -211,6 +283,20 @@ module.exports = {
         dialog: "100",
         popover: "200",
         toast: "300",
+      },
+      animation: {
+        accordionOpen: "accordionOpen 0.25s ease",
+        accordionClose: "accordionClose 0.25s ease",
+      },
+      keyframes: {
+        accordionOpen: {
+          "0%": { height: 0 },
+          "100%": { height: "var(--radix-accordion-content-height)" },
+        },
+        accordionClose: {
+          "0%": { height: "var(--radix-accordion-content-height)" },
+          "100%": { height: 0 },
+        },
       },
     },
   },
@@ -308,6 +394,24 @@ module.exports = {
           fontSize: theme("fontSize.18"),
           lineHeight: theme("lineHeight.26"),
           fontWeight: theme("fontWeight.semibold"),
+        },
+
+        // Title Text Styles
+        ".title-100": {
+          fontFamily: theme("fontFamily.landing"),
+          fontSize: theme("fontSize.20"),
+          lineHeight: theme("lineHeight.32"),
+          fontWeight: theme("fontWeight.regular"),
+          textTransform: "uppercase",
+          letterSpacing: "3px",
+        },
+        ".title-200": {
+          fontFamily: theme("fontFamily.landing"),
+          fontSize: theme("fontSize.26"),
+          lineHeight: theme("lineHeight.34"),
+          fontWeight: theme("fontWeight.regular"),
+          textTransform: "uppercase",
+          letterSpacing: "4px",
         },
 
         // Heading Text Styles

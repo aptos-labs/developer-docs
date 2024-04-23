@@ -4,6 +4,34 @@ searchable: false
 ---
 
 import { Landing } from "@components/landing";
+import {
+  coinsCodeSnippet,
+  fungibleAssetsCodeSnippet,
+  objectsCodeSnippet
+} from "@components/landing/codeSnippets";
+import { codeToHtml } from "shiki";
+
+export const getStaticProps = async () => {
+  const highlight = (codeSnippet) => {
+    return codeToHtml(codeSnippet, {
+      lang: "move",
+      themes: {
+        light: "github-light",
+        dark: "github-dark",
+      },
+      defaultColor: false,
+    })
+  }
+
+  return {
+    props: {
+      ssg: {
+        coinsCodeSnippet: await highlight(coinsCodeSnippet),
+        objectsCodeSnippet: await highlight(objectsCodeSnippet),
+        fungibleAssetsCodeSnippet: await highlight(fungibleAssetsCodeSnippet),
+      },
+    }
+  }
+}
 
 <Landing />
-
