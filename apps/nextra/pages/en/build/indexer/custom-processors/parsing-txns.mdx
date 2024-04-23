@@ -2,13 +2,14 @@
 title: "Parsing Transactions"
 ---
 
-import BetaNotice from '@components/IndexerBetaNotice';
+import BetaNotice from '@components/IndexerBetaNotice.mdx';
+
 <BetaNotice />
 
-<!--
+{/* <!--
 Things to add:
 - We should have tabs for each language that mentions helper functions for extracting the thing you want. For example, if the user is trying to extract the entry function arguments, there should be a function like `get_entry_function_arguments` and we show how to use it in each language and where it comes from in the SDK.
--->
+--> */}
 
 Fundamentally an indexer processor is just something that consumes a stream of a transactions and writes processed data to storage. Let's dive into what a transaction is and what kind of information you can extract from one.
 
@@ -81,4 +82,4 @@ Writesets show the end state of the on-chain data after the transaction has occu
 - Write resource / delete resource
 - Write table item / delete table item
 
-<!-- Add more information about writesets, ideally once have the helper functions. -->
+{/* <!-- Add more information about writesets, ideally once have the helper functions. --> */}
