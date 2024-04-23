@@ -187,22 +187,6 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         },
       },
     },
-    codeBlock: {
-      border: {
-        left: {
-          base: oklch(66.61, 0.101, 39.85), // #C97E64
-        },
-        right: {
-          base: oklch(75.89, 0.128, 64.03), // #E99E52
-        },
-      },
-      fileName: {
-        base: oklch(18.01, 0.024, 220.99), // #051419
-      },
-      copyButton: {
-        base: oklch(34.81, 0.022, 218.94), // #2D3D42
-      },
-    },
     carousel: {
       progressDot: {
         DEFAULT: {
