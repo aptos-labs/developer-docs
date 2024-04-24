@@ -29,7 +29,7 @@ cd aptos-indexer-processors
 cd python/processors/coin_flip
 ```
 
-Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an authorization token. Follow [this guide](../txn-stream/labs-hosted.md#authorization-via-api-key) to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`. Once you're done, you should have a token that looks like this:
+Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an authorization token. Follow [this guide](../txn-stream/labs-hosted.mdx#authorization-via-api-key) to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`. Once you're done, you should have a token that looks like this:
 
 ```bash filename="Terminal"
 aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx
@@ -37,7 +37,7 @@ aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx
 
 You also need the following tools:
 
-- The [Aptos CLI](/tools/aptos-cli/install-cli)
+- The [Aptos CLI](../../cli.mdx)
 - Python 3.11+: [Installation Guide](https://docs.python-guide.org/starting/installation/#python-3-installation-guides).
 - Poetry: [Installation Guide](https://python-poetry.org/docs/#installation).
 
@@ -87,7 +87,7 @@ Now let's set up the configuration details for the actual indexer processor we'r
 
 Copy the contents below and save it to a file called `config.yaml`. Save it in the `coin_flip` folder. Your file directory structure should look something like this:
 
-```yaml filename="config.yaml"
+```yaml filename="Directory"
 - aptos-indexer-processor
     - python
         - processors
@@ -225,7 +225,7 @@ In our Move contract (in `coin_flip/move/sources/coin_flip.move`), each user has
 struct CoinFlipStats has key {
     wins: u64,
     losses: u64,
-    event_handle: EventHandle<CoinFlipEvent>,  //
+    event_handle: EventHandle<CoinFlipEvent>,
     delete_ref: DeleteRef,
 }
 
