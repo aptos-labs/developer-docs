@@ -1,7 +1,7 @@
 ---
 title: "Parsing Transactions"
 ---
-
+import { Callout } from 'nextra/components'
 import BetaNotice from '@components/IndexerBetaNotice.mdx';
 
 <BetaNotice />
@@ -68,9 +68,11 @@ public entry fun invite_member(member: address) {
 
 If `invite_member` is called, you will find the `MemberInvitedEvent` in the transaction.
 
-:::tip Why emit events?
+<Callout type="info"> 
+Why emit events?
+
 This is a good question! In some cases, you might find it unnecessary to emit events since you can just parse the writesets. However, sometimes it is quite difficult to get all the data you need from the different "locations" in the transaction, or in some cases it might not even be possible, e.g. if you want to index data that isn't included in the writeset. In these cases, events are a convenient way to bundle together everything you want to index.
-:::
+</Callout>
 
 ### Writesets
 

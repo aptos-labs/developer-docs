@@ -1,16 +1,19 @@
 ---
 title: "Custom Data Model"
 ---
+import { Callout } from 'nextra/components'
 
-:::warning Legacy Indexer
+<Callout type="warning">
 This is documentation for the legacy indexer. To learn how to write a custom processor with the latest indexer stack, see [Custom Processors](/indexer/custom-processors).
-:::
+</Callout>
 
 ## Define your own data model
 
 Use this method if you want to develop your custom indexer for the Aptos ledger data.
 
-:::tip When to use custom indexer
+<Callout type="info"> 
+When should you use the custom indexer?
+
 Currently Aptos-provided indexing service (see above) supports the following core Move modules:
 
 - `0x1::coin`.
@@ -18,7 +21,7 @@ Currently Aptos-provided indexing service (see above) supports the following cor
 - `0x3::token_transfers`.
 
 If you need an indexed database for any other Move modules and contracts, then you should develop your custom indexer.
-:::
+</Callout>
 
 Creating a custom indexer involves the following steps. Refer to the indexing block diagram at the start of this document.
 
@@ -113,7 +116,7 @@ We will also need to specify the parsing logic, where the input is a portion of 
 
 **Where to find the relevant data for parsing**: This requires a combination of understanding the Move module and the structure of the transaction. In the example of coin balance, the contract lives in [coin.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move), specifically the coin struct (search for `struct Coin`) that has a `value` field. We then look at an [example transaction](https://api.testnet.aptoslabs.com/v1/transactions/by_version/259518) where we find this exact structure in `write_resources`:
 
-```json
+```
 "changes": [
   {
     ...
@@ -139,9 +142,9 @@ The `process_transactions` function takes in a vector of transactions with a sta
 - Insert the models into the database in a single Diesel transaction. This is important, to ensure that we do not have partial writes.
 - Return status (error or success).
 
-:::tip Coin transaction processor
+<Callout type="info">
 See [coin_process.rs](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/coin_processor.rs) for a relatively straightforward example. You can search for `coin_balances` in the page for the specific code snippet related to coin balances.
-:::
+</Callout>
 
 **How to decide whether to create a new processor:** This is completely up to you. The benefit of creating a new processor is that you are starting from scratch, so you will have full control over exactly what gets written to the indexed database. The downside is that you will have to maintain a new fullnode, since there is a 1-to-1 mapping between a fullnode and the processor.
 

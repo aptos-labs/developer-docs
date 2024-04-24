@@ -4,13 +4,14 @@ title: "Running Locally"
 
 # Running the Transaction Stream Service Locally
 
+import { Callout } from 'nextra/components'
 import BetaNotice from '@components/IndexerBetaNotice.mdx';
 
 <BetaNotice />
 
-:::info
+<Callout type="info">
 This has been tested on macOS 13 on ARM and Debian 11 on x86_64.
-:::
+</Callout>
 
 When building a custom processor, you might find it helpful to develop against a local development stack. The Transaction Stream Service is a complicated, multi-component system. To assist with local development, we offer a Python script that wraps a Docker compose file to set up the entire system.
 
