@@ -137,23 +137,24 @@ _Has an aggregate view for summary data called `current_token_ownerships_v2_aggr
 
 This table tracks who owns which NFTs. This includes both v1 and v2 tokens. Fungible tokens are not tracked as consistently.
 
-| Field                      | Type   | Description                                                                                                                              |
-| -------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| amount                     | bigint | The amount of the token owned. Ex. 42                                                                                                    |
-| aptos_name                 | String | This is a name tied to this account using the Aptos Name Service (ANS). Ex. "JohnDoe"                                                    |
-| collection_data_id_hash    | String | This is a hash identifying the data of the collection. Ex. "0xbd0818e81f08ccb0297a2ae80726e5f1a36ef077ad910d5c1efac79a824899f3"          |
-| collection_name            | String | The name of the collection to which the token belongs. Ex. "CryptoKitties"                                                               |
-| creator_address            | String | This is an Aptos account address that created the token. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"        |
-| current_collection_data    | Table  | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
-| current_token_data         | Table  | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
-| last_transaction_timestamp | String | Timestamp of the last transaction involving the token. Ex. "2024-04-17T02:14:25.68771"                                                   |
-| last_transaction_version   | bigint | The version number of the last transaction involving the token. Ex. 9000000001                                                           |
-| name                       | String | This is a name tied to this token, not necessarily unique. Ex. "GoldenDragon"                                                            |
-| owner_address              | String | This is an Aptos account address that currently owns the token. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
-| property_version           | bigint | The version number of the token's properties, which can change over time. Ex. 2                                                          |
-| table_type                 | String | The type of the token, usually differentiating between fungible and non-fungible. Ex. "NonFungible"                                      |
-| token_data_id_hash         | String | This is a hash that uniquely identifies the token's data. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"       |
-| token_properties           | Object | Arbitrary data unique to each token. Often null or empty. Ex. { "created": "1687147084" }                                                |
+| Field                        | Type    | Description |
+|------------------------------|---------|-------------|
+| amount                       | bigint  | The amount of the token owned. Example: 1 for an NFT. |
+| composed_nfts                | Array   | An array containing the IDs of NFTs that compose this token, if applicable. |
+| composed_nfts_aggregate      | Table   | Aggregate information about the composed NFTs, such as count or other statistics. |
+| current_token_data           | Table   | Detailed information about the token's current data; structure is defined in a related table. |
+| is_fungible_v2               | Boolean | Indicates whether the token is fungible. Example: true or null |
+| is_soulbound_v2              | Boolean | Indicates whether the token is soulbound (non-transferable once owned). Example: true or null |
+| last_transaction_timestamp   | String  | Timestamp of the last transaction involving the token. Example: "2024-04-17T02:14:25.68771" |
+| last_transaction_version     | bigint  | The version number of the last transaction involving the token. Example: 20747031 |
+| non_transferrable_by_owner   | Boolean | Indicates whether the token is non-transferrable by the owner. Example: true or null |
+| owner_address                | String  | The Aptos account address that currently owns the token. Addresses must be 66 characters so may be 0 padded. Example: "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
+| property_version_v1          | bigint  | The version number of the token's properties as of the last update. Example: 3 |
+| storage_id                   | String  | A unique identifier used for storage purposes. IDs must be 66 characters long, so may be 0 padded. Ex. "0xd8d41ff9f67d17d7dee061b5b683b92013b420cb6a30c21fc7c287454792d7a8" |
+| table_type_v1                | String  | The Move function type. Example: "0x3::token::TokenStore" |
+| token_data_id                | String  | A unique identifier for the token data, typically a hash or a numeric ID. Ex. "0x3d911af2dc3e47848fbba17b8694cf526942be183b84f8393a6c048232fb976d" |
+| token_properties_mutated_v1  | Object  | Properties of the token that have been mutated from the original. Often in JSON or similar format. Example: { "color": "blue", "size": "large" } |
+| token_standard               | String  | The standard used to generate this token. Ex. "v1" or "v2" |
 
 ### `current_token_datas_v2`
 
