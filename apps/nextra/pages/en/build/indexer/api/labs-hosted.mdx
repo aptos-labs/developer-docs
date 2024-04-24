@@ -4,7 +4,7 @@ title: "Labs-Hosted Indexer API"
 
 # Labs-Hosted Indexer API
 
-import { IndexerBetaNotice } from '@components/index';
+import { IndexerBetaNotice, Card, Cards } from '@components/index';
 
 <IndexerBetaNotice />
 
@@ -18,11 +18,22 @@ When making GraphQL queries to the Labs-Hosted Indexer API, use the following en
 
 ## Hasura Explorer
 
-The following URLs are for the Hasura Explorer for the Labs-Hosted Indexer API:
+Choose a network to explore the Labs-Hosted Indexer API using the Hasura Explorer: 
 
-- **Mainnet:** https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql
-- **Testnet:** https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql
-- **Devnet:** https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql
+<Cards>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">
+    <Card.Title>**Mainnet**</Card.Title>
+    <Card.Description>Hasura GraphQL Explorer for Aptos Mainnet</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">
+    <Card.Title>**Testnet**</Card.Title>
+    <Card.Description>Hasura GraphQL Explorer for Aptos Testnet</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">
+    <Card.Title>**Devnet**</Card.Title>
+    <Card.Description>Hasura GraphQL Explorer for Aptos Devnet</Card.Description>
+  </Card>
+</Cards>
 
 ## Rate limits
 
