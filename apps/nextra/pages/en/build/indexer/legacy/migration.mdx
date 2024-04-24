@@ -12,7 +12,7 @@ This new way of indexing uses the [Transaction Stream Service](https://aptos.dev
 
 ## 1. Clone the repo
 
-```
+```bash filename="Terminal"
 # SSH
 git clone git@github.com:aptos-labs/aptos-indexer-processors.git
 
@@ -22,7 +22,7 @@ git clone https://github.com/aptos-labs/aptos-indexer-processors.git
 
 Navigate to the directory for the service:
 
-```
+```bash filename="Terminal"
 cd aptos-indexer-processors
 cd rust/processor
 ```
@@ -31,7 +31,7 @@ cd rust/processor
 
 For each processor you're migrating, you'll need to create a config file using the template below. You can find more information about each field of the config file [here](https://aptos.dev/indexer/api/self-hosted/#configuration).
 
-```yaml
+```yaml filename="config.yaml"
 health_check_port: 8084
 server_config:
   processor_config:
@@ -69,7 +69,7 @@ Migrate the code by copying over your custom processors to the [`processors`](ht
 
 [`mod.rs`](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/processors/mod.rs)
 
-```
+```move filename="mod.rs"
 pub enum Processor {
     ...
     CoinProcessor,
@@ -85,7 +85,7 @@ impl Processor {
 
 [`worker.rs`](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/worker.rs)
 
-```
+```move filename="worker.rs"
 Processor::CoinProcessor => {
     Arc::new(CoinTransactionProcessor::new(self.db_pool.clone()))
 },
@@ -97,7 +97,7 @@ Even though the new processors have the same Postgres schemas as the old ones, w
 
 These instructions assume you are familiar with using [Diesel migrations](https://docs.rs/diesel_migrations/latest/diesel_migrations/). Run the full database migration with the following command:
 
-```
+```bash filename="Terminal"
 DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration run
 ```
 
@@ -105,7 +105,7 @@ DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration run
 
 To run a single processor, use the following command:
 
-```
+```bash filename="Terminal"
 cargo run --release -- -c config.yaml
 ```
 

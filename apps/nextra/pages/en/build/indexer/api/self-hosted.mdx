@@ -21,7 +21,7 @@ Currently this guide only explains how to run processor part of the Indexer API.
 
 To run the service we need to define a config file. We will start with this template:
 
-```yaml
+```yaml filename="config.yaml
 health_check_port: 8084
 server_config:
   processor_config:
@@ -66,7 +66,7 @@ This is the auth token used to connect to the Transaction Stream Service. If you
 
 Clone the repo:
 
-```
+```bash filename="Terminal"
 # SSH
 git clone git@github.com:aptos-labs/aptos-indexer-processors.git
 
@@ -76,14 +76,14 @@ git clone https://github.com/aptos-labs/aptos-indexer-processors.git
 
 Navigate to the directory for the service:
 
-```
+```bash filename="Terminal"
 cd aptos-indexer-processors
 cd rust/processor
 ```
 
 Run the service:
 
-```
+```bash filename="Terminal"
 cargo run --release -- -c config.yaml
 ```
 
@@ -100,7 +100,7 @@ We'll do that soon though: https://aptos-org.slack.com/archives/C04PRP1K1FZ/p169
 
 To run the service with Docker, use the following command:
 
-```
+```bash filename="Terminal"
 docker run -it --network host --mount type=bind,source=/tmp/config.yaml,target=/config.yaml aptoslabs/indexer-processor-rust -c /config.yaml
 ```
 

@@ -44,16 +44,16 @@ For an Aptos indexer fullnode, install these packages:
    `brew services start postgresql`
 1. Ensure you can run `psql postgres` and then exit the prompt by entering: `\q`
 1. Create a PostgreSQL user `postgres` with the `createuser` command (find it with `which`):
-   ```bash
+   ```bash filename="Terminal"
    /path/to/createuser -s postgres
    ```
 1. Clone `aptos-core` repository if you have not already:
-   ```bash
+   ```bash filename="Terminal"
    git clone https://github.com/aptos-labs/aptos-core.git
    ```
 1. Navigate (or `cd`) into `aptos-core/crates/indexer` directory.
 1. Create the database schema:
-   ```bash
+   ```bash filename="Terminal"
    diesel migration run --database-url postgresql://localhost/postgres
    ```
    This will create a database schema with the subdirectory `migrations` located in this `aptos-core/crates/indexer` directory. If for some reason this database is already in use, try a different database. For example: `DATABASE_URL=postgres://postgres@localhost:5432/indexer_v2 diesel database reset`
@@ -62,12 +62,12 @@ For an Aptos indexer fullnode, install these packages:
 
 1. Follow the instructions to set up a [public fullnode](/nodes/full-node/verify-pfn.md) and prepare the setup, but **do not** yet start the indexer (with `cargo run` or `docker run`).
 1. Pull the latest indexer Docker image with:
-   ```bash
+   ```bash filename="Terminal"
    docker pull aptoslabs/validator:nightly_indexer
    ```
 1. Edit the `./fullnode.yaml` and add the following configuration:
 
-   ```yaml
+   ```yaml filename="fullnode.yaml"
    storage:
      enable_indexer: true
      # This is to avoid the node being pruned
@@ -92,7 +92,7 @@ Note: indexers cannot be bootstrapped using [a snapshot](/nodes/full-node/bootst
 </Callout>
 
 1. Run the indexer fullnode with either `cargo run` or `docker run` depending upon your setup. Remember to supply the arguments you need for your specific node:
-   ```bash
+   ```bash filename="Terminal"
    docker run -p 8080:8080 \
      -p 9101:9101 -p 6180:6180 \
      -v $(pwd):/opt/aptos/etc -v $(pwd)/data:/opt/aptos/data \
@@ -101,7 +101,7 @@ Note: indexers cannot be bootstrapped using [a snapshot](/nodes/full-node/bootst
      -f /opt/aptos/etc/fullnode.yaml
    ```
    or:
-   ```bash
+   ```bash filename="Terminal"
    cargo run -p aptos-node --features "indexer" --release -- -f ./fullnode.yaml
    ```
 
@@ -111,17 +111,17 @@ To restart the PostgreSQL server:
 
 1. [shut down the server](https://www.postgresql.org/docs/8.1/postmaster-shutdown.html) by searching for the `postmaster` process and killing it:
 
-   ```bash
+   ```bash filename="Terminal"
    ps -ef | grep -i postmaster
    ```
 
 1. Copy the process ID (PID) for the process and pass it to the following command to shut it down:
 
-   ```bash
+   ```bash filename="Terminal"
    kill -INT PID
    ```
 
 1. Restart the PostgreSQL server with:
-   ```bash
+   ```bash filename="Terminal"
    brew services restart postgresql@14
    ```

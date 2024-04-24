@@ -40,13 +40,13 @@ Make sure you clone the Aptos-core repo by running `git clone https://github.com
 
 a. The first step is to create a new Diesel migration. This will generate a new folder under [migrations](https://github.com/aptos-labs/aptos-core/tree/main/crates/indexer/migrations) with `up.sql` and `down.sql`
 
-```bash
+```bash filename="Terminal"
 DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration generate add_coin_tables
 ```
 
 b. Create the necessary table schemas. This is just PostgreSQL code. In the code shown below, the `up.sql` will have the new changes and `down.sql` will revert those changes.
 
-```sql
+```sql filename="Terminal"
 -- up.sql
 -- coin balances for each version
 CREATE TABLE coin_balances (
@@ -77,7 +77,7 @@ See the [full source for `up.sql` and `down.sql`](https://github.com/aptos-labs/
 
 c. Run the migration. We suggest running it multiple times with `redo` to ensure that both `up.sql` and `down.sql` are implemented correctly. This will also modify the [`schema.rs`](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/schema.rs) file.
 
-```bash
+```bash filename="Terminal"
 DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration run
 DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration redo
 ```
@@ -86,7 +86,7 @@ DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration redo
 
 We now have to prepare the Rust data models that correspond to the Diesel schemas. In the case of coin balances, we will define `CoinBalance` and `CurrentCoinBalance` as below:
 
-```rust
+```rust filename="coin_balance.move"
 #[derive(Debug, Deserialize, FieldCount, Identifiable, Insertable, Serialize)]
 #[diesel(primary_key(transaction_version, owner_address, coin_type))]
 #[diesel(table_name = coin_balances)]
@@ -116,7 +116,7 @@ We will also need to specify the parsing logic, where the input is a portion of 
 
 **Where to find the relevant data for parsing**: This requires a combination of understanding the Move module and the structure of the transaction. In the example of coin balance, the contract lives in [coin.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move), specifically the coin struct (search for `struct Coin`) that has a `value` field. We then look at an [example transaction](https://api.testnet.aptoslabs.com/v1/transactions/by_version/259518) where we find this exact structure in `write_resources`:
 
-```
+```bash filename="Terminal"
 "changes": [
   {
     ...
@@ -156,7 +156,7 @@ This is the easiest step and involves just a few additions.
 
 [**mod.rs**](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/mod.rs)
 
-```rust
+```rust filename="mod.rs"
 pub enum Processor {
   CoinProcessor,
   ...
@@ -167,7 +167,7 @@ pub enum Processor {
 
 [**runtime.rs**](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/runtime.rs)
 
-```rust
+```rust filename="runtime.rs"
 Processor::CoinProcessor => Arc::new(CoinTransactionProcessor::new(conn_pool.clone())),
 ```
 
@@ -175,7 +175,7 @@ Processor::CoinProcessor => Arc::new(CoinTransactionProcessor::new(conn_pool.clo
 
 **fullnode.yaml**
 
-```yaml
+```yaml filename="fullnode.yaml"
 storage:
   enable_indexer: true
   storage_pruner_config:
@@ -194,7 +194,7 @@ indexer:
 
 Test by starting an Aptos fullnode by running the below command. You will see many logs in the terminal output, so use the `grep` filter to see only indexer log output, as shown below:
 
-```bash
+```bash filename="Terminal"
 cargo run -p aptos-node --features "indexer" --release -- -f ./fullnode_coin.yaml | grep -E "_processor"
 ```
 

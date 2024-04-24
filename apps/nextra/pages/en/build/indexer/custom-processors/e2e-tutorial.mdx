@@ -14,7 +14,7 @@ The smart contract is already deployed, and you mostly don't need to understand 
 
 To get started, clone the [aptos-indexer-processors](https://github.com/aptos-labs/aptos-indexer-processors) repo:
 
-```
+```bash filename="Terminal"
 # HTTPS
 https://github.com/aptos-labs/aptos-indexer-processors.git
 
@@ -24,14 +24,14 @@ git@github.com:aptos-labs/aptos-indexer-processors.git
 
 Navigate to the coin flip directory:
 
-```
+```bash filename="Terminal"
 cd aptos-indexer-processors
 cd python/processors/coin_flip
 ```
 
 Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an authorization token. Follow [this guide](../txn-stream/labs-hosted.md#authorization-via-api-key) to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`. Once you're done, you should have a token that looks like this:
 
-```
+```bash filename="Terminal"
 aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx
 ```
 
@@ -59,13 +59,13 @@ Make sure to start the `postgresql` service:
 
 The command for Linux/WSL might be something like:
 
-```shell
+```bash filename="Terminal"
 sudo service postgresql start
 ```
 
 For mac, if you're using brew, start it up with:
 
-```shell
+```bash filename="Terminal"
 brew services start postgresql
 ```
 
@@ -87,7 +87,7 @@ Now let's set up the configuration details for the actual indexer processor we'r
 
 Copy the contents below and save it to a file called `config.yaml`. Save it in the `coin_flip` folder. Your file directory structure should look something like this:
 
-```
+```yaml filename="config.yaml"
 - aptos-indexer-processor
     - python
         - processors
@@ -123,7 +123,7 @@ Once you have your config.yaml file open, you only need to update certain fields
 `starting_version` - The starting version of the transactions you want to process
 `ending_version` - The ending version of the transactions you want to process
 
-```yaml
+```yaml filename="config.yaml"
 server_config:
   processor_config:
     type: "coin_flip"
@@ -143,7 +143,7 @@ You can customize additional configuration with the `config.yaml` file.
 
 To start at a specific ledger version, you can specify the version in the `config.yaml` file with:
 
-```yaml
+```yaml filename="config.yaml"
 starting_version: <Starting Version>
 ```
 
@@ -151,7 +151,7 @@ This is the transaction version the indexer starts looking for events at.
 
 The table `next_versions_to_process` keeps track of the current state of indexing. The primary key is the `indexer_name`. The `next_version` field tells us what's the next transaction to process, and the `updated_at` time tells us the last time the indexer processed a transaction.
 
-```yaml
+```yaml filename="config.yaml"
 ending_version: <Ending Version>
 ```
 
@@ -159,7 +159,7 @@ If you'd would like to see a list of all Coin Flip transactions, you can search 
 
 If you want to use a different network, change the `indexer_grpc_data_service_address` field to the corresponding desired value:
 
-```yaml
+```yaml filename="config.yaml"
 # Devnet
 indexer_grpc_data_service_address: grpc.devnet.aptoslabs.com:443
 
@@ -174,7 +174,7 @@ If these ip addresses don't work for you, they might be outdated. Check out the 
 
 If you're using a different database name or processor name, change the `postgres_connection_string` to your specific needs. Here's the general structure of the field:
 
-```yaml
+```yaml filename="config.yaml"
 postgres_connection_string: "postgresql://username:password@database_url:port_number/database_name"
 ```
 
@@ -184,7 +184,7 @@ First, let's create the name for the database schema we're going to use. We use 
 
 1. We need to add it to our `python/utils/processor_name.py` file:
 
-```python
+```python filename="python/utils/processor_name.py"
     class ProcessorName(Enum):
         EXAMPLE_EVENT_PROCESSOR = "python_example_event_processor"
         NFT_MARKETPLACE_V1_PROCESSOR = "nft_marketplace_v1_processor"
@@ -194,7 +194,7 @@ First, let's create the name for the database schema we're going to use. We use 
 
 2. Add it to the constructor in the `IndexerProcessorServer` match cases in `utils/worker.py`:
 
-```python
+```python filename="utils/worker.py"
 match self.config.processor_name:
     case ProcessorName.EXAMPLE_EVENT_PROCESSOR.value:
         self.processor = ExampleEventProcessor()
@@ -208,7 +208,7 @@ match self.config.processor_name:
 
 3. Add it to the `python/utils/models/schema_names.py` file:
 
-```python
+```python filename="schema_names.py"
 EXAMPLE = "example"
 NFT_MARKETPLACE_SCHEMA_NAME = "nft_marketplace"
 NFT_MARKETPLACE_V2_SCHEMA_NAME = "nft_marketplace_v2"
@@ -219,7 +219,7 @@ COIN_FLIP_SCHEMA_NAME = "coin_flip"
 
 In our Move contract (in `coin_flip/move/sources/coin_flip.move`), each user has an object associated with their account. The object has a `CoinFlipStats` resource on it that tracks the total number of wins and losses a user has and is in charge of emitting events.
 
-```rust
+```rust filename="coin_flip.move"
 // CoinFlipStats object/resource definition
 #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
 struct CoinFlipStats has key {
@@ -258,7 +258,7 @@ fun flip_coin(
 
 The events emitted are of type `CoinFlipEvent`, shown below:
 
-```rust
+```rust filename="coin_flip.move"
 struct CoinFlipEvent has copy, drop, store {
     prediction: bool,     // true = heads, false = tails
     result: bool,
@@ -277,7 +277,7 @@ The processor loops over each event in each transaction to process all event dat
 
 This is the simple iterative structure for our event List:
 
-```python
+```python filename="processor.py"
 for event_index, event in enumerate(user_transaction.events):
     # Skip events that don't match our filter criteria
     if not CoinFlipProcessor.included_event_type(event.type_str):
@@ -286,7 +286,7 @@ for event_index, event in enumerate(user_transaction.events):
 
 where the `included_event_type` function is a static method in our `CoinFlipProcessor` class:
 
-```python
+```python filename="processor.py"
 @staticmethod
 def included_event_type(event_type: str) -> bool:
     parsed_tag = event_type.split("::")
@@ -308,7 +308,7 @@ def included_event_type(event_type: str) -> bool:
 
 If you wanted to see the event data for yourself inside the processor loop, you could add something like this to your `processor.py` file:
 
-```python
+```python filename="processor.py"
 for event_index, event in enumerate(user_transaction.events):
     # Skip events that don't match our filter criteria
     if not CoinFlipProcessor.included_event_type(event.type_str):
@@ -323,7 +323,7 @@ for event_index, event in enumerate(user_transaction.events):
 
 In our case, a single event prints this out:
 
-```
+```bash filename="Terminal"
 {
     'losses': '49',
     'prediction': False,
@@ -334,7 +334,7 @@ In our case, a single event prints this out:
 
 So we'll get our data like this:
 
-```python
+```python filename="processor.py"
 prediction = bool(data["prediction"])
 result = bool(data["result"])
 wins = int(data["wins"])
@@ -347,7 +347,7 @@ win_percentage = wins / (wins + losses)
 
 And then we add it to our event list with this:
 
-```python
+```python filename="processor.py"
 # Create an instance of CoinFlipEvent
 event_db_obj = CoinFlipEvent(
     sequence_number=sequence_number,
@@ -372,7 +372,7 @@ Now that we know how we store our CoinFlipEvents in our database, let's go backw
 
 We need to structure the `CoinFlipEvent` class in `models.py` to reflect the structure in our Move contract:
 
-```python
+```python filename="models.py"
 class CoinFlipEvent(Base):
     __tablename__ = "coin_flip_events"
     __table_args__ = ({"schema": COIN_FLIP_SCHEMA_NAME},)
@@ -401,31 +401,31 @@ Now that we have our configuration files and our database and the python databas
 
 Navigate to the `python` directory of your indexer repository:
 
-```shell
+```bash filename="Terminal"
 cd ~/aptos-indexer-processors/python
 ```
 
 And then run the following command:
 
-```shell
+```bash filename="Terminal"
 poetry run python -m processors.main -c processors/coin_flip/config.yaml
 ```
 
 If you get an error that complains about pyenv versions, you might need to install the correct version
 
-```shell
+```bash filename="Terminal"
  pyenv install 3.11.0
 ```
 
 If you are seeing many dependency errors, you might need to install the dependencies with Poetry, run the following command from /aptos-indexer-processors:
 
-```shell
+```bash filename="Terminal"
 poetry install
 ```
 
 If you're processing events correctly, you should see something like this in your terminal output:
 
-```shell
+```bash filename="Terminal"
 {"timestamp": "2023-12-07 18:08:26,493", "level": "INFO", "fields": {"message": "[Parser] Kicking off", "processor_name": "coin_flip", "service_type": "processor"}, "module": "worker", "func_name": "__init__", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 463}
 {"timestamp": "2023-12-07 18:08:26,494", "level": "INFO", "fields": {"message": "[Parser] Initializing DB tables", "processor_name": "coin_flip", "service_type": "processor"}, "module": "worker", "func_name": "run", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 592}
 {"timestamp": "2023-12-07 18:08:26,694", "level": "INFO", "fields": {"message": "[Parser] DB tables initialized", "processor_name": "coin_flip", "service_type": "processor"}, "module": "worker", "func_name": "run", "path_name": "/Users/jinhou/Projects/aptos-indexer-processors/python/utils/worker.py", "line_no": 600}

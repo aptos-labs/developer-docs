@@ -36,7 +36,7 @@ In order to use the local development script you must have the following install
 - Docker: [Installation Guide](https://docs.docker.com/get-docker/).
 - Docker Compose v2: This should be installed by default with modern Docker installations, verify with this command:
 
-```bash
+```bash filename="Terminal"
 docker-compose version --short
 ```
 
@@ -47,7 +47,7 @@ docker-compose version --short
 
 Clone the aptos-core repo:
 
-```
+```bash filename="Terminal"
 # HTTPS
 git clone https://github.com/aptos-labs/aptos-core.git
 
@@ -57,14 +57,14 @@ git clone git@github.com:aptos-labs/aptos-core.git
 
 Navigate to the `testsuite` directory:
 
-```
+```bash filename="Terminal"
 cd aptos-core
 cd testsuite
 ```
 
 Install the Python dependencies:
 
-```
+```bash filename="Terminal"
 poetry install
 ```
 
@@ -72,20 +72,20 @@ poetry install
 
 ### Starting the service
 
-```
+```bash filename="Terminal"
 poetry run python indexer_grpc_local.py start
 ```
 
 You will know this succeeded if the command exits, and you see the following:
 
-```
+```bash filename="Terminal"
 Attempting to stream from indexer grpc for 10s
 Stream finished successfully
 ```
 
 ### Stopping the service
 
-```
+```bash filename="Terminal"
 poetry run python indexer_grpc_local.py stop
 ```
 
@@ -93,7 +93,7 @@ poetry run python indexer_grpc_local.py stop
 
 When you start, stop, and start the service again, it will re-use the same localnet data. If you wish to wipe the locnet and start from scratch you can run the following command:
 
-```
+```bash filename="Terminal"
 poetry run python indexer_grpc_local.py wipe
 ```
 
@@ -101,14 +101,14 @@ poetry run python indexer_grpc_local.py wipe
 
 You can connect to the local Transaction Stream Service, e.g. from a custom processor, using the following configuration values:
 
-```
+```bash filename="Terminal"
 indexer_grpc_data_service_address: 127.0.0.1:50052
 auth_token: dummy_token
 ```
 
 You can connect to the node at the following address:
 
-```
+```bash filename="Terminal"
 http://127.0.0.1:8080/v1
 ```
 
@@ -118,7 +118,7 @@ http://127.0.0.1:8080/v1
 
 If you have a machine with an ARM processor, e.g. an M1/M2 Mac, the script should detect that and set the appropriate environment variables to ensure that the correct images will be used. If you have issues with this, try setting the following environment variable:
 
-```bash
+```bash filename="Terminal"
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 ```
 
@@ -134,7 +134,7 @@ This script has not been tested on Linux ARM systems.
 
 Try setting the following environment variable before running the script:
 
-```bash
+```bash filename="Terminal"
 export REDIS_IMAGE_REPO=arm64v8/redis
 ```
 
@@ -142,7 +142,7 @@ export REDIS_IMAGE_REPO=arm64v8/redis
 
 Wipe the data:
 
-```bash
+```bash filename="Terminal"
 poetry run python indexer_grpc_local.py wipe
 ```
 
