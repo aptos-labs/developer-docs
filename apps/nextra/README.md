@@ -10,7 +10,7 @@ the local dev server:
 1. From the root of the `developer-docs` directory, run:
 
 ```bash filename="Terminal"
-pnpm i && pnpm build
+pnpm i
 ```
 
 2. Navigate back to `nextra`
@@ -20,6 +20,9 @@ Create a `.env` file in the root of `nextra` with the following
 ```bash filename="Terminal"
 NEXT_PUBLIC_ORIGIN="http://localhost:3030"
 ```
+
+Note: There is an example at `apps/nextra/.env.example` that
+you can duplicate and rename the duplicate to `.env`.
 
 3. Then run
 

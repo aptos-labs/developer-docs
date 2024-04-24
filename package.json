@@ -2,6 +2,7 @@
   "name": "developer-docs",
   "private": true,
   "scripts": {
+    "prebuild": "node prebuild.js",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
