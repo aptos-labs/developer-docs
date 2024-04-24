@@ -18,7 +18,7 @@ player within a game and be an NFT at the same time. The ObjectCore itself
 stores both the address of the current owner and the appropriate data for
 creating event streams.
 
-For more usage based details checkout [Building With Objects](../move/move-on-aptos/objects/index.md).
+For more usage based details checkout [Building With Objects](../move/move-on-aptos/objects.mdx).
 
 ## Comparison with the account resources model
 
@@ -117,7 +117,7 @@ In the above code, `token_a` and `token_b` are references to other objects.
 Specifically, `Object<T>` is a reference to an object stored at a given address
 that contains `T` resource. In this example, they're fungible assets (similar to
 coins). This is covered in more detail in the
-[Aptos Fungible Asset Standard](./fungible-asset.md).
+[Aptos Fungible Asset Standard](./fungible-asset.mdx).
 LiquidityPool resource is part of the ObjectGroup resource group. This means
 that the LiquidityPool resource is stored in the same storage slot as the
 ObjectCore resource. This is more storage and gas efficient for reading and
