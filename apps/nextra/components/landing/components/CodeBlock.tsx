@@ -1,23 +1,24 @@
 import { CopyToClipboard } from "nextra/components";
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 import { cn } from "utils/cn";
-import { IconMoveLang } from "./Icons";
 
 // This component is loosely based on Nextra's `Pre` component.
 // I originally tried to use `Pre` directly, but ended up needing more control
 // Reference: https://github.com/shuding/nextra/blob/main/packages/nextra/src/components/pre.tsx
 
-export interface MoveCodeBlockProps {
+export interface CodeBlockProps {
   codeSnippet: TrustedHTML;
+  fileIcon?: ReactNode;
   fileName?: string;
   className?: string;
 }
 
-export function MoveCodeBlock({
+export function CodeBlock({
   codeSnippet,
-  fileName = "example.move",
+  fileIcon,
+  fileName,
   className,
-}: MoveCodeBlockProps) {
+}: CodeBlockProps) {
   const codeContainerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -29,7 +30,7 @@ export function MoveCodeBlock({
     >
       <div className="bg-background-elevated flex items-center justify-between p-2 md:p-4">
         <div className="flex items-center gap-2 text-[8px] md:text-[12px] leading-3 font-medium text-text-secondary">
-          <IconMoveLang className="w-[28.831px] h-[9.414px] md:w-[49px] md:h-[16px]" />
+          {fileIcon}
           {fileName}
         </div>
         <CopyToClipboard

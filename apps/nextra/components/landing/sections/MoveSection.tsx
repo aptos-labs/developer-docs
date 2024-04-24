@@ -1,12 +1,12 @@
+import { i18nConfig } from "@docs-config";
+import { Link } from "nextra-theme-docs";
 import { useData, useRouter } from "nextra/hooks";
 import { useMemo, useState } from "react";
-import { GradientText } from "../components/GradientText";
-import { MoveCodeBlock } from "../components/MoveCodeBlock";
-import { i18nConfig } from "@docs-config";
 import { Accordion } from "../components/Accordion";
 import { Carousel } from "../components/Carousel";
-import { Link } from "nextra-theme-docs";
-import { IconArrowRight } from "../components/Icons";
+import { CodeBlock } from "../components/CodeBlock";
+import { GradientText } from "../components/GradientText";
+import { IconArrowRight, IconMoveLang } from "../components/Icons";
 
 interface MoveExample {
   label: string;
@@ -83,8 +83,12 @@ export function MoveSection() {
           />
         </div>
         <div className="flex max-w-full px-8 lg:px-0">
-          <MoveCodeBlock
+          <CodeBlock
             codeSnippet={moveExamples[activeExample].codeSnippet}
+            fileIcon={
+              <IconMoveLang className="w-[28.831px] h-[9.414px] md:w-[49px] md:h-[16px]" />
+            }
+            fileName="example.move"
             className="md:w-[666px] xl:w-[780px] max-md:h-[415px] lg:h-[635px] xl:h-[735px]"
           />
         </div>
