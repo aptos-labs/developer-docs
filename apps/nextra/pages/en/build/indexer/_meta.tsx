@@ -5,9 +5,9 @@ export default {
       toc: false,
       layout: "full",
     },
-  }, 
-  "api": {
-    title: "Indexer API"
+  },
+  api: {
+    title: "Indexer API",
   },
   "custom-processors": {
     title: "Custom Processors",
@@ -15,7 +15,7 @@ export default {
   "txn-stream": {
     title: "Transaction Stream Service",
   },
-  "legacy": {
+  legacy: {
     title: "Legacy Indexer",
   },
 };
