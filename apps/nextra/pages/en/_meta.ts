@@ -21,7 +21,7 @@ export default {
         title: "Quick Start",
       },
       move: {
-        title: "Move",
+        title: "Smart Contracts",
       },
       apis: {
         title: "APIs",

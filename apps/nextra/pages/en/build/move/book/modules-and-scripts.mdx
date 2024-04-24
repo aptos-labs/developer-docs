@@ -2,7 +2,7 @@ import { Callout } from "nextra/components";
 
 # Modules and Scripts
 
-Move has two different types of programs: **_Modules_** and **_Scripts_**. Modules are libraries that define struct types along with functions that operate on these types. Struct types define the schema of Move's [global storage](./global-storage-structure.md), and module functions define the rules for updating storage. Modules themselves are also stored in global storage. A scripts is an executable entrypoint similar to a `main` function in a conventional language. A script typically calls functions of a published module that perform updates to global storage. Scripts are ephemeral code snippets that are not published in global storage.
+Move has two different types of programs: **_Modules_** and **_Scripts_**. Modules are libraries that define struct types along with functions that operate on these types. Struct types define the schema of Move's [global storage](./global-storage-structure.mdx), and module functions define the rules for updating storage. Modules themselves are also stored in global storage. A scripts is an executable entrypoint similar to a `main` function in a conventional language. A script typically calls functions of a published module that perform updates to global storage. Scripts are ephemeral code snippets that are not published in global storage.
 
 A Move source file (or **compilation unit**) may contain multiple modules and scripts. However, publishing a module or executing a script are separate VM operations.
 
@@ -11,7 +11,7 @@ A Move source file (or **compilation unit**) may contain multiple modules and sc
 ### Scripts
 
 <Callout type="info">
-To learn how to publish and execute a Move script, follow the [Move Scripts](../move-on-aptos/scripts/script-tutorial.md) example.
+To learn how to publish and execute a Move script, follow the [Move Scripts](../move-on-aptos/scripts/script-tutorial.mdx) example.
 </Callout>
 
 A script has the following structure:
@@ -24,8 +24,8 @@ script {
 }
 ```
 
-A `script` block must start with all of its [`use`](./uses.md) declarations, followed by any [constants](./constants.md) and (finally) the main
-[function](./functions.md) declaration.
+A `script` block must start with all of its [`use`](./uses.mdx) declarations, followed by any [constants](./constants.mdx) and (finally) the main
+[function](./functions.mdx) declaration.
 The main function can have any name (i.e., it need not be called `main`), is the only function in a script block, can have any number of
 arguments, and must not return a value. Here is an example with each of these components:
 
@@ -55,7 +55,7 @@ module <address>::<identifier> {
 }
 ```
 
-where `<address>` is a valid [named or literal address](./address.md).
+where `<address>` is a valid [named or literal address](./address.mdx).
 
 For example:
 
@@ -76,9 +76,9 @@ module 0x42::example {
 }
 ```
 
-The `module 0x42::example` part specifies that the module `example` will be published under the [account address](./address.md) `0x42` in [global storage](./global-storage-structure.md).
+The `module 0x42::example` part specifies that the module `example` will be published under the [account address](./address.mdx) `0x42` in [global storage](./global-storage-structure.mdx).
 
-Modules can also be declared using [named addresses](./address.md). For example:
+Modules can also be declared using [named addresses](./address.mdx). For example:
 
 ```move
 module example_addr::example {
@@ -131,7 +131,7 @@ module foo_bar_42 {}
 Typically, module names start with a lowercase letter. A module named `my_module` should be stored in a source file named `my_module.move`.
 
 All elements inside a `module` block can appear in any order.
-Fundamentally, a module is a collection of [`types`](./structs-and-resources.md) and [`functions`](./functions.md).
-The [`use`](./uses.md) keyword is used to import types from other modules.
-The [`friend`](./friends.md) keyword specifies a list of trusted modules.
-The [`const`](./constants.md) keyword defines private constants that can be used in the functions of a module.
+Fundamentally, a module is a collection of [`types`](./structs-and-resources.mdx) and [`functions`](./functions.mdx).
+The [`use`](./uses.mdx) keyword is used to import types from other modules.
+The [`friend`](./friends.mdx) keyword specifies a list of trusted modules.
+The [`const`](./constants.mdx) keyword defines private constants that can be used in the functions of a module.

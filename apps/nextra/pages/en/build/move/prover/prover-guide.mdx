@@ -2,43 +2,59 @@
 title: "Move Prover User Guide"
 ---
 
+# Move Prover User Guide
+
 This is the user guide for the Move Prover. This document accompanies the
-[Move specification language](spec-lang.md). See the sections below for details.
+[Move specification language](./spec-lang.mdx). See the sections below for details.
 
 ## Running the Move Prover
 
-The Move Prover is invoked via the [Aptos CLI](../../cli/use-cli.mdx). In order to call the CLI, you must have a [_Move package_](../book/packages.md) in place. In the simplest case, a Move package is defined by a directory with a set of `.move` files in it and a manifest of the name `Move.toml`. You can create a new Move package at a given location by running the command: `aptos move init --name <name>`
+The Move Prover is invoked via the [Aptos CLI](../../cli/use-cli.mdx). In order
+to call the CLI, you must have a [_Move package_](../book/packages.mdx) in place.
+In the simplest case, a Move package is defined by a directory with a set of
+`.move` files in it and a manifest of the name `Move.toml`. You can create a new
+Move package at a given location by running the command:
+`aptos move init --name <name>`
 
-Once the package exists, call the Move Prover from the directory to be tested or by supplying its path to the `--package-dir` argument:
+Once the package exists, call the Move Prover from the directory to be tested or
+by supplying its path to the `--package-dir` argument:
 
 - Prove the sources of the package in the current directory:
   ```bash filename="Terminal"
   aptos move prove
   ```
-- Prove the sources of the package in a specific directlry:
+- Prove the sources of the package in a specific directly:
   ```bash filename="Terminal"
   aptos move prove --package-dir <path>
   ```
-See example output and other available options in the [Proving Move](../../cli/use-cli/working-with-move-contracts.mdx#6-optional-formally-verifying-move-scripts) section of Use Aptos CLI.
+See example output and other available options in the
+[Proving Move](../../cli/use-cli/working-with-move-contracts.mdx#6-optional-formally-verifying-move-scripts)
+section of Use Aptos CLI.
 
 ### Target filtering
 
-By default, the `aptos move prove` command verifies all files of a package. During iterative development of larger packages, it is often more effective to focus verification on particular files with the
-`-f` (`--filter`) option, like so:
+By default, the `aptos move prove` command verifies all files of a package.
+During iterative development of larger packages, it is often more effective to
+focus verification on particular files with the `-f` (`--filter`) option, like so:
 
 ```bash filename="Terminal"
 aptos move prove -f coin
 ```
 
-In general, if the string provided to the `-f` option is contained somewhere in the file name of a source, that source will be included for verification.
+In general, if the string provided to the `-f` option is contained somewhere in
+the file name of a source, that source will be included for verification.
 
-> NOTE: the Move Prover ensures there is no semantic difference between verifying modules one-by-one
-> or all at once. However, if your goal is to verify all modules, verifying them in a single
-> `aptos move prove` run will be significantly faster than sequentially.
+> NOTE: the Move Prover ensures there is no semantic difference between
+> verifying modules one-by-one or all at once. However, if your goal is to
+> verify all modules, verifying them in a single `aptos move prove` run will be
+> significantly faster than sequentially.
 
 ### Prover options
 
-The Move Prover has a number of options (such as the filter option above) that you pass with an invocation of: `aptos move prove <options>`. The most commonly used option is the `-t` (`--trace`) option that causes the Move Prover to produce richer diagnosis when it encounters errors:
+The Move Prover has a number of options (such as the filter option above) that
+you pass with an invocation of: `aptos move prove <options>`. The most commonly
+used option is the `-t` (`--trace`) option that causes the Move Prover to
+produce richer diagnosis when it encounters errors:
 
 ```bash filename="Terminal"
 aptos move prove -f coin -t
@@ -48,14 +64,19 @@ To see the list of all command line options, run: `aptos move prove --help`
 
 ### Prover configuration file
 
-You can also create a Move Prover configuration file named `Prover.toml` that lives side-by-side with the `Move.toml` manifest file in the root of the package directory. For example, to enable tracing by default for a package, add a `Prover.toml` file with the following configuration:
+You can also create a Move Prover configuration file named `Prover.toml` that
+lives side-by-side with the `Move.toml` manifest file in the root of the package
+directory. For example, to enable tracing by default for a package, add a
+`Prover.toml` file with the following configuration:
 
 ```toml
 [prover]
 auto_trace_level = "VerifiedFunction"
 ```
 
-Find the most commonly used options in the example `.toml` below, which you can cut and paste and adopt for your needs (adjusting the defaults shown in the displayed values as needed):
+Find the most commonly used options in the example `.toml` below, which you can
+cut and paste and adopt for your needs (adjusting the defaults shown in the
+displayed values as needed):
 
 ```toml
 # Verbosity level
@@ -84,12 +105,14 @@ random_seed = 1
 proc_cores = 4
 ```
 
-> HINT: For local verification, you may want to set `proc_cores` to an aggressive number
-> (your actual cores) to speed up the turnaround cycle.
+> HINT: For local verification, you may want to set `proc_cores` to an
+> aggressive number (your actual cores) to speed up the turnaround cycle.
 
 ## Prover diagnosis
 
-When the Move Prover finds a verification error, it prints diagnosis to standard output in a style similar to a compiler or a debugger. We explain the different types of diagnoses below, based on the following evolving example:
+When the Move Prover finds a verification error, it prints diagnosis to standard
+output in a style similar to a compiler or a debugger. We explain the different
+types of diagnoses below, based on the following evolving example:
 
 ```move
 module 0x42::m {
@@ -113,7 +136,8 @@ We will modify this example as we demonstrate different types of diagnoses.
 
 ### Unexpected abort
 
-If we run the Move Prover on the example immediately above, we get the following error:
+If we run the Move Prover on the example immediately above, we get the following
+error:
 
 ```bash filename="Terminal"
 error: abort not covered by any of the `aborts_if` clauses
@@ -140,7 +164,12 @@ error: abort not covered by any of the `aborts_if` clauses
 }
 ```
 
-The Move Prover has generated an example counter that leads to an overflow when adding 1 to the value of 255 for an `u8`. This overflow occurs if the function specification calls for abort behavior, but the condition under which the function is aborting is not covered by the specification. And in fact, with `aborts_if !exists<Counter>(a)`, we only cover the abort caused by the absence of the resource, but not the abort caused by the arithmetic overflow.
+The Move Prover has generated an example counter that leads to an overflow when
+adding 1 to the value of 255 for an `u8`. This overflow occurs if the function
+specification calls for abort behavior, but the condition under which the
+function is aborting is not covered by the specification. And in fact, with
+`aborts_if !exists<Counter>(a)`, we only cover the abort caused by the absence
+of the resource, but not the abort caused by the arithmetic overflow.
 
 Let's fix the above and add the following condition:
 
@@ -192,14 +221,23 @@ error: post-condition does not hold
 }
 ```
 
-While we know what the error is (as we just injected it), this is not particularly obvious in the output This is because we don't directly see on which values the `ensures` condition was actually evaluated. To see
-this, use the `-t` (`--trace`) option; this is not enabled by default because it makes the verification problem slightly harder for the solver.
+While we know what the error is (as we just injected it), this is not
+particularly obvious in the output This is because we don't directly see on
+which values the `ensures` condition was actually evaluated. To see this, use
+the `-t` (`--trace`) option; this is not enabled by default because it makes the
+verification problem slightly harder for the solver.
 
-Instead or in addition to the `--trace` option, you can use the built-in function `TRACE(exp)` in conditions to explicitly mark expressions whose values should be printed on verification failures.
+Instead or in addition to the `--trace` option, you can use the built-in
+function `TRACE(exp)` in conditions to explicitly mark expressions whose values
+should be printed on verification failures.
 
-> NOTE: Expressions that depend on quantified symbols cannot be traced. Also, expressions appearing in
-> specification functions can not currently be traced.
+> NOTE: Expressions that depend on quantified symbols cannot be traced. Also,
+> expressions appearing in specification functions can not currently be traced.
 
 ## Debugging the Move Prover
 
-The Move Prover is an evolving tool with bugs and deficiencies. Sometimes it might be necessary to debug a problem based on the output the Move Prover passes to the underlying backends. If you pass the option `--dump`, the Move Prover will output the original Move bytecode, as well as the Move Prover bytecode, as the former is transformed during compilation.
+The Move Prover is an evolving tool with bugs and deficiencies. Sometimes it
+might be necessary to debug a problem based on the output the Move Prover passes
+to the underlying backends. If you pass the option `--dump`, the Move Prover
+will output the original Move bytecode, as well as the Move Prover bytecode,
+as the former is transformed during compilation.

@@ -1,7 +1,4 @@
 export default {
-  index: {
-    title: "Introduction",
-  },
   book: {
     title: "Move Book",
   },

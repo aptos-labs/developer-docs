@@ -1,6 +1,6 @@
 # Global Storage - Operators
 
-Move programs can create, delete, and update [resources](./structs-and-resources.md) in global storage using the following five instructions:
+Move programs can create, delete, and update [resources](./structs-and-resources.mdx) in global storage using the following five instructions:
 
 | Operation                               | Description                                                     | Aborts?                                 |
 | --------------------------------------- | --------------------------------------------------------------- | --------------------------------------- |
@@ -10,11 +10,11 @@ Move programs can create, delete, and update [resources](./structs-and-resources
 | `borrow_global<T>(address): &T`         | Return an immutable reference to the `T` stored under `address` | If `address` does not hold a `T`        |
 | `exists<T>(address): bool`              | Return `true` if a `T` is stored under `address`                | Never                                   |
 
-Each of these instructions is parameterized by a type `T` with the [`key` ability](./abilities.md). However, each type `T` _must be declared in the current module_. This ensures that a resource can only be manipulated via the API exposed by its defining module. The instructions also take either an [`address`](./address.md) or [`&signer`](./signer.md) representing the account address where the resource of type `T` is stored.
+Each of these instructions is parameterized by a type `T` with the [`key` ability](./abilities.mdx). However, each type `T` _must be declared in the current module_. This ensures that a resource can only be manipulated via the API exposed by its defining module. The instructions also take either an [`address`](./address.mdx) or [`&signer`](./signer.mdx) representing the account address where the resource of type `T` is stored.
 
 ## References to resources
 
-References to global resources returned by `borrow_global` or `borrow_global_mut` mostly behave like references to local storage: they can be extended, read, and written using ordinary [reference operators](./references.md) and passed as arguments to other function. However, there is one important difference between local and global references: **a function cannot return a reference that points into global storage**. For example, these two functions will each fail to compile:
+References to global resources returned by `borrow_global` or `borrow_global_mut` mostly behave like references to local storage: they can be extended, read, and written using ordinary [reference operators](./references.mdx) and passed as arguments to other function. However, there is one important difference between local and global references: **a function cannot return a reference that points into global storage**. For example, these two functions will each fail to compile:
 
 ```move
 module 0x42::example {
@@ -30,7 +30,7 @@ module 0x42::example {
 }
 ```
 
-Move must enforce this restriction to guarantee absence of dangling references to global storage. [This](#reference-safety-for-global-resources) section contains much more detail for the interested reader.
+Move must enforce this restriction to guarantee absence of dangling references to global storage. [This section](#reference-safety-for-global-resources) contains much more detail for the interested reader.
 
 ## Global storage operators with generics
 
@@ -52,7 +52,7 @@ module 0x42::example {
 }
 ```
 
-The ability to index into global storage via a type parameter chosen at runtime is a powerful Move feature known as _storage polymorphism_. For more on the design patterns enabled by this feature, see [Move generics](./generics.md).
+The ability to index into global storage via a type parameter chosen at runtime is a powerful Move feature known as _storage polymorphism_. For more on the design patterns enabled by this feature, see [Move generics](./generics.mdx).
 
 ## Example: `Counter`
 
@@ -186,11 +186,11 @@ module 0x42::m {
 }
 ```
 
-For more information on `acquires`, see [Move functions](./functions.md).
+For more information on `acquires`, see [Move functions](./functions.mdx).
 
 ## Reference Safety For Global Resources
 
-Move prohibits returning global references and requires the `acquires` annotation to prevent dangling references. This allows Move to live up to its promise of static reference safety (i.e., no dangling references, no `null` or `nil` dereferences) for all [reference](./references.md) types.
+Move prohibits returning global references and requires the `acquires` annotation to prevent dangling references. This allows Move to live up to its promise of static reference safety (i.e., no dangling references, no `null` or `nil` dereferences) for all [reference](./references.mdx) types.
 
 This example illustrates how the Move type system uses `acquires` to prevent a dangling reference:
 

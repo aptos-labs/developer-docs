@@ -131,7 +131,7 @@ Adhering to this principle ensures that functions are not over-exposed, restrict
 
 ### Generics type check
 
-Generics can be used to define functions and structs over different input data types. When using them, ensure that the generic types are valid and what’s expected. [Read more](https://aptos.dev/move/book/generics/) about generics.
+Generics can be used to define functions and structs over different input data types. When using them, ensure that the generic types are valid and what’s expected. [Read more](../book/generics.mdx) about generics.
 
 Unchecked generics can lead to unauthorized actions or transaction aborts, potentially compromising the integrity of the protocol.
 
@@ -168,7 +168,7 @@ module 0x42::example {
 
 #### Example Secure Code
 
-The Aptos Framework sample below creates a key-value table consisting of two generic types `K` and `V` . Its related `add` functions accepts as parameters a `Table<K, V>` object, a `key`, and a `value` of types `K` and `V` . The `phantom` syntax ensures that the key and value types cannot be different than those in the table, preventing type mismatches. [Read more](https://aptos.dev/move/book/generics/#phantom-type-parameters) about `phantom` type parameters.
+The Aptos Framework sample below creates a key-value table consisting of two generic types `K` and `V` . Its related `add` functions accepts as parameters a `Table<K, V>` object, a `key`, and a `value` of types `K` and `V` . The `phantom` syntax ensures that the key and value types cannot be different than those in the table, preventing type mismatches. [Read more](../book/generics.mdx#phantom-type-parameters) about `phantom` type parameters.
 
 ```move
 module 0x42::example {
@@ -274,7 +274,7 @@ Move's abilities are a set of permissions that control the possible actions on d
 | store   | Enables data to be saved in the global storage, critical to persist data across transactions.                          |
 | key     | Grants data the ability to serve as a key in global storage operations, important for data retrieval and manipulation. |
 
-[Read more](https://aptos.dev/move/book/abilities/) about abilities.
+[Read more](../move/book/abilities.mdx) about abilities.
 
 Incorrect usage of abilities can lead to security issues such as unauthorized copying of sensitive data (`copy`), resource leaks (`drop`), and global storage mishandling (`store`).
 
@@ -352,7 +352,7 @@ In Move, the security around integer operations is designed to prevent overflow 
 - Division (`/`) abort if the divisor is zero.
 - Left Shift (`<<`), uniquely, does not abort in the event of an overflow. This means if the shifted bits exceed the storage capacity of the integer type, the program will not terminate, resulting in incorrect values or unpredictable behavior.
 
-[Read more](https://aptos.dev/move/book/integers/#operations) about operations.
+[Read more](../move/book/integers.mdx#operations) about operations.
 
 Bad operations could unexpectedly alter the correct execution of the smart contract, either by causing an unwanted abort or by calculating inaccurate data.
 
@@ -362,7 +362,7 @@ Bad operations could unexpectedly alter the correct execution of the smart contr
 
 ### ConstructorRef leak
 
-When creating objects ensure to never expose the object’s `ConstructorRef` as it allows adding resources to an object. A `ConstructorRef` can also be used to generate other capabilities (or "Refs") that are used to alter or transfer the ownership the object. [Read more](https://aptos.dev/standards/aptos-object/#object-capabilities-refs) about Objects capabilities.
+When creating objects ensure to never expose the object’s `ConstructorRef` as it allows adding resources to an object. A `ConstructorRef` can also be used to generate other capabilities (or "Refs") that are used to alter or transfer the ownership the object. [Read more](../../standards/aptos-object.mdx#object-capabilities-refs) about Objects capabilities.
 
 #### Example Vulnerable code
 
@@ -415,7 +415,7 @@ However, objects should be isolated to different account, otherwise modification
 
 For example, transferring one resource implies the transfer of all group members, since the transfer function operates on `ObjectCore`, which is essentially a general tag for all resources at the account.
 
-[Read more](https://aptos.dev/standards/aptos-object/) about Aptos Objects.
+[Read more](../../standards/aptos-object.mdx) about Aptos Objects.
 
 #### Example Insecure Code
 
@@ -638,4 +638,4 @@ module 0x42::example {
 
 ### Smart contract publishing key management
 
-Using the same account for testnet and mainnet poses a security risk, as testnet private keys, often stored in less secure environments (ex. laptops), can be more easily exposed or leaked. An attacker that can obtain the private key for the the testnet smart contract would be able to upgrade the mainnet one.
+Using the same account for testnet and mainnet poses a security risk, as testnet private keys, often stored in less secure environments (ex. laptops), can be more easily exposed or leaked. An attacker that can obtain the private key for the testnet smart contract would be able to upgrade the mainnet one.

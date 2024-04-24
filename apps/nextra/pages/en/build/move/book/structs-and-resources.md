@@ -11,7 +11,7 @@ important values (such as a token).
 By default, structs are linear and ephemeral. By this we mean that they: cannot be copied, cannot be
 dropped, and cannot be stored in global storage. This means that all values have to have ownership
 transferred (linear) and the values must be dealt with by the end of the program's execution
-(ephemeral). We can relax this behavior by giving the struct [abilities](./abilities.md) which allow
+(ephemeral). We can relax this behavior by giving the struct [abilities](./abilities.mdx) which allow
 values to be copied or dropped and also to be stored in global storage or to define global storage
 schemas.
 
@@ -39,7 +39,7 @@ module 0x2::m {
 
 As mentioned above: by default, a struct declaration is linear and ephemeral. So to allow the value
 to be used with certain operations (that copy it, drop it, store it in global storage, or use it as
-a storage schema), structs can be granted [abilities](./abilities.md) by annotating them with
+a storage schema), structs can be granted [abilities](./abilities.mdx) by annotating them with
 `has <ability>`:
 
 ```move
@@ -48,7 +48,7 @@ module 0x2::m {
 }
 ```
 
-For more details, see the [annotating structs](./abilities.md#annotating-structs) section.
+For more details, see the [annotating structs](./abilities.mdx#annotating-structs) section.
 
 ### Naming
 
@@ -424,9 +424,9 @@ module 0x2::m {
 ## Storing Resources in Global Storage
 
 Only structs with the `key` ability can be saved directly in
-[persistent global storage](./global-storage-operators.md). All values stored within those `key`
-structs must have the `store` ability. See the [ability](./abilities) and
-[global storage](./global-storage-operators.md) chapters for more detail.
+[persistent global storage](./global-storage-operators.mdx). All values stored within those `key`
+structs must have the `store` ability. See the [ability](./abilities.mdx) and
+[global storage](./global-storage-operators.mdx) chapters for more detail.
 
 ## Examples
 

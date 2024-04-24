@@ -1,7 +1,4 @@
 export default {
-  index: {
-    title: "Building with Objects",
-  },
   "creating-objects": {
     title: "Creating Objects",
   },
