@@ -69,7 +69,7 @@ Migrate the code by copying over your custom processors to the [`processors`](ht
 
 [`mod.rs`](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/processors/mod.rs)
 
-```move filename="mod.rs"
+```rust filename="mod.rs"
 pub enum Processor {
     ...
     CoinProcessor,
@@ -85,7 +85,7 @@ impl Processor {
 
 [`worker.rs`](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/worker.rs)
 
-```move filename="worker.rs"
+```rust filename="worker.rs"
 Processor::CoinProcessor => {
     Arc::new(CoinTransactionProcessor::new(self.db_pool.clone()))
 },

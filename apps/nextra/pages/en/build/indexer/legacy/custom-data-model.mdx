@@ -32,7 +32,7 @@ Creating a custom indexer involves the following steps. Refer to the indexing bl
 3. Create a new transaction processor, or optionally add to an existing processor. In the diagram this step corresponds to processing the ledger database according to the new business logic and writing to the indexed database.
 4. Integrate the new processor. Optional if you are reusing an existing processor.
 
-In the below detailed description, an example of indexing and querying for the coin balances is used. You can see this in the [`coin_processor`](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/coin_processor.rs).
+In the below detailed description, an example of indexing and querying for the coin balances is used. You can see this in the [`coin_processor.rs`](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/coin_processor.rs).
 
 ### 1. Define new table schemas
 
@@ -48,7 +48,7 @@ DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration genera
 
 b. Create the necessary table schemas. This is just PostgreSQL code. In the code shown below, the `up.sql` will have the new changes and `down.sql` will revert those changes.
 
-```sql filename="Terminal"
+```sql filename="up.sql / down.sql"
 -- up.sql
 -- coin balances for each version
 CREATE TABLE coin_balances (
@@ -88,7 +88,7 @@ DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration redo
 
 We now have to prepare the Rust data models that correspond to the Diesel schemas. In the case of coin balances, we will define `CoinBalance` and `CurrentCoinBalance` as below:
 
-```rust filename="coin_balance.move"
+```rust filename="coin_balance.rs"
 #[derive(Debug, Deserialize, FieldCount, Identifiable, Insertable, Serialize)]
 #[diesel(primary_key(transaction_version, owner_address, coin_type))]
 #[diesel(table_name = coin_balances)]
@@ -145,7 +145,7 @@ The `process_transactions` function takes in a vector of transactions with a sta
 - Return status (error or success).
 
 <Callout type="info">
-See [coin_process.rs](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/coin_processor.rs) for a relatively straightforward example. You can search for `coin_balances` in the page for the specific code snippet related to coin balances.
+See [coin_processor.rs](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/coin_processor.rs) for a relatively straightforward example. You can search for `coin_balances` in the page for the specific code snippet related to coin balances.
 </Callout>
 
 **How to decide whether to create a new processor:** This is completely up to you. The benefit of creating a new processor is that you are starting from scratch, so you will have full control over exactly what gets written to the indexed database. The downside is that you will have to maintain a new fullnode, since there is a 1-to-1 mapping between a fullnode and the processor.
