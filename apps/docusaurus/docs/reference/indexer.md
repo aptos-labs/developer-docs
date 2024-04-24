@@ -102,14 +102,14 @@ This table tracks token activities and is especially useful for tracking NFT act
 | before_value               | String  | The value of a token property before the transaction. Ex. "50"                                                                           |
 | current_token_data         | Table   | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
 | entry_function_id_str      | String  | The identifier of the function called in this transaction. Ex. "0x1::aptos_account::transfer"                                                                |
-| event_account_address      | String  | This is an Aptos account address related to the event. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"          |
+| event_account_address      | String  | This is an Aptos account address related to the event. This address must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"          |
 | event_index                | bigint  | Index of the event within the transaction. Ex. 1                                                                                         |
-| from_address               | String  | This is an Aptos account address from which the token was sent. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
+| from_address               | String  | This is an Aptos account address from which the token was sent. This address must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
 | is_fungible_v2             | Boolean | Indicates whether the token is fungible. Ex. False for NFTs.                                                                             |
 | property_version_v1        | bigint  | The version of the token's properties under schema version 1. This field is only for token standard v1. It is always 0 for v2. Ex. 0                                                                      |
-| to_address                 | String  | This is an Aptos account address to which the token was sent. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"                         |
+| to_address                 | String  | This is an Aptos account address to which the token was sent. This address must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"                         |
 | token_amount               | bigint  | The amount of the token transferred in this activity. Ex. 3                                                                              |
-| token_data_id              | String  | Unique identifier for this particular token's data. For token standard v1, this is derived from a combination of creator_address, collection_name, and token_name. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"                                                                        |
+| token_data_id              | String  | Unique identifier for this particular token's data. For token standard v1, this is derived from a combination of creator_address, collection_name, and token_name. This ID must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"                                                                        |
 | token_standard             | String  | Aptos standard that the collection adheres to. Ex. "v1"                                                                                  |
 | transaction_timestamp      | String  | Timestamp when the transaction occurred. Ex. "2024-04-17T02:14:25.68771"                                                                 |
 | transaction_version        | bigint  | Blockchain version of the transaction. Ex. 10000000                                                                                      |
@@ -189,9 +189,9 @@ This table tracks the metadata associated with each NFT collection (Ex. collecti
 | Field                      | Type   | Description                                                                                                                            |
 | -------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
 | cdn_asset_uris             | Table  | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                             |
-| collection_id              | String | Unique identifier for the collection. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b88"                         |
+| collection_id              | String | Unique identifier for the collection. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b88"                         |
 | collection_name            | String | The formal name of the collection. Ex. "Mythic Dragons"                                                                                |
-| creator_address            | String | This is an Aptos account address that created the collection. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
+| creator_address            | String | This is an Aptos account address that created the collection. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
 | current_supply             | bigint | Current supply of tokens in this collection. Ex. 500                                                                                   |
 | description                | String | Description of the collection. Ex. "A collection of rare digital dragons."                                                             |
 | last_transaction_timestamp | String | Timestamp of the last transaction involving this collection. Ex. "2024-04-17T02:14:25.68771"                                           |
@@ -212,14 +212,14 @@ This table maps collections to who owns them and helps count how much of a colle
 
 | Field                    | Type   | Description                                                                                                                            |
 | ------------------------ | ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| collection_id            | String | Unique identifier for the collection. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"                         |
+| collection_id            | String | Unique identifier for the collection. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"                         |
 | collection_name          | String | The formal name of the collection. Ex. "Mythic Dragons"                                                                                |
 | collection_uri           | String | URI linking to further information about the collection. Ex. "https://example.com/collections/9876543210"                              |
-| creator_address          | String | This is an Aptos account address that created the collection. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
+| creator_address          | String | This is an Aptos account address that created the collection. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
 | current_collection       | Table  | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                             |
 | distinct_tokens          | bigint | The count of distinct tokens owned within this collection. Ex. 150                                                                     |
 | last_transaction_version | bigint | The version number of the last transaction involving this collection. Ex. 3000000002                                                   |
-| owner_address            | String | This is an Aptos account address that currently owns the token. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a""                     |
+| owner_address            | String | This is an Aptos account address that currently owns the token. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a""                     |
 | single_token_uri         | String | URI linking to information about a specific token within the collection. Ex. "https://example.com/tokens/9876543210"                   |
 | token_standard           | String | Aptos standard that the collection adheres to. Ex. "v1"                                                                                |
 
@@ -232,7 +232,7 @@ This tracks the metadata tied to each fungible asset (ex. decimals of precision)
 | Field                             | Type   | Description                                                                                                                       |
 | --------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
 | asset_type                        | String | The type of the asset, described by a Move resource. Ex. "0x1::aptos_coin::AptosCoin"                                             |
-| creator_address                   | String | This is an Aptos account address that created the asset. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
+| creator_address                   | String | This is an Aptos account address that created the asset. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
 | decimals                          | bigint | Number of decimal places for token value, typically for fungible tokens. Ex. 18                                                   |
 | icon_uri                          | String | URI for the icon of the asset. Ex. "https://cdn.example.com/icons/123"                                                            |
 | last_transaction_timestamp        | String | Timestamp of the last transaction involving this asset. Ex. "2024-04-17T02:14:25.68771"                                           |
@@ -255,15 +255,15 @@ This tracks the activity of fungible assets. It includes v1 token data.
 | block_height                | bigint  | The blockchain height at which this activity occurred. Ex. 1500000                                                                                   |
 | entry_function_id_str       | String  | The identifier of the function called in this transaction. Ex. "0x1::aptos_account::transfer"                                                                            |
 | event_index                 | bigint  | Index of the event within the transaction. Ex. 1                                                                                                     |
-| gas_fee_payer_address       | String  | This is an Aptos account address that paid the gas fee for the transaction. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
+| gas_fee_payer_address       | String  | This is an Aptos account address that paid the gas fee for the transaction. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
 | is_frozen                   | Boolean | Indicates whether the asset is frozen. Ex. False                                                                                                     |
 | is_gas_fee                  | Boolean | Indicates whether this activity involved a gas fee. Ex. True                                                                                         |
 | is_transaction_success      | Boolean | Indicates whether the transaction was successful. Ex. True                                                                                           |
 | metadata                    | Object  | Use the [Hasura explorer](#indexer-api-reference) to see fields for `metadata` in this table.                                                        |
-| owner_address               | String  | This is an Aptos account address that owns the asset. Ex. "0x123abc456def7890abcdef1234567890abcdef1234"                                             |
+| owner_address               | String  | This is an Aptos account address that owns the asset. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"                                             |
 | owner_aptos_names           | Table   | References [owner_aptos_names](#current_aptos_names).                                                                                                |
 | owner_aptos_names_aggregate | Table   | References [owner_aptos_names](#current_aptos_names).                                                                                                |
-| storage_id                  | String  | Identifier for the storage used in the transaction. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"                         |
+| storage_id                  | String  | Identifier for the storage used in the transaction. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"                         |
 | storage_refund_amount       | bigint  | Amount refunded for storage after the transaction. Ex. 50                                                                                            |
 | token_standard              | String  | Aptos standard that the collection adheres to. Ex. "v1"                                                                                              |
 | transaction_timestamp       | String  | Timestamp when the transaction occurred. Ex. "2024-04-17T02:14:25.68771"                                                                             |
@@ -285,8 +285,8 @@ This tracks the asset balances of each account on-chain. It includes v1 token da
 | last_transaction_timestamp | String  | Timestamp of the last transaction involving this balance. Ex. "2024-04-17T02:14:25.68771"                                         |
 | last_transaction_version   | bigint  | Blockchain version of the last transaction involving this balance. Ex. 30000000                                                   |
 | metadata                   | Object  | Use the [Hasura explorer](#indexer-api-reference) to see fields for `metadata` in `current_fungible_asset_balances`.              |
-| owner_address              | String  | This is an Aptos account address that owns the asset. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"    |
-| storage_id                 | String  | Identifier for the storage associated with this balance. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
+| owner_address              | String  | This is an Aptos account address that owns the asset. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"    |
+| storage_id                 | String  | Identifier for the storage associated with this balance. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
 | token_standard             | String  | Aptos standard that the collection adheres to. Ex. "v1"                                                                           |
 
 ## Aptos Naming Service (ANS)
@@ -306,8 +306,8 @@ This view of [`current_ans_lookup_v2`](#current_ans_lookup_v2) helps query by na
 | is_domain_owner          | Boolean | Indicates whether the registered address is the owner of the domain. Ex. False                                                      |
 | is_primary               | Boolean | Indicates whether this is the primary domain for the registered address. Ex. True                                                   |
 | last_transaction_version | bigint  | The version number of the last transaction involving this domain. Ex. 5000000                                                       |
-| owner_address            | String  | This is an Aptos account address that owns the domain. Ex. "0x123abc456def7890abcdef1234567890abcdef1234"                           |
-| registered_address       | String  | This is an Aptos account address registered to the domain. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
+| owner_address            | String  | This is an Aptos account address that owns the domain. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x123abc456def7890abcdef1234567890abcdef1234"                           |
+| registered_address       | String  | This is an Aptos account address registered to the domain. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
 | subdomain                | String  | Any subdomain part of the domain name. Ex. "sub.example"                                                                            |
 | token_name               | String  | The name of the token associated with this domain. Ex. "ExampleToken"                                                               |
 | token_standard           | String  | Aptos standard that the collection adheres to. Ex. "v1"                                                                             |
@@ -322,7 +322,7 @@ This table maps tokens, standards, and addresses to human readable names.
 | expiration_timestamp     | String  | Timestamp when the domain registration expires. Ex. "2024-04-17T02:14:25.68771"                                                     |
 | is_deleted               | Boolean | Indicates whether the domain registration has been deleted. Ex. False                                                               |
 | last_transaction_version | bigint  | The version number of the last transaction involving this domain. Ex. 5000000                                                       |
-| registered_address       | String  | This is an Aptos account address registered to the domain. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
+| registered_address       | String  | This is an Aptos account address registered to the domain. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
 | subdomain                | String  | Any subdomain part of the domain name. Ex. "sub.example"                                                                            |
 | token_name               | String  | The name of the token associated with this domain. Ex. "ExampleToken"                                                               |
 | token_standard           | String  | Aptos standard that the collection adheres to. Ex. "v1"                                                                             |
