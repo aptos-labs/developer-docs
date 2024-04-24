@@ -14,6 +14,7 @@ This guide will walk you through setting up a self-hosted Indexer API.
 <Callout type="warning">
 Currently this guide only explains how to run processor part of the Indexer API. By the end of this guide you will have a running processor that consumes transactions from the Transaction Stream Service, parses them, and stores them in the database. Unfortunately this guide does not explain how to attach an API to this system right now.
 </Callout>
+
 ## Prerequisites
 
 - A running PostgreSQL instance is required, with a valid user and database. In this example we call the user `postgres` and the database `indexer`.
@@ -56,6 +57,7 @@ This is the connection string to your PostgreSQL database. It should be in the f
 <Callout type="warning">
 If you're running this from a Docker Desktop environment (which you likely are if you're using MacOS or Windows) you must set `postgres_connection_string` to `postgresql://host.docker.internal:5432/indexer` instead. With Docker Desktop this is how the binary can reach the host network.
 </Callout>
+
 ### `indexer_grpc_data_service_address`
 
 This is the URL for the Transaction Stream Service. If you are using the Labs-Hosted instance you can find the URLs for each network at [this page](../txn-stream/labs-hosted.mdx). Make sure to select the correct URL for the network you want to index. If you are running this service locally the value should be `127.0.0.1:50051`.
