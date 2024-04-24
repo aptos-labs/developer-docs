@@ -2,21 +2,35 @@
 title: "Move Specification Language"
 ---
 
-This document describes the _Move specification language (MSL)_, a subset of the [Move](../move-on-aptos.md) language that supports specification of the behavior of Move programs. MSL works together with the [Move Prover](./index.md), a tool that can statically verify the correctness of MSL specifications against Move programs. In contrast to traditional testing, verification of MSL is exhaustive and holds for all possible inputs and global states of a [Move module](../../reference/glossary.md#move-module) or [Move script](../../reference/glossary.md#transaction-or-move-script). At the same time, this verification of MSL is fast and automated enough that it can be used at a similar place in the developer workflow where tests are typically conducted (for example, for qualification of pull requests in continuous integration).
+This document describes the _Move specification language (MSL)_, a subset of the
+[Move](../move-on-aptos.mdx) language that supports specification of the
+behavior of Move programs. MSL works together with the [Move Prover](../prover.mdx),
+a tool that can statically verify the correctness of MSL specifications against
+Move programs. In contrast to traditional testing, verification of MSL is
+exhaustive and holds for all possible inputs and global states of a
+[Move module](../../reference/glossary.md#move-module) or { /* TODO: Fix link */ }
+[Move script](../../reference/glossary.md#transaction-or-move-script). At the
+same time, this verification of MSL is fast and automated enough that it can be
+used at a similar place in the developer workflow where tests are typically
+conducted (for example, for qualification of pull requests in continuous
+integration).
 
-While the Move programming language at this point is stable, the subset represented by MSL should be
-considered evolving. This has no impact on platform stability, since MSL is not running in
-production; yet MSL is used for offline quality assurance where it is continuously improved for
-evolving objectives.
+While the Move programming language at this point is stable, the subset
+represented by MSL should be considered evolving. This has no impact on platform
+stability, since MSL is not running in production; yet MSL is used for offline
+quality assurance where it is continuously improved for evolving objectives.
 
-This document describes the language only; see [Use the Move Prover](./prover-guide.md) for instructions. The reader is expected to have basic knowledge of the Move language, as well as basic
-principles of pre- and post-condition specifications. (See for example the [Design by contract](https://en.wikipedia.org/wiki/Design_by_contract)). For examples of specifications, we refer to
-the [Aptos framework](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/overview.md) documentation, which has specifications embedded.
+This document describes the language only; see [Use the Move Prover](./prover-guide.mdx)
+for instructions. The reader is expected to have basic knowledge of the Move
+language, as well as basic principles of pre- and post-condition specifications.
+(See for example the [Design by contract](https://en.wikipedia.org/wiki/Design_by_contract)).
+For examples of specifications, we refer to the [Aptos framework](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/overview.md)
+documentation, which has specifications embedded.
 
 # Expressions
 
-Expressions in MSL are a subset of Move program expressions plus a set of additional constructs, as
-discussed in the following sections.
+Expressions in MSL are a subset of Move program expressions plus a set of
+additional constructs, as discussed in the following sections.
 
 ## Type System
 
