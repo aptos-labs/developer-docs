@@ -101,19 +101,19 @@ This table tracks token activities and is especially useful for tracking NFT act
 | aptos_names_to_aggregate   | Table   | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
 | before_value               | String  | The value of a token property before the transaction. Ex. "50"                                                                           |
 | current_token_data         | Table   | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
-| entry_function_id_str      | String  | The identifier of the function called in this transaction. Ex. "transfer"                                                                |
+| entry_function_id_str      | String  | The identifier of the function called in this transaction. Ex. "0x1::aptos_account::transfer"                                                                |
 | event_account_address      | String  | This is an Aptos account address related to the event. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"          |
 | event_index                | bigint  | Index of the event within the transaction. Ex. 1                                                                                         |
 | from_address               | String  | This is an Aptos account address from which the token was sent. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
 | is_fungible_v2             | Boolean | Indicates whether the token is fungible. Ex. False for NFTs.                                                                             |
-| property_version_v1        | bigint  | The version of the token's properties under schema version 1. Ex. 1                                                                      |
+| property_version_v1        | bigint  | The version of the token's properties under schema version 1. This field is only for token standard v1. It is always 0 for v2. Ex. 0                                                                      |
 | to_address                 | String  | This is an Aptos account address to which the token was sent. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"                         |
 | token_amount               | bigint  | The amount of the token transferred in this activity. Ex. 3                                                                              |
 | token_data_id              | String  | Unique identifier for this particular token's data. For token standard v1, this is derived from a combination of creator_address, collection_name, and token_name. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a"                                                                        |
 | token_standard             | String  | Aptos standard that the collection adheres to. Ex. "v1"                                                                                  |
 | transaction_timestamp      | String  | Timestamp when the transaction occurred. Ex. "2024-04-17T02:14:25.68771"                                                                 |
 | transaction_version        | bigint  | Blockchain version of the transaction. Ex. 10000000                                                                                      |
-| type                       | String  | Type of transfer, e.g., "deposit" or "withdrawal". Ex. "0x3::token::DepositEvent"                                                        |
+| type                       | String  | Type of transfer - like "deposit" or "withdrawal". Ex. "0x3::token::DepositEvent"                                                        |
 
 ### `nft_metadata_crawler_parsed_asset_uris`
 
@@ -149,7 +149,7 @@ This table tracks who owns which NFTs. This includes both v1 and v2 tokens. Fung
 | last_transaction_version     | bigint  | The version number of the last transaction involving the token. Example: 20747031 |
 | non_transferrable_by_owner   | Boolean | Indicates whether the token is non-transferrable by the owner. Example: true or null |
 | owner_address                | String  | The Aptos account address that currently owns the token. Addresses must be 66 characters so may be 0 padded. Example: "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
-| property_version_v1          | bigint  | The version number of the token's properties as of the last update. Example: 3 |
+| property_version_v1          | bigint  | The version number of the token's properties as of the last update. This field is only for token standard v1. It is always 0 for v2. Example: 0 |
 | storage_id                   | String  | A unique identifier used for storage purposes. IDs must be 66 characters long, so may be 0 padded. Ex. "0xd8d41ff9f67d17d7dee061b5b683b92013b420cb6a30c21fc7c287454792d7a8" |
 | table_type_v1                | String  | The Move function type. Example: "0x3::token::TokenStore" |
 | token_data_id                | String  | A unique identifier for the token data, typically a hash or a numeric ID. Ex. "0x3d911af2dc3e47848fbba17b8694cf526942be183b84f8393a6c048232fb976d" |
@@ -253,7 +253,7 @@ This tracks the activity of fungible assets. It includes v1 token data.
 | amount                      | bigint  | The amount of the asset involved in the activity. Ex. 1000                                                                                           |
 | asset_type                  | String  | The type of the asset, described by a Move resource. Ex. "0x1::aptos_coin::AptosCoin"                                                                |
 | block_height                | bigint  | The blockchain height at which this activity occurred. Ex. 1500000                                                                                   |
-| entry_function_id_str       | String  | The identifier of the function called in this transaction. Ex. "transfer"                                                                            |
+| entry_function_id_str       | String  | The identifier of the function called in this transaction. Ex. "0x1::aptos_account::transfer"                                                                            |
 | event_index                 | bigint  | Index of the event within the transaction. Ex. 1                                                                                                     |
 | gas_fee_payer_address       | String  | This is an Aptos account address that paid the gas fee for the transaction. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
 | is_frozen                   | Boolean | Indicates whether the asset is frozen. Ex. False                                                                                                     |
