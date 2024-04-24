@@ -30,8 +30,8 @@ export const i18nConfig = Object.freeze({
     coinsExampleDescription: "Simple, type-safe, and fungible assets",
     objectsExampleLabel: "Objects",
     objectsExampleDescription: "Composable containers for resources",
-    fungibleTokensExampleLabel: "Fungible Tokens",
-    fungibleTokensExampleDescription:
+    fungibleAssetsExampleLabel: "Fungible Assets",
+    fungibleAssetsExampleDescription:
       "Highly expressive, fungible, digital assets",
   },
 });
