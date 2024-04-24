@@ -82,7 +82,7 @@ gives you latest version processed per “processor”
 | last_success_version       | bigint | The version number of the last successful processor run. Ex. 5000000                     |
 | last_transaction_timestamp | String | Timestamp of the last processed transaction. Ex. "2024-04-17T02:14:25.68771"             |
 | last_updated               | String | Timestamp of the last update to this processor's status. Ex. "2024-04-17T02:14:25.68771" |
-| processor                  | String | Name of the processor. Ex. "TransactionProcessor"                                        |
+| processor                  | String | Name of the processor. Ex. "transaction_processor"                                        |
 
 ## NFT
 
