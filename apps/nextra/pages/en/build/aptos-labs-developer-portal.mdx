@@ -2,9 +2,12 @@
 title: "Aptos Labs Developer Portal"
 ---
 
-import BetaNotice from '../../src/components/\_dev_portal_beta_notice.mdx';
+import { Callout } from "nextra/components";
 
-<BetaNotice />
+<Callout type="info">
+  Developer Portal is currently in beta. Please report any problems you encounter
+  by creating an [issue in the aptos-core](https://github.com/aptos-labs/aptos-core/issues/new?assignees=@geekflyer,@dport,@blakezimmerman&labels=api-gateway&projects=&template=dev_portal_issue.md&title=%5BDev+Portal%5D) repo.
+</Callout>
 
 # Aptos Labs Developer Portal
 
@@ -29,7 +32,7 @@ Currently, the following rate limits apply:
 2. Fullnode API: 5000 requests per 5 minutes sliding window.
 3. GraphQL API: 5000 requests per 5 minutes sliding window.
 
-   Note that requests for the Fullnode API / GraphQL API are counted separately, so you can make 5000 Fullnode API requests AND 5000 GraphQL API requests in the same 5 minutes window. The rate limit is applied as a continuous sliding window.
+Note that requests for the Fullnode API / GraphQL API are counted separately, so you can make 5000 Fullnode API requests AND 5000 GraphQL API requests in the same 5 minutes window. The rate limit is applied as a continuous sliding window.
 
 Rate limits are customizable per user upon request. If you have a use-case that requires higher rate limits than the default, please open a support case through one of the supported channels in the portal.
 
@@ -37,6 +40,6 @@ Rate limits are customizable per user upon request. If you have a use-case that 
 
 1. Only authenticated access is supported.
 
-   At the moment the new URLs introduced by the Developer Portal / API Gateway only support requests with an API Key (Bearer authentication).
-   Effectively this means you can only use the new API gateway provided URLs from backend apps that can securely hold credentials.
-   We plan to add soon support for anonymous authentication in combination with more sophisticated rate limit protections, which then makes new URLs usable in client-side only applications like Browser Wallets etc.
+At the moment the new URLs introduced by the Developer Portal / API Gateway only support requests with an API Key (Bearer authentication).
+Effectively this means you can only use the new API gateway provided URLs from backend apps that can securely hold credentials.
+We plan to add soon support for anonymous authentication in combination with more sophisticated rate limit protections, which then makes new URLs usable in client-side only applications like Browser Wallets etc.
