@@ -30,14 +30,14 @@ transaction execution.
 version number associated with it that dictates its global sequential ordering in the history of the blockchain ledger.
 - The state is the representation of all transaction outputs up to a specific version. In other words, a state version
 is the accumulation of all transactions inclusive of that transaction version.
-- As transactions execute, they may emit events. [Events](../concepts/events.md) are hints about changes in on-chain
-data. {/* TODO: Fix link */}
+- As transactions execute, they may emit events. [Events](../../network/blockchain/learn-about-aptos/events.mdx) are hints about changes in on-chain
+data.
 
 <Callout type="info">
 Ensure the [fullnode](../../network/nodes/networks.mdx) you are communicating with is up-to-date. The fullnode must reach the
 version containing your transaction to retrieve relevant data from it. There can be latency from the fullnodes
-retrieving state from [validator fullnodes](../concepts/fullnodes.md), {/* TODO Fix link */} which in turn rely upon
-[validator nodes](../concepts/validator-nodes.md) as the source of truth.
+retrieving state from [validator fullnodes](../../network/blockchain/learn-about-aptos/fullnodes.mdx), which in turn rely upon
+[validator nodes](../../network/blockchain/learn-about-aptos/validator-nodes.mdx) as the source of truth.
 </Callout>
 
 The storage service on a node employs two forms of pruning that erase data from nodes:
@@ -93,15 +93,16 @@ aptos move view --function-id devnet::message::get_message --profile devnet --ar
 In the TypeScript SDK, a view function request would look like this:
 
 ```typescript
-    const payload: Gen.ViewRequest = {
+    import { Aptos } from "@aptos-labs/ts-sdk";
+
+    const aptos = new Aptos();
+    const [balance] = aptos.view<[string]>({
       function: "0x1::coin::balance",
-      type_arguments: ["0x1::aptos_coin::AptosCoin"],
-      arguments: [alice.address().hex()],
-    };
+      typeArguments: ["0x1::aptos_coin::AptosCoin"],
+      functionArguments: [alice.accountAddress]
+    });
 
-    const balance = await client.view(payload);
-
-    expect(balance[0]).toBe("100000000");
+    expect(balance).toBe("100000000");
 ```
 
 The view function returns a list of values as a vector. By default, the results are returned in JSON format; however,
