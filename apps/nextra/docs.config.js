@@ -1,6 +1,18 @@
 /* eslint-disable no-undef */
 // Unfortunately making this a .ts file is not easily doable atm
 // TODO: revisit this if time allows
+
+const getOrigin = () => {
+  if (process.env.NEXT_PUBLIC_ORIGIN) {
+    return process.env.NEXT_PUBLIC_ORIGIN;
+  } else {
+    console.warn(
+      "\x1b[33mWarning:\x1b[0m [nextra] No .env with NEXT_PUBLIC_ORIGIN found in apps/nextra. Using default http://localhost:3030\n",
+    );
+    return "http://localhost:3030";
+  }
+};
+
 export const i18nConfig = Object.freeze({
   en: {
     locale: "en",
@@ -44,5 +56,5 @@ export const docsConfig = Object.freeze({
   relativeDocsPath: "/apps/nextra",
   githubNewIssueUrl: "https://github.com/aptos-labs/developer-docs/issues/new",
   googleAnalyticsId: "G-LLF79THJN0",
-  origin: process.env.NEXT_PUBLIC_ORIGIN,
+  origin: getOrigin(),
 });
