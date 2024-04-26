@@ -12,8 +12,9 @@ export interface CodeSnippet {
   updated_at: string;
 }
 
-export type ParsedCodeSnippet = Omit<CodeSnippet, "code"> & {
-  code: TrustedHTML;
+export type ParsedCodeSnippet = CodeSnippet & {
+  highlightedCode: TrustedHTML;
+  language: string;
 };
 
 export interface CodecacheResponse<T> {

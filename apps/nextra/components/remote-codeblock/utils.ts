@@ -5,10 +5,31 @@ import type {
   CodecacheSSGProps,
   ParsedCodeSnippet,
 } from "./types";
+import { EXTENSION_TO_LANGUAGE } from "utils/language/language";
+import { BundledLanguage } from "shiki";
 
 const baseRoute = "https://code-cache.petra-wallet.workers.dev";
 const codeCacheApiKeyName = "NEXT_PUBLIC_CODECACHE_API_KEY";
 const Origin = "http://localhost";
+
+function getFileExtension(url: string): string {
+  // Remove any fragment identifier which might include line numbers
+  const basePart = url.split('#')[0];
+
+  // Extract the last segment of the URL after the last slash
+  const lastSegment = basePart.split('/').pop() || "";
+
+  // Find the position of the last dot, which should precede the extension
+  const lastDotIndex = lastSegment.lastIndexOf('.');
+
+  // Extract and return the substring after the last dot
+  // If there's no dot, return an empty string (or adjust as needed)
+  if (lastDotIndex !== -1 && lastDotIndex + 1 < lastSegment.length) {
+    return lastSegment.substring(lastDotIndex + 1);
+  } else {
+    return "";
+  }
+}
 
 /**
  * Fetches Github Permalinks
@@ -53,14 +74,25 @@ export async function permalinkFetch(permalinks: string[]) {
   });
 
   const jsonResponse: CodecacheResponse<CodeSnippet[]> = await response.json();
-  const formattedJsonResponse: CodecacheSSGProps<ParsedCodeSnippet> = { props: { ssg: {} } };
+  const formattedJsonResponse: CodecacheSSGProps<ParsedCodeSnippet> = {
+    props: { ssg: {} },
+  };
 
   for (let value of jsonResponse.data) {
-    const highlightedSnippet = await highlightCode(value.code)
+    const extension = getFileExtension(value.github_permalink);
+    console.log(extension);
+    let language: BundledLanguage;
+    if (Object.keys(EXTENSION_TO_LANGUAGE).includes(extension)) {
+      language = EXTENSION_TO_LANGUAGE[extension];
+    } else {
+      language = EXTENSION_TO_LANGUAGE["bash"];
+    }
+    const highlightedSnippet = await highlightCode(value.code, language);
     formattedJsonResponse.props.ssg[value.github_permalink] = {
       ...value,
-      code: highlightedSnippet
-    }
+      highlightedCode: highlightedSnippet,
+      language,
+    };
   }
 
   return formattedJsonResponse;
