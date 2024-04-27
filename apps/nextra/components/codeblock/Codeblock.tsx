@@ -74,7 +74,7 @@ export const CodeblockContent = forwardRef<
       ref={ref}
       dangerouslySetInnerHTML={{ __html: html }}
       className={cn(
-        "overflow-x-auto subpixel-antialiased text-[.9em] bg-white dark:bg-black py-4 ring-1 ring-inset ring-gray-300 dark:ring-neutral-700 contrast-more:ring-gray-900 contrast-more:dark:ring-gray-50 contrast-more:contrast-150 rounded-b-md [&_span]:text-[var(--shiki-light)] dark:[&_span]:text-[var(--shiki-dark)]",
+        "overflow-x-auto subpixel-antialiased text-[.9em] bg-white dark:bg-black py-4 ring-1 ring-inset ring-gray-300 dark:ring-neutral-700 contrast-more:ring-gray-900 contrast-more:dark:ring-gray-50 contrast-more:contrast-150 rounded-b-md [&_span]:min-h-[21px] [&_span]:text-[var(--shiki-light)] dark:[&_span]:text-[var(--shiki-dark)]",
         className,
       )}
     />

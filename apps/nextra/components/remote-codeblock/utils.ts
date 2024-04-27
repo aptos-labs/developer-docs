@@ -80,7 +80,6 @@ export async function permalinkFetch(permalinks: string[]) {
 
   for (let value of jsonResponse.data) {
     const extension = getFileExtension(value.github_permalink);
-    console.log(extension);
     let language: BundledLanguage;
     if (Object.keys(EXTENSION_TO_LANGUAGE).includes(extension)) {
       language = EXTENSION_TO_LANGUAGE[extension];
