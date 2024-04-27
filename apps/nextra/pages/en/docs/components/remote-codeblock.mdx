@@ -2,90 +2,68 @@
 title: "Remote Codeblock"
 ---
 
+import { Callout } from 'nextra/components'
 import { permalinkFetch, RemoteCodeblock } from '@components/index'
 import { useData } from 'nextra/hooks'
 
 export async function getStaticProps() {
   return await permalinkFetch([
-    'https://github.com/1Password/passkey-rs/blob/a4fa30f62b299faa33ae8d8f05aacd48240cf8f1/passkey-transports/src/hid.rs#L1-L91'
+    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
   ])
 }
 
 # Remote Codeblock
 
-Custom Remote Codeblock component.
+`<RemoteCodeblock />` is a custom component designed to enable users to query for
+code snippets from other repos and embed them in the docs natively given a github permalink.
+
+Here is an example
 
 <RemoteCodeblock 
-  permalink="https://github.com/1Password/passkey-rs/blob/a4fa30f62b299faa33ae8d8f05aacd48240cf8f1/passkey-transports/src/hid.rs#L1-L91" 
+  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
 />
 
+As you can see, each `<RemoteCodeblock />` comes with the ability to:
+1. Copy the code
+2. View the source
 
-```rs filename="Normal Codeblock"
-//! <https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-errata-20220621.html#usb>
-use std::collections::HashMap;
+<br />
 
-/// The CTAPHID protocol implements the following commands.
-#[derive(Debug, Clone, Copy)]
-pub enum Command {
-    /// This command sends an encapsulated CTAP1/U2F message to the device. The semantics of the
-    /// data message is defined in the U2F Raw Message Format encoding specification. See [passkey-rs::u2f].
-    Msg = 0x03,
-    /// This command sends an encapsulated CTAP CBOR encoded message. The semantics of the data
-    /// message is defined in the CTAP Message encoding specification. Please note that keep-alive
-    /// messages MAY be sent from the device to the client before the response message is returned.
-    Cbor = 0x10,
-    /// This command has two functions.
-    ///
-    /// If sent on an allocated CID, it synchronizes a channel, discarding the current transaction,
-    /// buffers and state as quickly as possible. It will then be ready for a new transaction. The
-    /// device then responds with the CID of the channel it received the INIT on, using that channel.
-    ///
-    /// If sent on the broadcast CID, it requests the device to allocate a unique 32-bit channel
-    /// identifier (CID) that can be used by the requesting application during its lifetime.
-    /// The requesting application generates a nonce that is used to match the response. When the
-    /// response is received, the application compares the sent nonce with the received one.
-    /// After a positive match, the application stores the received channel id and uses that for
-    /// subsequent transactions.
-    ///
-    /// To allocate a new channel, the requesting application SHALL use the broadcast channel
-    /// CTAPHID_BROADCAST_CID (0xFFFFFFFF). The device then responds with the newly allocated
-    /// channel in the response, using the broadcast channel.
-    Init = 0x06,
-    /// Sends a transaction to the device, which immediately echoes the same data back. This
-    /// command is defined to be a uniform function for debugging, latency and performance measurements.
-    Ping = 0x01,
-    /// Cancel any outstanding requests on this CID. If there is an outstanding request that can be
-    /// cancelled, the authenticator MUST cancel it and that cancelled request will reply with the
-    /// error CTAP2_ERR_KEEPALIVE_CANCEL.
-    ///
-    /// As the CTAPHID_CANCEL command is sent during an ongoing transaction, transaction semantics
-    /// do not apply. Whether a request was cancelled or not, the authenticator MUST NOT reply to
-    /// the CTAPHID_CANCEL message itself. The CTAPHID_CANCEL command MAY be sent by the client
-    /// during ongoing processing of a CTAPHID_CBOR request. The CTAP2_ERR_KEEPALIVE_CANCEL response
-    /// MUST be the response to that request, not an error response in the HID transport.
-    ///
-    /// A CTAPHID_CANCEL received while no CTAPHID_CBOR request is being processed, or on a
-    /// non-active CID SHALL be ignored by the authenticator.
-    Cancel = 0x11,
-    /// This command code is used in response messages only.
-    Err = 0x3F,
-    /// This command code is sent while processing a CTAPHID_MSG. It should be sent at least every 100ms
-    /// and whenever the status changes. A KEEPALIVE sent by an authenticator does not constitute a
-    /// response and does therefore not end an ongoing transaction.
-    KeepAlive = 0x3B,
+# Usage
 
-    // Optional Commands:
-    //---------------------------------------------------------------------------------------------
-    /// The wink command performs a vendor-defined action that provides some visual or audible
-    /// identification a particular authenticator. A typical implementation will do a short burst
-    /// of flashes with a LED or something similar. This is useful when more than one device is
-    /// attached to a computer and there is confusion which device is paired with which connection.
-    Wink = 0x08,
-    /// The lock command places an exclusive lock for one channel to communicate with the device.
-    /// As long as the lock is active, any other channel trying to send a message will fail. In
-    /// order to prevent a stalling or crashing application to lock the device indefinitely, a lock
-    /// time up to 10 seconds may be set. An application requiring a longer lock has to send
-    /// repeating lock commands to maintain the lock.
-    Lock = 0x04,
+<Callout type="info">
+This requires the document writer to include [`getStaticProps`](https://nextjs.org/docs/pages/building-your-application/data-fetching/get-static-props).
+This enables Nextra to fetch the Codeblock, syntax highlight it with [shiki](https://shiki.matsu.io/) at build time rather than
+fetching it dynamically on each client load.
+</Callout>
+
+Here is an example of how to use `<RemoteCodeblock />`.
+
+```mdx filename="example.mdx"
+import { permalinkFetch, RemoteCodeblock } from '@components/index'
+import { useData } from 'nextra/hooks'
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
+  ])
 }
+
+# Hello World on Aptos
+
+Here is an example Hello World contract on Aptos.
+
+<RemoteCodeblock 
+  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
+/>
 ```
+
+## API
+
+The `RemoteCodeblock` component takes the following props:
+
+### `permalink`
+
+The github permalink (must be a permalink)
+
+- Type: `string`
