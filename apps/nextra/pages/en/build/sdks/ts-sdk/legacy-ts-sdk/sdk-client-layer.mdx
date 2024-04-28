@@ -55,7 +55,7 @@ To submit a transaction to the Aptos network we should:
 
 ### Generate a Raw Transaction
 
-The TypeScript SDK provides 2 efficient ways to `generate a raw transaction` that can be signed and submitted to chain.
+The Legacy TypeScript SDK provides 2 efficient ways to `generate a raw transaction` that can be signed and submitted to chain.
 
 #### Transaction Builder
 
@@ -107,7 +107,7 @@ const rawTxn = await provider.generateRawTransaction(
 );
 ```
 
-For simplicity, the TypeScript SDK provides a method that can submit a BCS transaction in a one call.
+For simplicity, the Legacy TypeScript SDK provides a method that can submit a BCS transaction in a one call.
 
 ```ts
 const rawTxn = await provider.generateSignSubmitTransaction(
@@ -118,7 +118,7 @@ const rawTxn = await provider.generateSignSubmitTransaction(
 
 ### Sign a Raw Transaction
 
-Once one has generated a raw transaction, they need to sign this transaction with their private key. The TypeScript SDK provides a method that accepts an `aptos account` and `a raw transaction` and signs it.
+Once one has generated a raw transaction, they need to sign this transaction with their private key. The Legacy TypeScript SDK provides a method that accepts an `aptos account` and `a raw transaction` and signs it.
 
 ```ts
 const signedTxn = AptosClient.generateBCSTransaction(alice, rawTxn);
@@ -126,7 +126,7 @@ const signedTxn = AptosClient.generateBCSTransaction(alice, rawTxn);
 
 ### Submit transaction to blockchain
 
-Once a transaction has been signed, it is ready to be submitted to the blockchain. The TypeScript SDK provides a method that accepts the `signed transaction` and submits it to the Aptos network.
+Once a transaction has been signed, it is ready to be submitted to the blockchain. The Legacy TypeScript SDK provides a method that accepts the `signed transaction` and submits it to the Aptos network.
 
 ```ts
 const transactionRes = await provider.submitSignedBCSTransaction(signedTxn);
