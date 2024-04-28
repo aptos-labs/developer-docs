@@ -1,14 +1,14 @@
 export default {
-    "typescript-sdk": {
-        title: "Aptos TypeScript SDK"
-    },
-    "python-sdk": {
-        title: "Aptos Python SDK",
-    },
-    "rust-sdk": {
-        title: "Aptos Rust SDK",
-    },
-    "unity-sdk": {
-        title: "Aptos Unity SDK",
-    }
+  "typescript-sdk": {
+    title: "Aptos TypeScript SDK",
+  },
+  "python-sdk": {
+    title: "Aptos Python SDK",
+  },
+  "rust-sdk": {
+    title: "Aptos Rust SDK",
+  },
+  "unity-sdk": {
+    title: "Aptos Unity SDK",
+  },
 };
