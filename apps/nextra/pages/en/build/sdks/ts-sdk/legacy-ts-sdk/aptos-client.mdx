@@ -56,9 +56,9 @@ const transactionRes = await client.submitSignedBCSTransaction(bcsTxn);
 ```
 
 Transaction payload contents:
-`function` – This must be a fully qualified function name and composed of `module address`, `module name` and `function name` separated by `::`.
-`type_arguments` – This is for the case a Move function expects a generic type argument.
-`arguments` – The arguments the function expects.
+`function` - This must be a fully qualified function name and composed of `module address`, `module name` and `function name` separated by `::`.
+`type_arguments` - This is for the case a Move function expects a generic type argument.
+`arguments` - The arguments the function expects.
 
 :::tip
 You can use the `AptosClient` class directly or the [Provider](./sdk-client-layer.mdx) class (preferred).

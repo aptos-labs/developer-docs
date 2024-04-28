@@ -107,10 +107,10 @@ The TypeScript SDK uses a configuration file for [@graphql-codegen](https://the-
 
 The SDK [configuration file](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/indexer/codegen.yml) defines how `@graphql-codegen` should generate TypeScript code from a GraphQL schema and queries. Let's break down some of the key elements of this file:
 
-- `schema` – Specifies the location of the GraphQL schema file that `@graphql-codegen` should use for code generation. In this case, it is using the Aptos Indexer `mainnet` schema.
+- `schema` - Specifies the location of the GraphQL schema file that `@graphql-codegen` should use for code generation. In this case, it is using the Aptos Indexer `mainnet` schema.
 - `documents` - Specifies the location of the GraphQL operation files that `@graphql-codegen` should use for code generation. In this case, it is using the `src/indexer/queries/` location (as mentioned in the previous section) and includes all files with the `.graphql` extension.
-- `generates` – Defines the output files that `@graphql-codegen` should generate based on the schema and operations. In this case, it is generating the types, operations and queries.
-- `plugins` – Specifies the plugins that `@graphql-codegen` should use for code generation. In this case, it is using the `typescript` plugin to generate TypeScript typings from the GraphQL schema, `typescript-operations` plugin to generate TypeScript typings for GraphQL operations and `typescript-graphql-request` plugin to generate function for making GraphQL requests .
+- `generates` - Defines the output files that `@graphql-codegen` should generate based on the schema and operations. In this case, it is generating the types, operations and queries.
+- `plugins` - Specifies the plugins that `@graphql-codegen` should use for code generation. In this case, it is using the `typescript` plugin to generate TypeScript typings from the GraphQL schema, `typescript-operations` plugin to generate TypeScript typings for GraphQL operations and `typescript-graphql-request` plugin to generate function for making GraphQL requests .
 
 :::tip
 You can use the `IndexerClient` class directly or the [Provider](./sdk-client-layer.mdx) class (preferred).
