@@ -14,13 +14,13 @@ const Origin = "http://localhost";
 
 function getFileExtension(url: string): string {
   // Remove any fragment identifier which might include line numbers
-  const basePart = url.split('#')[0];
+  const basePart = url.split("#")[0];
 
   // Extract the last segment of the URL after the last slash
-  const lastSegment = basePart.split('/').pop() || "";
+  const lastSegment = basePart.split("/").pop() || "";
 
   // Find the position of the last dot, which should precede the extension
-  const lastDotIndex = lastSegment.lastIndexOf('.');
+  const lastDotIndex = lastSegment.lastIndexOf(".");
 
   // Extract and return the substring after the last dot
   // If there's no dot, return an empty string (or adjust as needed)

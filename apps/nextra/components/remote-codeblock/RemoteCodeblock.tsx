@@ -59,7 +59,10 @@ export function RemoteCodeblock({ permalink }: RemoteCodeblockProps) {
   return (
     <Codeblock.Container>
       <Codeblock.Header>
-        <img className="filter-none dark:invert h-[16px]" src={`/language-icons/${icon}`} />
+        <img
+          className="filter-none dark:invert h-[16px]"
+          src={`/language-icons/${icon}`}
+        />
         <Link
           href={snippetInfo.github_permalink}
           target="_blank"
