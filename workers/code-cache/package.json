@@ -2,8 +2,11 @@
 	"name": "@aptos-labs/docs-code-cache",
 	"version": "0.0.0",
 	"description": "Code caching for Github permalinks for Nextra docs",
+	"type": "module",
+	"main": "dist/index.js",
 	"scripts": {
 		"test:types": "tsc --noEmit",
+		"build": "tsc",
 		"dev": "wrangler dev",
 		"migrate": "wrangler d1 execute db --local --file=./drizzle/0000_short_lockheed.sql",
 		"worker:deploy": "wrangler deploy",

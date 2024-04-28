@@ -7,6 +7,8 @@ import { codecache } from "./schema";
 import { fetchCodeSnippetFromGithub, unifiedReturn } from "./github";
 import { checkApiKey, setCORSHeaders, wrap } from "./utils";
 
+export * from './github'
+
 export interface Env {
   DB: D1Database;
   API_KEY: string;
@@ -31,6 +33,7 @@ type GithubPermalinks = { github_permalinks: string[] };
  * 1. Inject DB
  * 2. Set CORS Headers
  */
+// @ts-ignore
 async function middleware(request: WorkersRequest, env: Env) {
   try {
     setCORSHeaders(request, env);
