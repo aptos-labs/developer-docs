@@ -5,7 +5,7 @@ export default {
     "building-transactions": {
         title: "Building and Sending Transactions"
     },
-    "legacy-sdk": {
+    "legacy-ts-sdk": {
         title: "Legacy TypeScript SDK"
     }
 };
