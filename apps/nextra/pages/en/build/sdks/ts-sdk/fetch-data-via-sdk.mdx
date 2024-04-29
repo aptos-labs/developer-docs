@@ -64,7 +64,7 @@ const chainId = (await aptos.view({ payload }))[0];
 
 ## Ensuring Fresh Indexer Data
 
-Behind the scenes, some requests use the [Indexer API](https://aptos.dev/indexer/api/) to access data which has been processed or aggregated. That extra parsing can take a bit of time, so the data may lag slightly behind the latest ledger.
+Behind the scenes, some requests use the [Indexer API](../../indexer.mdx) to access data which has been processed or aggregated. That extra parsing can take a bit of time, so the data may lag slightly behind the latest ledger.
 
 If you want to ensure that the data is fresh, you can specify the `minimumLedgerVersion` in any request which uses the Indexer API. 
 
