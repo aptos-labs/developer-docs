@@ -44,6 +44,10 @@ const aptosConfig = new AptosConfig({ network: Network.TESTNET });
 const aptos = new Aptos(aptosConfig);
 ```
 
+<Callout type="info">
+(Advanced) If you need to connect to a specific node, you can set that in the `AptosConfig` by specifying the `fullnode` url. Ex. `fullnode: http://localhost:8080/v1`. 
+</Callout>
+
 ## 2. Fetch Data From On-Chain
 
 You can use the `Aptos` client to fetch all sorts of data from on-chain such as information about the network itself or account-specific information.
