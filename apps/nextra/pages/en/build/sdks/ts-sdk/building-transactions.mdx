@@ -19,7 +19,7 @@ Building a transaction is how you specify:
 
 This can be packaged into a `SimpleTransaction` using `aptos.transaction.build.simple(...)` like so:
 
-```tsx filename="build-a-transaction.ts"
+```ts filename="build-a-transaction.ts"
 const transaction = await aptos.transaction.build.simple({
   sender: sender.accountAddress,
   data: {
@@ -54,7 +54,7 @@ This simulation only requires the `publicKey` of an account since it will not im
 
 You can execute the simulation by using `aptos.transaction.simulate.simple(...)` like so:
 
-```tsx filename="build-a-transaction.ts"
+```ts filename="build-a-transaction.ts"
 const [userTransactionResponse] = await aptos.transaction.simulate.simple({
   signerPublicKey: signer.publicKey,
   transaction,
@@ -66,7 +66,7 @@ const [userTransactionResponse] = await aptos.transaction.simulate.simple({
 
 Once the transaction is built and the fees seem reasonable, you can sign the transaction with `aptos.transaction.sign`. The signature must come from the `sender` account.
 
-```tsx filename="build-a-transaction.ts"
+```ts filename="build-a-transaction.ts"
 // 3. Sign
 const senderAuthenticator = aptos.transaction.sign({
   signer: sender,
@@ -78,7 +78,7 @@ const senderAuthenticator = aptos.transaction.sign({
 
 Now that the transaction is signed, you can submit it to the network using `aptos.transaction.submit.simple` like so:
 
-```tsx filename="build-a-transaction.ts"
+```ts filename="build-a-transaction.ts"
 // 4. Submit
 const committedTransaction = await aptos.transaction.submit.simple({
   transaction,
@@ -90,7 +90,7 @@ const committedTransaction = await aptos.transaction.submit.simple({
 
 Finally, you can wait for the result of the transaction by using [`aptos.waitForTransaction`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.12.2/classes/Aptos.html#waitForTransaction) and specifying the hash of the transaction you just submitted like so:
 
-```tsx filename="build-a-transaction.ts"
+```ts filename="build-a-transaction.ts"
 // 5. Wait
 const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
 ```
@@ -98,7 +98,7 @@ const executedTransaction = await aptos.waitForTransaction({ transactionHash: co
 
 ## Full TypeScript Example
 
-```tsx filename="build-a-transaction.ts"
+```ts filename="build-a-transaction.ts"
 /**
  * This example shows how to use the Aptos SDK to send a transaction.
  * Don't forget to install @aptos-labs/ts-sdk before running this example!

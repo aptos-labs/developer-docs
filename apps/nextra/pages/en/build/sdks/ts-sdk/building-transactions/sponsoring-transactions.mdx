@@ -11,7 +11,7 @@ This can be used to help manage fees from a central account when working with co
 <Steps>
 ### Build the transaction with the parameter `withFeePayer: true`.
     
-```tsx filename="sponsor.ts"
+```ts filename="sponsor.ts"
 const transaction = await aptos.transaction.build.simple({
     sender: sender.accountAddress,
     withFeePayer: true,
@@ -32,7 +32,7 @@ const transaction = await aptos.transaction.build.simple({
 The sponsor uses a different function (`.signAsFeePayer`) than the sender to sign!
 </Callout>
 
-```tsx filename="sponsor.ts"
+```ts filename="sponsor.ts"
 const senderAuthenticator = aptos.transaction.sign({
     signer: sender,
     transaction,
@@ -49,7 +49,7 @@ const feePayerAuthenticator = aptos.transaction.signAsFeePayer({
 Currently, simulating a sponsor transaction must happen AFTER signing with the sponsor or it will fail to recognize this transaction has a sponsor.
 </Callout>
 
-```tsx filename="sponsor.ts"
+```ts filename="sponsor.ts"
 const [userTransactionResponse] = await aptos.transaction.simulate.simple({
     signerPublicKey: sender.publicKey,
     feePayerPublicKey: feePayer.publicKey,
@@ -59,7 +59,7 @@ const [userTransactionResponse] = await aptos.transaction.simulate.simple({
 
 ### Submit the transaction by combining both signatures.
 
-```tsx filename="sponsor.ts"
+```ts filename="sponsor.ts"
 // 4. Submit
 const committedTransaction = await aptos.transaction.submit.simple({
     transaction,
@@ -70,7 +70,7 @@ const committedTransaction = await aptos.transaction.submit.simple({
 
 ### Wait for the transaction to execute.
 
-```tsx filename="sponsor.ts"
+```ts filename="sponsor.ts"
 // 5. Wait for results
 const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
 ```
@@ -78,7 +78,7 @@ const executedTransaction = await aptos.waitForTransaction({ transactionHash: co
 
 ## TypeScript Sponsor Transaction Code Sample
 
-```tsx filename="sponsor.ts"
+```ts filename="sponsor.ts"
 /**
  * This example shows how to use the Aptos SDK to send a transaction with a sponsor.
  */

@@ -6,7 +6,7 @@ This can be done with `aptos.transaction.batch.forSingleAccount` as can be seen 
 
 ## Full TypeScript Example
 
-```tsx filename="batch.ts"
+```ts filename="batch.ts"
 /**
  * This example shows how to use the Aptos SDK to send several transactions in a batch.
  */
@@ -63,7 +63,7 @@ example();
 
 In order to tell when transaction submitted in a batch have executed on chain, you must listen to events while the process runs.
 
-```tsx filename="transaction-worker-events.ts"
+```ts filename="transaction-worker-events.ts"
 export enum TransactionWorkerEventsEnum {
   // Fired after a transaction gets sent to the chain
   TransactionSent = "transactionSent",

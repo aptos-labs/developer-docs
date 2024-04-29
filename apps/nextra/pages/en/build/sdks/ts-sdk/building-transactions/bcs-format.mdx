@@ -11,7 +11,7 @@ Using BCS directly can have a light performance advantage as the SDK can skip an
 
 You can directly use the BCS format to build transactions by specifying argument types explicitly like so:
 
-```tsx filename="example.ts"
+```ts filename="example.ts"
 const transaction = await aptos.transaction.build.simple({
     sender: alice.accountAddress,
     data: {

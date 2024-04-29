@@ -21,7 +21,7 @@ Instead of `.simple`, multi-agent transaction functions use `.multiAgent`.
 Make sure to replace the `function` field below with your entry function that requires multiple agents to sign.
 </Callout>
 
-```tsx filename="multi-agent.ts"
+```ts filename="multi-agent.ts"
 const transaction = await aptos.transaction.build.multiAgent({
   sender: alice.accountAddress,
   secondarySignerAddresses: [bob.accountAddress],
@@ -37,7 +37,7 @@ const transaction = await aptos.transaction.build.multiAgent({
     
 ### Simulate the transaction by passing in all additional public keys to `secondarySignersPublicKeys`. (Optional)
     
-```tsx filename="multi-agent.ts"
+```ts filename="multi-agent.ts"
 const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
   {
     signerPublicKey: alice.publicKey,
@@ -51,7 +51,7 @@ const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
 
 You will combine these signatures in the next step.
     
-```tsx filename="multi-agent.ts"
+```ts filename="multi-agent.ts"
 const aliceSenderAuthenticator = aptos.transaction.sign({
   signer: alice,
   transaction,
@@ -65,7 +65,7 @@ const bobSenderAuthenticator = aptos.transaction.sign({
     
 ### Submit the transaction by combining all agent signatures via the `additionalSignerAuthenticators` parameter.
     
-```tsx filename="multi-agent.ts"
+```ts filename="multi-agent.ts"
 const committedTransaction = await aptos.transaction.submit.multiAgent({
   transaction,
   senderAuthenticator: aliceSenderAuthenticator,
@@ -75,7 +75,7 @@ const committedTransaction = await aptos.transaction.submit.multiAgent({
     
 ### Lastly, wait for the transaction to resolve.
     
-```tsx filename="multi-agent.ts"
+```ts filename="multi-agent.ts"
 const executedTransaction = await aptos.waitForTransaction({
   transactionHash: committedTransaction.hash,
 });
@@ -93,7 +93,7 @@ The below snippet needs light editing to work properly! (See below steps)
     1. Replace the function and parameters below this comment: `// REPLACE WITH YOUR MULTI-AGENT FUNCTION HERE`
     2. This customization is needed as there are no pre-made Aptos contracts which need multi-agent signatures. If you want to deploy your own example multi-agent contract, you can deploy the [“transfer two by two” example Move contract](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/tests/move/transfer/sources/script_two_by_two.move#L5).
 
-```tsx filename="multi-agent.ts"
+```ts filename="multi-agent.ts"
 /**
  * This example shows how to use the Aptos SDK to send a transaction.
  */
