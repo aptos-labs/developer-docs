@@ -1,74 +1,80 @@
-import { Callout } from 'nextra/components'
+import { Callout, Steps } from 'nextra/components'
 
 # Sponsoring Transactions
 
-Normally, the account that is executing a transaction pays for the gas fees. You can allow another account to cover those charges though by sponsoring a transaction.
+Normally, the account that is executing a transaction pays for the gas fees. You can allow another account to cover those charges by sponsoring a transaction.
 
-This can be used to help manage fees from a central account when setting up several accounts with smart contracts. That way you will not have to worry about having to “refill” intermediary accounts with funds.
+This can be used to help manage fees from a central account when working with complicated smart contracts.
 
 ## How To Sponsor a Transaction
 
-1. When **building** the transaction, include the parameter `withFeePayer: true`.
+<Steps>
+### Build the transaction with the parameter `withFeePayer: true`.
     
-    ```tsx filename="sponsor.ts"
-    const transaction = await aptos.transaction.build.simple({
-        sender: sender.accountAddress,
-        withFeePayer: true,
-        data: {
-            // All transactions on Aptos are implemented via smart contracts.
-            function: "0x1::aptos_account::transfer",
-            functionArguments: [destination.accountAddress, 100],
-        },
-    });
-    ```
-    
-2. To **sign** the transaction:
-    1. Sign with the sender account using `.sign`.
-    2. Also sign with the sponsor account using `.signAsFeePayer`.
-    
-    ```tsx filename="sponsor.ts"
-    const senderAuthenticator = aptos.transaction.sign({
-        signer: sender,
-        transaction,
-    });
-    const feePayerAuthenticator = aptos.transaction.signAsFeePayer({
-        signer: feePayer,
-        transaction
-    })
-    ```
-    
-3. (Optional) When **simulating** the transaction, include the parameter `feePayerPublicKey: account.publicKey`
-    
-    <Callout type="warning">
-    Currently, simulating a sponsor transaction must happen AFTER signing with the sponsor or it will fail to recognize this transaction has a sponsor.
-    </Callout>    
-    
-    ```tsx filename="sponsor.ts"
-    const [userTransactionResponse] = await aptos.transaction.simulate.simple({
-        signerPublicKey: sender.publicKey,
-        feePayerPublicKey: feePayer.publicKey,
-        transaction,
-    });
-    ```
-    
-4. Then **submit** the transaction by combining both signatures like so:
-    
-    ```tsx filename="sponsor.ts"
-    // 4. Submit
-    const committedTransaction = await aptos.transaction.submit.simple({
-        transaction,
-        senderAuthenticator: senderAuthenticator,
-        feePayerAuthenticator: feePayerAuthenticator,
-    });
-    ```
-    
-5. **Waiting** is the same as for a normal transaction.
-    
-    ```tsx filename="sponsor.ts"
-    // 5. Wait for results
-    const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
-    ```
-    
+```tsx filename="sponsor.ts"
+const transaction = await aptos.transaction.build.simple({
+    sender: sender.accountAddress,
+    withFeePayer: true,
+    data: {
+        // All transactions on Aptos are implemented via smart contracts.
+        function: "0x1::aptos_account::transfer",
+        functionArguments: [destination.accountAddress, 100],
+    },
+});
+```
+
+### Sign the transaction with BOTH the sender and the feePayer.
+
+1. Sign with the sender account using `.sign`.
+2. Sign with the sponsor account using `.signAsFeePayer`.
+
+<Callout type="warning">
+The sponsor uses a different function (`.signAsFeePayer`) than the sender to sign!
+</Callout>
+
+```tsx filename="sponsor.ts"
+const senderAuthenticator = aptos.transaction.sign({
+    signer: sender,
+    transaction,
+});
+const feePayerAuthenticator = aptos.transaction.signAsFeePayer({
+    signer: feePayer,
+    transaction
+})
+```
+
+### (Optional) When simulating the transaction, include the parameter `feePayerPublicKey: account.publicKey`
+
+<Callout type="warning">
+Currently, simulating a sponsor transaction must happen AFTER signing with the sponsor or it will fail to recognize this transaction has a sponsor.
+</Callout>
+
+```tsx filename="sponsor.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+    signerPublicKey: sender.publicKey,
+    feePayerPublicKey: feePayer.publicKey,
+    transaction,
+});
+```
+
+### Submit the transaction by combining both signatures.
+
+```tsx filename="sponsor.ts"
+// 4. Submit
+const committedTransaction = await aptos.transaction.submit.simple({
+    transaction,
+    senderAuthenticator: senderAuthenticator,
+    feePayerAuthenticator: feePayerAuthenticator,
+});
+```
+
+### Wait for the transaction to execute.
+
+```tsx filename="sponsor.ts"
+// 5. Wait for results
+const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
+```
+</Steps>
 
 ## TypeScript Sponsor Transaction Code Sample
 
