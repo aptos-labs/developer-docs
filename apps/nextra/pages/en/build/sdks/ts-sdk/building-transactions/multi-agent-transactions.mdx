@@ -1,84 +1,82 @@
-import { Callout } from 'nextra/components'
+import { Callout, Steps } from 'nextra/components'
 
 # Multi-Agent Transactions
 
 Multi-agent transactions allow multiple accounts to participate in the logic of a Move contract. 
 
-This can be used to accomplish things like:
-
-1. Requiring multiple approvals before transferring funds.
-    - Ex. Protecting an important account by only allowing access if multiple members of the board sign the transaction.
-2. Managing multiple accounts at the same time 
-    - Ex. Pooling funds and only transferring the value when everyone has signed the transaction. 
+This can be used to require multiple parties agree to a transaction before executing or to use resources from multiple accounts.
 
 ## Writing Multi-Agent Transactions
 
 Creating and executing a multi-agent transaction follows a similar flow to the [simple transaction flow](../building-transactions.mdx), but with several notable differences.
 
 <Callout type="info">
-Anywhere that used to have `.simple` we now use `.multiAgent`
+Anywhere in the [simple transaction flow](../building-transactions.mdx) that used to use `.simple` now uses `.multiAgent`
 </Callout>
 
-1. To **build** the transaction, we must include the list of `secondarySignerAddresses`.
+<Steps>
+### Build the transaction by including `secondarySignerAddresses` with a list of each additional agent.
+
+```tsx filename="multi-agent.ts"
+const transaction = await aptos.transaction.build.multiAgent({
+  sender: alice.accountAddress,
+  secondarySignerAddresses: [bob.accountAddress],
+  data: {
+    // REPLACE WITH YOUR MULTI-AGENT FUNCTION HERE
+    function:
+      "<REPLACE WITH YOUR MULTI AGENT MOVE ENTRY FUNCTION> (Syntax {address}::{module}::{function})",
+    // Pass in arguments for the function you specify above
+    functionArguments: [],
+  },
+});
+```
     
-    ```tsx filename="multi-agent.ts"
-    const transaction = await aptos.transaction.build.multiAgent({
-      sender: alice.accountAddress,
-      secondarySignerAddresses: [bob.accountAddress],
-      data: {
-        // REPLACE WITH YOUR MULTI-AGENT FUNCTION HERE
-        function:
-          "<REPLACE WITH YOUR MULTI AGENT MOVE ENTRY FUNCTION> (Syntax {address}::{module}::{function})",
-        // Pass in arguments for the function you specify above
-        functionArguments: [],
-      },
-    });
-    ```
+### Simulate the transaction using the parameter `secondarySignersPublicKeys`.
     
-2. To **simulate** the transaction, include the parameter `secondarySignersPublicKeys`.
+```tsx filename="multi-agent.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
+  {
+    signerPublicKey: alice.publicKey,
+    secondarySignersPublicKeys: [bob.publicKey],
+    transaction,
+  },
+);
+```
     
-    ```tsx filename="multi-agent.ts"
-    const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
-      {
-        signerPublicKey: alice.publicKey,
-        secondarySignersPublicKeys: [bob.publicKey],
-        transaction,
-      },
-    );
-    ```
+### Sign once for each agent. 
+
+You will combine these signatures in the next step.
     
-3. To **sign** the transaction, sign once for each agent. You will combine those signatures in the next step.
+```tsx filename="multi-agent.ts"
+const aliceSenderAuthenticator = aptos.transaction.sign({
+  signer: alice,
+  transaction,
+});
+// Bob is a secondary signer for this transaction
+const bobSenderAuthenticator = aptos.transaction.sign({
+  signer: bob,
+  transaction,
+});
+```
     
-    ```tsx filename="multi-agent.ts"
-    const aliceSenderAuthenticator = aptos.transaction.sign({
-      signer: alice,
-      transaction,
-    });
-    // Bob is a secondary signer for this transaction
-    const bobSenderAuthenticator = aptos.transaction.sign({
-      signer: bob,
-      transaction,
-    });
-    ```
+### Submit the transaction by combining all agent signatures via the `additionalSignerAuthenticators` parameter.
     
-4. To **submit** the transaction, combine all agent signatures via the `additionalSignerAuthenticators` parameter.
+```tsx filename="multi-agent.ts"
+const committedTransaction = await aptos.transaction.submit.multiAgent({
+  transaction,
+  senderAuthenticator: aliceSenderAuthenticator,
+  additionalSignersAuthenticators: [bobSenderAuthenticator],
+});
+```
     
-    ```tsx filename="multi-agent.ts"
-    const committedTransaction = await aptos.transaction.submit.multiAgent({
-      transaction,
-      senderAuthenticator: aliceSenderAuthenticator,
-      additionalSignersAuthenticators: [bobSenderAuthenticator],
-    });
-    ```
+### Lastly, wait for the transaction to resolve like so.
     
-5. Lastly, **wait** for the transaction to resolve like so.
-    
-    ```tsx filename="multi-agent.ts"
-    const executedTransaction = await aptos.waitForTransaction({
-      transactionHash: committedTransaction.hash,
-    });
-    ```
-    
+```tsx filename="multi-agent.ts"
+const executedTransaction = await aptos.waitForTransaction({
+  transactionHash: committedTransaction.hash,
+});
+```
+</Steps>
 
 ## Full TypeScript Multi-Agent Code Snippet
 

@@ -9,8 +9,8 @@ import { Callout } from 'nextra/components';
 
 The Legacy TypeScript SDK uses two types of tests, `e2e` and `unit` tests, located under the `src/tests/` folder:
 
-- `e2e` tests - End-to-end tests are meant to test the end-to-end operations starting from the SDK methods to the interaction with the REST/Indexer API and a smart contract and up to the blockchain level. For example, to test if a transaction has been submitted, we start with building the transaction payload the SDK expects, post the submit request to the REST API, and fetch the transaction data to make sure it has been fully submitted to the blockchain.
-- `unit` tests - Unit tests are meant to test the output of a function in the SDK with the provided input. For example, we can test whether an account address is valid.
+- `e2e` tests - End-to-end tests are meant to test the end-to-end operations starting from the SDK methods to the interaction with the REST/Indexer API and a smart contract and up to the blockchain level. For example, to test if a transaction has been submitted, start with building the transaction payload the SDK expects, post the submit request to the REST API, and fetch the transaction data to make sure it has been fully submitted to the blockchain.
+- `unit` tests - Unit tests are meant to test the output of a function in the SDK with the provided input. For example, the SDK can test whether an account address is valid.
 
 ## Validation for the Transaction Builder and BCS
 

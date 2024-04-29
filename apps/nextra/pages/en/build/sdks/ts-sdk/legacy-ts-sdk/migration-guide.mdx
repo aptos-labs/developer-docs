@@ -10,7 +10,7 @@ import { Callout } from 'nextra/components';
 If you are coming from an earlier version `1.x.x` of `aptos`, you will need to make the following updates.
 
 <Callout type="info">
-In this guide we only mention the API differences and updates you would need to do and excluding new features implementation
+This guide only contains API differences and updates required for deprecated features. New features of the v2 SDK are not included.
 </Callout>
 
 ## Install the SDK
@@ -77,7 +77,7 @@ const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
 
 ## Configuration class
 
-Introduce `AptosConfig` class that holds the config information for the SDK. Once define it we can pass and use it with the `Aptos` class
+To configure your `Aptos` client, you can use an `AptosConfig` object.
 
 ```ts filename="v2.ts"
 const aptosConfig = new AptosConfig({ network: Network.TESTNET }); // default to devnet

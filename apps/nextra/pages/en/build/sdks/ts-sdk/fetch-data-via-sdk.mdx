@@ -43,7 +43,7 @@ const resource =await aptos.getAccountResource<Coin>({
   resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
 });
 
-// Now we have access to the response type property
+// Now you have access to the response type property
 const value = resource.coin.value;
 ```
 

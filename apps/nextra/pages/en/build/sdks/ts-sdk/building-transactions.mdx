@@ -11,10 +11,10 @@ For these examples, `aptos` is an instance of the [`Aptos`](https://aptos-labs.g
 <Steps>
 ### Build
 
-Building a transaction is how we specify:
+Building a transaction is how you specify:
 
 1. **The `sender` account.** <br/>This account normally pays the gas fees for this transaction. See [Transaction Sponsoring](./building-transactions/sponsoring-transactions.mdx) to learn how to have another account pay for fees.
-2. **The `function` being called on-chain.** <br/>This is the identifier for the smart contract entry function on-chain that will trigger when we execute this transaction.
+2. **The `function` being called on-chain.** <br/>This is the identifier for the smart contract entry function on-chain that will trigger when you execute this transaction.
 3. **The `functionArguments`.** <br/>This is any data the function needs to run.
 
 This can be packaged into a `SimpleTransaction` using `aptos.transaction.build.simple(...)` like so:
