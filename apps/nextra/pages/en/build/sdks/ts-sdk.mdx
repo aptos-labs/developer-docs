@@ -1,4 +1,4 @@
-import { Tabs, Callout } from 'nextra/components'
+import { Tabs, Callout, Steps } from 'nextra/components'
  
 # Aptos TypeScript SDK
 The TypeScript SDK allows you to connect, explore, and interact on the Aptos blockchain. You can use it to request data, send transactions, set up test environments, and more!
@@ -8,7 +8,8 @@ The TypeScript SDK allows you to connect, explore, and interact on the Aptos blo
 
 # Quickstart
 
-0. Install the TypeScript SDK using the package manager of your choice:
+<Steps>
+### Install the TypeScript SDK using the package manager of your choice:
 <Tabs items={['pnpm', 'npm', 'yarn', 'bun']}>
   <Tabs.Tab>
     ```bash filename="Terminal"
@@ -32,7 +33,7 @@ The TypeScript SDK allows you to connect, explore, and interact on the Aptos blo
   </Tabs.Tab>
 </Tabs>
 
-## 1. Set Up Aptos
+### Set up the `Aptos` client
 
 You can use the `Aptos` object to handle everything that requires a connection to the Aptos network. A connection is established as soon as you create the object.
 
@@ -48,7 +49,7 @@ const aptos = new Aptos(aptosConfig);
 (Advanced) If you need to connect to a specific node, you can set that in the `AptosConfig` by specifying the `fullnode` url. Ex. `fullnode: http://localhost:8080/v1`. 
 </Callout>
 
-## 2. Fetch Data From On-Chain
+### Fetch data from on-chain
 
 You can use the `Aptos` client to fetch all sorts of data from on-chain such as information about the network itself or account-specific information.
 
@@ -58,11 +59,13 @@ const modules = await aptos.getAccountModules({ accountAddress: "0x123" });
 const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
 ```
 
-## 3. Send Transactions
+### Send Transactions
 
-You can send transactions to change the state of the ledger. Transactions let you send tokens like APT, trigger Move modules, trade NFTs, and more. To begin with though, here’s how you can send a basic transaction to transfer APT.
+You can send transactions to change the state of the ledger. Transactions let you send tokens like APT, trigger Move modules, trade NFTs, and more. You can find an in-depth tutorial on transactions [here](./ts-sdk/building-transactions.mdx).
 
-### 3.1 Create an Account
+To begin with though, here’s how you can send a basic transaction to transfer APT.
+
+#### 4.1 Create an Account
 
 To create a new account, you first generate new credentials then fund the account. On test networks you can fund an account programmatically by asking a “faucet” which has a lot of test APT to send some to your new account.
 
@@ -86,7 +89,7 @@ await aptos.fundAccount({
 });
 ```
 
-### 3.2 Build the Transaction
+#### 4.2 Build the Transaction
 
 You can build transactions with `aptos.transaction.build.simple({...})` by specifying:
 
@@ -112,11 +115,13 @@ const transaction = await aptos.transaction.build.simple({
 For some situations, you can also use simplified functions in the SDK such as `[transferCoinTransaction](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000001/modules/code/aptos_account?network=mainnet)`.
 </Callout>
 
-### 3.3 Sign and Submit
+#### 4.3 Sign and Submit
 
-Once you have built the transaction, you must sign and submit it. Signing with the sending account verifies that you own or manage that account. The client will then automatically determine the cost to execute this transaction based on network load.
+Signing proves that you own or manage the account that is executing the transaction. This is important since the sender must pay gas fees for the work the network does to execute the transaction.
 
-Here we use `aptos.signAndSubmitTransaction` which combines these two steps into one:
+Once signed, you can submit to the network for on chain verification and execution.
+
+You can use `aptos.signAndSubmitTransaction` which combines those two steps into one:
 
 ```ts filename="quickstart.ts"
 // Both signs and submits (although these can be done separately too)
@@ -126,13 +131,16 @@ const pendingTransaction = await aptos.signAndSubmitTransaction({
 });
 ```
 
-### 3.4 Wait for completion
+#### 4.4 Wait for completion
 
-Lastly, you can run `aptos.waitForTransaction` to guarantee your code executes after the transaction has been processed and applied. This also helps you get any errors that may occur after submitting, such as the transaction being rejected. 
+You can run `aptos.waitForTransaction` to guarantee your code executes after the transaction has been processed and applied. 
+
+This also helps you get any errors that may occur after submitting, such as the transaction being rejected. 
 
 ```ts filename="quickstart.ts"
 const executedTransaction = await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
 ```
+</Steps>
 
 ## Full Quickstart Code
 ```ts filename="quickstart.ts"
@@ -250,16 +258,17 @@ example();
 All told, you just learned how to transfer APT via a transaction by:
 
 1. Connecting to the network using the `Aptos` client.
-2. Looking up data from on-chain using client helper functions like [`aptos.getAccountModules`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.12.2/classes/Aptos.html#signAndSubmitTransaction).
-3. Submitting a transaction by building, signing, submitting.
-4. Waiting for Aptos to execute the transaction.
+2. Creating an account.
+3. Looking up data from on-chain using client helper functions like [`aptos.getAccountModules`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.13.1/classes/Aptos.html#signAndSubmitTransaction).
+4. Signing and submitting a transaction to the network.
+5. Waiting for Aptos to execute the transaction.
 
-To see all this in action, you can copy and run the [full working code snippet for this quickstart](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/simple_transfer.ts).
+To see all this in action, you can copy and run the full working code snippet for this quickstart above.
 
-# Further Learning
+## Further Learning
 
 Explore more in-depth guides for each of the common SDK workflows:
 
 1. [Fetching Data](./ts-sdk/fetch-data-via-sdk.mdx)
 2. [Building and Sending Transactions](./ts-sdk/building-transactions.mdx)
-3. [Testing With a Local Network](./ts-sdk/local-network.mdx)
+{/* TODO: Add this after figuring out what code snippet to have for it. - 3. [Testing With a Local Network](./ts-sdk/local-network.mdx) */}
