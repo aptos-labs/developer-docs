@@ -2,8 +2,7 @@
 title: "Migration Guide"
 ---
 
-import { Tabs, TabItem } from '@components/tabs/Tabs';
-import { Callout } from 'nextra/components';
+import { Callout, Tabs } from 'nextra/components';
 
 # TypeScript SDK Migration Guide
 
@@ -17,35 +16,27 @@ This guide only contains API differences and updates required for deprecated fea
 
 The TypeScript SDK V2 is under a new [GitHub repo](https://github.com/aptos-labs/aptos-ts-sdk) and with a new package name - `@aptos-labs/ts-sdk`
 
-<Tabs groupId="install-sdk">
-  <TabItem value="pnpm" label="pnpm">
-
-  ```bash filename="Terminal"
-  pnpm i @aptos-labs/ts-sdk
-  ```
-
-  </TabItem>
-  <TabItem value="npm" label="npm">
-
-  ```bash filename="Terminal"
-  npm i @aptos-labs/ts-sdk
-  ```
-
-  </TabItem>
-  <TabItem value="yarn" label="yarn">
-
-  ```bash filename="Terminal"
-  yarn add @aptos-labs/ts-sdk
-  ```
-
-  </TabItem>
-    <TabItem value="bun" label="bun">
-
-  ```bash filename="Terminal"
-  bun i @aptos-labs/ts-sdk
-  ```
-
-  </TabItem>
+<Tabs items={['pnpm', 'npm', 'yarn', 'bun']}>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    pnpm i @aptos-labs/ts-sdk
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    npm i @aptos-labs/ts-sdk
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    yarn add @aptos-labs/ts-sdk
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    bun i @aptos-labs/ts-sdk
+    ```
+  </Tabs.Tab>
 </Tabs>
 
 ## SDK usage and query the Aptos chain
@@ -63,7 +54,7 @@ const tokenClient = new TokenClient(aptosClient);
 
 **V2**
 <Callout type="info">
-Read more about it [here](../../ts-sdk.mdx)
+Read more about it [here](../../ts-sdk.mdx).
 </Callout>
 
 ```ts filename="v2.ts"
@@ -133,7 +124,7 @@ const txn = await client.submitSignedBCSTransaction(signedTransaction);
 
 **V2**
 <Callout type="info">
-Read more about it [here](../building-transactions.mdx)
+Read more about it [here](../building-transactions.mdx).
 </Callout>
 
 ```ts filename="v2.ts"
@@ -186,7 +177,7 @@ const account = AptosAccount.fromDerivePath(..)
 
 **V2**
 <Callout type="info">
-Read more about it [here](../../ts-sdk/account.mdx)
+Read more about it [here](../../ts-sdk/account.mdx).
 </Callout>
 
 ```ts filename="v2.ts"
