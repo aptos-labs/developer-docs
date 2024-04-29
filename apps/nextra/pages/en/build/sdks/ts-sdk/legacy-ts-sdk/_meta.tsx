@@ -22,5 +22,5 @@ export default {
     },
     "typescript-sdk-overview": {
         title: "Legacy TypeScript SDK Architecture"
-    }
+    },
 }
