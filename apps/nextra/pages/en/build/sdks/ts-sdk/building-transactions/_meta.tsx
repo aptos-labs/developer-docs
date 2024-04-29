@@ -1,6 +1,6 @@
 export default {
-    "multi-agent-signatures": {
-        title: "Multi-Agent Signatures",
+    "multi-agent-transactions": {
+        title: "Multi-Agent Transactions",
     },
     "sponsoring-transactions": {
         title: "Sponsoring Transactions",
