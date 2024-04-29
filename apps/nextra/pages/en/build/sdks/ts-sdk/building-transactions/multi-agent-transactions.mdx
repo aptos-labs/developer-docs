@@ -11,11 +11,15 @@ This can be used to require multiple parties agree to a transaction before execu
 Creating and executing a multi-agent transaction follows a similar flow to the [simple transaction flow](../building-transactions.mdx), but with several notable differences.
 
 <Callout type="info">
-Anywhere in the [simple transaction flow](../building-transactions.mdx) that used to use `.simple` now uses `.multiAgent`
+Instead of `.simple`, multi-agent transaction functions use `.multiAgent`.
 </Callout>
 
 <Steps>
 ### Build the transaction by including `secondarySignerAddresses` with a list of each additional agent.
+
+<Callout type="info">
+Make sure to replace the `function` field below with your entry function that requires multiple agents to sign.
+</Callout>
 
 ```tsx filename="multi-agent.ts"
 const transaction = await aptos.transaction.build.multiAgent({
@@ -31,7 +35,7 @@ const transaction = await aptos.transaction.build.multiAgent({
 });
 ```
     
-### Simulate the transaction using the parameter `secondarySignersPublicKeys`.
+### Simulate the transaction by passing in all additional public keys to `secondarySignersPublicKeys`. (Optional)
     
 ```tsx filename="multi-agent.ts"
 const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
@@ -69,7 +73,7 @@ const committedTransaction = await aptos.transaction.submit.multiAgent({
 });
 ```
     
-### Lastly, wait for the transaction to resolve like so.
+### Lastly, wait for the transaction to resolve.
     
 ```tsx filename="multi-agent.ts"
 const executedTransaction = await aptos.waitForTransaction({
