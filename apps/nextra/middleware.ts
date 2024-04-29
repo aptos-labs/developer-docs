@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import ISO6391 from "iso-639-1";
+import { i18nConfig } from "@docs-config";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
-const LOCALES = ["en"];
+const EN_LOCALE = i18nConfig.en.locale;
+const LOCALES = [EN_LOCALE];
 
 export async function middleware(req: NextRequest) {
   if (
@@ -11,10 +13,8 @@ export async function middleware(req: NextRequest) {
     req.nextUrl.pathname.includes("/api/") ||
     PUBLIC_FILE.test(req.nextUrl.pathname)
   ) {
-    console.log(`skip ${req.nextUrl}`);
     return;
   }
-  console.log(req.nextUrl);
 
   // Determine language
   let code = ISO6391.getAllCodes().find((locale) => {
@@ -26,26 +26,23 @@ export async function middleware(req: NextRequest) {
   });
 
   // If there is a language code, we determine if it's supported
-  if (code && LOCALES.some((locale) => locale === code)) {
+  if (code && LOCALES.includes(code)) {
     // Supported locales should be passed normally
-    console.log(`Supported ${code}`);
     return;
   } else if (code) {
     // If the language is unsupported
     // Strip the unsupported language
     req.nextUrl.pathname = req.nextUrl.pathname.substring(1 + code.length);
 
-    console.log(`Unsupported ${code}`);
     return NextResponse.redirect(
-      new URL(`/en${req.nextUrl.pathname}`, req.url),
+      new URL(`/${EN_LOCALE}${req.nextUrl.pathname}`, req.url),
     );
   } else {
-    console.log(`Default to en`);
-    // Otherwise, redirect to en
+    // Otherwise, redirect to default locale
     // TODO: Currently there's some hydration issue which prevents using the
     // '/' path instead of 'en'
     return NextResponse.redirect(
-      new URL(`/en${req.nextUrl.pathname}`, req.url),
+      new URL(`/${EN_LOCALE}${req.nextUrl.pathname}`, req.url),
     );
   }
 }
