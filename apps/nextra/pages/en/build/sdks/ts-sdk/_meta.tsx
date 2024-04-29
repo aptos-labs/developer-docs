@@ -5,6 +5,9 @@ export default {
     "building-transactions": {
         title: "Building and Sending Transactions"
     },
+    "account": {
+        title: "Creating and Managing Accounts"
+    },
     "legacy-ts-sdk": {
         title: "Legacy TypeScript SDK"
     }
