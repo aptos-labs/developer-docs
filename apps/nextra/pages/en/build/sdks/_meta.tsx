@@ -1,5 +1,5 @@
 export default {
-  "typescript-sdk": {
+  "ts-sdk": {
     title: "Aptos TypeScript SDK",
   },
   "python-sdk": {
