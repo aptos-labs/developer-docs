@@ -3,6 +3,8 @@ title: "IndexerClient Class"
 slug: "typescript-sdk-indexer-client-class"
 ---
 
+import { Callout } from 'nextra/components';
+
 # Legacy TypeScript IndexerClient Class
 
 The [IndexerClient](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/providers/indexer.ts) is responsible for handling the communication between the client-side application and the blockchain network. It uses the [Hasura framework](https://hasura.io/) to generate a set of [GraphQL queries](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) that can be used to retrieve data from the blockchain. The queries are optimized for performance and can retrieve data in real-time.
@@ -67,9 +69,9 @@ const graphqlQuery = { query, variables };
 const accountTokensCount = await client.queryIndexer(graphqlQuery);
 ```
 
-:::tip
+<Callout type="info">
 Be aware that it queries the network endpoint you passed in when initializing the `IndexerClient` class.
-:::
+</Callout>
 
 ## Generate queries
 
@@ -112,6 +114,6 @@ The SDK [configuration file](https://github.com/aptos-labs/aptos-core/blob/main/
 - `generates` - Defines the output files that `@graphql-codegen` should generate based on the schema and operations. In this case, it is generating the types, operations and queries.
 - `plugins` - Specifies the plugins that `@graphql-codegen` should use for code generation. In this case, it is using the `typescript` plugin to generate TypeScript typings from the GraphQL schema, `typescript-operations` plugin to generate TypeScript typings for GraphQL operations and `typescript-graphql-request` plugin to generate function for making GraphQL requests .
 
-:::tip
+<Callout type="info">
 You can use the `IndexerClient` class directly or the [Provider](./sdk-client-layer.mdx) class (preferred).
-:::
+</Callout>

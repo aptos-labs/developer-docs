@@ -2,16 +2,16 @@
 title: "Migration Guide"
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import { Tabs, TabItem } from '@components/tabs/Tabs';
+import { Callout } from 'nextra/components';
 
 # TypeScript SDK Migration Guide
 
 If you are coming from an earlier version `1.x.x` of `aptos`, you will need to make the following updates.
 
-:::note
+<Callout type="info">
 In this guide we only mention the API differences and updates you would need to do and excluding new features implementation
-:::
+</Callout>
 
 ## Install the SDK
 
@@ -20,30 +20,30 @@ The TypeScript SDK V2 is under a new [GitHub repo](https://github.com/aptos-labs
 <Tabs groupId="install-sdk">
   <TabItem value="pnpm" label="pnpm">
 
-```bash
- pnpm i @aptos-labs/ts-sdk
-```
+  ```bash
+  pnpm i @aptos-labs/ts-sdk
+  ```
 
   </TabItem>
   <TabItem value="npm" label="npm">
 
-```bash
- npm i @aptos-labs/ts-sdk
-```
+  ```bash
+  npm i @aptos-labs/ts-sdk
+  ```
 
   </TabItem>
   <TabItem value="yarn" label="yarn">
 
-```bash
- yarn add @aptos-labs/ts-sdk
-```
+  ```bash
+  yarn add @aptos-labs/ts-sdk
+  ```
 
   </TabItem>
     <TabItem value="bun" label="bun">
 
-```bash
- bun i @aptos-labs/ts-sdk
-```
+  ```bash
+  bun i @aptos-labs/ts-sdk
+  ```
 
   </TabItem>
 </Tabs>
@@ -62,9 +62,9 @@ const tokenClient = new TokenClient(aptosClient);
 ```
 
 **V2**
-:::tip
+<Callout type="info">
 Read more about it [here](../../ts-sdk.mdx)
-:::
+</Callout>
 
 ```ts
 const aptos = new Aptos();
@@ -132,9 +132,9 @@ const txn = await client.submitSignedBCSTransaction(signedTransaction);
 ```
 
 **V2**
-:::tip
-Read more about it [here](./transaction-builder.md)
-:::
+<Callout type="info">
+Read more about it [here](../building-transactions.mdx)
+</Callout>
 
 ```ts
 const aptos = new Aptos();
@@ -185,10 +185,10 @@ const account = AptosAccount.fromDerivePath(..)
 ```
 
 **V2**
-
-:::tip
-Read more about it [here](./account.md)
-:::
+{/* TODO - Add a link to the "account" information apage instead of ts-sdk */}
+<Callout type="info">
+Read more about it [here](../../ts-sdk.mdx)
+</Callout>
 
 ```ts
 // generate a new account (or key pair)

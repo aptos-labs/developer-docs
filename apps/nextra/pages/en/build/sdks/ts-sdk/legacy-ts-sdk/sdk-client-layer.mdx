@@ -3,6 +3,8 @@ title: "API Client Layer"
 slug: "typescript-sdk-client-layer"
 ---
 
+import { Callout } from 'nextra/components';
+
 # Legacy TypeScript SDK Client Layer
 
 The API client layer in the SDK provides a robust and reliable communication channel between the client-side application and the blockchain server. It is a component of the SDK that enables developers to interact with the network through the use of application programming interfaces (APIs). The client layer is responsible for making API calls to the network, sending and receiving data to and from the network, and handling any errors or exceptions that may occur during the process.
@@ -80,9 +82,9 @@ const rawTxn = await provider.generateTransaction(
 `type_arguments` - This is for the case a Move function expects a generic type argument.
 `arguments` - The arguments the function expects.
 
-:::tip
+<Callout type="info">
 To submit an entry function payload, using the Transaction Builder would be simpler to use as the developer do not need to deal with BCS serialization.
-:::
+</Callout>
 
 #### BCS Transaction
 

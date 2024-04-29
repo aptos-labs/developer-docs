@@ -3,6 +3,8 @@ title: "Tests and Validation"
 slug: "typescript-sdk-tests"
 ---
 
+import { Callout } from 'nextra/components';
+
 # Legacy TypeScript Tests and Validation
 
 The Legacy TypeScript SDK uses two types of tests, `e2e` and `unit` tests, located under the `src/tests/` folder:
@@ -20,13 +22,11 @@ The Aptos SDK validates the Transaction Builder and BCS in two ways:
 
 1. The first level of validation is through unit tests and end-to-end (e2e) tests.
 
-:::tip
-
+<Callout type="info">
 An example of unit tests for the BCS serializer can be found in [`serializer.test.ts`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/tests/unit/serializer.test.ts).
 
 An example of an e2e test for submitting a BCS transaction can be found in [`aptos_client.test.ts`](https://github.com/aptos-labs/aptos-core/blob/f4a7820a61f22ed8306219621402d96f70379d20/ecosystem/typescript/sdk/src/tests/e2e/aptos_client.test.ts#L78).
-
-:::
+</Callout>
 
 2. The second level of validation is fuzzing tests with test vectors. The test vectors are produced by the same code used by the Aptos blockchain. The test vectors are arrays of JSON objects. Each JSON object contains randomized inputs and the expected outputs. The Aptos SDKs can parse and load test vectors to validate their implementations of Transaction Builder and BCS.
 
@@ -43,6 +43,6 @@ Vector items are self-explanatory. However, a special serialization method is us
 - U8 is serialized as a number (not a string).
 - `code` in Script and ModuleBundle are hex-coded.
 
-:::tip
+<Callout type="info">
 See the [`transaction_vector.test.ts`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/tests/unit/transaction_vector.test.ts) code example for how the Legacy TypeScript SDK does vector validation.
-:::
+</Callout>
