@@ -21,7 +21,7 @@ Before using the `IndexerClient` class, you will need to configure it with the n
 
 To initialize the `IndexerClient` class, you will need to pass in the necessary configuration parameters. Here is an example:
 
-```ts
+```ts filename="indexerclient.ts"
 import { IndexerClient } from "aptos";
 
 const client = new IndexerClient(
@@ -33,7 +33,7 @@ const client = new IndexerClient(
 
 To make an API call, you will need to call the appropriate method on the `IndexerClient` object. The method name and parameters will depend on the specific API you are using. Here is an example:
 
-```ts
+```ts filename="indexerclient.ts"
 const accountNFTs = await client.getAccountNFTs("0x123");
 ```
 
@@ -47,7 +47,7 @@ With that being said, one can structure custom queries and use the SDK to query 
 
 Here is the `GraphqlQuery` type definition.
 
-```ts
+```ts filename="indexerclient.ts"
 type GraphqlQuery = {
   query: string;
   variables?: {};
@@ -56,7 +56,7 @@ type GraphqlQuery = {
 
 To use the `queryIndexer()` method, one should pass the GraphQL query. For example:
 
-```ts
+```ts filename="indexerclient.ts"
 const query: string = `query getAccountTokensCount($owner_address: String) {
   current_token_ownerships_aggregate(where: { owner_address: { _eq: $owner_address }, amount: { _gt: "0" } }) {
     aggregate {
@@ -81,7 +81,7 @@ To generate an Indexer query that can be used within the SDK, we can write a Gra
 
 All Indexer queries, which are basically GraphQL queries, live under the `src/indexer/queries/` folder. In this folder, we create a `.graphql` file for each query we want the SDK to support. For example, a `.graphql` file with a GraphQL query can be:
 
-```graphql
+```graphql filename="example.graphql"
 query getAccountTokensCount($owner_address: String) {
   current_token_ownerships_aggregate(
     where: { owner_address: { _eq: $owner_address }, amount: { _gt: "0" } }
@@ -97,7 +97,7 @@ query getAccountTokensCount($owner_address: String) {
 
 Once we have created a `.graphql` file with a GraphQL query, we can generate TypeScript code based on that query, so we can use it with the TypeScript SDK by running the following command:
 
-```cmd
+```cmd filename="Terminal"
 pnpm run indexer-codegen
 ```
 

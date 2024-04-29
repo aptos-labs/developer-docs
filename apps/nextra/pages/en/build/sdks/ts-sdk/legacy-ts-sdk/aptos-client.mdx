@@ -22,7 +22,7 @@ Before using the `AptosClient` class, you will need to configure it with the nec
 
 Here is an example of how to initialize an `AptosClient`:
 
-```ts
+```ts filename="aptosclient.ts"
 import { AptosClient } from "aptos";
 
 const client = new AptosClient("https://api.testnet.aptoslabs.com");
@@ -32,7 +32,7 @@ const client = new AptosClient("https://api.testnet.aptoslabs.com");
 
 To make an API call, you will need to call the appropriate method on the `AptosClient` object. The method name and parameters will depend on the specific API you are using. Here is an example:
 
-```ts
+```ts filename="aptosclient.ts"
 const accountResources = await client.getAccountResources("0x123");
 ```
 
@@ -42,7 +42,7 @@ In this example, we are using the `getAccountResources()` method to retrieve the
 
 To submit a transaction to the blockchain, you will need to build a transaction payload to be submitted. Here is an example:
 
-```ts
+```ts filename="aptosclient.ts"
 const alice = new AptosAccount();
 
 const payload: Types.EntryFunctionPayload = {

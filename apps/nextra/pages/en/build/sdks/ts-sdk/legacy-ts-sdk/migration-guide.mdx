@@ -20,28 +20,28 @@ The TypeScript SDK V2 is under a new [GitHub repo](https://github.com/aptos-labs
 <Tabs groupId="install-sdk">
   <TabItem value="pnpm" label="pnpm">
 
-  ```bash
+  ```bash filename="Terminal"
   pnpm i @aptos-labs/ts-sdk
   ```
 
   </TabItem>
   <TabItem value="npm" label="npm">
 
-  ```bash
+  ```bash filename="Terminal"
   npm i @aptos-labs/ts-sdk
   ```
 
   </TabItem>
   <TabItem value="yarn" label="yarn">
 
-  ```bash
+  ```bash filename="Terminal"
   yarn add @aptos-labs/ts-sdk
   ```
 
   </TabItem>
     <TabItem value="bun" label="bun">
 
-  ```bash
+  ```bash filename="Terminal"
   bun i @aptos-labs/ts-sdk
   ```
 
@@ -54,7 +54,7 @@ Remove all `<*>Client` modules (i.e `AptosClient`, `FaucetClient`, `CoinClient`,
 
 **V1**
 
-```ts
+```ts filename="v1.ts"
 const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
 const aptosClient = new AptosClient(NODE_URL);
 const indexerClient = new IndexerClient(INDEXER_URL);
@@ -66,7 +66,7 @@ const tokenClient = new TokenClient(aptosClient);
 Read more about it [here](../../ts-sdk.mdx)
 </Callout>
 
-```ts
+```ts filename="v2.ts"
 const aptos = new Aptos();
 
 // make queries
@@ -79,7 +79,7 @@ const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
 
 Introduce `AptosConfig` class that holds the config information for the SDK. Once define it we can pass and use it with the `Aptos` class
 
-```ts
+```ts filename="v2.ts"
 const aptosConfig = new AptosConfig({ network: Network.TESTNET }); // default to devnet
 const aptos = new Aptos(config);
 ```
@@ -90,7 +90,7 @@ Removed all separate transaction functions in favor of a more simplified and fri
 
 **V1**
 
-```ts
+```ts filename="v1.ts"
 const aptosClient = new AptosClient(NODE_URL);
 
 // bcs serialized arguments payload
@@ -136,7 +136,7 @@ const txn = await client.submitSignedBCSTransaction(signedTransaction);
 Read more about it [here](../building-transactions.mdx)
 </Callout>
 
-```ts
+```ts filename="v2.ts"
 const aptos = new Aptos();
 
 // non-serialized arguments transaction
@@ -176,7 +176,7 @@ Rename `AptosAccount` to `Account` and use static methods to generate / derive a
 
 **V1**
 
-```ts
+```ts filename="v1.ts"
 // generate a new account (or key pair) OR derive from private key OR derive from private key and address
 const account = new AptosAccount(); // supports only Legacy Ed25519
 
@@ -190,7 +190,7 @@ const account = AptosAccount.fromDerivePath(..)
 Read more about it [here](../../ts-sdk.mdx)
 </Callout>
 
-```ts
+```ts filename="v2.ts"
 // generate a new account (or key pair)
 const account = Account.generate(); // defaults to Legacy Ed25519
 const account = Account.generate({ scheme: SigningSchemeInput.Secp256k1 }); // Single Sender Secp256k1
