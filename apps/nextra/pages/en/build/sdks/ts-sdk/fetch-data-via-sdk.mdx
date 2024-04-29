@@ -96,36 +96,3 @@ const tokens = await aptos.getAccountOwnedTokens({
   minimumLedgerVersion: BigInt(response.version),
 });
 ```
-
----
-
----
-
-## Feedback on existing page
-
-## [Fetch Data From Chain](https://aptos.dev/sdks/ts-sdk/fetch-data-from-chain/)
-
-1. The beginning talks about a new `Aptos instance` and links out, but we don’t want to send the user away immediately.
-    1. Just refer to the `Aptos instance below`. 
-2. I don’t see how to query the indexer via the example provided.
-    1. We should add an example of pulling data from the Indexer since they both can be done via the `Aptos` client. 
-3. To effectively figure out what options are available I need to access the reference docs.
-    1. We should link to the reference docs here.
-4. Namespaces are a built-in typescript feature so we don’t need to explain it here.
-    1. I would rename the section / remove it.
-5. That being said, calling out which parts of the reference docs to explore to find what we can ask on-chain is valuable, and we should highlight that. (It seems like `account` is one section that’s high value for this page)
-    1. We should list out sections (with links) of the reference docs which contain the functions we’re allowed to call. 
-6. There is no mention of getting data from Move modules, even though this is an important aspect of on-chain data. 
-    1. We should include an example of getting data from a Move module that shares info. (I am new to this so may be misunderstanding how that whole process works - still haven’t read through the Move sections). 
-- Borrows from: [Fetch Data From Chain](https://aptos.dev/sdks/ts-sdk/fetch-data-from-chain)
-- Introduces the Indexer API at a high level and how to use it
-- Higher up than transactions since it’s much more likely that you’ll need it. (Not all apps need transactions).
-    - TODO: Fix a doc in the Indexer docs (or CLI docs?) that has separate clients for the Indexer
-
-# Useful Queries
-
-You can find most queries that the SDK provides by looking at the list of functions on the `[Aptos` object](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.12.2/classes/Aptos.html) that start with `get...`. 
-
-A couple of the most commonly used include:
-
-- …
