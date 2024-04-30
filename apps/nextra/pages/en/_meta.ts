@@ -63,7 +63,7 @@ export default {
   },
   developer_platforms: {
     type: "menu",
-    title: "Developer Platforms",
+    title: "Additional Resources",
     items: {
       forum: {
         title: "Community Forum ↗",
@@ -93,6 +93,6 @@ export default {
   },
   docs: {
     type: "page",
-    title: "Help",
+    title: "Docs Help",
   },
 };
