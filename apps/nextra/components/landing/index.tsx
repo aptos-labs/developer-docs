@@ -1,16 +1,19 @@
 import { IconBump } from "./components/Icons";
 import { MoveSection } from "./sections/MoveSection";
 import { TitleSection } from "./sections/TitleSection";
+import { ToolingSection } from "./sections/ToolingSection";
 
 /** Entry point of landing page content */
 export function Landing() {
   return (
-    <div className="landing-page bg-background-primary text-text-primary font-landing">
+    <main className="landing-page bg-background-primary text-text-primary font-landing">
       <TitleSection />
       <Divider />
       <MoveSection />
       <Divider />
-    </div>
+      <ToolingSection />
+      <Divider />
+    </main>
   );
 }
 

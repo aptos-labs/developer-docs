@@ -29,12 +29,16 @@ export const i18nConfig = Object.freeze({
     searchErrorText: "Failed to load search index.",
     lastUpdatedOn: "Last updated on",
 
-    // Landing Page
+    ////////// Landing Page //////////
+
+    // Title Section
     headline: "Build the Future of Web3 on Aptos",
     subHeading:
       "Everything you need to build the best-in-class Web3 developer experience.",
     quickStartBtnLabel: "Quick Start",
     learnBtnLabel: "Learn",
+
+    // Move Section
     moveSectionHeadline:
       "Craft safe and high-performance smart contracts with Move",
     moveExamplesHeadline: "Get started with these Move examples",
@@ -45,6 +49,20 @@ export const i18nConfig = Object.freeze({
     fungibleAssetsExampleLabel: "Fungible Assets",
     fungibleAssetsExampleDescription:
       "Highly expressive, fungible, digital assets",
+
+    // Tooling Section
+    toolingSectionHeadline:
+      "Aptos tooling makes web3 development easier than ever",
+    indexerIllustrationAlt: "Indexer Illustration",
+    indexerLabel: "Indexer",
+    indexerDescription:
+      "Easily query for on-chain data with the Aptos Indexer.",
+    graphqlLogoAlt: "GraphQL Logo",
+    sdkIllustrationAlt: "SDK Illustration",
+    sdkLabel: "SDK Docs",
+    sdkDescription:
+      "Build web applications quickly using Aptos’ TypeScript SDK.",
+    typescriptLogoAlt: "TypeScript Logo",
   },
 });
 
