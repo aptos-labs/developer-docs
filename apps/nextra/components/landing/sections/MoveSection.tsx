@@ -7,6 +7,7 @@ import { Carousel } from "../components/Carousel";
 import { CodeBlock } from "../components/CodeBlock";
 import { GradientText } from "../components/GradientText";
 import { IconArrowRight, IconMoveLang } from "../components/Icons";
+import { Section, SectionHeader } from "../components/Section";
 
 interface MoveExample {
   label: string;
@@ -57,15 +58,8 @@ export function MoveSection() {
   }));
 
   return (
-    <div className="flex flex-col items-center pt-16 lg:pt-24 gap-8 md:gap-12 lg:gap-24 overflow-hidden">
-      <h2
-        className="
-          title-100 md:title-200 text-text-secondary text-center pb-16 lg:pb-0 px-8 lg:px-12
-          border-b-border-divider border-b-100 lg:border-none
-        "
-      >
-        {t.moveSectionHeadline}
-      </h2>
+    <Section>
+      <SectionHeader>{t.moveSectionHeadline}</SectionHeader>
       <div className="flex flex-col lg:flex-row lg:gap-12 justify-between items-center w-full max-w-[1200px] xl:max-w-[1280px] lg:px-12">
         <div className="flex flex-col gap-8 md:gap-12 max-md:mb-8 max-lg:mb-12 px-8 lg:px-0">
           <GradientText
@@ -104,7 +98,7 @@ export function MoveSection() {
               <div className="flex items-center justify-between gap-4">
                 <h3 className="label-300 text-text-primary">{item.label}</h3>
                 <Link href={item.href}>
-                  <IconArrowRight className="text-text-primary" />
+                  <IconArrowRight className="text-text-primary h-[26px] w-[26px]" />
                 </Link>
               </div>
               <p className="body-100 text-text-muted">{item.description}</p>
@@ -112,6 +106,6 @@ export function MoveSection() {
           ))}
         </Carousel>
       </div>
-    </div>
+    </Section>
   );
 }

@@ -4,17 +4,11 @@ import { SVGProps } from "react";
 
 export function IconArrowTopRight(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
+    <svg width="24" height="24" viewBox="0 0 34 34" fill="none" {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M17.5303 6.46967C17.8232 6.76256 17.8232 7.23744 17.5303 7.53033L7.53033 17.5303C7.23744 17.8232 6.76256 17.8232 6.46967 17.5303C6.17678 17.2374 6.17678 16.7626 6.46967 16.4697L16.4697 6.46967C16.7626 6.17678 17.2374 6.17678 17.5303 6.46967Z"
-        fill="currentColor"
-      />
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M7.25 7C7.25 6.58579 7.58579 6.25 8 6.25H17C17.4142 6.25 17.75 6.58579 17.75 7V16C17.75 16.4142 17.4142 16.75 17 16.75C16.5858 16.75 16.25 16.4142 16.25 16V7.75H8C7.58579 7.75 7.25 7.41421 7.25 7Z"
+        d="M22.5858 10L13.5 10L13.5 8L26 8.00002L26 20.5L24 20.5L24 11.4142L10.2071 25.2071L8.79289 23.7929L22.5858 10Z"
         fill="currentColor"
       />
     </svg>
@@ -23,11 +17,12 @@ export function IconArrowTopRight(props: SVGProps<SVGSVGElement>) {
 
 export function IconArrowRight(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" {...props}>
+    <svg width="24" height="24" viewBox="0 0 34 34" fill="none" {...props}>
       <path
-        d="M4 13.8643H21.5M21.5 13.8643L15 20.3643M21.5 13.8643L15 7.36426"
-        stroke="currentColor"
-        strokeWidth="2"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M25.5858 16L19.2929 9.70712L20.7071 8.29291L29.4142 17L20.7071 25.7071L19.2929 24.2929L25.5858 18H6V16H25.5858Z"
+        fill="currentColor"
       />
     </svg>
   );
