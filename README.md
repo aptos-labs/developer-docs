@@ -45,6 +45,11 @@ git clone https://github.com/aptos-labs/developer-docs.git
 
 ## Install deps
 
+You may have to run the following command first if you are on macOS M1 Sonoma or newer
+```sh
+pnpm add node-gyp -g
+```
+
 ```sh
 pnpm install
 ```
