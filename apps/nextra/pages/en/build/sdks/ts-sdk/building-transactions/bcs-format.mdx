@@ -1,0 +1,24 @@
+# Binary Canonical Serialization (BCS) Format
+
+Behind the scenes, the Aptos SDK has two formats for transaction parameters:
+
+1. **Simple** - This represents transaction parameters using primitive types like strings, integers, etc.
+2. **Binary Canonical Serialization (BCS)** - This is the format the Aptos chain recognizes, with specific types (ex. Instead of an integer, it uses types like `U64` or `U128`)
+
+Normally, the TypeScript SDK will automatically convert simple types in function parameters into BCS in order to communicate with the network. For some contracts though, you will have to use BCS directly to specify complicated types. 
+
+Using BCS directly can have a light performance advantage as the SDK can skip an API call to transform the TypeScript primitive parameter format into BCS format. 
+
+You can directly use the BCS format to build transactions by specifying argument types explicitly like so:
+
+```ts filename="example.ts"
+const transaction = await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      function: "0x1::aptos_account::transfer",
+      functionArguments: [AccountAddress.fromString("0x123"), new U64(1_000_000)],
+    },
+  });
+```
+
+You can learn more about BCS by exploring the [BCS GitHub repo](https://github.com/aptos-labs/bcs).
