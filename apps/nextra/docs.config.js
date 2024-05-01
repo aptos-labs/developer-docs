@@ -63,6 +63,21 @@ export const i18nConfig = Object.freeze({
     sdkDescription:
       "Build web applications quickly using Aptos’ TypeScript SDK.",
     typescriptLogoAlt: "TypeScript Logo",
+
+    // Developers Section
+    developersSectionHeadline: "At Aptos, developers come first",
+    developerDiscussionsLabel: "Developer Discussions",
+    developerDiscussionsDescription:
+      "Receive timely responses to your burning questions, from any timezone.",
+    developerDiscussionsLink: "Join",
+    officeHoursLabel: "Office Hours",
+    officeHoursDescription:
+      "Enjoy dedicated live support from Aptos engineers.",
+    officeHoursLink: "Sign Up",
+    grantsLabel: "Grants",
+    grantsDescription:
+      "Apply for grants from the Aptos Foundation to get your project moving.",
+    grantsLink: "Apply",
   },
 });
 

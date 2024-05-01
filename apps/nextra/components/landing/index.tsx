@@ -1,4 +1,5 @@
 import { IconBump } from "./components/Icons";
+import { DevelopersSection } from "./sections/DevelopersSection";
 import { MoveSection } from "./sections/MoveSection";
 import { TitleSection } from "./sections/TitleSection";
 import { ToolingSection } from "./sections/ToolingSection";
@@ -12,6 +13,8 @@ export function Landing() {
       <MoveSection />
       <Divider />
       <ToolingSection />
+      <Divider />
+      <DevelopersSection />
       <Divider />
     </main>
   );
