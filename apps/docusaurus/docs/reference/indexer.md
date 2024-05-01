@@ -196,13 +196,13 @@ This table tracks the metadata associated with each NFT collection (Ex. collecti
 | description                | String | Description of the collection. Ex. "A collection of rare digital dragons."                                                             |
 | last_transaction_timestamp | String | Timestamp of the last transaction involving this collection. Ex. "2024-04-17T02:14:25.68771"                                           |
 | last_transaction_version   | bigint | Blockchain version of the last transaction involving this collection. Ex. 3000000002                                                   |
-| max_supply                 | bigint | Maximum possible quantity of tokens in this collection. Ex. 1000                                                                       |
+| max_supply                 | bigint | Maximum possible quantity of tokens in this collection. If the max supply is 0, there is no limit on the supply. Ex. 1000                                                                       |
 | mutable_description        | String | Changeable description of the collection. Ex. "Updated collection description."                                                        |
-| mutable_uri                | String | URI where updated information about the collection can be found. Ex. "https://example.com/collections/updated-info"                    |
+| mutable_uri                | Boolean | True if the uri is changeable by the creator. Ex. True                    |
 | table_handle_v1            | String | Legacy identifier handle for the collection in earlier schema versions. Ex. "handle_12345"                                             |
 | token_standard             | String | Aptos standard that the collection adheres to. Ex. "v1"                                                                                |
 | total_minted_v2            | bigint | Total number of tokens minted in this collection under schema version 2. Ex. 800                                                       |
-| uri                        | String | URI linking to further information about the collection. Ex. "https://example.com/collections/9876543210"                              |
+| uri                        | String | This is a URI to  where the image live. This can also be JSON data. Ex. "https://example.com/collections/9876543210"                              |
 
 ### `current_collection_ownership_v2_view`
 
@@ -233,7 +233,7 @@ This tracks the metadata tied to each fungible asset (ex. decimals of precision)
 | --------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
 | asset_type                        | String | The type of the asset, described by a Move resource. Ex. "0x1::aptos_coin::AptosCoin"                                             |
 | creator_address                   | String | This is an Aptos account address that created the asset. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
-| decimals                          | bigint | Number of decimal places for token value, typically for fungible tokens. Ex. 18                                                   |
+| decimals                          | bigint | Number of decimal places for token value, typically for fungible tokens. To get back the actual asset amount, divide the amount field by 10^decimals, e.g. amount / (10^8) to get APT from octa Ex. 18                                                   |
 | icon_uri                          | String | URI for the icon of the asset. Ex. "https://cdn.example.com/icons/123"                                                            |
 | last_transaction_timestamp        | String | Timestamp of the last transaction involving this asset. Ex. "2024-04-17T02:14:25.68771"                                           |
 | last_transaction_version          | bigint | Blockchain version of the last transaction involving this asset. Ex. 10000000                                                     |
