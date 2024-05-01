@@ -38,7 +38,7 @@ export default {
       standards: {
         title: "Standards",
       },
-      advanced_guides: {
+      "advanced-guides": {
         title: "Advanced Guides",
       },
     },

@@ -6,5 +6,5 @@ export default {
   indexer: "Indexer",
   cli: "CLI",
   standards: "Standards",
-  advanced_guides: "Advanced Guides",
+  "advanced-guides": "Advanced Guides",
 };
