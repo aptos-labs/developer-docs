@@ -115,7 +115,7 @@ and its subpages.
 
 ## Connect to an Aptos network
 
-Aptos offers the ability to run a local testnet, as well as provides a shared
+Aptos offers the ability to run a localnet, as well as provides a shared
 devnet and testnet. See
 the [System Integrators Guide](guides/system-integrators-guide.md#choose-a-network)
 for a summary of the available networks and the means to connect to them.

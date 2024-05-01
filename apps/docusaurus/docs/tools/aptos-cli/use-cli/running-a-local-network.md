@@ -59,10 +59,10 @@ Faucet is ready. Endpoint: http://127.0.0.1:8081/
 
 Applying post startup steps...
 
-Setup is complete, you can now use the local testnet!
+Setup is complete, you can now use the localnet!
 ```
 
-5. Wait for the final line `Setup is complete, you can now use the local testnet!`
+5. Wait for the final line `Setup is complete, you can now use the localnet!`
 
    :::caution
    If you ran into an error, jump to the [Common Errors](#common-errors-on-network-startup) section below.

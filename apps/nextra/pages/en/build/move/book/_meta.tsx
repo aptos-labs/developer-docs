@@ -2,9 +2,6 @@ export default {
   SUMMARY: {
     title: "Summary",
   },
-  introduction: {
-    title: "Introduction",
-  },
   "modules-and-scripts": {
     title: "Modules and Scripts",
   },

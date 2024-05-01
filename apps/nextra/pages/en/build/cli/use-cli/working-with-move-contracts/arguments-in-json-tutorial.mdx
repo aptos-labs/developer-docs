@@ -1,0 +1,576 @@
+import { Callout } from 'nextra/components';
+
+# Arguments in JSON Tutorial
+
+## Package info
+
+This section references the [`CliArgs` example package](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args), which contains the following manifest:
+
+```toml filename="move.toml"
+[package]
+name = "CliArgs"
+version = "0.1.0"
+upgrade_policy = "compatible"
+
+[addresses]
+test_account = "_"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }
+```
+
+Here, the package is deployed under the named address `test_account`.
+
+<Callout type="info" emoji="ℹ️">
+Set your working directory to [`aptos-move/move-examples/cli_args`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args) to follow along:
+
+```bash filename="Terminal"
+cd <aptos-core-parent-directory>/aptos-core/aptos-move/move-examples/cli_args
+```
+</Callout>
+
+## Deploying the package
+
+Start by mining a vanity address for Ace, who will deploy the package:
+
+```bash filename="Terminal"
+aptos key generate \
+    --vanity-prefix 0xace \
+    --output-file ace.key
+```
+
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": {
+    "Account Address:": "0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+    "PublicKey Path": "ace.key.pub",
+    "PrivateKey Path": "ace.key"
+  }
+}
+```
+
+<Callout type="info" emoji="ℹ️">
+The exact account address should vary for each run, though the vanity prefix should not.
+</Callout>
+</details>
+
+Store Ace's address in a shell variable, so you can call it inline later on:
+
+```bash filename="Terminal"
+# Your exact address will vary
+ace_addr=0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46
+```
+
+Fund Ace's account with the faucet (either devnet or testnet):
+
+```bash filename="Terminal"
+aptos account fund-with-faucet --account $ace_addr
+```
+
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": "Added 100000000 Octas to account acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46"
+}
+```
+
+</details>
+
+Now publish the package under Ace's account:
+
+```bash filename="Terminal"
+aptos move publish \
+    --named-addresses test_account=$ace_addr \
+    --private-key-file ace.key \
+    --assume-yes
+```
+
+
+<details>
+<summary>Output</summary>
+
+```json filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0x1d7b074dd95724c5459a1c30fe4cb3875e7b0478cc90c87c8e3f21381625bec1",
+    "gas_used": 1294,
+    "gas_unit_price": 100,
+    "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+    "sequence_number": 0,
+    "success": true,
+    "timestamp_us": 1685077849297587,
+    "version": 528422121,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+</details>
+
+## Entry functions
+
+The only module in the package, `cli_args.move`, defines a simple `Holder` resource with fields of various data types:
+
+```move filename="Holder in cli_args.move"
+module test_account::cli_args {
+  use std::signer;
+  use aptos_std::type_info::{Self, TypeInfo};
+  use std::string::String;
+
+  struct Holder has key, drop {
+      u8_solo: u8,
+      bytes: vector<u8>,
+      utf8_string: String,
+      bool_vec: vector<bool>,
+      address_vec_vec: vector<vector<address>>,
+      type_info_1: TypeInfo,
+      type_info_2: TypeInfo,
+  } 
+```
+
+A public entry function with multi-nested vectors can be used to set the fields:
+
+```move filename="Setter function in cli_args.move"
+/// Set values in a `Holder` under `account`.
+public entry fun set_vals<T1, T2>(
+    account: signer,
+    u8_solo: u8,
+    bytes: vector<u8>,
+    utf8_string: String,
+    bool_vec: vector<bool>,
+    address_vec_vec: vector<vector<address>>,
+) acquires Holder {
+    let account_addr = signer::address_of(&account);
+    if (exists<Holder>(account_addr)) {
+        move_from<Holder>(account_addr);
+    };
+    move_to(&account, Holder {
+        u8_solo,
+        bytes,
+        utf8_string,
+        bool_vec,
+        address_vec_vec,
+        type_info_1: type_info::type_of<T1>(),
+        type_info_2: type_info::type_of<T2>(),
+    });
+}
+```
+
+After the package has been published, `aptos move run` can be used to call `set_vals()`:
+
+<Callout type="info" emoji="ℹ️">
+To pass vectors (including nested vectors) as arguments from the command line, use JSON syntax escaped with quotes!
+</Callout>
+
+```bash filename="Running function with nested vector arguments from CLI"
+aptos move run \
+    --function-id $ace_addr::cli_args::set_vals \
+    --type-args \
+        0x1::account::Account \
+        0x1::chain_id::ChainId \
+    --args \
+        u8:123 \
+        "hex:0x1234" \
+        "string:hello, world\! ♥" \
+        "bool:[false, true, false, false]" \
+        'address:[["0xace", "0xbee"], ["0xcad"], []]' \
+    --private-key-file ace.key \
+    --assume-yes
+```
+
+
+<details>
+<summary>Output</summary>
+
+```json filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0x5e141dc6c28e86fa9f5594de93d07a014264ebadfb99be6db922a929eb1da24f",
+    "gas_used": 504,
+    "gas_unit_price": 100,
+    "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+    "sequence_number": 1,
+    "success": true,
+    "timestamp_us": 1685077888820037,
+    "version": 528422422,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+</details>
+
+The function ID, type arguments, and arguments can alternatively be specified in a JSON file:
+
+```json filename="entry_function_arguments.json"
+{
+    "function_id": "<test_account>::cli_args::set_vals",
+    "type_args": [
+        "0x1::account::Account",
+        "0x1::chain_id::ChainId"
+    ],
+    "args": [
+        {
+            "type": "u8",
+            "value": 123
+        },
+        {
+            "type": "hex",
+            "value": "0x1234"
+        },
+        {
+            "type": "string",
+            "value": "hello, world! ♥"
+        },
+        {
+            "type": "bool",
+            "value": [
+                false,
+                true,
+                false,
+                false
+            ]
+        },
+        {
+            "type": "address",
+            "value": [
+                [
+                    "0xace",
+                    "0xbee"
+                ],
+                [
+                    "0xcad"
+                ],
+                []
+            ]
+        }
+    ]
+}
+```
+
+Here, the call to `aptos move run` looks like:
+
+```bash filename="Running function with JSON input file"
+aptos move run \
+    --json-file entry_function_arguments.json \
+    --private-key-file ace.key \
+    --assume-yes
+```
+
+
+<details>
+<summary>Output</summary>
+
+```json filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0x60a32315bb48bf6d31629332f6b1a3471dd0cb016fdee8d0bb7dcd0be9833e60",
+    "gas_used": 3,
+    "gas_unit_price": 100,
+    "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+    "sequence_number": 2,
+    "success": true,
+    "timestamp_us": 1685077961499641,
+    "version": 528422965,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
+</details>
+
+<Callout type="info" emoji="ℹ️">
+If you are trying to run the example yourself don't forget to substitute Ace's actual address for `<test_account>` in `entry_function_arguments.json`!
+</Callout>
+
+## View functions
+
+Once the values in a `Holder` have been set, the `reveal()` view function can be used to check the first three fields, and to compare type arguments against the last two fields:
+
+```move filename="View function"
+struct RevealResult has drop {
+    u8_solo: u8,
+    bytes: vector<u8>,
+    utf8_string: String,
+    bool_vec: vector<bool>,
+    address_vec_vec: vector<vector<address>>,
+    type_info_1_match: bool,
+    type_info_2_match: bool
+}
+
+#[view]
+/// Pack into a `RevealResult` the first three fields in host's
+/// `Holder`, as well as two `bool` flags denoting if `T1` & `T2`
+/// respectively match `Holder.type_info_1` & `Holder.type_info_2`,
+/// then return the `RevealResult`.
+public fun reveal<T1, T2>(host: address): RevealResult acquires Holder {
+    let holder_ref = borrow_global<Holder>(host);
+    RevealResult {
+        u8_solo: holder_ref.u8_solo,
+        bytes: holder_ref.bytes,
+        utf8_string: holder_ref.utf8_string,
+        bool_vec: holder_ref.bool_vec,
+        address_vec_vec: holder_ref.address_vec_vec,
+        type_info_1_match:
+            type_info::type_of<T1>() == holder_ref.type_info_1,
+        type_info_2_match:
+            type_info::type_of<T2>() == holder_ref.type_info_2
+    }
+}
+```
+
+This view function can be called with arguments specified either from the CLI or from a JSON file:
+
+```bash filename="Arguments via CLI"
+aptos move view \
+    --function-id $ace_addr::cli_args::reveal \
+    --type-args \
+        0x1::account::Account \
+        0x1::account::Account \
+    --args address:$ace_addr
+```
+
+```bash filename="Arguments via JSON file"
+aptos move view --json-file view_function_arguments.json
+```
+
+<Callout type="info" emoji="ℹ️">
+If you are trying to run the example yourself don't forget to substitute Ace's actual address for `<test_account>` in `view_function_arguments.json` (twice)!
+</Callout>
+
+```json filename="view_function_arguments.json"
+{
+    "function_id": "<test_account>::cli_args::reveal",
+    "type_args": [
+        "0x1::account::Account",
+        "0x1::account::Account"
+    ],
+    "args": [
+        {
+            "type": "address",
+            "value": "<test_account>"
+        }
+    ]
+}
+```
+
+```bash filename="Terminal"
+{
+  "Result": [
+    {
+      "address_vec_vec": [
+        [
+          "0xace",
+          "0xbee"
+        ],
+        [
+          "0xcad"
+        ],
+        []
+      ],
+      "bool_vec": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "bytes": "0x1234",
+      "type_info_1_match": true,
+      "type_info_2_match": false,
+      "u8_solo": 123,
+      "utf8_string": "hello, world! ♥"
+    }
+  ]
+}
+```
+
+## Script functions
+
+The package also contains a script, `set_vals.move`, which is a wrapper for the setter function:
+
+```move filename="script"
+script {
+    use test_account::cli_args;
+    use std::vector;
+    use std::string::String;
+
+    /// Get a `bool` vector where each element indicates `true` if the
+    /// corresponding element in `u8_vec` is greater than `u8_solo`.
+    /// Then pack `address_solo` in a `vector<vector<<address>>` and
+    /// pass resulting argument set to public entry function.
+    fun set_vals<T1, T2>(
+        account: signer,
+        u8_solo: u8,
+        bytes: vector<u8>,
+        utf8_string: String,
+        u8_vec: vector<u8>,
+        address_solo: address,
+    ) {
+        let bool_vec = vector::map_ref(&u8_vec, |e_ref| *e_ref > u8_solo);
+        let addr_vec_vec = vector[vector[address_solo]];
+        cli_args::set_vals<T1, T2>(account, u8_solo, bytes, utf8_string, bool_vec, addr_vec_vec);
+    }
+}
+```
+
+First compile the package (this will compile the script):
+
+```bash filename="Compilation"
+aptos move compile --named-addresses test_account=$ace_addr
+```
+
+
+<details>
+<summary>Output</summary>
+
+```json filename="Terminal"
+{
+  "Result": [
+    "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46::cli_args"
+  ]
+}
+```
+
+</details>
+
+Next, run `aptos move run-script`:
+
+```bash filename="Arguments via CLI"
+aptos move run-script \
+    --compiled-script-path build/CliArgs/bytecode_scripts/set_vals.mv \
+    --type-args \
+        0x1::account::Account \
+        0x1::chain_id::ChainId \
+    --args \
+        u8:123 \
+        "hex:0x1234" \
+        "string:hello, world\! ♥" \
+        "u8:[122, 123, 124, 125]" \
+        address:"0xace" \
+    --private-key-file ace.key \
+    --assume-yes
+```
+
+
+<details>
+<summary>Output</summary>
+
+```json filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0x1d644eba8187843cc43919469112339bc2c435a49a733ac813b7bc6c79770152",
+    "gas_used": 3,
+    "gas_unit_price": 100,
+    "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+    "sequence_number": 3,
+    "success": true,
+    "timestamp_us": 1685078415935612,
+    "version": 528426413,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
+</details>
+
+```bash filename="Arguments via JSON file"
+aptos move run-script \
+    --compiled-script-path build/CliArgs/bytecode_scripts/set_vals.mv \
+    --json-file script_function_arguments.json \
+    --private-key-file ace.key \
+    --assume-yes
+```
+
+
+<details>
+<summary>Output</summary>
+
+```json filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0x840e2d6a5ab80d5a570effb3665f775f1755e0fd8d76e52bfa7241aaade883d7",
+    "gas_used": 3,
+    "gas_unit_price": 100,
+    "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+    "sequence_number": 4,
+    "success": true,
+    "timestamp_us": 1685078516832128,
+    "version": 528427132,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
+</details>
+
+```json filename="script_function_arguments.json"
+{
+    "type_args": [
+        "0x1::account::Account",
+        "0x1::chain_id::ChainId"
+    ],
+    "args": [
+        {
+            "type": "u8",
+            "value": 123
+        },
+        {
+            "type": "hex",
+            "value": "0x1234"
+        },
+        {
+            "type": "string",
+            "value": "hello, world! ♥"
+        },
+        {
+            "type": "u8",
+            "value": [
+                122,
+                123,
+                124,
+                125
+            ]
+        },
+        {
+            "type": "address",
+            "value": "0xace"
+        }
+    ]
+}
+```
+
+Both such script function invocations result in the following `reveal()` view function output:
+
+```bash filename="View function call"
+aptos move view \
+    --function-id $ace_addr::cli_args::reveal \
+    --type-args \
+        0x1::account::Account \
+        0x1::chain_id::ChainId \
+    --args address:$ace_addr
+```
+
+```json filename="View function output"
+{
+  "Result": [
+    {
+      "address_vec_vec": [["0xace"]],
+      "bool_vec": [false, false, true, true],
+      "bytes": "0x1234",
+      "type_info_1_match": true,
+      "type_info_2_match": true,
+      "u8_solo": 123,
+      "utf8_string": "hello, world! ♥"
+    }
+  ]
+}
+```
+
+<Callout type="info" emoji="ℹ️">
+As of the time of this writing, the `aptos` CLI only supports script function arguments for vectors of type `u8`, and only up to a vector depth of 1. Hence `vector<address>` and `vector<vector<u8>>` are invalid script function argument types.
+</Callout>

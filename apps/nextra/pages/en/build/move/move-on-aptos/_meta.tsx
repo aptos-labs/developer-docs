@@ -14,9 +14,6 @@ export default {
   "compiling-and-testing": {
     title: "Compiling and Testing",
   },
-  "gas-profiling": {
-    title: "Gas Profiling",
-  },
   cryptography: {
     title: "Cryptography",
   },

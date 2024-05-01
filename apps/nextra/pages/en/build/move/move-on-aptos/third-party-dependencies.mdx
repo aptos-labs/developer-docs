@@ -21,7 +21,6 @@ Third party dependencies will have varying amounts of reliability and available 
 
 Source code that is verified against the on-chain deployed module, like the [Git Repository](#git-repository) and [Local Source Code](#local-source-code), should always be preferred. If neither of those are available, there are other options to depend on usable code, like [decompiled code](#decompiled-code), [bytecode](#bytecode), and [ABI](#abi)-crafted code.
 
-
 ### Git Repository
 
 The default `Move.toml` includes `AptosFramework` as a git repository dependency:
@@ -246,7 +245,7 @@ Afterwards, the interface code is treated equivalent to local source code.
 
     An interface Move file can be handwritten and treated as a source file. Looking similar to:
 
-    ```jsx
+    ```move
     module 0x4::aptos_token {
         // ...
         public entry fun add_property<T: key>(

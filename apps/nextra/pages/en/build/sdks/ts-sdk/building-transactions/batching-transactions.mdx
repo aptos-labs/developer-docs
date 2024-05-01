@@ -1,0 +1,81 @@
+# Batching Transactions
+
+The TypeScript SDK has a built-in way to send several independent transactions together in a batch. This can be a convenient tool when trying to execute multiple transactions quickly from the same account. 
+
+This can be done with `aptos.transaction.batch.forSingleAccount` as can be seen in the below example.
+
+## Full TypeScript Example
+
+```ts filename="batch.ts"
+/**
+ * This example shows how to use the Aptos SDK to send several transactions in a batch.
+ */
+
+import {
+    Account,
+    Aptos,
+    AptosConfig,
+    Network,
+    InputGenerateTransactionPayloadData,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+    console.log("This example will send several transactions in a batch.");
+
+    // Setup the client and test accounts
+    const config = new AptosConfig({ network: Network.TESTNET });
+    const aptos = new Aptos(config);
+
+    let sender = Account.generate();
+
+    console.log("=== Addresses ===\n");
+    console.log(`Sender's address is: ${sender.accountAddress}`);
+
+    console.log("\n=== Funding sender ===\n");
+    await aptos.fundAccount({
+        accountAddress: sender.accountAddress,
+        amount: 100_000_000,
+    });  
+    console.log("Funded the sender account!")
+
+    // Generate several recipients to send APT to
+    const recipients = [Account.generate(), Account.generate(), Account.generate()];
+
+    // Create transactions to send APT to each account
+    const transactions: InputGenerateTransactionPayloadData[] = [];
+
+    for (let i = 0; i < recipients.length; i += 1) {
+        const transaction: InputGenerateTransactionPayloadData = {
+            function: "0x1::aptos_account::transfer",
+            functionArguments: [recipients[i].accountAddress, 10],
+        };
+        transactions.push(transaction);
+    }
+
+    // Sign and submit all transactions as fast as possible (throws if any error)
+    await aptos.transaction.batch.forSingleAccount({ sender: sender, data: transactions });
+};
+
+example();
+```
+
+## Checking The Status of Batched Transactions
+
+In order to tell when transaction submitted in a batch have executed on chain, you must listen to events while the process runs.
+
+```ts filename="transaction-worker-events.ts"
+export enum TransactionWorkerEventsEnum {
+  // Fired after a transaction gets sent to the chain
+  TransactionSent = "transactionSent",
+  // Fired if there is an error sending the transaction to the chain
+  TransactionSendFailed = "transactionSendFailed",
+  // Fired when a single transaction has executed successfully
+  TransactionExecuted = "transactionExecuted",
+  // Fired if a single transaction fails in execution
+  TransactionExecutionFailed = "transactionExecutionFailed",
+  // Fired when the worker has finished its job / when the queue has been emptied
+  ExecutionFinish = "executionFinish",
+}
+```
+
+You can find an example of how to listen to these events [here](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/batch_funds.ts#L108).

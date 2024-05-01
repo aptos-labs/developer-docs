@@ -21,7 +21,7 @@ export default {
         title: "Quick Start",
       },
       move: {
-        title: "Move",
+        title: "Smart Contracts",
       },
       apis: {
         title: "APIs",
@@ -34,6 +34,9 @@ export default {
       },
       cli: {
         title: "CLI",
+      },
+      standards: {
+        title: "Standards",
       },
       advanced_guides: {
         title: "Advanced Guides",
@@ -60,7 +63,7 @@ export default {
   },
   developer_platforms: {
     type: "menu",
-    title: "Developer Platforms",
+    title: "Additional Resources",
     items: {
       forum: {
         title: "Community Forum ↗",
@@ -90,6 +93,6 @@ export default {
   },
   docs: {
     type: "page",
-    title: "Help",
+    title: "Docs Help",
   },
 };

@@ -1,0 +1,69 @@
+---
+title: "Remote Codeblock"
+---
+
+import { Callout } from 'nextra/components'
+import { permalinkFetch, RemoteCodeblock } from '@components/index'
+import { useData } from 'nextra/hooks'
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
+  ])
+}
+
+# Remote Codeblock
+
+`<RemoteCodeblock />` is a custom component designed to enable users to query for
+code snippets from other repos and embed them in the docs natively given a github permalink.
+
+Here is an example
+
+<RemoteCodeblock 
+  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
+/>
+
+As you can see, each `<RemoteCodeblock />` comes with the ability to:
+1. Copy the code
+2. View the source
+
+<br />
+
+# Usage
+
+<Callout type="info">
+This requires the document writer to include [`getStaticProps`](https://nextjs.org/docs/pages/building-your-application/data-fetching/get-static-props).
+This enables Nextra to fetch the Codeblock, syntax highlight it with [shiki](https://shiki.matsu.io/) at build time rather than
+fetching it dynamically on each client load.
+</Callout>
+
+Here is an example of how to use `<RemoteCodeblock />`.
+
+```mdx filename="example.mdx"
+import { permalinkFetch, RemoteCodeblock } from '@components/index'
+import { useData } from 'nextra/hooks'
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
+  ])
+}
+
+# Hello World on Aptos
+
+Here is an example Hello World contract on Aptos.
+
+<RemoteCodeblock 
+  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
+/>
+```
+
+## API
+
+The `RemoteCodeblock` component takes the following props:
+
+### `permalink`
+
+The github permalink (must be a permalink)
+
+- Type: `string`

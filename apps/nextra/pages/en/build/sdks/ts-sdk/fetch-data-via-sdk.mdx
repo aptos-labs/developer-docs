@@ -1,0 +1,93 @@
+import { Callout } from 'nextra/components'
+
+# Fetch Data via the TypeScript SDK
+
+You can use the `Aptos` client to get on-chain data using a variety of helper functions. Specifically, many of the functions listed in the reference docs [here](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.12.2/classes/Aptos.html) that start with `get...` will retrieve data from on-chain.
+
+Here’s an example showing how to fetch common data you may need in your application:
+
+```ts filename="fetch-data.ts"
+const aptosConfig = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(aptosConfig);
+
+const fund = await aptos.getAccountInfo({ accountAddress: "0x123" });
+const modules = await aptos.getAccountTransactions({ accountAddress: "0x123" });
+const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
+```
+
+<Callout type="info">
+Many queries have a parameter named `options` to customize the results, use it to get specifically what you are looking for.
+</Callout>
+
+The `Aptos` client can out of the box query both network data from [fullnodes](https://api.mainnet.aptoslabs.com/v1/spec#/) and the [Indexer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) API which contains aggregated and enriched data. If you want to use a custom query for Indexer API data, you can use `aptos.queryIndexer` like so:
+
+```ts filename="fetch-data.ts"
+const ledgerInfo = aptos.queryIndexer({
+ query: `query MyQuery {
+     ledger_infos {
+       chain_id
+     }
+   }`;
+})
+```
+
+## Using Generic Queries
+
+Some queries are intentionally broad, but this can make inferring the proper return type difficult. To accommodate that, these broad requests like `getAccountResources` allow you to specify what the expected response type should be. 
+
+```ts filename="fetch-data.ts"
+type Coin = { coin: { value: string } };
+
+const resource =await aptos.getAccountResource<Coin>({
+  accountAddress: testAccount.accountAddress,
+  resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+});
+
+// Now you have access to the response type property
+const value = resource.coin.value;
+```
+
+## Using Move View Functions
+
+You can call view functions which return custom data from on-chain by using `aptos.view`. 
+
+For example, you can look up the network you are using with the `chain_id` view function:
+
+```ts filename="fetch-data.ts"
+const payload: InputViewFunctionData = {
+  function: "0x1::chain_id::get",
+};
+
+const chainId = (await aptos.view({ payload }))[0];
+```
+
+## Ensuring Fresh Indexer Data
+
+Behind the scenes, some requests use the [Indexer API](../../indexer.mdx) to access data which has been processed or aggregated. That extra parsing can take a bit of time, so the data may lag slightly behind the latest ledger.
+
+If you want to ensure that the data is fresh, you can specify the `minimumLedgerVersion` in any request which uses the Indexer API. 
+
+```ts filename="fetch-data.ts"
+// Get the latest ledger version number
+const ledgerVersion = await aptos.getLedgerInfo().ledger_version;
+
+const tokens = await aptos.getAccountOwnedTokens({
+  accountAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(response.version),
+});
+```
+
+You can also ensure that your request has the data from a transaction you submitted by getting the ledger version from the transaction validation itself. 
+
+```ts filename="fetch-data.ts"
+// Wait for a transaction you just submitted
+const response = await aptos.waitForTransaction({
+  transactionHash: pendingTransaction.hash,
+});
+
+// Then look up how that transaction affected alice's account
+const tokens = await aptos.getAccountOwnedTokens({
+  accountAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(response.version),
+});
+```

@@ -162,9 +162,9 @@ Currently owned coins (`0x1::coin::CoinStore`).
 ```graphql
 query CurrentBalances($owner_address: String, $offset: Int) {
   current_coin_balances(
-    where: {owner_address: {_eq: $owner_address}}
+    where: { owner_address: { _eq: $owner_address } }
     # Needed for pagination
-    order_by: [{last_transaction_version: desc}, {token_data_id: desc}]
+    order_by: [{ last_transaction_version: desc }, { token_data_id: desc }]
     # Optional for pagination
     offset: $offset
   ) {

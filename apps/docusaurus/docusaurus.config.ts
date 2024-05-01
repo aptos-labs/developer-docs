@@ -373,11 +373,23 @@ const config: Config = {
             to: "/aptos-white-paper",
           },
           {
-            from: "/guides/local-testnet-dev-flow",
+            from: "/nodes/local-testnet/run-a-local-testnet",
+            to: "/nodes/localnet/run-a-localnet",
+          },
+          {
+            from: "/nodes/local-testnet/local-testnet-index",
+            to: "/nodes/localnet",
+          },
+          {
+            from: "/guides/localnet-dev-flow",
             to: "/tools/aptos-cli/use-cli/running-a-local-network",
           },
           {
-            from: "/nodes/local-testnet/using-cli-to-run-a-local-testnet",
+            from: "/nodes/localnet/using-cli-to-run-a-local-testnet",
+            to: "/tools/aptos-cli/use-cli/running-a-local-network",
+          },
+          {
+            from: "/nodes/localnet/using-cli-to-run-a-localnet",
             to: "/tools/aptos-cli/use-cli/running-a-local-network",
           },
           {
@@ -496,10 +508,6 @@ const config: Config = {
           {
             from: "/tools/aptos-cli/use-cli/cli-configuration",
             to: "/tools/aptos-cli/cli-configuration",
-          },
-          {
-            from: "/guides/local-development-network",
-            to: "/tools/aptos-cli/use-cli/running-a-local-network",
           },
         ],
         // Create redirects for all the move pages

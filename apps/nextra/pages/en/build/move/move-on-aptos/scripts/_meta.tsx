@@ -1,7 +1,4 @@
 export default {
-  index: {
-    title: "Building with Move Scripts",
-  },
   "writing-scripts": {
     title: "Writing Move Scripts",
   },
