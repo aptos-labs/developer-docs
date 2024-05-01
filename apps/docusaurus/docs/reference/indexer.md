@@ -251,12 +251,12 @@ This tracks the activity of fungible assets. It includes v1 token data.
 | Field                       | Type    | Description                                                                                                                                          |
 | --------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | amount                      | bigint  | The amount of the asset involved in the activity. Ex. 1000                                                                                           |
-| asset_type                  | String  | The type of the asset, described by a Move resource. Ex. "0x1::aptos_coin::AptosCoin"                                                                |
-| block_height                | bigint  | The blockchain height at which this activity occurred. Ex. 1500000                                                                                   |
+| asset_type                  | String  | The type of the asset, described by a Move resource. For fungible assets, this will be the address of the metadata object. Ex. "0x1::aptos_coin::AptosCoin"                                                                |
+| block_height                | bigint  | The blockchain id at which this activity occurred. Ex. 1500000                                                                                   |
 | entry_function_id_str       | String  | The identifier of the function called in this transaction. Ex. "0x1::aptos_account::transfer"                                                                            |
-| event_index                 | bigint  | Index of the event within the transaction. Ex. 1                                                                                                     |
+| event_index                 | bigint  | Index of the event within the transaction. This can be negative if the event doesn't actually exist on chain. For example, 0x1::aptos_coin::GasFeeEvent is a "fake" event created to track gas fees. Ex. 1                                                                                                     |
 | gas_fee_payer_address       | String  | This is an Aptos account address that paid the gas fee for the transaction. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
-| is_frozen                   | Boolean | Indicates whether the asset is frozen. Ex. False                                                                                                     |
+| is_frozen                   | Boolean | True if this activity is a freeze asset activity. For regular transactions this will be null. Ex. null                                                                                                     |
 | is_gas_fee                  | Boolean | Indicates whether this activity involved a gas fee. Ex. True                                                                                         |
 | is_transaction_success      | Boolean | Indicates whether the transaction was successful. Ex. True                                                                                           |
 | metadata                    | Object  | Use the [Hasura explorer](#indexer-api-reference) to see fields for `metadata` in this table.                                                        |
@@ -264,11 +264,11 @@ This tracks the activity of fungible assets. It includes v1 token data.
 | owner_aptos_names           | Table   | References [owner_aptos_names](#current_aptos_names).                                                                                                |
 | owner_aptos_names_aggregate | Table   | References [owner_aptos_names](#current_aptos_names).                                                                                                |
 | storage_id                  | String  | Identifier for the storage used in the transaction. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"                         |
-| storage_refund_amount       | bigint  | Amount refunded for storage after the transaction. Ex. 50                                                                                            |
+| storage_refund_amount       | bigint  | Amount refunded for storage after the transaction. This is always in APT octas. Ex. 50                                                                                            |
 | token_standard              | String  | Aptos standard that the collection adheres to. Ex. "v1"                                                                                              |
 | transaction_timestamp       | String  | Timestamp when the transaction occurred. Ex. "2024-04-17T02:14:25.68771"                                                                             |
 | transaction_version         | bigint  | Blockchain version of the transaction. Ex. 2                                                                                                         |
-| type                        | String  | Type of the transaction, described by a Move entry function. Ex. "0x3::token::TokenStore"                                                            |
+| type                        | String  | Type of the transaction, described by a Move entry function. Ex. "0x1::coin::WithdrawEvent"                                                            |
 
 ### `current_fungible_asset_balances`
 
@@ -279,8 +279,8 @@ This tracks the asset balances of each account on-chain. It includes v1 token da
 | Field                      | Type    | Description                                                                                                                       |
 | -------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | amount                     | bigint  | The amount of the asset owned. Ex. 2000                                                                                           |
-| asset_type                 | String  | The type of the asset, described by a Move resource. Ex. "0x1::aptos_coin::AptosCoin"                                             |
-| is_frozen                  | Boolean | Indicates whether the asset is frozen. Ex. False                                                                                  |
+| asset_type                 | String  | The type of the asset, described by a Move resource. For v2 tokens this is the address of the fungible asset metadata object. For v1 it's the fully qualified path of the move resource. Ex. "0x1::aptos_coin::AptosCoin"                                             |
+| is_frozen                  | Boolean | Indicates whether the account is frozen. Ex. False                                                                                  |
 | is_primary                 | Boolean | Indicates whether this is the primary balance of the owner. Ex. True                                                              |
 | last_transaction_timestamp | String  | Timestamp of the last transaction involving this balance. Ex. "2024-04-17T02:14:25.68771"                                         |
 | last_transaction_version   | bigint  | Blockchain version of the last transaction involving this balance. Ex. 30000000                                                   |
@@ -333,58 +333,58 @@ The following tables are planned for deprecation, or are already deprecated. See
 
 | Table                                                         | Deprecation Date | Notes |
 | ------------------------------------------------------------- | ---------------- | ----- |
-| address_events_summary                                        | May 15th         |       |
-| address_version_from_events                                   | May 15th         |       |
-| address_version_from_events_aggregate                         | May 15th         |       |
-| address_version_from_move_resources                           | May 15th         |       |
-| address_version_from_move_resources_aggregate                 | May 15th         |       |
-| block_metadata_transactions                                   | May 15th         |       |
-| coin_activities                                               | May 15th         |       |
-| coin_activities_aggregate                                     | May 15th         |       |
-| coin_balances                                                 | May 15th         |       |
-| coin_infos                                                    | May 15th         |       |
-| coin_supply                                                   | May 15th         |       |
-| collection_datas                                              | May 15th         |       |
-| current_ans_lookup                                            | May 15th         |       |
-| current_coin_balances                                         | May 15th         |       |
-| current_collection_datas                                      | May 15th         |       |
-| current_delegated_staking_pool_balances                       | May 15th         |       |
-| current_delegated_voter                                       | May 15th         |       |
-| current_delegator_balances                                    | May 15th         |       |
-| current_objects                                               | May 15th         |       |
-| current_staking_pool_voter                                    | May 15th         |       |
-| current_table_items                                           | May 15th         |       |
-| current_token_datas                                           | May 15th         |       |
-| current_token_ownerships                                      | May 15th         |       |
-| current_token_ownerships_aggregate                            | May 15th         |       |
-| current_token_pending_claims                                  | May 15th         |       |
-| delegated_staking_activities                                  | May 15th         |       |
-| delegated_staking_pool_balances                               | May 15th         |       |
-| delegated_staking_pool_balances_aggregate                     | May 15th         |       |
-| delegated_staking_pools                                       | May 15th         |       |
-| delegator_distinct_pool                                       | May 15th         |       |
-| delegator_distinct_pool_aggregate                             | May 15th         |       |
-| events                                                        | May 15th         |       |
-| move_resources                                                | May 15th         |       |
-| move_resources_aggregate                                      | May 15th         |       |
-| nft_marketplace_v2_current_nft_marketplace_auctions           | May 15th         |       |
-| nft_marketplace_v2_current_nft_marketplace_collection_offers  | May 15th         |       |
-| nft_marketplace_v2_current_nft_marketplace_listings           | May 15th         |       |
-| nft_marketplace_v2_current_nft_marketplace_listings_aggregate | May 15th         |       |
-| nft_marketplace_v2_current_nft_marketplace_token_offers       | May 15th         |       |
-| nft_marketplace_v2_nft_marketplace_activities                 | May 15th         |       |
-| num_active_delegator_per_pool                                 | May 15th         |       |
-| proposal_votes                                                | May 15th         |       |
-| proposal_votes_aggregate                                      | May 15th         |       |
-| signatures                                                    | May 15th         |       |
-| table_items                                                   | May 15th         |       |
-| table_metadatas                                               | May 15th         |       |
-| token_activities                                              | May 15th         |       |
-| token_activities_aggregate                                    | May 15th         |       |
-| token_activities_v2                                           | May 15th         |       |
-| token_activities_v2_aggregate                                 | May 15th         |       |
-| token_datas                                                   | May 15th         |       |
-| token_ownerships                                              | May 15th         |       |
-| tokens                                                        | May 15th         |       |
-| transaction_version                                           | May 15th         |       |
-| user_transactions                                             | May 15th         |       |
+| address_events_summary                                        |                  |       |
+| address_version_from_events                                   |                  |       |
+| address_version_from_events_aggregate                         |                  |       |
+| address_version_from_move_resources                           |                  |       |
+| address_version_from_move_resources_aggregate                 |                  |       |
+| block_metadata_transactions                                   |                  |       |
+| coin_activities                                               |                  |       |
+| coin_activities_aggregate                                     |                  |       |
+| coin_balances                                                 |                  |       |
+| coin_infos                                                    |                  |       |
+| coin_supply                                                   |                  |       |
+| collection_datas                                              |                  |       |
+| current_ans_lookup                                            |                  |       |
+| current_coin_balances                                         |                  |       |
+| current_collection_datas                                      |                  |       |
+| current_delegated_staking_pool_balances                       |                  |       |
+| current_delegated_voter                                       |                  |       |
+| current_delegator_balances                                    |                  |       |
+| current_objects                                               |                  |       |
+| current_staking_pool_voter                                    |                  |       |
+| current_table_items                                           |                  |       |
+| current_token_datas                                           |                  |       |
+| current_token_ownerships                                      |                  |       |
+| current_token_ownerships_aggregate                            |                  |       |
+| current_token_pending_claims                                  |                  |       |
+| delegated_staking_activities                                  |                  |       |
+| delegated_staking_pool_balances                               |                  |       |
+| delegated_staking_pool_balances_aggregate                     |                  |       |
+| delegated_staking_pools                                       |                  |       |
+| delegator_distinct_pool                                       |                  |       |
+| delegator_distinct_pool_aggregate                             |                  |       |
+| events                                                        |                  |       |
+| move_resources                                                |                  |       |
+| move_resources_aggregate                                      |                  |       |
+| nft_marketplace_v2_current_nft_marketplace_auctions           |                  |       |
+| nft_marketplace_v2_current_nft_marketplace_collection_offers  |                  |       |
+| nft_marketplace_v2_current_nft_marketplace_listings           |                  |       |
+| nft_marketplace_v2_current_nft_marketplace_listings_aggregate |                  |       |
+| nft_marketplace_v2_current_nft_marketplace_token_offers       |                  |       |
+| nft_marketplace_v2_nft_marketplace_activities                 |                  |       |
+| num_active_delegator_per_pool                                 |                  |       |
+| proposal_votes                                                |                  |       |
+| proposal_votes_aggregate                                      |                  |       |
+| signatures                                                    |                  |       |
+| table_items                                                   |                  |       |
+| table_metadatas                                               |                  |       |
+| token_activities                                              |                  |       |
+| token_activities_aggregate                                    |                  |       |
+| token_activities_v2                                           |                  |       |
+| token_activities_v2_aggregate                                 |                  |       |
+| token_datas                                                   |                  |       |
+| token_ownerships                                              |                  |       |
+| tokens                                                        |                  |       |
+| transaction_version                                           |                  |       |
+| user_transactions                                             |                  |       |
