@@ -3,6 +3,8 @@ title: "Indexer API Reference"
 ---
 
 import { Callout } from 'nextra/components'
+import { Card, Cards } from '@components/index';
+
 
 # Indexer API Reference
 
@@ -16,13 +18,25 @@ You can interactively explore the data discussed here using Hasura explorers her
 
 Or via code at the following endpoints:
 
-- Mainnet: https://api.mainnet.aptoslabs.com/v1/graphql
-- Testnet: https://api.testnet.aptoslabs.com/v1/graphql
-- Devnet: https://api.devnet.aptoslabs.com/v1/graphql
+<Cards>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">
+    <Card.Title>**Mainnet**</Card.Title>
+    <Card.Description>Hasura GraphQL Explorer for Aptos Mainnet</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">
+    <Card.Title>**Testnet**</Card.Title>
+    <Card.Description>Hasura GraphQL Explorer for Aptos Testnet</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">
+    <Card.Title>**Devnet**</Card.Title>
+    <Card.Description>Hasura GraphQL Explorer for Aptos Devnet</Card.Description>
+  </Card>
+</Cards>
 
 As you explore, you can refer back to these reference docs to understand the tables you are interested in. You should use Ctrl + F to quickly find the right entry for that table.
 
-At the bottom of this page we list the tables which are deprecated, along with any alternatives which may replace them. Make sure to check before building any production infrastructure that the table you are using is not deprecated as there was recently a v2 which dramatically simplified the list of tables.
+At the bottom of this page we list the tables which are deprecated, along with any alternatives which may replace them. 
+Make sure to check the list before building any production infrastructure that relies heavily on specific Indexer tables.
 
 <Callout type="info">
 If you are looking up a table with the `_by_pk` suffix, search for the table name without that suffix. `_by_pk` tables are automatically generated for convenience to allow querying by primary key.
