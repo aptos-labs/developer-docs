@@ -1,4 +1,7 @@
 export default {
+  "indexer-reference": {
+    title: "Indexer API Table Reference"
+  },
   "graphql-api": {
     title: "GraphQL API",
     theme: {
