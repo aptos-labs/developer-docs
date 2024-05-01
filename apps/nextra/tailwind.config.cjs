@@ -199,6 +199,12 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         },
       },
     },
+    chainVector: {
+      fill: {
+        base: oklch(46.19, 0.016, 214.47), // #4F5B5E
+        dark: "general-white",
+      },
+    },
   },
 }));
 
@@ -269,15 +275,16 @@ module.exports = {
         toast: "300",
       },
       animation: {
-        accordionOpen: "accordionOpen 0.25s ease",
-        accordionClose: "accordionClose 0.25s ease",
+        "accordion-open": "accordion-open 0.25s ease",
+        "accordion-close": "accordion-close 0.25s ease",
+        "spin-subtle": "spin 20s linear infinite",
       },
       keyframes: {
-        accordionOpen: {
+        "accordion-open": {
           "0%": { height: 0 },
           "100%": { height: "var(--radix-accordion-content-height)" },
         },
-        accordionClose: {
+        "accordion-close": {
           "0%": { height: "var(--radix-accordion-content-height)" },
           "100%": { height: 0 },
         },
