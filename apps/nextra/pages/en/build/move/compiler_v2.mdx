@@ -20,7 +20,7 @@ If you run into issues, please use [this link to create a github issue][bug]. If
 
 To run compiler v2, pass the flag `--compiler-version=2` to the Aptos CLI. Examples:
 
-```shell
+```bash filename="Terminal"
 aptos move compile --compiler-version=2
 aptos move test --compiler-version=2
 aptos move prove --compiler-version=2
@@ -32,8 +32,8 @@ Compiler v2 implements some first features for Move language version 2. The scop
 
 - Receiver style function calls (see the [Move Book](../book/functions.mdx) for more details)
 
-One must currently explicitily opt-in to use language version v2 with the flag `--language-version=2`:
+One must currently explicitly opt-in to use language version v2 with the flag `--language-version=2`:
 
-```shell
+```bash filename="Terminal
 aptos move compile --compiler-version=2 --language-version=2
 ```

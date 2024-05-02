@@ -636,11 +636,18 @@ _Since language version 2.0_
 By using the well-known name `self` as the first parameter for a function declaration, one can enable calling this function with the `.` syntax -- often also called receiver style syntax. Example:
 
 ```move
-struct S {}
-fun foo(self: &S, x: u64) { .. }
-...
-let s = S{};
-s.foo(1)
+module 0x42::example {
+    struct S {}
+
+    fun foo(self: &S, x: u64) { /* ... */ }
+
+    //...
+
+    fun example() {
+        let s = S{};
+        s.foo(1);
+    }
+}
 ```
 
 The call `s.foo(1)` is syntactic sugar for `f(&s, 1)`. Notice that the compiler automatically inserts the reference operator. The 2nd, old notation is still available for `f`, so one can incrementally introduce the new call style without breaking existing code.
@@ -649,7 +656,7 @@ The type of the `self` argument can be a struct or an immutable or mutable refer
 
 Notice that you do not need to `use` the modules which introduce receiver functions. The compiler will find those functions automatically based on the argument type of `s` in a call like `s.foo(1)`. This, in combination with the automatic insertion of reference operators, can make code using this syntax significantly more concise.
 
- 
+
 
 
 
