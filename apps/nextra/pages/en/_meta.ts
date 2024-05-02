@@ -83,16 +83,10 @@ export default {
         newWindow: true,
         type: "page",
       },
-      token_hub: {
-        title: "Token Hub ↗",
-        href: "",
-        newWindow: true,
+      docs: {
+        title: "How to modify the docs ↗",
         type: "page",
       },
     },
-  },
-  docs: {
-    type: "page",
-    title: "Docs Help",
   },
 };
