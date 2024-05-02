@@ -7,4 +7,5 @@ export default {
   "themed-image": "Themed Image",
   "graphql-editor": "GraphQL Editor",
   "remote-codeblock": "Remote Codeblock",
+  "sandpack": "Sandpack",
 };

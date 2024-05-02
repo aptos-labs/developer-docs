@@ -1,3 +1,4 @@
+import { getSandpackCssText } from "@codesandbox/sandpack-react";
 import Document, { Head, Html, Main, NextScript } from "next/document";
 import Script from "next/script";
 import { SkipNavLink } from "nextra-theme-docs";
@@ -23,6 +24,11 @@ class MyDocument extends Document {
             </script>
           `,
             }}
+          />
+          <style
+            dangerouslySetInnerHTML={{ __html: getSandpackCssText() }}
+            id="sandpack"
+            key="sandpack-css"
           />
         </Head>
         <body>
