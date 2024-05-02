@@ -199,11 +199,22 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         },
       },
     },
-    chainVector: {
-      fill: {
-        base: oklch(46.19, 0.016, 214.47), // #4F5B5E
-        dark: "general-white",
+    illustration: {
+      line: {
+        DEFAULT: {
+          base: oklch(46.19, 0.016, 214.47), // #4F5B5E
+          dark: "general-white",
+        },
+        secondary: {
+          base: oklch(18.01, 0.024, 220.99), // #051419
+          dark: oklch(92.05, 0.007, 106.53), // #E5E5E0
+        },
       },
+      bg: {
+        base: oklch(98.86, 0.0088, 214.34), // #F5FDFF
+        dark: oklch(18.01, 0.024, 220.99), // #051419
+      },
+      shadow: { base: "general-black/50", dark: "general-black" },
     },
   },
 }));
@@ -278,6 +289,14 @@ module.exports = {
         "accordion-open": "accordion-open 0.25s ease",
         "accordion-close": "accordion-close 0.25s ease",
         "spin-subtle": "spin 20s linear infinite",
+        "scale-up-from-t": "scale-up-from-t 4s ease-out infinite",
+        "scale-up-from-br": "scale-up-from-br 4s ease-out infinite",
+        "scale-up-from-bl": "scale-up-from-bl 4s ease-out infinite",
+        "fade-in-first": "fade-in-first 4s linear infinite",
+        "fade-in-second": "fade-in-second 4s linear infinite",
+        "scale-group-a": "scale-group-a 4s ease-out infinite",
+        "scale-group-b": "scale-group-b 4s ease-out infinite",
+        "scale-group-c": "scale-group-c 4s ease-out infinite",
       },
       keyframes: {
         "accordion-open": {
@@ -287,6 +306,69 @@ module.exports = {
         "accordion-close": {
           "0%": { height: "var(--radix-accordion-content-height)" },
           "100%": { height: 0 },
+        },
+        "scale-up-from-t": {
+          "0%": { transform: "translate(-22px, 22px) scale(2)" },
+          "16.65%": { transform: "translate(-22px, 22px) scale(2)" },
+          "33.3%": { transform: "translate(0px, 0px) scale(1)" },
+          "83.25%": { transform: "translate(0px, 0px) scale(1)" },
+          "100%": { transform: "translate(-22px, 22px) scale(2)" },
+        },
+        "scale-up-from-br": {
+          "0%": { transform: "translate(0px, 0px) scale(1)" },
+          "16.65%": { transform: "translate(0px, 0px) scale(1)" },
+          "33.3%": { transform: "translate(-22px, -22px) scale(2)" },
+          "49.95%": { transform: "translate(-22px, -22px) scale(2)" },
+          "66.6%": { transform: "translate(0px, 0px) scale(1)" },
+          "100%": { transform: "translate(0px, 0px) scale(1)" },
+        },
+        "scale-up-from-bl": {
+          "0%": { transform: "translate(0px, 0px) scale(1)" },
+          "49.95%": { transform: "translate(0px, 0px) scale(1)" },
+          "66.6%": { transform: "translate(22px, -22px) scale(2)" },
+          "83.25%": { transform: "translate(22px, -22px) scale(2)" },
+          "100%": { transform: "translate(0px, 0px) scale(1)" },
+        },
+        "fade-in-first": {
+          "0%": { opacity: 0 },
+          "10%": { opacity: 0 },
+          "20%": { opacity: 1 },
+          "80%": { opacity: 1 },
+          "90%": { opacity: 0 },
+          "100%": { opacity: 0 },
+        },
+        "fade-in-second": {
+          "0%": { opacity: 0 },
+          "40%": { opacity: 0 },
+          "50%": { opacity: 1 },
+          "80%": { opacity: 1 },
+          "90%": { opacity: 0 },
+          "100%": { opacity: 0 },
+        },
+        "scale-group-a": {
+          "0%": { transform: "scale(1)" },
+          "10%": { transform: "scale(1.06)" },
+          "20%": { transform: "scale(1.06)" },
+          "30%": { transform: "scale(1.06)" },
+          "40%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "scale-group-b": {
+          "0%": { transform: "scale(1)" },
+          "30%": { transform: "scale(1)" },
+          "40%": { transform: "scale(1.06)" },
+          "50%": { transform: "scale(1.06)" },
+          "60%": { transform: "scale(1.06)" },
+          "70%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "scale-group-c": {
+          "0%": { transform: "scale(1)" },
+          "60%": { transform: "scale(1)" },
+          "70%": { transform: "scale(1.06)" },
+          "80%": { transform: "scale(1.06)" },
+          "90%": { transform: "scale(1.06)" },
+          "100%": { transform: "scale(1)" },
         },
       },
     },

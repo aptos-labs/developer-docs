@@ -78,6 +78,47 @@ export const i18nConfig = Object.freeze({
     grantsDescription:
       "Apply for grants from the Aptos Foundation to get your project moving.",
     grantsLink: "Apply",
+
+    // Blockchain Section
+    blockchainSectionHeadline:
+      "Discover blockchain features only possible on Aptos",
+    performanceLabel: "Performance",
+    performanceDescription:
+      "Redefine blockchain performance with high TPS and low latency",
+    parallelExecutionLabel: "Parallel Execution",
+    parallelExecutionDescription:
+      "Learn how Block-STM powers parallelization and optimistic concurrency on Aptos",
+    validatorsLabel: "Validators & Fullnodes",
+    validatorsDescription:
+      "Learn more about what it takes to run a validator or fullnode",
+    keylessLabel: "Keyless",
+    keylessDescription: "Enjoy seamless user authentication with Keyless",
+    passkeysLabel: "Passkeys",
+    passkeysDescription: "Onboard seamlessly using biometrics",
+    randomnessLabel: "On-Chain Randomness",
+    randomnessDescription: "Unlock true fairness in gaming and beyond",
+    feePayerLabel: "Fee Payer",
+    feePayerDescription:
+      "Empower your transactions with seamless execution, letting others foot the bill",
+    multiSigLabel: "Multi-sig",
+    multiSigDescription:
+      "Secure your assets like never before with collaborative control and unparalleled safety",
+    gasLabel: "Gas",
+    gasDescription: "Trade smarter, not harder with low gas fees",
+    consensusLabel: "Consensus",
+    consensusDescription: "Learn more about DAG based consensus",
+    storageLabel: "Storage",
+    storageDescription:
+      "Learn more about Aptos' Jellyfish Merkle Tree and custom RocksDB configuration",
+    networkingLabel: "Networking",
+    networkingDescription:
+      "Learn about the topology of the Aptos blockchain and how nodes communicate with each other",
+    mempoolLabel: "Mempool",
+    mempoolDescription:
+      "Learn how transactions are buffered for processing before they're sent upstream",
+    stateSyncLabel: "State Sync",
+    stateSyncDescription:
+      "Learn how nodes downstream synchronizes with the latest state",
   },
 });
 

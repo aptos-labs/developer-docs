@@ -1,4 +1,5 @@
 import { IconBump } from "./components/Icons";
+import { BlockchainSection } from "./sections/BlockchainSection";
 import { DevelopersSection } from "./sections/DevelopersSection";
 import { MoveSection } from "./sections/MoveSection";
 import { TitleSection } from "./sections/TitleSection";
@@ -15,6 +16,8 @@ export function Landing() {
       <ToolingSection />
       <Divider />
       <DevelopersSection />
+      <Divider />
+      <BlockchainSection />
       <Divider />
     </main>
   );
