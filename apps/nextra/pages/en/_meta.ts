@@ -84,7 +84,8 @@ export default {
         type: "page",
       },
       docs: {
-        title: "How to modify the docs ↗",
+        title: "Contribute",
+        href: "/docs",
         type: "page",
       },
     },
