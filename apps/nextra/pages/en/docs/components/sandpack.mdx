@@ -1,0 +1,15 @@
+---
+title: "Sandpack"
+---
+
+import { SandpackTS, permalinkFetch } from '@components/index'
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    "https://github.com/aptos-labs/aptos-ts-sdk/blob/0877cfe4652b2e325b7367170ef618b956736924/examples/typescript/simple_transfer.ts#L1-L106"
+  ])
+}
+
+# Sandpack
+
+<SandpackTS remoteFiles={{ "simple_transfer.ts": "https://github.com/aptos-labs/aptos-ts-sdk/blob/0877cfe4652b2e325b7367170ef618b956736924/examples/typescript/simple_transfer.ts#L1-L106" }} />
