@@ -14,7 +14,7 @@ If you still need to install the CLI, follow [these steps](install-cli/install-c
 
 1. Run `aptos init` and follow the instructions in the command line.
 
-   1. To use default settings, you can provide no input and just press “Enter”. For example:
+   1. To use default settings, you can provide no input and just press "Enter". For example:
 
    ```bash
    aptos init

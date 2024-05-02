@@ -17,18 +17,9 @@ A multi-DEX router actively utilizes third party dependencies. Instead of submit
 
 ## Sources
 
-Third party dependencies will have varying amounts of reliability and available information based on where they’re sourced from. 
+Third party dependencies will have varying amounts of reliability and available information based on where they’re sourced from. Specifically, documentation for a few instances will be non-existant, as well as logic potentially being refactored.
 
-|  | **Git Repository** | **Local Source Code** | **Decompiler** | **Bytecode** | **ABI** | 
-| --- | --- | --- | --- | --- | --- |
-| **Requires direct support from the external module owner**  | Yes. | Yes. | No. | No. | No. | 
-| **Accuracy of dependency code** | (Possibly) verified against the on-chain bytecode. | (Possibly) verified against the on-chain bytecode. | Functionally accurate. | 1:1 bytecode. Generated interface will have correct method signatures, but logic will be missing. | Manual interface will have correct method signatures, but logic will be missing. | 
-| **Readability of dependency code** | True source code. | True source code. | Method signatures readable. Logic refactored. | Method signatures readable. No logic. | Method signatures readable. No logic. | 
-| **Aptos Prover usability** | Usable. | Usable. | Usable. | Unusable. | Unusable. | 
-| **Aptos CLI Test usability** | Usable. | Usable. |  Usable. | Unusable. | Unusable. |
-| **Necessities when third party upgrades dependent package** | Requires the repo to match on-chain bytecode. | Requires manual retrieval. | Requires the decompiler steps to be re-performed. | Requires the bytecode steps to be re-performed. | Requires the ABI steps to be re-performed. | 
-
-
+Source code that is verified against the on-chain deployed module, like the [Git Repository](#git-repository) and [Local Source Code](#local-source-code), should always be preferred. If neither of those are available, there are other options to depend on usable code, like [decompiled code](#decompiled-code), [bytecode](#bytecode), and [ABI](#abi)-crafted code.
 
 ### Git Repository
 

@@ -7,11 +7,14 @@ import { Tabs, TabItem } from '@components/tabs/Tabs';
 
 # Building Aptos From Source
 
-[Binary releases are available](../../build/cli/install-cli.mdx), but if you want to build from source or develop on the Aptos tools, this is how.
+[CLI Binary releases are available](../../build/cli/install-cli.mdx), but if you
+want to build from source for an Aptos node or CLI, this is how.
 
 ## Supported operating systems
 
-Aptos can be built on various operating systems, including Linux, macOS. and Windows. Aptos is tested extensively on Linux and macOS, and less so on Windows. Here are the versions we use:
+Aptos can be built on various operating systems, including Linux, macOS. and
+Windows. Aptos is tested extensively on Linux and macOS, and less so on Windows.
+Here are the versions we use:
 
 - Linux - Ubuntu version 20.04 and 22.04
 - macOS - macOS Monterey and later
@@ -19,9 +22,14 @@ Aptos can be built on various operating systems, including Linux, macOS. and Win
 
 ## Clone the Aptos-core repo
 
-1. Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git). Git is required to clone the aptos-core repo, and will need to be installed prior to continuing. You can install it with the instructions on the official [Git website](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+1. Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+Git is required to clone the aptos-core repo, and will need to be installed
+prior to continuing. You can install it with the instructions on the official
+[Git website](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
-2. Clone the Aptos repository. To clone the Aptos repository (repo), you first need to open a command line prompt (Terminal on macOS / Linux, PowerShell on Windows). Then run the following command to clone the Git repository from GitHub.
+2. Clone the Aptos repository. To clone the Aptos repository (repo), you first
+need to open a command line prompt (Terminal on macOS / Linux, PowerShell on
+Windows). Then run the following command to clone the Git repository from GitHub.
 
    ```bash filename="Terminal"
    git clone https://github.com/aptos-labs/aptos-core.git
@@ -36,7 +44,8 @@ Aptos can be built on various operating systems, including Linux, macOS. and Win
 
 Optionally, check out a release branch to install an Aptos node.
 We suggest you check out `devnet` for your first development.
-See [Choose a network](./system-integrators-guide.md#choose-a-network) for an explanation of their differences.
+See [Choose a network](./system-integrators-guide.md#choose-a-network) for an
+explanation of their differences.
 
 <details>
 <summary>Release Branches</summary>
@@ -62,7 +71,8 @@ See [Choose a network](./system-integrators-guide.md#choose-a-network) for an ex
 ## Set up build dependencies
 
 Prepare your developer environment by installing the dependencies needed to build, test and inspect Aptos Core.
-No matter your selected mechanism for installing these dependencies, **it is imperative you keep your entire toolchain up-to-date**. If you encounter issues later, update all packages and try again.
+No matter your selected mechanism for installing these dependencies, **it is imperative you keep your entire toolchain up-to-date**.
+If you encounter issues later, update all packages and try again.
 
 <details>
 <summary>macOS</summary>
@@ -70,11 +80,20 @@ No matter your selected mechanism for installing these dependencies, **it is imp
 **> Using the automated script**
 
 1. Ensure you have `brew` package manager installed: https://brew.sh/
-2. Run the dev setup script to prepare your environment: `./scripts/dev_setup.sh`
-3. Update your current shell environment: `source ~/.cargo/env`.
+2. Run the dev setup script to prepare your environment:
+  ```bash filename="Terminal"
+  ./scripts/dev_setup.sh
+  ```
+3. Update your current shell environment:
+  ```bash filename="Terminal"
+  source ~/.cargo/env
+  ```
 
 <Callout type="info">
-You can see the available options for the script by running `./scripts/dev_setup.sh --help`
+You can see the available options for the script by running
+  ```bash filename="Terminal"
+  ./scripts/dev_setup.sh --help
+  ```
 </Callout>
 
 **> Manual installation of dependencies**
@@ -93,11 +112,20 @@ If the script above doesn't work for you, you can install these manually, but it
 
 **> Using the automated script**
 
-1. Run the dev setup script to prepare your environment: `./scripts/dev_setup.sh`
-2. Update your current shell environment: `source ~/.cargo/env`
+1. Run the dev setup script to prepare your environment:
+  ```bash filename="Terminal"
+  ./scripts/dev_setup.sh
+  ```
+2. Update your current shell environment:
+  ```bash filename="Terminal"
+  source ~/.cargo/env
+  ```
 
 <Callout type="info">
-You can see the available options for the script by running `./scripts/dev_setup.sh --help`
+You can see the available options for the script by running
+  ```bash filename="Terminal"
+  ./scripts/dev_setup.sh --help
+  ```
 </Callout>
 
 **> Manual installation of dependencies**
@@ -117,7 +145,10 @@ If the script above does not work for you, you can install these manually, but i
 **> Using the automated script**
 
 1. Open a PowerShell terminal as an administrator.
-2. Run the dev setup script to prepare your environment: `PowerShell -ExecutionPolicy Bypass -File ./scripts/windows_dev_setup.ps1`
+2. Run the dev setup script to prepare your environment:
+  ```powershell filename="Terminal"
+  PowerShell -ExecutionPolicy Bypass -File ./scripts/windows_dev_setup.ps1
+  ```
 3. Open a new PowerShell terminal after installing all dependencies
 
 **> Manual installation of dependencies**
@@ -135,10 +166,6 @@ If the script above does not work for you, you can install these manually, but i
 
 If you used `scripts/dev_setup.sh` for macOS or Linux setup, additional tools are optionally available.
 
-#### TypeScript
-
-[Using the released SDK can be achieved from npm/pnpm/yarn](../../build/sdks.mdx).
-
 ## Building Aptos
 
 The simplest check that you have a working environment is to build everything and run the tests.
@@ -148,11 +175,13 @@ cargo build
 cargo test -- --skip prover
 ```
 
-If you installed the Move Prover Tools above then you don't need to skip the prover tests.
+If you have already installed the Move Prover Tools above then you don't need to
+skip the prover tests.  To install the prover (optional), follow the [Prover guide](../../build/move/prover.mdx)
 
 Other documentation of specific tools has recommended patterns for `cargo build` and `cargo run`
+
+### Other resources
 
 - [Run a Local Development Network](./localnet/local-development-network.mdx)
 - [Indexer](../../build/indexer.mdx)
 - [Node Health Checker](./measure/node-health-checker.mdx)
-- [Running a Local Multi-node Network](./localnet/running-a-local-multi-node-network.mdx)

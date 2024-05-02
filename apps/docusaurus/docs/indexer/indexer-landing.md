@@ -41,7 +41,7 @@ sources={{
 At a high level, indexing on the Aptos blockchain works like this:
 
 1. Users of a dapp, for example, on an NFT marketplace, interact with the Aptos blockchain via a rich UI presented by the dapp. Behind the scenes, these interactions generate, via smart contracts, the transaction and event data. This raw data is stored in the distributed ledger database, for example, on an Aptos fullnode.
-2. This raw ledger data is read and indexed using an application-specific data model, in this case an NFT marketplace-specific data model (”Business logic” in the above diagram). This NFT marketplace-specific index is then stored in a separate database (”Indexed database” in the above diagram) and exposed via an API.
+2. This raw ledger data is read and indexed using an application-specific data model, in this case an NFT marketplace-specific data model ("Business logic" in the above diagram). This NFT marketplace-specific index is then stored in a separate database ("Indexed database" in the above diagram) and exposed via an API.
 3. The dapp sends NFT-specific GraphQL queries to this indexed database and receives rich data back, which is then served to the users.
 
 Step 2 is facilitated by the Aptos Indexer. The diagram above is a simplified view of how the system works at a high level. In reality, the system is composed of many components. If you are interested in these details, see the [Detailed Overview](#detailed-overview) below.

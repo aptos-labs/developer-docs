@@ -17,7 +17,7 @@ export default {
     type: "menu",
     title: "Build",
     items: {
-      quick_start: {
+      "quick-start": {
         title: "Quick Start",
       },
       move: {
@@ -38,7 +38,7 @@ export default {
       standards: {
         title: "Standards",
       },
-      advanced_guides: {
+      "advanced-guides": {
         title: "Advanced Guides",
       },
     },
