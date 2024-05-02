@@ -4,7 +4,8 @@ title: "Delegation Pool Operations"
 
 # Delegation Pool Operations
 
-> Beta: This documentation is in experimental, beta mode. Supply feedback by [requesting document changes](../../../community/site-updates.md#request-docs-changes). See also the related [Staking Pool Operations](./staking-pool-operations.mdx) instructions.
+> Beta: This documentation is in experimental, beta mode. Supply feedback by opening a [GitHub issue](https://github.com/aptos-labs/developer-docs/issues/new/choose).
+> See also the related [Staking Pool Operations](./staking-pool-operations.mdx) instructions.
 
 Validator operators should follow these instructions to carry out delegation pool operations for [delegated staking](../../../blockchain/learn-about-aptos/delegated-staking.mdx). You may delegate as little as 10 APT plus a small add stake fee that will be mostly refunded as rewards at the end of the current epoch. You might notice that some UIs might use 11 APT as the minimum for a round number. Note that your validator will become part of the _Active Validator Set_ only when the delegation pool satisfies the minimum cumulative [staking requirement of 1 million APT](./staking-pool-operations.mdx).
 
@@ -22,7 +23,7 @@ The operator address will receive the pool commission that was set at the initia
 Before initializing a delegation pool, you need to know the delegation pool address. You can use the following CLI commands to obtain the delegation pool address depending on where you are in the process:
 
 - Before you create the delegation pool:
-  ```bash filename="Terminal" 
+  ```bash filename="Terminal"
   aptos account derive-resource-account-address --address <owner_address> --seed "aptos_framework::delegation_pool<SEED>" --seed-encoding utf8
   ```
   - The `<SEED>` is a number chosen by you to create the resource account address to host the delegation pool resource. Once you choose a seed, you should use the same value for all following usages.
@@ -145,7 +146,7 @@ Once the beneficiary address is set, the operator commission earned by the deleg
 
 ## Check delegation pool information
 
-Until the delegation pool has received 1 million APT and the validator has been added to the set of active validators, there will be no rewards to track during each cycle. In order to obtain information about a delegation pool, use the Aptos [View function](../../aptos-api-spec.mdx#reading-state-with-the-view-function).
+Until the delegation pool has received 1 million APT and the validator has been added to the set of active validators, there will be no rewards to track during each cycle. In order to obtain information about a delegation pool, use the Aptos View Function. {/* TODO: fix this link [View function](../../aptos-api-spec.mdx#reading-state-with-the-view-function) */}
 
 - `get_owned_pool_address(owner: address): address` - Returns the address of the delegation pool belonging to the owner, or produces an error if there is no delegation pool associated with the owner.
 
@@ -163,7 +164,7 @@ Until the delegation pool has received 1 million APT and the validator has been 
 
 - `can_withdraw_pending_inactive(pool_address: address): bool` - Returns whether `pending_inactive` stake can be directly withdrawn from the delegation pool, implicitly its stake pool, in the special case the validator had gone inactive before its lockup expired.
 
-In the [Aptos TypeScript SDK](../../../../build/sdks.mdx), a View function request would resemble:
+In the [Aptos TypeScript SDK](../../../../build/sdks/ts-sdk.mdx), a View function request would resemble:
 
 ```ts filename="view_function.ts"
 import { Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
@@ -201,5 +202,5 @@ Use this formula to calculate _rewards earned_ for `active` and `pending_inactiv
    - "pending inactive principal" = **UnlockStakeEvent** - **ReactivateStakeEvent**. If at any point during the iteration, "pending inactive principal" < 0, reset to 0. Negative principal could happen when the amount users `reactivate` include rewards earned from staking.
 
 3. Compute rewards earned:
-   - active*rewards = `active` - \_active principal*.
+   - active rewards = `active` - active principal.
    - pending_inactive_rewards = `pending_inactive` - "pending inactive principal".
