@@ -90,7 +90,7 @@ function ToolingCard(props: ToolingCardProps) {
     <Link
       href={props.href}
       className="
-        flex flex-col no-underline flex-1 p-8 w-full sm:max-w-[591px] gap-8
+        no-underline flex flex-col flex-1 p-8 w-full sm:max-w-[591px] gap-8
         border-t border-b sm:border border-border-divider rounded-0
         text-text-primary hover:bg-background-elevated transition-colors
       "

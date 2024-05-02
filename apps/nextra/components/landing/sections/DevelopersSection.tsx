@@ -4,7 +4,7 @@ import { Button } from "../components/Button";
 import { Link } from "nextra-theme-docs";
 import { useRouter } from "nextra/hooks";
 import { IconArrowTopRight } from "../components/Icons";
-import { ChainVector } from "../components/ChainVector";
+import { ChainIllustration } from "../components/Illustrations/ChainIllustration";
 
 export function DevelopersSection() {
   const { locale } = useRouter();
@@ -14,7 +14,7 @@ export function DevelopersSection() {
     <Section>
       <SectionHeader>{t.developersSectionHeadline}</SectionHeader>
       <div className="relative overflow-hidden flex flex-col lg:flex-row justify-center items-center lg:items-stretch w-full max-w-full sm:w-max">
-        <ChainVector
+        <ChainIllustration
           className="
             absolute top-2 left-1/2 max-sm:-translate-x-1/2 max-lg:w-auto max-sm:h-[210px]
             sm:top-[-4px] sm:left-[-90px] max-lg:h-[330px]
@@ -55,7 +55,7 @@ function DevelopersCard(props: DevelopersCard) {
   return (
     <div
       className="
-        flex flex-col flex-1 p-8 w-full sm:max-w-[591px] lg:max-w-[393px] gap-8 group
+        flex flex-col flex-1 p-8 w-full sm:max-w-[591px] lg:max-w-[393px] gap-8
         border-t border-b sm:border border-border-divider rounded-0
         text-text-primary hover:bg-background-elevated transition-colors
       "
