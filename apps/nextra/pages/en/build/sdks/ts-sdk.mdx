@@ -1,5 +1,5 @@
 import { Callout, Steps } from 'nextra/components'
- 
+
 # TypeScript SDK
 The TypeScript SDK allows you to connect, explore, and interact on the Aptos blockchain. You can use it to request data, send transactions, set up test environments, and more!
 
@@ -28,7 +28,7 @@ const aptos = new Aptos(aptosConfig);
 ```
 
 <Callout type="info">
-(Advanced) If you need to connect to a specific node, you can set that in the `AptosConfig` by specifying the `fullnode` url. Ex. `fullnode: http://localhost:8080/v1`. 
+(Advanced) If you need to connect to a specific node, you can set that in the `AptosConfig` by specifying the `fullnode` url. Ex. `fullnode: http://localhost:8080/v1`.
 </Callout>
 
 ### Fetch data from on-chain
@@ -49,7 +49,7 @@ To begin with though, here’s how you can send a basic transaction to transfer 
 
 #### 4.1 Create an Account
 
-To create a new account, you first generate new credentials then fund the account. On test networks you can fund an account programmatically by asking a “faucet” which has a lot of test APT to send some to your new account.
+To create a new account, you first generate new credentials then fund the account. On test networks you can fund an account programmatically by asking a "faucet" which has a lot of test APT to send some to your new account.
 
 ```ts filename="quickstart.ts"
 // Generate a new account key pair
@@ -115,9 +115,9 @@ const pendingTransaction = await aptos.signAndSubmitTransaction({
 
 #### 4.4 Wait for completion
 
-You can run `aptos.waitForTransaction` to guarantee your code executes after the transaction has been processed and applied. 
+You can run `aptos.waitForTransaction` to guarantee your code executes after the transaction has been processed and applied.
 
-This also helps you get any errors that may occur after submitting, such as the transaction being rejected. 
+This also helps you get any errors that may occur after submitting, such as the transaction being rejected.
 
 ```ts filename="quickstart.ts"
 const executedTransaction = await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });

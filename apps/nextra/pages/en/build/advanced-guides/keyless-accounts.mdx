@@ -21,7 +21,7 @@ the identity provider (e.g. Google).
 
 Keyless accounts are revolutionary to users for the following reasons:
 
-1. “1-click” account creation via familiar Web2 logins
+1. "1-click" account creation via familiar Web2 logins
 like `Sign In with Google`.
 2. Ability to transact on the Aptos blockchain without needing to navigate away
 from the application experience to download a wallet.
@@ -51,7 +51,7 @@ maintained.
 
 - **OpenID Connect (OIDC)**: is the identity authentication protocol used to
 enable federated identity verification. This protocol is what is used when a
-user goes through the “Sign in with Google” flow for example.
+user goes through the "Sign in with Google" flow for example.
 - **Identity Provider (IdP)**: is the trusted authority who authenticates your
 identity via OIDC. Supported example includes: Google.
 - **JSON Web Token (JWT):** is an open standard used to share security
@@ -107,7 +107,7 @@ Accounts.
 will register with the IdP of choice (e.g. Google) and receive a `client_id`
 2. **Install the Aptos TypeScript SDK.**
 3. **Integrate Keyless Account support in your application client**
-4. Set up the `“Sign In with [Idp]”` flow for your user.
+4. Set up the `"Sign In with [Idp]"` flow for your user.
 5. Instantiate the user’s `KeylessAccount`
 6. Sign and submit transactions via the `KeylessAccount`.
 
@@ -159,7 +159,7 @@ pnpm install @aptos-labs/ts-sdk@zeta
 
 Below are the default steps for a client to integrate Keyless Accounts
 
-### 1. Present the user with a “Sign In with [IdP]” button on the UI
+### 1. Present the user with a "Sign In with [IdP]" button on the UI
 
     1. In the background, we create an ephemeral key pair. Store this in local storage.
 

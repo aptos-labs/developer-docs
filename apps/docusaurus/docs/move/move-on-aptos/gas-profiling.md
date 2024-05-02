@@ -85,7 +85,7 @@ If you click on an item, you can zoom into it and see the child items more clear
 You can reset the view by clicking the "Reset Zoom" button in the top-left corner.
 ![gas-profiling-flamegraph-1.png](../../../static/img/docs/gas-profiling-flamegraph-1.png)
 
-There is also “Search” button in the top-right corner that allows to match certain items and highlight them.
+There is also "Search" button in the top-right corner that allows to match certain items and highlight them.
 ![gas-profiling-flamegraph-2.png](../../../static/img/docs/gas-profiling-flamegraph-2.png)
 
 ### Cost Break-down

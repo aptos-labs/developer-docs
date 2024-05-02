@@ -15,7 +15,7 @@ You can jump to sections here:
 5. [Running Published Contracts](#5-running-published-contracts)
 6. [(Optional) Formally Verifying Move Scripts](#6-optional-formally-verifying-move-scripts)
 
-To see how to chain together Move contracts on-chain using the CLI, you can follow this [“CLI Arguments” tutorial](./move-tutorials/arguments-in-json-tutorial.md).
+To see how to chain together Move contracts on-chain using the CLI, you can follow this ["CLI Arguments" tutorial](./move-tutorials/arguments-in-json-tutorial.md).
 
 :::tip
 Throughout this document there are parts of commands you will have to modify to fit your situation. Those variables will be wrapped in triangle brackets `<like this>`.

@@ -92,8 +92,8 @@ Avoid passive tense and gerunds when possible:
 - Address the user directly. Use "you" instead of "user" or "they".
 - Avoid writing the way you speak, i.e., avoid using contractions, jokes or using colloquial content.
   💡 **Example**:
-  - **Preferred**: “it will” or “we will” or “it would”.
-  - **Avoid**: “it’ll” or “we’ll” or “it’d”.
+  - **Preferred**: "it will" or "we will" or "it would".
+  - **Avoid**: "it’ll" or "we’ll" or "it’d".
 - Use the active voice.
   💡 **Example**:
   - **Preferred**: Fork and clone the Aptos repo.
@@ -103,7 +103,7 @@ Avoid passive tense and gerunds when possible:
 - Avoid hypothetical future "would". Instead, write in present tense.
   💡 **Example**:
   - **Preferred**: "The compiler sends".
-  - **Avoid**: “The compiler would then send”.
+  - **Avoid**: "The compiler would then send".
 
 ## Ensure readability
 
@@ -136,7 +136,7 @@ Use title case for page titles and sentence case for section headers. Ex:
 - Page title - Integrate Aptos with Your Platform
 - Section title - Choose a network
 
-Of course, capitalize [proper nouns](https://www.scribbr.com/nouns-and-pronouns/proper-nouns/), such as “Aptos” in “Accounts on Aptos”
+Of course, capitalize [proper nouns](https://www.scribbr.com/nouns-and-pronouns/proper-nouns/), such as "Aptos" in "Accounts on Aptos"
 
 ## Write clear titles and headings
 

@@ -74,7 +74,7 @@ the [official Aptos website](https://aptosfoundation.org).
   registered domain. Find out more
   at: [Aptosnames.com](https://www.aptosnames.com/)
 
-### Aptos-core
+### Aptos Core
 
 **Aptos-core** is
 the [open-source repository](https://github.com/aptos-labs/aptos-core/)
@@ -135,7 +135,7 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
 - Code for checking or incrementing sequence numbers, withdrawing or depositing
   currency, and extracting gas deposits is included in the AptosAccount module.
 
-### Aptos devnet
+### Aptos Devnet
 
 - See [devnet](#devnet).
 
@@ -145,7 +145,7 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
 
 - On Aptos, blocks are a batch of [transactions](#transaction) committed at the
   same time.
-- Block number is analogous to “block height” in blockchain literature.
+- Block number is analogous to "block height" in blockchain literature.
 - Transactions are referenced by ledger version rather than by block.
 
 ### Byzantine (Validator)
@@ -159,17 +159,17 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
 
 - **Byzantine Fault Tolerance** (BFT) is the ability of a distributed system to
   provide safety and liveness guarantees in the presence of faulty,
-  or “[Byzantine](#byzantine-validator),” validators below a certain threshold.
+  or "[Byzantine](https://en.wikipedia.org/wiki/Byzantine_fault)," validators below a certain threshold.
 - The Aptos blockchain uses AptosBFT, a consensus protocol based
   on [Jolteon](#jolteon).
 - BFT algorithms typically operate with a number of entities, collectively
-  holding N votes (which are called “validators” in the Aptos network’s
+  holding $N$ votes (which are called "validators" in the Aptos network’s
   application of the system).
-- N is chosen to withstand some number of validators holding f votes, which
+- $N$ is chosen to withstand some number of validators holding $f$ votes, which
   might be malicious.
-- In this configuration, N is typically set to 3f+1. Validators holding up to f
+- In this configuration, $N$ is typically set to $3f + 1$. Validators holding up to $f$
   votes will be allowed to be faulty &mdash; offline, malicious, slow, etc. As
-  long as 2f+1 votes are held by [honest](#honest-validator) validators, they
+  long as $2f + 1$ votes are held by [honest](#honest-validator) validators, they
   will be able to reach consensus on consistent decisions.
 - This implies that BFT consensus protocols can function correctly, even if up
   to one-third of the voting power is held by validators that are compromised or
@@ -181,7 +181,7 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
 
 - **Command line interface** refers to the Aptos CLI used for developing on the
   Aptos blockchain, operating nodes, and debugging issues. Find out more
-  at [Use the Aptos CLI](../build/cli/use-cli.md).
+  at [Use the Aptos CLI](../build/cli/use-cli.mdx).
 
 ### Client
 
@@ -189,7 +189,7 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
   manages transactions. Clients interact with the blockchain through the Aptos
   nodes.
 
-### Code labs
+### Code Labs
 
 - **Code labs and tutorials** depict various workflows - such as the use of the
   Aptos CLI in minting non-fungible tokens (NFTs) - in order for users to
@@ -217,13 +217,13 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
 
 ## D
 
-### dapps
+### Dapps
 
 - **Decentralized applications (dapps)** are programs or digital applications
   that run on the Aptos blockchain autonomously. Smart contracts are commonly
   used to achieve this function.
 
-### devnet
+### Devnet
 
 - The **Aptos devnet** is a publicly deployed instance of the Aptos network that
   runs using a set of validator test nodes.
@@ -274,12 +274,11 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
 A transaction ceases to be valid after its **expiration time**. If it is assumed
 that:
 
-- Time_C is the current time that is agreed upon between validators (Time_C is
+- $Time_C$ is the current time that is agreed upon between validators ($Time_C$ is
   not the local time of the client);
-- Time_E is the expiration time of a transaction T_N; and
-- Time_C > Time_E and transaction T_N has not been included in the blockchain,
-
-then there is a guarantee that T_N will never be included in the blockchain.
+- $Time_E$ is the expiration time of a transaction $T_N$; and
+- $Time_C > Time_E$ and transaction $T_N$ has not been included in the blockchain,
+then there is a guarantee that $T_N$ will never be included in the blockchain.
 
 ## F
 
@@ -288,7 +287,7 @@ then there is a guarantee that T_N will never be included in the blockchain.
 - **Faucet** is a service that mints APT on devnet and testnet. APT on these
   networks has no real world value, it is only for development purposes.
 - You can use the faucet in a few different ways:
-  - With the [Aptos CLI](../build/cli/use-cli/index.md).
+  - With the [Aptos CLI](../build/cli/use-cli/trying-things-on-chain/create-test-accounts.mdx).
   - Through a wallet, such
     as [Petra](https://aptosfoundation.org/ecosystem/project/petra)
     or [Pontem](https://aptosfoundation.org/ecosystem/project/pontem-wallet).
@@ -296,7 +295,7 @@ then there is a guarantee that T_N will never be included in the blockchain.
     of [Aptos Wallets](https://aptosfoundation.org/ecosystem/projects/wallets).
   - Using an SDK, for example by using the `FaucetClient` in the TypeScript SDK.
   - With a direct HTTP request. Learn how to do
-    this [here](../build/advanced-guides/system-integrators-guide.mdx#calling-the-faucet-other-languages). {/* TODO: Fix link */}
+    this [here](../build/advanced-guides/system-integrators-guide.mdx#calling-the-faucet-other-languages).
 
 ### Fullnodes
 
@@ -347,7 +346,7 @@ then there is a guarantee that T_N will never be included in the blockchain.
   storage resources of the validators, including preventing denial of service (
   DoS) attacks.
 
-See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more information.
+See [Gas and Storage Fees](./blockchain/learn-about-aptos/gas-txn-fee.mdx) for more information.
 
 ### Gas Unit Price
 
@@ -357,7 +356,7 @@ See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more
   usage of the network.
 - Gas price is expressed in Octa. 1 APT = 10^8 Octa
 
-See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more information.
+See [Gas and Storage Fees](./blockchain/learn-about-aptos/gas-txn-fee.mdx) for more information.
 
 ## H
 
@@ -393,7 +392,7 @@ See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more
   consensus protocol.
 - In leader-based protocols, nodes must agree on a leader to make progress.
 - Leaders are selected by a function that takes the
-  current [round number](https://fb.quip.com/LkbMAEBIVNbh#ffYACAO6CzD) as input.
+  current [round number](#round-number) as input.
 
 ## M
 
@@ -415,7 +414,8 @@ See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more
   runs out of balance during execution, then the sender will be charged for gas
   used and the transaction will fail.
 
-See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more information.
+See [Gas and Storage Fees](./blockchain/learn-about-aptos/gas-txn-fee.mdx) for
+more information.
 
 ### Mempool
 
@@ -441,12 +441,11 @@ See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more
 
 ### Merkle Accumulator
 
-- The *
-  *[Merkle Accumulator](https://www.usenix.org/legacy/event/sec09/tech/full_papers/crosby.pdf)
-  ** is an _append-only_ Merkle tree that the Aptos blockchain uses to store the
+- The **[Merkle Accumulator](https://www.usenix.org/legacy/event/sec09/tech/full_papers/crosby.pdf)**
+  is an _append-only_ Merkle tree that the Aptos blockchain uses to store the
   ledger.
 - A Merkle accumulator can provide proofs that a transaction was included in the
-  chain (“proof of inclusion”).
+  chain ("proof of inclusion").
 - They are also called "history trees" in literature.
 
 ### Module
@@ -459,12 +458,12 @@ See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more
 - **Move** is a new programming language that implements all the transactions on
   the Aptos blockchain.
 - It has two different kinds of code
-  &mdash; [Move scripts](#transaction-or-move-script)
+  &mdash; [Move scripts](#move-script)
   and [Move modules](#move-module).
 - Move is a safe and secure programming language for web3 that emphasizes access
   control and scarcity. It is the programming language used to build the Aptos
   blockchain. You can read more about it
-  in [Move on Aptos](../build/move/move-on-aptos.mdx).
+  in [Move on Aptos](../build/move.mdx). { /* TODO add move-on-aptos landing page */}
 
 ### Move Bytecode
 
@@ -486,6 +485,27 @@ See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more
   *procedures** declared in a Move **module.**
 - Move resources can never be copied, reused, or lost. This protects Move
   programmers from accidentally or intentionally losing track of a resource.
+
+### Move Script
+
+- Each transaction submitted by a user includes a **Move script**.
+- These transactions, also known as Move scripts, represent the operations a
+client submits to a validator.
+- The operation could be a request to move coins from user A to user B, or it
+could involve interactions with published [Move modules](#move-module) (smart
+contracts).
+- The Move script is an arbitrary program that interacts with resources
+published in the global storage of the Aptos blockchain by calling the
+procedures of a module. It encodes the logic for a transaction.
+- A single Move script can send funds to multiple recipients and invoke
+procedures from several different modules.
+- A Move script **is not** stored in the global state and cannot be invoked by
+other Move scripts. It is a single-use program.
+
+To see example uses of Move scripts,
+follow [Move scripts](../build/move/move-on-aptos/scripts/script-tutorial.mdx). {/*
+TODO: This tutorial seems to have disappeared
+and the [Your First Multisig](../) tutorial. */}
 
 ### Move Virtual Machine (MVM)
 
@@ -533,7 +553,7 @@ See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more
   transaction, they will be provided with a cryptographic proof that the data
   returned to them is correct.
 
-### PoS
+### Proof-of-Stake (PoS)
 
 **Proof-of-Stake (PoS)** is a security mechanism that serves in confirming the
 uniqueness and legitimacy of blockchain transactions. The PoS consensus
@@ -541,6 +561,10 @@ mechanism is leveraged by the Aptos blockchain powered by a network of
 validators, which in turn update the system and process transactions.
 
 ## R
+
+### Randapp
+
+- A [dapp](#dapp) that uses randomness for its functionality.
 
 ### Resource Account
 
@@ -555,9 +579,9 @@ validators, which in turn update the system and process transactions.
 See [Resource accounts](../build/move/move-on-aptos/resource-accounts.mdx) for
 instructions on use.
 
-### REST Service
+### REST API Service
 
-- The **REST Service** component is the external interface of an Aptos node. Any
+- The **REST API Service** component is the external interface of an Aptos node. Any
   incoming client request, such as submitted transactions or queries, must first
   go through the REST Service. A client needs to go through the REST Service
   component to access storage or any other component in the system. This filters
@@ -581,7 +605,7 @@ instructions on use.
 
 - Aptos **software development kits (SDKs)** are sets of tools that enable a
   developer to quickly create a custom app on the Aptos platform. Find out more
-  at [Use the Aptos SDKs](..build/sdks.mdx).
+  at [Use the Aptos SDKs](../build/sdks.mdx).
 
 ### Sequence Number
 
@@ -608,7 +632,7 @@ instructions on use.
 ### Shoal
 
 - Method for decreasing latency for BFT protocols.
-  See [paper](https://arxiv.org/pdf/2306.03058.pdf)
+  See the [Shoal paper](https://arxiv.org/pdf/2306.03058.pdf)
 
 ### Smart Contract
 
@@ -654,7 +678,7 @@ for the associated Aptos source file.
 
 - A raw **transaction** contains the following fields:
   - [Sender (account address)](#account-address)
-  - [Move script](#transaction-or-move-script)
+  - [Move script](#move-script)
   - [Gas price](#gas-unit-price)
   - [Maximum gas amount](#maximum-gas-amount)
   - [Sequence number](#sequence-number)
@@ -662,25 +686,9 @@ for the associated Aptos source file.
 - A signed transaction is a raw transaction with the digital signature.
 - An executed transaction changes the state of the Aptos blockchain.
 
-### Transaction or Move Script
+### Transaction Script
 
-- Each transaction submitted by a user includes a **Move script**.
-- These transactions, also known as Move scripts, represent the operations a
-  client submits to a validator.
-- The operation could be a request to move coins from user A to user B, or it
-  could involve interactions with published [Move modules](#move-module) (smart
-  contracts).
-- The Move script is an arbitrary program that interacts with resources
-  published in the global storage of the Aptos blockchain by calling the
-  procedures of a module. It encodes the logic for a transaction.
-- A single Move script can send funds to multiple recipients and invoke
-  procedures from several different modules.
-- A Move script **is not** stored in the global state and cannot be invoked by
-  other Move scripts. It is a single-use program.
-
-To see example uses of Move scripts,
-follow [Move scripts](../build/move/move-on-aptos/scripts/script-tutorial.mdx) and
-the [Your First Multisig](../tutorials/first-multisig.md) tutorial. {/* TODO Tutorial link */}
+- See [Move script](#move-script)
 
 ## V
 
@@ -707,7 +715,7 @@ the [Your First Multisig](../tutorials/first-multisig.md) tutorial. {/* TODO Tut
 - A **version** is a sequentially increasing number that increments for
   every [transaction](#transaction).
 - On aptos, transactions are globally ordered and every transaction has a
-  version (often called “height” in blockchain literature.)
+  version (often called "height" in blockchain literature.)
 - Transaction version 0 is the first transaction (genesis transaction), and a
   transaction version 100 is the 101st transaction in the blockchain.
 
