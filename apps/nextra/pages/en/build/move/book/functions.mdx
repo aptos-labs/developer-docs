@@ -24,24 +24,25 @@ Module functions, by default, can only be called within the same module. These i
 
 ```move
 address 0x42 {
-  module m {
+module m {
     fun foo(): u64 { 0 }
-    fun calls_foo(): u64 { foo() } // valid
-  }
 
-  module other {
+    fun calls_foo(): u64 { foo() } // valid
+}
+
+module other {
     fun calls_m_foo(): u64 {
-      0x42::m::foo() // ERROR!
-//    ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+        0x42::m::foo() // ERROR!
+        //    ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
     }
-  }
+}
 }
 
 script {
-  fun calls_m_foo(): u64 {
-    0x42::m::foo() // ERROR!
-//  ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
-  }
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // ERROR!
+        //  ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+    }
 }
 ```
 
@@ -59,22 +60,23 @@ There are also no restrictions for what the argument types a public function can
 
 ```move
 address 0x42 {
-  module m {
+module m {
     public fun foo(): u64 { 0 }
-    fun calls_foo(): u64 { foo() } // valid
-  }
 
-  module other {
+    fun calls_foo(): u64 { foo() } // valid
+}
+
+module other {
     fun calls_m_foo(): u64 {
-      0x42::m::foo() // valid
+        0x42::m::foo() // valid
     }
-  }
+}
 }
 
 script {
-  fun calls_m_foo(): u64 {
-    0x42::m::foo() // valid
-  }
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // valid
+    }
 }
 ```
 
@@ -89,31 +91,32 @@ Note that since we cannot declare a script to be a friend of a module, the funct
 
 ```move
 address 0x42 {
-  module m {
+module m {
     friend 0x42::n;  // friend declaration
     public(friend) fun foo(): u64 { 0 }
+
     fun calls_foo(): u64 { foo() } // valid
-  }
+}
 
-  module n {
+module n {
     fun calls_m_foo(): u64 {
-      0x42::m::foo() // valid
+        0x42::m::foo() // valid
     }
-  }
+}
 
-  module other {
+module other {
     fun calls_m_foo(): u64 {
-      0x42::m::foo() // ERROR!
-//    ^^^^^^^^^^^^ 'foo' can only be called from a 'friend' of module '0x42::m'
+        0x42::m::foo() // ERROR!
+        //    ^^^^^^^^^^^^ 'foo' can only be called from a 'friend' of module '0x42::m'
     }
-  }
+}
 }
 
 script {
-  fun calls_m_foo(): u64 {
-    0x42::m::foo() // ERROR!
-//  ^^^^^^^^^^^^ 'foo' can only be called from a 'friend' of module '0x42::m'
-  }
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // ERROR!
+        //  ^^^^^^^^^^^^ 'foo' can only be called from a 'friend' of module '0x42::m'
+    }
 }
 ```
 
@@ -129,28 +132,29 @@ For example:
 
 ```move
 address 0x42 {
-  module m {
-    public entry fun foo() {  }
+module m {
+    public entry fun foo() {}
+
     fun calls_foo(): u64 { foo() } // valid!
-  }
+}
 
-  module n {
+module n {
     fun calls_m_foo(): u64 {
-      0x42::m::foo() // valid!
+        0x42::m::foo() // valid!
     }
-  }
+}
 
-  module other {
+module other {
     public entry fun calls_m_foo() {
-      0x42::m::foo(); // valid!
+        0x42::m::foo(); // valid!
     }
-  }
+}
 }
 
 script {
-  fun calls_m_foo(): u64 {
-    0x42::m::foo() // valid!
-  }
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // valid!
+    }
 }
 ```
 
@@ -158,30 +162,30 @@ Even internal functions can be marked as `entry`! This lets you guarantee that t
 
 ```move
 address 0x42 {
-  module m {
+module m {
     entry fun foo() { 0 } // valid! entry functions do not have to be public
-  }
+}
 
-  module n {
+module n {
     fun calls_m_foo(): u64 {
-      0x42::m::foo() // ERROR!
-//    ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+        0x42::m::foo() // ERROR!
+        //    ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
     }
-  }
+}
 
-  module other {
+module other {
     public entry fun calls_m_foo() {
-      0x42::m::foo() // ERROR!
-//    ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+        0x42::m::foo() // ERROR!
+        //    ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
     }
-  }
+}
 }
 
 script {
-  fun calls_m_foo(): u64 {
-    0x42::m::foo() // ERROR!
-//  ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
-  }
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // ERROR!
+        //  ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+    }
 }
 ```
 
@@ -194,13 +198,15 @@ Function names can start with letters `a` to `z` or letters `A` to `Z`. After th
 
 ```move
 module 0x42::example {
-  // all valid
-  fun FOO() {}
-  fun bar_42() {}
-  fun bAZ19() {}
+    // all valid
+    fun FOO() {}
 
-  // invalid
-  fun _bAZ19() {} // Function names cannot start with '_'
+    fun bar_42() {}
+
+    fun bAZ19() {}
+
+    // invalid
+    fun _bAZ19() {} // Function names cannot start with '_'
 }
 ```
 
@@ -210,8 +216,9 @@ After the name, functions can have type parameters
 
 ```move
 module 0x42::example {
-  fun id<T>(x: T): T { x }
-  fun example<T1: copy, T2>(x: T1, y: T2): (T1, T1, T2) { (copy x, x, y) }
+    fun id<T>(x: T): T { x }
+
+    fun example<T1: copy, T2>(x: T1, y: T2): (T1, T1, T2) { (copy x, x, y) }
 }
 ```
 
@@ -223,7 +230,7 @@ Functions parameters are declared with a local variable name followed by a type 
 
 ```move
 module 0x42::example {
-  fun add(x: u64, y: u64): u64 { x + y }
+    fun add(x: u64, y: u64): u64 { x + y }
 }
 ```
 
@@ -233,7 +240,7 @@ A function does not have to have any parameters at all.
 
 ```move
 module 0x42::example {
-  fun useless() { }
+    fun useless() {}
 }
 ```
 
@@ -241,11 +248,11 @@ This is very common for functions that create new or empty data structures
 
 ```move
 module 0x42::example {
-  struct Counter { count: u64 }
+    struct Counter { count: u64 }
 
-  fun new_counter(): Counter {
-    Counter { count: 0 }
-  }
+    fun new_counter(): Counter {
+        Counter { count: 0 }
+    }
 }
 ```
 
@@ -256,16 +263,16 @@ When a function accesses a resource using `move_from`, `borrow_global`, or `borr
 ```move
 module 0x42::example {
 
-  struct Balance has key { value: u64 }
+    struct Balance has key { value: u64 }
 
-  public fun add_balance(s: &signer, value: u64) {
-    move_to(s, Balance { value })
-  }
+    public fun add_balance(s: &signer, value: u64) {
+        move_to(s, Balance { value })
+    }
 
-  public fun extract_balance(addr: address): u64 acquires Balance {
-    let Balance { value } = move_from<Balance>(addr); // acquires needed
-    value
-  }
+    public fun extract_balance(addr: address): u64 acquires Balance {
+        let Balance { value } = move_from<Balance>(addr); // acquires needed
+        value
+    }
 }
 ```
 
@@ -274,27 +281,27 @@ module 0x42::example {
 ```move
 module 0x42::example {
 
-  struct Balance has key { value: u64 }
+    struct Balance has key { value: u64 }
 
-  public fun add_balance(s: &signer, value: u64) {
-    move_to(s, Balance { value })
-  }
+    public fun add_balance(s: &signer, value: u64) {
+        move_to(s, Balance { value })
+    }
 
-  public fun extract_balance(addr: address): u64 acquires Balance {
-    let Balance { value } = move_from<Balance>(addr); // acquires needed
-    value
-  }
+    public fun extract_balance(addr: address): u64 acquires Balance {
+        let Balance { value } = move_from<Balance>(addr); // acquires needed
+        value
+    }
 
-  public fun extract_and_add(sender: address, receiver: &signer) acquires Balance {
-    let value = extract_balance(sender); // acquires needed here
-    add_balance(receiver, value)
-  }
+    public fun extract_and_add(sender: address, receiver: &signer) acquires Balance {
+        let value = extract_balance(sender); // acquires needed here
+        add_balance(receiver, value)
+    }
 }
 
 module 0x42::other {
-  fun extract_balance(addr: address): u64 {
-    0x42::example::extract_balance(addr) // no acquires needed
-  }
+    fun extract_balance(addr: address): u64 {
+        0x42::example::extract_balance(addr) // no acquires needed
+    }
 }
 ```
 
@@ -302,23 +309,24 @@ A function can `acquire` as many resources as it needs to
 
 ```move
 module 0x42::example {
-  use std::vector;
+    use std::vector;
 
-  struct Balance has key { value: u64 }
-  struct Box<T> has key { items: vector<T> }
+    struct Balance has key { value: u64 }
 
-  public fun store_two<Item1: store, Item2: store>(
-    addr: address,
-    item1: Item1,
-    item2: Item2,
-  ) acquires Balance, Box {
-    let balance = borrow_global_mut<Balance>(addr); // acquires needed
-    balance.value = balance.value - 2;
-    let box1 = borrow_global_mut<Box<Item1>>(addr); // acquires needed
-    vector::push_back(&mut box1.items, item1);
-    let box2 = borrow_global_mut<Box<Item2>>(addr); // acquires needed
-    vector::push_back(&mut box2.items, item2);
-  }
+    struct Box<T> has key { items: vector<T> }
+
+    public fun store_two<Item1: store, Item2: store>(
+        addr: address,
+        item1: Item1,
+        item2: Item2,
+    ) acquires Balance, Box {
+        let balance = borrow_global_mut<Balance>(addr); // acquires needed
+        balance.value = balance.value - 2;
+        let box1 = borrow_global_mut<Box<Item1>>(addr); // acquires needed
+        vector::push_back(&mut box1.items, item1);
+        let box2 = borrow_global_mut<Box<Item2>>(addr); // acquires needed
+        vector::push_back(&mut box2.items, item2);
+    }
 }
 ```
 
@@ -328,7 +336,7 @@ After the parameters, a function specifies its return type.
 
 ```move
 module 0x42::example {
-  fun zero(): u64 { 0 }
+    fun zero(): u64 { 0 }
 }
 ```
 
@@ -342,7 +350,7 @@ Using tuples, a function can return multiple values:
 
 ```move
 module 0x42::example {
-  fun one_two_three(): (u64, u64, u64) { (0, 1, 2) }
+    fun one_two_three(): (u64, u64, u64) { (0, 1, 2) }
 }
 ```
 
@@ -350,9 +358,11 @@ If no return type is specified, the function has an implicit return type of unit
 
 ```move
 module 0x42::example {
-  fun just_unit1(): () { () }
-  fun just_unit2() { () }
-  fun just_unit3() { }
+    fun just_unit1(): () { () }
+
+    fun just_unit2() { () }
+
+    fun just_unit3() {}
 }
 ```
 
@@ -360,7 +370,7 @@ module 0x42::example {
 
 ```move
 script {
-    fun do_nothing() { }
+    fun do_nothing() {}
 }
 ```
 
@@ -372,11 +382,11 @@ A function's body is an expression block. The return value of the function is th
 
 ```move
 module 0x42::example {
-  fun example(): u64 {
-    let x = 0;
-    x = x + 1;
-    x // returns 'x'
-  }
+    fun example(): u64 {
+        let x = 0;
+        x = x + 1;
+        x // returns 'x'
+    }
 }
 ```
 
@@ -394,8 +404,8 @@ Most `native` functions you will likely see are in standard library code such as
 
 ```move
 module std::vector {
-  native public fun empty<Element>(): vector<Element>;
-  // ...
+    native public fun empty<Element>(): vector<Element>;
+    // ...
 }
 ```
 
@@ -405,17 +415,18 @@ When calling a function, the name can be specified either through an alias or fu
 
 ```move
 module 0x42::example {
-  public fun zero(): u64 { 0 }
+    public fun zero(): u64 { 0 }
 }
 
 script {
-  use 0x42::example::{Self, zero};
-  fun call_zero() {
-    // With the `use` above all of these calls are equivalent
-    0x42::example::zero();
-    example::zero();
-    zero();
-  }
+    use 0x42::example::{Self, zero};
+
+    fun call_zero() {
+        // With the `use` above all of these calls are equivalent
+        0x42::example::zero();
+        example::zero();
+        zero();
+    }
 }
 ```
 
@@ -423,20 +434,24 @@ When calling a function, an argument must be given for every parameter.
 
 ```move
 module 0x42::example {
-  public fun takes_none(): u64 { 0 }
-  public fun takes_one(x: u64): u64 { x }
-  public fun takes_two(x: u64, y: u64): u64 { x + y }
-  public fun takes_three(x: u64, y: u64, z: u64): u64 { x + y + z }
+    public fun takes_none(): u64 { 0 }
+
+    public fun takes_one(x: u64): u64 { x }
+
+    public fun takes_two(x: u64, y: u64): u64 { x + y }
+
+    public fun takes_three(x: u64, y: u64, z: u64): u64 { x + y + z }
 }
 
 script {
-  use 0x42::example;
-  fun call_all() {
-    example::takes_none();
-    example::takes_one(0);
-    example::takes_two(0, 1);
-    example::takes_three(0, 1, 2);
-  }
+    use 0x42::example;
+
+    fun call_all() {
+        example::takes_none();
+        example::takes_one(0);
+        example::takes_two(0, 1);
+        example::takes_three(0, 1, 2);
+    }
 }
 ```
 
@@ -444,15 +459,16 @@ Type arguments can be either specified or inferred. Both calls are equivalent.
 
 ```move
 module 0x42::example {
-  public fun id<T>(x: T): T { x }
+    public fun id<T>(x: T): T { x }
 }
 
 script {
-  use 0x42::example;
-  fun call_all() {
-    example::id(0);
-    example::id<u64>(0);
-  }
+    use 0x42::example;
+
+    fun call_all() {
+        example::id(0);
+        example::id<u64>(0);
+    }
 }
 ```
 
@@ -464,9 +480,9 @@ The result of a function, its "return value", is the final value of its function
 
 ```move
 module 0x42::example {
-  fun add(x: u64, y: u64): u64 {
-    x + y
-  }
+    fun add(x: u64, y: u64): u64 {
+        x + y
+    }
 }
 ```
 
@@ -474,11 +490,11 @@ module 0x42::example {
 
 ```move
 module 0x42::example {
-  fun double_and_add(x: u64, y: u64): u64 {
-    let double_x = x * 2;
-    let double_y = y * 2;
-    double_x + double_y
-  }
+    fun double_and_add(x: u64, y: u64): u64 {
+        let double_x = x * 2;
+        let double_y = y * 2;
+        double_x + double_y
+    }
 }
 ```
 
@@ -490,8 +506,9 @@ A function implicitly returns the value that its body evaluates to. However, fun
 
 ```move
 module 0x42::example {
-  fun f1(): u64 { return 0 }
-  fun f2(): u64 { 0 }
+    fun f1(): u64 { return 0 }
+
+    fun f2(): u64 { 0 }
 }
 ```
 
@@ -499,10 +516,10 @@ These two functions are equivalent. In this slightly more involved example, the 
 
 ```move
 module 0x42::example {
-  fun safe_sub(x: u64, y: u64): u64 {
-    if (y > x) return 0;
-    x - y
-  }
+    fun safe_sub(x: u64, y: u64): u64 {
+        if (y > x) return 0;
+        x - y
+    }
 }
 ```
 
@@ -512,18 +529,19 @@ However, where `return` really shines is in exiting deep within other control fl
 
 ```move
 module 0x42::example {
-  use std::vector;
-  use std::option::{Self, Option};
-  fun index_of<T>(v: &vector<T>, target: &T): Option<u64> {
-    let i = 0;
-    let n = vector::length(v);
-    while (i < n) {
-      if (vector::borrow(v, i) == target) return option::some(i);
-      i = i + 1
-    };
+    use std::vector;
+    use std::option::{Self, Option};
 
-    option::none()
-  }
+    fun index_of<T>(v: &vector<T>, target: &T): Option<u64> {
+        let i = 0;
+        let n = vector::length(v);
+        while (i < n) {
+            if (vector::borrow(v, i) == target) return option::some(i);
+            i = i + 1
+        };
+
+        option::none()
+    }
 }
 ```
 
@@ -531,8 +549,9 @@ Using `return` without an argument is shorthand for `return ()`. That is, the fo
 
 ```move
 module 0x42::example {
-  fun foo1() { return }
-  fun foo2() { return () }
+    fun foo1() { return }
+
+    fun foo2() { return () }
 }
 ```
 
@@ -547,7 +566,7 @@ One can define an inline function by adding the `inline` keyword to a function d
 
 ```move
 module 0x42::example {
-  inline fun percent(x: u64, y: u64):u64 { x * 100 / y }
+    inline fun percent(x: u64, y: u64): u64 { x * 100 / y }
 }
 ```
 
@@ -571,18 +590,18 @@ Below is an example that showcases many of these concepts in action (this exampl
 
 ```move
 module 0x42::example {
-  /// Fold the function over the elements.
-  /// E.g, `fold(vector[1,2,3], 0, f)` is the same as `f(f(f(0, 1), 2), 3)`.
-  public inline fun fold<Accumulator, Element>(
-      v: vector<Element>,
-      init: Accumulator,
-      f: |Accumulator,Element|Accumulator
-  ): Accumulator {
-    let accu = init;
-    // Note: `for_each` is an inline function, but is not shown here.
-    for_each(v, |elem| accu = f(accu, elem));
-    accu
-  }
+    /// Fold the function over the elements.
+    /// E.g, `fold(vector[1,2,3], 0, f)` is the same as `f(f(f(0, 1), 2), 3)`.
+    public inline fun fold<Accumulator, Element>(
+        v: vector<Element>,
+        init: Accumulator,
+        f: |Accumulator, Element|Accumulator
+    ): Accumulator {
+        let accu = init;
+        // Note: `for_each` is an inline function, but is not shown here.
+        for_each(v, |elem| accu = f(accu, elem));
+        accu
+    }
 }
 ```
 
@@ -609,3 +628,29 @@ There are plans to loosen some of these restrictions in the future, but for now,
 - Avoid marking large functions that are called at different locations as inline. Also avoid inline functions calling lots of other inline functions transitively.
   These may lead to excessive inlining and increase the bytecode size.
 - Inline functions can be useful for returning references to global storage, which non-inline functions cannot do.
+
+## Dot (receiver) function call style
+
+_Since language version 2.0_
+
+By using the well-known name `self` as the first parameter for a function declaration, one can enable calling this function with the `.` syntax -- often also called receiver style syntax. Example:
+
+```move
+struct S {}
+fun foo(self: &S, x: u64) { .. }
+...
+let s = S{};
+s.foo(1)
+```
+
+The call `s.foo(1)` is syntactic sugar for `f(&s, 1)`. Notice that the compiler automatically inserts the reference operator. The 2nd, old notation is still available for `f`, so one can incrementally introduce the new call style without breaking existing code.
+
+The type of the `self` argument can be a struct or an immutable or mutable reference to a struct. The struct must be declared in the same module as the function.
+
+Notice that you do not need to `use` the modules which introduce receiver functions. The compiler will find those functions automatically based on the argument type of `s` in a call like `s.foo(1)`. This, in combination with the automatic insertion of reference operators, can make code using this syntax significantly more concise.
+
+ 
+
+
+
+
