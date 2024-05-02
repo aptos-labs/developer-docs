@@ -145,7 +145,7 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
 
 - On Aptos, blocks are a batch of [transactions](#transaction) committed at the
   same time.
-- Block number is analogous to “block height” in blockchain literature.
+- Block number is analogous to "block height" in blockchain literature.
 - Transactions are referenced by ledger version rather than by block.
 
 ### Byzantine (Validator)
@@ -159,11 +159,11 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
 
 - **Byzantine Fault Tolerance** (BFT) is the ability of a distributed system to
   provide safety and liveness guarantees in the presence of faulty,
-  or “[Byzantine](#byzantine-validator),” validators below a certain threshold.
+  or "[Byzantine](#byzantine-validator)," validators below a certain threshold.
 - The Aptos blockchain uses AptosBFT, a consensus protocol based
   on [Jolteon](#jolteon).
 - BFT algorithms typically operate with a number of entities, collectively
-  holding N votes (which are called “validators” in the Aptos network’s
+  holding N votes (which are called "validators" in the Aptos network’s
   application of the system).
 - N is chosen to withstand some number of validators holding f votes, which
   might be malicious.
@@ -446,7 +446,7 @@ See [Gas and Storage Fees](./network/learn-about-aptos/gas-txn-fee.mdx) for more
   ** is an _append-only_ Merkle tree that the Aptos blockchain uses to store the
   ledger.
 - A Merkle accumulator can provide proofs that a transaction was included in the
-  chain (“proof of inclusion”).
+  chain ("proof of inclusion").
 - They are also called "history trees" in literature.
 
 ### Module
@@ -707,7 +707,7 @@ the [Your First Multisig](../tutorials/first-multisig.md) tutorial. {/* TODO Tut
 - A **version** is a sequentially increasing number that increments for
   every [transaction](#transaction).
 - On aptos, transactions are globally ordered and every transaction has a
-  version (often called “height” in blockchain literature.)
+  version (often called "height" in blockchain literature.)
 - Transaction version 0 is the first transaction (genesis transaction), and a
   transaction version 100 is the 101st transaction in the blockchain.
 

@@ -13,12 +13,12 @@ with many defaults in place for things like i18n, latex macros, move syntax high
 search, and more.
 
 Nextra first collects all your Markdown files and configurations from the
-`pages` directory, and then generates the “page map information” of your entire
+`pages` directory, and then generates the "page map information" of your entire
 site, to render things such as the _navigation bar_ and _sidebar_ below:
 
 ## Navigation Bar
 
-The links in the navigation bar are set in the `_meta.ts(x)` file in the docs for a given locale. 
+The links in the navigation bar are set in the `_meta.ts(x)` file in the docs for a given locale.
 In other words, they live in `pages/<LOCALE>/docs/_meta.ts`, e.g., for english docs, they're set in `pages/en/docs/_meta.ts`, like so:
 
 
@@ -97,7 +97,7 @@ export default {
 
 ## Page Configuration
 
-By default, each `.mdx` page in `/pages` corresponds to a docs page. 
+By default, each `.mdx` page in `/pages` corresponds to a docs page.
 The page map contains all `.mdx` filenames and the
 directory structure, sorted alphabetically. Then, Nextra will use the
 [title](https://github.com/vercel/title) package to get formatted page names

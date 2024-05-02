@@ -13,7 +13,7 @@ Importantly, Aptos Keyless maintains user privacy in two ways:
 
 Keyless accounts are revolutionary to users for the following reasons:
 
-1. “1-click” account creation via familiar Web2 logins like `Sign In with Google`.
+1. "1-click" account creation via familiar Web2 logins like `Sign In with Google`.
 2. Ability to transact on the Aptos blockchain without needing to navigate away from the application experience to download a wallet.
 3. Requires no secret key management by the user. This means blockchain account access is synonymous with access to one’s OIDC account and Web2-like recovery flows are available to regain access to one’s blockchain account in case the user ever loses access to their OIDC account.
 4. Seamless cross-device experiences; users log in with their OIDC account no matter what device they are on - no need to download wallet software on each device, import their keys and encrypt them with a password, which must be maintained.
@@ -26,7 +26,7 @@ To provide feedback, get support, or be a design partner as we enhance Aptos Key
 
 ## Terminology
 
-- **OpenID Connect (OIDC)**: is the identity authentication protocol used to enable federated identity verification. This protocol is what is used when a user goes through the “Sign in with Google” flow for example.
+- **OpenID Connect (OIDC)**: is the identity authentication protocol used to enable federated identity verification. This protocol is what is used when a user goes through the "Sign in with Google" flow for example.
 - **Identity Provider (IdP)**: is the trusted authority who authenticates your identity via OIDC. Supported example includes: Google.
 - **JSON Web Token (JWT):** is an open standard used to share security information between two parties — a client and a server. Each JWT contains encoded JSON objects, including a set of claims. JWTs are signed using a cryptographic algorithm to ensure that the claims cannot be altered after the token is issued.
   - `iss`, an identifier for the OIDC provider (e.g., https://accounts.google.com)
@@ -55,7 +55,7 @@ At a high level, there are three steps to follow in order to integrate Keyless A
 1. **Configure your OpenID integration with your IdP.** In this step, the dApp will register with the IdP of choice (e.g. Google) and receive a `client_id`
 2. **Install the Aptos TypeScript SDK.**
 3. **Integrate Keyless Account support in your application client**
-   1. Set up the `“Sign In with [Idp]”` flow for your user.
+   1. Set up the `"Sign In with [Idp]"` flow for your user.
    2. Instantiate the user’s `KeylessAccount`
    3. Sign and submit transactions via the `KeylessAccount`.
 
@@ -100,7 +100,7 @@ If your integration stops working please try upgrading the package to the latest
 
 Below are the default steps for a client to integrate Keyless Accounts
 
-### 1. Present the user with a “Sign In with [IdP]” button on the UI
+### 1. Present the user with a "Sign In with [IdP]" button on the UI
 
     1. In the background, we create an ephemeral key pair. Store this in local storage.
 

@@ -11,7 +11,7 @@ This section lays out some basic coding conventions for Move that the Move team 
 -
 - **Generic type names**: should be descriptive, or anti-descriptive where appropriate, e.g., `T` or `Element` for the Vector generic type parameter. Most of the time the "main" type in a module should be the same name as the module e.g., `option::Option`, `fixed_point32::FixedPoint32`.
 - **Module file names**: should be the same as the module name e.g., `option.move`.
-- **Script file names**: should be lowercase snake case and should match the name of the “main” function in the script.
+- **Script file names**: should be lowercase snake case and should match the name of the "main" function in the script.
 - **Mixed file names**: If the file contains multiple modules and/or scripts, the file name should be lowercase snake case, where the name does not match any particular module/script inside.
 
 ## Imports

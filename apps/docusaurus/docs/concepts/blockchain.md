@@ -218,7 +218,7 @@ sources={{
 />
 </div>
 
-Mempool is a shared buffer that holds the transactions that are “waiting” to be executed. When a new transaction is added to the mempool, the mempool shares this transaction with other validator nodes in the system. To reduce network consumption in the “shared mempool,” each validator is responsible for delivering its own transactions to other validators. When a validator receives a transaction from the mempool of another validator, the transaction is added to the mempool of the recipient validator.
+Mempool is a shared buffer that holds the transactions that are "waiting" to be executed. When a new transaction is added to the mempool, the mempool shares this transaction with other validator nodes in the system. To reduce network consumption in the "shared mempool," each validator is responsible for delivering its own transactions to other validators. When a validator receives a transaction from the mempool of another validator, the transaction is added to the mempool of the recipient validator.
 
 ### 1. REST Service → Mempool
 
@@ -288,7 +288,7 @@ The execution component coordinates the execution of a block of transactions and
 ### 1. Consensus → Execution
 
 - Consensus requests execution to execute a block of transactions via: `BlockExecutorTrait::execute_block()`.
-- Execution maintains a “scratchpad,” which holds in-memory copies of the relevant portions of the [Merkle accumulator](../reference/glossary.md#merkle-accumulator). This information is used to calculate the root hash of the current state of the Aptos blockchain.
+- Execution maintains a "scratchpad," which holds in-memory copies of the relevant portions of the [Merkle accumulator](../reference/glossary.md#merkle-accumulator). This information is used to calculate the root hash of the current state of the Aptos blockchain.
 - The root hash of the current state is combined with the information about the transactions in the proposed block to determine the new root hash of the accumulator. This is done prior to persisting any data, and to ensure that no state or transaction is stored until agreement is reached by a quorum of validators.
 - Execution computes the speculative root hash and then the consensus component of V<sub>X</sub> signs this root hash and attempts to reach agreement on this root hash with other validators.
 
@@ -302,7 +302,7 @@ If a quorum of validators agrees on the block execution results, the consensus c
 
 ### 4. Execution → Storage
 
-Execution takes the values from its “scratchpad” and sends them to storage for persistence via `DbWriter::save_transactions()`. Execution then prunes the old values from the “scratchpad” that are no longer needed (for example, parallel blocks that cannot be committed).
+Execution takes the values from its "scratchpad" and sends them to storage for persistence via `DbWriter::save_transactions()`. Execution then prunes the old values from the "scratchpad" that are no longer needed (for example, parallel blocks that cannot be committed).
 
 For implementation details refer to the [Execution README](https://github.com/aptos-labs/aptos-core/tree/main/execution).
 
@@ -332,11 +332,11 @@ When mempool invokes `VMValidator::validate_transaction()` to validate a transac
 
 ### 2. Execution → Storage
 
-When the consensus component calls `BlockExecutorTrait::execute_block()`, execution reads the current state from storage combined with the in-memory “scratchpad” data to determine the execution results.
+When the consensus component calls `BlockExecutorTrait::execute_block()`, execution reads the current state from storage combined with the in-memory "scratchpad" data to determine the execution results.
 
 ### 3. Execution → Storage
 
-Once consensus is reached on a block of transactions, execution calls storage via `DbWriter::save_transactions()` to save the block of transactions and permanently record them. This will also store the signatures from the validator nodes that agreed on this block of transactions. The in-memory data in “scratchpad” for this block is passed to update storage and persist the transactions. When the storage is updated, every account that was modified by these transactions will have its sequence number incremented by one.
+Once consensus is reached on a block of transactions, execution calls storage via `DbWriter::save_transactions()` to save the block of transactions and permanently record them. This will also store the signatures from the validator nodes that agreed on this block of transactions. The in-memory data in "scratchpad" for this block is passed to update storage and persist the transactions. When the storage is updated, every account that was modified by these transactions will have its sequence number incremented by one.
 
 Note: The sequence number of an account on the Aptos blockchain increments by one for each committed transaction originating from that account.
 
