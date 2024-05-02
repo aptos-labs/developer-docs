@@ -17,7 +17,7 @@ export default {
     type: "menu",
     title: "Build",
     items: {
-      quick_start: {
+      "quick-start": {
         title: "Quick Start",
       },
       move: {
