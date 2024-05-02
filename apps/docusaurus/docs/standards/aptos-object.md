@@ -201,7 +201,8 @@ Once the resources have been created on an object, they can be modified by the c
 
 ```rust
 public entry fun modify_reserves(liquidity_pool: Object<LiquidityPool>) {
-    let liquidity_pool = &mut borrow_global_mut<LiquidityPool>(liquidity_pool);
+    let liquidity_pool_address = object::object_address(liquidity_pool);
+    let liquidity_pool = &mut borrow_global_mut<LiquidityPool>(liquidity_pool_address);
     liquidity_pool.reserves_a = liquidity_pool.reserves_a + 1000;
 }
 ```
