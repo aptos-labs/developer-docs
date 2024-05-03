@@ -13,7 +13,7 @@ export function TitleSection() {
     asChild: true,
     children: (
       <Link href={`${locale}/build/quick-start`}>
-        Quick Start <IconArrowTopRight />
+        Quick Start
       </Link>
     ),
   };

@@ -81,7 +81,7 @@ export const i18nConfig = Object.freeze({
 
     // Blockchain Section
     blockchainSectionHeadline:
-      "Discover blockchain features only possible on Aptos",
+      "Discover blockchain features on Aptos",
     performanceLabel: "Performance",
     performanceDescription:
       "Redefine blockchain performance with high TPS and low latency",
