@@ -1,6 +1,6 @@
 export default {
-    "coin-info": {
-        title: "Get Coin Info",
+    "coin-balances": {
+        title: "Get Coin Balances",
         theme: {
             toc: false,
             layout: "full",
@@ -8,6 +8,27 @@ export default {
     },
     "account-transactions": {
         title: "Get Transactions Impacting an Account",
+        theme: {
+            toc: false,
+            layout: "full",
+        },
+    },
+    "account-transactions-gt": {
+        title: "Get Recent Account Transactions",
+        theme: {
+            toc: false,
+            layout: "full",
+        },
+    },
+    "ans-lookup": {
+        title: "Get Account Domain Name",
+        theme: {
+            toc: false,
+            layout: "full",
+        },
+    },
+    "coin-info": {
+        title: "Get Coin Info",
         theme: {
             toc: false,
             layout: "full",
@@ -27,8 +48,15 @@ export default {
             layout: "full",
         },
     },
-    "ans-lookup": {
-        title: "Get Account Domain Name",
+    "token-metadata": {
+        title: "Get Token Metadata",
+        theme: {
+            toc: false,
+            layout: "full",
+        },
+    },
+    "get-delegators": {
+        title: "Count Delegators in Staking Pool",
         theme: {
             toc: false,
             layout: "full",
