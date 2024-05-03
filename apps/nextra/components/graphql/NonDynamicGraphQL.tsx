@@ -1052,6 +1052,20 @@ interface FormValues {
 export interface GraphQLEditorProps {
   network: Network;
   query: string;
+  /**
+   * A set of variable replacements to use in the editor. Replaces $variables with the same name. 
+   * Ex.
+   * {
+   *   "owner_address": "0xaa921481e07b82a26dbd5d3bc472b9ad82d3e5bfd248bacac160eac51687c2ff",
+   *   "offset": 0
+   * }
+   */
+  variables?: string;
+  /**
+   * Useful for having multiple GraphQLEditors on a single page only display one view each.
+   * Otherwise having multiple editors on the same page will open a tab for each of them.
+   */
+  disableTabs?: boolean;
 }
 
 /**
@@ -1068,6 +1082,8 @@ export interface GraphQLEditorProps {
 export const GraphQLEditor = ({
   network: propsNetwork = "mainnet",
   query,
+  variables,
+  disableTabs
 }: GraphQLEditorProps) => {
   const methods = useForm<FormValues>({
     defaultValues: {
@@ -1089,7 +1105,7 @@ export const GraphQLEditor = ({
   return (
     <FormProvider {...methods}>
       <form className="2xl:max-w-[1136px] xl:max-w-[1136px] w-full lg:max-w-[calc(100vw - 256px)] overflow-x-auto">
-        <GraphiQL defaultQuery={query} fetcher={fetcher} />
+        <GraphiQL defaultQuery={query} fetcher={fetcher} variables={variables} disableTabs={disableTabs}/>
       </form>
     </FormProvider>
   );
