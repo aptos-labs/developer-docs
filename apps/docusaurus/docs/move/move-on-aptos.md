@@ -6,6 +6,10 @@ title: "Move on Aptos"
 
 To begin your journey in developing Move, we provide the following resources:
 
+:::tip
+All the tutorials have been moved to [Aptos Learn](https://learn.aptoslabs.com/tutorials) for a prettier experience.
+:::
+
 - [Your first move module](../tutorials/first-move-module.md) to walks you through compiling, deploying, and interacting with Move.
 - [Aptos Move Book](./book/SUMMARY.md) to teach you many of the general Move concepts.
 - [The Move tutorial](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial) to cover the basics of programming with Move.
