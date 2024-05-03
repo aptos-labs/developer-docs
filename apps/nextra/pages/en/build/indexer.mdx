@@ -1,12 +1,18 @@
 ---
-title: "Learn about Indexing"
+title: "Indexer"
 ---
 
 import { IndexerBetaNotice, ThemedImage } from '@components/index';
 
-# Learn About Indexing
+# Indexer
 
 <IndexerBetaNotice />
+
+## Purpose
+
+Typical applications built on the Aptos blockchain, on any blockchain for that matter, require the raw blockchain data to be shaped and stored in an application-specific manner. This is essential to supporting low-latency and rich experiences when consuming blockchain data in end-user apps from millions of users. The [Aptos Node API](../network/nodes/aptos-api-spec.mdx) provides a lower level, stable and generic API and is not designed to support data shaping and therefore cannot support rich end-user experiences directly.
+
+The Aptos Indexer is the answer to this need, allowing the data shaping critical to real-time app use. See this high-level diagram for how Aptos indexing works:
 
 ## Quick Start
 
@@ -22,11 +28,7 @@ Refer to this role-oriented guide to help you quickly find the relevant docs:
   - See docs for the [Labs-Hosted Indexer API](./indexer/api/labs-hosted.mdx).
   - See the [Indexer Example Queries](./indexer/api/example-queries.mdx).
 
-# Architecture Overview
-
-Typical applications built on the Aptos blockchain, on any blockchain for that matter, require the raw blockchain data to be shaped and stored in an application-specific manner. This is essential to supporting low-latency and rich experiences when consuming blockchain data in end-user apps from millions of users. The [Aptos Node API](../network/nodes/aptos-api-spec.mdx) provides a lower level, stable and generic API and is not designed to support data shaping and therefore cannot support rich end-user experiences directly.
-
-The Aptos Indexer is the answer to this need, allowing the data shaping critical to real-time app use. See this high-level diagram for how Aptos indexing works:
+## Architecture Overview
 
 <center>
 <ThemedImage
