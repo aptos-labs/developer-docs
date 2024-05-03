@@ -3,15 +3,33 @@ title: "Fullnode Rest API"
 ---
 
 import { Callout } from 'nextra/components'
+import { Card, Cards } from '@components/index'
 
-# Use the Aptos Fullnode REST API
+# Aptos Fullnode REST API
 
-If you wish to employ the [Aptos API](https://aptos.dev/nodes/aptos-api-spec/#/), then this guide is for you. This guide
-will walk you through all you need to integrate the Aptos blockchain into your platform with the Aptos API.
+This API - embedded into Fullnodes - provides a simple, low latency, yet low-level way of reading state and submitting transactions to the Aptos Blockchain. It also supports transaction simulation.
+For more advanced queries, we recommend using the [Indexer GraphQL API](../indexer.mdx).
 
 <Callout type="info">
 Also see the [System Integrators Guide](../guides/system-integrators-guide.md) {/* TODO fix link */} for a thorough walkthrough of Aptos integration.
 </Callout>
+
+## Fullnode REST API Explorer
+
+<Cards>
+  <Card href="https://fullnode.mainnet.aptoslabs.com/v1/spec#/">
+    <Card.Title>Mainnet Fullnode REST API</Card.Title>
+    <Card.Description>REST API Explorer for Mainnet</Card.Description>
+  </Card>
+  <Card href="https://fullnode.testnet.aptoslabs.com/v1/spec#/">
+    <Card.Title>Testnet Fullnode REST API</Card.Title>
+    <Card.Description>REST API Explorer for Testnet</Card.Description>
+  </Card>
+  <Card href="https://fullnode.devnet.aptoslabs.com/v1/spec#/">
+    <Card.Title>Devnet Fullnode REST API</Card.Title>
+    <Card.Description>REST API Explorer for Devnet</Card.Description>
+  </Card>
+</Cards>
 
 ## Understanding rate limits
 
@@ -92,17 +110,17 @@ aptos move view --function-id devnet::message::get_message --profile devnet --ar
 
 In the TypeScript SDK, a view function request would look like this:
 
-```typescript
-    import { Aptos } from "@aptos-labs/ts-sdk";
+```ts filename="index.ts"
+import { Aptos } from "@aptos-labs/ts-sdk";
 
-    const aptos = new Aptos();
-    const [balance] = aptos.view<[string]>({
-      function: "0x1::coin::balance",
-      typeArguments: ["0x1::aptos_coin::AptosCoin"],
-      functionArguments: [alice.accountAddress]
-    });
+const aptos = new Aptos();
+const [balance] = aptos.view<[string]>({
+  function: "0x1::coin::balance",
+  typeArguments: ["0x1::aptos_coin::AptosCoin"],
+  functionArguments: [alice.accountAddress]
+});
 
-    expect(balance).toBe("100000000");
+expect(balance).toBe("100000000");
 ```
 
 The view function returns a list of values as a vector. By default, the results are returned in JSON format; however,
