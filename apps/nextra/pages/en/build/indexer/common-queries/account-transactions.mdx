@@ -1,0 +1,33 @@
+
+import {GraphQLEditor} from 'components/index'
+import { Callout } from 'nextra/components'
+
+# Get Transactions That Impact an Account
+
+`GetAccountTransactionsData` fetches the latest transactions that involved a specific account. This is useful for applications that need to track or display a historical log of transactions associated with an account.
+
+<Callout type="info">
+Try it yourself! You can customize the variables at the bottom of the editor.
+</Callout>
+
+<GraphQLEditor
+  query={`query GetAccountTransactionsData($address: String, $limit: Int) {
+    address_version_from_move_resources(
+      where: {address: {_eq: $address}},
+      order_by: {transaction_version: desc},
+      limit: $limit
+    ) {
+      transaction_version
+      __typename
+    }
+  }`}
+  variables={`{
+  "address": "0x96b8e9422ed1f3786b13ed4891a59065b87b974971fa66378b525299cd90f77a",
+  "limit": 10
+}`}
+  disableTabs={true}
+/>
+
+#### Variables:
+- `$address`: **String** - The Aptos account address for which you want to query transaction data. Ex. "0x96b8e9422ed1f3786b13ed4891a59065b87b974971fa66378b525299cd90f77a"
+- `$limit`: **Integer** (Optional) - Specifies the maximum number of transaction versions to return. This is useful for limiting the results to a manageable size.
