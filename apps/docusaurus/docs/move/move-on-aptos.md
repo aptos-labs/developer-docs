@@ -30,3 +30,5 @@ The following external resources exist to further your education:
 - [IMCODING Move Tutorials](https://www.imcoding.online/tutorials?tag=Aptos)
 - [Pontem Move Playground](https://playground.pontem.network/)
 - [Collection of nestable Move resources](https://github.com/taoheorg/taohe)
+
+A new Move compiler and language version is currently in early beta testing. If you are interested to play with it, check [this page](./compiler_v2.md).
