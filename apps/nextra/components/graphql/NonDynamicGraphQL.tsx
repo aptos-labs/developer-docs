@@ -1053,7 +1053,7 @@ export interface GraphQLEditorProps {
   network: Network;
   query: string;
   /**
-   * A set of variable replacements to use in the editor. Replaces $variables with the same name. 
+   * A set of variable replacements to use in the editor. Replaces $variables with the same name.
    * Ex.
    * {
    *   "owner_address": "0xaa921481e07b82a26dbd5d3bc472b9ad82d3e5bfd248bacac160eac51687c2ff",
@@ -1083,7 +1083,7 @@ export const GraphQLEditor = ({
   network: propsNetwork = "mainnet",
   query,
   variables,
-  disableTabs
+  disableTabs,
 }: GraphQLEditorProps) => {
   const methods = useForm<FormValues>({
     defaultValues: {
@@ -1105,7 +1105,12 @@ export const GraphQLEditor = ({
   return (
     <FormProvider {...methods}>
       <form className="2xl:max-w-[1136px] xl:max-w-[1136px] w-full lg:max-w-[calc(100vw - 256px)] overflow-x-auto">
-        <GraphiQL defaultQuery={query} fetcher={fetcher} variables={variables} disableTabs={disableTabs}/>
+        <GraphiQL
+          defaultQuery={query}
+          fetcher={fetcher}
+          variables={variables}
+          disableTabs={disableTabs}
+        />
       </form>
     </FormProvider>
   );
