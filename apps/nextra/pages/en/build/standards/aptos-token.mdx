@@ -3,11 +3,12 @@ title: "Aptos Token Standard (Legacy)"
 ---
 
 import { Callout } from "nextra/components";
+import { ThemedImage } from '@components/index'
 
 # Aptos Token Standard (Legacy)
 
 <Callout type="info">
-  ### Aptos Token standards compared
+  **Aptos Token standards compared**<br />
   Also see the [comparison of Aptos Token
   standards](../guides/nfts/aptos-token-overview.md). {/* TODO fix link*/}
 </Callout>
@@ -59,7 +60,7 @@ fungible tokens. This can lead to, for example, reduced overhead for similar
 tokens by the reuse of on-chain metadata for certain fungible tokens.
 
 <Callout type="info">
-  ### Fungible token → NFT
+  **Fungible token → NFT**<br />
   The Aptos token standard supports [mutation of a fungible token to an
   NFT](#evolving-from-fungible-token-to-nft).
 </Callout>
@@ -216,15 +217,14 @@ load the file.
 The [following diagram](/docs/aptos-token-standard-flow.svg) depicts the
 flow of token data through Aptos.
 
-{/* TODO: Fix with new diagram?
+
 <ThemedImage
   alt="Signed Transaction Flow"
   sources={{
-    light: useBaseUrl('/img/docs/aptos-token-standard-flow.svg'),
-    dark: useBaseUrl('/img/docs/aptos-token-standard-flow-dark.svg'),
+    light: '/docs/aptos-token-standard-flow.svg',
+    dark: '/docs/aptos-token-standard-flow-dark.svg',
   }}
 />
-*/}
 
 ## Token resources
 
@@ -342,7 +342,7 @@ NFT is still stored under Alice’s account.
 and stored in Bob’s token store.
 
 <Callout type="info">
-  ### Token transfer module
+  **Token transfer module**<br />
   The token transfer is implemented in the
   [`token_transfers`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token_transfers.move)
   module.
@@ -358,7 +358,7 @@ to transfer tokens directly. For example, Alice and anyone can directly send a
 token to Bob's token store once Bob opts in.
 
 <Callout type="info">
-  ### Turning off direct transfer
+  **Turning off direct transfer**<br />
   The user can also turn off this direct transfer behavior by calling the same
   `opt_in_direct_transfer` function to reset to the default behavior.
 </Callout>
