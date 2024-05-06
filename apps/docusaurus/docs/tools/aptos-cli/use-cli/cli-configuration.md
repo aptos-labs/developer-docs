@@ -99,7 +99,9 @@ Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b
 }
 ```
 
-Note: Enter the private key from your validator if you're going to initialize a staking pool, I.e the value of account_private_key from keys/private-keys.yaml
+:::tip Validator private keys
+If you're trying to import a private key so that you can operate a validator node and initialize a staking pool, enter the `account_private_key` from the private key file (e.g., `private-keys.yaml`).
+:::
 
 ### Step 2: Changing the configuration
 
