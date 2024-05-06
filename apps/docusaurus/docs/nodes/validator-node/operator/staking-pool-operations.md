@@ -232,7 +232,7 @@ Example output:
 
 ## Requesting commission
 
-Either an owner, an operator or the beneficiary of the operator can request commission. You can request commission at the end of a lockup period, i.e., at the end of **lockup_expiration_utc_time**, by running the `aptos stake request-commission` command. Make sure to provide the operator and the owner addresses. See an example command below:
+Either an owner, an operator or the beneficiary of the operator can request commission. You must request commission **twice**, once before the end of the lockup period and a second time after the lockup period ends, i.e., at the end of **lockup_expiration_utc_time**, by running the `aptos stake request-commission` command. Make sure to provide the operator and the owner addresses. See an example command below:
 
 ```bash
 aptos stake request-commission \
@@ -241,7 +241,7 @@ aptos stake request-commission \
   --profile mainnet-operator
 ```
 
-If you run the `aptos stake request-commission` command before the end of the lockup expiration, the command will initiate unlock for any locked commission earned up until that moment in time.
+When you run the `aptos stake request-commission` command before the end of the lockup expiration, the command will initiate unlock for any locked commission earned up until that moment in time. The commission will remain in `pending_inactive` until the end of the lockup period, will continue to earn rewards until the lockup period expires. The commission will not be withdrawable until after the end of the lockup period, when `aptos stake request-commission` is called a second time.
 
 See example below:
 
@@ -253,7 +253,7 @@ Month 3, Day 29, if you call the commission again, 30 days of commission would b
 
 You can call the command multiple times, and the amount you receive depends on the day when you requested commission unlock previously.
 
-Commission is unlocked when `request-commission` is called, the staker unlocks stake, or the staker switches operator. The commission will not be withdrawable until the end of the lockup period. Unlocked commission will continue to earn rewards until the lockup period expires.
+Commission is unlocked when `request-commission` is called, the staker unlocks stake, or the staker switches operator.
 
 ## Checking your validator performance
 

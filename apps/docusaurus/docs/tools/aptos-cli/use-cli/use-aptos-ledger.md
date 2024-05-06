@@ -48,7 +48,7 @@ After the above command, a new profile will be created in `~/.aptos/config.yml` 
 myprofile:
   public_key: "0x05a8ace09d1136181029be3e817de3619562b0da2eedbff210e2b2f92c71be70"
   account: 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb
-  rest_url: "https://fullnode.devnet.aptoslabs.com"
+  rest_url: "https://api.devnet.aptoslabs.com"
   faucet_url: "https://faucet.devnet.aptoslabs.com"
   derivation_path: "m/44'/637'/0'/0'/0'"
 ```

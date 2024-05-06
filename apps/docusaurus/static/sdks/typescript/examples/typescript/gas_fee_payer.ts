@@ -131,7 +131,7 @@ async function main(): Promise<void> {
   console.log(`    private_key: "${alice.toPrivateKeyObject().privateKeyHex}"`);
   console.log(`    public_key: "${alice.pubKey()}"`);
   console.log(`    account: ${alice.address()}`);
-  console.log(`    rest_url: "https://fullnode.devnet.aptoslabs.com"`);
+  console.log(`    rest_url: "https://api.devnet.aptoslabs.com"`);
   console.log(`    faucet_url: "https://faucet.devnet.aptoslabs.com"`);
 
   console.log("Bob's profile:");
@@ -139,7 +139,7 @@ async function main(): Promise<void> {
   console.log(`    private_key: "${bob.toPrivateKeyObject().privateKeyHex}"`);
   console.log(`    public_key: "${bob.pubKey()}"`);
   console.log(`    account: ${bob.address()}`);
-  console.log(`    rest_url: "https://fullnode.devnet.aptoslabs.com"`);
+  console.log(`    rest_url: "https://api.devnet.aptoslabs.com"`);
   console.log(`    faucet_url: "https://faucet.devnet.aptoslabs.com"`);
   await waitForEnter();
 

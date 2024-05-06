@@ -1,10 +1,12 @@
 ---
-title: "Move Scripts"
+title: "Move Scripts Tutorial"
 ---
 
 # Move Scripts
 
-This tutorial explains how to write and execute a [Move script](../book/modules-and-scripts.md). You can use Move scripts to execute a series of commands across published Move module interfaces.
+This tutorial explains how to write and execute a [Move script](../../book/modules-and-scripts.md). You can use Move scripts to execute a series of commands across published Move module interfaces.
+
+For more information about scripts, see the [Move scripts docs](./index.md)
 
 ## Example use case
 
@@ -39,7 +41,7 @@ Now that you know what you would like to accomplish, you need to determine:
 - Do I need a `Move.toml`?
 - How do I run my script with the CLI?
 
-Let us run through how to execute a Move script with a step-by-step example using the [Aptos CLI](../../tools/aptos-cli/use-cli/use-aptos-cli.md).
+Let us run through how to execute a Move script with a step-by-step example using the [Aptos CLI](../../../tools/aptos-cli/use-cli/use-aptos-cli.md).
 
 1. Make a new directory for your work:
 
@@ -48,7 +50,7 @@ Let us run through how to execute a Move script with a step-by-step example usin
    cd testing
    ```
 
-2. Set up the Aptos CLI and [create an account](../../tools/aptos-cli/use-cli/use-aptos-cli#initialize-local-configuration-and-create-an-account):
+2. Set up the Aptos CLI and [create an account](../../../tools/aptos-cli/use-cli/use-aptos-cli#initialize-local-configuration-and-create-an-account):
 
    ```sh
    aptos init --network devnet
@@ -63,7 +65,7 @@ Let us run through how to execute a Move script with a step-by-step example usin
        private_key: "0xbd944102bf5b5dfafa7fe865d8fa719da6a1f0eafa3cd600f93385482d2c37a4"
        public_key: "0x47673ec83bb254cc9a8bfdb31846daacd0c96fe41f81855462f5fc5306312b1b"
        account: cb265645385819f3dbe71aac266e319e7f77aed252cacf2930b68102828bf615
-       rest_url: "https://fullnode.devnet.aptoslabs.com"
+       rest_url: "https://api.devnet.aptoslabs.com"
        faucet_url: "https://faucet.devnet.aptoslabs.com"
    ```
 

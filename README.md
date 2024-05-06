@@ -1,11 +1,12 @@
 # Developer Documentation
 
-- [Installation](#installation)
-  - [Requirements](#requirements)
-- [Fork and clone the Aptos repo](#fork-and-clone-the-aptos-repo)
-- [Build and serve the docs locally](#build-and-serve-the-docs-locally)
-- [Build static html files](#build-static-html-files)
-- [Debug/Format files](#debugging)
+- [Developer Documentation](#developer-documentation)
+  - [Installation](#installation)
+    - [Requirements](#requirements)
+  - [Clone the Developer docs repo](#clone-the-developer-docs-repo)
+  - [Build and serve the docs locally](#build-and-serve-the-docs-locally)
+  - [Debugging](#debugging)
+  - [Regenerating contributors](#regenerating-contributors)
 
 > Visit the `README.md` under `apps/docusaurus` for more steps on building / developing in this repo
 
@@ -24,74 +25,67 @@ Before you proceed, make sure you install the following tools.
 
 - Install [Node.js](https://nodejs.org/en/download/) by executing the below command on your Terminal:
 
-```
+```sh
 brew install node
 ```
 
 - Install the latest [pnpm](https://pnpm.io/installation) by executing the below command on your Terminal:
 
-```
+```sh
 curl -fsSL https://get.pnpm.io/install.sh | sh -
 ```
 
 ## Clone the Developer docs repo
 
-```
+```sh
 git clone https://github.com/aptos-labs/developer-docs.git
-
 ```
 
 ## Build and serve the docs locally
 
 1. Run `pnpm`.
 
-```
+```sh
 pnpm install
 ```
 
-This step will configure the Docusaurus static site generator.
+2. Build the repository
 
-2. Start the server locally. This will also open the locally built docs in your default browser.
-
-> **NOTE**: This step will not generate static html files, but will render the docs dynamically.
-
-```
-pnpm start
-```
-
-3. See your changes staged at: http://localhost:3000/
-
-4. Create a pull request with your changes as described in our [Contributing](https://github.com/aptos-labs/aptos-core/blob/main/CONTRIBUTING.md) README.
-
-## (Optional) Build static html files
-
-Execute the below steps if you want to generate static html documentation files. A `build` directory will be created with the static html files and assets contained in it.
-
-1. Make sure you install dependencies.
-
-```
-pnpm install
-```
-
-2. Build static html files with pnpm.
-
-```
+```sh
 pnpm build
 ```
 
-This command generates static html content and places it in the `build` directory.
+3. Navigate to the correct subdirectory
 
-3. Finally, use the below command to start the documentation server on your localhost.
+**Docusaurus**
+```sh
+cd apps/docusaurus
+```
 
+**Nextra**
+```sh
+cd apps/nextra
 ```
-pnpm run serve
+
+4. Run the development server
+
+**Docusaurus**
+```sh
+pnpm serve
 ```
+
+**Nextra**
+```sh
+pnpm dev
+```
+
+See the README.md in each respective app for more information
 
 ## Debugging
 
 Fix formatting issues by running:
 
-```
+```sh
 pnpm fmt
 ```
 
@@ -101,12 +95,12 @@ The src/contributors.json file (which powers the list of Authors at the bottom o
 
 In order to generate the contributor map you must authenticate with GitHub. The best way to do that is using GitHub CLI ([installation guide(https://github.com/cli/cli#installation)]). Once you have the GitHub CLI installed, you can run the following command to authenticate:
 
-```
+```sh
 gh auth login --scopes read:user,user:email
 ```
 
 Once that is done, you can generate the map with this command:
 
-```
+```sh
 pnpm contributors
 ```

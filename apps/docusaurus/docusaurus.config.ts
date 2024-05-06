@@ -118,12 +118,16 @@ const themeConfig: Preset.ThemeConfig = {
             to: "apis",
           },
           {
-            label: "Integrate with Aptos",
-            to: "integration",
+            label: "Aptos SDKs",
+            to: "/sdks/index",
           },
           {
-            label: "Configure Your Environment",
-            to: "/category/environment",
+            label: "Aptos CLI",
+            to: "/tools/aptos-cli",
+          },
+          {
+            label: "Integrate with Aptos",
+            to: "integration",
           },
           {
             label: "Build E2E Dapp on Aptos",
@@ -422,6 +426,10 @@ const config: Config = {
           {
             from: "/sdks/new-ts-sdk/typescript",
             to: "/sdks/ts-sdk/typescript",
+          },
+          {
+            from: "/move/move-on-aptos/move-scripts",
+            to: "/move/move-on-aptos/scripts/script-tutorial",
           },
         ],
         // Create redirects for all the move pages

@@ -92,7 +92,7 @@ aptos move view --function-id 0x1::account::get_authentication_key --args addres
 
 This program creates two accounts on devnet, Alice and Bob, funds them, then rotates the Alice's authentication key to that of Bob's.
 
-View the full example for this code [here](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/typescript/sdk/examples/typescript/rotate_key.ts).
+View the full example for this code [here](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/examples/typescript-esm/rotate_key.ts).
 
 The function to rotate is very simple:
 
@@ -124,7 +124,7 @@ Bob                0x1c06...ac3bb3     0x1c06...ac3bb3      0xf2be...9486aa     
 
 This program creates two accounts on devnet, Alice and Bob, funds them, then rotates the Alice's authentication key to that of Bob's.
 
-View the full example for this code [here](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/python/sdk/examples/rotate-key.py).
+View the full example for this code [here](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/rotate_key.py).
 
 Here's the relevant code that rotates Alice's keys to Bob's:
 
@@ -135,7 +135,7 @@ Here's the relevant code that rotates Alice's keys to Bob's:
 Commands to run the example script:
 
 ```shell title="Navigate to the python SDK directory, install dependencies and run rotate_key.ts"
-cd ~/aptos-core/ecosystem/python/sdk
+cd aptos-core/ecosystem/python/sdk
 poetry install && poetry run python -m examples.rotate-key
 ```
 

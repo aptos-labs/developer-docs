@@ -204,7 +204,7 @@ The `set_message` function modifies the `hello_blockchain` `MessageHolder` resou
 
 ```bash
 
-https://fullnode.devnet.aptoslabs.com/v1/accounts/a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a/resource/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder
+https://api.devnet.aptoslabs.com/v1/accounts/a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a/resource/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder
 ```
 
 After the first execution, this should contain:
@@ -232,7 +232,7 @@ Notice that the `message` field contains `hello, blockchain`.
 Each successful call to `set_message` after the first call results in an update to `message_change_events`. The `message_change_events` for a given account can be accessed via the REST API:
 
 ```bash
-https://fullnode.devnet.aptoslabs.com/v1/accounts/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a/events/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder/message_change_events
+https://api.devnet.aptoslabs.com/v1/accounts/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a/events/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder/message_change_events
 ```
 
 where, after a call to set the message to `hello, blockchain, again`, the event stream would contain the following:

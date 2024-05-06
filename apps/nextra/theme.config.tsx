@@ -24,13 +24,21 @@ function isFullUrl(url: string): boolean {
   return pattern.test(url);
 }
 
+const url = new URL(docsConfig.githubUrl);
+const pathname = url.pathname.endsWith('/') && url.pathname !== '/' ? url.pathname.slice(0, -1) : url.pathname;
+const githubUrl = `${url.protocol}//${url.host}${pathname}${url.search}${url.hash}`;
+
 const config: DocsThemeConfig = {
   darkMode: true,
-  docsRepositoryBase: docsConfig.githubDocsUrl,
+  docsRepositoryBase: docsConfig.githubUrl,
   editLink: {
     content: function useText() {
       const { locale } = useRouter()
       return i18nConfig[locale!].editText
+    },
+    component: ({ children, className, filePath }) => {
+      const href = `${githubUrl}/edit/main${docsConfig.relativeDocsPath}/${filePath}`;
+      return <a className={className} href={href}>{children}</a>
     }
   },
   feedback: {
@@ -78,7 +86,7 @@ const config: DocsThemeConfig = {
     const { frontMatter } = config;
     const { locale } = useRouter();
 
-    if (!docsConfig.origin) throw new Error('Origin is not defined in docs.config.js. Ensure it is part of your .env file for your project')
+    if (!docsConfig.origin) throw new Error('Origin is not defined in docs.config.js. Ensure it is part of your .env file for your project by adding something like `NEXT_PUBLIC_ORIGIN="http://localhost:3030"`')
     
     const description = frontMatter.description || docsConfig.defaultDescription
 

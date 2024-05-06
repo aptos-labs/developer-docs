@@ -84,11 +84,4 @@ export default {
     title: 'Docs',
     display: 'hidden'
   },
-  nextra_link: {
-    type: 'page',
-    title: 'Nextra ↗',
-    href: 'https://github.com/shuding/nextra',
-    newWindow: true,
-    display: 'hidden'
-  },
 };
