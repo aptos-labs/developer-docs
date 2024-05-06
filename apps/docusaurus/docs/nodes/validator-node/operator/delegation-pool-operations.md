@@ -33,10 +33,9 @@ The command above will generate an output like this:
 
 ```
 
-Now you have to provide the <delegation_pool_address> to someone from Aptos Labs so they'll whitelist you.
-
-
-- After you create the delegation pool and have it whitelisted:
+:::tip Testnet delegation pools
+For testnet, you should provide the <delegation_pool_address> to someone from Aptos Labs so you can be added to the allowlist.
+:::
 
 1. Run the command below, substitute in the profile you previously configured during initialization:
 
