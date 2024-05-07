@@ -41,7 +41,7 @@ const buttonStyles = cva(
           "hover:bg-button-primary-hovered-background hover:text-button-primary-hovered-text hover:border-button-primary-hovered-background",
           "active:bg-button-primary-pressed-background active:text-button-primary-pressed-text active:border-button-primary-pressed-background",
           "disabled:bg-button-primary-disabled-background disabled:text-button-primary-disabled-text disabled:border-button-primary-disabled-background",
-          "shadow-[4px_4px_0_-1px_#000,4px_4px_0_0_var(--button-primary-border)]",
+          "shadow-[4px_4px_0_-1px_var(--button-primary-border-inset),4px_4px_0_0_var(--button-primary-border)]",
         ),
         secondary: clsx(
           "bg-button-secondary-background text-button-secondary-text border-button-secondary-border",

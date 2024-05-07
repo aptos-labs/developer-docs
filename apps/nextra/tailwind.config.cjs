@@ -15,6 +15,7 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
     brand: {
       blue: oklch(78.07, 0.1339, 192.33), // #00D2CE
       lightBlue: oklch(91.54, 0.134, 193.32), // #5BFFFC
+      darkBlue: oklch(70.07, 0.101, 207.76), // #41B0BF
     },
     spectral: {
       red: {
@@ -70,8 +71,8 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         dark: oklch(65.68, 0.023, 218.74), // #82959B
       },
       link: {
-        DEFAULT: { base: "brand-blue", dark: "brand-blue" },
-        hover: { base: "brand-lightBlue", dark: "brand-lightBlue" },
+        DEFAULT: { base: "brand-darkBlue", dark: "brand-blue" },
+        hover: { base: "brand-blue", dark: "brand-lightBlue" },
       },
       label: {
         base: oklch(90.06, 0, 0), // #DEDEDE
@@ -117,7 +118,7 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         },
       },
       divider: {
-        base: oklch(18.01, 0.024, 220.99, 30), // #051419 @ 30%
+        base: oklch(18.01, 0.024, 220.99, 10), // #051419 @ 10%
         dark: "general-white/5",
       },
     },
@@ -139,18 +140,28 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
     button: {
       primary: {
         DEFAULT: {
-          background: { base: "general-white" },
-          text: { base: "general-black" },
+          background: {
+            base: oklch(18.01, 0.024, 220.99), // #051419
+            dark: "general-white",
+          },
+          text: { base: "general-white", dark: "general-black" },
           border: {
-            base: oklch(65.68, 0.023, 218.74), // #82959B
+            DEFAULT: {
+              base: oklch(65.68, 0.023, 218.74), // #82959B
+              dark: oklch(65.68, 0.023, 218.74), // #82959B
+            },
+            inset: {
+              base: oklch(95.87, 0.009, 214.34), // #EBF3F5
+              dark: oklch(18.01, 0.024, 220.99), // #051419
+            },
           },
         },
         hovered: {
-          background: { base: "brand-blue" },
+          background: { base: "brand-darkBlue", dark: "brand-blue" },
           text: { base: "general-black" },
         },
         pressed: {
-          background: { base: "brand-lightBlue" },
+          background: { base: "brand-blue", dark: "brand-lightBlue" },
           text: { base: "general-black" },
         },
         disabled: {
@@ -164,12 +175,15 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         DEFAULT: {
           background: { base: "general-transparent" },
           text: { base: "general-black", dark: "general-white" },
-          border: { base: "general-black", dark: "general-white" },
+          border: {
+            base: oklch(18.01, 0.024, 220.99), // #051419
+            dark: "general-white",
+          },
         },
         hovered: {
           background: { base: "general-transparent" },
-          text: { base: "brand-blue" },
-          border: { base: "brand-blue" },
+          text: { base: "brand-darkBlue", dark: "brand-blue" },
+          border: { base: "brand-darkBlue", dark: "brand-blue" },
         },
         pressed: {
           background: { base: "general-transparent" },
@@ -197,6 +211,10 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
           base: oklch(65.72, 0.024, 221.98), // #82959C
           dark: oklch(50.66, 0.078, 221.71), // #266F85
         },
+      },
+      arrow: {
+        base: oklch(18.01, 0.024, 220.99, 50), // #051419 @ 50%
+        dark: oklch(92.05, 0.007, 106.53, 50), // #E5E5E0 @ 50%
       },
     },
     illustration: {
@@ -346,28 +364,25 @@ module.exports = {
           "100%": { opacity: 0 },
         },
         "scale-group-a": {
-          "0%": { transform: "scale(1)" },
-          "10%": { transform: "scale(1.06)" },
-          "20%": { transform: "scale(1.06)" },
-          "30%": { transform: "scale(1.06)" },
-          "40%": { transform: "scale(1)" },
-          "100%": { transform: "scale(1)" },
+          "0%": { transform: "scale(1.06)" },
+          "16.65%": { transform: "scale(1.06)" },
+          "33.3%": { transform: "scale(1)" },
+          "83.25%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1.06)" },
         },
         "scale-group-b": {
           "0%": { transform: "scale(1)" },
-          "30%": { transform: "scale(1)" },
-          "40%": { transform: "scale(1.06)" },
-          "50%": { transform: "scale(1.06)" },
-          "60%": { transform: "scale(1.06)" },
-          "70%": { transform: "scale(1)" },
+          "16.65%": { transform: "scale(1)" },
+          "33.3%": { transform: "scale(1.06)" },
+          "49.95%": { transform: "scale(1.06)" },
+          "66.6%": { transform: "scale(1)" },
           "100%": { transform: "scale(1)" },
         },
         "scale-group-c": {
           "0%": { transform: "scale(1)" },
-          "60%": { transform: "scale(1)" },
-          "70%": { transform: "scale(1.06)" },
-          "80%": { transform: "scale(1.06)" },
-          "90%": { transform: "scale(1.06)" },
+          "49.95%": { transform: "scale(1)" },
+          "66.6%": { transform: "scale(1.06)" },
+          "83.25%": { transform: "scale(1.06)" },
           "100%": { transform: "scale(1)" },
         },
       },
@@ -472,13 +487,21 @@ module.exports = {
         // Title Text Styles
         ".title-100": {
           fontFamily: theme("fontFamily.landing"),
+          fontSize: theme("fontSize.16"),
+          lineHeight: theme("lineHeight.22"),
+          fontWeight: theme("fontWeight.medium"),
+          textTransform: "uppercase",
+          letterSpacing: "2px",
+        },
+        ".title-200": {
+          fontFamily: theme("fontFamily.landing"),
           fontSize: theme("fontSize.20"),
           lineHeight: theme("lineHeight.32"),
           fontWeight: theme("fontWeight.regular"),
           textTransform: "uppercase",
           letterSpacing: "3px",
         },
-        ".title-200": {
+        ".title-300": {
           fontFamily: theme("fontFamily.landing"),
           fontSize: theme("fontSize.26"),
           lineHeight: theme("lineHeight.34"),
