@@ -5,6 +5,7 @@ export default {
     display: "hidden",
     theme: {
       layout: "raw",
+      footer: null,
     },
   },
   learn: {
