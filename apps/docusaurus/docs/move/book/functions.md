@@ -581,8 +581,9 @@ There are plans to loosen some of these restrictions in the future, but for now,
 
 - Only inline functions can have function parameters.
 - Only explicit lambda expressions can be passed as an argument to an inline function's function parameters.
-- cannot have `return` expressions; or free `break` or `continue` expressions (occurring outside of a loop)
-- Inline functions or lambda expressions cannot return lambda expressions.
+- Inline functions and lambda expressions:
+  - cannot have `return` expressions; or free `break` or `continue` expressions (occurring outside of a loop).
+  - cannot return lambda expressions.
 - Cyclic recursion involving only inline functions is not allowed.
 - Parameters in lambda expressions must not be type annotated (e.g., `|x: u64| x + 1` is not allowed): their types are inferred.
 
