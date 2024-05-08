@@ -1,14 +1,15 @@
 export default {
-  book: {
-    title: "Move Book",
+  'learn-move': {
+    title: 'Learn Move'
   },
-  "move-on-aptos": {
-    title: "Move on Aptos",
+  'aptos-standards': {
+    title: 'Aptos Standards'
   },
-  prover: {
-    title: "Move Prover",
+  'compiler_v2': {
+    title: "Move Compiler v2 (beta)",
   },
-  compiler_v2: {
-    title: "Compiler v2 (beta)",
-  },
+  // TODO: Add Move Reference - https://aptos.dev/reference/move
+  'error-codes': {
+    title: "Move Error Codes",
+  }
 };

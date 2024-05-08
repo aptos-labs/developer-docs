@@ -1,4 +1,5 @@
 export default {
-  "wallet-adapter": "Wallet Adapter",
-  "aptos-name-service": "Aptos Name Service",
-};
+    "integrate-with-aptos": {
+        title: "Integrator Guides" 
+    }
+}
