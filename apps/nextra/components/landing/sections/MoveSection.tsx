@@ -92,14 +92,11 @@ export function MoveSection() {
             className="md:w-[666px] xl:w-[780px] max-md:h-[415px] lg:h-[635px] xl:h-[735px]"
           />
         </div>
-        <Carousel
-          onChange={setActiveExample}
-          className="md:hidden border-b-border-divider border-b-100"
-        >
+        <Carousel onChange={setActiveExample} className="md:hidden">
           {exampleItems.map((item) => (
             <div
               key={item.id}
-              className="flex flex-col gap-4 p-8 w-full border-b-border-divider border-b-100"
+              className="flex flex-col gap-4 p-8 w-full border-b-border-divider border-b"
             >
               <div className="flex items-center justify-between gap-4">
                 <h3 className="label-300 text-text-primary">{item.label}</h3>

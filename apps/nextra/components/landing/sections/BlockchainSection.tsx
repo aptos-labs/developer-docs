@@ -17,7 +17,12 @@ export function BlockchainSection() {
   return (
     <Section>
       <SectionHeader>{t.blockchainSectionHeadline}</SectionHeader>
-      <div className="grid w-full sm:max-w-[591px] lg:max-w-[1176px] lg:grid-cols-[repeat(auto-fit,minmax(341px,1fr))]">
+      <div
+        className="
+          grid w-full sm:max-w-[591px] lg:max-w-[1176px] lg:grid-cols-[repeat(auto-fit,minmax(341px,1fr))]
+          sm:border-t sm:border-l border-border-divider sm:-mb-px
+        "
+      >
         <FeatureCard
           illustration={
             <PerformanceIllustration className={illustrationStyles} />
@@ -114,8 +119,8 @@ function FeatureCard(props: FeatureCardProps) {
     <Link
       href={props.href}
       className="
-        no-underline flex flex-col p-8 gap-8 border-t border-b sm:border border-border-divider rounded-0
-        text-text-primary hover:bg-background-elevated transition-colors
+        no-underline flex flex-col p-8 gap-8 text-text-primary hover:bg-background-elevated transition-colors
+        rounded-0 max-sm:border-t sm:border-b sm:border-r border-border-divider
       "
     >
       {props.illustration}
