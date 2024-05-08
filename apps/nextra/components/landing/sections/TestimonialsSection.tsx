@@ -54,7 +54,7 @@ export function TestimonialsSection() {
     <div
       key={i}
       className="
-        flex flex-col px-8 py-10 gap-8 border-x border-t border-border-divider h-full
+        flex flex-col px-8 py-10 gap-8 border-t border-l border-border-divider h-full
         max-md:bg-background-elevated md:[[data-active=true]>&]:bg-background-elevated
         transition-colors duration-300
       "
