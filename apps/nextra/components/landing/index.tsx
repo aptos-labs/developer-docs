@@ -30,7 +30,11 @@ export function Landing() {
   );
 }
 
-function Divider({ className }: { className?: string }) {
+interface DividerProps {
+  className?: string;
+}
+
+function Divider({ className }: DividerProps) {
   return (
     <div
       className={cn(
