@@ -11,16 +11,16 @@ Try it now! Customize the variable below in the editor to explore different pool
 
 <GraphQLEditor
   query={`query getNumberOfDelegators($poolAddress: String) {
-    num_active_delegator_per_pool(
-      where: {pool_address: {_eq: $poolAddress}, num_active_delegator: {_gt: "0"}},
-      distinct_on: pool_address
-    ) {
-      num_active_delegator
-    }
-  }`}
+  num_active_delegator_per_pool(
+    where: {pool_address: {_eq: $poolAddress}, num_active_delegator: {_gt: "0"}},
+    distinct_on: pool_address
+  ) {
+    num_active_delegator
+  }
+}`}
   variables={`{
-    "poolAddress": "0x06099edbe54f242bad50020dfd67646b1e46282999483e7064e70f02f7ea3c15"
-  }`}
+  "poolAddress": "0x06099edbe54f242bad50020dfd67646b1e46282999483e7064e70f02f7ea3c15"
+}`}
   disableTabs={true}
 />
 

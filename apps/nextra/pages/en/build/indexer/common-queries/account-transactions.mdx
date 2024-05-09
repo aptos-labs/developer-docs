@@ -11,21 +11,21 @@ Experiment and see the results! Modify the address, limit, and offset in the var
 
 <GraphQLEditor
   query={`query AccountTransactionsData($address: String, $limit: Int, $offset: Int) {
-    address_version_from_move_resources(
-      where: {address: {_eq: $address}},
-      order_by: {transaction_version: desc},
-      limit: $limit,
-      offset: $offset
-    ) {
-      transaction_version
-      __typename
-    }
-  }`}
+  address_version_from_move_resources(
+    where: {address: {_eq: $address}},
+    order_by: {transaction_version: desc},
+    limit: $limit,
+    offset: $offset
+  ) {
+    transaction_version
+    __typename
+  }
+}`}
   variables={`{
-    "address": "0x1abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-    "limit": 10,
-    "offset": 0
-  }`}
+  "address": "0x1abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "limit": 10,
+  "offset": 0
+}`}
   disableTabs={true}
 />
 

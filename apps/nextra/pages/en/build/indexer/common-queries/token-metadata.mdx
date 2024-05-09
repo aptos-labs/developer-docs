@@ -11,17 +11,17 @@ Explore the capabilities of this query! Modify the variables below to tailor the
 
 <GraphQLEditor
   query={`query GetTokensDataByName($name: String, $collectionName: String) {
-    current_token_datas(
-      where: {name: {_eq: $name}, collection_name: {_eq: $collectionName}}
-    ) {
-      metadata_uri
-      __typename
-    }
-  }`}
+  current_token_datas(
+    where: {name: {_eq: $name}, collection_name: {_eq: $collectionName}}
+  ) {
+    metadata_uri
+    __typename
+  }
+}`}
   variables={`{
-    "name": "EpicDragon",
-    "collectionName": "MythicDragons"
-  }`}
+  "name": "EpicDragon",
+  "collectionName": "MythicDragons"
+}`}
   disableTabs={true}
 />
 

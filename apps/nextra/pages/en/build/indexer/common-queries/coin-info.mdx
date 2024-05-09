@@ -11,18 +11,18 @@ Try it yourself! You can customize the variables at the bottom of the editor.
 
 <GraphQLEditor
   query={`query GetCoinInfos($in: [String!], $offset: Int) {
-    coin_infos(
-      where: {coin_type: {_in: $in}},
-      offset: $offset,
-      limit: 100
-    ) {
-      symbol
-      name
-      decimals
-      coin_type
-      __typename
-    }
-  }`}
+  coin_infos(
+    where: {coin_type: {_in: $in}},
+    offset: $offset,
+    limit: 100
+  ) {
+    symbol
+    name
+    decimals
+    coin_type
+    __typename
+  }
+}`}
   variables={`{
   "in": ["0x1::aptos_coin::AptosCoin", "0x1::example_coin::ExampleCoin"],
   "offset": 0

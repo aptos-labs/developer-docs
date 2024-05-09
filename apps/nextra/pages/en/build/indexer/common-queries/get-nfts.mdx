@@ -11,35 +11,35 @@ Try it yourself! You can customize the variables at the bottom of the editor.
 
 <GraphQLEditor
   query={`query GetAccountNfts($address: String) {
-    current_token_ownerships_v2(
-      where: {owner_address: {_eq: $address}, amount: {_gt: "0"}}
-    ) {
-      current_token_data {
+  current_token_ownerships_v2(
+    where: {owner_address: {_eq: $address}, amount: {_gt: "0"}}
+  ) {
+    current_token_data {
+      collection_id
+      largest_property_version_v1
+      current_collection {
         collection_id
-        largest_property_version_v1
-        current_collection {
-          collection_id
-          collection_name
-          description
-          creator_address
-          uri
-          __typename
-        }
+        collection_name
         description
-        token_name
-        token_data_id
-        token_standard
-        token_uri
+        creator_address
+        uri
         __typename
       }
-      owner_address
-      amount
+      description
+      token_name
+      token_data_id
+      token_standard
+      token_uri
       __typename
     }
-  }`}
+    owner_address
+    amount
+    __typename
+  }
+}`}
   variables={`{
-    "address": "0x8824ebb6e0d60656f6d4d5bbc408805d9ca6b984aad78b16f42b1dae545d6762"
-  }`}
+  "address": "0x8824ebb6e0d60656f6d4d5bbc408805d9ca6b984aad78b16f42b1dae545d6762"
+}`}
   disableTabs={true}
 />
 

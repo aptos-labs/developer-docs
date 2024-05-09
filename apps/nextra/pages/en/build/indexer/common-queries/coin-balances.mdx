@@ -11,21 +11,21 @@ Try it yourself! Adjust the query variables below in the editor to fetch data fo
 
 <GraphQLEditor
   query={`query GetCoinBalances($address: String, $offset: Int) {
-    current_coin_balances(
-      where: {owner_address: {_eq: $address}},
-      offset: $offset,
-      limit: 100,
-      order_by: {amount: desc}
-    ) {
-      coin_type
-      amount
-      __typename
-    }
-  }`}
+  current_coin_balances(
+    where: {owner_address: {_eq: $address}},
+    offset: $offset,
+    limit: 100,
+    order_by: {amount: desc}
+  ) {
+    coin_type
+    amount
+    __typename
+  }
+}`}
   variables={`{
-    "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
-    "offset": 0
-  }`}
+  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "offset": 0
+}`}
   disableTabs={false}
 />
 

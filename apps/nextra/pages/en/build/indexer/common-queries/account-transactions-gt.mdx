@@ -11,20 +11,20 @@ Try it yourself! You can customize the variables at the bottom of the editor.
 
 <GraphQLEditor
   query={`query GetAccountTransactionsDataGt($address: String, $limit: Int, $gt: bigint) {
-    address_version_from_move_resources(
-      where: {address: {_eq: $address}, transaction_version: {_gt: $gt}},
-      order_by: {transaction_version: desc},
-      limit: $limit
-    ) {
-      transaction_version
-      __typename
-    }
-  }`}
+  address_version_from_move_resources(
+    where: {address: {_eq: $address}, transaction_version: {_gt: $gt}},
+    order_by: {transaction_version: desc},
+    limit: $limit
+  ) {
+    transaction_version
+    __typename
+  }
+}`}
   variables={`{
-    "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
-    "limit": 10,
-    "gt": 582607591
-  }`}
+  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "limit": 10,
+  "gt": 582607591
+}`}
   disableTabs={true}
 />
 
