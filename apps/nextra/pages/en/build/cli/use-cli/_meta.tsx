@@ -5,6 +5,9 @@ export default {
   "trying-things-on-chain": {
     title: "Trying Things On-Chain",
   },
+  "replay-past-transactions": {
+    title: "Replaying Past Transactions",
+  },
   "running-a-local-network": {
     title: "Running a Local Network",
   },
