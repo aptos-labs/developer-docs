@@ -614,7 +614,10 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
           )}
           <div ref={pluginResize.secondRef} className="graphiql-sessions !mr-0">
             <div className="graphiql-session-header">
-              {props.disableTabs ? null : (
+              {/* Note: Placeholder div kept to maintain proper spacing of graphiql-session-handler flex */}
+              {props.disableTabs ? (
+                <div></div>
+              ) : (
                 <Tabs
                   values={editorContext.tabs}
                   onReorder={handleReorder}
@@ -667,7 +670,7 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
               <div ref={editorResize.firstRef}>
                 <div
                   className={`graphiql-editors${
-                    editorContext.tabs.length === 1 ? " full-height" : ""
+                    editorContext.tabs.length <= 1 ? " full-height" : ""
                   }`}
                 >
                   <div ref={editorToolsResize.firstRef}>
