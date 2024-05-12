@@ -244,6 +244,7 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
   // This is a hacky fix to make it work. It only impacts initialQuery, not
   // current query state so should be fine
   editorContext.initialQuery = props.defaultQuery;
+  editorContext.tabs = [];
 
   const copy = useCopyQuery({ onCopyQuery: props.onCopyQuery });
   const merge = useMergeQuery();
@@ -1064,11 +1065,6 @@ export interface GraphQLEditorProps {
    * }
    */
   variables?: string;
-  /**
-   * Useful for having multiple GraphQLEditors on a single page only display one view each.
-   * Otherwise having multiple editors on the same page will open a tab for each of them.
-   */
-  disableTabs?: boolean;
 }
 
 /**
@@ -1086,7 +1082,6 @@ export const GraphQLEditor = ({
   network: propsNetwork = "mainnet",
   query,
   variables,
-  disableTabs,
 }: GraphQLEditorProps) => {
   const methods = useForm<FormValues>({
     defaultValues: {
@@ -1112,7 +1107,6 @@ export const GraphQLEditor = ({
           defaultQuery={query}
           fetcher={fetcher}
           variables={variables}
-          disableTabs={disableTabs}
         />
       </form>
     </FormProvider>
