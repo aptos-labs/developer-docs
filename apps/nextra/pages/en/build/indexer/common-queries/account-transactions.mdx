@@ -3,19 +3,20 @@ import { Callout } from 'nextra/components'
 
 # Get Account Transactions Data
 
-`AccountTransactionsData` retrieves transactions that affect a specified account address, ordered by the `transaction_version` in descending order. This query is essential for applications that require a historical log of transactions for audit, tracking, or display purposes.
+`AccountTransactionsData` retrieves `transaction_version`s of transactions that affect a specified account address, ordered in descending order. `transaction_version` is a unique id given to each transaction on-chain that increases by 1 each time. 
+
+This query is essential for applications that require a historical log of transactions for audit, tracking, or display purposes.
 
 <Callout type="info">
 Experiment and see the results! Modify the address, limit, and offset in the variables below to customize your query.
 </Callout>
 
 <GraphQLEditor
-  query={`query AccountTransactionsData($address: String, $limit: Int, $offset: Int) {
-  address_version_from_move_resources(
-    where: {address: {_eq: $address}},
-    order_by: {transaction_version: desc},
-    limit: $limit,
-    offset: $offset
+  query={`query GetAccountTransactionsData($address: String, $limit: Int) {
+  account_transactions(
+    where: { account_address: { _eq: $address } }
+    order_by: {transaction_version: desc}
+    limit: $limit
   ) {
     transaction_version
     __typename
@@ -23,8 +24,7 @@ Experiment and see the results! Modify the address, limit, and offset in the var
 }`}
   variables={`{
   "address": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-  "limit": 10,
-  "offset": 0
+  "limit": 10
 }`}
 />
 
@@ -35,14 +35,13 @@ Experiment and see the results! Modify the address, limit, and offset in the var
 <br/>
 
 # Getting Recent Transactions
-To look up transactions from a specific timeframe, you can use this modified query. 
-It finds all transactions which impacted the account with `$address` that have a `transaction_version` that is greater than `$gt`. `transaction_version` is a unique id given to each transaction on-chain that increases by 1 each time. 
+A helpful variant of the above query limits results to just ones that happened after a specific `transaction_version`. All results will have a `transaction_version` greater than `$gt`. 
 
 <GraphQLEditor
-  query={`query GetAccountTransactionsDataGt($address: String, $limit: Int, $gt: bigint) {
-  address_version_from_move_resources(
-    where: {address: {_eq: $address}, transaction_version: {_gt: $gt}},
-    order_by: {transaction_version: desc},
+  query={`query GetAccountTransactionsData($address: String, $limit: Int, $gt: bigint) {
+  account_transactions(
+    where: { account_address: { _eq: $address }, transaction_version: {_gt: $gt} }
+    order_by: {transaction_version: desc}
     limit: $limit
   ) {
     transaction_version
