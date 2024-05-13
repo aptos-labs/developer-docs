@@ -13,13 +13,6 @@ export default {
       layout: "full",
     },
   },
-  "account-transactions-gt": {
-    title: "Get Recent Account Transactions",
-    theme: {
-      toc: false,
-      layout: "full",
-    },
-  },
   "ans-lookup": {
     title: "Get Account Domain Name",
     theme: {
