@@ -70,17 +70,20 @@ export function FooterSection() {
               links={[
                 {
                   label: t.documentationLink,
-                  href: `${locale}/build/quick-start`,
+                  href: `/${locale}/build/quick-start`,
                 },
                 {
                   label: t.governanceLink,
-                  href: "https://governance.aptosfoundation.org/",
+                  href: `/${locale}/network/blockchain/learn-about-aptos/governance`,
                 },
                 {
                   label: t.networkNumbersLink,
                   href: "https://aptosfoundation.org/#network-numbers",
                 },
-                { label: t.validatorsLink, href: "TODO:" },
+                {
+                  label: t.validatorsLink,
+                  href: `/${locale}/network/blockchain/learn-about-aptos/validator-nodes`,
+                },
                 {
                   label: t.nodeOperationsLink,
                   href: "https://aptos.dev/nodes/nodes-landing/",
@@ -131,7 +134,7 @@ export function FooterSection() {
                 { label: t.netZeroPolicyLink, href: "TODO:" },
                 {
                   label: t.whitePaperLink,
-                  href: "https://aptosfoundation.org/whitepaper",
+                  href: `/${locale}/network/blockchain/aptos-white-paper`,
                 },
                 {
                   label: t.brandLink,
