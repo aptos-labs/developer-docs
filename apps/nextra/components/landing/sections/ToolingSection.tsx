@@ -41,7 +41,7 @@ export function ToolingSection() {
           }
           label={t.indexerLabel}
           description={t.indexerDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/build/indexer`}
         />
         <ToolingCard
           illustration={
@@ -70,7 +70,7 @@ export function ToolingSection() {
           }
           label={t.sdkLabel}
           description={t.sdkDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/build/sdks`}
         />
       </div>
     </Section>
