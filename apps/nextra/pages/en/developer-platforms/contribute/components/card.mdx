@@ -14,6 +14,9 @@ learn more and are often used for things like links for quickstart / summary pag
 
 Suppose you want to mimic the following `<Card />` layout. 
 
+### Plain Card
+
+
 <Cards>
   <Card href="./docs/setup/organize-files">
     <Card.Title>Organize Files</Card.Title>
@@ -41,6 +44,38 @@ import { Card, Cards } from '@components/index'
   <Card href="./docs/setup/organize-files-advanced">
     <Card.Title>Organize Files (Advanced)</Card.Title>
     <Card.Description>How to customize file routing, use `_meta.tsx` files, hide routes, and more</Card.Description>
+  </Card>
+</Cards>
+```
+
+### Image with Card
+
+Suppose you want to add an image to your card. Like so:
+
+<Cards className="xl:grid-cols-2">
+  <Card className="flex flex-row gap-4">
+    <Card.Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/2048px-Typescript_logo_2020.svg.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Typescript SDK</Card.Title>
+      <Card.Description>Aptos Typescript SDK (V2)</Card.Description>
+    </div>
+  </Card>
+</Cards>
+
+To accomplish this you can do the following:
+
+```mdx filename="index.mdx"
+import { Card, Cards } from '@components/index'
+
+...
+
+<Cards className="xl:grid-cols-2">
+  <Card className="flex flex-row gap-4">
+    <Card.Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/2048px-Typescript_logo_2020.svg.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Typescript SDK</Card.Title>
+      <Card.Description>Aptos Typescript SDK (V2)</Card.Description>
+    </div>
   </Card>
 </Cards>
 ```
