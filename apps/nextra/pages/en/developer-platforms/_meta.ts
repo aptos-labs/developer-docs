@@ -1,3 +1,3 @@
 export default {
-  contribute: 'Contribute'
-}
+  contribute: "Contribute",
+};
