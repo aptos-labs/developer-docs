@@ -81,7 +81,7 @@ export const i18nConfig = Object.freeze({
 
     // Blockchain Section
     blockchainSectionHeadline:
-      "Discover blockchain features only possible on Aptos",
+      "Discover blockchain features on Aptos",
     performanceLabel: "Performance",
     performanceDescription:
       "Redefine blockchain performance with high TPS and low latency",
@@ -119,6 +119,48 @@ export const i18nConfig = Object.freeze({
     stateSyncLabel: "State Sync",
     stateSyncDescription:
       "Learn how nodes downstream synchronizes with the latest state",
+
+    // Testimonials Section
+    testimonialsSectionHeadline: "Hear From The Ecosystem",
+    testimonial1Body:
+      "Building on Aptos has been transformative, offering unmatched transaction speed and reliability. We love the vibrant community and overall direction that the Aptos ecosystem is heading.",
+    testimonial1Author: "–Muhd Dahlan, CEO Zabava Labs",
+    testimonial2Body:
+      "Aptin Finance drives secure, intuitive, and seamless financial interactions for Aptos users. Aligned with Aptos' vision, we aim to establish a nexus of Omni-chain DeFi opportunities for a diverse global community.'",
+    testimonial2Author: "–Elvis Woo, CTO & Co-Founder, Aptin Finance",
+    testimonial3Body:
+      "Cellana Finance chose to build on Aptos because of its rapid transaction speed, cost-effectiveness, and robust security. Moreover, Aptos’s instant finality (less than 1s) will be a significant strength in attracting a variety of financial applications from Web 2 in the future.",
+    testimonial3Author: "–Andy Hoang, CEO, Cellana",
+
+    // Footer Section
+    aptosAlt: "Aptos Foundation",
+    discordAlt: "Discord",
+    githubAlt: "Github",
+    linkedinAlt: "LinkedIn",
+    telegramAlt: "Telegram",
+    twitterAlt: "Twitter",
+    buildHeading: "Build",
+    discoverHeading: "Discover",
+    connectHeading: "Connect",
+    meetAptosHeading: "Meet Aptos",
+    documentationLink: "Documentation",
+    governanceLink: "Governance",
+    networkNumbersLink: "Network Numbers",
+    validatorsLink: "Validators",
+    nodeOperationsLink: "Node Operations",
+    ecosystemHubLink: "Ecosystem Hub",
+    grantsLink: "Grants",
+    pressLink: "Press",
+    eventsLink: "Events",
+    collectiveLink: "Collective",
+    forumLink: "Forum",
+    aboutAptosLink: "About",
+    netZeroPolicyLink: "Net Zero Policy",
+    whitePaperLink: "White Paper",
+    brandLink: "Brand",
+    careersLink: "Careers",
+    privacyLink: "Privacy",
+    termsLink: "Terms",
   },
 });
 

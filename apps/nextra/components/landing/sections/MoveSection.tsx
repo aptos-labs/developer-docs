@@ -60,11 +60,17 @@ export function MoveSection() {
   return (
     <Section>
       <SectionHeader>{t.moveSectionHeadline}</SectionHeader>
-      <div className="flex flex-col lg:flex-row lg:gap-12 justify-between items-center w-full max-w-[1200px] xl:max-w-[1280px] lg:px-12">
+      <div
+        className="
+          flex flex-col lg:flex-row lg:gap-12 justify-between items-center
+          w-full max-w-[1200px] xl:max-w-[1280px] lg:px-12
+          border-t border-t-border-divider lg:border-none max-lg:pt-8 
+        "
+      >
         <div className="flex flex-col gap-8 md:gap-12 max-md:mb-8 max-lg:mb-12 px-8 lg:px-0">
           <GradientText
             asChild
-            className="title-100 md:title-200 lg:max-w-[336px]"
+            className="title-200 md:title-300 lg:max-w-[336px]"
           >
             <p>{t.moveExamplesHeadline}</p>
           </GradientText>
@@ -86,14 +92,11 @@ export function MoveSection() {
             className="md:w-[666px] xl:w-[780px] max-md:h-[415px] lg:h-[635px] xl:h-[735px]"
           />
         </div>
-        <Carousel
-          onChange={setActiveExample}
-          className="md:hidden border-b-border-divider border-b-100"
-        >
+        <Carousel onChange={setActiveExample} className="md:hidden">
           {exampleItems.map((item) => (
             <div
               key={item.id}
-              className="flex flex-col gap-4 p-8 w-full border-b-border-divider border-b-100"
+              className="flex flex-col gap-4 p-8 w-full border-b-border-divider border-b"
             >
               <div className="flex items-center justify-between gap-4">
                 <h3 className="label-300 text-text-primary">{item.label}</h3>

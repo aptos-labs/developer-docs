@@ -8,4 +8,7 @@ export default {
   prover: {
     title: "Move Prover",
   },
+  compiler_v2: {
+    title: "Compiler v2 (beta)",
+  },
 };

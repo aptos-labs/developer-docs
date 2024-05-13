@@ -56,7 +56,7 @@ function DevelopersCard(props: DevelopersCard) {
     <div
       className="
         flex flex-col flex-1 p-8 w-full sm:max-w-[591px] lg:max-w-[393px] gap-8
-        border-t border-b sm:border border-border-divider rounded-0
+        border-t sm:border-l sm:border-r lg:border-r-0 lg:last:border-r border-border-divider rounded-0
         text-text-primary hover:bg-background-elevated transition-colors
       "
     >

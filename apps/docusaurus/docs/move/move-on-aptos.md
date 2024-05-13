@@ -6,6 +6,10 @@ title: "Move on Aptos"
 
 To begin your journey in developing Move, we provide the following resources:
 
+:::tip
+All the tutorials have been moved to [Aptos Learn](https://learn.aptoslabs.com/tutorials) for a prettier experience.
+:::
+
 - [Your first move module](../tutorials/first-move-module.md) to walks you through compiling, deploying, and interacting with Move.
 - [Aptos Move Book](./book/SUMMARY.md) to teach you many of the general Move concepts.
 - [The Move tutorial](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial) to cover the basics of programming with Move.
@@ -26,3 +30,5 @@ The following external resources exist to further your education:
 - [IMCODING Move Tutorials](https://www.imcoding.online/tutorials?tag=Aptos)
 - [Pontem Move Playground](https://playground.pontem.network/)
 - [Collection of nestable Move resources](https://github.com/taoheorg/taohe)
+
+A new Move compiler and language version is currently in early beta testing. If you are interested to play with it, check [this page](./compiler_v2.md).

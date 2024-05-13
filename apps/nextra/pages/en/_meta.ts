@@ -5,6 +5,7 @@ export default {
     display: "hidden",
     theme: {
       layout: "raw",
+      footer: null,
     },
   },
   learn: {
@@ -61,7 +62,7 @@ export default {
       },
     },
   },
-  developer_platforms: {
+  "developer-platforms": {
     type: "menu",
     title: "Additional Resources",
     items: {
@@ -83,9 +84,8 @@ export default {
         newWindow: true,
         type: "page",
       },
-      docs: {
+      contribute: {
         title: "Contribute",
-        href: "/docs",
         type: "page",
       },
     },
