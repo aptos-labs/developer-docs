@@ -1,0 +1,27 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# Count Number of Active Delegators for a Pool
+
+`getNumberOfDelegators` retrieves the count of active delegators for a specified pool address. This query is especially valuable for platforms that need to analyze participation in staking or delegation pools.
+
+<Callout type="info">
+Try it now! Customize the variable below in the editor to explore different pool addresses.
+</Callout>
+
+<GraphQLEditor
+  query={`query getNumberOfDelegators($poolAddress: String) {
+  num_active_delegator_per_pool(
+    where: {pool_address: {_eq: $poolAddress}, num_active_delegator: {_gt: "0"}},
+    distinct_on: pool_address
+  ) {
+    num_active_delegator
+  }
+}`}
+  variables={`{
+  "poolAddress": "0x06099edbe54f242bad50020dfd67646b1e46282999483e7064e70f02f7ea3c15"
+}`}
+/>
+
+#### Variables:
+- `$poolAddress`: **String** - The address of the pool for which to query the number of active delegators. Example: `"0x06099edbe54f242bad50020dfd67646b1e46282999483e7064e70f02f7ea3c15"`.

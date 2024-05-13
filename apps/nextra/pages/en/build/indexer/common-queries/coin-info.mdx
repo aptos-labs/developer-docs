@@ -1,0 +1,34 @@
+import { GraphQLEditor } from '@components/index'
+import { Callout } from 'nextra/components'
+
+# Get Coin Info
+
+By providing a list of coin types, `GetCoinInfos` can fetch data such as the symbol, name, decimals, and the coin type itself. This is particularly useful for applications needing to display token details.
+
+<Callout type="info">
+Try it yourself! You can customize the variables at the bottom of the editor.
+</Callout>
+
+<GraphQLEditor
+  query={`query GetCoinInfos($in: [String!], $offset: Int) {
+  coin_infos(
+    where: {coin_type: {_in: $in}},
+    offset: $offset,
+    limit: 100
+  ) {
+    symbol
+    name
+    decimals
+    coin_type
+    __typename
+  }
+}`}
+  variables={`{
+  "in": ["0x1::aptos_coin::AptosCoin", "0x1::example_coin::ExampleCoin"],
+  "offset": 0
+}`}
+/>
+
+## Variables:
+- `$in`: **List of String** - This variable should contain a list of coin types you want to query information for. Ex. `["0x1::aptos_coin::AptosCoin"]`
+- `$offset`: **Integer** (Optional) - This variable can be used to paginate through results, specifying how many records to skip before starting to return results.

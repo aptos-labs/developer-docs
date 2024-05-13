@@ -244,6 +244,7 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
   // This is a hacky fix to make it work. It only impacts initialQuery, not
   // current query state so should be fine
   editorContext.initialQuery = props.defaultQuery;
+  editorContext.tabs = [];
 
   const copy = useCopyQuery({ onCopyQuery: props.onCopyQuery });
   const merge = useMergeQuery();
@@ -614,7 +615,10 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
           )}
           <div ref={pluginResize.secondRef} className="graphiql-sessions !mr-0">
             <div className="graphiql-session-header">
-              {props.disableTabs ? null : (
+              {/* Note: Placeholder div kept to maintain proper spacing of graphiql-session-handler flex */}
+              {props.disableTabs ? (
+                <div></div>
+              ) : (
                 <Tabs
                   values={editorContext.tabs}
                   onReorder={handleReorder}
@@ -667,7 +671,7 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
               <div ref={editorResize.firstRef}>
                 <div
                   className={`graphiql-editors${
-                    editorContext.tabs.length === 1 ? " full-height" : ""
+                    editorContext.tabs.length <= 1 ? " full-height" : ""
                   }`}
                 >
                   <div ref={editorToolsResize.firstRef}>
@@ -1052,6 +1056,15 @@ interface FormValues {
 export interface GraphQLEditorProps {
   network: Network;
   query: string;
+  /**
+   * A set of variable replacements to use in the editor. Replaces $variables with the same name.
+   * Ex.
+   * {
+   *   "owner_address": "0xaa921481e07b82a26dbd5d3bc472b9ad82d3e5bfd248bacac160eac51687c2ff",
+   *   "offset": 0
+   * }
+   */
+  variables?: string;
 }
 
 /**
@@ -1068,6 +1081,7 @@ export interface GraphQLEditorProps {
 export const GraphQLEditor = ({
   network: propsNetwork = "mainnet",
   query,
+  variables,
 }: GraphQLEditorProps) => {
   const methods = useForm<FormValues>({
     defaultValues: {
@@ -1089,7 +1103,11 @@ export const GraphQLEditor = ({
   return (
     <FormProvider {...methods}>
       <form className="2xl:max-w-[1136px] xl:max-w-[1136px] w-full lg:max-w-[calc(100vw - 256px)] overflow-x-auto">
-        <GraphiQL defaultQuery={query} fetcher={fetcher} />
+        <GraphiQL
+          defaultQuery={query}
+          fetcher={fetcher}
+          variables={variables}
+        />
       </form>
     </FormProvider>
   );

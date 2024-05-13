@@ -1,0 +1,63 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# Get Account Transactions Data
+
+`AccountTransactionsData` retrieves `transaction_version`s of transactions that affect a specified account address, ordered in descending order. `transaction_version` is a unique id given to each transaction on-chain that increases by 1 each time. 
+
+This query is essential for applications that require a historical log of transactions for audit, tracking, or display purposes.
+
+<Callout type="info">
+Experiment and see the results! Modify the address, limit, and offset in the variables below to customize your query.
+</Callout>
+
+<GraphQLEditor
+  query={`query GetAccountTransactionsData($address: String, $limit: Int) {
+  account_transactions(
+    where: { account_address: { _eq: $address } }
+    order_by: {transaction_version: desc}
+    limit: $limit
+  ) {
+    transaction_version
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "limit": 10
+}`}
+/>
+
+#### Variables:
+- `$address`: **String** - The blockchain account address for which to query transaction data. Example: `"0x1abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"`.
+- `$limit`: **Integer** - Specifies the maximum number of transaction versions to return. Helps manage the volume of data retrieved. Example: `10`.
+- `$offset`: **Integer** - The offset from which to start fetching the transaction versions. Useful for paginating results. Example: `0`.
+<br/>
+
+# Getting Recent Transactions
+A helpful variant of the above query limits results to just ones that happened after a specific `transaction_version`. All results will have a `transaction_version` greater than `$gt`. 
+
+<GraphQLEditor
+  query={`query GetAccountTransactionsData($address: String, $limit: Int, $gt: bigint) {
+  account_transactions(
+    where: { account_address: { _eq: $address }, transaction_version: {_gt: $gt} }
+    order_by: {transaction_version: desc}
+    limit: $limit
+  ) {
+    transaction_version
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "limit": 10,
+  "gt": 599296148
+}`}
+/>
+
+#### Variables:
+- `$address`: **String** - The blockchain account address for which to query transaction data. Example: `"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"`.
+- `$limit`: **Integer** - Specifies the maximum number of transaction versions to return. This helps limit the results to a manageable size. Example: `10`.
+- `$gt`: **bigint** - The transaction version number above which transactions should be fetched. A transaction version is a sequentially increasing number that increments for every transaction.
+Transaction version 0 is the first transaction (genesis transaction), and a transaction version 100 is the 101st transaction in the blockchain.
+ Example: `599296148`.
