@@ -306,15 +306,13 @@ For any `FungibleStore`
 s, [`fungible_asset::transfer`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move#L347)
 would be invoked with `FungibleStore` object addresses.
 
-### Current balance for a coin
+### Current balance for Fungible Asset
 
-The current balance for a APT FA of `FungibleStore` is available at the account
-resources
-URL: `https://{rest_api_server}/accounts/{fungible_store_object_address}/resource/0x1::fungible_asset::FungibleStore`.
-The balance is stored as `balance`. The resource also contains `metadata` object
-of the FA type and the `frozen` status.
-The address of the primary fungible store could be calculated
-as `sha3(32-byte account address | 32-byte metadata object address | 0xFC)`.
+The current balance for an APT FA of FungibleStore is available at the account resources URL: `https://{rest_api_server}/accounts/{fungible_store_object_address}/resource/0x1::fungible_asset::FungibleStore`. The balance is stored as `balance`. The resource also contains a metadata object of the FA type and the frozen status. The address of the primary fungible store can be calculated as `sha3_256(32-byte account address | 32-byte metadata object address | 0xFC)`. The metadata object address of APT FA is `0xA`.
+
+Aptos users have the option to upgrade to concurrent fungible balance to allow parallelization of balance updates, improving the performance of a single account. When a user has upgraded a fungible store balance to support concurrent update, the fungible store object will have another resource `ConcurrentFungibleBalance` that contains the balance of the store, and the `balance` field of FungibleStore will be set to 0. The current balance for an APT FA of `ConcurrentFungibleBalance` (if exists) is available at the account resources URL: `https://{rest_api_server}/accounts/{fungible_store_object_address}/resource/0x1::fungible_asset::ConcurrentFungibleBalance`.
+
+Therefore, to get the total balance of a fungible asset, it is either the non-zero balance of `FungibleStore` or the `balance` field of `ConcurrentFungibleBalance` if it exists and the balance of `FungibleStore` is 0.
 
 ```json
 {
@@ -326,6 +324,15 @@ as `sha3(32-byte account address | 32-byte metadata object address | 0xFC)`.
       "inner": "0xedc2704f2cef417a06d1756a04a16a9fa6faaed13af469be9cdfcac5a21a8e2e"
     }
   }
+}
+```
+
+```json
+{
+    "type": "0x1::fungible_asset::ConcurrentFungibleBalance",
+    "data": {
+        "balance": "233910778869"
+    }
 }
 ```
 
