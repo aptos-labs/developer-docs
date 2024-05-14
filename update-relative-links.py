@@ -9,14 +9,15 @@ import re
 
 def find_markdown_links(file_path):
     """
-    Find all relative markdown links in the provided file.
+    Find all relative markdown and href links in the provided file.
     """
     with open(file_path, 'r') as file:
         content = file.read()
     
-    # Regex to find markdown links: [text](relative/path.md)
-    links = re.findall(r'\[.*?\]\((.*?)\)', content)
-    return links, content
+    # Regex to find markdown links: [text](relative/path.md) and href links: href="relative/path"
+    markdown_links = re.findall(r'\[.*?\]\((.*?)\)', content)
+    href_links = re.findall(r'href="(.*?)"', content)
+    return markdown_links + href_links, content
 
 def search_directory_for_file(directory, filename):
     """
@@ -29,7 +30,7 @@ def search_directory_for_file(directory, filename):
 
 def update_links_in_file(file_path, directory):
     """
-    Update all relative markdown links in the file with their actual paths found in the directory.
+    Update all relative markdown and href links in the file with their actual paths found in the directory.
     """
     links, content = find_markdown_links(file_path)
     updated_content = content
@@ -67,6 +68,12 @@ def update_links_in_file(file_path, directory):
             # Replace the relative link in the content
             if f']({link})' in updated_content:
                 updated_content = updated_content.replace(f']({link})', f']({updated_link})')
+                changed = True
+            elif f'href="{link}"' in updated_content:
+                href_link = updated_link.rsplit('.', 1)[0]  # Remove the .mdx extension
+                if link.startswith('./'):
+                    href_link = './' + href_link
+                updated_content = updated_content.replace(f'href="{link}"', f'href="{href_link}"')
                 changed = True
         else:
             # Output file and line number if unable to update link
@@ -114,7 +121,7 @@ def main(path, search_directory):
         update_links_in_file(path, search_directory)
     elif os.path.isdir(path):
         update_links_in_folder(path, search_directory)
-
+        
 path = "apps/nextra/pages/en/build/"
 search_directory = "apps/nextra/pages/en"
 main(path, search_directory)

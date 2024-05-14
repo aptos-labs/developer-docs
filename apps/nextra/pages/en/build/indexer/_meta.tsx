@@ -1,13 +1,12 @@
 export default {
-  "graphql-api": {
-    title: "GraphQL API",
-    theme: {
-      toc: false,
-      layout: "full",
-    },
+  "architecture": {
+    title: "Architecture"
   },
   api: {
     title: "Indexer API",
+  },
+  "common-queries": {
+    title: "Common Indexer Queries",
   },
   "custom-processors": {
     title: "Custom Processors",

@@ -37,7 +37,7 @@ export function Accordion({
         <AccordionPrimitive.Item
           key={item.id}
           value={item.id}
-          className="flex flex-col overflow-hidden data-[state=open]:bg-background-elevated [&:not(:first-child)]:border-t-2 border-border-divider transition-colors"
+          className="flex flex-col overflow-hidden data-[state=open]:bg-background-elevated [&:not(:first-child)]:border-t border-border-divider transition-colors"
         >
           <AccordionPrimitive.Header asChild>
             <HeadingLevel

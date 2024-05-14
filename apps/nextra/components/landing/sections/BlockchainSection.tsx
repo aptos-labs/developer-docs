@@ -17,14 +17,19 @@ export function BlockchainSection() {
   return (
     <Section>
       <SectionHeader>{t.blockchainSectionHeadline}</SectionHeader>
-      <div className="grid w-full sm:max-w-[591px] lg:max-w-[1176px] lg:grid-cols-[repeat(auto-fit,minmax(341px,1fr))]">
+      <div
+        className="
+          grid w-full sm:max-w-[591px] lg:max-w-[1176px] lg:grid-cols-[repeat(auto-fit,minmax(341px,1fr))]
+          sm:border-t sm:border-l border-border-divider sm:-mb-px
+        "
+      >
         <FeatureCard
           illustration={
             <PerformanceIllustration className={illustrationStyles} />
           }
           label={t.performanceLabel}
           description={t.performanceDescription}
-          href="" // TODO: Add link to relevant docs page
+          href="https://aptosfoundation.org/#network-numbers"
         />
         <FeatureCard
           illustration={
@@ -32,7 +37,7 @@ export function BlockchainSection() {
           }
           label={t.parallelExecutionLabel}
           description={t.parallelExecutionDescription}
-          href="" // TODO: Add link to relevant docs page
+          href="https://medium.com/aptoslabs/block-stm-how-we-execute-over-160k-transactions-per-second-on-the-aptos-blockchain-3b003657e4ba"
         />
         <FeatureCard
           illustration={
@@ -40,62 +45,62 @@ export function BlockchainSection() {
           }
           label={t.validatorsLabel}
           description={t.validatorsDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/network/blockchain/learn-about-aptos/validator-nodes`}
         />
         <FeatureCard
           label={t.keylessLabel}
           description={t.keylessDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/build/advanced-guides/keyless-accounts`}
         />
         <FeatureCard
           label={t.passkeysLabel}
           description={t.passkeysDescription}
-          href="" // TODO: Add link to relevant docs page
+          href="https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-66.md" // TODO: Add link to relevant docs page
         />
         <FeatureCard
           label={t.randomnessLabel}
           description={t.randomnessDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/build/move/move-on-aptos/cryptography#verifying-randomness-from-the-drand-beacon`}
         />
         <FeatureCard
           label={t.feePayerLabel}
           description={t.feePayerDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/build/sdks/ts-sdk/building-transactions/sponsoring-transactions`}
         />
         <FeatureCard
           label={t.multiSigLabel}
           description={t.multiSigDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/build/sdks/ts-sdk/building-transactions/multi-agent-transactions`}
         />
         <FeatureCard
           label={t.gasLabel}
           description={t.gasDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/network/blockchain/learn-about-aptos/gas-txn-fee`}
         />
         <FeatureCard
           label={t.consensusLabel}
           description={t.consensusDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/network/blockchain/learn-about-aptos/blockchain#consensus`}
         />
         <FeatureCard
           label={t.storageLabel}
           description={t.storageDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/network/blockchain/learn-about-aptos/blockchain#storage`}
         />
         <FeatureCard
           label={t.networkingLabel}
           description={t.networkingDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/network/blockchain/learn-about-aptos/node-networks-sync`}
         />
         <FeatureCard
           label={t.mempoolLabel}
           description={t.mempoolDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/network/blockchain/learn-about-aptos/blockchain#mempool`}
         />
         <FeatureCard
           label={t.stateSyncLabel}
           description={t.stateSyncDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/network/nodes/configure/state-sync`}
         />
       </div>
     </Section>
@@ -114,8 +119,8 @@ function FeatureCard(props: FeatureCardProps) {
     <Link
       href={props.href}
       className="
-        no-underline flex flex-col p-8 gap-8 border-t border-b sm:border border-border-divider rounded-0
-        text-text-primary hover:bg-background-elevated transition-colors
+        no-underline flex flex-col p-8 gap-8 text-text-primary hover:bg-background-elevated transition-colors
+        rounded-0 max-sm:border-t sm:border-b sm:border-r border-border-divider
       "
     >
       {props.illustration}

@@ -13,36 +13,49 @@ interface Testimonial {
   authorLogo: ReactNode;
 }
 
+interface PlaceholderAuthorLogoProps {
+  src: string;
+  alt: string;
+}
+
+const PlaceholderAuthorLogo = ({ src, alt }: PlaceholderAuthorLogoProps) => (
+  <Image src={src} alt={alt} height={42} width={42} />
+);
+
 export function TestimonialsSection() {
   const { locale } = useRouter();
   const t = i18nConfig[locale!];
 
   // TODO: Each testimonial should have its own logo based on the organization that the author is from
-  const placeholderAuthorLogo = (
-    <Image
-      src="/landing/testimonial-logo.png"
-      alt="placeholder logo"
-      height={42}
-      width={42}
-    />
-  );
 
   const testimonials: Testimonial[] = useMemo(
     () => [
       {
         body: t.testimonial1Body,
         author: t.testimonial1Author,
-        authorLogo: placeholderAuthorLogo,
+        authorLogo: (
+          <PlaceholderAuthorLogo src="/landing/zabava.png" alt="zabava" />
+        ),
       },
       {
         body: t.testimonial2Body,
         author: t.testimonial2Author,
-        authorLogo: placeholderAuthorLogo,
+        authorLogo: (
+          <PlaceholderAuthorLogo
+            src="/landing/aptin-labs.jpeg"
+            alt="Aptin Labs logo"
+          />
+        ),
       },
       {
         body: t.testimonial3Body,
         author: t.testimonial3Author,
-        authorLogo: placeholderAuthorLogo,
+        authorLogo: (
+          <PlaceholderAuthorLogo
+            src="/landing/cellana.svg"
+            alt="Cellana logo"
+          />
+        ),
       },
     ],
     [],
@@ -54,7 +67,7 @@ export function TestimonialsSection() {
     <div
       key={i}
       className="
-        flex flex-col px-8 py-10 gap-8 border-x border-t border-border-divider h-full
+        flex flex-col px-8 py-10 gap-8 border-t border-l border-border-divider h-full
         max-md:bg-background-elevated md:[[data-active=true]>&]:bg-background-elevated
         transition-colors duration-300
       "

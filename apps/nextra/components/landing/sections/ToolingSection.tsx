@@ -41,7 +41,7 @@ export function ToolingSection() {
           }
           label={t.indexerLabel}
           description={t.indexerDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/build/indexer`}
         />
         <ToolingCard
           illustration={
@@ -70,7 +70,7 @@ export function ToolingSection() {
           }
           label={t.sdkLabel}
           description={t.sdkDescription}
-          href="" // TODO: Add link to relevant docs page
+          href={`/${locale}/build/sdks/ts-sdk`}
         />
       </div>
     </Section>
@@ -91,8 +91,8 @@ function ToolingCard(props: ToolingCardProps) {
       href={props.href}
       className="
         no-underline flex flex-col flex-1 p-8 w-full sm:max-w-[591px] gap-8
-        border-t border-b sm:border border-border-divider rounded-0
-        text-text-primary hover:bg-background-elevated transition-colors
+        border-t sm:border-l sm:border-r lg:border-r-0 lg:last:border-r rounded-0
+        border-border-divider text-text-primary hover:bg-background-elevated transition-colors
       "
     >
       <div className="relative w-full aspect-[525/294]">

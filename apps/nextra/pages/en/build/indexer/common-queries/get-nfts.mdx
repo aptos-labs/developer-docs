@@ -1,0 +1,46 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# Get NFTs Owned by an Account
+
+`GetAccountNfts` retrieves a list of NFTs owned by a specified account address. This query provides comprehensive details about each token, including its collection details, description, and unique identifiers. It is ideal for platforms that need to display the NFT portfolios of users or provide insights into the NFT market holdings.
+
+<Callout type="info">
+Try it yourself! You can customize the variables at the bottom of the editor.
+</Callout>
+
+<GraphQLEditor
+  query={`query GetAccountNfts($address: String) {
+  current_token_ownerships_v2(
+    where: {owner_address: {_eq: $address}, amount: {_gt: "0"}}
+  ) {
+    current_token_data {
+      collection_id
+      largest_property_version_v1
+      current_collection {
+        collection_id
+        collection_name
+        description
+        creator_address
+        uri
+        __typename
+      }
+      description
+      token_name
+      token_data_id
+      token_standard
+      token_uri
+      __typename
+    }
+    owner_address
+    amount
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0x8824ebb6e0d60656f6d4d5bbc408805d9ca6b984aad78b16f42b1dae545d6762"
+}`}
+/>
+
+#### Variables:
+- `$address`: **String** - The Aptos account address for which you want to query NFT data. Ex. `"0x8824ebb6e0d60656f6d4d5bbc408805d9ca6b984aad78b16f42b1dae545d6762"`
