@@ -36,7 +36,7 @@ monorepo for wallet and dapps creators to ease development and ensure a smooth
 process in building projects on the Aptos network.
 The Aptos Wallet Adapter acts as a service between dapps and wallets and exposes
 APIs for dapps to interact with the wallets by following
-our [Wallet Standard](../standards/wallets.mdx). This in turns allows dapps to
+our [Wallet Standard](wallet-adapter/wallets.mdx). This in turns allows dapps to
 support many wallets with minimal integration efforts, and for wallets to follow
 a known standard and gain visibility.
 
@@ -69,9 +69,9 @@ new [Wallet Standard AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/
 the wallet adapter supports the old wallet adapter standard and the new wallet
 standard described in AIP-62 while the ecosystem is onboarding to the new
 standard. Dapps can follow the integration
-guide [here](../advanced-guides/integrate-with-aptos/wallet-adapter/dapp.mdx#aip-62-wallet-standard) and Wallets
+guide [here](wallet-adapter/dapp.mdx#aip-62-wallet-standard) and Wallets
 can follow the integration
-guide [here](../advanced-guides/integrate-with-aptos/wallet-adapter/wallets.mdx#aip-62-wallet-standard)
+guide [here](wallet-adapter/wallets.mdx#aip-62-wallet-standard)
 :::
 
 ### Adapter Core package
@@ -105,7 +105,7 @@ light [Adapter React package](https://github.com/aptos-labs/aptos-wallet-adapter
 is for dapps to import and use. The package contains a `Provider` and
 a `Context` to implement and use within your app.
 
-Follow the [Wallet Adapter For Dapp Builders](../advanced-guides/integrate-with-aptos/wallet-adapter/dapp.mdx)
+Follow the [Wallet Adapter For Dapp Builders](wallet-adapter/dapp.mdx)
 guide on how to use the provider package on your dapp.
 
 ### Adapter Template plugin
@@ -118,7 +118,7 @@ The [Wallet Adapter Plugin Template repo](https://github.com/aptos-labs/wallet-a
 holds a pre-made class, a test file, and some config files to help you build and
 publish the plugin as an NPM package.
 
-Follow the [Wallet Adapter For Wallet Builders](../advanced-guides/integrate-with-aptos/wallet-adapter/wallets.mdx)
+Follow the [Wallet Adapter For Wallet Builders](wallet-adapter/wallets.mdx)
 on how to use the template to implement and publish your wallet plugin.
 
 {/* TODO: Fix image
