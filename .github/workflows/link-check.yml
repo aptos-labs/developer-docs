@@ -1,15 +1,9 @@
 name: Links
 
 on:
-  push:
-    branches:
-      - main
-      - kc/link-checker
   pull_request:
     branches:
       - main
-  schedule:
-    - cron: "00 18 * * *"  # This will run the check daily at 18:00 UTC
 
 jobs:
   linkChecker:
