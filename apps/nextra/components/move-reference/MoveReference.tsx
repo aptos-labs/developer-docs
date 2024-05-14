@@ -26,6 +26,7 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useRouter } from "next/router";
+import { MoveReferenceContent } from "./MoveReferenceContent";
 
 const root = "https://raw.githubusercontent.com/aptos-labs/aptos-core";
 const branches = ["mainnet", "testnet", "devnet", "main"] as const;
@@ -166,7 +167,7 @@ const ModulePageSelector = ({
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-60"
             placeholder="Select a module"
           />
-          <Button >
+          <Button>
             <IconChevronDown />
           </Button>
           {selectedPage && (
@@ -184,6 +185,7 @@ const ModulePageSelector = ({
                   <ListBoxItem
                     key={item.id}
                     id={item.id}
+                    // @ts-ignore
                     ref={(el) => (itemRefs.current[item.id] = el)}
                   >
                     {item.name}
@@ -205,6 +207,7 @@ type ContentProps = {
 
 const Content = ({ branch, page }: ContentProps) => {
   const [content, setContent] = useState<string | null>(null);
+  const [compiledMdx, setCompiledMdx] = useState<string | null>(null);
   const location = usePathname();
   const { asPath } = useRouter();
 
@@ -219,7 +222,19 @@ const Content = ({ branch, page }: ContentProps) => {
         const response = await fetch(pagePath);
         if (response.ok) {
           const rawContent = await response.text();
+          console.log(rawContent)
           setContent(rawContent);
+          const compileMdxRoute = "/api/compile-mdx";
+          const result = await fetch(compileMdxRoute, {
+            method: 'POST', // Specify the request method
+            headers: {
+              'Content-Type': 'application/json', // Set the content type to JSON
+            },
+            body: JSON.stringify(rawContent), // Convert the raw content to JSON
+          });
+          console.log(result);
+          const responseJson = await response.json();
+          const compiledMdx = (responseJson as any).code;
         }
       } else {
         setContent(null);
@@ -247,7 +262,7 @@ const Content = ({ branch, page }: ContentProps) => {
   // Conditional rendering based on whether a page is selected
   return (
     <div className="move-content">
-      {page && content ? (
+      {/* {page && content ? (
         <ReactMarkdown
           children={content}
           rehypePlugins={[rehypeRaw]}
@@ -261,7 +276,8 @@ const Content = ({ branch, page }: ContentProps) => {
         <div>Loading content...</div>
       ) : (
         <div className="mt-6">Please select a module to view its content.</div>
-      )}
+      )} */}
+      <MoveReferenceContent compiledSource={compiledMdx} />
     </div>
   );
 };
@@ -343,8 +359,6 @@ export const MoveReference = () => {
   const pkgsData = useFrameworksData(branch);
 
   return (
-    // <BrowserOnly fallback={<div>Loading...</div>}>
-    //   {() => (
     <div className="move-reference-body">
       <div className="move-reference-nav">
         <TopNav
@@ -361,8 +375,6 @@ export const MoveReference = () => {
         <Content branch={branch} page={page} />
       </div>
     </div>
-    //   )}
-    // </BrowserOnly>
   );
 };
 
