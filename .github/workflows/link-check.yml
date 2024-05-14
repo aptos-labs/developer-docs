@@ -1,0 +1,34 @@
+name: Links
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "00 18 * * *"  # This will run the check daily at 18:00 UTC
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run Lychee Link Checker
+      uses: lycheeverse/lychee-action@v1
+      with:
+        args: --base . --verbose --no-progress './apps/nextra/**/*.mdx' './apps/nextra/**/*.html'
+        format: markdown
+        output: lychee/out.md
+
+    - name: Create Issue From File
+      if: failure()
+      uses: peter-evans/create-issue-from-file@v4
+      with:
+        title: "Link Checker Report"
+        content-filepath: lychee/out.md
+        labels: report, automated issue
