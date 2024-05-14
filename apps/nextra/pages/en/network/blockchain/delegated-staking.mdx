@@ -22,7 +22,7 @@ For the full delegation pool smart contract, see [delegation_pool.move](https://
 
 Unlike a stake pool, a delegation pool can be initialized with zero stake. When initialized, the delegated stake pool is owned indirectly via a resource account. This account will manage the stake of the underlying stake pool on behalf of the delegators by forwarding their stake-management operations to it (add, unlock, reactivate, withdraw) while the resource account cannot be directly accessed nor externally owned.
 
-See full list of [Delegation Pool Operations](../../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx)
+See full list of [Delegation Pool Operations](../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx)
 
 ![image](https://user-images.githubusercontent.com/120680608/234953723-ae6cc89e-76d8-4014-89f3-ec8799c7b281.png)
 
@@ -76,13 +76,13 @@ A delegator is anyone who has stake in the delegation pool. Delegators earn rewa
 ## Validator flow
 
 <Callout type="info">
-See [Delegation pool operations](../../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx) for the correct sequence of commands to run for the below flow.
+See [Delegation pool operations](../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx) for the correct sequence of commands to run for the below flow.
 </Callout>
 
-1. [Operator deploys validator node](../../nodes/validator-node.mdx)
-2. [Run command to get delegation pool address](../../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx#connect-to-aptos-network)
-3. [Operator connects to the network using pool address derived in step 2](../../nodes/validator-node/connect-nodes/connect-to-aptos-network.mdx)
-4. [Owner initializes the delegation pool and sets operator](../../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx#initialize-a-delegation-pool)
+1. [Operator deploys validator node](../nodes/validator-node.mdx)
+2. [Run command to get delegation pool address](../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx#connect-to-aptos-network)
+3. [Operator connects to the network using pool address derived in step 2](../nodes/validator-node/connect-nodes/connect-to-aptos-network.mdx)
+4. [Owner initializes the delegation pool and sets operator](../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx#initialize-a-delegation-pool)
 5. Delegators can add stake at any time
 6. When the delegation pool reaches 1M APT, the operator can call aptos node join-validator-set to join the active validator set. Changes will be effective in the next epoch.
 7. Validator validates (proposes blocks as a leader-validator) and gains rewards. Rewards are distributed to delegators proportionally to stake amount. The stake will automatically be locked up for a fixed duration (set by governance) and automatically renewed at expiration.
@@ -102,7 +102,7 @@ Participating as a delegation validator node on the Aptos network works like thi
 6. Operator must wait until the new epoch starts before their validator becomes active.
 
 <Callout type="info">
-For step-by-step instructions on how to join the validator set, see: [Joining Validator Set](../../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#joining-validator-set).
+For step-by-step instructions on how to join the validator set, see: [Joining Validator Set](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#joining-validator-set).
 </Callout>
 
 ### Automatic lockup duration
@@ -129,4 +129,4 @@ Rewards for delegated staking are calculated by using:
 2. Delegator stake
 3. [Validator rewards performance](./staking.mdx#rewards-formula)
 
-See [Computing delegation pool rewards](../../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx#compute-delegation-pool-rewards-earned)
+See [Computing delegation pool rewards](../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx#compute-delegation-pool-rewards-earned)

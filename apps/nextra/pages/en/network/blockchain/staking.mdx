@@ -150,7 +150,7 @@ The below rules is applicable during the changes of state:
 ## Validator flow
 
 <Callout type="info">
-See [Staking pool operations](../../nodes/validator-node/connect-nodes/staking-pool-operations.mdx) for the correct sequence of commands to run for the below flow.
+See [Staking pool operations](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx) for the correct sequence of commands to run for the below flow.
 </Callout>
 
 1. Owner initializes the stake pool with `aptos stake create-staking-contract`.
@@ -176,7 +176,7 @@ Participating as a validator node on the Aptos network works like this:
 6. Operator must wait until the new epoch starts before their validator becomes active.
 
 <Callout type="info">
-For step-by-step instructions on how to join the validator set, see: [Joining Validator Set](../../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#joining-validator-set).
+For step-by-step instructions on how to join the validator set, see: [Joining Validator Set](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#joining-validator-set).
 </Callout>
 
 ### Minimum and maximum stake
@@ -201,7 +201,7 @@ You can request to unlock your stake at any time. However, your stake will only 
 
 The principal amount is updated when any of the following actions occur:
 
-1. Operator [requests commission unlock](../../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#requesting-commission)
+1. Operator [requests commission unlock](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#requesting-commission)
 2. Staker (owner) withdraws funds
 3. Staker (owner) switches operators
 
@@ -289,8 +289,8 @@ When you leave a validator set, you can rejoin by depositing the minimum require
 ## Supporting documentation
 
 - [Current on-chain data](https://api.mainnet.aptoslabs.com/v1/accounts/0x1/resource/0x1::staking_config::StakingConfig)
-- [Staking Pool Operations](../../nodes/validator-node/connect-nodes/staking-pool-operations.mdx)
-- [Delegation Pool Operations](../../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx)
+- [Staking Pool Operations](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx)
+- [Delegation Pool Operations](../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx)
 - [Configuration file `staking_config.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/configs/staking_config.move)
 - [Contract file `staking_contract.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/staking_contract.move) covering requesting commissions
 - [All staking-related `.move files](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-framework/sources)
