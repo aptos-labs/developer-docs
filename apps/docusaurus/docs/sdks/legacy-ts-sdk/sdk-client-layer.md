@@ -19,7 +19,7 @@ This class provides a high-level interface for the application to interact with 
 The `Provider` class accepts:
 
 - `network` - network enum type `mainnet | testnet | devnet` indicates the network the app interacts with.
-- `CustomEndpoints` of type `{fullnodeUrl: string, indexerUrl: string}` - this is to support devs who run their own nodes/indexer or to use local development against a local testnet.
+- `CustomEndpoints` of type `{fullnodeUrl: string, indexerUrl: string}` - this is to support devs who run their own nodes/indexer or to use local development against a localnet.
 - `Config` - an optional argument the AptosClient accepts.
 - `doNotFixNodeUrl` - an optional argument the AptosClient accepts.
 

@@ -4,7 +4,7 @@ title: "Working With Move Contracts"
 
 # Working With Move Contracts
 
-The Aptos CLI is mostly used to compile, test, and formally verify Move contracts. If you have not installed the Aptos CLI yet, you can do so by following the steps here [Install the Aptos CLI (In-between Page)](https://www.notion.so/Install-the-Aptos-CLI-In-between-Page-9b923ca3507c4ffd8291f905ba621b95?pvs=21).
+The Aptos CLI is mostly used to compile, test, and formally verify Move contracts. If you have not installed the Aptos CLI yet, you can do so by following the steps here [Install the Aptos CLI](../install-cli/index.md).
 
 You can jump to sections here:
 
@@ -15,7 +15,7 @@ You can jump to sections here:
 5. [Running Published Contracts](#5-running-published-contracts)
 6. [(Optional) Formally Verifying Move Scripts](#6-optional-formally-verifying-move-scripts)
 
-To see how to chain together Move contracts on-chain using the CLI, you can follow this [“CLI Arguments” tutorial](./move-tutorials/arguments-in-json-tutorial.md).
+To see how to chain together Move contracts on-chain using the CLI, you can follow this ["CLI Arguments" tutorial](./move-tutorials/arguments-in-json-tutorial.md).
 
 :::tip
 Throughout this document there are parts of commands you will have to modify to fit your situation. Those variables will be wrapped in triangle brackets `<like this>`.

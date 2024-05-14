@@ -1,0 +1,33 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# Get Coin Balances
+
+`GetCoinBalances` retrieves the current balances for various coin types associated with a specified account address. This is crucial for platforms requiring real-time information on account coin holdings.
+
+<Callout type="info">
+Try it yourself! Adjust the query variables below in the editor to fetch data for different addresses.
+</Callout>
+
+<GraphQLEditor
+  query={`query GetCoinBalances($address: String, $offset: Int) {
+  current_coin_balances(
+    where: {owner_address: {_eq: $address}},
+    offset: $offset,
+    limit: 100,
+    order_by: {amount: desc}
+  ) {
+    coin_type
+    amount
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "offset": 0
+}`}
+/>
+
+#### Variables:
+- `$address`: **String** - The account address for which to fetch coin balances. Example: `"0x0000000000000000000000000000000000000000000000000000000000000001"`.
+- `$offset`: **Integer** (Optional) - The pagination offset to start fetching balances from. Default: `0`.

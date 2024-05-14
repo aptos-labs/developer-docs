@@ -4,7 +4,9 @@
   - [Installation](#installation)
     - [Requirements](#requirements)
   - [Clone the Developer docs repo](#clone-the-developer-docs-repo)
-  - [Build and serve the docs locally](#build-and-serve-the-docs-locally)
+  - [Install deps](#install-deps)
+  - [Develop on Nextra (New)](#develop-on-nextra-new)
+  - [Develop on Docusaurus (Legacy)](#develop-on-docusaurus-legacy)
   - [Debugging](#debugging)
   - [Regenerating contributors](#regenerating-contributors)
 
@@ -41,12 +43,58 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 git clone https://github.com/aptos-labs/developer-docs.git
 ```
 
-## Build and serve the docs locally
+## Install deps
 
-1. Run `pnpm`.
+You may have to run the following command first if you are on macOS M1 Sonoma or newer
+```sh
+pnpm add node-gyp -g
+```
 
 ```sh
 pnpm install
+```
+
+## Develop on Nextra (New)
+
+> Note: PLEASE SEE `apps/nextra/README.md` for more details!
+
+
+0. Setup environment
+
+Ensure you have configured your `.env` properly under `apps/nextra/.env`. There is a `.env.example` there that you can duplicate and rename to `.env` for simplicity.
+
+To ensure you have the right setup, you can run
+
+```sh
+pnpm prebuild
+```
+
+1. Build Nextra
+
+```bash
+npx turbo run build --filter={apps/nextra}...
+```
+
+This will build `apps/nextra` and all local packages it depends on.
+
+2. Navigate to the correct subdirectory
+
+```sh
+cd apps/nextra
+```
+
+3. Run development server
+
+```sh
+pnpm dev
+```
+
+## Develop on Docusaurus (Legacy)
+
+1. Navigate to the correct subdirectory
+
+```sh
+cd apps/docusaurus
 ```
 
 2. Build the repository
@@ -57,29 +105,9 @@ pnpm build
 
 3. Navigate to the correct subdirectory
 
-**Docusaurus**
-```sh
-cd apps/docusaurus
-```
-
-**Nextra**
-```sh
-cd apps/nextra
-```
-
-4. Run the development server
-
-**Docusaurus**
 ```sh
 pnpm serve
 ```
-
-**Nextra**
-```sh
-pnpm dev
-```
-
-See the README.md in each respective app for more information
 
 ## Debugging
 

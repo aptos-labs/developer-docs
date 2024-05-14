@@ -37,7 +37,7 @@ See [Accounts](../concepts/accounts.md) for more information.
 
 ### Aptos
 
-**Aptos** is a Layer 1 blockchain for everyone. It uses the Move programming language and launched its mainnet on 2022-10-17 to redefine the web3 user experience. The Aptos blockchain is dedicated to creating better user experiences through increased speed, security, scalability, reliability and usability with low transaction costs. The word “Aptos" means "The People" in the Ohlone language. Learn more about the Aptos blockchain on the [official Aptos website](https://aptosfoundation.org).
+**Aptos** is a Layer 1 blockchain for everyone. It uses the Move programming language and launched its mainnet on 2022-10-17 to redefine the web3 user experience. The Aptos blockchain is dedicated to creating better user experiences through increased speed, security, scalability, reliability and usability with low transaction costs. The word "Aptos" means "The People" in the Ohlone language. Learn more about the Aptos blockchain on the [official Aptos website](https://aptosfoundation.org).
 
 ### AptosBFT
 
@@ -100,7 +100,7 @@ An **Aptos node** is a peer entity of the Aptos network that tracks the state of
 ### Blocks
 
 - On Aptos, blocks are a batch of [transactions](#transaction) committed at the same time.
-- Block number is analogous to “block height” in blockchain literature.
+- Block number is analogous to "block height" in blockchain literature.
 - Transactions are referenced by ledger version rather than by block.
 
 ### Byzantine (Validator)
@@ -110,9 +110,9 @@ An **Aptos node** is a peer entity of the Aptos network that tracks the state of
 
 ### Byzantine Fault Tolerance (BFT)
 
-- **Byzantine Fault Tolerance** (BFT) is the ability of a distributed system to provide safety and liveness guarantees in the presence of faulty, or “[Byzantine](#byzantine-validator),” validators below a certain threshold.
+- **Byzantine Fault Tolerance** (BFT) is the ability of a distributed system to provide safety and liveness guarantees in the presence of faulty, or "[Byzantine](#byzantine-validator)," validators below a certain threshold.
 - The Aptos blockchain uses AptosBFT, a consensus protocol based on [Jolteon](#jolteon).
-- BFT algorithms typically operate with a number of entities, collectively holding N votes (which are called “validators” in the Aptos network’s application of the system).
+- BFT algorithms typically operate with a number of entities, collectively holding N votes (which are called "validators" in the Aptos network’s application of the system).
 - N is chosen to withstand some number of validators holding f votes, which might be malicious.
 - In this configuration, N is typically set to 3f+1. Validators holding up to f votes will be allowed to be faulty &mdash; offline, malicious, slow, etc. As long as 2f+1 votes are held by [honest](#honest-validator) validators, they will be able to reach consensus on consistent decisions.
 - This implies that BFT consensus protocols can function correctly, even if up to one-third of the voting power is held by validators that are compromised or fail.
@@ -271,8 +271,9 @@ See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 
 ### Maximum Gas Amount
 
-- The **Maximum Gas Amount** of a transaction is the maximum amount of gas the sender is ready to pay for the transaction.
-- The gas charged is equal to the gas price multiplied by units of gas required to process this transaction. If the result is less than the max gas amount, the transaction has been successfully executed.
+- The **Maximum Gas Amount** of a transaction is the maximum gas amount in gas units that the sender is ready to pay for the transaction.
+- The transaction can be successfully executed only if the gas used does not exceed the maximum gas amount.
+- The gas charged is equal to the gas price multiplied by units of gas required to process this transaction.
 - If the transaction runs out of gas while it is being executed or the account runs out of balance during execution, then the sender will be charged for gas used and the transaction will fail.
 
 See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
@@ -294,7 +295,7 @@ See [Gas and Storage Fees](../concepts/gas-txn-fee.md) for more information.
 ### Merkle Accumulator
 
 - The **[Merkle Accumulator](https://www.usenix.org/legacy/event/sec09/tech/full_papers/crosby.pdf)** is an _append-only_ Merkle tree that the Aptos blockchain uses to store the ledger.
-- A Merkle accumulator can provide proofs that a transaction was included in the chain (“proof of inclusion”).
+- A Merkle accumulator can provide proofs that a transaction was included in the chain ("proof of inclusion").
 - They are also called "history trees" in literature.
 
 ### Module
@@ -474,7 +475,7 @@ To see example uses of Move scripts, follow [Move scripts](../move/move-on-aptos
 ### Version
 
 - A **version** is a sequentially increasing number that increments for every [transaction](#transaction).
-- On aptos, transactions are globally ordered and every transaction has a version (often called called “height” in blockchain literature.)
+- On aptos, transactions are globally ordered and every transaction has a version (often called called "height" in blockchain literature.)
 - Transaction version 0 is the first transaction (genesis transaction), and a transaction version 100 is the 101st transaction in the blockchain.
 
 ## W

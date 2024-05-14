@@ -1,0 +1,324 @@
+<!-- Copyright © Aptos Foundation -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gas Report - 0xdbcb-message-set_message</title>
+    <style>
+      /* Add your custom CSS styles here */
+      body {
+        background-color: white;
+        color: black;
+      }
+
+      section {
+        margin-bottom: 60px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      td {
+        padding: 2px;
+      }
+
+      table {
+        border-collapse: collapse;
+      }
+
+      h2 {
+        background: rgb(220, 220, 220);
+      }
+
+      h3 {
+        background: rgb(240, 240, 240);
+      }
+
+      .flamegraph {
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body onload="init();">
+    <header>
+      <h1>Gas Report - 0xdbcb-message-set_message</h1>
+    </header>
+
+    <section>
+      <h2>Flamegraphs</h2>
+      <object
+        data="assets/exec_io.svg"
+        type="image/svg+xml"
+        class="flamegraph"
+      ></object>
+
+      <object
+        data="assets/storage.svg"
+        type="image/svg+xml"
+        class="flamegraph"
+      ></object>
+    </section>
+
+    <section>
+      <h2>Cost Break-down</h2>
+      The Aptos network charges a transaction in two parts: (1) execution and
+      IO, and (2) storage.
+
+      <h3>Execution & IO</h3>
+      The execution & IO costs cover the transient resources used for executing
+      the transaction and are quantified in gas units, meaning that the final
+      fee incurred will be subject to the gas unit price established by the gas
+      fee market. This allows one to benefit from low transaction fees when the
+      network is not at capacity.
+
+      <h4>Intrinsic Cost</h4>
+      2.76 gas units , 85.12% of the total cost for execution & IO.
+      <h4>Dependencies</h4>
+      <table>
+        <tr>
+          <th><b>Name</b></th>
+          <th style="text-align: right"><b>Size in Bytes</b></th>
+          <th style="text-align: right"><b>Cost in Gas Units</b></th>
+          <th style="text-align: right"><b>Percentage</b></th>
+        </tr>
+        <tr>
+          <td>0xdbcb..::message</td>
+          <td style="text-align: right">567</td>
+          <td style="text-align: right">0.0607</td>
+          <td style="text-align: right">1.87%</td>
+        </tr>
+      </table>
+      <h4>Execution</h4>
+      <table>
+        <tr>
+          <th><b>Operation</b></th>
+          <th style="text-align: right"><b>Number of Hits</b></th>
+          <th style="text-align: right"><b>Cost in Gas Units</b></th>
+          <th style="text-align: right"><b>Percentage</b></th>
+        </tr>
+        <tr>
+          <td>call</td>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">0.008453</td>
+          <td style="text-align: right">0.26%</td>
+        </tr>
+        <tr>
+          <td>create_ty</td>
+          <td style="text-align: right">6</td>
+          <td style="text-align: right">0.0032</td>
+          <td style="text-align: right">0.10%</td>
+        </tr>
+        <tr>
+          <td>move_to_generic</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.001838</td>
+          <td style="text-align: right">0.06%</td>
+        </tr>
+        <tr>
+          <td>read_ref</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.001295</td>
+          <td style="text-align: right">0.04%</td>
+        </tr>
+        <tr>
+          <td>pack</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000955</td>
+          <td style="text-align: right">0.03%</td>
+        </tr>
+        <tr>
+          <td>exists_generic</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000919</td>
+          <td style="text-align: right">0.03%</td>
+        </tr>
+        <tr>
+          <td>move_loc</td>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">0.000882</td>
+          <td style="text-align: right">0.03%</td>
+        </tr>
+        <tr>
+          <td>copy_loc</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000854</td>
+          <td style="text-align: right">0.03%</td>
+        </tr>
+        <tr>
+          <td>0x1::signer::borrow_address</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000735</td>
+          <td style="text-align: right">0.02%</td>
+        </tr>
+        <tr>
+          <td>not</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000588</td>
+          <td style="text-align: right">0.02%</td>
+        </tr>
+        <tr>
+          <td>br_false</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000441</td>
+          <td style="text-align: right">0.01%</td>
+        </tr>
+        <tr>
+          <td>st_loc</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000441</td>
+          <td style="text-align: right">0.01%</td>
+        </tr>
+        <tr>
+          <td>imm_borrow_loc</td>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">0.00044</td>
+          <td style="text-align: right">0.01%</td>
+        </tr>
+        <tr>
+          <td>ret</td>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">0.00044</td>
+          <td style="text-align: right">0.01%</td>
+        </tr>
+        <tr>
+          <td>branch</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000294</td>
+          <td style="text-align: right">0.01%</td>
+        </tr>
+      </table>
+      <h4>State Reads</h4>
+      <table>
+        <tr>
+          <td><b>Resource Name</b></td>
+          <td style="text-align: right"><b>Number of Hits</b></td>
+          <td style="text-align: right"><b>Cost in Gas Units</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+        </tr>
+        <tr>
+          <td>
+            0xdbcbe741d003a7369d87ec8717afb5df425977106497052f96f4e236372f7dd5::message::MessageHolder
+          </td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.302385</td>
+          <td style="text-align: right">9.33%</td>
+        </tr>
+      </table>
+      <h4>Ledger Writes</h4>
+      <h5>Transaction Itself</h5>
+      <table>
+        <tr>
+          <td style="text-align: right"><b>Cost in Gas Units</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+        </tr>
+        <tr>
+          <td style="text-align: right">0</td>
+          <td style="text-align: right">0.00%</td>
+        </tr>
+      </table>
+      <h5>Events</h5>
+      (No writes to show.)
+      <h5>State Write Ops</h5>
+      <table>
+        <tr>
+          <td><b>Resource Name</b></td>
+          <td style="text-align: right"><b>Number of Hits</b></td>
+          <td style="text-align: right"><b>Cost in Gas Units</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+        </tr>
+        <tr>
+          <td>
+            0xdbcbe741d003a7369d87ec8717afb5df425977106497052f96f4e236372f7dd5::message::MessageHolder
+          </td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.097756</td>
+          <td style="text-align: right">3.01%</td>
+        </tr>
+      </table>
+      <h3>Storage</h3>
+      The storage fees cover the extended-term storage of states and events and
+      are assessed at a fixed price in APT.
+
+      <h4>Transaction</h4>
+      0 APT , 0.00% of the total cost for storage.
+      <h4>States</h4>
+      <table>
+        <tr>
+          <td><b>Path</b></td>
+          <td style="text-align: right"><b>Cost in APT</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+          <td style="text-align: right"><b>Refund in APT</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+        </tr>
+        <tr>
+          <td>
+            0xdbcb..::0xdbcbe741d003a7369d87ec8717afb5df425977106497052f96f4e236372f7dd5::message::MessageHolder
+          </td>
+          <td style="text-align: right">0.0004368</td>
+          <td style="text-align: right">100.00%</td>
+          <td style="text-align: right">/</td>
+          <td style="text-align: right">/</td>
+        </tr>
+      </table>
+      <h4>Events</h4>
+      (No events to show.)
+    </section>
+
+    <section>
+      <h2>Full Execution Trace</h2>
+      <div>
+        <pre
+          style="display: inline-block; border: 1px solid black; padding: 2px"
+        ><code>execution &amp; IO (gas unit, full trace)                                                                                       3.242616    100.00%
+    intrinsic                                                                                                               2.76        85.12%
+    dependencies                                                                                                            0.0607      1.87%
+        0xdbcb..::message                                                                                                   0.0607      1.87%
+    0xdbcb..::message::set_message                                                                                          0.32416     10.00%
+        create_ty                                                                                                           0.0004      0.01%
+        create_ty                                                                                                           0.0004      0.01%
+        create_ty                                                                                                           0.0004      0.01%
+        create_ty                                                                                                           0.0004      0.01%
+        create_ty                                                                                                           0.0008      0.02%
+        imm_borrow_loc                                                                                                      0.00022     0.01%
+        call                                                                                                                0.00441     0.14%
+        0x1::signer::address_of                                                                                             0.007534    0.23%
+            create_ty                                                                                                       0.0008      0.02%
+            move_loc                                                                                                        0.000441    0.01%
+            call                                                                                                            0.004043    0.12%
+            0x1::signer::borrow_address                                                                                     0.000735    0.02%
+            read_ref                                                                                                        0.001295    0.04%
+            ret                                                                                                             0.00022     0.01%
+        st_loc                                                                                                              0.000441    0.01%
+        copy_loc                                                                                                            0.000854    0.03%
+        load&lt;0xdbcb..::0xdbcbe741d003a7369d87ec8717afb5df425977106497052f96f4e236372f7dd5::message::MessageHolder&gt;          0.302385    9.33%
+        exists_generic                                                                                                      0.000919    0.03%
+        not                                                                                                                 0.000588    0.02%
+        br_false                                                                                                            0.000441    0.01%
+        imm_borrow_loc                                                                                                      0.00022     0.01%
+        move_loc                                                                                                            0.000441    0.01%
+        pack                                                                                                                0.000955    0.03%
+        move_to_generic                                                                                                     0.001838    0.06%
+        branch                                                                                                              0.000294    0.01%
+        @28
+        ret                                                                                                                 0.00022     0.01%
+    ledger writes                                                                                                           0.097756    3.01%
+        transaction
+        events
+        state write ops                                                                                                     0.097756    3.01%
+            create&lt;0xdbcb..::0xdbcbe741d003a7369d87ec8717afb5df425977106497052f96f4e236372f7dd5::message::MessageHolder&gt;    0.097756    3.01%
+</code></pre>
+      </div>
+    </section>
+
+    <footer>
+      <p>Generated by the Aptos Gas Profiler</p>
+    </footer>
+  </body>
+</html>

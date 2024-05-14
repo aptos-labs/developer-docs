@@ -1,6 +1,5 @@
 ---
 title: "Staking Pool Operations"
-slug: "staking-pool-operations"
 ---
 
 import { Callout, Steps } from 'nextra/components';
@@ -35,7 +34,7 @@ View the values in [Aptos Blockchain Networks](../../../nodes/networks.mdx) to s
 
 Before initializing a staking pool, ensure that there is an existing owner account with 1 Million APT.
 
-1. Initialize the [Aptos CLI](../../../tools/aptos-cli/index.md) with a private key from an existing account, such as a wallet, or create a new account.
+1. Initialize the [Aptos CLI](../../../../build/cli.mdx) with a private key from an existing account, such as a wallet, or create a new account.
 
 ```bash filename="Terminal"
 aptos init --profile mainnet-owner \
@@ -234,7 +233,7 @@ Example output:
 
 **epoch_info**
 
-- Use the [Epoch Converter](https://www.epochconverter.com/) to convert the `unix_time` into human-readable time.
+- Use [Epoch Converter](https://www.epochconverter.com/) or a similar tool to convert the `unix_time` into human-readable time.
 
 ## Requesting commission
 
@@ -333,4 +332,7 @@ aptos node analyze-validator-performance \
 
 ## Tracking rewards
 
-`DistributeEvent` is emitted when there is a transfer from staking_contract to the operator or staker (owner). Rewards can be tracked either by listening to `DistributeEvent` or by using the [View function](../../../../build/apis/index.mdx#reading-state-with-the-view-function) to call `staking_contract_amounts`. This will return `accumulated_rewards` and `commission_amount`.
+`DistributeEvent` is emitted when there is a transfer from staking_contract to
+the operator or staker (owner). Rewards can be tracked either by listening to
+`DistributeEvent` or by using the View function {/* TODO: This link doesn't exist anymore! [View function](../../../../build/apis.mdx#reading-state-with-the-view-function) */}
+to call `staking_contract_amounts`. This will return `accumulated_rewards` and `commission_amount`.

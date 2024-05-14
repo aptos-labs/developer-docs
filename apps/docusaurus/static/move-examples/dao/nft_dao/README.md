@@ -85,10 +85,10 @@ create_proposal(
   - arg_values empty
   - arg_types empty
 - `transfer_fund`, the fund will be automatically transferred from DAO resource account to the destination account.
-  - arg_names: “dst”, “amount”
+  - arg_names: "dst", "amount"
   - arg_values: bcs_serialized values, please refer to TS SDK function. You need to provide original values in TS and arg_types to get the serialized values
     [aptos-core/property_map_serde.ts at main · aptos-labs/aptos-core](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/utils/property_map_serde.ts#L48)
-  - arg_types: “address”, “u64”
+  - arg_types: "address", "u64"
 
 4. A voter can vote for a proposal of a DAO
 
@@ -103,7 +103,7 @@ vote(
 )
 ```
 
-To generate the batch of token_ids, You need to provide corresponding token_names and property_versions: For example, token_names = (”monkey 1”, “monkey 2”), property_versions = (”1”, “0”)
+To generate the batch of token_ids, You need to provide corresponding token_names and property_versions: For example, token_names = ("monkey 1", "monkey 2"), property_versions = ("1", "0")
 
 5. Anyone can call resolve to resolve the proposal. A proposal voting duration has to expire and the proposal should have more votes than the minimum required threshold.
 

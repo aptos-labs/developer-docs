@@ -447,3 +447,59 @@ of a newly created object is the creator whose `signer` is passed into the creat
 objects managed by smart contract itself, usually they shouldn't have an owner out of the control of this contract. For
 those cases, those objects could make themselves as their owners and keep their object `ExtendRef` at the proper place
 to create `signer` as needed by the contract logic.
+
+# Migration from Coin to FA
+
+The Aptos framework now facilitates automatic creation of a FA (Fungible Asset) for each coin type as needed.
+For instance, when a user without a `CoinStore<CoinType>` receives a `Coin<CoinType>`, the framework seamlessly converts
+the coin to its corresponding FA and deposits it into the user's `PrimaryFungibleStore`. As assets may exist in both
+coin and FA forms, dapps require updates to ensure smooth and transparent migration for users.
+
+## Smart Contract Migration
+
+Projects utilizing the coin module need not modify their contracts. The coin module has been enhanced to handle
+migration automatically. Whenever a paired FA is required for a coin, it will be automatically created if it doesn't
+already exist. The mapping between coins and FAs is immutable and stored in an on-chain table:
+
+```rust
+struct CoinConversionMap has key {
+    coin_to_fungible_asset_map: Table<TypeInfo, address>,
+}
+```
+
+A `#[view]` function is available to retrieve metadata for the paired FA if it exists:
+
+```rust
+#[view]
+public fun paired_metadata<CoinType>(): Option<Object<Metadata>>
+```
+
+Similarly, a function exists for reverse lookup:
+
+```rust
+#[view]
+public fun paired_coin(metadata: Object<Metadata>): Option<TypeInfo>
+```
+
+## Off-chain Migration
+
+Since paired FAs are integrated into the `coin` module, off-chain migration involves two aspects:
+
+### Balance
+
+If a coin has a paired FA, a user may possess both as the same asset. So the balance has to be updated from coin balance only to the sum
+of coin balance and its paired FA balance.
+
+- For Aptos Indexer users, utilize a new table called `current_migrated_coin_balance` to obtain the latest sum of coin balance and FA balance representing the same asset type.
+- For users employing Node API or other customized indexing, they should add the balance of the paired FA in users' `PrimaryFungibleStore` if it exists to the coin balance.
+
+To retrieve the balance of the `PrimaryFungibleStore` of the paired FA of coin type CoinType for a user:
+
+1. Call `paired_metadata<CoinType>()` to obtain the paired FA metadata object address, which is immutable, allowing for storage or caching to enhance performance.
+2. Retrieve the balance of the paired FA by calling [getCurrentFungibleAssetBalances](https://github.com/aptos-labs/aptos-ts-sdk/blob/c01a26ff899235fac1c31c6cc3fe504b764e5b91/src/api/fungibleAsset.ts#L115);
+3. Alternatively, determine the address of the `PrimaryFungibleStore`, which is deterministic as `sha3(32-byte account address | 32-byte metadata object address | 0xFC)`, and obtain the `PrimaryFungibleStore` resource at this address to fetch the balance.
+
+### Event
+
+Post-migration, both coin events and FA events could be emitted for an activity, depending on whether the user has migrated or not. Dapps relying on events should update their business logic accordingly.
+If a dapp relies on the events, the business logic should be updated properly.

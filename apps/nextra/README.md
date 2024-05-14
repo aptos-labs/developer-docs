@@ -8,20 +8,26 @@ the local dev server:
 ### Development
 
 1. From the root of the `developer-docs` directory, run:
-```sh
-pnpm i && pnpm build
+
+```bash filename="Terminal"
+pnpm i
 ```
 
-2. Navigate back to `netra` 
+2. Navigate back to `nextra`
 
 Create a `.env` file in the root of `nextra` with the following
 
-```sh
+```bash filename="Terminal"
 NEXT_PUBLIC_ORIGIN="http://localhost:3030"
+NEXT_PUBLIC_CODECACHE_API_KEY="<API_KEY>"
 ```
 
+Note: There is an example at `apps/nextra/.env.example` that
+you can duplicate and rename the duplicate to `.env`.
+
 3. Then run
-```bash
+
+```bash filename="Terminal"
 pnpm dev
 ```
 
@@ -31,7 +37,7 @@ And visit `localhost:3030` to preview your changes.
 
 1. From the root of the `developer-docs` directory run:
 
-```sh
+```bash filename="Terminal"
 npx turbo run build --filter={apps/nextra}...
 ```
 
@@ -39,21 +45,21 @@ Note: This guarantees that all dependencies are built properly, in addition to `
 
 If there are no changes to other packages, you can just do
 
-```sh
+```bash filename="Terminal"
 pnpm build
 ```
 
 from inside the `nextra` directory.
 
-2. Navigate back to `netra` 
+2. Navigate back to `nextra`
 
 3. Then run
 
-```sh
+```bash filename="Terminal"
 pnpm start
 ```
 
 ### Troubleshooting
 
-There are some known issues with Nextra, such as search not working in development. These are further described in 
+There are some known issues with Nextra, such as search not working in development. These are further described in
 [troubleshooting.mdx](./pages/en/docs/setup/troubleshooting.mdx)

@@ -13,7 +13,7 @@ Importantly, Aptos Keyless maintains user privacy in two ways:
 
 Keyless accounts are revolutionary to users for the following reasons:
 
-1. “1-click” account creation via familiar Web2 logins like `Sign In with Google`.
+1. "1-click" account creation via familiar Web2 logins like `Sign In with Google`.
 2. Ability to transact on the Aptos blockchain without needing to navigate away from the application experience to download a wallet.
 3. Requires no secret key management by the user. This means blockchain account access is synonymous with access to one’s OIDC account and Web2-like recovery flows are available to regain access to one’s blockchain account in case the user ever loses access to their OIDC account.
 4. Seamless cross-device experiences; users log in with their OIDC account no matter what device they are on - no need to download wallet software on each device, import their keys and encrypt them with a password, which must be maintained.
@@ -24,11 +24,9 @@ Use of the **_Aptos Keyless Integration Guide_** will allow for the integration 
 To provide feedback, get support, or be a design partner as we enhance Aptos Keyless, join us here: https://t.me/+h5CN-W35yUFiYzkx
 :::
 
-_Note: This guide is oriented toward non-wallet applications. If you are a wallet developer and have interest in using Keyless accounts, please reach out to us directly._
-
 ## Terminology
 
-- **OpenID Connect (OIDC)**: is the identity authentication protocol used to enable federated identity verification. This protocol is what is used when a user goes through the “Sign in with Google” flow for example.
+- **OpenID Connect (OIDC)**: is the identity authentication protocol used to enable federated identity verification. This protocol is what is used when a user goes through the "Sign in with Google" flow for example.
 - **Identity Provider (IdP)**: is the trusted authority who authenticates your identity via OIDC. Supported example includes: Google.
 - **JSON Web Token (JWT):** is an open standard used to share security information between two parties — a client and a server. Each JWT contains encoded JSON objects, including a set of claims. JWTs are signed using a cryptographic algorithm to ensure that the claims cannot be altered after the token is issued.
   - `iss`, an identifier for the OIDC provider (e.g., https://accounts.google.com)
@@ -39,7 +37,7 @@ _Note: This guide is oriented toward non-wallet applications. If you are a walle
   - `email`, some providers might also expose the user’s email as one of the fields (e.g., Google)
     - in addition, an `email_verified` field will be exposed to indicate if the provider has verified that the user owns this email address
   - `nonce`, arbitrary data that the application wants the OIDC provider to sign over
-  - `iat`, the time the the JWT was issued at.
+  - `iat`, the time the JWT was issued at.
 - **Ephemeral Key Pair:** a temporary public/private key pair that is used to sign transactions for an Aptos Keyless account. The public key and its expiration date are committed in the JWT token via the `nonce` field.
 - **Keyless Account:** a blockchain account that is directly-derived from (1) a user’s OIDC account (e.g., `alice@gmail.com`) and (2) an associated application’s OAuth client_id (e.g., Notion.so). Users authenticate through the OIDC flow.
 - **JSON Web Key (JWK):** is the cryptographic public key of the OIDC provider. This public key is used to verify the signature on the JWTs that the OIDC provider issues to the client application. This way, the client application can verify the authenticity of the tokens and ensure that they have not been tampered with.
@@ -57,7 +55,7 @@ At a high level, there are three steps to follow in order to integrate Keyless A
 1. **Configure your OpenID integration with your IdP.** In this step, the dApp will register with the IdP of choice (e.g. Google) and receive a `client_id`
 2. **Install the Aptos TypeScript SDK.**
 3. **Integrate Keyless Account support in your application client**
-   1. Set up the `“Sign In with [Idp]”` flow for your user.
+   1. Set up the `"Sign In with [Idp]"` flow for your user.
    2. Instantiate the user’s `KeylessAccount`
    3. Sign and submit transactions via the `KeylessAccount`.
 
@@ -102,7 +100,7 @@ If your integration stops working please try upgrading the package to the latest
 
 Below are the default steps for a client to integrate Keyless Accounts
 
-### 1. Present the user with a “Sign In with [IdP]” button on the UI
+### 1. Present the user with a "Sign In with [IdP]" button on the UI
 
     1. In the background, we create an ephemeral key pair. Store this in local storage.
 
@@ -116,7 +114,7 @@ Below are the default steps for a client to integrate Keyless Accounts
 
         ```tsx
         // This saves the EphemeralKeyPair in local storage keyed, by its nonce.
-        storeEphemeralKeyPair(ephemeralKeyPair.nonce, ephemeralKeyPair);
+        storeEphemeralKeyPair(ephemeralKeyPair);
         ```
 
 <details>
@@ -173,18 +171,8 @@ export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
  * Encoding for the EphemeralKeyPair class to be stored in localStorage
  */
 const EphemeralKeyPairEncoding = {
-  decode: (e: any) =>
-    new EphemeralKeyPair({
-      blinder: new Uint8Array(e.blinder),
-      expiryDateSecs: BigInt(e.expiryDateSecs),
-      privateKey: new Ed25519PrivateKey(e.privateKey),
-    }),
-  encode: (e: EphemeralKeyPair) => ({
-    __type: "EphemeralKeyPair",
-    blinder: Array.from(e.blinder),
-    expiryDateSecs: e.expiryDateSecs.toString(),
-    privateKey: e.privateKey.toString(),
-  }),
+  decode: (e: any) => EphemeralKeyPair.fromBytes(e.data),
+  encode: (e: EphemeralKeyPair) => ({ __type: "EphemeralKeyPair", data: e.bcsToBytes() }),
 };
 
 /**
@@ -195,6 +183,8 @@ export const encodeEphemeralKeyPairs = (
 ): string =>
   JSON.stringify(keyPairs, (_, e) => {
     if (typeof e === "bigint") return { __type: "bigint", value: e.toString() };
+    if (e instanceof Uint8Array)
+      return { __type: "Uint8Array", value: Array.from(e) };
     if (e instanceof EphemeralKeyPair)
       return EphemeralKeyPairEncoding.encode(e);
     return e;
@@ -208,6 +198,7 @@ export const decodeEphemeralKeyPairs = (
 ): StoredEphemeralKeyPairs =>
   JSON.parse(encodedEphemeralKeyPairs, (_, e) => {
     if (e && e.__type === "bigint") return BigInt(e.value);
+    if (e && e.__type === "Uint8Array") return new Uint8Array(e.value);
     if (e && e.__type === "EphemeralKeyPair")
       return EphemeralKeyPairEncoding.decode(e);
     return e;
@@ -351,9 +342,9 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
     4. Instantiate the user’s `KeylessAccount`
 
         ```tsx
-        import {Aptos, Network} from '@aptos-labs/ts-sdk';
+        import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
-        const aptos = new Aptos({network: Network.DEVNET});  // Only devnet supported as of now.
+        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET}));  // Only devnet supported as of now.
         const keylessAccount = await aptos.deriveKeylessAccount({
             jwt,
             ephemeralKeyPair,

@@ -1,0 +1,676 @@
+<!-- Copyright © Aptos Foundation -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gas Report - 0x1-aptos_account-transfer</title>
+    <style>
+      /* Add your custom CSS styles here */
+      body {
+        background-color: white;
+        color: black;
+      }
+
+      section {
+        margin-bottom: 60px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      td {
+        padding: 2px;
+      }
+
+      table {
+        border-collapse: collapse;
+      }
+
+      h2 {
+        background: rgb(220, 220, 220);
+      }
+
+      h3 {
+        background: rgb(240, 240, 240);
+      }
+
+      .flamegraph {
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body onload="init();">
+    <header>
+      <h1>Gas Report - 0x1-aptos_account-transfer</h1>
+    </header>
+
+    <section>
+      <h2>Flamegraphs</h2>
+      <object
+        data="assets/exec_io.svg"
+        type="image/svg+xml"
+        class="flamegraph"
+      ></object>
+
+      (No storage graph to show.)
+    </section>
+
+    <section>
+      <h2>Cost Break-down</h2>
+      The Aptos network charges a transaction in two parts: (1) execution and
+      IO, and (2) storage.
+
+      <h3>Execution & IO</h3>
+      The execution & IO costs cover the transient resources used for executing
+      the transaction and are quantified in gas units, meaning that the final
+      fee incurred will be subject to the gas unit price established by the gas
+      fee market. This allows one to benefit from low transaction fees when the
+      network is not at capacity.
+
+      <h4>Intrinsic Cost</h4>
+      2.76 gas units , 45.77% of the total cost for execution & IO.
+
+      <h4>Dependencies</h4>
+      (No dependencies to show. System dependencies are excluded.)
+      <h4>Execution</h4>
+      <table>
+        <tr>
+          <th><b>Operation</b></th>
+          <th style="text-align: right"><b>Number of Hits</b></th>
+          <th style="text-align: right"><b>Cost in Gas Units</b></th>
+          <th style="text-align: right"><b>Percentage</b></th>
+        </tr>
+        <tr>
+          <td>call_generic</td>
+          <td style="text-align: right">14</td>
+          <td style="text-align: right">0.074585</td>
+          <td style="text-align: right">1.24%</td>
+        </tr>
+        <tr>
+          <td>create_ty</td>
+          <td style="text-align: right">92</td>
+          <td style="text-align: right">0.0568</td>
+          <td style="text-align: right">0.94%</td>
+        </tr>
+        <tr>
+          <td>
+            0x1::event::write_to_event_store&lt;0x1::coin::DepositEvent&gt;
+          </td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.024886</td>
+          <td style="text-align: right">0.41%</td>
+        </tr>
+        <tr>
+          <td>
+            0x1::event::write_to_event_store&lt;0x1::coin::WithdrawEvent&gt;
+          </td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.024886</td>
+          <td style="text-align: right">0.41%</td>
+        </tr>
+        <tr>
+          <td>copy_loc</td>
+          <td style="text-align: right">20</td>
+          <td style="text-align: right">0.01708</td>
+          <td style="text-align: right">0.28%</td>
+        </tr>
+        <tr>
+          <td>read_ref</td>
+          <td style="text-align: right">11</td>
+          <td style="text-align: right">0.014245</td>
+          <td style="text-align: right">0.24%</td>
+        </tr>
+        <tr>
+          <td>call</td>
+          <td style="text-align: right">3</td>
+          <td style="text-align: right">0.012863</td>
+          <td style="text-align: right">0.21%</td>
+        </tr>
+        <tr>
+          <td>move_loc</td>
+          <td style="text-align: right">28</td>
+          <td style="text-align: right">0.012348</td>
+          <td style="text-align: right">0.20%</td>
+        </tr>
+        <tr>
+          <td>imm_borrow_field_generic</td>
+          <td style="text-align: right">12</td>
+          <td style="text-align: right">0.00882</td>
+          <td style="text-align: right">0.15%</td>
+        </tr>
+        <tr>
+          <td>mut_borrow_field_generic</td>
+          <td style="text-align: right">8</td>
+          <td style="text-align: right">0.00588</td>
+          <td style="text-align: right">0.10%</td>
+        </tr>
+        <tr>
+          <td>mut_borrow_global_generic</td>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">0.003676</td>
+          <td style="text-align: right">0.06%</td>
+        </tr>
+        <tr>
+          <td>br_false</td>
+          <td style="text-align: right">7</td>
+          <td style="text-align: right">0.003087</td>
+          <td style="text-align: right">0.05%</td>
+        </tr>
+        <tr>
+          <td>write_ref</td>
+          <td style="text-align: right">4</td>
+          <td style="text-align: right">0.00294</td>
+          <td style="text-align: right">0.05%</td>
+        </tr>
+        <tr>
+          <td>0x1::bcs::to_bytes&lt;0x1::guid::GUID&gt;</td>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">0.00288</td>
+          <td style="text-align: right">0.05%</td>
+        </tr>
+        <tr>
+          <td>pack</td>
+          <td style="text-align: right">3</td>
+          <td style="text-align: right">0.002865</td>
+          <td style="text-align: right">0.05%</td>
+        </tr>
+        <tr>
+          <td>ret</td>
+          <td style="text-align: right">13</td>
+          <td style="text-align: right">0.00286</td>
+          <td style="text-align: right">0.05%</td>
+        </tr>
+        <tr>
+          <td>exists</td>
+          <td style="text-align: right">3</td>
+          <td style="text-align: right">0.002757</td>
+          <td style="text-align: right">0.05%</td>
+        </tr>
+        <tr>
+          <td>not</td>
+          <td style="text-align: right">4</td>
+          <td style="text-align: right">0.002352</td>
+          <td style="text-align: right">0.04%</td>
+        </tr>
+        <tr>
+          <td>st_loc</td>
+          <td style="text-align: right">5</td>
+          <td style="text-align: right">0.002205</td>
+          <td style="text-align: right">0.04%</td>
+        </tr>
+        <tr>
+          <td>add</td>
+          <td style="text-align: right">3</td>
+          <td style="text-align: right">0.001764</td>
+          <td style="text-align: right">0.03%</td>
+        </tr>
+        <tr>
+          <td>branch</td>
+          <td style="text-align: right">5</td>
+          <td style="text-align: right">0.00147</td>
+          <td style="text-align: right">0.02%</td>
+        </tr>
+        <tr>
+          <td>unpack</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000955</td>
+          <td style="text-align: right">0.02%</td>
+        </tr>
+        <tr>
+          <td>exists_generic</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000919</td>
+          <td style="text-align: right">0.02%</td>
+        </tr>
+        <tr>
+          <td>0x1::signer::borrow_address</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000735</td>
+          <td style="text-align: right">0.01%</td>
+        </tr>
+        <tr>
+          <td>ge</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000588</td>
+          <td style="text-align: right">0.01%</td>
+        </tr>
+        <tr>
+          <td>sub</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.000588</td>
+          <td style="text-align: right">0.01%</td>
+        </tr>
+        <tr>
+          <td>ld_u64</td>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">0.00044</td>
+          <td style="text-align: right">0.01%</td>
+        </tr>
+        <tr>
+          <td>nop</td>
+          <td style="text-align: right">7</td>
+          <td style="text-align: right">0.000252</td>
+          <td style="text-align: right">0.00%</td>
+        </tr>
+        <tr>
+          <td>imm_borrow_loc</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.00022</td>
+          <td style="text-align: right">0.00%</td>
+        </tr>
+      </table>
+      <h4>State Reads</h4>
+      <table>
+        <tr>
+          <td><b>Resource Name</b></td>
+          <td style="text-align: right"><b>Number of Hits</b></td>
+          <td style="text-align: right"><b>Cost in Gas Units</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+        </tr>
+        <tr>
+          <td>0x1::coin::CoinStore&lt;0x1::aptos_coin::AptosCoin&gt;</td>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">1.841762</td>
+          <td style="text-align: right">30.54%</td>
+        </tr>
+        <tr>
+          <td>0x1::account::Account</td>
+          <td style="text-align: right">1</td>
+          <td style="text-align: right">0.920881</td>
+          <td style="text-align: right">15.27%</td>
+        </tr>
+      </table>
+      <h4>Ledger Writes</h4>
+      <h5>Transaction Itself</h5>
+      <table>
+        <tr>
+          <td style="text-align: right"><b>Cost in Gas Units</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+        </tr>
+        <tr>
+          <td style="text-align: right">0</td>
+          <td style="text-align: right">0.00%</td>
+        </tr>
+      </table>
+      <h5>Events</h5>
+      (No writes to show.)
+      <h5>State Write Ops</h5>
+      <table>
+        <tr>
+          <td><b>Resource Name</b></td>
+          <td style="text-align: right"><b>Number of Hits</b></td>
+          <td style="text-align: right"><b>Cost in Gas Units</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+        </tr>
+        <tr>
+          <td>0x1::coin::CoinStore&lt;0x1::aptos_coin::AptosCoin&gt;</td>
+          <td style="text-align: right">2</td>
+          <td style="text-align: right">0.222034</td>
+          <td style="text-align: right">3.68%</td>
+        </tr>
+      </table>
+      <h3>Storage</h3>
+      The storage fees cover the extended-term storage of states and events and
+      are assessed at a fixed price in APT.
+
+      <h4>Transaction</h4>
+      0 APT
+      <h4>States</h4>
+      <table>
+        <tr>
+          <td><b>Path</b></td>
+          <td style="text-align: right"><b>Cost in APT</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+          <td style="text-align: right"><b>Refund in APT</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+        </tr>
+        <tr>
+          <td>
+            0x551f..::0x1::coin::CoinStore&lt;0x1::aptos_coin::AptosCoin&gt;
+          </td>
+          <td style="text-align: right">0</td>
+          <td style="text-align: right">/</td>
+          <td style="text-align: right">/</td>
+          <td style="text-align: right">/</td>
+        </tr>
+        <tr>
+          <td>
+            0xc94e..::0x1::coin::CoinStore&lt;0x1::aptos_coin::AptosCoin&gt;
+          </td>
+          <td style="text-align: right">0</td>
+          <td style="text-align: right">/</td>
+          <td style="text-align: right">/</td>
+          <td style="text-align: right">/</td>
+        </tr>
+      </table>
+      <h4>Events</h4>
+      <table>
+        <tr>
+          <td><b>Name</b></td>
+          <td style="text-align: right"><b>Cost in APT</b></td>
+          <td style="text-align: right"><b>Percentage</b></td>
+        </tr>
+        <tr>
+          <td>0x1::coin::WithdrawEvent</td>
+          <td style="text-align: right">0</td>
+          <td style="text-align: right">/</td>
+        </tr>
+        <tr>
+          <td>0x1::coin::DepositEvent</td>
+          <td style="text-align: right">0</td>
+          <td style="text-align: right">/</td>
+        </tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Full Execution Trace</h2>
+      <div>
+        <pre
+          style="display: inline-block; border: 1px solid black; padding: 2px"
+        ><code>execution &amp; IO (gas unit, full trace)                                                   6.030623    100.00%
+    intrinsic                                                                           2.76        45.77%
+    keyless                                                                                         
+    0x1::aptos_account::transfer                                                        3.048589    50.55%
+        create_ty                                                                       0.0008      0.01%
+        create_ty                                                                       0.0004      0.01%
+        create_ty                                                                       0.0004      0.01%
+        create_ty                                                                       0.0004      0.01%
+        copy_loc                                                                        0.000854    0.01%
+        call                                                                            0.00441     0.07%
+        0x1::account::exists_at                                                         0.922861    15.30%
+            create_ty                                                                   0.0004      0.01%
+            move_loc                                                                    0.000441    0.01%
+            load&lt;0x551f..::0x1::account::Account&gt;                                       0.920881    15.27%
+            exists_generic                                                              0.000919    0.02%
+            ret                                                                         0.00022     0.00%
+        not                                                                             0.000588    0.01%
+        br_false                                                                        0.000441    0.01%
+        @6                                                                                          
+        copy_loc                                                                        0.000854    0.01%
+        create_ty                                                                       0.0004      0.01%
+        call_generic                                                                    0.004777    0.08%
+        0x1::coin::is_account_registered&lt;0x1::aptos_coin::AptosCoin&gt;                    0.923661    15.32%
+            create_ty                                                                   0.0004      0.01%
+            move_loc                                                                    0.000441    0.01%
+            create_ty                                                                   0.0008      0.01%
+            load&lt;0x551f..::0x1::coin::CoinStore&lt;0x1::aptos_coin::AptosCoin&gt;&gt;            0.920881    15.27%
+            exists                                                                      0.000919    0.02%
+            ret                                                                         0.00022     0.00%
+        not                                                                             0.000588    0.01%
+        br_false                                                                        0.000441    0.01%
+        @15                                                                                         
+        move_loc                                                                        0.000441    0.01%
+        move_loc                                                                        0.000441    0.01%
+        move_loc                                                                        0.000441    0.01%
+        create_ty                                                                       0.0004      0.01%
+        call_generic                                                                    0.006612    0.11%
+        0x1::coin::transfer&lt;0x1::aptos_coin::AptosCoin&gt;                                 1.178159    19.54%
+            create_ty                                                                   0.0008      0.01%
+            create_ty                                                                   0.0004      0.01%
+            create_ty                                                                   0.0004      0.01%
+            create_ty                                                                   0.0008      0.01%
+            move_loc                                                                    0.000441    0.01%
+            move_loc                                                                    0.000441    0.01%
+            create_ty                                                                   0.0004      0.01%
+            call_generic                                                                0.006245    0.10%
+            0x1::coin::withdraw&lt;0x1::aptos_coin::AptosCoin&gt;                             1.048476    17.39%
+                create_ty                                                               0.0008      0.01%
+                create_ty                                                               0.0004      0.01%
+                create_ty                                                               0.0004      0.01%
+                create_ty                                                               0.0012      0.02%
+                move_loc                                                                0.000441    0.01%
+                call                                                                    0.00441     0.07%
+                0x1::signer::address_of                                                 0.007534    0.12%
+                    create_ty                                                           0.0008      0.01%
+                    move_loc                                                            0.000441    0.01%
+                    call                                                                0.004043    0.07%
+                    0x1::signer::borrow_address                                         0.000735    0.01%
+                    read_ref                                                            0.001295    0.02%
+                    ret                                                                 0.00022     0.00%
+                st_loc                                                                  0.000441    0.01%
+                copy_loc                                                                0.000854    0.01%
+                create_ty                                                               0.0004      0.01%
+                call_generic                                                            0.004777    0.08%
+                0x1::coin::is_account_registered&lt;0x1::aptos_coin::AptosCoin&gt;            0.923661    15.32%
+                    create_ty                                                           0.0004      0.01%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    load&lt;0xc94e..::0x1::coin::CoinStore&lt;0x1::aptos_coin::AptosCoin&gt;&gt;    0.920881    15.27%
+                    exists                                                              0.000919    0.02%
+                    ret                                                                 0.00022     0.00%
+                br_false                                                                0.000441    0.01%
+                branch                                                                  0.000294    0.00%
+                @10                                                                                 
+                move_loc                                                                0.000441    0.01%
+                create_ty                                                               0.0008      0.01%
+                mut_borrow_global_generic                                               0.001838    0.03%
+                st_loc                                                                  0.000441    0.01%
+                copy_loc                                                                0.000854    0.01%
+                create_ty                                                               0.0008      0.01%
+                create_ty                                                               0.0004      0.01%
+                imm_borrow_field_generic                                                0.000735    0.01%
+                read_ref                                                                0.001295    0.02%
+                not                                                                     0.000588    0.01%
+                br_false                                                                0.000441    0.01%
+                branch                                                                  0.000294    0.00%
+                @24                                                                                 
+                copy_loc                                                                0.000854    0.01%
+                create_ty                                                               0.0008      0.01%
+                create_ty                                                               0.0008      0.01%
+                mut_borrow_field_generic                                                0.000735    0.01%
+                copy_loc                                                                0.000854    0.01%
+                pack                                                                    0.000955    0.02%
+                create_ty                                                               0.0004      0.01%
+                call_generic                                                            0.005511    0.09%
+                0x1::event::emit_event&lt;0x1::coin::WithdrawEvent&gt;                        0.053853    0.89%
+                    create_ty                                                           0.0012      0.02%
+                    create_ty                                                           0.0004      0.01%
+                    copy_loc                                                            0.000854    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    imm_borrow_field_generic                                            0.000735    0.01%
+                    create_ty                                                           0.0004      0.01%
+                    call_generic                                                        0.00441     0.07%
+                    0x1::bcs::to_bytes&lt;0x1::guid::GUID&gt;                                 0.00144     0.02%
+                    copy_loc                                                            0.000854    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    imm_borrow_field_generic                                            0.000735    0.01%
+                    read_ref                                                            0.001295    0.02%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0004      0.01%
+                    call_generic                                                        0.005144    0.09%
+                    0x1::event::write_to_event_store&lt;0x1::coin::WithdrawEvent&gt;          0.024886    0.41%
+                    nop                                                                 0.000036    0.00%
+                    copy_loc                                                            0.000854    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    imm_borrow_field_generic                                            0.000735    0.01%
+                    read_ref                                                            0.001295    0.02%
+                    ld_u64                                                              0.00022     0.00%
+                    add                                                                 0.000588    0.01%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    mut_borrow_field_generic                                            0.000735    0.01%
+                    write_ref                                                           0.000735    0.01%
+                    ret                                                                 0.00022     0.00%
+                move_loc                                                                0.000441    0.01%
+                create_ty                                                               0.0008      0.01%
+                create_ty                                                               0.0008      0.01%
+                mut_borrow_field_generic                                                0.000735    0.01%
+                move_loc                                                                0.000441    0.01%
+                create_ty                                                               0.0004      0.01%
+                call_generic                                                            0.005511    0.09%
+                0x1::coin::extract&lt;0x1::aptos_coin::AptosCoin&gt;                          0.019386    0.32%
+                    create_ty                                                           0.0012      0.02%
+                    create_ty                                                           0.0004      0.01%
+                    copy_loc                                                            0.000854    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    imm_borrow_field_generic                                            0.000735    0.01%
+                    read_ref                                                            0.001295    0.02%
+                    copy_loc                                                            0.000854    0.01%
+                    ge                                                                  0.000588    0.01%
+                    br_false                                                            0.000441    0.01%
+                    branch                                                              0.000294    0.00%
+                    @12                                                                             
+                    nop                                                                 0.000036    0.00%
+                    copy_loc                                                            0.000854    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    imm_borrow_field_generic                                            0.000735    0.01%
+                    read_ref                                                            0.001295    0.02%
+                    copy_loc                                                            0.000854    0.01%
+                    sub                                                                 0.000588    0.01%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    mut_borrow_field_generic                                            0.000735    0.01%
+                    write_ref                                                           0.000735    0.01%
+                    nop                                                                 0.000036    0.00%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0004      0.01%
+                    create_ty                                                           0.0008      0.01%
+                    pack                                                                0.000955    0.02%
+                    ret                                                                 0.00022     0.00%
+                ret                                                                     0.00022     0.00%
+            st_loc                                                                      0.000441    0.01%
+            move_loc                                                                    0.000441    0.01%
+            move_loc                                                                    0.000441    0.01%
+            create_ty                                                                   0.0004      0.01%
+            call_generic                                                                0.005878    0.10%
+            0x1::coin::deposit&lt;0x1::aptos_coin::AptosCoin&gt;                              0.111935    1.86%
+                create_ty                                                               0.0004      0.01%
+                create_ty                                                               0.0008      0.01%
+                create_ty                                                               0.0012      0.02%
+                copy_loc                                                                0.000854    0.01%
+                create_ty                                                               0.0004      0.01%
+                call_generic                                                            0.004777    0.08%
+                0x1::coin::is_account_registered&lt;0x1::aptos_coin::AptosCoin&gt;            0.00278     0.05%
+                    create_ty                                                           0.0004      0.01%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    exists                                                              0.000919    0.02%
+                    ret                                                                 0.00022     0.00%
+                br_false                                                                0.000441    0.01%
+                branch                                                                  0.000294    0.00%
+                @7                                                                                  
+                move_loc                                                                0.000441    0.01%
+                create_ty                                                               0.0008      0.01%
+                mut_borrow_global_generic                                               0.001838    0.03%
+                st_loc                                                                  0.000441    0.01%
+                copy_loc                                                                0.000854    0.01%
+                create_ty                                                               0.0008      0.01%
+                create_ty                                                               0.0004      0.01%
+                imm_borrow_field_generic                                                0.000735    0.01%
+                read_ref                                                                0.001295    0.02%
+                not                                                                     0.000588    0.01%
+                br_false                                                                0.000441    0.01%
+                branch                                                                  0.000294    0.00%
+                @21                                                                                 
+                copy_loc                                                                0.000854    0.01%
+                create_ty                                                               0.0008      0.01%
+                create_ty                                                               0.0008      0.01%
+                mut_borrow_field_generic                                                0.000735    0.01%
+                imm_borrow_loc                                                          0.00022     0.00%
+                create_ty                                                               0.0008      0.01%
+                create_ty                                                               0.0004      0.01%
+                imm_borrow_field_generic                                                0.000735    0.01%
+                read_ref                                                                0.001295    0.02%
+                pack                                                                    0.000955    0.02%
+                create_ty                                                               0.0004      0.01%
+                call_generic                                                            0.005511    0.09%
+                0x1::event::emit_event&lt;0x1::coin::DepositEvent&gt;                         0.053853    0.89%
+                    create_ty                                                           0.0012      0.02%
+                    create_ty                                                           0.0004      0.01%
+                    copy_loc                                                            0.000854    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    imm_borrow_field_generic                                            0.000735    0.01%
+                    create_ty                                                           0.0004      0.01%
+                    call_generic                                                        0.00441     0.07%
+                    0x1::bcs::to_bytes&lt;0x1::guid::GUID&gt;                                 0.00144     0.02%
+                    copy_loc                                                            0.000854    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    imm_borrow_field_generic                                            0.000735    0.01%
+                    read_ref                                                            0.001295    0.02%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0004      0.01%
+                    call_generic                                                        0.005144    0.09%
+                    0x1::event::write_to_event_store&lt;0x1::coin::DepositEvent&gt;           0.024886    0.41%
+                    nop                                                                 0.000036    0.00%
+                    copy_loc                                                            0.000854    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    imm_borrow_field_generic                                            0.000735    0.01%
+                    read_ref                                                            0.001295    0.02%
+                    ld_u64                                                              0.00022     0.00%
+                    add                                                                 0.000588    0.01%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    mut_borrow_field_generic                                            0.000735    0.01%
+                    write_ref                                                           0.000735    0.01%
+                    ret                                                                 0.00022     0.00%
+                move_loc                                                                0.000441    0.01%
+                create_ty                                                               0.0008      0.01%
+                create_ty                                                               0.0008      0.01%
+                mut_borrow_field_generic                                                0.000735    0.01%
+                move_loc                                                                0.000441    0.01%
+                create_ty                                                               0.0004      0.01%
+                call_generic                                                            0.005878    0.10%
+                0x1::coin::merge&lt;0x1::aptos_coin::AptosCoin&gt;                            0.013989    0.23%
+                    create_ty                                                           0.0012      0.02%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    nop                                                                 0.000036    0.00%
+                    nop                                                                 0.000036    0.00%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0004      0.01%
+                    create_ty                                                           0.0008      0.01%
+                    unpack                                                              0.000955    0.02%
+                    st_loc                                                              0.000441    0.01%
+                    nop                                                                 0.000036    0.00%
+                    copy_loc                                                            0.000854    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    imm_borrow_field_generic                                            0.000735    0.01%
+                    read_ref                                                            0.001295    0.02%
+                    move_loc                                                            0.000441    0.01%
+                    add                                                                 0.000588    0.01%
+                    move_loc                                                            0.000441    0.01%
+                    create_ty                                                           0.0008      0.01%
+                    create_ty                                                           0.0004      0.01%
+                    mut_borrow_field_generic                                            0.000735    0.01%
+                    write_ref                                                           0.000735    0.01%
+                    ret                                                                 0.00022     0.00%
+                ret                                                                     0.00022     0.00%
+            ret                                                                         0.00022     0.00%
+        ret                                                                             0.00022     0.00%
+    ledger writes                                                                       0.222034    3.68%
+        transaction                                                                                 
+        events                                                                                      
+            0x1::coin::WithdrawEvent                                                                
+            0x1::coin::DepositEvent                                                                 
+        state write ops                                                                 0.222034    3.68%
+            modify&lt;0x551f..::0x1::coin::CoinStore&lt;0x1::aptos_coin::AptosCoin&gt;&gt;          0.111017    1.84%
+            modify&lt;0xc94e..::0x1::coin::CoinStore&lt;0x1::aptos_coin::AptosCoin&gt;&gt;          0.111017    1.84%
+</code></pre>
+      </div>
+    </section>
+
+    <footer>
+      <p>Generated by the Aptos Gas Profiler</p>
+    </footer>
+  </body>
+</html>

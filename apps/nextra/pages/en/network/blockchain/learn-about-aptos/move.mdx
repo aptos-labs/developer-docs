@@ -1,6 +1,5 @@
 ---
 title: "Move - A Web3 Language and Runtime"
-slug: "move-on-aptos"
 ---
 
 # Move - A Web3 Language and Runtime
@@ -24,7 +23,7 @@ In Move, a transaction's sender is represented by a _signer_, a verified owner o
 | Transaction safety          | Sequence number                                              | Transaction uniqueness                                      | nonces, similar to sequence numbers                        | Transaction uniqueness                |
 | Type safety                 | Module structs and generics                                  | Program structs                                             | Contract types                                             | Module structs and generics           |
 | Function calling            | Static dispatch                                              | Static dispatch                                             | Dynamic dispatch                                           | Static dispatch                       |
-| Authenticated Storage       | [Yes](../reference/glossary.md#merkle-trees)                 | No                                                          | Yes                                                        | No                                    |
+| Authenticated Storage       | [Yes](../../glossary.mdx#merkle-trees)                 | No                                                          | Yes                                                        | No                                    |
 | Object global accessibility | Yes                                                          | Not applicable                                              | Not applicable                                             | No, can be placed in other objects    |
 
 ## Aptos Move features
@@ -34,15 +33,15 @@ Each deployment of the MoveVM has the ability to extend the core MoveVM with add
 The Aptos Move adapter features include:
 
 - [Move Objects](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-10.md) that offer an extensible programming model for globally access to heterogeneous set of resources stored at a single address on-chain.
-- [Cryptography primitives](../move/move-on-aptos/cryptography) for building scalable, privacy-preserving dapps.
-- [Resource accounts](../move/move-on-aptos/resource-accounts) that offer programmable accounts on-chain, which can be useful for DAOs (decentralized autonomous organizations), shared accounts, or building complex applications on-chain.
+- [Cryptography primitives](../../../build/move/move-on-aptos/cryptography.mdx) for building scalable, privacy-preserving dapps.
+- [Resource accounts](../../../build/move/move-on-aptos/resource-accounts.mdx) that offer programmable accounts on-chain, which can be useful for DAOs (decentralized autonomous organizations), shared accounts, or building complex applications on-chain.
 - [Tables](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/table.move) for storing key, value data within an account at scale.
 - Parallelism via [Block-STM](https://medium.com/aptoslabs/block-stm-how-we-execute-over-160k-transactions-per-second-on-the-aptos-blockchain-3b003657e4ba) that enables concurrent execution of transactions without any input from the user.
 - Multi-agent framework that enables a single transaction to be submitted with multiple distinct `signer` entities.
 
 The Aptos framework ships with many useful libraries:
 
-- An [Aptos Token Objects](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-token-objects/sources) standard as defined in [AIP-11](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-1.md) and [AIP-22](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-22.md) that makes it possible to create interoperable NFTs with either lightweight smart contract development or none at all.
+- An [Aptos Token Objects](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-token-objects/sources) standard as defined in [AIP-11](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-11.md) and [AIP-22](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-22.md) that makes it possible to create interoperable NFTs with either lightweight smart contract development or none at all.
 - A [Coin standard](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) that makes it possible to create type-safe Coins by publishing a trivial module.
 - A [Fungible asset standard](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) as defined in [AIP-21](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-21.md) to modernize the coin concept with better programmability and controls.
 - A [staking](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/staking_contract.move) and [delegation](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/delegation_pool.move) framework.
@@ -53,4 +52,4 @@ With updates frequently.
 
 ## More Resources
 
-Developers can begin their journey in Move by heading over to our [Move developer page](../move/move-on-aptos.md).
+Developers can begin their journey in Move by heading over to our [Move developer page](../../../build/move.mdx).

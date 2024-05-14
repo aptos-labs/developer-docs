@@ -14,7 +14,7 @@ If you still need to install the CLI, follow [these steps](install-cli/install-c
 
 1. Run `aptos init` and follow the instructions in the command line.
 
-   1. To use default settings, you can provide no input and just press “Enter”. For example:
+   1. To use default settings, you can provide no input and just press "Enter". For example:
 
    ```bash
    aptos init
@@ -47,6 +47,7 @@ For testing more complicated scenarios, you will often want multiple accounts on
 To create a profile, run `aptos init --profile <name_of_profile>`. The configuration you generate will be usable when calling CLI commands as replacements for arguments.
 
 For example:
+
 ```bash
 aptos init --profile bob
 ...

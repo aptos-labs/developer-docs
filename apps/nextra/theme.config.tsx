@@ -213,7 +213,7 @@ const config: DocsThemeConfig = {
     );
   },
   nextThemes: {
-    defaultTheme: "light",
+    defaultTheme: "system",
   },
   project: {
     link: docsConfig.githubUrl,
@@ -241,7 +241,6 @@ const config: DocsThemeConfig = {
     },
   },
   sidebar: {
-    autoCollapse: true,
     defaultMenuCollapseLevel: 1,
     toggleButton: true,
   },

@@ -1,9 +1,10 @@
 export default {
-  'quick_start': 'Quick Start',
-  'smart_contracts': 'Smart Contracts',
-  apis: 'APIs',
-  'sdks': 'SDKs',
-  'indexer': "Indexer",
-  'cli': "CLI",
-  'advanced_guides': "Advanced Guides"
-}
+  "quick-start": "Quick Start",
+  move: "Smart Contracts",
+  apis: "APIs",
+  sdks: "SDKs",
+  indexer: "Indexer",
+  cli: "CLI",
+  standards: "Standards",
+  "advanced-guides": "Advanced Guides",
+};

@@ -13,7 +13,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "baseUrl": "./",
     "paths": {
       "@components/*": ["./components/*"],
@@ -26,6 +26,13 @@
     ],
     "strictNullChecks": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "./.next/types/**/*.ts", "docs.config.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "./.next/types/**/*.ts",
+    "docs.config.js",
+    "postbuild.js"
+  ],
   "exclude": ["node_modules"]
 }

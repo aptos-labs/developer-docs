@@ -124,7 +124,9 @@ export function Tabs({ children, groupName, height }: TabsProps) {
   const childrenWithProps = React.Children.map(children, (child) => {
     // Verify that the child is a valid React element before cloning
     if (React.isValidElement(child)) {
-      return React.cloneElement(child, { groupName: groupName });
+      return React.cloneElement(child, {
+        groupName: groupName,
+      } as Partial<unknown>);
     }
     return child;
   });

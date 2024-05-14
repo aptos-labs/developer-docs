@@ -1,7 +1,5 @@
 ---
 title: "Learn about Nodes"
-hide_table_of_contents: true
-toc: false
 ---
 
 import { Card, Cards } from '@components/index'
@@ -11,12 +9,12 @@ import { Card, Cards } from '@components/index'
 The Aptos network consists of three node types: validator nodes, validator fullnodes (VFNs), and public fullnodes (PFNs). To
 participate in consensus, you are required to run a validator node and stake the minimum amount of utility coins. VFNs and PFNs
 are not required to participate in consensus, but they are necessary to distribute blockchain data and enable ecosystem services,
-e.g., indexing, querying, and RESTful API services (see [Aptos APIs](../apis)). VFNs can only be run by validator operators,
-while PFNs can be run by anyone. You can learn more about the different types of nodes in the [Blockchain Deep Dive](../concepts/blockchain.md) section.
+e.g., indexing, querying, and RESTful API services (see [Aptos APIs](../build/apis.mdx)). VFNs can only be run by validator operators,
+while PFNs can be run by anyone. You can learn more about the different types of nodes in the [Blockchain Deep Dive](./blockchain/learn-about-aptos/blockchain.mdx) section.
 
 This section provides detailed, step-by-step instructions on how to deploy and operate Aptos nodes in different
-environments. It also describes everything you need to stake and participate in consensus and governance. You can also
-find additional resources for node operation in the [External Resources](../community/external-resources.md) section.
+environments. It also describes everything you need to stake and participate in consensus and governance.
+{ /* TODO: Are we going to add this back? You can also find additional resources for node operation in the [External Resources](../community/external-resources.md) section.*/}
 
 ## Quick Links
 
@@ -25,11 +23,11 @@ find additional resources for node operation in the [External Resources](../comm
 Everything you need to know about how validation, staking and governance works on Aptos.
 
 <Cards>
-  <Card href="/concepts/staking#validation-on-the-aptos-blockchain">
+  <Card href="./blockchain/learn-about-aptos/staking#validation-on-the-aptos-blockchain">
     <Card.Title>How validation works</Card.Title>
     <Card.Description>Validator-leader proposes and earns rewards on success.</Card.Description>
   </Card>
-  <Card href="/concepts/staking#validator-state-and-stake-state">
+  <Card href="./blockchain/learn-about-aptos/staking#validator-state-and-stake-state">
     <Card.Title>Validator states</Card.Title>
     <Card.Description>Learn how a validator gets into a validator set.</Card.Description>
   </Card>
@@ -38,11 +36,11 @@ Everything you need to know about how validation, staking and governance works o
 ### Staking
 
 <Cards>
-  <Card href="/concepts/staking">
+  <Card href="./blockchain/learn-about-aptos/staking">
     <Card.Title>Staking on Aptos</Card.Title>
     <Card.Description>A comprehensive guide to how staking works on Aptos.</Card.Description>
   </Card>
-  <Card href="/concepts/governance">
+  <Card href="./blockchain/learn-about-aptos/governance">
     <Card.Title>Governance</Card.Title>
     <Card.Description>Who can propose, who can vote, and how an AIP is resolved.</Card.Description>
   </Card>
@@ -96,7 +94,7 @@ A section with detailed, step-by-step instructions on everything related to Apto
     <Card.Title>Deploy a PFN</Card.Title>
     <Card.Description>Follow this section to deploy a PFN.</Card.Description>
   </Card>
-  <Card href="/indexer/legacy/indexer-fullnode">
+  <Card href="../build/indexer/legacy/indexer-fullnode">
     <Card.Title>Indexer PFN</Card.Title>
     <Card.Description>Describes how to run an indexer PFN on the Aptos network.</Card.Description>
   </Card>
@@ -105,9 +103,9 @@ A section with detailed, step-by-step instructions on everything related to Apto
 ### Common Operations
 
 <Cards>
-  <Card href="./nodes/local-testnet">
-    <Card.Title>Develop with local testnet</Card.Title>
-    <Card.Description>Run a local testnet for development (including validator nodes).</Card.Description>
+  <Card href="./nodes/localnet/local-development-network">
+    <Card.Title>Develop with localnet</Card.Title>
+    <Card.Description>Run a localnet for development (including validator nodes).</Card.Description>
   </Card>
   <Card href="./nodes/full-node/modify/update-fullnode-with-new-releases">
     <Card.Title>Upgrade your PFN</Card.Title>

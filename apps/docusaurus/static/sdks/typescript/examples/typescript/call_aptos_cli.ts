@@ -22,7 +22,7 @@ const args_aptos_info = ["aptos", "info"];
   );
   try {
     console.log(`Aptos Info: ${aptos_info.readCString()}`);
-    console.log(`Run Local Testnet: ${run_local_testnet.readCString()}`);
+    console.log(`Run Localnet: ${run_local_testnet.readCString()}`);
   } catch (error) {
     console.error(error);
   } finally {

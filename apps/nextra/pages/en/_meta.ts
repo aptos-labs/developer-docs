@@ -1,86 +1,99 @@
 export default {
   index: {
-    title: 'Introduction',
-    type: 'page',
-    display: 'hidden'
+    title: "Introduction",
+    type: "page",
+    display: "hidden",
+    theme: {
+      layout: "raw",
+      footer: null,
+    },
   },
   learn: {
-    type: 'page',
-    title: 'Learn ↗',
-    href: 'https://learn.aptoslabs.com/',
+    type: "page",
+    title: "Learn ↗",
+    href: "https://learn.aptoslabs.com/",
     newWindow: true,
   },
   build: {
-    type: 'menu',
-    title: 'Build',
+    type: "menu",
+    title: "Build",
     items: {
-      quick_start: {
-        title: 'Quick Start'
+      "quick-start": {
+        title: "Quick Start",
       },
-      smart_contracts: {
-        title: 'Smart Contracts'
+      move: {
+        title: "Smart Contracts",
       },
       apis: {
-        title: 'APIs',
+        title: "APIs",
       },
       sdks: {
-        title: 'SDKs'
+        title: "SDKs",
       },
       indexer: {
-        title: 'Indexer'
+        title: "Indexer",
       },
       cli: {
-        title: 'CLI'
+        title: "CLI",
       },
-      advanced_guides: {
-        title: 'Advanced Guides'
-      }
-    }
+      standards: {
+        title: "Standards",
+      },
+      "advanced-guides": {
+        title: "Advanced Guides",
+      },
+    },
   },
   network: {
-    type: 'menu',
-    title: 'Network',
+    type: "menu",
+    title: "Network",
     items: {
       blockchain: {
-        title: 'Blockchain'
+        title: "Blockchain",
       },
       nodes: {
-        title: 'Nodes'
+        title: "Nodes",
       },
       releases: {
-        title: 'Releases'
+        title: "Releases",
       },
       glossary: {
-        title: 'Glossary'
-      }
-    }
+        title: "Glossary",
+      },
+    },
   },
-  developer_platforms: {
-    type: 'menu',
-    title: 'Developer Platforms',
+  "developer-platforms": {
+    type: "menu",
+    title: "Additional Resources",
     items: {
       forum: {
-        title: 'Forum ↗',
-        href: 'https://forum.aptoslabs.com/',
+        title: "Community Forum ↗",
+        href: "https://forum.aptosfoundation.org/",
         newWindow: true,
-        type: 'page'
+        type: "page",
+      },
+      discussions: {
+        title: "Developer Discussions ↗",
+        href: "https://github.com/aptos-labs/aptos-developer-discussions/discussions",
+        newWindow: true,
+        type: "page",
       },
       api_gateway: {
-        title: 'API Gateway ↗',
-        href: 'https://developers.aptoslabs.com/',
+        title: "API Gateway ↗",
+        href: "https://developers.aptoslabs.com/",
         newWindow: true,
-        type: 'page'
+        type: "page",
       },
-      token_hub: {
-        title: 'Token Hub ↗',
-        href: '',
+      aptos_foundation: {
+        title: "Aptos Foundation ↗",
+        href: "https://aptosfoundation.org/",
         newWindow: true,
-        type: 'page'
-      }
-    }
-  },
-  docs: {
-    type: 'page',
-    title: 'Help',
+        type: "page",
+      },
+      contribute: {
+        title: "Contribute",
+        type: "page",
+      },
+    },
   },
 };
