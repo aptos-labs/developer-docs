@@ -47,7 +47,7 @@ Some queries are intentionally broad, but this can make inferring the proper ret
 ```ts filename="fetch-data.ts"
 type Coin = { coin: { value: string } };
 
-const resource =await aptos.getAccountResource<Coin>({
+const resource = await aptos.getAccountResource<Coin>({
   accountAddress: testAccount.accountAddress,
   resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
 });

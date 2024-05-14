@@ -1,11 +1,13 @@
+"use client";
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import BrowserOnly from "@docusaurus/BrowserOnly";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import remarkMermaid from "remark-mermaid-plugin";
+import Select from "react-select";
+// import remarkMermaid from "remark-mermaid-plugin";
 import {
-  Select,
+  // Select,
   Label,
   Button,
   ListBox,
@@ -18,7 +20,12 @@ import {
   Header,
 } from "react-aria-components";
 import { IconChevronDown } from "@tabler/icons-react";
-import { useLocation, useHistory } from "@docusaurus/router";
+import {
+  ReadonlyURLSearchParams,
+  usePathname,
+  useSearchParams,
+} from "next/navigation";
+import { useRouter } from "next/router";
 
 const root = "https://raw.githubusercontent.com/aptos-labs/aptos-core";
 const branches = ["mainnet", "testnet", "devnet", "main"] as const;
@@ -44,7 +51,7 @@ type FrameworkData = {
   framework: Framework;
   pages: { id: string; name: string }[];
 };
-type URLParams = { branch: Branch; page: string };
+type URLParams = { branch: Branch; page: string | null };
 
 type TopNavProps = {
   branch: Branch;
@@ -52,27 +59,34 @@ type TopNavProps = {
 };
 
 const TopNav = ({ branch, onBranchChange }: TopNavProps) => (
-  <Select selectedKey={branch} onSelectionChange={onBranchChange}>
-    <Label>Branch</Label>
-    <Button>
-      <SelectValue>{branchTitles[branch]}</SelectValue>
-      <IconChevronDown aria-hidden="true" />
-    </Button>
-    <Popover>
-      <ListBox>
-        {branches.map((branch) => (
-          <ListBoxItem key={branch} id={branch}>
-            {branchTitles[branch]}
-          </ListBoxItem>
-        ))}
-      </ListBox>
-    </Popover>
-  </Select>
+  <form className="w-full mt-6">
+    <label
+      htmlFor="branches"
+      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+    >
+      Branch
+    </label>
+    <select
+      id="branches"
+      onChange={(event) => {
+        onBranchChange(event.currentTarget.value as any);
+      }}
+      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-60"
+    >
+      {branches.map((branchIndex) => {
+        return (
+          <option key={branchIndex} selected={branchIndex === branch}>
+            {branchIndex}
+          </option>
+        );
+      })}
+    </select>
+  </form>
 );
 
 type ModulePageSelectorProps = {
   pkgsData: FrameworkData[];
-  selectedPage: string;
+  selectedPage: string | null;
   onSelectPage: (newPage: string) => void;
 };
 
@@ -83,14 +97,22 @@ const ModulePageSelector = ({
 }: ModulePageSelectorProps) => {
   const itemRefs = useRef({});
   const items = useMemo(
-    () => pkgsData.flatMap((frameworkData) => frameworkData.pages),
+    () =>
+      pkgsData
+        .flatMap((frameworkData) => frameworkData.pages)
+        .map((pkg) => {
+          return {
+            ...pkg,
+            value: pkg.name,
+          };
+        }),
     [pkgsData],
   );
   const [isComboBoxOpen, setOpen] = useState(false);
   const comboBoxKey = selectedPage || "none";
 
   useEffect(() => {
-    if (isComboBoxOpen && itemRefs.current[selectedPage]) {
+    if (isComboBoxOpen && selectedPage && itemRefs.current[selectedPage]) {
       itemRefs.current[selectedPage].scrollIntoView({
         behavior: "instant",
         block: "nearest",
@@ -103,20 +125,48 @@ const ModulePageSelector = ({
   };
 
   return (
-    <div className="d-flex">
+    <div className="mt-6">
+      {/* <form className="w-full mt-6">
+        <label
+          htmlFor="modules"
+          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >
+          Branch
+        </label>
+        <select
+          id="modules"
+          onChange={(event) => {
+            onSelectPage(event.currentTarget.value as any);
+          }}
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-60"
+        >
+          {items.map((item) => {
+            return (
+              <option key={item.value} selected={item.value === selectedPage}>
+                {item.value}
+              </option>
+            );
+          })}
+        </select>
+      </form> */}
       <ComboBox
         defaultItems={items}
-        defaultSelectedKey={selectedPage}
-        defaultInputValue={selectedPage}
+        defaultSelectedKey={selectedPage || ""}
+        defaultInputValue={selectedPage || ""}
         menuTrigger="focus"
         onSelectionChange={onSelectPage}
         onOpenChange={setOpen}
         key={comboBoxKey}
       >
-        <Label>Module</Label>
-        <div className="d-flex align-items-center pl-2">
-          <Input placeholder="Select a module" />
-          <Button>
+        <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          Module
+        </Label>
+        <div className="flex gap-2 relative">
+          <Input
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-60"
+            placeholder="Select a module"
+          />
+          <Button >
             <IconChevronDown />
           </Button>
           {selectedPage && (
@@ -125,8 +175,8 @@ const ModulePageSelector = ({
             </a>
           )}
         </div>
-        <Popover>
-          <ListBox>
+        <Popover className="max-h-32 overflow-y-auto bg-white dark:bg-gray-700">
+          <ListBox className="max-h-32 overflow-auto ">
             {pkgsData.map((frameworkData) => (
               <Section key={frameworkData.framework}>
                 <Header>{frameworkData.framework}</Header>
@@ -150,12 +200,15 @@ const ModulePageSelector = ({
 
 type ContentProps = {
   branch: Branch;
-  page: string;
+  page: string | null;
 };
 
 const Content = ({ branch, page }: ContentProps) => {
-  const [content, setContent] = useState(null);
-  const location = useLocation();
+  const [content, setContent] = useState<string | null>(null);
+  const location = usePathname();
+  const { asPath } = useRouter();
+
+  const hash = asPath.split("#")[1];
 
   useEffect(() => {
     let isMounted = true;
@@ -185,12 +238,11 @@ const Content = ({ branch, page }: ContentProps) => {
   }, [branch, page]);
 
   useEffect(() => {
-    if (content && location.hash) {
-      const hash = location.hash;
+    if (content && hash) {
       window.location.hash = "";
       window.location.hash = hash;
     }
-  }, [content, location.hash]);
+  }, [content, hash]);
 
   // Conditional rendering based on whether a page is selected
   return (
@@ -199,20 +251,22 @@ const Content = ({ branch, page }: ContentProps) => {
         <ReactMarkdown
           children={content}
           rehypePlugins={[rehypeRaw]}
-          remarkPlugins={[remarkGfm, [remarkMermaid as any, { theme: "dark" }]]}
+          remarkPlugins={[
+            remarkGfm,
+            // [remarkMermaid as any, { theme: "dark" }]
+          ]}
           remarkRehypeOptions={{ allowDangerousHtml: true }}
         />
       ) : page ? (
         <div>Loading content...</div>
       ) : (
-        <div>Please select a module to view its content.</div>
+        <div className="mt-6">Please select a module to view its content.</div>
       )}
     </div>
   );
 };
 
-function parseFilters(searchParams: string): URLParams {
-  const params = new URLSearchParams(searchParams);
+function parseFilters(params: ReadonlyURLSearchParams): URLParams {
   const branchFromParams = params.get("branch") as Branch;
   const pageFromParams = params.get("page");
 
@@ -226,11 +280,12 @@ function parseFilters(searchParams: string): URLParams {
 }
 
 function useURLParams() {
-  const history = useHistory();
-  const location = useLocation();
-  const params = parseFilters(location.search);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const params = parseFilters(searchParams);
 
   const updateParams = (newParams: Partial<URLParams>) => {
+    console.log("In updating params");
     const newSearchParams = new URLSearchParams();
 
     newSearchParams.set("branch", newParams.branch ?? params.branch);
@@ -238,7 +293,7 @@ function useURLParams() {
       newSearchParams.set("page", newParams.page);
     }
 
-    history.push({ search: decodeURIComponent(newSearchParams.toString()) });
+    router.push({ search: decodeURIComponent(newSearchParams.toString()) });
   };
 
   return { params, updateParams };
@@ -247,12 +302,12 @@ function useURLParams() {
 async function loadFrameworkData(
   branch: Branch,
   framework: Framework,
-): Promise<FrameworkData | null> {
+): Promise<FrameworkData> {
   const pageUrl = `${root}/${branch}/aptos-move/framework/${framework}/doc/overview.md`;
   const response = await fetch(pageUrl);
 
   if (!response.ok) {
-    return null;
+    throw new Error("Error loading framework data");
   }
 
   const rawContent = await response.text();
@@ -274,13 +329,13 @@ function useFrameworksData(branch: Branch) {
   useEffect(() => {
     Promise.all(pkgs.map((framework) => loadFrameworkData(branch, framework)))
       .then((data) => data.filter(Boolean))
-      .then(setFrameworksData);
+      .then((frameworkData) => setFrameworksData(frameworkData ?? []));
   }, [branch]);
 
   return pkgsData;
 }
 
-const MoveReference = () => {
+export const MoveReference = () => {
   const {
     params: { branch, page },
     updateParams,
@@ -288,26 +343,26 @@ const MoveReference = () => {
   const pkgsData = useFrameworksData(branch);
 
   return (
-    <BrowserOnly fallback={<div>Loading...</div>}>
-      {() => (
-        <div className="move-reference-body">
-          <div className="move-reference-nav">
-            <TopNav
-              branch={branch}
-              onBranchChange={(branch) => updateParams({ branch })}
-            />
-            <ModulePageSelector
-              pkgsData={pkgsData}
-              selectedPage={page}
-              onSelectPage={(page) => updateParams({ page })}
-            />
-          </div>
-          <div className="move-reference-contents">
-            <Content branch={branch} page={page} />
-          </div>
-        </div>
-      )}
-    </BrowserOnly>
+    // <BrowserOnly fallback={<div>Loading...</div>}>
+    //   {() => (
+    <div className="move-reference-body">
+      <div className="move-reference-nav">
+        <TopNav
+          branch={branch}
+          onBranchChange={(branch) => updateParams({ branch })}
+        />
+        <ModulePageSelector
+          pkgsData={pkgsData}
+          selectedPage={page}
+          onSelectPage={(page) => updateParams({ page })}
+        />
+      </div>
+      <div className="move-reference-contents">
+        <Content branch={branch} page={page} />
+      </div>
+    </div>
+    //   )}
+    // </BrowserOnly>
   );
 };
 

@@ -5,12 +5,12 @@ export default {
   "move-on-aptos": {
     title: "Move on Aptos",
   },
+  reference: {
+    title: "Move Reference",
+  },
   prover: {
     title: "Move Prover",
   },
-  reference: {
-    title: "Move Reference",
-  }
   compiler_v2: {
     title: "Compiler v2 (beta)",
   },
