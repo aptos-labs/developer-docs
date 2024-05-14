@@ -28,7 +28,7 @@ The [Fungible Asset module](https://github.com/aptos-labs/aptos-core/blob/main/a
 provides a standard, type-safe framework for defining FAs within the Aptos Move
 ecosystem.
 
-The standard is built upon [Aptos object model](./aptos-object.mdx), so all
+The standard is built upon [Aptos object model](aptos-object.mdx), so all
 resources defined here are included in the object resource group and stored
 inside objects. There are two types of objects related to FA:
 
@@ -70,7 +70,7 @@ a `Coin` uses a generic, or the `CoinType`, to support distinct typing within
 the Coin framework. For example, `Coin<A>` and `Coin<B>` are two distinct coins,
 if `A != B`. In contrast, FA does not have a generic in struct definition but
 uses the metadata reference to distinguish the type, which will be further
-explained later. Minimally, [Aptos coin](./aptos-coin.mdx) should be
+explained later. Minimally, [Aptos coin](aptos-coin.mdx) should be
 interchangeable with FA. The migration plan is under discussion.
 
 ## Structures
@@ -185,7 +185,7 @@ deposit, and transfer FA using the MintRef, BurnRef, and TransferRef.
 
 Note, these are framework functions and must be combined with business logic to
 produce a usable system. Developers who want to use these functions should
-familiarize themselves with the concepts of [Aptos object model](./aptos-object.mdx)
+familiarize themselves with the concepts of [Aptos object model](aptos-object.mdx)
 and understand how the reference system enables extensible designs within Aptos
 move.
 

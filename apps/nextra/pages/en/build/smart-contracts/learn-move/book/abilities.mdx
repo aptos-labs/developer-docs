@@ -21,7 +21,7 @@ The four abilities are:
 
 ### `copy`
 
-The `copy` ability allows values of types with that ability to be copied. It gates the ability to copy values out of local variables with the [`copy`](./variables.mdx#move-and-copy) operator and to copy values via references with [dereference `*e`](./references.mdx#reading-and-writing-through-references).
+The `copy` ability allows values of types with that ability to be copied. It gates the ability to copy values out of local variables with the [`copy`](variables.mdx#move-and-copy) operator and to copy values via references with [dereference `*e`](references.mdx#reading-and-writing-through-references).
 
 If a value has `copy`, all values contained inside of that value have `copy`.
 
@@ -30,9 +30,9 @@ If a value has `copy`, all values contained inside of that value have `copy`.
 The `drop` ability allows values of types with that ability to be dropped. By dropped, we mean that value is not transferred and is effectively destroyed as the Move program executes. As such, this ability gates the ability to ignore values in a multitude of locations, including:
 
 - not using the value in a local variable or parameter
-- not using the value in a [sequence via `;`](./variables.mdx#expression-blocks)
-- overwriting values in variables in [assignments](./variables.mdx#assignments)
-- overwriting values via references when [writing `*e1 = e2`](./references.mdx#reading-and-writing-through-references).
+- not using the value in a [sequence via `;`](variables.mdx#expression-blocks)
+- overwriting values in variables in [assignments](variables.mdx#assignments)
+- overwriting values via references when [writing `*e1 = e2`](references.mdx#reading-and-writing-through-references).
 
 If a value has `drop`, all values contained inside of that value have `drop`.
 
@@ -44,7 +44,7 @@ If a value has `store`, all values contained inside of that value have `store`
 
 ### `key`
 
-The `key` ability allows the type to serve as a key for [global storage operations](./global-storage-operators.mdx). It gates all global storage operations, so in order for a type to be used with `move_to`, `borrow_global`, `move_from`, etc., the type must have the `key` ability. Note that the operations still must be used in the module where the `key` type is defined (in a sense, the operations are private to the defining module).
+The `key` ability allows the type to serve as a key for [global storage operations](global-storage-operators.mdx). It gates all global storage operations, so in order for a type to be used with `move_to`, `borrow_global`, `move_from`, etc., the type must have the `key` ability. Note that the operations still must be used in the module where the `key` type is defined (in a sense, the operations are private to the defining module).
 
 If a value has `key`, all values contained inside of that value have `store`. This is the only ability with this sort of asymmetry.
 
@@ -61,7 +61,7 @@ Most primitive, builtin types have `copy`, `drop`, and `store` except for `signe
   - This refers to copying and dropping the reference itself, not what they refer to.
   - References cannot appear in global storage, hence they do not have `store`.
 
-None of the primitive types have `key`, meaning none of them can be used directly with the [global storage operations](./global-storage-operators.mdx).
+None of the primitive types have `key`, meaning none of them can be used directly with the [global storage operations](global-storage-operators.mdx).
 
 ## Annotating Structs
 

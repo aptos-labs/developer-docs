@@ -25,7 +25,7 @@ for more details.
 
 ## How it works
 
-Move code upgrades on the Aptos blockchain happen at the [Move package](./packages.mdx)
+Move code upgrades on the Aptos blockchain happen at the [Move package](packages.mdx)
 granularity. A package specifies an upgrade policy in the `Move.toml` manifest:
 
 ```toml
@@ -45,7 +45,7 @@ Aptos checks compatibility at the time a Move package is published via an Aptos 
 To upgrade already published Move code, simply attempt to republish the code at
 the same address that it was previously published. This can be done by following the
 instructions for code compilation and publishing using the
-[Aptos CLI](../../cli/use-cli/working-with-move-contracts.mdx). For an example,
+[Aptos CLI](../../../cli/use-cli/working-with-move-contracts.mdx). For an example,
 see the [Your First Move Module](../../tutorials/first-move-module.mdx) tutorial. {/* TODO fix link */}
 
 ## Upgrade policies
@@ -123,4 +123,4 @@ only after that transaction ends.
 The Aptos framework itself, including all the on-chain administration logic, is
 an example for programmatic upgrade. The framework is marked as `compatible`.
 Upgrades happen via specific generated governance scripts. For more details,
-see [Aptos Governance](../../../network/blockchain/learn-about-aptos/governance.mdx).
+see [Aptos Governance](../../../../network/blockchain/governance.mdx).

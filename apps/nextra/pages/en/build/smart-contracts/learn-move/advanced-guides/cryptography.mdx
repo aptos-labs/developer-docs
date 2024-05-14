@@ -101,7 +101,7 @@ Our [`aptos_std::bls12381`](https://github.com/aptos-labs/aptos-core/blob/main/a
 ## Elliptic curve arithmetic
 
 While the [hash function](#cryptographic-hash-functions) and [digital signature](#digital-signature-verification) modules should provide enough functionality for most applications, some applications will require more powerful cryptography.
-Normally, developers of such applications would have to wait until their desired cryptographic functionality is implemented efficiently as a [Move native function](../book/functions.mdx#native-functions) in the [Aptos Move framework](/reference/move.md). {/*TODO fix link*/}
+Normally, developers of such applications would have to wait until their desired cryptographic functionality is implemented efficiently as a [Move native function](../book/functions.mdx#native-functions) in the [Aptos Move framework](../../../../network/blockchain/move.mdx). {/*TODO fix link*/}
 Instead, we expose basic building blocks that developers can use to implement their own cryptographic primitives directly in the Move language and do so **efficiently**.
 
 Specifically, we currently expose low-level arithmetic operations on two popular elliptic curve groups and their associated finite fields:
@@ -151,7 +151,7 @@ Compared to fixing a particular curve in the code (e.g., by implementing against
 
 Although currently the `crypto_algebra` module only supports arithmetic over BLS12-381 curves (via the marker types declared in [`aptos_std::bls12381_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381_algebra.move)), more curves will be supported into the future (e.g., BN254, Ristretto255, BLS12-377, BW6-761, secp256k1, secp256r1).
 
-As an example, a Move developer can implement the popular Boneh-Lynn-Shacham (BLS) signature scheme generically over **any** curve by using [type arguments](../book/functions#type-parameters) for the curve type in their implementation:
+As an example, a Move developer can implement the popular Boneh-Lynn-Shacham (BLS) signature scheme generically over **any** curve by using [type arguments](../book/functions.mdx#type-parameters) for the curve type in their implementation:
 
 ```rust
 use std::option;

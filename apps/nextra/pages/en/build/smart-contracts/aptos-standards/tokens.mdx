@@ -4,12 +4,12 @@ title: "Aptos Token Standard Overview"
 
 # Aptos Token Standards
 
-The [Aptos Digital Asset Standard](./digital-asset.mdx) defines the
+The [Aptos Digital Asset Standard](digital-asset.mdx) defines the
 canonical Non-fungible Token on Aptos. Aptos leverages composability to extend
 the digital asset standard with features like fungibility via
-the [Fungible Asset standard](./fungible-asset.mdx). The concept of
+the [Fungible Asset standard](fungible-asset.mdx). The concept of
 composability comes from the underlying data model for these constructs:
-the [Move object](./aptos-object.mdx) data model.
+the [Move object](aptos-object.mdx) data model.
 
 The rest of this document discusses how the Aptos token standards compare to the
 standards on Ethereum and Solana.
@@ -47,12 +47,12 @@ program to populate a new collection and set of NFTs.
 
 ### Aptos
 
-The [accounts](../../network/blockchain/learn-about-aptos/accounts.mdx) in Aptos store both smart contracts
+The [accounts](../../../network/blockchain/accounts.mdx) in Aptos store both smart contracts
 and data. Unlike Ethereum, the associated data of a smart contract is
 distributed across the space of all accounts
-in [resources](../../network/blockchain/learn-about-aptos/resources.mdx)
-within [accounts](../../network/blockchain/learn-about-aptos/accounts.mdx)
-or [objects](./aptos-object.mdx). For example, a collection and an
+in [resources](../../../network/blockchain/resources.mdx)
+within [accounts](../../../network/blockchain/accounts.mdx)
+or [objects](aptos-object.mdx). For example, a collection and an
 NFT within that collection are stored in distinct objects at different addresses
 with the smart contract defining them at another address. A smart contract
 developer could also store data associated with the NFT and collection at the
