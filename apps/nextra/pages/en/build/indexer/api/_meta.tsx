@@ -5,7 +5,4 @@ export default {
   "self-hosted": {
     title: "Self-Hosted Indexer API",
   },
-  "example-queries": {
-    title: "Example Indexer API Queries",
-  },
 };

@@ -1,9 +1,12 @@
 export default {
-  "common-queries": {
-    title: "Common Indexer Queries",
+  "architecture": {
+    title: "Architecture"
   },
   api: {
     title: "Indexer API",
+  },
+  "common-queries": {
+    title: "Common Indexer Queries",
   },
   "custom-processors": {
     title: "Custom Processors",
