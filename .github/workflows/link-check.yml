@@ -25,4 +25,4 @@ jobs:
         args: --base . --verbose --no-progress './apps/nextra/**/*.mdx' './apps/nextra/**/*.html'
         format: markdown
         output: lychee/out.md
-
+        fail: true  # Ensure the workflow fails on broken links
