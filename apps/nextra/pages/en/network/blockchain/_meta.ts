@@ -4,7 +4,7 @@ export default {
   "gas-txn-fee": "Gas and Storage Fees",
   events: "Events",
   // TODO: Decide what to do with these pages. Below this line is not included in the information architecture rewrite.
-  "accounts": "Accounts",
+  accounts: "Accounts",
   "validator-nodes": "Validator Nodes Overview",
   fullnodes: "Fullnodes Overview",
   "node-networks-sync": "Node Networks and Sync",

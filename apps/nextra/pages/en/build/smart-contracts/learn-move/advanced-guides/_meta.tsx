@@ -21,6 +21,6 @@ export default {
     title: "Move Security Guidelines",
   },
   "third-party-dependencies": {
-    title: "Third Party Dependencies"
-  }
+    title: "Third Party Dependencies",
+  },
 };
