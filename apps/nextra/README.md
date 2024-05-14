@@ -59,7 +59,21 @@ from inside the `nextra` directory.
 pnpm start
 ```
 
+### Fixing Relative Links
+1. Go to `update-relative-links.py`
+2. Update the absolute paths in the file
+
+### Link Checking
+
+1. Install [`markdown-link-check`](https://www.npmjs.com/package/markdown-link-check) globally. 
+2. From the directory you would like to check, run the following command:
+`find . -name \*.mdx -print0 | xargs -0 -n1 markdown-link-check`
+3. Scroll through and verify if any links marked with an X are actually problematic. (See known issues below for reasons they may be fine)
+
+KNOWN ISSUE: This link checker does not recognize within-page links like \[\]\(#abc\). It will mark them with an X when they are fine.
+There are also rare instances where this link checker is blocked by a DDOS protection service, such as when pointing to Hasura.
+
 ### Troubleshooting
 
 There are some known issues with Nextra, such as search not working in development. These are further described in
-[troubleshooting.mdx](./pages/en/docs/setup/troubleshooting.mdx)
+[troubleshooting.mdx](pages/en/developer-platforms/contribute/setup/troubleshooting.mdx)
