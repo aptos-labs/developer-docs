@@ -48,14 +48,14 @@ transaction execution.
 version number associated with it that dictates its global sequential ordering in the history of the blockchain ledger.
 - The state is the representation of all transaction outputs up to a specific version. In other words, a state version
 is the accumulation of all transactions inclusive of that transaction version.
-- As transactions execute, they may emit events. [Events](../../network/blockchain/learn-about-aptos/events.mdx) are hints about changes in on-chain
+- As transactions execute, they may emit events. [Events](../../network/blockchain/events.mdx) are hints about changes in on-chain
 data.
 
 <Callout type="info">
 Ensure the [fullnode](../../network/nodes/networks.mdx) you are communicating with is up-to-date. The fullnode must reach the
 version containing your transaction to retrieve relevant data from it. There can be latency from the fullnodes
-retrieving state from [validator fullnodes](../../network/blockchain/learn-about-aptos/fullnodes.mdx), which in turn rely upon
-[validator nodes](../../network/blockchain/learn-about-aptos/validator-nodes.mdx) as the source of truth.
+retrieving state from [validator fullnodes](../../network/blockchain/fullnodes.mdx), which in turn rely upon
+[validator nodes](../../network/blockchain/validator-nodes.mdx) as the source of truth.
 </Callout>
 
 The storage service on a node employs two forms of pruning that erase data from nodes:
