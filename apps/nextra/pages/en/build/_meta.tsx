@@ -1,6 +1,6 @@
 export default {
   "quick-start": "Quick Start",
-  move: "Smart Contracts",
+  move: "Move",
   apis: "APIs",
   sdks: "SDKs",
   indexer: "Indexer",

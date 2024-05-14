@@ -1,22 +1,74 @@
-# Learn the Move Language
+---
+title: "Move"
+---
 
-To begin your journey in developing Move, we provide the following resources:
-{/* TODO: fix tutorial link */}
+import { RemoteCodeblock, permalinkFetch, Card, Cards } from '@components/index'
 
-- [Your first move module](../tutorials/first-move-module.md) to walks you through compiling, deploying, and interacting with Move. {/* TODO: Fix link */}
-- [Aptos Move Book](./move/book.mdx) to teach you many of the general Move concepts.
-- [The Move tutorial](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial) to cover the basics of programming with Move.
-- [Aptos Move Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples) demonstrating many different aspects of Move especially those unique to Aptos.
-- [Aptos Move Framework](../reference/move.md).{/* TODO: fix reference link */}
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
+  ])
+}
+
+# Move
+
+Welcome to Move, a next generation language for secure, sandboxed, and formally verified programming. It has been used as the smart contract language for several blockchains including Aptos. 
+Move allows developers to write programs that flexibly manage and transfer assets, while providing the security and protections against attacks on those assets.
+
+## 📖 Learn Move
+
+<Cards>
+  <Card href="./move/book">
+    <Card.Title>Aptos Move Book</Card.Title>
+    <Card.Description>Learn the Move Language and general Move concepts on Aptos</Card.Description>
+  </Card>
+  <Card href="./move/prover">
+    <Card.Title>Move Prover</Card.Title>
+    <Card.Description>Formal specification and verification of Move contracts on Aptos</Card.Description>
+  </Card>
+  <Card href="./move/examples/first-move-module">
+    <Card.Title>Move on Aptos</Card.Title>
+    <Card.Description>Learn how to use Move on Aptos, how to use objects, fungible assets, publish modules, and more</Card.Description>
+  </Card>
+</Cards>
+
+## 👨‍💻 Move Examples
+
+<Cards>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples">
+    <Card.Title>Aptos Move Examples</Card.Title>
+    <Card.Description>30+ examples on how to develop Move on Aptos</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial">
+    <Card.Title>Move Tutorial</Card.Title>
+    <Card.Description>Covers the basics of programming with Move</Card.Description>
+  </Card>
+  <Card href="./move/examples/first-move-module">
+    <Card.Title>Your first Move Module</Card.Title>
+    <Card.Description>A `hello_blockchain` example of how to publish your first move module</Card.Description>
+  </Card>
+</Cards>
+
+Here is a `hello_blockchain` example of move
+
+<RemoteCodeblock 
+  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
+/>
+
+## ⚒️ Developer Resources
+
+### FAQ and Discussions
+
 - [Aptos Dev Discussions](https://github.com/aptos-labs/aptos-developer-discussions/discussions) for Q&A about Move.
 
-There are several IDE plugins available for Aptos and the Move language:
+
+### Move IDE plugins
 
 - [Aptos Move Analyzer](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer) for Visual Studio.
 - [Remix IDE Plugin](../community/contributions/remix-ide-plugin.md): {/* TODO: fix reference link */} Offers a web-based development environment. It is a no-setup tool with a graphical interface for developing Move modules.
 - [Move language plugin for JetBrains IDEs](https://plugins.jetbrains.com/plugin/14721-move-language): Supports syntax highlighting, code navigation, renames, formatting, type checks and code generation.
 
-The following external resources exist to further your education:
+### External Resources
 
 - [Teach yourself Move on Aptos](https://github.com/econia-labs/teach-yourself-move).
 - [Formal Verification, the Move Language, and the Move Prover](https://www.certik.com/resources/blog/2wSOZ3mC55AB6CYol6Q2rP-formal-verification-the-move-language-and-the-move-prover)
