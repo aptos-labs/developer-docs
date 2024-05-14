@@ -82,15 +82,15 @@ export default {
     type: "separator",
     title: "Reference",
   },
-  book: {
-    title: "Move Book",
-  },
-  "move-reference": {
+  reference: {
     title: "Move Reference",
     theme: {
       toc: false,
       layout: "full",
     },
+  },
+  "book": {
+    title: 'Move Book',
   },
   "error-codes": {
     title: "Error Codes",
