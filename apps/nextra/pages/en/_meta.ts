@@ -84,6 +84,12 @@ export default {
         newWindow: true,
         type: "page",
       },
+      aptos_foundation: {
+        title: "Aptos Foundation ↗",
+        href: "https://aptosfoundation.org/",
+        newWindow: true,
+        type: "page",
+      },
       contribute: {
         title: "Contribute",
         type: "page",

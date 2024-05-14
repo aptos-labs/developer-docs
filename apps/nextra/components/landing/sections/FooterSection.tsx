@@ -117,7 +117,10 @@ export function FooterSection() {
                   label: t.eventsLink,
                   href: "https://aptosfoundation.org/events",
                 },
-                { label: t.collectiveLink, href: "TODO:" },
+                {
+                  label: t.collectiveLink,
+                  href: "https://aptosfoundation.org/currents/join-the-aptos-collective",
+                },
                 {
                   label: t.forumLink,
                   href: "https://forum.aptosfoundation.org/",
@@ -131,7 +134,7 @@ export function FooterSection() {
                   label: t.aboutAptosLink,
                   href: "https://aptosfoundation.org/",
                 },
-                { label: t.netZeroPolicyLink, href: "TODO:" },
+                // { label: t.netZeroPolicyLink, href: "TODO:" },
                 {
                   label: t.whitePaperLink,
                   href: `/${locale}/network/blockchain/aptos-white-paper`,
