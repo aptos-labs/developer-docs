@@ -55,7 +55,7 @@ export function BlockchainSection() {
         <FeatureCard
           label={t.passkeysLabel}
           description={t.passkeysDescription}
-          href="" // TODO: Add link to relevant docs page
+          href="https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-66.md" // TODO: Add link to relevant docs page
         />
         <FeatureCard
           label={t.randomnessLabel}

@@ -70,7 +70,7 @@ export function ToolingSection() {
           }
           label={t.sdkLabel}
           description={t.sdkDescription}
-          href={`/${locale}/build/sdks`}
+          href={`/${locale}/build/sdks/ts-sdk`}
         />
       </div>
     </Section>
