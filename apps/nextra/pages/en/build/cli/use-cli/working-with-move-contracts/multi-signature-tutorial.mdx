@@ -4,19 +4,19 @@ import { Callout } from 'nextra/components'
 
 ## Background
 
-This section builds upon the [Arguments in JSON tutorial](./arguments-in-json-tutorial.mdx). If you have not done that, please complete that tutorial first.
+This section builds upon the [Arguments in JSON tutorial](arguments-in-json-tutorial.mdx). If you have not done that, please complete that tutorial first.
 
 This tutorial likewise references the [`CliArgs` example package](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args).
 
 <Callout type="info" emoji="ℹ️">
-If you would like to follow along, start by completing the [Arguments in JSON](./arguments-in-json-tutorial.mdx) tutorial steps!
+If you would like to follow along, start by completing the [Arguments in JSON](arguments-in-json-tutorial.mdx) tutorial steps!
 </Callout>
 
 For this example, Ace and Bee will conduct governance operations from a 2-of-2 "multisig v2" account (an on-chain multisig account per [`multisig_account.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/multisig_account.move))
 
 ## Account creation
 
-Since Ace's account was created during the [Arguments in JSON](./arguments-in-json-tutorial.mdx) tutorial, start by mining a vanity address account for Bee too:
+Since Ace's account was created during the [Arguments in JSON](arguments-in-json-tutorial.mdx) tutorial, start by mining a vanity address account for Bee too:
 
 ```bash filename="Terminal"
 aptos key generate \
