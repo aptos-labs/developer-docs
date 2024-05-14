@@ -1,7 +1,4 @@
 export default {
-  "wallet-adapter": {
-    title: "Wallet Adapter"
-  },
   "aptos-name-service": {
     title: "Aptos Names Service"
   },

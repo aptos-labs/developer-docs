@@ -11,4 +11,7 @@ export default {
   "unity-sdk": {
     title: "Unity SDK",
   },
+  "wallet-adapter": {
+    title: "Integrate with Aptos Wallets",
+  },
 };
