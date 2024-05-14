@@ -172,7 +172,10 @@ export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
  */
 const EphemeralKeyPairEncoding = {
   decode: (e: any) => EphemeralKeyPair.fromBytes(e.data),
-  encode: (e: EphemeralKeyPair) => ({ __type: "EphemeralKeyPair", data: e.bcsToBytes() }),
+  encode: (e: EphemeralKeyPair) => ({
+    __type: "EphemeralKeyPair",
+    data: e.bcsToBytes(),
+  }),
 };
 
 /**
