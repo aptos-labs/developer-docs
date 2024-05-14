@@ -6,7 +6,7 @@ The TypeScript SDK allows you to connect, explore, and interact on the Aptos blo
 - [Source Code](https://github.com/aptos-labs/aptos-ts-sdk)
 - [Reference Docs](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-latest)
 
-# Quickstart
+## TypeScript Quickstart
 
 <Steps>
 ### Install the TypeScript SDK using the package manager of your choice:
@@ -47,7 +47,7 @@ You can send transactions to change the state of the ledger. Transactions let yo
 
 To begin with though, here’s how you can send a basic transaction to transfer APT.
 
-#### 4.1 Create an Account
+#### 1. Create an Account
 
 To create a new account, you first generate new credentials then fund the account. On test networks you can fund an account programmatically by asking a "faucet" which has a lot of test APT to send some to your new account.
 
@@ -71,7 +71,7 @@ await aptos.fundAccount({
 });
 ```
 
-#### 4.2 Build the Transaction
+#### 2. Build the Transaction
 
 You can build transactions with `aptos.transaction.build.simple({...})` by specifying:
 
@@ -97,7 +97,7 @@ const transaction = await aptos.transaction.build.simple({
 For some situations, you can also use simplified functions in the SDK such as [`transferCoinTransaction`](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000001/modules/code/aptos_account?network=mainnet).
 </Callout>
 
-#### 4.3 Sign and Submit
+#### 3. Sign and Submit
 
 Signing proves that you own or manage the account that is executing the transaction. This is important since the sender must pay gas fees for the work the network does to execute the transaction.
 
@@ -113,7 +113,7 @@ const pendingTransaction = await aptos.signAndSubmitTransaction({
 });
 ```
 
-#### 4.4 Wait for completion
+#### 4. Wait for completion
 
 You can run `aptos.waitForTransaction` to guarantee your code executes after the transaction has been processed and applied.
 
