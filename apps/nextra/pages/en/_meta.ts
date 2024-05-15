@@ -22,7 +22,7 @@ export default {
         title: "Quick Start",
       },
       move: {
-        title: "Smart Contracts",
+        title: "Move",
       },
       apis: {
         title: "APIs",
@@ -81,6 +81,12 @@ export default {
       api_gateway: {
         title: "API Gateway ↗",
         href: "https://developers.aptoslabs.com/",
+        newWindow: true,
+        type: "page",
+      },
+      aptos_foundation: {
+        title: "Aptos Foundation ↗",
+        href: "https://aptosfoundation.org/",
         newWindow: true,
         type: "page",
       },

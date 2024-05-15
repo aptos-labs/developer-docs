@@ -11,4 +11,7 @@ export default {
   compiler_v2: {
     title: "Compiler v2 (beta)",
   },
+  examples: {
+    title: "Examples",
+  },
 };

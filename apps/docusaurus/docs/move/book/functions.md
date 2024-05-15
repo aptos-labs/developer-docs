@@ -622,7 +622,7 @@ passed to the function, but this need not be the case for an inline function, as
 value is in the function scope after inlining.
 
 The exact details of reference safety and "borrow checking" are complex and documented elsewhere.
-Advanced Move users find new expressiveness by understanding that 
+Advanced Move users find new expressiveness by understanding that
 "borrow checking" happens only after all `inline` function calls are expanded.
 
 However, with this power comes new responsibility: documentation of a nontrivial `inline` function should
@@ -654,4 +654,3 @@ The call `s.foo(1)` is syntactic sugar for `foo(&s, 1)`. Notice that the compile
 The type of the `self` argument can be a struct or an immutable or mutable reference to a struct. The struct must be declared in the same module as the function.
 
 Notice that you do not need to `use` the modules which introduce receiver functions. The compiler will find those functions automatically based on the argument type of `s` in a call like `s.foo(1)`. This, in combination with the automatic insertion of reference operators, can make code using this syntax significantly more concise.
-
