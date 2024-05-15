@@ -1,11 +1,11 @@
 export default {
   "install-cli": {
-    title: "Installation Methods",
+    title: "Installation",
   },
-  "cli-configuration": {
-    title: "CLI Configuration",
+  "setup-cli": {
+    title: "Setup",
   },
   "use-cli": {
-    title: "Use the Aptos CLI",
+    title: "Usage",
   },
 };
