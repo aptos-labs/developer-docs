@@ -1,6 +1,6 @@
 export default {
-  "architecture": {
-    title: "Architecture"
+  architecture: {
+    title: "Architecture",
   },
   api: {
     title: "Indexer API",

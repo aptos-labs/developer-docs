@@ -1,0 +1,21 @@
+name: Links
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run Lychee Link Checker
+      uses: lycheeverse/lychee-action@v1
+      with:
+        args: --base . --verbose --no-progress './apps/nextra/**/*.mdx' './apps/nextra/**/*.html' --exclude 'http://localhost*' --exclude 'https://localhost*'
+        format: markdown
+        output: lychee/out.md
