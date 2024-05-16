@@ -3,7 +3,6 @@
 # Search_directory determines where the link fixer will search for similarly named files. Set this to the highest-up folder in which all other files exist.
 # This script only fixes links between .md and .mdx files. Image paths are not checked.
 # Use `python3 update-relative-links.py` to run this script. 
-
 import os
 import re
 
@@ -28,6 +27,16 @@ def search_directory_for_file(directory, filename):
             return os.path.relpath(os.path.join(root, filename), start=directory)
     return None
 
+def is_valid_link(link):
+    """
+    Check if the link has a valid extension (.md, .mdx, or no extension).
+    """
+    if link.startswith(('http://', 'https://', '#')):
+        return False
+
+    ext = os.path.splitext(link)[1]
+    return ext in ('', '.md', '.mdx')
+
 def update_links_in_file(file_path, directory):
     """
     Update all relative markdown and href links in the file with their actual paths found in the directory.
@@ -39,8 +48,8 @@ def update_links_in_file(file_path, directory):
     warning_messages = []
 
     for link in links:
-        # Skip hardcoded links, image files, and links that start with '#'
-        if link.startswith('http://') or link.startswith('https://') or re.search(r'\.(png|jpeg|jpg|gif|svg|bmp|webp)$', link) or link.startswith('#'):
+        # Skip invalid links
+        if not is_valid_link(link):
             continue
 
         header = ''
@@ -121,7 +130,7 @@ def main(path, search_directory):
         update_links_in_file(path, search_directory)
     elif os.path.isdir(path):
         update_links_in_folder(path, search_directory)
-        
+
 path = "apps/nextra/pages/en/build/"
 search_directory = "apps/nextra/pages/en"
 main(path, search_directory)
