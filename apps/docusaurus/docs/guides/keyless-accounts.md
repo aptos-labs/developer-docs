@@ -46,8 +46,8 @@ To provide feedback, get support, or be a design partner as we enhance Aptos Key
 
 # Keyless Account Integration Steps
 
-:::info Only devnet is supported
-Currently Aptos Keyless is only supported in devnet. Testnet and mainnet support to come in the following weeks.
+:::info Only devnet and testnet is supported
+Currently Aptos Keyless is only supported in devnet and testnet. Mainnet support to come in the following weeks.
 :::
 
 At a high level, there are three steps to follow in order to integrate Keyless Accounts.
@@ -347,7 +347,7 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
         ```tsx
         import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
-        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET}));  // Only devnet supported as of now.
+        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET}));  // Only devnet and testnet supported as of now.
         const keylessAccount = await aptos.deriveKeylessAccount({
             jwt,
             ephemeralKeyPair,
