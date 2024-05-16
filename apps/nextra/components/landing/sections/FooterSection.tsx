@@ -74,7 +74,7 @@ export function FooterSection() {
                 },
                 {
                   label: t.governanceLink,
-                  href: `/${locale}/network/blockchain/learn-about-aptos/governance`,
+                  href: `/${locale}/network/blockchain/governance`,
                 },
                 {
                   label: t.networkNumbersLink,
@@ -82,7 +82,7 @@ export function FooterSection() {
                 },
                 {
                   label: t.validatorsLink,
-                  href: `/${locale}/network/blockchain/learn-about-aptos/validator-nodes`,
+                  href: `/${locale}/network/blockchain/validator-nodes`,
                 },
                 {
                   label: t.nodeOperationsLink,

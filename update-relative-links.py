@@ -6,17 +6,21 @@
 import os
 import re
 
-def find_markdown_links(file_path):
+def find_links(file_path):
     """
-    Find all relative markdown and href links in the provided file.
+    Find all relative markdown, href links in HTML/JSX, and href links in JSON in the provided file.
     """
     with open(file_path, 'r') as file:
         content = file.read()
     
-    # Regex to find markdown links: [text](relative/path.md) and href links: href="relative/path"
+    # Regex to find markdown links: [text](relative/path.md)
     markdown_links = re.findall(r'\[.*?\]\((.*?)\)', content)
-    href_links = re.findall(r'href="(.*?)"', content)
-    return markdown_links + href_links, content
+    # Regex to find href links: href="relative/path"
+    href_links_html = re.findall(r'href="(.*?)"', content)
+    # Regex to find href links in JSON: href: `relative/path`
+    href_links_json = re.findall(r'href: `([^`]*)`', content)
+    
+    return markdown_links + href_links_html + href_links_json, content
 
 def search_directory_for_file(directory, filename):
     """
@@ -37,11 +41,12 @@ def is_valid_link(link):
     ext = os.path.splitext(link)[1]
     return ext in ('', '.md', '.mdx')
 
-def update_links_in_file(file_path, directory):
+def update_links_in_file(file_path, directory, is_tsx_file=False):
     """
-    Update all relative markdown and href links in the file with their actual paths found in the directory.
+    Update all relative markdown, href links in HTML/JSX, and href links in JSON in the file
+    with their actual paths found in the directory.
     """
-    links, content = find_markdown_links(file_path)
+    links, content = find_links(file_path)
     updated_content = content
     warnings = False
     changed = False
@@ -72,6 +77,9 @@ def update_links_in_file(file_path, directory):
         if actual_path:
             # Calculate the relative path from the file to the actual path
             relative_path = os.path.relpath(os.path.join(directory, actual_path), start=os.path.dirname(file_path))
+            # Replace en with ${locale} in the replacement relative link if in a .tsx file
+            if is_tsx_file:
+                relative_path = relative_path.replace('en', '${locale}')
             # Reattach the header if it exists
             updated_link = f"{relative_path}#{header}" if header else relative_path
             # Replace the relative link in the content
@@ -83,6 +91,13 @@ def update_links_in_file(file_path, directory):
                 if link.startswith('./'):
                     href_link = './' + href_link
                 updated_content = updated_content.replace(f'href="{link}"', f'href="{href_link}"')
+                changed = True
+            elif f'href: `{link}`' in updated_content:
+                href_link = '/' + relative_path.lstrip('/').rsplit('.', 1)[0]  # Convert to absolute path without .mdx extension
+                split = href_link.split('${locale}')
+                if len(split) > 1:
+                    href_link = '/${locale}' + split[1]
+                updated_content = updated_content.replace(f'href: `{link}`', f'href: `{href_link}`')
                 changed = True
         else:
             # Output file and line number if unable to update link
@@ -106,31 +121,34 @@ def update_links_in_file(file_path, directory):
 
 def update_links_in_folder(folder_path, search_directory):
     """
-    Recursively find all .mdx files in the folder and update their links.
+    Recursively find all .mdx and .tsx files in the folder and update their links.
     """
     for root, _, files in os.walk(folder_path):
         for file in files:
-            if file.endswith('.mdx'):
+            if file.endswith(('.mdx', '.tsx')):
                 file_path = os.path.join(root, file)
-                update_links_in_file(file_path, search_directory)
+                is_tsx_file = file.endswith('.tsx')
+                update_links_in_file(file_path, search_directory, is_tsx_file)
 
-def main(path, search_directory):
+def main(paths, search_directory):
     """
     Main function to update links in the specified file or folder.
     """
-    if not os.path.exists(path):
-        print(f"Error: Path '{path}' does not exist or is not a file/folder.")
-        return
-    
-    if not os.path.exists(search_directory):
-        print(f"Error: Directory '{search_directory}' does not exist.")
-        return
+    if isinstance(paths, str):
+        paths = [paths]
 
-    if os.path.isfile(path):
-        update_links_in_file(path, search_directory)
-    elif os.path.isdir(path):
-        update_links_in_folder(path, search_directory)
+    for path in paths:
+        if not os.path.exists(path):
+            print(f"Error: Path '{path}' does not exist or is not a file/folder.")
+            continue
 
-path = "apps/nextra/pages/en/build/"
+        if os.path.isfile(path):
+            if path.endswith(('.mdx', '.tsx')):
+                is_tsx_file = path.endswith('.tsx')
+                update_links_in_file(path, search_directory, is_tsx_file)
+        elif os.path.isdir(path):
+            update_links_in_folder(path, search_directory)
+
+path = ["apps/nextra/pages/en/build/", "apps/nextra/components"]
 search_directory = "apps/nextra/pages/en"
 main(path, search_directory)
