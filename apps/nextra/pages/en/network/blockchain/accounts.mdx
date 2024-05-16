@@ -9,7 +9,7 @@ import { Callout } from 'nextra/components';
 
 An account on the Aptos blockchain represents access control over a set of assets including on-chain currency and NFTs. In Aptos, these assets are represented by a Move language primitive known as a **resource** that emphasizes both access control and scarcity.
 
-Each account on the Aptos blockchain is identified by a 32-byte account address. You can employ the [Aptos Name Service](../../../build/advanced-guides/aptos-name-service.mdx) at [www.aptosnames.com](https://www.aptosnames.com/) to secure .apt domains for key accounts to make them memorable and unique.
+Each account on the Aptos blockchain is identified by a 32-byte account address. You can employ the [Aptos Name Service](../../build/advanced-guides/aptos-name-service.mdx) at [www.aptosnames.com](https://www.aptosnames.com/) to secure .apt domains for key accounts to make them memorable and unique.
 
 Different from other blockchains where accounts and addresses are implicit, accounts on Aptos are explicit and need to be created before they can execute transactions. The account can be created explicitly or implicitly by transferring Aptos tokens (APT) there. See the [Creating an account](#creating-an-account) section for more details. In a way, this is similar to other chains where an address needs to be sent funds for gas before it can send transactions.
 
@@ -21,8 +21,8 @@ Explicit accounts allow first-class features that are not available on other net
 There are three types of accounts on Aptos:
 
 - _Standard account_ - This is a typical account corresponding to an address with a corresponding pair of public/private keys.
-- [_Resource account_](../../../build/move/move-on-aptos/resource-accounts.md) - An autonomous account without a corresponding private key used by developers to store resources or publish modules on-chain.
-- [_Object_](../../../build/standards/aptos-object.md) - A complex set of resources stored within a single address representing a single entity.
+- [_Resource account_](../../build/smart-contracts/learn-move/advanced-guides/resource-accounts.mdx) - An autonomous account without a corresponding private key used by developers to store resources or publish modules on-chain.
+- [_Object_](../../build/smart-contracts/aptos-standards/aptos-object.mdx) - A complex set of resources stored within a single address representing a single entity.
 
 <Callout type="info">
 Account addresses are 32-bytes. They are usually shown as 64 hex characters, with each hex character a nibble.
@@ -41,7 +41,7 @@ Currently, Aptos supports only a single, unified identifier for an account. Acco
 
 ## Creating an account
 
-When a user requests to create an account, for example by using the [Aptos SDK](../../../build/sdks/ts-sdk/account), the following steps are executed:
+When a user requests to create an account, for example by using the [Aptos SDK](../../build/sdks/ts-sdk/account.mdx), the following steps are executed:
 
 - Select the authentication scheme for managing the user's account, e.g., Ed25519 or Secp256k1 ECDSA.
 - Generate a new private key, public key pair.

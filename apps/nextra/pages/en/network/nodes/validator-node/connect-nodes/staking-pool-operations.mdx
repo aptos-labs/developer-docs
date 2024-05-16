@@ -15,7 +15,7 @@ The current minimum staking requirement is 1 million APT.
 </Callout>
 
 See also the related
-[Delegation Pool Operations](./delegation-pool-operations.mdx) instructions to accept stake from multiple delegators in order to reach the minimum
+[Delegation Pool Operations](delegation-pool-operations.mdx) instructions to accept stake from multiple delegators in order to reach the minimum
 staking requirement.
 
 <Callout type="warning">
@@ -29,7 +29,7 @@ delegation pool must be created.
 <Callout type="info">
 **TESTNET VS MAINNET**<br/>
 The Aptos CLI commands below target mainnet. Change the `--network` value for testnet and devnet.
-View the values in [Aptos Blockchain Networks](../../../nodes/networks.mdx) to see how profiles can be configured based on the network.
+View the values in [Aptos Blockchain Networks](../../networks.mdx) to see how profiles can be configured based on the network.
 </Callout>
 
 Before initializing a staking pool, ensure that there is an existing owner account with 1 Million APT.
@@ -54,7 +54,7 @@ aptos stake create-staking-contract \
   --profile mainnet-owner
 ```
 
-3. Once the staking pool has been initialized, you can proceed to [connect to the Aptos Network](./connect-to-aptos-network.mdx).
+3. Once the staking pool has been initialized, you can proceed to [connect to the Aptos Network](connect-to-aptos-network.mdx).
 
 ## Perform pool owner operations
 
@@ -155,7 +155,7 @@ To check the details of your stake pool, run the below CLI command with the `get
 The below command is for an example owner address `e7be097a90c18f6bdd53efe0e74bf34393cac2f0ae941523ea196a47b6859edb`.
 
 <Callout type="info">
-For testnet or devnet `--url` field values, see [Aptos Blockchain Networks](../../../nodes/networks.mdx).
+For testnet or devnet `--url` field values, see [Aptos Blockchain Networks](../../networks.mdx).
 </Callout>
 
 ```bash filename="Terminal"

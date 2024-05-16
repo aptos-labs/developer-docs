@@ -160,6 +160,8 @@ def main(paths, search_directory):
                 update_links_in_file(path, search_directory, is_tsx_file)
         elif os.path.isdir(path):
             update_links_in_folder(path, search_directory)
-path = ["apps/nextra/pages/en/build/", "apps/nextra/components"]
+
+# Update links across the docs site and in components. The landing page links are defined in components.
+path = ["apps/nextra/pages/en", "apps/nextra/components"]
 search_directory = "apps/nextra/pages/en"
 main(path, search_directory)

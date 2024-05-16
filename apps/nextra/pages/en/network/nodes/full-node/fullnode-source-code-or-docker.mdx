@@ -13,7 +13,7 @@ can be run by anyone. This tutorial explains how to deploy a PFN and connect to 
 <Callout type="info">
 **Do I have to run a PFN?**<br />
 If you do not wish to run a PFN, but still want to interact with the Aptos blockchain, you can use the REST API
-provided by the Aptos Labs' PFNs (see [Aptos APIs](../../../build/apis)). Note, however, that Aptos Labs-provided PFNs have rate
+provided by the Aptos Labs' PFNs (see [Aptos APIs](../../../build/apis.mdx)). Note, however, that Aptos Labs-provided PFNs have rate
 limits, which can impede your development. If you want to avoid such rate limits, you can deploy your own PFN
 and synchronize with the Aptos blockchain directly.
 </Callout>
@@ -324,7 +324,7 @@ aptos_connections{direction="outbound",network_id="Public",peer_id="aabd651f",ro
 
 If the number of outbound connections returned is `0`, then it means your node cannot connect to the Aptos blockchain. If this happens to you, follow these steps to resolve the issue:
 
-1. Update your node to the latest release by following the [Update Fullnode With New Releases](./modify/update-fullnode-with-new-releases.mdx).
+1. Update your node to the latest release by following the [Update Fullnode With New Releases](modify/update-fullnode-with-new-releases.mdx).
 2. Remove any `seed` peers you may have added to your configuration file. The seeds may be preventing you from
    connecting to the network. Seed peers are discussed in the [Connecting your fullnode to seed peers](../full-node/modify/fullnode-network-connections.mdx#connecting-your-fullnode-to-seed-peers) section.
 3. Ensure that you have used the correct `genesis.blob` and `waypoint.txt` files for your network. This is a common error.

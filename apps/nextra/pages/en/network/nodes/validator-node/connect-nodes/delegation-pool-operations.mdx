@@ -5,9 +5,9 @@ title: "Delegation Pool Operations"
 # Delegation Pool Operations
 
 > Beta: This documentation is in experimental, beta mode. Supply feedback by opening a [GitHub issue](https://github.com/aptos-labs/developer-docs/issues/new/choose).
-> See also the related [Staking Pool Operations](./staking-pool-operations.mdx) instructions.
+> See also the related [Staking Pool Operations](staking-pool-operations.mdx) instructions.
 
-Validator operators should follow these instructions to carry out delegation pool operations for [delegated staking](../../../blockchain/delegated-staking.mdx). You may delegate as little as 10 APT plus a small add stake fee that will be mostly refunded as rewards at the end of the current epoch. You might notice that some UIs might use 11 APT as the minimum for a round number. Note that your validator will become part of the _Active Validator Set_ only when the delegation pool satisfies the minimum cumulative [staking requirement of 1 million APT](./staking-pool-operations.mdx).
+Validator operators should follow these instructions to carry out delegation pool operations for [delegated staking](../../../blockchain/delegated-staking.mdx). You may delegate as little as 10 APT plus a small add stake fee that will be mostly refunded as rewards at the end of the current epoch. You might notice that some UIs might use 11 APT as the minimum for a round number. Note that your validator will become part of the _Active Validator Set_ only when the delegation pool satisfies the minimum cumulative [staking requirement of 1 million APT](staking-pool-operations.mdx).
 
 The delegation pool owner should set an operator for the pool via the `set_operator` function described in the [Perform pool owner operations](#perform-pool-owner-operations) section. The operator should then start their own Aptos node, as it is a best practice to have a different account for owner and operator. Once the delegation pool attains 1 million APT, the operator can join the validator set.
 
@@ -53,7 +53,7 @@ Before initializing a delegation pool, you need to know the delegation pool addr
 
 4. The delegation pool can now accept a minimum amount of 10 APT from any user who wishes to delegate to it.
 
-5. The delegation pool can now [connect to the Aptos Network](./connect-to-aptos-network.mdx).
+5. The delegation pool can now [connect to the Aptos Network](connect-to-aptos-network.mdx).
 
 ## Perform delegation pool operations
 

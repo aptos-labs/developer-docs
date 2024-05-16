@@ -29,7 +29,7 @@ Conceptually, this fee can be thought of as quite similar to how we pay for our 
 
 Transactions can range from simple and inexpensive to complicated based upon what they do. In the Aptos blockchain, a **unit of gas** represents a basic unit of consumption for transient resources, such as doing computation or accessing the storage. The latter should not be conflated with the long-term storage aspect of such operations, as that is covered by the storage fees separately.
 
-See [How Base Gas Works](./base-gas.mdx) for a detailed description of gas fee types and available optimizations.
+See [How Base Gas Works](base-gas.mdx) for a detailed description of gas fee types and available optimizations.
 
 <Callout type="info">
 👉 A **unit of gas** is a dimensionless number or a unit that is not associated with any one item such as a coin, expressed as an integer. The total gas units consumed by your transaction depend on the complexity of your transaction. The **gas price**, on the other hand, is expressed in terms of Aptos blockchain’s native coin (Octas). Also see [Transactions and States](txns-states.mdx) for how a transaction submitted to the Aptos blockchain looks like.
@@ -128,7 +128,7 @@ The storage fee for a transaction is calculated based on the following factors:
 1. The size of the transaction itself
 2. The number of new storage slots used and bytes written
 3. The events emitted
-   For details, see [How Base Gas Works](./base-gas.mdx).
+   For details, see [How Base Gas Works](base-gas.mdx).
 
 It should be noted that due to some backward compatibility reasons, the total storage fee of a transaction is currently presented to the client as part of the total `gas_used`. This means, this amount could vary based on the gas unit price even for the same transaction.
 
@@ -167,7 +167,7 @@ To simulate transactions on chain, used the [`SimulateTransaction`](https://api.
 
 To simulate the transaction locally, use the gas profiler, which is integrated into the Aptos CLI.
 This will generate a web-based report to help you understand the precise gas usage of your transaction.
-See [Gas Profiling](../../../build/cli/use-cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling#gas-profiling) for more details.
+See [Gas Profiling](../../build/cli/use-cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx#gas-profiling) for more details.
 
 <Callout type="info">
 Note that the `Signature` provided on the transaction must be all zeros. This is to prevent someone from using the valid signature.
