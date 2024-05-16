@@ -3,6 +3,7 @@
 # Search_directory determines where the link fixer will search for similarly named files. Set this to the highest-up folder in which all other files exist.
 # This script only fixes links between .md and .mdx files. Image paths are not checked.
 # Use `python3 update-relative-links.py` to run this script. 
+
 import os
 import re
 
@@ -17,8 +18,11 @@ def find_links(file_path):
     markdown_links = re.findall(r'\[.*?\]\((.*?)\)', content)
     # Regex to find href links: href="relative/path"
     href_links_html = re.findall(r'href="(.*?)"', content)
-    # Regex to find href links in JSON: href: `relative/path`
-    href_links_json = re.findall(r'href: `([^`]*)`', content)
+    # Regex to find href links in JSON: href: `relative/path` and href={`relative/path`}
+    href_links_json = re.findall(r'href:\s*`([^`]*)`|href=\{`([^`]*)`\}', content)
+    
+    # Flatten the list of tuples returned by the regex for JSON links
+    href_links_json = [item for sublist in href_links_json for item in sublist if item]
     
     return markdown_links + href_links_html + href_links_json, content
 
@@ -79,7 +83,9 @@ def update_links_in_file(file_path, directory, is_tsx_file=False):
             relative_path = os.path.relpath(os.path.join(directory, actual_path), start=os.path.dirname(file_path))
             # Replace en with ${locale} in the replacement relative link if in a .tsx file
             if is_tsx_file:
-                relative_path = relative_path.replace('en', '${locale}')
+                split = relative_path.split('/en/')
+                if len(split) > 1:
+                    relative_path = '/${locale}/' + split[1]
             # Reattach the header if it exists
             updated_link = f"{relative_path}#{header}" if header else relative_path
             # Replace the relative link in the content
@@ -90,14 +96,20 @@ def update_links_in_file(file_path, directory, is_tsx_file=False):
                 href_link = updated_link.rsplit('.', 1)[0]  # Remove the .mdx extension
                 if link.startswith('./'):
                     href_link = './' + href_link
+                # Reattach the header if it exists for href links
+                if '#' in link:
+                    href_link = f"{href_link}#{header}"
                 updated_content = updated_content.replace(f'href="{link}"', f'href="{href_link}"')
                 changed = True
-            elif f'href: `{link}`' in updated_content:
+            elif f'href: `{link}`' in updated_content or f'href={{`{link}`}}' in updated_content:
                 href_link = '/' + relative_path.lstrip('/').rsplit('.', 1)[0]  # Convert to absolute path without .mdx extension
-                split = href_link.split('${locale}')
+                split = href_link.split('/${locale}')
                 if len(split) > 1:
                     href_link = '/${locale}' + split[1]
-                updated_content = updated_content.replace(f'href: `{link}`', f'href: `{href_link}`')
+                # Reattach the header if it exists for JSON href links
+                if '#' in link:
+                    href_link = f"{href_link}#{header}"
+                updated_content = updated_content.replace(f'href: `{link}`', f'href: `{href_link}`').replace(f'href={{`{link}`}}', f'href={{`{href_link}`}}')
                 changed = True
         else:
             # Output file and line number if unable to update link
@@ -148,7 +160,6 @@ def main(paths, search_directory):
                 update_links_in_file(path, search_directory, is_tsx_file)
         elif os.path.isdir(path):
             update_links_in_folder(path, search_directory)
-
 path = ["apps/nextra/pages/en/build/", "apps/nextra/components"]
 search_directory = "apps/nextra/pages/en"
 main(path, search_directory)
