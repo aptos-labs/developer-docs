@@ -46,7 +46,7 @@ To provide feedback, get support, or be a design partner as we enhance Aptos Key
 
 # Keyless Account Integration Steps
 
-:::info Only devnet and testnet is supported
+:::info Mainnet not yet supported
 Currently Aptos Keyless is only supported in devnet and testnet. Mainnet support to come in the following weeks.
 :::
 
@@ -58,6 +58,12 @@ At a high level, there are three steps to follow in order to integrate Keyless A
    1. Set up the `"Sign In with [Idp]"` flow for your user.
    2. Instantiate the user’s `KeylessAccount`
    3. Sign and submit transactions via the `KeylessAccount`.
+
+## Example Implementaion
+
+You can find an example app demonstrating how to do basic Keyless integration with Google in the repository below.  Follow the directions in the README to get started quickly with Keyless.  For more detailed instructions please read the rest of the integration guide.
+
+https://github.com/aptos-labs/aptos-keyless-example/
 
 ## Step 1. Configure your OpenID integration with your IdP
 
@@ -380,5 +386,150 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
         ```tsx
         const committedTransactionResponse = await aptos.waitForTransaction({ transactionHash: committedTxn.hash });
         ```
+
+### 4. Error Handling
+
+Eventually your EphemeralKeyPair will expire or the JWK used to validate the token will be rotated.  In these cases the KeylessAccount must be refreshed with a new JWT token.  To detect errors, use a try catch on sign and submit and switch on the KeylessError.type.
+
+  ```tsx
+  try {
+    const committedTxn = await aptos.signAndSubmitTransaction({ signer: keylessAccount, transaction });
+  } catch(error) {
+    if (error instanceOf KeylessError) {
+      switch(error.type) { 
+        case KeylessError.EPK_EXPIRED: { 
+            // Handle error
+            break; 
+        } 
+        case KeylessError.JWK_EXPIRED: { 
+            // Handle error
+            break; 
+        } 
+        default: { 
+            break; 
+        } 
+      } 
+    }
+  }
+  ```
+
+## SDK Configurable Options
+
+The Keyless SDK provides several configurable options for Keyless Account derivation
+
+### Choice of pepper
+
+Developers may opt to use their own pepper service/scheme and can override use of the labs hosted pepper service.
+
+Example
+```tsx
+const keylessAccount = await aptos.deriveKeylessAccount({
+    jwt,
+    ephemeralKeyPair,
+    pepper: "05e2844f1a7d5d27ca57f89d6f599fb073b2352b97d4905fa1c431236e00eb",
+});
+```
+
+### Claim to use for user identification
+
+Certain dApps may want to use 'email' instead of the default 'sub' claim to identify user.  This allows dApps to mint NFTs to a user's email even if the user has not created an account yet.  Note that this also means that if a user changes their emails with respect to the IdP, they may love access to their account.
+
+Example
+```tsx
+const keylessAccount = await aptos.deriveKeylessAccount({
+    jwt,
+    ephemeralKeyPair,
+    uidKey: "email",
+});
+```
+
+### Asyncronous proof fetching
+
+Fetching the proof may take a few seconds and can be done in the background to allow for a more responsive user experience.  To enable asyncronous proof fetching just provide a callback to be invoked on proof fetch completion.
+
+Example
+```tsx
+const handleProofFetchStatus = async (res: ProofFetchStatus) => {
+  if (res.status === 'Failed') {
+    // Handle failue
+    return
+  }
+  // Handle success
+  store.persist.rehydrate();
+};
+const keylessAccount = await aptos.deriveKeylessAccount({
+    jwt,
+    ephemeralKeyPair,
+    proofFetchCallback: handleProofFetchStatus,
+});
+```
+
+### EphemeralKeyPair expiry time 
+
+By default, the expiry time of the EphemeralKeyPair is set to be maximum allowed time in the future, now + 10000000 seconds.  To avoid proofs that are long lived which can be a security risk, 
+```tsx
+const ephemeralKeyPair = EphemeralKeyPair.generate({expiryDateSecs: 1721397500});
+```
+
+## Pepper Service API
+
+The pepper service is an Aptos Labs hosted API that computes a pepper as a result of a verifiable unpredictible function (VUF).  The inputs to the VUF are the iss, uid_key (defaults to sub), uid_val, aud.
+
+To recieve a pepper from the API you must input a JWT token and its nonce components (ephemeral public key, blinder, and expiry timestamp).  The service will do the following checks
+- verify that the computed nonce from nonce components match the nonce on the JWT token.
+- check that the ephemeral public key hasn't expired
+- check that the token is still valid under the issuer's JWK key set
+
+If these checks pass you will get back the user's pepper in the response.
+
+Example request
+```json
+{
+    "jwt_b64": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InRlc3QtcnNhIn0.eyJpc3MiOiJ0ZXN0IiwiYXVkIjoidGVzdCIsInN1YiI6InRlc3QiLCJlbWFpbCI6InRlc3QiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaWF0IjoxNzE1OTI3NTI2LCJleHAiOjI3MDAwMDAwMDAsIm5vbmNlIjoiMTY1NjkyNDIwNzExODc3NTA3OTMwODk3NDIwMzcxMzUzMjY0NzY0MzQyMTI4MDgyNTM2MDA1MzEwMTE2NDQzNzAzNTMzMTkxNjIzNDEifQ.PcSnAEebQeKP2ge8hQizIazekQb_x9xS6xNqZM4cmRseisfHpXelLPGfwWsecGa6f3SZWXYeCMCtij2OXXMveYfPYTbDd8d01Ks8lHvcr5PLuRP1jvwVfLP34oKRsjjE1Dowams1xyKDmEI8qWA3IY5QILH6xIIhnnz4Qa6AvibzG_1cbXmGDaC4_zzAvL812QSzQfJ3hr45j_EAQcFOnuy_vUm7WqLVxWlWb0Vi3D5ahZe6wdlS4otcwXG8R5P94qVdZECSzsGwOyGPztUTwZuUGZV20-sxJPZmyrWNXZoNqOs3FQuAN6QfkFTcmenU1roNBZ2XTzBEGh2PDGV1ow",
+    "epk": "11208fe2661376a2d938e77123d51f06a42116a0da22aaf79cf9e80527bc91bfaab8",
+    "epk_blinder": "258a117208bab6b620ed4edd496fd63d327daca0d17f8d460ec2dd0bcb7a90",
+    "exp_date_secs": 1725926400,
+}
+```
+
+Example response
+```json
+{
+    "pepper": "f634a051057e7c8632194c80a5c7c4d0cd10edbd8fc4505b7d2018839b0f6f",
+    "address": "0xd19c3bcd94cdb6576b4a0ed958ed94805b78e1d7f4bdab3e5033bd7fb09d9bbd"
+}
+```
+
+## Prover Service API
+
+The prover service is an Aptos Labs hosted API that computes zero-knowledge proofs.
+
+The input to the prover consists of the same request to the pepper service with the addition of the pepper and the max expiry horizon.  The inputs to the prover must satisfy the circuit relation for secret witness generation.
+
+Example request
+```json
+{
+    "jwt_b64": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InRlc3QtcnNhIn0.eyJpc3MiOiJ0ZXN0IiwiYXVkIjoidGVzdCIsInN1YiI6InRlc3QiLCJlbWFpbCI6InRlc3QiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaWF0IjoxNzE1OTI3NTI2LCJleHAiOjI3MDAwMDAwMDAsIm5vbmNlIjoiMTY1NjkyNDIwNzExODc3NTA3OTMwODk3NDIwMzcxMzUzMjY0NzY0MzQyMTI4MDgyNTM2MDA1MzEwMTE2NDQzNzAzNTMzMTkxNjIzNDEifQ.PcSnAEebQeKP2ge8hQizIazekQb_x9xS6xNqZM4cmRseisfHpXelLPGfwWsecGa6f3SZWXYeCMCtij2OXXMveYfPYTbDd8d01Ks8lHvcr5PLuRP1jvwVfLP34oKRsjjE1Dowams1xyKDmEI8qWA3IY5QILH6xIIhnnz4Qa6AvibzG_1cbXmGDaC4_zzAvL812QSzQfJ3hr45j_EAQcFOnuy_vUm7WqLVxWlWb0Vi3D5ahZe6wdlS4otcwXG8R5P94qVdZECSzsGwOyGPztUTwZuUGZV20-sxJPZmyrWNXZoNqOs3FQuAN6QfkFTcmenU1roNBZ2XTzBEGh2PDGV1ow",
+    "epk": "11208fe2661376a2d938e77123d51f06a42116a0da22aaf79cf9e80527bc91bfaab8",
+    "epk_blinder": "258a117208bab6b620ed4edd496fd63d327daca0d17f8d460ec2dd0bcb7a90",
+    "exp_date_secs": 1725926400,
+    "exp_horizon_secs": 10000000,
+    "pepper": "f634a051057e7c8632194c80a5c7c4d0cd10edbd8fc4505b7d2018839b0f6f"
+}
+```
+
+Example response
+```json
+{
+    "proof": {
+        "a": "11b90e23bb57ecfd09e336d30756dfce2f8f54db183116d8b9c1f218bcc1b280",
+        "b": "99d62fd33fe3721b0ee1a99a56de12dfc0ca9e9afbc858ece5b3c7fa9a9116060332aab2816f94f0f25f5c325bf422206b00c478f856aeb151e38bbb4fa501a4",
+        "c": "fc1ff9fe5740bd87344b0d95fa1fb5df4741b1e67511c6a2cd9902da597aba2f"
+    },
+    "public_inputs_hash": "123366eb10261f9e08471a2c25dba06e5c666a6cf6326bb9dff8579b9202a80f",
+    "training_wheels_signature": "00403eeff1cb27d501c9e2c44042fa132ba16897ce1db5abb27dbefe6f7dacd7dc0accf1a2e2cc404125f97596154b1e49c4fbef7fae1cce01edd64847d50f4e3e0a"
+}
+```
+
 
 For more details on the design of keyless accounts see [`AIP-61`](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md)
