@@ -1,6 +1,6 @@
 # Sponsored Transactions
 
-As outlined in [AIP-39](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-39.md),sponsored transactions allow one account to pay the fees associated with executing a transaction for another account. Sponsored transactions simplify the process for onboarding users into applications by allowing the application to cover all associated fees for interacting with the Aptos blockchain. Here are two examples:
+As outlined in [AIP-39](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-39.md),sponsored transactions allow one account to pay the fees associated with executing a transaction for another account, essentially setting up a fee payer. Sponsored transactions simplify the process for onboarding users into applications by allowing the application to cover all associated fees for interacting with the Aptos blockchain. Here are two examples:
 
 - [MerkleTrade](https://merkle.trade/) offers low cost trading to those with Ethereum wallets by creating an Aptos wallet for users and covering all transaction fees so that the user does not need to acquire utility tokens for Aptos.
 - Community engagement applications like [Graffio](https://medium.com/aptoslabs/graffio-web3s-overnight-sensation-81a6cf18b626) offered to cover transaction fees for custodial accounts to support the collaborative drawing application for those without wallets.
