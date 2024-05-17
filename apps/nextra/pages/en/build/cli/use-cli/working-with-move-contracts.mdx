@@ -6,7 +6,7 @@ The Aptos CLI is mostly used to compile, test, and formally verify Move contract
 
 You can jump to specific sections by using the table of contents on the right.
 
-To see how to chain together Move contracts on-chain using the CLI, you can follow this ["CLI Arguments" tutorial](./working-with-move-contracts/arguments-in-json-tutorial.mdx).
+To see how to chain together Move contracts on-chain using the CLI, you can follow this ["CLI Arguments" tutorial](working-with-move-contracts/arguments-in-json-tutorial.mdx).
 
 <Callout type="info" emoji="ℹ️">
 Throughout this document there are parts of commands you will have to modify to fit your situation. Those variables will be wrapped in triangle brackets `<like this>`.
@@ -117,7 +117,7 @@ The package will be published to your default profile in the CLI. You can overri
 
 Please also note that when publishing Move modules, if multiple modules are in one package, then all modules in that package must use the same account. If they use different accounts, then the publishing will fail at the transaction level.
 
-You can estimate the gas fees associated with publishing your Move contract by using the [Gas Profiler](../../move/move-on-aptos/gas-profiling.mdx).
+You can estimate the gas fees associated with publishing your Move contract by using the [Gas Profiler](../../move/move-on-aptos/gas-profiling.mdx). {/* TODO: Fix this link */}
 
 <Callout type="warning">
 By default Move contracts publish their source code. To avoid publishing with source code, publish with the `--included-artifacts none` argument.
@@ -223,7 +223,7 @@ Which should result in:
 
 ## 6. (Optional) Formally Verifying Move Scripts
 
-For cases where you want to guarantee that your code works as expected beyond unit testing, you can use the [Move Prover](../../move/prover) to formally verify your Move contract code.
+For cases where you want to guarantee that your code works as expected beyond unit testing, you can use the [Move Prover](../../smart-contracts/learn-move/prover.mdx) to formally verify your Move contract code.
 
 You can install the Move Prover by following [these steps](../install-cli/install-move-prover.mdx).
 

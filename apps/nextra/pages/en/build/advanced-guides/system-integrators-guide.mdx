@@ -47,7 +47,7 @@ Mainnet.
 4. [Mainnet](https://api.mainnet.aptoslabs.com/v1/spec#/) -- a production
 network with real assets.
 
-See [Aptos Blockchain Networks](../../network/blockchain/nodes/networks.mdx) for full details on each
+See [Aptos Blockchain Networks](../../network/nodes/networks.mdx) for full details on each
 environment.
 
 ### Run a localnet
@@ -60,8 +60,8 @@ This path is useful for developing on the Aptos blockchain, debugging Move
 contracts, and testing node operations. This will provide a fully featured
 local development environment including a single node network, a node REST
 API, an Indexer API, and a faucet.
-- Directly [run a localnet](../../network/blockchain/nodes/localnet/run-a-localnet.mdx) using either
-the [Aptos-core source code](../network/blockchain/nodes/localnet/run-a-localnet.mdx#using-the-aptos-core-source-code).
+- Directly [run a localnet](../../network/nodes/localnet/run-a-localnet.mdx) using either
+the [Aptos-core source code](../../network/nodes/localnet/run-a-localnet.mdx).
 These paths are useful for testing changes to the Aptos-core codebase or
 framework, or for building services on top of the Aptos blockchain,
 respectively.
@@ -110,10 +110,10 @@ accounts, transfer coins, publish Move modules, and more.
 
 ## Accounts on Aptos
 
-An [account](../../network/blockchain/learn-about-aptos/accounts.mdx) represents
+An [account](../../network/blockchain/accounts.mdx) represents
 an entity on the Aptos blockchain that can send transactions. Each account is
 identified by a particular 32-byte account address and is a container for
-[Move modules and resources](../network/blockchain/learn-about-aptos/resources.mdx).
+[Move modules and resources](../../network/blockchain/resources.mdx).
 On Aptos, accounts must be created on-chain prior to any blockchain operations
 involving that account. The Aptos framework supports implicitly creating
 accounts when transferring Aptos coin via [`aptos_account::transfer`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L18)
@@ -125,12 +125,12 @@ At creation, an [Aptos account](https://github.com/aptos-labs/aptos-core/blob/88
 and deposit and withdrawal of coins from that resource.
 - An authentication key associated with their current public, private key(s).
 - A strictly
-increasing [sequence number](../../network/blockchain/learn-about-aptos/accounts.mdx#account-sequence-number)
+increasing [sequence number](../../network/blockchain/accounts.mdx)
 that represents the account's next transaction's sequence number to prevent
 replay attacks.
 - A strictly increasing number that represents the next distinct GUID creation
 number.
-- An [event handle](../../network/blockchain/learn-about-aptos/events.mdx) for all new types of coins added to
+- An [event handle](../../network/blockchain/events.mdx) for all new types of coins added to
 the account.
 - An event handle for all key rotations for the account.
 
@@ -139,14 +139,14 @@ and [set one up](../cli/cli-configuration.mdx).
 
 ## Transactions
 
-Aptos [transactions](../../network/blockchain/learn-about-aptos/txns-states.mdx) are encoded
+Aptos [transactions](../../network/blockchain/txns-states.mdx) are encoded
 in [Binary Canonical Serialization (BCS)](https://github.com/diem/bcs).
 Transactions contain information such as the sender’s account address,
 authentication from the sender, the desired operation to be performed on the
 Aptos blockchain, and the amount of gas the sender is willing to pay to execute
 the transaction.
 
-Read more in [Transactions and States](../../network/blockchain/learn-about-aptos/txns-states.mdx).
+Read more in [Transactions and States](../../network/blockchain/txns-states.mdx).
 
 ### Generating transactions
 
@@ -261,7 +261,7 @@ blockchain ledger.
 - The state is the representation of all transaction outputs up to a specific
 version. In other words, a state version is the accumulation of all
 transactions inclusive of that transaction version.
-- As transactions execute, they may emit events. [Events](../../network/blockchain/learn-about-aptos/events.mdx)
+- As transactions execute, they may emit events. [Events](../../network/blockchain/events.mdx)
 are hints about changes in on-chain data.
 
 The storage service on a node employs two forms of pruning that erase data from

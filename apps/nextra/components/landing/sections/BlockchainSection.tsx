@@ -45,7 +45,7 @@ export function BlockchainSection() {
           }
           label={t.validatorsLabel}
           description={t.validatorsDescription}
-          href={`/${locale}/network/blockchain/learn-about-aptos/validator-nodes`}
+          href={`/${locale}/network/blockchain/validator-nodes`}
         />
         <FeatureCard
           label={t.keylessLabel}
@@ -60,7 +60,7 @@ export function BlockchainSection() {
         <FeatureCard
           label={t.randomnessLabel}
           description={t.randomnessDescription}
-          href={`/${locale}/build/move/move-on-aptos/cryptography#verifying-randomness-from-the-drand-beacon`}
+          href={`/${locale}/build/smart-contracts/learn-move/advanced-guides/cryptography#verifying-randomness-from-the-drand-beacon`}
         />
         <FeatureCard
           label={t.feePayerLabel}
@@ -75,27 +75,27 @@ export function BlockchainSection() {
         <FeatureCard
           label={t.gasLabel}
           description={t.gasDescription}
-          href={`/${locale}/network/blockchain/learn-about-aptos/gas-txn-fee`}
+          href={`/${locale}/network/blockchain/gas-txn-fee`}
         />
         <FeatureCard
           label={t.consensusLabel}
           description={t.consensusDescription}
-          href={`/${locale}/network/blockchain/learn-about-aptos/blockchain#consensus`}
+          href={`/${locale}/network/blockchain/blockchain-deep-dive#consensus`}
         />
         <FeatureCard
           label={t.storageLabel}
           description={t.storageDescription}
-          href={`/${locale}/network/blockchain/learn-about-aptos/blockchain#storage`}
+          href={`/${locale}/network/blockchain/blockchain-deep-dive#storage`}
         />
         <FeatureCard
           label={t.networkingLabel}
           description={t.networkingDescription}
-          href={`/${locale}/network/blockchain/learn-about-aptos/node-networks-sync`}
+          href={`/${locale}/network/blockchain/node-networks-sync`}
         />
         <FeatureCard
           label={t.mempoolLabel}
           description={t.mempoolDescription}
-          href={`/${locale}/network/blockchain/learn-about-aptos/blockchain#mempool`}
+          href={`/${locale}/network/blockchain/blockchain-deep-dive#mempool`}
         />
         <FeatureCard
           label={t.stateSyncLabel}

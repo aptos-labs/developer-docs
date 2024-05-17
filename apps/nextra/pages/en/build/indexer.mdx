@@ -9,10 +9,10 @@ import { Tabs } from 'nextra/components'
 
 <IndexerBetaNotice />
 
-Most applications **require** an indexer to efficiently query for on-chain state as the [Aptos Node API](./apis/fullnode-rest-api) provides only a basic, stable API and does not support data shaping required for rich user experiences.
+Most applications **require** an indexer to efficiently query for on-chain state as the [Aptos Node API](apis/fullnode-rest-api.mdx) provides only a basic, stable API and does not support data shaping required for rich user experiences.
 The Aptos Indexer processes raw blockchain data for app-specific needs, enabling low-latency and enhanced experiences for end-user applications.
 
-Here's an interactive example of how you can query for the Current Coin Balances of an account. More usage examples can be found in [common queries](./indexer/common-queries).
+Here's an interactive example of how you can query for the Current Coin Balances of an account. More usage examples can be found in [common queries](indexer/common-queries.mdx).
 
 <GraphQLEditor
   query={`query GetCoinBalances($address: String, $offset: Int) {
@@ -37,19 +37,19 @@ Here's an interactive example of how you can query for the Current Coin Balances
 ## Indexer API
 
 <Cards>
-  <Card href="./indexer/api/labs-hosted">
+  <Card href="indexer/api/labs-hosted">
     <Card.Title>Aptos Labs Indexer API →</Card.Title>
     <Card.Description>Query Aptos Labs GraphQL Indexer API hosted on Hasura</Card.Description>
   </Card>
-  <Card href="./indexer/api/self-hosted">
+  <Card href="indexer/api/self-hosted">
     <Card.Title>Self-hosted Indexer API →</Card.Title>
     <Card.Description>Host your own Indexer API</Card.Description>
   </Card>
-  <Card href="./indexer/architecture">
+  <Card href="indexer/architecture">
     <Card.Title>Architecture →</Card.Title>
     <Card.Description>Detailed layout of Indexer Architecture</Card.Description>
   </Card>
-  <Card href="./indexer/custom-processors">
+  <Card href="indexer/custom-processors">
     <Card.Title>Indexer Processors →</Card.Title>
     <Card.Description>Use existing or custom indexer processors to shape on-chain data for your application</Card.Description>
   </Card>
@@ -58,7 +58,7 @@ Here's an interactive example of how you can query for the Current Coin Balances
 ## Query Examples
 
 <Cards>
-  <Card href="./indexer/common-queries">
+  <Card href="indexer/common-queries">
     <Card.Title>Common Indexer Queries →</Card.Title>
     <Card.Description>8+ example queries for accounts, tokens, coins, staking and more</Card.Description>
   </Card>
@@ -67,7 +67,7 @@ Here's an interactive example of how you can query for the Current Coin Balances
 ## Transaction Streaming Service (GRPC)
 
 <Cards>
-  <Card href="./indexer/txn-stream">
+  <Card href="indexer/txn-stream">
     <Card.Title>Transaction Streaming Service →</Card.Title>
     <Card.Description>GRPC transaction streaming service, consumed by the Indexer</Card.Description>
   </Card>
@@ -75,4 +75,4 @@ Here's an interactive example of how you can query for the Current Coin Balances
 
 ## Legacy Indexer
 
-Find information about the legacy indexer [here](./indexer/legacy.mdx).
+Find information about the legacy indexer [here](indexer/legacy.mdx).

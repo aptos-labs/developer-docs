@@ -21,8 +21,8 @@ export default {
       "quick-start": {
         title: "Quick Start",
       },
-      move: {
-        title: "Move",
+      "smart-contracts": {
+        title: "Smart Contracts",
       },
       apis: {
         title: "APIs",
@@ -35,9 +35,6 @@ export default {
       },
       cli: {
         title: "CLI",
-      },
-      standards: {
-        title: "Standards",
       },
       "advanced-guides": {
         title: "Advanced Guides",
