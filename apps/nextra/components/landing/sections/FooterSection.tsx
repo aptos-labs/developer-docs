@@ -86,7 +86,7 @@ export function FooterSection() {
                 },
                 {
                   label: t.nodeOperationsLink,
-                  href: "https://aptos.dev/nodes/nodes-landing/",
+                  href: `/${locale}/network/nodes`,
                 },
               ]}
             />
@@ -145,7 +145,7 @@ export function FooterSection() {
                 },
                 {
                   label: t.careersLink,
-                  href: "https://jobs.ashbyhq.com/aptosfoundation",
+                  href: "https://aptosfoundation.org/ecosystem/jobs",
                 },
               ]}
             />
@@ -154,7 +154,7 @@ export function FooterSection() {
 
         <div
           className="
-            flex flex-col sm:flex-row px-5 sm:px-8 py-6 gap-4 sm:gap-6 sm:items-center 
+            flex flex-col sm:flex-row px-5 sm:px-8 py-6 gap-4 sm:gap-6 sm:items-center
             max-sm:border-t border-border-divider body-100 sm:body-200 font-medium
           "
         >
