@@ -31,8 +31,8 @@ const transaction = await aptos.transaction.build.simple({
   sender: account.accountAddress,
   data: {
     bytecode,
-    typeArguments: ["0x1::aptos_coin::AptosCoin"],
-    functionArguments: ["0x1"],
+    typeArguments: [parseTypeTag("0x1::aptos_coin::AptosCoin")],
+    functionArguments: [AccountAddress.from("0x1")],
   },
 });
 
@@ -70,8 +70,8 @@ export default function App() {
     signAndSubmitTransaction({
       data: {
         bytecode: BYTECODE_IN_HEX,
-        typeArguments: ["0x1::aptos_coin::AptosCoin"],
-        functionArguments: ["0x1"],
+        typeArguments: [parseTypeTag("0x1::aptos_coin::AptosCoin")],
+        functionArguments: [AccountAddress.from("0x1")],
       },
     });
   }

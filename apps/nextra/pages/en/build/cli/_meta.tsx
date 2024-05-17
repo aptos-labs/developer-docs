@@ -6,7 +6,7 @@ export default {
     title: "Setup",
   },
   "---": {
-    "type": "separator"
+    type: "separator",
   },
   "working-with-move-contracts": {
     title: "Working With Move Contracts",
