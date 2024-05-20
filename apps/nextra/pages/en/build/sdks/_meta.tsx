@@ -15,6 +15,6 @@ export default {
     title: "Go SDK",
   },
   "wallet-adapter": {
-    title: "Integrate with Aptos Wallets",
+    title: "Wallet Adapter",
   },
 };
