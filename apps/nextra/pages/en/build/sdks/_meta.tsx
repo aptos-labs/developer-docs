@@ -18,6 +18,6 @@ export default {
     title: "C++ / Unreal SDK",
   },
   "wallet-adapter": {
-    title: "Integrate with Aptos Wallets",
+    title: "Wallet Adapter",
   },
 };
