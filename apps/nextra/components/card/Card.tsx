@@ -1,9 +1,32 @@
 import { Link } from "nextra-theme-docs";
 import { cn } from "utils/cn";
 
-export const Title = ({ children, ...props }) => (
+type LinkType = "internal" | "external" | undefined | null;
+
+interface TitleProps {
+  children: React.ReactElement;
+  linkType: LinkType;
+}
+
+function generateLinkTypeCharacter(linkType: LinkType) {
+  switch (linkType) {
+    case "external":
+      return "↗";
+    case "internal":
+      return "→";
+    default:
+      return "";
+  }
+}
+
+export const Title = ({
+  children,
+  linkType = "internal",
+  ...props
+}: TitleProps) => (
   <h2 className="font-semibold items-start gap-2" {...props}>
     {children}
+    {linkType ? ' ' + generateLinkTypeCharacter(linkType) : null}
   </h2>
 );
 
