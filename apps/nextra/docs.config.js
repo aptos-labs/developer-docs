@@ -170,6 +170,6 @@ export const docsConfig = Object.freeze({
   githubUrl: "https://github.com/aptos-labs/developer-docs",
   relativeDocsPath: "/apps/nextra",
   githubNewIssueUrl: "https://github.com/aptos-labs/developer-docs/issues/new",
-  googleAnalyticsId: "G-LLF79THJN0",
+  googleAnalyticsId: "G-WCYR52WMW9",
   origin: getOrigin(),
 });
