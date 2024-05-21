@@ -41,7 +41,7 @@ In the `App.jsx` file:
 Import the installed wallets:
 
 ```js
-import { PetraWallet } from "petra-plugin-wallet-adapter";
+import { SomeWallet } from "some-wallet-plugin-wallet-adapter";
 ```
 
 Import the `AptosWalletAdapterProvider`:
@@ -53,7 +53,7 @@ import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
 Wrap your app with the Provider, pass it the plugins (wallets) you want to have on your app as an array, and include an autoConnect option (set to false by default):
 
 ```js
-const wallets = [new PetraWallet()];
+const wallets = [new SomeWallet()];
 <AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>
   <App />
 </AptosWalletAdapterProvider>;
@@ -123,6 +123,7 @@ If you already use the wallet adapter with the legacy standard, uninstall and re
 Wallets compatible with AIP-62 wallet standard
 
 - [Nightly](https://chromewebstore.google.com/detail/nightly/fiikommddbeccaoicoejoniammnalkfa)
+- [Petra](https://chromewebstore.google.com/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci?hl=en)
 - T Wallet
 
 To only support the AIP-62 wallet standard, dapp should not include the `plugins` prop in the React provider
@@ -138,7 +139,7 @@ To only support the AIP-62 wallet standard, dapp should not include the `plugins
 To support both standards, dapp should provide a wallets array to the React provider. That way the adapter will resolve both wallet standards and provide to the end user with the dapp's installed wallets and with the AIP-62 wallet standard compatible wallets.
 
 ```js
-const wallets = [new PetraWallet()];
+const wallets = [new SomeWallet()];
 <AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>
   <App />
 </AptosWalletAdapterProvider>;
@@ -153,7 +154,7 @@ Sometimes, a dapp might want to specifically opt in to certain wallets and displ
 ```jsx
  <AptosWalletAdapterProvider
       plugins={wallets}
-      optInWallets=["Nightly","T wallet"] // include Nightly and T wallet AIP-62 compatible wallets
+      optInWallets=["Petra"] // include Petra AIP-62 compatible wallet
     >
   {children}
 </AptosWalletAdapterProvider>
