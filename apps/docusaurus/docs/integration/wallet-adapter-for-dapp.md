@@ -150,7 +150,7 @@ Since the discovery of uninstalled AIP-62 wallets is challenging for a dapp, the
 
 Sometimes, a dapp might want to specifically opt in to certain wallets and display only those. For this, you should be able to pass an `optInWallets` array to the `AptosWalletAdapterProvider` with the names of the wallets you wish to include in your dapp.
 
-```js
+```jsx
  <AptosWalletAdapterProvider
       plugins={wallets}
       optInWallets=["Nightly","T wallet"] // include Nightly and T wallet AIP-62 compatible wallets
