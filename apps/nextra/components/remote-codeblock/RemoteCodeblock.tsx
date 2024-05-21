@@ -79,7 +79,7 @@ export function RemoteCodeblock({ permalink }: RemoteCodeblockProps) {
             Source Code
           </Link>
           <CopyToClipboard
-            className="transition rounded-md p-1.5 border border-gray-300 dark:border-neutral-700 contrast-more:border-gray-900 contrast-more:dark:border-gray-50 "
+            className="transition rounded-md p-1.5 border border-gray-300 dark:border-neutral-700 contrast-more:border-gray-900 contrast-more:dark:border-gray-50 max-sm:hidden"
             getValue={() =>
               codeContainerRef.current?.querySelector("code")?.textContent || ""
             }
