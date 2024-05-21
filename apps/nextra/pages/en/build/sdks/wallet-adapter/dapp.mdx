@@ -55,7 +55,7 @@ In the `App.jsx` file:
 Import the installed wallets:
 
 ```jsx
-import { PetraWallet } from "petra-plugin-wallet-adapter";
+import { SomeWallet } from "some-wallet-plugin-wallet-adapter";
 ```
 
 Import the `AptosWalletAdapterProvider`:
@@ -69,7 +69,7 @@ on your app as an array, and include an autoConnect option (set to false by
 default):
 
 ```jsx
-const wallets = [new PetraWallet()];
+const wallets = [new SomeWallet()];
 <AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>
   <App/>
 </AptosWalletAdapterProvider>;
@@ -164,6 +164,7 @@ wallet by default.
 Wallets compatible with AIP-62 wallet standard
 
 - [Nightly](https://chromewebstore.google.com/detail/nightly/fiikommddbeccaoicoejoniammnalkfa)
+- [Petra](https://chromewebstore.google.com/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci?hl=en)
 - T Wallet
 
 To only support the AIP-62 wallet standard, dapp should not include
@@ -183,7 +184,7 @@ the end user with the dapp's installed wallets and with the AIP-62 wallet
 standard compatible wallets.
 
 ```jsx
-const wallets = [new PetraWallet()];
+const wallets = [new SomeWallet()];
 <AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>
   <App/>
 </AptosWalletAdapterProvider>;
@@ -198,7 +199,7 @@ Sometimes, a dapp might want to specifically opt in to certain wallets and displ
 ```jsx
  <AptosWalletAdapterProvider
       plugins={wallets}
-      optInWallets=["Nightly","T wallet"] // include Nightly and T wallet AIP-62 compatible wallets
+      optInWallets=["Petra"] // include Petra AIP-62 compatible wallet
     >
   {children}
 </AptosWalletAdapterProvider>
