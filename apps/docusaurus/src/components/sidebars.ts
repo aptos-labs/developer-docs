@@ -382,6 +382,7 @@ const sidebars: SidebarsConfig = {
         "sdks/rust-sdk/index",
         "sdks/unity-sdk/index",
         "sdks/go-sdk/index",
+        "sdks/cpp-sdk/index",
       ],
     },
     {

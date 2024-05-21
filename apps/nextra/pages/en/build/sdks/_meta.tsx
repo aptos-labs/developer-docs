@@ -14,6 +14,9 @@ export default {
   "go-sdk": {
     title: "Go SDK",
   },
+  "cpp-sdk": {
+    title: "C++ / Unreal SDK",
+  },
   "wallet-adapter": {
     title: "Integrate with Aptos Wallets",
   },
