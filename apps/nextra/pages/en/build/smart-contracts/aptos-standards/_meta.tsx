@@ -5,5 +5,4 @@ export default {
   "fungible-asset": "Fungible Asset (FA)",
   "aptos-coin": "Coin (legacy)",
   "aptos-token": "Token (legacy)",
-  wallets: "Wallet",
 };
