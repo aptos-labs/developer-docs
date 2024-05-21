@@ -796,6 +796,121 @@ export default withBundleAnalyzer(
         destination: "/en/network/glossary",
         permanent: true,
       },
+      {
+        source: "/indexer/api/example-queries",
+        destination: "/en/build/indexer/common-queries",
+        permanent: true
+      },
+      {
+        source: "/guides/explore-aptos",
+        destination: "/en/network/glossary#aptos-explorer",
+        permanent: true
+      },
+      {
+        source: "/aptos-white-paper/aptos-white-paper-in-korean",
+        destination: "/en/network/blockchain/aptos-white-paper",
+        permanent: true
+      },
+      {
+        source: "/aptos-white-paper/aptos-white-paper-in-japanese",
+        destination: "/en/network/blockchain/aptos-white-paper",
+        permanent: true
+      },
+      {
+        source: "/move/move-on-aptos/gas-profiling",
+        destination: "/en/build/cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling",
+        permanent: true
+      },
+      {
+        source: "/sdks/ts-sdk/sdk-configuration",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true
+      },
+      {
+        source: "/sdks/ts-sdk/fetch-data-from-chain",
+        destination: "/en/build/sdks/ts-sdk/fetch-data-via-sdk",
+        permanent: true
+      },
+      {
+        source: "/sdks/ts-sdk/transaction-builder",
+        destination: "/en/build/sdks/ts-sdk/building-transactions",
+        permanent: true
+      },
+      {
+        source: "/sdks/ts-sdk/http-client",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true
+      },
+      {
+        source: "/sdks/ts-sdk/move-types",
+        destination: "/en/build/sdks/ts-sdk/building-transactions/bcs-format",
+        permanent: true
+      },
+      {
+        source: "/sdks/ts-sdk/testing",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true
+      },
+      {
+        source: "/sdks/ts-sdk/typescript",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true
+      },
+      {
+        source: "/tools/aptos-cli/cli-configuration",
+        destination: "/en/build/cli/setup-cli",
+        permanent: true
+      },
+      {
+        source: "/tools/aptos-cli/use-cli/public-network/run-public-network",
+        destination: "/en/build/cli/public-network",
+        permanent: true
+      },
+      {
+        source: "/guides/nfts/aptos-token-overview",
+        destination: "/en/build/smart-contracts/aptos-standards/tokens",
+        permanent: true
+      },
+      {
+        source: "/integration/wallet-adapter-for-dapp",
+        destination: "/en/build/sdks/wallet-adapter/dapp",
+        permanent: true
+      },
+      {
+        source: "/integration/wallet-adapter-for-wallets",
+        destination: "/en/build/sdks/wallet-adapter/wallets",
+        permanent: true
+      },
+      {
+        source: "/integration/aptos-names-service-package",
+        destination: "/en/build/advanced-guides/aptos-name-service",
+        permanent: true
+      },
+      {
+        source: "/nodes/nodes-landing",
+        destination: "/en/network/nodes",
+        permanent: true
+      },
+      {
+        source: "/nodes/validator-node/voter/index",
+        destination: "/en/network/nodes/validator-node/connect-nodes/staking-pool-voter",
+        permanent: true
+      },
+      {
+        source: "/nodes/node-files-all-networks/node-files",
+        destination: "/en/network/nodes/configure/node-files-all-networks/node-files-mainnet",
+        permanent: true
+      },
+      {
+        source: "/move/book/introduction",
+        destination: "/en/build/smart-contracts/learn-move/book",
+        permanent: true
+      },
+      {
+        source: "/move/book/creating-coins",
+        destination: "/en/build/smart-contracts/learn-move/book/move-tutorial",
+        permanent: true
+      }
     ],
   }),
 );
