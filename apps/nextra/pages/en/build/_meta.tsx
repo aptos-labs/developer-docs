@@ -1,5 +1,5 @@
 export default {
-  "quick-start": "Quick Start",
+  "get-started": "Get Started",
   "smart-contracts": "Smart Contracts",
   apis: "APIs",
   sdks: "SDKs",

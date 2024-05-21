@@ -12,8 +12,8 @@ export default {
     type: "menu",
     title: "Build",
     items: {
-      "quick-start": {
-        title: "Quick Start",
+      "get-started": {
+        title: "Get Started",
       },
       "smart-contracts": {
         title: "Smart Contracts",
