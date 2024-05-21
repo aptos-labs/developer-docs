@@ -26,7 +26,7 @@ export const Title = ({
 }: TitleProps) => (
   <h2 className="font-semibold items-start gap-2" {...props}>
     {children}
-    {linkType ? ' ' + generateLinkTypeCharacter(linkType) : null}
+    {linkType ? " " + generateLinkTypeCharacter(linkType) : null}
   </h2>
 );
 
