@@ -117,8 +117,13 @@ Since the AIP-62 wallet standard uses event communication between a dapp and a w
 #### Support only AIP-62 wallet standard
 
 :::tip
-If you already use the wallet adapter with the legacy standard, uninstall and remove any AIP-62 wallet standard compatible wallet dependencies.
+If you already use the wallet adapter with the legacy standard, uninstall and remove any AIP-62 standard compatible wallet dependencies.
 :::
+
+Wallets compatible with AIP-62 wallet standard
+
+- [Nightly](https://chromewebstore.google.com/detail/nightly/fiikommddbeccaoicoejoniammnalkfa)
+- T Wallet
 
 To only support the AIP-62 wallet standard, dapp should not include the `plugins` prop in the React provider
 
@@ -127,10 +132,6 @@ To only support the AIP-62 wallet standard, dapp should not include the `plugins
   <App />
 </AptosWalletAdapterProvider>
 ```
-
-Wallets compatible with AIP-62 wallet standard
-
-- [Nightly](https://chromewebstore.google.com/detail/nightly/fiikommddbeccaoicoejoniammnalkfa)
 
 #### Support both standards
 
@@ -141,4 +142,19 @@ const wallets = [new PetraWallet()];
 <AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>
   <App />
 </AptosWalletAdapterProvider>;
+```
+
+#### How to opt-in to show only specific wallets?
+
+Since the discovery of uninstalled AIP-62 wallets is challenging for a dapp, the adapter supports a discovery logic to include any AIP-62 wallet that is not installed on the user's machine and adds it by default to the final wallets array used by the dapp.
+
+Sometimes, a dapp might want to specifically opt in to certain wallets and display only those. For this, you should be able to pass an `optInWallets` array to the `AptosWalletAdapterProvider` with the names of the wallets you wish to include in your dapp.
+
+```js
+ <AptosWalletAdapterProvider
+      plugins={wallets}
+      optInWallets=["Nightly","T wallet"] // include Nightly and T wallet AIP-62 compatible wallets
+    >
+  {children}
+</AptosWalletAdapterProvider>
 ```
