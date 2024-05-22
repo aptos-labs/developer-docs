@@ -50,6 +50,22 @@ const config: DocsThemeConfig = {
       );
     },
   },
+  banner: {
+    content: function useBanner() {
+      return (
+        <div>
+          🎉 Welcome to the new Aptos Docs preview!{" "}
+          <a
+            className="text-blue-400 dark:text-blue-400 hover:underline"
+            target="_blank"
+            href="https://forms.gle/h7CGG9UKA1zCRNgd6"
+          >
+            Click here to submit feedback!
+          </a>
+        </div>
+      );
+    },
+  },
   feedback: {
     content: function useFeedback() {
       const { locale } = useRouter();
