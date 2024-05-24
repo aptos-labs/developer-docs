@@ -12,7 +12,7 @@ The `Ledger Nano S` has limited memory and may not be able to sign many transact
 
 You will need to do a few steps of configuration for the Aptos CLI and your Ledger device to sign transactions.
 <Steps>
-### Ensure you have the Aptos CLI installed. 
+### Ensure you have the Aptos CLI installed.
    You can install the Aptos CLI by following [these steps](../../install-cli.mdx) if you have not done so already.
 ### Ensure you have done the basic setup for your Ledger device.
    You can find those steps on [Ledger’s website](https://www.ledger.com/). For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
@@ -117,3 +117,36 @@ yes
 After you have approved publishing this package you will be prompted to sign the transaction on your Ledger device. Once signed, the package will be published to the network!
 
 One error you might run into is `Error: Wrong raw transaction length`. This means that the transaction or package size was too big for your device to sign. Currently the Aptos Ledger app can only support transactions that are smaller than 20kb. The `Ledger Nano S` device has less memory than that, which is why it is more likely to produce this error.
+
+## Authentication key rotation
+
+If you have an active account that is not secured using a hardware wallet, then you may wish to rotate the account's authentication key so that it is linked with your Ledger.
+
+Alternatively, if you have an account linked with a Ledger hardware wallet that you wish to publish a large package from, you might want to temporarily rotate the account's authentication key to a hot key.
+
+This tutorial will walk you through both scenarios.
+
+<Steps>
+
+### Start a localnet
+
+You can run this command at any point to restart a fresh localnet:
+
+```sh filename="Terminal"
+mkdir -p localnet-data
+aptos node run-localnet \
+    --assume-yes \
+    --test-dir localnet-data \
+    --force-restart
+```
+
+The localnet is ready when it prints out:
+
+```sh filename="Terminal"
+Setup is complete, you can now use the localnet!
+```
+
+### Initialize a profile for your ledger
+
+</Steps>
+
