@@ -58,10 +58,11 @@ export default async function (req) {
             bottom: 140,
             left: 160,
             margin: 0,
-            fontSize: 60,
+            fontSize: 64,
             letterSpacing: -1,
             display: "flex",
             flexDirection: "row",
+            alignItems: 'center',
             gap: 24,
           }}
         >
