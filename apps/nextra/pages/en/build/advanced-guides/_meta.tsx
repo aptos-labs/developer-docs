@@ -5,6 +5,9 @@ export default {
   "key-rotation": {
     title: "Account Key Rotation",
   },
+  "wallets": {
+    title: "Aptos Wallet Standard",
+  },
   "keyless-accounts": {
     title: "Aptos Keyless Integration Guide",
   },
