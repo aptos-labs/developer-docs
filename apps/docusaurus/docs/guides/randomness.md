@@ -11,10 +11,11 @@ Building a lottery system and pick a random winner from n participants is trivia
 Unfortunately, without an equivalent of `random.randomint()` in Aptos Move, building a dApp version of it was another story.
 
 One may have written a contract where the random numbers are sampled insecurely (e.g., from the blockchain timestamp):
+
 ```rust
 module module_owner::lottery {
     // ...
-    
+
     struct LotteryState {
         players: vector<address>,
         winner_idx: std::option::Option<u64>,
@@ -32,15 +33,19 @@ module module_owner::lottery {
     }
 }
 ```
+
 NOTE: it is insecure in multiple ways:
+
 - a malicious user may bias the result by picking the transaction submission time;
 - a malicious validator can bias the result easily by selecting which block the `decide_winner` transaction goes to.
 
 Other dApps may have chosen to use a external secure randomness source
 (e.g., [drand](https://drand.love/)), which is typically a complicated flow:
+
 1. The participants agree on using a future randomness seed promised by the randomness source to determine the winner.
 2. Once the randomness seed is revealed, the clients fetch the it and derive the winner locally.
 3. One of the participants submits the seed and the winner on chain.
+
 ```rust
 module module_owner::lottery {
     // ...
@@ -78,10 +83,11 @@ module module_owner::lottery {
 ### Achieve both simplicity and security with Aptos randomness API
 
 Using Aptos randomness API, the implementation will look like this:
+
 ```rust
 module module_owner::lottery {
     // ...
-    
+
     struct LotteryState {
         players: vector<address>,
         winner_idx: std::option::Option<u64>,
@@ -100,7 +106,9 @@ module module_owner::lottery {
     }
 }
 ```
+
 where:
+
 - `let winner_idx = aptos_framework::randomness::u64_range(0, n);` is the a randomness API call that returns a u64 integer in range `[0, n)` uniformly at random.
 - `#[randomness]` is a required attribute for the execution engine to perform some safety check and enable the API for the transaction.
   - Calling randomness API without this attribute on top of the entry function will cause the transaction to abort.
@@ -131,6 +139,7 @@ alias aptos=target/debug/aptos
 ### Identify randomness-dependent entry functions and make them compliant
 
 For safety, randomness API calls are allowed at runtime only when the transaction invokes an entry function that is:
+
 - private, and
 - annotated with `#[randomness]`.
 
@@ -150,10 +159,11 @@ module module_owner::lottery {
 ### Call the API
 
 The APIs are public functions under `0x1::randomness` and can be referenced directly, as demonstrated in the lottery example above.
+
 ```rust
 module module_owner::lottery {
     // ...
-    
+
     #[randomness]
     entry fun decide_winner() {
         // ...
@@ -165,6 +175,7 @@ module module_owner::lottery {
 
 The above example uses function `u64_range()` but many other basic types are also supported.
 Here's a quick overview of all the API, where `T` can be one of `u8, u16, u32, u64, u128, u256`.
+
 ```
 /// Generates an T uniformly at random.
 fun T_integer(): T
@@ -189,7 +200,7 @@ While this is supported as shown below, extra care must be taken.
 ```rust
 module module_owner::lottery {
     // ...
-    
+
     #[randomness]
     entry fun decide_winner_v0() {
         // ...
@@ -213,12 +224,13 @@ module module_owner::lottery {
 
 If `decide_winner_internal()` were accidentally marked public,
 malicious players can deploy their own contract to:
+
 1. call`decide_winner_internal()`;
 1. read the lottery result (assuming the `lottery` module has some getter functions for the result);
 1. abort if the result is not in their favor.
-By repeatedly calling their own contract until a txn succeeds,
-malicious users can bias the uniform distribution of the winner (dApp developer's initial design).
-This is referred to as a *test-and-abort attack*.
+   By repeatedly calling their own contract until a txn succeeds,
+   malicious users can bias the uniform distribution of the winner (dApp developer's initial design).
+   This is referred to as a _test-and-abort attack_.
 
 Aptos move compiler have been updated to prevent this attack for your contract safety:
 a randomness-dependent public function is treated as a compile error.
@@ -253,19 +265,21 @@ module module_owner::lottery {
 ### Security warning: undergasing attacks, and how to prevent
 
 Imagine such a dApp. It defines a private entry function for a user to:
+
 1. toss a coin (gas cost: 9), then
 2. get a reward (gas cost: 10) if coin=1, or get multiple punishments (gas cost: 100) otherwise.
 
 A malicious user can control its account blanace so it covers at most 108 gas units (or set transaction parameter `max_gas=108`), and the punishing branch will never be reached.
 
-Formally, this is referred to as an *undergasing attack*,
+Formally, this is referred to as an _undergasing attack_,
 where an attacker can control how much gas is left for the entry function to execute,
 and so can arbitrarily decide to abort paths that cost more gas,
 biasing the outcome (i.e. effectively changing the distribution of random numbers).
 
-*WARNING: randomness API currently doesn’t prevent undergassing attacks.*
+_WARNING: randomness API currently doesn’t prevent undergassing attacks._
 As a dApp developer, you need to be very careful in your design to avoid this type of attack.
 Here are some ideas of how to prevent undergasing attack generally.
+
 - Make your entry function gas independent from the randomness outcome.
   Simplest example is to not “act” on the randomness outcome, i.e. read it and store it for later.
 - If your dApp involves a trusted admin/admin group, only allow the trusted to execute randomness transaction (i.e. require an admin signer).
@@ -284,6 +298,7 @@ and not every randomness-dependent logic in your private centralized server can 
 **especially when it involves a secret that only the server should see**.
 
 E.g., in your contract, DO NOT try to do the following.
+
 - Use randomness API to generate an asymmetric key pair, discard the private key, then think the public key is safe.
 - Use randomness API to shuffle some opened cards, veil them, and think no one knows the permutation.
 
