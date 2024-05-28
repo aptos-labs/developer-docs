@@ -6,13 +6,13 @@ title: "Aptos Roll: on-chain public instant randomness API"
 
 ### How randomness may have been obtained insecurely/overcomplicated
 
-Building a lottery system and pick a random winner from n participants is trivial, at least in the centralized world with a trusted server: the backend simply calls a `random.randint(0, n-1)` (this is a python example).
+Building a lottery system and pick a random winner from `n` participants is trivial, at least in the centralized world with a trusted server: the backend simply calls a `random.randint(0, n-1)` (this is a python example).
 
-Unfortunately, without an equivalent of `random.randomint()` in Aptos Move, building a dApp version of it was another story.
+Unfortunately, without an equivalent of `random.randomint()` in Aptos Move, building a dApp version of it was actually much harder.
 
 One may have written a contract where the random numbers are sampled insecurely (e.g., from the blockchain timestamp):
 
-```rust
+```move
 module module_owner::lottery {
     // ...
 
@@ -46,7 +46,7 @@ Other dApps may have chosen to use a external secure randomness source
 2. Once the randomness seed is revealed, the clients fetch the it and derive the winner locally.
 3. One of the participants submits the seed and the winner on chain.
 
-```rust
+```move
 module module_owner::lottery {
     // ...
 
@@ -84,7 +84,7 @@ module module_owner::lottery {
 
 Using Aptos randomness API, the implementation will look like this:
 
-```rust
+```move
 module module_owner::lottery {
     // ...
 
@@ -113,6 +113,7 @@ where:
 - `#[randomness]` is a required attribute for the execution engine to perform some safety check and enable the API for the transaction.
   - Calling randomness API without this attribute on top of the entry function will cause the transaction to abort.
   - It also means randomness API calls are supported only in transactions that call an entry function.
+    For example, calling the API from a script won't work.
 
 ## How to use Aptos randomness API
 
@@ -120,11 +121,11 @@ where:
 
 Randomness APIs are enabled on devnet and testnet, and landing soon on mainnet.
 
-### Build aptos-cli from latest source
+### Build Aptos CLI from latest source
 
-Some changes have been made to aptos-cli to support compiling a randomness consuming contract.
-While the changes haven't been included in an official aptos-cli release (but coming soon),
-you can build aptos-cli from source to support your randomness-dependent contract development.
+Some changes have been made to [Aptos CLI](https://aptos.dev/tools/aptos-cli/) to support compiling a randomness consuming contract.
+While the changes haven't been included in an official Aptos CLI release (but coming soon),
+you can build it from source to support your randomness-dependent contract development.
 
 ```shell
 git clone https://github.com/aptos-labs/aptos-core
@@ -145,7 +146,7 @@ For safety, randomness API calls are allowed at runtime only when the transactio
 
 It's now a good time to think about what user actions need randomness API, write them down, and make sure they are private and have the right attribute, as shown in the example below.
 
-```rust
+```move
 module module_owner::lottery {
     // ...
 
@@ -160,7 +161,7 @@ module module_owner::lottery {
 
 The APIs are public functions under `0x1::randomness` and can be referenced directly, as demonstrated in the lottery example above.
 
-```rust
+```move
 module module_owner::lottery {
     // ...
 
@@ -176,7 +177,7 @@ module module_owner::lottery {
 The above example uses function `u64_range()` but many other basic types are also supported.
 Here's a quick overview of all the API, where `T` can be one of `u8, u16, u32, u64, u128, u256`.
 
-```
+```move
 /// Generates an T uniformly at random.
 fun T_integer(): T
 
@@ -191,13 +192,21 @@ fun bytes(n: u64): vector<u8>;
 fun permutation(n: u64): vector<u64>;
 ```
 
-### Security warning: randomness API calls in non-entry functions
+The full API function list and documentation can be found [here](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/randomness.md).
+
+## WARNING: how to use randomness APIs insecurely
+
+Randomness API is powerful in many ways: it unlocks new dApp designs;
+but if used incorrectly, it may leave your dApps open to attacks!
+Below are some common mistakes you should avoid.
+
+### Randomness API calls in non-entry functions
 
 As your dApp gets more complicated, you may have multiple entry functions that need to share the same randomness-dependent logic, and want to pull the logic out as a separate helper function.
 
 While this is supported as shown below, extra care must be taken.
 
-```rust
+```move
 module module_owner::lottery {
     // ...
 
@@ -230,14 +239,14 @@ malicious players can deploy their own contract to:
 1. abort if the result is not in their favor.
    By repeatedly calling their own contract until a txn succeeds,
    malicious users can bias the uniform distribution of the winner (dApp developer's initial design).
-   This is referred to as a _test-and-abort attack_.
+   This is referred to as a [_test-and-abort attack_](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#test-and-abort-attacks).
 
-Aptos move compiler have been updated to prevent this attack for your contract safety:
+The Aptos Move compiler have been updated to prevent this attack for your contract safety:
 a randomness-dependent public function is treated as a compile error.
-If you have finished the steps in the ["build aptos-cli"](#build-aptos-cli-from-latest-source)) section,
-then your aptos-cli are equipped with the updated compiler.
+If you have finished the steps in the ["build Aptos CLI"](#build-aptos-cli-from-latest-source)) section,
+then your Aptos CLI are equipped with the updated compiler.
 
-```rust
+```move
 module module_owner::lottery {
     // Compile error!
     public fun decide_winner_internal(lottery_state: &mut lottery_state) {
@@ -262,21 +271,21 @@ module module_owner::lottery {
 }
 ```
 
-### Security warning: undergasing attacks, and how to prevent
+### Undergasing attacks, and how to prevent
 
 Imagine such a dApp. It defines a private entry function for a user to:
 
 1. toss a coin (gas cost: 9), then
 2. get a reward (gas cost: 10) if coin=1, or get multiple punishments (gas cost: 100) otherwise.
 
-A malicious user can control its account blanace so it covers at most 108 gas units (or set transaction parameter `max_gas=108`), and the punishing branch will never be reached.
+A malicious user can control its account balance so it covers at most 108 gas units (or set transaction parameter `max_gas=108`), and the punishing branch will never be reached.
 
-Formally, this is referred to as an _undergasing attack_,
+Formally, this is referred to as an [undergasing attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#undergasing-attacks),
 where an attacker can control how much gas is left for the entry function to execute,
 and so can arbitrarily decide to abort paths that cost more gas,
 biasing the outcome (i.e. effectively changing the distribution of random numbers).
 
-_WARNING: randomness API currently doesn’t prevent undergassing attacks._
+**WARNING: randomness API currently doesn’t prevent undergassing attacks.**
 As a dApp developer, you need to be very careful in your design to avoid this type of attack.
 Here are some ideas of how to prevent undergasing attack generally.
 
@@ -290,7 +299,7 @@ Note that everything that doesn’t fall in above categories can be susceptible 
 
 We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergasing attacks.
 
-### Security warning: the randomness is public!
+### It's random, but not a secret
 
 While the randomness API mimics the stdlibs you use to implement a private centralized server,
 keep in mind that **the seed is public, and so is your transaction execution**,
