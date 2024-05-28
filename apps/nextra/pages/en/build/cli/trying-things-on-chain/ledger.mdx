@@ -207,7 +207,7 @@ Inspect the account's `Account` resource:
 aptos account list --profile localnet-a
 ```
 
-Note that the `jq` authentication key is the same as the account address:
+Note that the authentication key is the same as the account address:
 
 ```sh filename="Terminal"
 export AUTH_KEY_A=$(
@@ -270,6 +270,12 @@ export NEW_AUTH_KEY_A=$(
         '.Result[0]["0x1::account::Account"]["authentication_key"]'
 )
 echo $NEW_AUTH_KEY_A
+```
+
+This should match the authentication key of the `localnet-b` profile:
+
+```sh filename="Terminal"
+echo $AUTH_KEY_B
 ```
 
 ### Update the CLI profile
