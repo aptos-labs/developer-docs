@@ -2,6 +2,8 @@
 title: "Aptos Roll: on-chain public instant randomness API"
 ---
 
+# Aptos Roll: on-chain public instant randomness API
+
 ## What does it do: a quick example
 
 ### How randomness may have been obtained insecurely/overcomplicated
@@ -34,7 +36,7 @@ module module_owner::lottery {
 }
 ```
 
-NOTE: it is insecure in multiple ways:
+The implementation above is insecure in multiple ways:
 
 - a malicious user may bias the result by picking the transaction submission time;
 - a malicious validator can bias the result easily by selecting which block the `decide_winner` transaction goes to.
