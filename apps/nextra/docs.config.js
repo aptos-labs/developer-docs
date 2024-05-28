@@ -163,7 +163,7 @@ export const i18nConfig = Object.freeze({
   },
   "zh-cn": {
     locale: "zh-cn",
-    name: "Simplified Chinese ",
+    name: "简体中文",
     direction: "ltr",
     title: "Aptos 文档",
     editText: "在 Github 上修改当前页面 →",
