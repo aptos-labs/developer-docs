@@ -280,19 +280,19 @@ In the first step, the example initializes both the API and faucet clients.
 - The faucet client interacts with the devnet Faucet service for creating and funding accounts.
 
 ```python
-:!: /sdks/python/examples/simple_aptos_token.py section_1a
+:!: static/sdks/python/examples/simple_aptos_token.py section_1a
 ```
 
 Using the API client we can create a `TokenClient` that we use for common token operations such as creating collections and tokens, transferring them, claiming them, and so on.
 
 ```python
-:!: /sdks/python/examples/simple_aptos_token.py section_1b
+:!: static/sdks/python/examples/simple_aptos_token.py section_1b
 ```
 
 [`common.py`](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/python/sdk/examples/common.py) initializes these values as follows:
 
 ```python
-:!: /sdks/python/examples/common.py section_1
+:!: static/sdks/python/examples/common.py section_1
 ```
 
 <Callout type="info">
@@ -323,7 +323,7 @@ const bob = Account.generate();
   <Tabs.Tab>
 
 ```python
-:!: /sdks/python/examples/simple_aptos_token.py section_2
+:!: static/sdks/python/examples/simple_aptos_token.py section_2
 ```
 
   </Tabs.Tab>
@@ -357,7 +357,7 @@ await aptos.faucet.fundAccount({
   <Tabs.Tab>
 
 ```python
-:!: /sdks/python/examples/simple_aptos_token.py section_3
+:!: static/sdks/python/examples/simple_aptos_token.py section_3
 ```
 
   </Tabs.Tab>
@@ -408,13 +408,13 @@ export async function createCollectionTransaction(
 Your application will call `create_collection`:
 
 ```python
-:!: /sdks/python/examples/simple_aptos_token.py section_4
+:!: static/sdks/python/examples/simple_aptos_token.py section_4
 ```
 
 This is the function signature of `create_collection`. It returns a transaction hash:
 
 ```python
-:!: /sdks/python/aptos_sdk/aptos_token_client.py create_collection
+:!: static/sdks/python/aptos_sdk/aptos_token_client.py create_collection
 ```
 
   </Tabs.Tab>
@@ -465,13 +465,13 @@ async mintTokenTransaction(args: {
 Your application will call `mint_token`:
 
 ```python
-:!: /sdks/python/examples/simple_aptos_token.py section_5
+:!: static/sdks/python/examples/simple_aptos_token.py section_5
 ```
 
 This is the function signature of `mint_token`. It returns a transaction hash:
 
 ```python
-:!: /sdks/python/aptos_sdk/aptos_token_client.py mint_token
+:!: static/sdks/python/aptos_sdk/aptos_token_client.py mint_token
 ```
 
   </Tabs.Tab>
@@ -516,13 +516,13 @@ console.log(
 To read a collection's metadata:
 
 ```python
-:!: /sdks/python/examples/simple_aptos_token.py section_6
+:!: static/sdks/python/examples/simple_aptos_token.py section_6
 ```
 
 To read a token's metadata:
 
 ```python
-:!: /sdks/python/examples/simple_aptos_token.py get_token_data
+:!: static/sdks/python/examples/simple_aptos_token.py get_token_data
 ```
 
   </Tabs.Tab>
@@ -585,11 +585,11 @@ export async function getOwnedDigitalAssets(args: {
   <Tabs.Tab>
 
 ```python title="Get the object's resources and parse the owner"
-:!: /sdks/python/examples/simple_aptos_token.py section_7
+:!: static/sdks/python/examples/simple_aptos_token.py section_7
 ```
 
 ```python title="How the owners dictionary is defined"
-:!: /sdks/python/examples/simple_aptos_token.py owners
+:!: static/sdks/python/examples/simple_aptos_token.py owners
 ```
 
   </Tabs.Tab>
@@ -650,23 +650,23 @@ console.log(`Bob's digital assets balance: ${bobDigitalAssetsAfter.length}`);
   <Tabs.Tab>
 
 ```python title="Transfer the token to Bob"
-:!: /sdks/python/examples/simple_aptos_token.py section_8
+:!: static/sdks/python/examples/simple_aptos_token.py section_8
 ```
 
 ```python title="How the transfer_token function is defined"
-:!: /sdks/python/aptos_sdk/aptos_token_client.py transfer_token
+:!: static/sdks/python/aptos_sdk/aptos_token_client.py transfer_token
 ```
 
 ```python title="Read the owner"
-:!: /sdks/python/examples/simple_aptos_token.py section_9
+:!: static/sdks/python/examples/simple_aptos_token.py section_9
 ```
 
 ```python title="Transfer the token back to Alice"
-:!: /sdks/python/examples/simple_aptos_token.py section_10
+:!: static/sdks/python/examples/simple_aptos_token.py section_10
 ```
 
 ```python title="Read the owner again"
-:!: /sdks/python/examples/simple_aptos_token.py section_11
+:!: static/sdks/python/examples/simple_aptos_token.py section_11
 ```
 
   </Tabs.Tab>

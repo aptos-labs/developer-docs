@@ -42,7 +42,7 @@ Make sure devnet is live when you try running the example!
 First, we will generate single signer accounts for Alice, Bob, and Chad:
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_1
+:!: static/sdks/python/examples/multisig.py section_1
 ```
 
 Fresh accounts are generated for each example run, but the output should resemble:
@@ -71,7 +71,7 @@ For each user, note the [account address](../concepts/accounts.md#account-addres
 Next generate a [K-of-N multi-signer](../concepts/accounts.md#multied25519-authentication) public key and account address for a multisig account requiring two of the three signatures:
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_2
+:!: static/sdks/python/examples/multisig.py section_2
 ```
 
 The multisig account address depends on the public keys of the single signers. (Hence, it will be different for each example.) But the output should resemble:
@@ -87,7 +87,7 @@ Account address:    0x08cac3b7b7ce4fbc5b18bc039279d7854e4c898cbf82518ac2650b565a
 Next fund all accounts:
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_3
+:!: static/sdks/python/examples/multisig.py section_3
 ```
 
 ```zsh title=Output
@@ -108,7 +108,7 @@ Since it is a two-of-three multisig account, signatures are required from only t
 First generate a raw transaction, signed by Alice and Bob, but not by Chad.
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_4
+:!: static/sdks/python/examples/multisig.py section_4
 ```
 
 Again, signatures vary for each example run:
@@ -124,7 +124,7 @@ Bob:   0x6305101f8f3ad5a75254a8fa74b0d9866756abbf359f9e4f2b54247917caf8c52798a36
 Next generate a multisig authenticator and submit the transaction:
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_5
+:!: static/sdks/python/examples/multisig.py section_5
 ```
 
 ```zsh title=Output
@@ -137,7 +137,7 @@ Transaction hash: 0x3ff2a848bf6145e6df3abb3ccb8b94fefd07ac16b4acb0c694fa7fa30b77
 Check the new account balances:
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_6
+:!: static/sdks/python/examples/multisig.py section_6
 ```
 
 ```zsh title=Output
@@ -160,7 +160,7 @@ In this section, a fourth user named Deedee will generate a vanity address, then
 A fourth user, Deedee, wants her account address to start with `0xdd..`, so she generates random accounts until she finds one with a matching account address:
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_7
+:!: static/sdks/python/examples/multisig.py section_7
 ```
 
 ```zsh title=Output
@@ -178,7 +178,7 @@ The multisig signature, `cap_update_table`, verifies that the multisig approves 
 Here, Bob and Chad provide individual signatures for the multisig:
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_8
+:!: static/sdks/python/examples/multisig.py section_8
 ```
 
 ```zsh title=Output
@@ -193,7 +193,7 @@ Now that the relevant signatures have been gathered, the authentication key rota
 After it executes, the rotated authentication key matches the address of the first multisig account (the one that sent octas to Chad):
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_9
+:!: static/sdks/python/examples/multisig.py section_9
 ```
 
 ```zsh title=Output
@@ -236,7 +236,7 @@ Here, Alice and Chad will sign off on the publication transaction.
 All compilation and publication operations are handled via the ongoing Python script:
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_10
+:!: static/sdks/python/examples/multisig.py section_10
 ```
 
 ```zsh title=Output
@@ -284,7 +284,7 @@ Alice, Bob, and Chad will all sign off on this publication transaction, which re
 This process is almost identical to that of the genesis publication, with the new `transfer` module listed after the `parameters` module:
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_11
+:!: static/sdks/python/examples/multisig.py section_11
 ```
 
 <Callout type="info">
@@ -331,7 +331,7 @@ Alice and Bob sign off on the Move script, which sends coins from the vanity mul
 Here, the amounts sent to each account are specified in the hard-coded values from the script.
 
 ```python title="multisig.py snippet"
-:!: /sdks/python/examples/multisig.py section_12
+:!: static/sdks/python/examples/multisig.py section_12
 ```
 
 ```zsh title=Output
