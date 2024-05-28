@@ -1,8 +1,4 @@
----
-title: "Your First Fungible Asset"
-slug: "your-first-fungible-asset"
----
-
+import { Callout } from 'nextra/components';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -32,7 +28,7 @@ Install your preferred SDK from the below list:
 ## Step 3: Run the example
 
 <Tabs groupId="examples">
-  <TabItem value="typescript" label="Typescript">
+  <Tabs.Tab>
 
 Clone the `aptos-ts-sdk` repo and build it:
 
@@ -61,7 +57,7 @@ Run the TypeScript [`your_fungible_asset`](https://github.com/aptos-labs/aptos-t
 pnpm run your_fungible_asset
 ```
 
-  </TabItem>
+  </Tabs.Tab>
 </Tabs>
 
 ---
@@ -104,7 +100,7 @@ Move contracts are effectively a set of Move modules known as a package. When de
 These are read by the example and published to the Aptos blockchain:
 
 <Tabs groupId="examples">
-  <TabItem value="typescript" label="Typescript">
+  <Tabs.Tab>
 
 In the TypeScript example, we use `aptos move build-publish-payload` command to compile and build the module.
 That command builds the `build` folder that contains the `package-metadata.bcs` and the bytecode for the `moon_coin.mv` module. The command also builds a publication transaction payload and stores it in a JSON output file that we can later read from to get the `metadataBytes` and `byteCode` to publish the contract to chain with.
@@ -166,7 +162,7 @@ const pendingTransaction = await aptos.signAndSubmitTransaction({
 await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
 ```
 
-  </TabItem>
+  </Tabs.Tab>
 </Tabs>
 
 ---
@@ -175,9 +171,10 @@ await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
 
 The FACoin module contains a function called `init_module` in which it creates a named metadata object that defines a type of FA called "FACoin" with a bunch of properties. The `init_module` function is called when the module is published. In this case, FACoin initializes the `FACoin` metadata object, owned by the owner of the account. According to the module code, the owner will be the admin of "FACoin" so that they are entitled to manage "FACoin" under the fungible asset framework.
 
-:::tip Managed Fungible Asset framework
+<Callout type="info">
+Managed Fungible Asset framework
 [`Managed Fungible Asset`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/fungible_asset/managed_fungible_asset/sources/managed_fungible_asset.move) is a full-fledged FA management framework for FAs directly managed by users. It provides convenience wrappers around different `refs` and both primary and secondary fungible stores. This example is a simplified version that only deals with primary stores.
-:::
+</Callout>
 
 ---
 
@@ -192,10 +189,10 @@ The creator of FACoin have several managing primitives:
 - **Deposit**: Deposit FACoin from the primary store of any account regardless of being frozen or not.
 - **Transfer**: Withdraw from one account and deposit to another regardless of either being frozen or not.
 
-:::tip
+<Callout type="info">
 The entity that creates FACoin gains the capabilities for minting, burning, freezing/unfreezing, and forceful transferring between any fungible stores no matter they are frozen or not.
 So `Withdraw`, `Deposit`, and `Transfer` in the management module have different semantics than those described in fungible asset framework that limited by frozen status.
-:::
+</Callout>
 
 ---
 
@@ -211,9 +208,9 @@ This ensures that this FA type has never been initialized before using a named o
 Then we call `primary_fungible_store::create_primary_store_enabled_fungible_asset` to create a FA metadata resource inside the newly created object, most of the time you call this function to initialize
 the metadata object. After this call, we generate all the `Refs` that are necessary for the management api and store them in a customized wrapper resource.
 
-:::tip
+<Callout type="info">
 FACoin does all the initialization automatically upon package publishing via `init_module(&signer)`.
-:::
+</Callout>
 
 Different from coin module, FA doesn't require users to register to use it because primary store will be automatically created if necessary.
 
@@ -241,9 +238,9 @@ Aptos provides several APIs to support FA flows with same names in different mod
 - `fungible_asset::{transfer/withdraw/deposit}_with_ref`: Move FA between different fungible stores objects with the corresponding `TransferRef` regardless of their frozen status.
 - `primary_fungible_store::{transfer/withdraw/deposit}`: Move FA between unfrozen primary stores of different accounts.
 
-:::tip important
+<Callout type="info">
 There are two separate withdraw and deposit events instead of a single transfer event.
-:::
+</Callout>
 
 ## Supporting documentation
 

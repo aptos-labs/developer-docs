@@ -1,3 +1,5 @@
+import { Callout } from 'nextra/components';
+
 # 4. Fetch Data from Chain
 
 In the fourth chapter of the tutorial on [building an end-to-end dapp on Aptos](./index.md), you will be learning to fetch data from chain.
@@ -20,9 +22,9 @@ import { Aptos } from "@aptos-labs/ts-sdk";
 
 The TypeScript SDK provides us with a `Aptos` class which is the main entry point into Aptos's API. By initializing `Aptos` we can query the Aptos chain.
 
-:::tip
+<Callout type="info">
 Read more about the [`Aptos`](../../sdks/ts-sdk/sdk-configuration.md) class in the Aptos TypeScript SDK docs.
-:::
+</Callout>
 
 1. In the `App.tsx` file, add:
 
@@ -32,7 +34,7 @@ const aptos = new Aptos();
 
 This will initialize a `Aptos` instance for us.
 
-:::note
+<Callout type="info">
 By default, `Aptos` will interact with the `devnet` network, to set up a [different network](../../guides/system-integrators-guide.md#choose-a-network), we can use `AptosConfig` class.
 
 ```js
@@ -42,7 +44,7 @@ const aptosConfig = new AptosConfig({ network: Network.MAINNET });
 const aptos = new Aptos(aptosConfig);
 ```
 
-:::
+</Callout>
 
 Our app displays different UIs based on a user resource (i.e if a user has a list ⇒ if a user has a `TodoList` resource). For that, we need to know the current account connected to our app.
 

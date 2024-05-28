@@ -1,8 +1,4 @@
----
-title: "Your First Move Module"
-slug: "first-move-module"
----
-
+import { Callout } from 'nextra/components';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -222,9 +218,9 @@ Notice that the `message` field contains `hello, blockchain`.
 
 Each succesful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](https://aptos.dev/concepts/events/#module-events). Module Events for a given account can be accessed via the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
 
-:::tip
+<Callout type="info">
 Other accounts can reuse the published module by calling the exact same function as in this example. It is left as an exercise to the reader.
-:::
+</Callout>
 
 ## Supporting documentation
 

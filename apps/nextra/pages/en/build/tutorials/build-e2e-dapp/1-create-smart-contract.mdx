@@ -1,3 +1,5 @@
+import { Callout } from 'nextra/components';
+
 # 1. Create a Smart Contract
 
 This is the first chapter of the tutorial on [building an end-to-end dapp on Aptos](./index.md). If you haven’t done it, review that introduction, and ensure your environment meets the [prerequisites](../../tools/aptos-cli/install-cli/index.md) listed there.
@@ -42,9 +44,9 @@ An account is needed to publish a Move module. So first we need to create an acc
    From now on, whenever we run a CLI command in this `move` directory, it will run with that default profile.
    We use the `devnet` network flag so eventually when we publish our package it will get published to the `devnet` network.
 
-   :::tip
+   <Callout type="info">
    You just created a new account on the Aptos (dev) network! Yay! You can see it by going to the [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet) Devnet network view, pasting the `account` address value from your configuration file into the search field, and clicking on the dropdown option!
-   :::
+   </Callout>
 
 As mentioned, our `sources` directory holds our `.move` module files; so let’s add our first Move file.
 
@@ -71,7 +73,7 @@ module todolist_addr::todolist {
 }
 ```
 
-:::tip
+<Callout type="info">
 A Move module is stored under an address (so when it published anyone can access it using that address); the syntax for a Move module is
 
 ```rust
@@ -81,7 +83,7 @@ module <account-address>::<module-name> {
 ```
 
 In our module, the `account-address` is `todolist_addr` (a variable we just declared on the `Move.toml` file in the previous step that holds an `address`), and the `module-name` is `todolist` (a random name we selected).
-:::
+</Callout>
 
 ### Our contract logic
 
@@ -92,9 +94,9 @@ Before jumping into writing code, let’s first understand what we want our smar
    - Whenever someone creates a new task, emit a `task_created` event.
 3. Let an account mark their task as completed.
 
-:::tip
+<Callout type="info">
 Creating an event is not mandatory yet useful if dapps/users want to monitor data, such as how many people create a new task, using the [Aptos Indexer](../../indexer/indexer-landing.md).
-:::
+</Callout>
 
 We can start with defining a `TodoList` struct, that holds the:
 
@@ -440,9 +442,9 @@ public entry fun test_flow() {
 }
 ```
 
-:::tip
+<Callout type="info">
 we need to use `entry` here because we are testing an `entry` function.
-:::
+</Callout>
 
 2. For simplicity, and because we don't have much code to test, we use one function to test the whole flow of the app.
    The test steps are:
