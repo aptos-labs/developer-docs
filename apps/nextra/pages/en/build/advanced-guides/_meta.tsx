@@ -5,13 +5,13 @@ export default {
   "key-rotation": {
     title: "Account Key Rotation",
   },
-  "wallets": {
+  wallets: {
     title: "Aptos Wallet Standard",
   },
   "keyless-accounts": {
     title: "Aptos Keyless Integration Guide",
   },
-  "randomness": {
+  randomness: {
     title: "Aptos Roll: on-chain public instant randomness API",
   },
   "multisig-managed-fungible-asset": {

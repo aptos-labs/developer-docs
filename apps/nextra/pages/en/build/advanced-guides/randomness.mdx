@@ -6,7 +6,7 @@ title: "Aptos Roll: on-chain public instant randomness API"
 
 ## What does it do: a quick example
 
-### How randomness may have been obtained insecurely/overcomplicated
+### How random numbers have been obtained, insecurely/awkwardly
 
 Building a lottery system and pick a random winner from `n` participants is trivial, at least in the centralized world with a trusted server: the backend simply calls a `random.randint(0, n-1)` (this is a python example).
 
@@ -82,7 +82,7 @@ module module_owner::lottery {
 }
 ```
 
-### Achieve both simplicity and security with Aptos randomness API
+### Achieve simplicity + security with Aptos randomness API
 
 Using Aptos randomness API, the implementation will look like this:
 
@@ -112,10 +112,7 @@ module module_owner::lottery {
 where:
 
 - `let winner_idx = aptos_framework::randomness::u64_range(0, n);` is the a randomness API call that returns a u64 integer in range `[0, n)` uniformly at random.
-- `#[randomness]` is a required attribute for the execution engine to perform some safety check and enable the API for the transaction.
-  - Calling randomness API without this attribute on top of the entry function will cause the transaction to abort.
-  - It also means randomness API calls are supported only in transactions that call an entry function.
-    For example, calling the API from a script won't work.
+- `#[randomness]` is a required attribute to enable the API call at runtime.
 
 ## How to use Aptos randomness API
 
@@ -141,7 +138,7 @@ alias aptos=target/debug/aptos
 
 ### Identify randomness-dependent entry functions and make them compliant
 
-For safety, randomness API calls are allowed at runtime only when the transaction invokes an entry function that is:
+For safety (discussed with more details later), randomness API calls are only allowed from an entry function that is:
 
 - private, and
 - annotated with `#[randomness]`.
@@ -158,6 +155,11 @@ module module_owner::lottery {
     }
 }
 ```
+
+At runtime, when randomness API is called, the VM checks whether the outermost of the callstack is a private entry function with `#[randomness]` attribute.
+**If not, the enture transaction is aborted.**
+NOTE: It also means randomness API calls are supported only in entry function-based transactions.
+(For example, using randomness API in a Move script is impossible.)
 
 ### Call the API
 
@@ -202,7 +204,7 @@ Randomness API is powerful in many ways: it unlocks new dApp designs;
 but if used incorrectly, it may leave your dApps open to attacks!
 Below are some common mistakes you should avoid.
 
-### Randomness API calls in non-entry functions
+### Randomness API calls in public functions
 
 As your dApp gets more complicated, you may have multiple entry functions that need to share the same randomness-dependent logic, and want to pull the logic out as a separate helper function.
 
@@ -241,9 +243,9 @@ malicious players can deploy their own contract to:
 1. abort if the result is not in their favor.
    By repeatedly calling their own contract until a txn succeeds,
    malicious users can bias the uniform distribution of the winner (dApp developer's initial design).
-   This is referred to as a [_test-and-abort attack_](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#test-and-abort-attacks).
+   This is referred to as a [test-and-abort attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#test-and-abort-attacks).
 
-The Aptos Move compiler have been updated to prevent this attack for your contract safety:
+The Aptos Move compiler has been updated to prevent this attack for your contract safety:
 a randomness-dependent public function is treated as a compile error.
 If you have finished the steps in the ["build Aptos CLI"](#build-aptos-cli-from-latest-source)) section,
 then your Aptos CLI are equipped with the updated compiler.
@@ -310,7 +312,7 @@ keep in mind that **the seed is public, and so is your transaction execution**,
 and not every randomness-dependent logic in your private centralized server can be transferred on chain safely,
 **especially when it involves a secret that only the server should see**.
 
-E.g., in your contract, DO NOT try to do the following.
+For example, in your contract, DO NOT try to do the following.
 
 - Use randomness API to generate an asymmetric key pair, discard the private key, then think the public key is safe.
 - Use randomness API to shuffle some opened cards, veil them, and think no one knows the permutation.
