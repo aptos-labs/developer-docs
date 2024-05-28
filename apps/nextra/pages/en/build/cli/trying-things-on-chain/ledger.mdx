@@ -182,7 +182,7 @@ When prompted, choose `local` as the network, then enter the following private k
 Once the profile is setup, store the account address for later:
 
 ```sh filename="Terminal"
-export ACCOUNT_A=$(
+export ACCOUNT_A=0x$(
     aptos account lookup-address --profile localnet-a \
     | jq -r '.Result'
 )
@@ -210,8 +210,11 @@ aptos account list --profile localnet-a
 Note that the `jq` authentication key is the same as the account address:
 
 ```sh filename="Terminal"
-aptos account list --profile localnet-a \
-    | jq -r '.Result[0]["0x1::account::Account"]["authentication_key"]'
+export AUTH_KEY_A=$(
+    aptos account list --profile localnet-a | jq -r \
+        '.Result[0]["0x1::account::Account"]["authentication_key"]'
+)
+echo $AUTH_KEY_A
 ```
 
 This should also output:
@@ -228,5 +231,146 @@ aptos init --profile localnet-b --ledger
 
 When prompted, choose `local` as the network, then derivation path index `0`.
 
-</Steps>
+Once the profile is setup, store the account address for later:
 
+```sh filename="Terminal"
+export ACCOUNT_B=0x$(
+    aptos account lookup-address --profile localnet-b \
+    | jq -r '.Result'
+)
+echo $ACCOUNT_B
+```
+
+Check the authentication key for the account:
+
+```sh filename="Terminal"
+export AUTH_KEY_B=$(
+    aptos account list --profile localnet-b | jq -r \
+        '.Result[0]["0x1::account::Account"]["authentication_key"]'
+)
+echo $AUTH_KEY_B
+```
+
+### Rotate the authentication key of the hot wallet
+
+Rotate the authentication key of the hot wallet via [`aptos_framework::account::rotate_authentication_key_call`](https://github.com/aptos-labs/aptos-core/blob/415d7e12e94ebd833a910ed4138742f005149610/aptos-move/framework/aptos-framework/sources/account.move#L294):
+
+```sh filename="Terminal"
+aptos move run \
+    --args "hex:$AUTH_KEY_B" \
+    --profile localnet-a \
+    --function-id 0x1::account::rotate_authentication_key_call
+```
+
+Check the new authentication key of the account:
+
+```sh filename="Terminal"
+export NEW_AUTH_KEY_A=$(
+    aptos account list --profile localnet-a | jq -r \
+        '.Result[0]["0x1::account::Account"]["authentication_key"]'
+)
+echo $NEW_AUTH_KEY_A
+```
+
+### Update the CLI profile
+
+Since the vanity address account (`localnet-a`) now has the same authentication key as the Ledger account (`localnet-b`), you can sign transactions for vanity address account using the Ledger.
+
+To make this process easier, you'll want to update the corresponding profile in your CLI `config.yaml` file, which is typically stored at `~/.aptos/config.yaml`.
+
+The `localnet-a` profile should look something like this:
+
+```yml filename="CLI Config"
+  localnet-a:
+    private_key: "0x44bbe12dd5e120d94f65fb3cdae1dc7017156a8f7da1ebfa876cabf48fa6f5e2"
+    public_key: "0xc4e7b2ff0d57d67a35c1605f1f3f2e4213723b1ff2a8426b9ca111f0fc51254d"
+    account: aaaa29ce2bd42dec0bad87599d827c0bc565b2a83595489aa3dc3f5e43ebaaaa
+    rest_url: "http://localhost:8080"
+    faucet_url: "http://localhost:8081"
+```
+
+Identify the `public_key` and `derivation_path` for the `localnet-b` profile, then use them to update the `localnet-a` profile:
+
+```yml filename="CLI Config"
+  localnet-a:
+    private_key_before_rotation: "0x44bbe12dd5e120d94f65fb3cdae1dc7017156a8f7da1ebfa876cabf48fa6f5e2"
+    public_key_before_rotation: "0xc4e7b2ff0d57d67a35c1605f1f3f2e4213723b1ff2a8426b9ca111f0fc51254d"
+    public_key: <SAME_AS_FOR_LOCALNET_B>
+    account: aaaa29ce2bd42dec0bad87599d827c0bc565b2a83595489aa3dc3f5e43ebaaaa
+    rest_url: "http://localhost:8080"
+    faucet_url: "http://localhost:8081"
+    derivation_path: <SAME_AS_FOR_LOCALNET_B>
+```
+
+<Callout type="default" emoji="🧠">
+You'll want to save the private key and public key from before the rotation for when you rotate back later.
+This is what `private_key_before_rotation` and `public_key_before_rotation` are for.
+</Callout>
+
+### Sign a transfer transaction via Ledger
+
+Send 1 octa from `localnet-a` to `localnet-b`:
+
+```sh filename="Terminal"
+aptos move run \
+    --args \
+        address:$ACCOUNT_B \
+        u64:1 \
+    --profile localnet-a \
+    --function-id 0x1::aptos_account::transfer
+```
+
+<Callout type="info">
+You'll need to approve the transaction on your Ledger.
+</Callout>
+
+### Rotate the authentication key back
+
+Rotate the authentication key of the `localnet-a` account back to the original authentication key, thereby rendering it a hot wallet again:
+
+```sh filename="Terminal"
+aptos move run \
+    --args "hex:$AUTH_KEY_A" \
+    --profile localnet-a \
+    --function-id 0x1::account::rotate_authentication_key_call
+```
+
+<Callout type="info">
+You'll need to approve the transaction on your Ledger.
+</Callout>
+
+Check the final authentication key of the account:
+
+```sh filename="Terminal"
+export FINAL_AUTH_KEY_A=$(
+    aptos account list --profile localnet-a | jq -r \
+        '.Result[0]["0x1::account::Account"]["authentication_key"]'
+)
+echo $FINAL_AUTH_KEY_A
+```
+
+Revert the CLI profile to reflect the final authentication key and corresponding public key:
+
+```yml filename="CLI Config"
+  localnet-a:
+    private_key: "0x44bbe12dd5e120d94f65fb3cdae1dc7017156a8f7da1ebfa876cabf48fa6f5e2"
+    public_key: "0xc4e7b2ff0d57d67a35c1605f1f3f2e4213723b1ff2a8426b9ca111f0fc51254d"
+    account: aaaa29ce2bd42dec0bad87599d827c0bc565b2a83595489aa3dc3f5e43ebaaaa
+    rest_url: "http://localhost:8080"
+    faucet_url: "http://localhost:8081"
+```
+
+### Sign a transfer transaction via hot wallet
+
+Send another 1 octa transfer from `localnet-a` to `localnet-b`, which should authenticate via the private key stored in your CLI config:
+
+```sh filename="Terminal"
+aptos move run \
+    --args \
+        address:$ACCOUNT_B \
+        u64:1 \
+    --profile localnet-a \
+    --function-id 0x1::aptos_account::transfer
+```
+
+</Steps>
