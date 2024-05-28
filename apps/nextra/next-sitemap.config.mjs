@@ -4,12 +4,11 @@
  * @type {import('next-sitemap').IConfig}
  */
 export default {
-  siteUrl: process.env.SITE_URL || 'https://preview.aptos.dev',
+  siteUrl: process.env.SITE_URL || "https://preview.aptos.dev",
   generateRobotsTxt: true,
   sitemapSize: 5000,
-  outDir: 'public',
+  outDir: "public",
 };
-
 
 // Example Support for different locales in sitemap
 // /**
