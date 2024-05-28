@@ -278,7 +278,8 @@ Imagine such a dApp. It defines a private entry function for a user to:
 1. toss a coin (gas cost: 9), then
 2. get a reward (gas cost: 10) if coin=1, or get multiple punishments (gas cost: 100) otherwise.
 
-A malicious user can control its account balance so it covers at most 108 gas units (or set transaction parameter `max_gas=108`), and the punishing branch will never be reached.
+A malicious user can control its account balance so it covers at most 108 gas units (or set transaction parameter `max_gas=108`), and the punishing branch will never succeed.
+The user then repeatedly call the the entry function until it gets the reward.
 
 Formally, this is referred to as an [undergasing attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#undergasing-attacks),
 where an attacker can control how much gas is left for the entry function to execute,
