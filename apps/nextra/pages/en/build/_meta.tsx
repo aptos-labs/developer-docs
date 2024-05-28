@@ -5,5 +5,6 @@ export default {
   sdks: "SDKs",
   indexer: "Indexer",
   cli: "CLI",
+  "tutorials": "Tutorials",
   "advanced-guides": "Advanced Guides",
 };
