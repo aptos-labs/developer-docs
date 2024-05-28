@@ -126,6 +126,15 @@ Alternatively, if you have an account linked with a Ledger hardware wallet that 
 
 This tutorial will walk you through both scenarios.
 
+
+<Callout type="default" emoji="🧠">
+Before you start this tutorial make sure you have `jq`, a lightweight and flexible command-line JSON processor:
+
+```sh filename="Terminal"
+jq --version
+```
+</Callout>
+
 <Steps>
 
 ### Start a localnet
@@ -143,10 +152,81 @@ aptos node run-localnet \
 The localnet is ready when it prints out:
 
 ```sh filename="Terminal"
+Applying post startup steps...
+
 Setup is complete, you can now use the localnet!
 ```
 
-### Initialize a profile for your ledger
+### Move localnet to a background process
+
+Open up a new terminal window to continue with the rest of the tutorial and leave the localnet running in the background.
+
+<Callout type="default">
+When you finally want to shut down the localnet, you can press `Ctrl+C` in the terminal window where you started the localnet.
+</Callout>
+
+### Set up localnet hot wallet profile
+
+In a fresh terminal window, set up a localnet profile for an account with a compromised private key:
+
+```sh filename="Terminal"
+aptos init --profile localnet-a
+```
+
+When prompted, choose `local` as the network, then enter the following private key:
+
+```sh filename="Terminal"
+0x44bbe12dd5e120d94f65fb3cdae1dc7017156a8f7da1ebfa876cabf48fa6f5e2
+```
+
+Once the profile is setup, store the account address for later:
+
+```sh filename="Terminal"
+export ACCOUNT_A=$(
+    aptos account lookup-address --profile localnet-a \
+    | jq -r '.Result'
+)
+echo $ACCOUNT_A
+```
+
+This should output:
+
+```sh filename="Terminal"
+0xaaaa29ce2bd42dec0bad87599d827c0bc565b2a83595489aa3dc3f5e43ebaaaa
+```
+
+<Callout type="default" emoji="🧠">
+For ease of identification this account has vanity address `0xaaaa...aaaa`, which was generated via [`optivanity`](https://github.com/econia-labs/optivanity).
+</Callout>
+
+### Inspect the account
+
+Inspect the account's `Account` resource:
+
+```sh filename="Terminal"
+aptos account list --profile localnet-a
+```
+
+Note that the `jq` authentication key is the same as the account address:
+
+```sh filename="Terminal"
+aptos account list --profile localnet-a \
+    | jq -r '.Result[0]["0x1::account::Account"]["authentication_key"]'
+```
+
+This should also output:
+
+```sh filename="Terminal"
+0xaaaa29ce2bd42dec0bad87599d827c0bc565b2a83595489aa3dc3f5e43ebaaaa
+```
+
+### Set up localnet Ledger profile
+
+```sh filename="Terminal"
+aptos init --profile localnet-b --ledger
+```
+
+When prompted, choose `local` as the network, then derivation path index `0`.
 
 </Steps>
 
