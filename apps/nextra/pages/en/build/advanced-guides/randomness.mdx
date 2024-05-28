@@ -261,7 +261,7 @@ module module_owner::lottery {
 
 Not recommended, but if you intend to expose such a randomness-dependent function to the public, you can bypass the compiler check by annotating your function with `#[lint_allow_unsafe_randomness]`.
 
-```rust
+```move
 module module_owner::lottery {
     // Can compile, but use it at your own risk!
     #[lint_allow_unsafe_randomness]
