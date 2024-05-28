@@ -1,81 +1,72 @@
 ---
-title: "Bootstrap from a Backup"
+
+title: "从备份中引导启动"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Bootstrap from a Backup
+# 从备份中引导启动
 
-This document describes how to bootstrap an Aptos node using a backup. This can be done on all node types, including
-validators, VFNs and PFNs. Bootstrapping using a backup helps node operators achieve two goals:
+本文档描述了如何使用备份来引导启动一个 Aptos 节点。这可以在所有节点类型上完成，包括验证器、VFN 和 PFN。使用备份进行引导启动可以帮助节点运营者实现两个目标：
 
-1. Quickly bootstrap a database to start a new or failed node.
-1. Efficiently recover data from any specific period in the blockchain's history (e.g., from genesis to a target version).
+1. 快速引导启动数据库，以启动一个新的或失败的节点。
+2. 高效地从区块链历史的任何特定时期恢复数据（例如，从创世到目标版本）。
 
-To achieve these goals, the Aptos database restore tool lets you use existing [public backup files](#public-backup-files) to restore
-the database of a node. This includes the transaction history containing events, write sets, and key-value pairs. Using
-the tool, you can restore transactions from any historical range, or restore the database to the latest version in the
-backup. The public backup files are backed by cryptographic proofs and stored on both AWS and Google Cloud for easy
-access.
+为了实现这些目标，Aptos数据库恢复工具允许您使用现有的[公共备份文件](#公共备份文件)来恢复节点的数据库。这包括包含事件、写入集和键值对的交易历史。使用该工具，您可以从任何历史范围恢复交易，或者将数据库恢复到备份中的最新版本。公共备份文件由加密证明支持，并存储在AWS和Google Cloud上，便于访问。
 
-## Public backup files
+## 公共备份文件
 
-Aptos Labs maintains a few publicly accessible database backups by continuously querying a PFN and storing the backup
-data in remote storage, such as Amazon S3 or Google Cloud Storage. The links to this backup data can be seen below:
+Aptos实验室通过持续查询PFN并存储备份数据在远程存储中（如Amazon S3或Google Cloud Storage）来维护一些公共可访问的数据库备份。这些备份数据的链接如下所示：
 
-|         | AWS Backup Data                                                                       | Google Cloud Backup Data                                                        |
+|         | AWS备份数据                                                                       | Google Cloud备份数据                                                        |
 | ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Testnet | Discontinued                                                                          | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/gcs.yaml |
-| Mainnet | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/s3-public.yaml | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/gcs.yaml |
+| 测试网 | 已停止                                                                            | https://github.com/aptos-labs/aptos-networks/blob/main/testnet/backups/gcs.yaml  |
+| 主网   | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/s3-public.yaml  | https://github.com/aptos-labs/aptos-networks/blob/main/mainnet/backups/gcs.yaml  |
 
 <Callout type="info">
-Backups are only created for `testnet` and `mainnet`. Given that `devnet` is wiped frequently, it is not useful to maintain backups for it.
+备份仅针对`testnet`和`mainnet`创建。鉴于`devnet`经常清空，为它维护备份并不有用。
 </Callout>
 
-The backup files consist of three types of data that can be used to reconstruct the blockchain DB:
+备份文件由三种类型的数据组成，可用于重建区块链数据库：
 
-- `epoch_ending` – This contains the ledger_info at the ending block of each epoch since the genesis. This data can be used to prove the epoch's provenance from the genesis and validator set of each epoch.
-- `state_snapshot` – This contains a snapshot of the blockchain's state Merkle tree (SMT) and key values at a certain version.
-- `transaction` – This contains the raw transaction metadata, payload, the executed outputs of the transaction after VM, and the cryptographic proofs of the transaction in the ledger history.
+- `epoch_ending` - 这包含自创世以来每个纪元结束区块的账本信息。这些数据可以用来证明每个纪元的起源和每个纪元的验证器集。
+- `state_snapshot` - 这包含区块链状态默克尔树（SMT）和某个特定版本的键值对的快照。
+- `transaction` - 这包含原始交易元数据、交易负载、交易在虚拟机执行后的输出以及账本历史中交易的加密证明。
 
-Each type of data in the backup storage is organized as follows:
+备份存储中每种类型的数据都按以下方式组织：
 
-- The metadata file in the metadata folder contains the range of each backup and the relative path to the backup folder.
-- The backup contains a manifest file and all the actual chunked data files.
+- 元数据文件夹中的元数据文件包含每个备份的范围和备份文件夹的相对路径。
+- 备份包含一个清单文件和所有实际分块的数据文件。
 
-See the diagram below for a visual representation of the backup data structure:
+下面的图表提供了备份数据结构的可视化表示：
 
 ![aptos-db-restore.png](/docs/aptos-db-restore.png)
 
-## Restore an Aptos DB
+## 恢复Aptos数据库
 
-The [Aptos CLI](../../../build/cli.mdx) supports two kinds of restore operations for Aptos nodes:
+[Aptos CLI](../../../build/cli.mdx)支持Aptos节点的两种恢复操作：
 
-1. Recreating a database with a minimal transaction history at a user-specified transaction version (or the latest version offered by the backup).
-2. Restoring the database over a specific period. In addition to the above, this option ensures that the 
-   recreated database carries the ledger history of the user-designated version range.
+1. 在用户指定的交易版本（或备份提供的最新版本）处重新创建一个数据库，但交易历史最少。
+2. 在特定时间段内恢复数据库。除了上述选项外，此选项还确保重新创建的数据库携带用户指定版本范围的账本历史。
 
 <Callout type="info">
-Aptos CLI 1.0.14 or newer is needed to perform these operations. Additionally, depending on whether you use AWS or
-Google Cloud, install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) or 
-[gsutil](https://cloud.google.com/storage/docs/gsutil_install).
+需要Aptos CLI 1.0.14或更高版本才能执行这些操作。此外，根据您的使用情况，安装[AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)或[gsutil](https://cloud.google.com/storage/docs/gsutil_install)。
 </Callout>
 
-The sections below provide examples of how to use the Aptos CLI to restore a database from a backup.
+下面的部分提供了如何使用Aptos CLI从备份中恢复数据库的示例。
 
-### Bootstrap to the latest version
+### 引导到最新版本
 
-The `aptos node bootstrap-db` command can quickly restore a database from the latest snapshot back to a target version,
-but it does not restore the transaction history prior to the target version.
+`aptos node bootstrap-db`命令可以快速从最近的快照中恢复数据库到目标版本，但它不会恢复目标版本之前的交易历史。
 
-Use the following options to run the command:
+使用以下选项运行命令：
 
-- `target-version` – The sync will begin from this period onwards in the transaction history (towards the latest version).
-- `command-adapter-config` – The path to one of the [YAML configuration files](#public-backup-files) that 
-  specifies the location of the public backup files and commands used by our backup and restore tool to interact with the remote storage.
-- `target-db-dir` – The target DB path to write the restored database.
+- `target-version` - 同步将从交易历史的这个时期开始（朝着最新版本）。
+- `command-adapter-config` - 指向[YAML配置文件](#公共备份文件)之一的路径，该文件指定公共备份文件的位置以及备份和恢复工具与远程存储交互使用的命令。
+- `target-db-dir` - 写入恢复数据库的目标DB路径。
 
-Example command:
+示例命令：
 
 ```bash filename="Terminal"
 aptos node bootstrap-db \
@@ -84,44 +75,42 @@ aptos node bootstrap-db \
     --target-db-dir /path/to/local/db
 ```
 
-### Restore over a specific time period
+### 在特定时间段内恢复
 
-The `aptos node bootstrap-db` command can restore the transaction history within a specified period, along with the state Merkle tree at the target version.
+`aptos node bootstrap-db`命令可以恢复指定期间内的交易历史，以及目标版本的默克尔树状态。
 
-Use the following options to run the command:
+使用以下选项运行命令：
 
-- `ledger-history-start-version` – The sync will begin from this period onwards in the transaction history (towards the target version).
-- `target-version` – The sync will end at this period in the transaction history.
-- `command-adapter-config` – The path to one of the [YAML configuration files](#public-backup-files) that specifies the location of the public backup files and commands used by our backup and restore tool to interact with the remote storage.
-- `target-db-dir` – The target DB path to write the restored database.
+- `ledger-history-start-version` - 同步将从交易历史的这个时期开始（朝着目标版本）。
+- `target-version` - 同步将在交易历史的这个时期结束。
+- `command-adapter-config` - 指向[YAML配置文件](#公共备份文件)之一的路径，该文件指定公共备份文件的位置以及备份和恢复工具与远程存储交互使用的命令。
+- `target-db-dir` - 写入恢复数据库的目标DB路径。
 
-Example command:
+示例命令：
 
 ```bash filename="Terminal"
 aptos node bootstrap-db \
     --ledger-history-start-version 150000000 \
-    --target-version 155000000
+    --target-version 155000000 \
     --command-adapter-config /path/to/s3-public.yaml \
     --target-db-dir /path/to/local/db
 ```
 
-### Restore a full history from genesis
+### 从创世恢复完整历史
 
-To restore an Aptos node with the full history from genesis, set `ledger-history-start-version` to 0 and
-disable the pruner by following the instructions in the [disabling the ledger pruner](../configure/data-pruning.mdx) section before
-starting the node. Note: performing a full history restore requires a significant amount of resources and time.
-See the resource requirements below.
+要使用从创世的完整历史恢复Aptos节点，将`ledger-history-start-version`设置为0，并在启动节点之前按照[禁用账本修剪器](../configure/data-pruning.mdx)部分中的说明禁用修剪器。注意：执行完整历史恢复需要大量的资源和时间。
+请参阅下面的资源要求。
 
-- **Open File Limit**: Set the open file limit to 10K, e.g., using `ulimit -n 10000`.
+- **打开文件限制**：将打开文件限制设置为10K，例如，使用`ulimit -n 10000`。
 
-If you are restoring a node, you will need the following resources:
+如果您正在恢复节点，您将需要以下资源：
 
-|         | Disk   | RAM   |
+|         | 磁盘   | 内存  |
 |---------|--------|-------|
-| Testnet | 1.5 TB | 32 GB |
-| Mainnet | 1 TB   | 32 GB |
+| 测试网 | 1.5 TB | 32 GB |
+| 主网   | 1 TB   | 32 GB |
 
-Example command:
+示例命令：
 
 ```bash filename="Terminal"
 aptos node bootstrap-db \
@@ -132,5 +121,5 @@ aptos node bootstrap-db \
 ```
 
 <Callout type="info">
-If you don't specify the target_version (via `--target-version`), the tool will use the latest version in the backup as the target version.
+如果您没有指定目标版本（通过`--target-version`），工具将使用备份中的最新版本作为目标版本。
 </Callout>

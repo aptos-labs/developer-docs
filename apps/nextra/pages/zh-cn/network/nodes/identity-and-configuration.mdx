@@ -1,71 +1,71 @@
 ---
-title: "Identity and Configuration"
+title: 身份和配置
 ---
 
-# Node Identity and Configuration
+# 节点身份和配置
 
-When installing a node on an Aptos network, the installation steps require you to work with identities and configurations. This document describes how to interpret the terms **identity** and **configuration**, and presents a description of the identity YAML files.
+在 Aptos 网络上安装节点时，安装的过程中需要您处理身份和配置。本文档描述了如何理解术语 **身份** 和 **配置**，并提供了身份 YAML 文件的说明。
 
-## Concept
+## 概念
 
-This section presents a mental-model view of an identity and configuration. It is meant to help make the node installation process easy.
+本节提供了身份和配置的思想模型视图。它的目的是帮助简化节点的安装过程。
 
-The terms **identity** and **configuration** should be understood in the following way:
+术语**身份**和**配置**应按以下方式理解：
 
-- The terms **validator node**, **fullnode**, and **validator fullnode** refer to the machine (physical or virtual).
-- The terms **operator**, **owner** and **voter** refer to the persona.
-- A machine has both an identity and a configuration. They are defined in separate YAML files. A persona's identity and configuration are combined into a single YAML file.
+- **验证者节点**、**全节点**和**验证者全节点**：指的是机器（物理或虚拟）。
+- **运营者**、**所有者**和**投票者**：指的是角色。
+- 机器具有身份和配置。它们分别在单独的 YAML 文件中定义。角色的身份和配置被合并到一个 YAML 文件中。
 
-### Machine
+### 机器
 
-#### Identity
+#### 身份
 
-Machine **identity** is defined in a YAML file. An identity is established by means of keys. A machine identity YAML contains only private keys. Moreover, an identity YAML always contains the associated blockchain account address.
+机器**身份**在 YAML 文件中定义。身份通过密钥建立。机器身份 YAML 仅包含私钥。此外，身份 YAML 始终包含相关的区块链账户地址。
 
-A machine identity YAML has the string `identity` in its name. For example:
+机器身份 YAML 在其名称中包含字符串 `identity`。例如：
 
-- validator-**identity**.yaml contains the private keys for the validator node.
-- validator-full-node-**identity**.yaml contains the private keys for validator fullnode and public fullnode.
+- validator-**identity**.yaml 包含验证节点的私钥。
+- validator-full-node-**identity**.yaml 包含验证者全节点和公共全节点的私钥。
 
-Hence, if you are looking for your machine’s private keys, look for YAML filenames with `identity` in them.
+因此，如果您正在寻找机器的私钥，请查找名称中包含`identity`的 YAML 文件。
 
-#### Configuration
+#### 配置
 
-Machine **configuration** is also defined in a YAML file. A machine configuration YAML **never contains any key, public or private**. For example, the configuration YAML files validator.yaml, fullnode.yaml, docker-compose.yaml and docker-compose-fullnode.yaml **do not contain any keys.**
+机器**配置**也在 YAML 文件中定义。机器配置 YAML**从不包含任何密钥，公共或私有**。例如，配置 YAML 文件 validator.yaml、fullnode.yaml、docker-compose.yaml 和 docker-compose-fullnode.yaml**不包含任何密钥**。
 
-As noted earlier, a machine has an identity and a configuration. Hence:
+如前所述，机器具有身份和配置。因此：
 
-- For a validator node, identity is defined in validator-**identity**.yaml and configuration is in validator.yaml.
-- For a validator fullnode, its identity is defined in validator-full-node-**identity**.yaml and its configuration is defined in fullnode.yaml.
+- 对于验证者节点，身份在 validator-**identity**.yaml 中定义，配置在 validator.yaml 中。
+- 对于验证者全节点，其身份在 validator-full-node-**identity**.yaml 中定义，其配置在 fullnode.yaml 中。
 
-### Persona
+### 角色
 
-#### Identity and configuration
+#### 身份和配置
 
-A persona has a single YAML that combines the persona’s identity and configuration information. For example, for the three personas, owner, operator and voter:
+角色有一个单一的 YAML，结合了角色的身份和配置信息。例如，对于三个角色 —— 所有者、运营者和投票者：
 
-- An owner's identity-configuration is defined in **owner.yaml**. The owner.yaml contains the public keys and blockchain account addresses for owner, operator and voter, and some owner-specific configuration such as stake amount and commission percentage.
-- An operator’s identity-configuration is defined in **operator.yaml**. The operator.yaml contains public keys and blockchain account address for the operator and some machine configuration information plus a consensus public key and consensus proof of possession key. **Only the operator has the consensus keys.** Neither the owner nor the voter has the consensus keys.
-- A voter's identity-configuration, i.e., voter.yaml, does not exist.
+- 所有者的身份配置在 ***owner.yaml*** 中定义。owner.yaml 包含所有者、运营商和投票者的公钥和区块链账户地址，以及一些特定于所有者的配置，如质押金额和佣金比例。
+- 运营者的身份配置在 ***operator.yaml*** 中定义。operator.yaml 包含运营者的公钥和区块链账户地址，以及一些机器配置信息加上共识公钥和共识持有证明公钥。**只有运营商拥有共识密钥。** 所有者和投票者都没有共识密钥。
+- 投票者的身份配置，即 *voter.yaml*，不存在。
 
-## Description of identity YAML files
+## 身份 YAML 文件的描述
 
-This section explains the following key and identity YAML files that are generated during the deployment of a validator node:
+本节解释了在部署验证者节点期间生成以下密钥（key）和身份（identity）的 YAML 文件：
 
 - `public-keys.yaml`.
 - `private-keys.yaml`.
 - `validator-identity.yaml`.
 - `validator-full-node-identity.yaml`.
 
-The following command is used to generate the above key and identity YAML files. 
-See, for example, [Step 10 while using AWS to deploy the validator node](validator-node/deploy-nodes/using-aws.mdx), 
-or in [Step 10 while using GCP](full-node/deployments/using-gcp.mdx).
+以下是用于生成上述密钥和身份 YAML 文件的命令。
+例如，[使用 AWS 部署验证者节点时的步骤 10](validator-node/deploy-nodes/using-aws.mdx)，
+或在[使用 GCP 时的步骤 10](full-node/deployments/using-gcp.mdx)。
 
 ```bash filename="Terminal"
 aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
 ```
 
-See below a diagram that shows how the identities for the validator node and validator fullnode are derived from the private and public keys:
+请参阅下图，它展示了如何从私钥和公钥派生验证者节点和验证者全节点的身份：
 
 {/* <ThemedImage
 alt="Signed Transaction Flow"
@@ -77,9 +77,9 @@ sources={{
 
 ### public-keys.yaml
 
-#### Example
+#### 示例
 
-Click below to see an example YAML configuration:
+点击查看示例 YAML 配置：
 
 <details>
 <summary>public-keys.yaml</summary>
@@ -96,22 +96,22 @@ validator_network_public_key: "0x71f2642aeaa6cbfacf75663cf14d2f6e9e1bd890f9bc1c9
 
 </details>
 
-#### Description
+#### 描述
 
-| public-keys.yaml              | Description                                                                                                                        |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| account_address               | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                           |
-| account_public_key            | The public key associated with the blockchain account.                                                                             |
-| consensus_public_key          | Used only by the operator for validation purpose.                                                                                  |
-| consensus_proof_of_possession | Used only by the operator for validation purpose.                                                                                  |
-| full_node_network_public_key  | The public key for the fullnode by which a VFN (validator fullnode) or a PFN (public fullnode) is identified in the Aptos network. |
-| validator_network_public_key  | The public key for the validator node and by which the validator node is identified in the Aptos network.                          |
+| public-keys.yaml | 描述 |
+| ---- | ---- |
+| account_address  | 运营者的 Aptos 区块链账户地址，即部署验证者节点的角色。 |
+| account_public_key | 与区块链账户关联的公钥。 |
+| consensus_public_key | 仅由运营者用于验证目的。 |
+| consensus_proof_of_possession | 仅由运营者用于验证目的。 |
+| full_node_network_public_key | 用于识别 Aptos 网络中 VFN（验证者全节点）或 PFN（公共全节点）的全节点公钥。 |
+| validator_network_public_key | 验证者节点的公钥，用于在 Aptos 网络中识别验证者节点。 |
 
 ### private-keys.yaml
 
-#### Example
+#### 示例
 
-Click below to see an example YAML configuration:
+点击查看示例 YAML 配置：
 
 <details>
 <summary>private-keys.yaml</summary>
@@ -127,21 +127,21 @@ validator_network_private_key: "0xa03ec46b24f2f1066d7980dc13b4baf722ba60c367e498
 
 </details>
 
-#### Description
+#### 描述
 
-| private-keys.yaml             | Description                                                                                                                                                |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| account_address               | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                                                   |
-| account_private_key           | The private key associated with the blockchain account.                                                                                                    |
-| consensus_private_key         | The consensus private key, used only by the operator for validation purpose and for rotating the consensus key.                                            |
-| full_node_network_private_key | The private key for the fullnode. Whoever holds this private key will be able to establish the ownership of the VFN and PFN in the Aptos network.          |
-| validator_network_private_key | The private key for the validator node. Whoever holds this private key will be able to establish the ownership of the validator node in the Aptos network. |
+| private-keys.yaml | 描述 |
+| ----- | ----- |
+| account_address | 运营者的 Aptos 区块链账户地址，即部署验证者节点的角色。 |
+| account_private_key | 与区块链账户关联的私钥。 |
+| consensus_private_key | 仅由运营者用于验证目的和轮换共识密钥的共识私钥。 |
+| full_node_network_private_key | 全节点的私钥。持有此私钥的人将能够在 Aptos 网络中拥有对 VFN 和 PFN 的所有权。 |
+| validator_network_private_key | 验证者节点的私钥。持有此私钥的人将能够在 Aptos 网络中拥有验证者节点的所有权。 |
 
 ### validator-identity.yaml
 
-#### Example
+#### 示例
 
-Click below to see an example YAML configuration:
+点击查看示例 YAML 配置：
 
 <details>
 <summary>validator-identity.yaml</summary>
@@ -156,20 +156,20 @@ network_private_key: "0xa03ec46b24f2f1066d7980dc13b4baf722ba60c367e498e47a657ba0
 
 </details>
 
-#### Description
+#### 描述
 
-| validator-identity.yaml | Description                                                                                                                                                |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| account_address         | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                                                   |
-| account_private_key     | The private key associated with the blockchain account.                                                                                                    |
-| consensus_private_key   | The consensus private key, used only by the operator for validation purpose and for rotating the consensus key.                                            |
-| network_private_key     | The private key for the validator node. Whoever holds this private key will be able to establish the ownership of the validator node in the Aptos network. |
+| validator-identity.yaml | 描述 |
+| ----- | ----- |
+| account_address | 运营商的 Aptos 区块链账户地址，即部署验证者节点的角色。 |
+| account_private_key | 与区块链账户关联的私钥。 |
+| consensus_private_key | 仅由运营商用于验证目的和轮换共识密钥的共识私钥。 |
+| network_private_key | 验证者节点的私钥。持有此私钥的人将能够在 Aptos 网络中建立验证者节点的所有权。 |
 
 ### validator-full-node-identity.yaml
 
-#### Example
+#### 示例
 
-Click below to see an example YAML configuration:
+点击查看示例 YAML 配置：
 
 <details>
 <summary>validator-full-node-identity.yaml</summary>
@@ -182,9 +182,9 @@ network_private_key: "0x689c11c6e5405219b5eae1312086c801e3a044946afc74429e5157b4
 
 </details>
 
-#### Description
+#### 描述
 
-| validator-full-node-identity.yaml | Description                                                                                                                                       |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| account_address                   | The Aptos blockchain account address for the operator, i.e., the persona who deploys the validator node.                                          |
-| network_private_key               | The private key for the fullnode. Whoever holds this private key will be able to establish the ownership of the VFN and PFN in the Aptos network. |
+| validator-full-node-identity.yaml | 描述  |
+| ----- | ----- |
+| account_address | 运营者的 Aptos 区块链账户地址，即部署验证者节点的角色。 |
+| network_private_key | 全节点的私钥。持有此私钥的人将能够在 Aptos 网络中拥有对 VFN 和 PFN 的所有权。 |

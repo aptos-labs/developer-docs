@@ -1,28 +1,30 @@
 ---
-title: "Networks"
-hide_table_of_contents: true
+title: 网络
+hide_table_of_contents: true 
 toc: false
 ---
 
-# Aptos Networks
+# Aptos 网络
 
 {/* TODO Make this fit better on the screen */}
 
-| Description                              | Mainnet                                                                                                          | Testnet                                                                                                          | Devnet                                                                                                          |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **REST API**                             | https://api.mainnet.aptoslabs.com/v1                                                                             | https://api.testnet.aptoslabs.com/v1                                                                             | https://api.devnet.aptoslabs.com/v1                                                                             |
-| **REST API Spec**                        | <a href="https://api.mainnet.aptoslabs.com/v1/spec#/">Link</a>                                                   | <a href="https://api.testnet.aptoslabs.com/v1/spec#/">Link</a>                                                   | <a href="https://api.devnet.aptoslabs.com/v1/spec#/">Link</a>                                                   |
-| **Indexer GraphQL API**                  | https://api.mainnet.aptoslabs.com/v1/graphql                                                                     | https://api.testnet.aptoslabs.com/v1/graphql                                                                     | https://api.devnet.aptoslabs.com/v1/graphql                                                                     |
-| **Indexer GraphQL API Spec**             | <a href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">Link</a> | <a href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">Link</a> | <a href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">Link</a> |
-| **[Dev Portal] Fullnode API**            | https://api.mainnet.aptoslabs.com/v1                                                                             | https://api.testnet.aptoslabs.com/v1                                                                             | https://api.devnet.aptoslabs.com/v1                                                                             |
-| **[Dev Portal] Indexer GraphQL API**     | https://api.mainnet.aptoslabs.com/v1/graphql                                                                     | https://api.testnet.aptoslabs.com/v1/graphql                                                                     | https://api.devnet.aptoslabs.com/v1/graphql                                                                     |
-| **[Dev Portal] GRPC Transaction Stream** | https://grpc.mainnet.aptoslabs.com                                                                               | https://grpc.testnet.aptoslabs.com                                                                               | https://grpc.devnet.aptoslabs.com                                                                               |
-| **Faucet**                               | No Faucet                                                                                                        | https://faucet.testnet.aptoslabs.com/                                                                            | https://faucet.devnet.aptoslabs.com/                                                                            |
-| **Genesis and Waypoint**                 | https://github.com/aptos-labs/aptos-networks/tree/main/mainnet                                                   | https://github.com/aptos-labs/aptos-networks/tree/main/testnet                                                   | https://github.com/aptos-labs/aptos-networks/tree/main/devnet                                                   |
-| **Chain ID**                             | 1                                                                                                                | 2                                                                                                                | [On Aptos Explorer **select Devnet from top right**](https://explorer.aptoslabs.com/?network=Devnet).           |
-| **Epoch duration**                       | 7200 seconds                                                                                                     | 7200 seconds                                                                                                     | 7200 seconds                                                                                                    |
-| **Network providers**                    | Fully decentralized.                                                                                             | Managed by Aptos Labs on behalf of Aptos Foundation.                                                             | Managed by Aptos Labs on behalf of Aptos Foundation.                                                            |
-| **Release cadence**                      | Monthly                                                                                                          | Monthly                                                                                                          | Weekly                                                                                                          |
-| **Wipe cadence**                         | Never.                                                                                                           | Never.                                                                                                           | On update.                                                                                                      |
-| **Purpose**                              | The main Aptos network.                                                                                          | Long-lived test network.                                                                                         | Bleeding edge and exploratory.                                                                                  |
-| **Network status**                       | Always live.                                                                                                     | Always live.                                                                                                     | Almost always live, with brief interruptions during updates.                                                    |
+| 描述 | 主网  | 测试网 | 开发网 |
+| ---- | ---- | ---- | ---- |
+| **REST API**   | https://api.mainnet.aptoslabs.com/v1 | https://api.testnet.aptoslabs.com/v1 | https://api.devnet.aptoslabs.com/v1 |
+| **REST API 规范** | <a href="https://api.mainnet.aptoslabs.com/v1/spec#/">链接</a> | <a href="https://api.testnet.aptoslabs.com/v1/spec#/">链接</a> | <a href="https://api.devnet.aptoslabs.com/v1/spec#/">链接</a> |
+| **索引器 GraphQL API** | https://api.mainnet.aptoslabs.com/v1/graphql | https://api.testnet.aptoslabs.com/v1/graphql | https://api.devnet.aptoslabs.com/v1/graphql |
+| **索引器 GraphQL API 规范** | <a href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">链接</a> | <a href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">链接</a> | <a href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">链接</a> |
+| **[开发门户] 全节点 API** | https://api.mainnet.aptoslabs.com/v1 | https://api.testnet.aptoslabs.com/v1 | https://api.devnet.aptoslabs.com/v1 |
+| **[开发门户] 索引器 GraphQL API** | https://api.mainnet.aptoslabs.com/v1/graphql | https://api.testnet.aptoslabs.com/v1/graphql | https://api.devnet.aptoslabs.com/v1/graphql |
+| **[开发门户] gRPC 交易流** | https://grpc.mainnet.aptoslabs.com | https://grpc.testnet.aptoslabs.com | https://grpc.devnet.aptoslabs.com |
+| **水龙头（faucet）** | 无 | https://faucet.testnet.aptoslabs.com/ | https://faucet.devnet.aptoslabs.com/ |
+| **创世和路标** | https://github.com/aptos-labs/aptos-networks/tree/main/mainnet | https://github.com/aptos-labs/aptos-networks/tree/main/testnet | https://github.com/aptos-labs/aptos-networks/tree/main/devnet |
+| **链 ID** | 1 | 2 | [在 Aptos Explorer 页面的**右上角选择 Devnet**](https://explorer.aptoslabs.com/?network=Devnet) |
+| **纪元持续时间** | 7200 秒 | 7200 秒 | 7200 秒 |
+| **网络提供者** | 完全去中心化 | 由 Aptos Labs 代表 Aptos 基金会管理 | 由 Aptos Labs 代表 Aptos 基金会管理 |
+| **发布频率**  | 每月 | 每月 | 每周 |
+| **清除频率**  | 从不 | 从不 | 在更新时 |
+| **目的** | 主 Aptos 网络 | 长期存在的测试网络 | 尖端和探索性 |
+| **网络状态** | 始终在线 | 始终在线 | 几乎始终在线，在更新期间会有短暂中断。 |
+
+请注意，表格中的一些链接可能无法直接点击访问，特别是索引器 GraphQL API 规范和水龙头（faucet）链接，因为它们可能需要在浏览器中特别处理。用户可能需要复制并粘贴链接到浏览器地址栏中，或者根据他们的具体环境调整链接。

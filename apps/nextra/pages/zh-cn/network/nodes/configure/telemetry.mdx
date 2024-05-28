@@ -1,88 +1,79 @@
 ---
-title: "Telemetry"
+title: "遥测"
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Telemetry
+# 遥测
 
-When you run a node on an Aptos network, your node will send telemetry data to Aptos Labs. All node types
-(e.g., validators, VFNs and PFNs) send telemetry data. This also occurs for other binaries (e.g., the Aptos CLI).
-If you would prefer not to send telemetry, you can disable telemetry using the instructions below.
+当您在Aptos网络上运行节点时，您的节点将向 Aptos 实验室发送遥测数据。所有节点类型（例如，验证者、VFN和PFN）都会发送遥测数据。这也适用于其他二进制文件（例如，Aptos CLI）。
+如果您不愿意发送遥测数据，您可以按照以下说明禁用遥测。
 
 <Callout type="info">
-**No personal information is collected**<br />
-The Aptos node binary does **not** collect any personal information, such as usernames or email addresses.
-It only collects relevant node telemetry, such as software version, node metrics, operating system information and the IP
-address of your node. This data is used to enhance the decentralization and performance of the network.
+**不收集个人信息**<br />
+Aptos节点二进制文件**不**收集任何个人信息，如用户名或电子邮件地址。
+它只收集相关的节点遥测数据，如软件版本、节点指标、操作系统信息和节点的IP地址。
+这些数据用于增强网络的去中心化和性能。
 </Callout>
 
-## Node telemetry
+## 节点遥测
 
-The list below shows the categories of information collected by Aptos node telemetry:
+下面的列表显示了Aptos节点遥测收集的信息类别：
 
-- **Core metrics:** Core metrics are those emitted by the core components of the `aptos-node` binary. These include,
-  state sync, consensus, mempool and storage. You can see the full list of core metrics,
-  [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/core_metrics.rs#L14-L29).
+- **核心指标：** 核心指标是由`aptos-node`二进制文件的核心组件发出的。这些包括状态同步、共识、内存池和存储。
+  您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/core_metrics.rs#L14-L29)看到完整的核心指标列表。
 
-- **Build information**: Rust build information, including the versions of Rust, cargo, the target architecture and
-  the build tag are also collected. You can see the full list of build information, [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20).
+- **构建信息：** 也会收集Rust构建信息，包括Rust、cargo的版本、目标架构和构建标签。
+  您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20)看到完整的构建信息列表。
 
-- **System information**: System information is also collected by node telemetry. This includes resource information
-  (e.g., CPU, RAM, disk and network specifications) as well as operating system information. You can see the full list of
-  system information, [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/system_information.rs#L14-L32).
+- **系统信息：** 节点遥测也会收集系统信息。这包括资源信息（例如，CPU、RAM、磁盘和网络规格）以及操作系统信息。
+  您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/system_information.rs#L14-L32)看到完整的系统信息列表。
 
-- **Network metrics:**: Network metrics are also collected by node telemetry. These include network information such as
-  the number of connected peers, the number of inbound and outbound messages, and the size of messages sent and received.
-  You can see the full list of network metrics, [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/network_metrics.rs#L12-L17).
+- **网络指标：** 节点遥测也会收集网络指标。这些包括网络信息，如连接的对等方数量、进出消息的数量以及发送和接收的消息大小。
+  您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/network_metrics.rs#L12-L17)看到完整的网络指标列表。
 
-- **Prometheus metrics**: Prometheus metrics are also collected by node telemetry. These include runtime metrics
-  for all the components of the `aptos-node` binary. You can see the full list of Prometheus metrics by visiting the
-  metrics endpoint on your node using the [node inspection service](../measure/node-inspection-service.mdx).
+- **Prometheus指标：** 节点遥测也会收集Prometheus指标。这些包括`aptos-node`二进制文件所有组件的运行时指标。
+  您可以通过使用[节点检查服务](../measure/node-inspection-service.mdx)访问节点上的指标端点来查看Prometheus指标的完整列表。
 
-- **Node logs**: Logs of warn-level and higher are also collected by node telemetry. These are used to monitor the
-  health of the network. You can identify these logs by filtering the logs for the `aptos-node` binary, locally.
+- **节点日志：** 节点遥测也会收集警告级别及以上的日志。这些用于监控网络的健康状况。
+  您可以通过过滤`aptos-node`二进制文件的日志来识别这些日志。
 
-## CLI telemetry
+## CLI遥测
 
-The Aptos CLI tool also collects telemetry data. The list below shows the categories of information collected by
-CLI telemetry:
+Aptos CLI工具也会收集遥测数据。下面的列表显示了CLI遥测收集的信息类别：
 
-- **Command metrics**: Command metrics are those emitted by the CLI when a command is executed. These
-  include the command itself, the latency of the command, and the success or failure of the command. You can see
-  the full list of CLI metrics,
-  [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/cli_metrics.rs#L12-L15).
+- **命令指标：** 当执行命令时，CLI会发出命令指标。这些包括命令本身、命令的延迟以及命令的成功或失败。
+  您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/cli_metrics.rs#L12-L15)看到完整的CLI指标列表。
 
-- **Build information**: Rust build information, including the versions of Rust, cargo, the target architecture and
-  the build tag are also collected for the CLI. You can see the full list of build information, [here](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20).
+- **构建信息：** 对于CLI，也会收集Rust构建信息，包括Rust、cargo的版本、目标架构和构建标签。
+  您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20)看到完整的构建信息列表。
 
-## Disabling telemetry
+## 禁用遥测
 
-On macOS and Linux, you can set the `APTOS_DISABLE_TELEMETRY` environment variable to disable the metrics sent by
-both the Aptos node and the Aptos CLI tool. To disable all telemetry, set `APTOS_DISABLE_TELEMETRY` environment to `true`:
+在macOS和Linux上，您可以通过设置`APTOS_DISABLE_TELEMETRY`环境变量来禁用Aptos节点和Aptos CLI工具发送的指标。
+要禁用所有遥测，请将`APTOS_DISABLE_TELEMETRY`环境变量设置为`true`：
 
 ```bash filename="Terminal"
 export APTOS_DISABLE_TELEMETRY=true
 ```
 
-The above command only disables telemetry for a single session in the current terminal where you run the command.
-To disable it permanently across all terminals and Aptos binary invocations, include it in your startup profile.
-For example:
+上述命令仅在当前终端的单个会话中禁用遥测，如果您运行该命令。
+要永久禁用所有终端和Aptos二进制调用的遥测，请将其包含在您的启动配置文件中。
+例如：
 
 ```bash filename="Terminal"
 echo "export APTOS_DISABLE_TELEMETRY=true" >> ~/.profile
 source ~/.profile
 ```
 
-## Configuring telemetry
+## 配置遥测
 
-You can also configure telemetry to disable specific telemetry metrics and collections. The environment variable
-list below shows the variables you can set to configure telemetry for Aptos nodes and the CLI:
+您还可以配置遥测以禁用特定的遥测指标和集合。下面的环境变量列表显示了您可以设置的变量，以配置Aptos节点和CLI的遥测：
 
-- `APTOS_DISABLE_TELEMETRY`: This disables all telemetry emission, including sending telemetry to the Google Analytics service (GA4).
-- `APTOS_FORCE_ENABLE_TELEMETRY`: This overrides the chain ID check and forces the Aptos node to send telemetry regardless of whether the remote service accepts it or not.
-- `APTOS_DISABLE_TELEMETRY_PUSH_METRICS`: This disables sending [Prometheus](https://prometheus.io/) metrics.
-- `APTOS_DISABLE_TELEMETRY_PUSH_LOGS`: This disables sending logs.
-- `APTOS_DISABLE_TELEMETRY_PUSH_EVENTS`: This disables sending custom events.
-- `APTOS_DISABLE_LOG_ENV_POLLING`: This disables the dynamic ability to send verbose logs.
-- `APTOS_DISABLE_PROMETHEUS_NODE_METRICS`: This disables sending the Aptos node resource metrics such as system CPU, memory, etc.
+- `APTOS_DISABLE_TELEMETRY`：这会禁用所有遥测发射，包括向Google Analytics服务（GA4）发送遥测。
+- `APTOS_FORCE_ENABLE_TELEMETRY`：这会覆盖链ID检查，并强制Aptos节点发送遥测，无论远程服务是否接受。
+- `APTOS_DISABLE_TELEMETRY_PUSH_METRICS`：这会禁用发送[Prometheus](https://prometheus.io/)指标。
+- `APTOS_DISABLE_TELEMETRY_PUSH_LOGS`：这会禁用发送日志。
+- `APTOS_DISABLE_TELEMETRY_PUSH_EVENTS`：这会禁用发送自定义事件。
+- `APTOS_DISABLE_LOG_ENV_POLLING`：这会禁用动态发送详细日志的能力。
+- `APTOS_DISABLE_PROMETHEUS_NODE_METRICS`：这会禁用发送Aptos节点资源指标，如系统CPU、内存等。

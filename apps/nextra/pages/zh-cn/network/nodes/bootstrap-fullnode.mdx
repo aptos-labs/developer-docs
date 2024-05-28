@@ -1,10 +1,15 @@
 ---
-title: "Bootstrap a Node"
+title: 引导一个节点
 ---
 
-# Bootstrap a Node with historical data
+# 使用历史数据引导节点
 
-Bootstrapping a new node usually only depends on [state sync](configure/state-sync.mdx) in its fast sync mode, which synchronises to a recent state with help from its peers and start syncing recent ledger history from there. However, if longer ledger history is needed for any reason, we have these choices:
+通常，引导一个新节点仅依赖于其快速同步模式中的[state sync](configure/state-sync.mdx)，这会在其同行的帮助下同步到最近的一个状态，并从那里开始同步最近的账本历史。然而，如果出于任何原因需要更长时间的账本历史，我们有以下选择：
 
-- ### [Bootstrap from a Snapshot](bootstrap-fullnode.mdx)
-- ### [Bootstrap from a Backup](bootstrap-fullnode/aptos-db-restore.mdx)
+引导一个新节点通常只依赖于[状态同步（state sunc）](configure/state-sync.mdx)的快速同步模式，这种模式在同伴的帮助下与较近的状态同步，并从那里开始同步最近的账本历史。然而，如果出于任何原因需要更长的账本历史，我们有以下几种选择：
+
+启动新节点通常主要依靠其快速同步模式下的[状态同步](configure/state-sync.mdx)，此模式通其他参与者节点（peers）的协助迅速同步到最新的账本状态，并基于此开始下载近期的账本数据。然而，如果因任何原因需要更旧的账本历史记录，我们可以做出以下选择：
+
+
+- ### [从快照引导](bootstrap-fullnode.mdx)
+- ### [从备份引导](bootstrap-fullnode/aptos-db-restore.mdx)

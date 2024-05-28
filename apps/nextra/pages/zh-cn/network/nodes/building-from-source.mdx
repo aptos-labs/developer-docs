@@ -1,54 +1,46 @@
 ---
-title: "Building Aptos From Source"
+title: 从源代码构建 Aptos
 ---
 
 import { Callout } from 'nextra/components'
 import { Tabs, TabItem } from '@components/tabs/Tabs';
 
-# Building Aptos From Source
+# 从源代码构建 Aptos
 
-[CLI Binary releases are available](../../build/cli/install-cli.mdx), but if you
-want to build from source for an Aptos node or CLI, this is how.
+[使用 CLI 的二进制版本构建](../../build/cli/install-cli.mdx)，但如果你想从源代码构建 Aptos 节点或 CLI，可以使用以下方法。
 
-## Supported operating systems
+## 支持的操作系统
 
-Aptos can be built on various operating systems, including Linux, macOS. and
-Windows. Aptos is tested extensively on Linux and macOS, and less so on Windows.
-Here are the versions we use:
+Aptos 可以在包括 Linux、macOS 和 Windows 在内的各种操作系统上构建。Aptos 在 Linux 和 macOS 上经过了广泛的测试，而在 Windows 上的测试较少。这里是我们使用的版本：
 
-- Linux - Ubuntu version 20.04 and 22.04
-- macOS - macOS Monterey and later
-- Microsoft Windows - Windows 10, 11 and Windows Server 2022+
+- Linux - Ubuntu 20.04 和 22.04 版本
+- macOS - macOS Monterey 及更高版本
+- 微软 Windows - Windows 10、11 和 Windows Server 2022+
 
-## Clone the Aptos-core repo
+## 克隆 Aptos-core 仓库
 
-1. Install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
-Git is required to clone the aptos-core repo, and will need to be installed
-prior to continuing. You can install it with the instructions on the official
-[Git website](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+1. 安装[Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)。
+   Git 是克隆 aptos-core 仓库的必需工具，需要在克隆仓库之前安装。你可以按照官方[Git 网站](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)上的说明进行安装。
 
-2. Clone the Aptos repository. To clone the Aptos repository (repo), you first
-need to open a command line prompt (Terminal on macOS / Linux, PowerShell on
-Windows). Then run the following command to clone the Git repository from GitHub.
+2. 克隆 Aptos 仓库。要克隆 Aptos 仓库，你首先需要打开命令行提示符（macOS 或 Linux 的终端，Windows 的 PowerShell）。然后运行以下命令从 GitHub 克隆 Git 仓库。
 
    ```bash filename="Terminal"
    git clone https://github.com/aptos-labs/aptos-core.git
    ```
 
-3. Now let's go into the newly created directory `aptos-core` by _changing directory_ or `cd`ing into it:
+3. 现在让我们`cd`进入目录`aptos-core`：
    ```bash filename="Terminal"
    cd aptos-core
    ```
 
-### (Optional) Check out release branch
+### （可选）切换到 release 分支
 
-Optionally, check out a release branch to install an Aptos node.
-We suggest you check out `devnet` for your first development.
-See [Choose a network](../../build/advanced-guides/system-integrators-guide.mdx) for an
-explanation of their differences.
+这是可选的：切换到 `release` 分支以安装 Aptos 节点。
+我们建议你首先切换到 `devnet` 进行开发。
+查看[选择网络](../../build/advanced-guides/system-integrators-guide.mdx)了解它们之间的区别。
 
 <details>
-<summary>Release Branches</summary>
+<summary>发布分支</summary>
 <Tabs groupName="release-branches" height="175px">
   <TabItem value="devnet" defaultChecked={true}>
     ```bash filename="Terminal"
@@ -68,37 +60,43 @@ explanation of their differences.
 </Tabs>
 </details>
 
-## Set up build dependencies
+## 设置构建依赖
 
-Prepare your developer environment by installing the dependencies needed to build, test and inspect Aptos Core.
-No matter your selected mechanism for installing these dependencies, **it is imperative you keep your entire toolchain up-to-date**.
-If you encounter issues later, update all packages and try again.
+通过安装构建（build）、测试（test）和检查（inspect） Aptos Core 所需的依赖项来准备你的开发环境。
+无论你选择哪种机制来安装这些依赖项，**你必须保持你的整个工具链为最新版本**。
+如果你稍后遇到问题，请更新所有的包然后重试。
 
 <details>
 <summary>macOS</summary>
 
-**> Using the automated script**
+**> 使用自动化脚本**
 
-1. Ensure you have `brew` package manager installed: https://brew.sh/
-2. Run the dev setup script to prepare your environment:
-  ```bash filename="Terminal"
-  ./scripts/dev_setup.sh
-  ```
-3. Update your current shell environment:
-  ```bash filename="Terminal"
-  source ~/.cargo/env
-  ```
+1. 确保你安装了`brew`包管理器：https://brew.sh/
+2. 运行开发设置脚本来准备你的环境：
+
+```bash filename="Terminal"
+./scripts/dev_setup.sh
+```
+
+3. 更新你当前的 shell 环境：
+
+```bash filename="Terminal"
+source ~/.cargo/env
+```
 
 <Callout type="info">
-You can see the available options for the script by running
+你可以通过运行
+
   ```bash filename="Terminal"
   ./scripts/dev_setup.sh --help
   ```
+
+来查看脚本的可用选项。
 </Callout>
 
-**> Manual installation of dependencies**
+**> 手动安装依赖项**
 
-If the script above doesn't work for you, you can install these manually, but it's **not recommended**.
+如果你不能使用上面的脚本，你可以手动安装这些依赖项，但**不推荐**。
 
 1. [Rust](https://www.rust-lang.org/tools/install)
 2. [CMake](https://cmake.org/download/)
@@ -110,78 +108,84 @@ If the script above doesn't work for you, you can install these manually, but it
 <details>
 <summary>Linux</summary>
 
-**> Using the automated script**
+**> 使用自动化脚本**
 
-1. Run the dev setup script to prepare your environment:
-  ```bash filename="Terminal"
-  ./scripts/dev_setup.sh
-  ```
-2. Update your current shell environment:
-  ```bash filename="Terminal"
-  source ~/.cargo/env
-  ```
+1. 运行开发设置脚本来准备你的环境：
+
+```bash filename="Terminal"
+./scripts/dev_setup.sh
+```
+
+2. 更新你当前的 shell 环境：
+
+```bash filename="Terminal"
+source ~/.cargo/env
+```
 
 <Callout type="info">
-You can see the available options for the script by running
+如果想要查看脚本的可用选项，你可以通过运行：
+
   ```bash filename="Terminal"
   ./scripts/dev_setup.sh --help
   ```
+
 </Callout>
 
-**> Manual installation of dependencies**
+**> 手动安装依赖项**
 
-If the script above does not work for you, you can install these manually, but it is **not recommended**:
+如果你不能使用上面的脚本，你也可以手动安装这些依赖项，但**不推荐**。
 
 1. [Rust](https://www.rust-lang.org/tools/install).
 2. [CMake](https://cmake.org/download/).
 3. [LLVM](https://releases.llvm.org/).
-4. [libssl-dev](https://packages.ubuntu.com/jammy/libssl-dev) and [libclang-dev](https://packages.ubuntu.com/jammy/libclang-dev)
+4. [libssl-dev](https://packages.ubuntu.com/jammy/libssl-dev) 和 [libclang-dev](https://packages.ubuntu.com/jammy/libclang-dev)
 
 </details>
 
 <details>
 <summary>Windows</summary>
 
-**> Using the automated script**
+**> 使用自动化脚本**
 
-1. Open a PowerShell terminal as an administrator.
-2. Run the dev setup script to prepare your environment:
-  ```powershell filename="Terminal"
-  PowerShell -ExecutionPolicy Bypass -File ./scripts/windows_dev_setup.ps1
-  ```
-3. Open a new PowerShell terminal after installing all dependencies
+1. 以管理员身份打开 PowerShell 终端。
+2. 运行开发设置脚本来准备你的环境：
 
-**> Manual installation of dependencies**
+```powershell filename="Terminal"
+PowerShell -ExecutionPolicy Bypass -File ./scripts/windows_dev_setup.ps1
+```
 
-1. Install [Rust](https://www.rust-lang.org/tools/install).
-2. Install [LLVM](https://releases.llvm.org/). Visit their GitHub repository for the [latest prebuilt release](https://github.com/llvm/llvm-project/releases/tag/llvmorg-15.0.7).
-3. Install [Microsoft Visual Studio Build Tools for Windows](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022). During setup, select "Desktop development with C++" and three additional options: MSVC C++ build tools, Windows 10/11 SDK, and C++ CMake tools for Windows.
-4. If on Windows ARM, install [Visual Studio](https://visualstudio.microsoft.com/vs).
-5. If not already installed during Visual Studio/Build Tools installation, install [CMake](https://cmake.org/download/).
-6. Open a new PowerShell terminal after installing all dependencies
+3. 安装完所有依赖项后打开一个新的 PowerShell 终端
+
+**> 手动安装依赖项**
+
+1. 安装 [Rust](https://www.rust-lang.org/tools/install).
+2. 安装 [LLVM](https://releases.llvm.org/). 访问他们的 GitHub 仓库以获取[最新的预构建版本（prebuilt release）](https://github.com/llvm/llvm-project/releases/tag/llvmorg-15.0.7).
+3. 安装 [Microsoft Visual Studio Build Tools for Windows](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022). 在安装过程中，选择"Desktop development with C++" 和三个额外选项：MSVC C++ build tools、Windows 10/11 SDK 和 C++ CMake tools for Windows。
+4. 如果在 Windows ARM 上，安装 [Visual Studio](https://visualstudio.microsoft.com/vs).
+5. 如果在 Visual Studio/Build Tools 安装期间还没有安装 CMake，则需要先安装 [CMake](https://cmake.org/download/).
+6. 安装完所有依赖项后打开一个新的 PowerShell 终端
 
 </details>
 
-### Additional Tools
+### 附加工具
 
-If you used `scripts/dev_setup.sh` for macOS or Linux setup, additional tools are optionally available.
+如果你对 macOS 或 Linux 设置使用了 `scripts/dev_setup.sh`，附加工具是可选用的。
 
-## Building Aptos
+## 构建 Aptos
 
-The simplest check that you have a working environment is to build everything and run the tests.
+检查你的环境是否正常工作的一个简单方法是构建它并运行测试。
 
 ```bash filename="Terminal"
 cargo build
 cargo test -- --skip prover
 ```
 
-If you have already installed the Move Prover Tools above then you don't need to
-skip the prover tests.  To install the prover (optional), follow the [Prover guide](../../build/smart-contracts/learn-move/prover.mdx)
+如果你已经安装了上述的 Move Prover Tools，那么你就不需要跳过验证器测试。如果你想安装验证器（可选），请遵循[验证器指南](../../build/smart-contracts/learn-move/prover.mdx)
 
-Other documentation of specific tools has recommended patterns for `cargo build` and `cargo run`
+特定工具的其他文档已经为 `cargo build` 和 `cargo run` 推荐了一些模式。
 
-### Other resources
+### 其他资源
 
-- [Run a Local Development Network](localnet/local-development-network.mdx)
-- [Indexer](../../build/indexer.mdx)
-- [Node Health Checker](measure/node-health-checker.mdx)
+- [运行本地开发网络](localnet/local-development-network.mdx)
+- [索引器](../../build/indexer.mdx)
+- [节点健康检查器](measure/node-health-checker.mdx)
