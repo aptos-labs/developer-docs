@@ -1,0 +1,94 @@
+import { Callout } from 'nextra/components'
+
+# Create Test Accounts and Send Transactions From Aptos CLI
+
+<Callout type="info" emoji="ℹ️">
+You can install the Aptos CLI by following [these steps](../../install-cli.mdx) if you have not done so already.
+</Callout>
+
+In general, to make a new account on-chain, you will need to generate keys and then fund the account. On test networks, you can fund a new account by asking a "faucet" account with test Aptos tokens to send them to your account.
+
+Using the CLI, you can generate and fund a test account using:
+
+```bash filename="Terminal"
+aptos init --profile <your-profile-name>
+```
+
+Once you have a funded account you can send coins between accounts with the `transfer` command like this:
+
+```bash filename="Terminal"
+aptos account transfer --account superuser --amount 100
+```
+
+You should see a result like:
+
+```json filename="Output"
+{
+  "Result": {
+    "gas_used": 73,
+    "balance_changes": {
+      "742854f7dca56ea6309b51e8cebb830b12623f9c9d76c72c3242e4cad353dedc": {
+        "coin": {
+          "value": "10100"
+        },
+        "deposit_events": {
+          "counter": "2",
+          "guid": {
+            "id": {
+              "addr": "0x742854f7dca56ea6309b51e8cebb830b12623f9c9d76c72c3242e4cad353dedc",
+              "creation_num": "1"
+            }
+          }
+        },
+        "withdraw_events": {
+          "counter": "0",
+          "guid": {
+            "id": {
+              "addr": "0x742854f7dca56ea6309b51e8cebb830b12623f9c9d76c72c3242e4cad353dedc",
+              "creation_num": "2"
+            }
+          }
+        }
+      },
+      "b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb": {
+        "coin": {
+          "value": "9827"
+        },
+        "deposit_events": {
+          "counter": "1",
+          "guid": {
+            "id": {
+              "addr": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
+              "creation_num": "1"
+            }
+          }
+        },
+        "withdraw_events": {
+          "counter": "1",
+          "guid": {
+            "id": {
+              "addr": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
+              "creation_num": "2"
+            }
+          }
+        }
+      }
+    },
+    "sender": "b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
+    "success": true,
+    "version": 1139,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
+This can be useful for manual testing of Move contracts or just to try seeing how the chain works in practice.
+
+<Callout type="info" emoji="ℹ️">
+To have more control over what your generated credentials look like, instead of `aptos init`, you can use:
+
+1. `aptos key generate --vanity-prefix 0x<your-prefix>`
+2. `aptos account fund-with-faucet --account <your-newly-generated-account-address>`
+
+Note however that addresses are different than keys.
+</Callout>

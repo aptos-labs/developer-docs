@@ -1,0 +1,139 @@
+import { Callout } from 'nextra/components'
+
+# Look Up On-Chain Account Info Using Aptos CLI
+
+<Callout type="info" emoji="ℹ️">
+You can install the Aptos CLI by following [these steps](../../install-cli.mdx) if you have not done so already.
+</Callout>
+
+You can look up resources and data an account has on-chain by running the following command:
+
+```bash filename="Terminal"
+aptos account list --account <your-profile-name-or-account-address>
+```
+
+This will show all resources that an account has. For example:
+
+```json filename="Output"
+{
+  "Result": [
+    {
+      "coin": {
+        "value": "110000"
+      },
+      "deposit_events": {
+        "counter": "3",
+        "guid": {
+          "id": {
+            "addr": "0xf1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696",
+            "creation_num": "2"
+          }
+        }
+      },
+      "frozen": false,
+      "withdraw_events": {
+        "counter": "0",
+        "guid": {
+          "id": {
+            "addr": "0xf1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696",
+            "creation_num": "3"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+If you’re interested in a specific type of account data, you can specify that with the `--query` parameter. The supported queries are:
+
+- `balance` - to see the current balance and a list of deposit and withdrawal events.
+- `modules` - see the Move contracts that are published on this account.
+- `resources` - this is what the default command does with no query specified.
+
+Here’s an example of what calling with the `--query modules` parameter looks like:
+
+```bash filename="Terminal"
+aptos account list --query modules
+```
+
+This will show all modules that an account has. For example:
+
+```json filename="Output"
+{
+  "Result": [
+    {
+      "bytecode": "0xa11ceb0b050000000b01000a020a12031c2504410405452d0772da0108cc0240068c030a0a9603150cab03650d90040400000101010201030104000506000006080004070700020e0401060100080001000009020300010f0404000410060100031107000002120709010602130a030106050806080105010802020c0a02000103040508020802070801010a0201060c010800010b0301090002070b030109000900074d657373616765056572726f72056576656e74067369676e657206737472696e67124d6573736167654368616e67654576656e740d4d657373616765486f6c64657206537472696e670b6765745f6d6573736167650b7365745f6d6573736167650c66726f6d5f6d6573736167650a746f5f6d657373616765076d657373616765156d6573736167655f6368616e67655f6576656e74730b4576656e7448616e646c65096e6f745f666f756e6404757466380a616464726573735f6f66106e65775f6576656e745f68616e646c650a656d69745f6576656e74b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb0000000000000000000000000000000000000000000000000000000000000001030800000000000000000002020a08020b08020102020c08020d0b030108000001000101030b0a002901030607001102270b002b0110001402010104010105240b0111030c040e0011040c020a02290120030b05120e000b040e00380012012d0105230b022a010c050a051000140c030a050f010b030a04120038010b040b050f0015020100010100",
+      "abi": {
+        "address": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
+        "name": "Message",
+        "friends": [],
+        "exposed_functions": [
+          {
+            "name": "get_message",
+            "visibility": "public",
+            "is_entry": false,
+            "generic_type_params": [],
+            "params": [
+              "address"
+            ],
+            "return": [
+              "0x1::string::String"
+            ]
+          },
+          {
+            "name": "set_message",
+            "visibility": "public",
+            "is_entry": true,
+            "generic_type_params": [],
+            "params": [
+              "signer",
+              "vector<u8>"
+            ],
+            "return": []
+          }
+        ],
+        "structs": [
+          {
+            "name": "MessageChangeEvent",
+            "is_native": false,
+            "abilities": [
+              "drop",
+              "store"
+            ],
+            "generic_type_params": [],
+            "fields": [
+              {
+                "name": "from_message",
+                "type": "0x1::string::String"
+              },
+              {
+                "name": "to_message",
+                "type": "0x1::string::String"
+              }
+            ]
+          },
+          {
+            "name": "MessageHolder",
+            "is_native": false,
+            "abilities": [
+              "key"
+            ],
+            "generic_type_params": [],
+            "fields": [
+              {
+                "name": "message",
+                "type": "0x1::string::String"
+              },
+              {
+                "name": "message_change_events",
+                "type": "0x1::event::EventHandle<0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb::Message::MessageChangeEvent>"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+```

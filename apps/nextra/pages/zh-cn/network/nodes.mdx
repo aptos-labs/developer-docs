@@ -1,0 +1,122 @@
+---
+title: "Learn about Nodes"
+---
+
+import { Card, Cards } from '@components/index'
+
+# Learn about Nodes
+
+The Aptos network consists of three node types: validator nodes, validator fullnodes (VFNs), and public fullnodes (PFNs). To
+participate in consensus, you are required to run a validator node and stake the minimum amount of utility coins. VFNs and PFNs
+are not required to participate in consensus, but they are necessary to distribute blockchain data and enable ecosystem services,
+e.g., indexing, querying, and RESTful API services (see [Aptos APIs](../build/apis.mdx)). VFNs can only be run by validator operators,
+while PFNs can be run by anyone. You can learn more about the different types of nodes in the [Blockchain Deep Dive](blockchain.mdx) section.
+
+This section provides detailed, step-by-step instructions on how to deploy and operate Aptos nodes in different
+environments. It also describes everything you need to stake and participate in consensus and governance.
+{ /* TODO: Are we going to add this back? You can also find additional resources for node operation in the [External Resources](../community/external-resources.md) section.*/}
+
+## Quick Links
+
+### Validation on Aptos
+
+Everything you need to know about how validation, staking and governance works on Aptos.
+
+<Cards>
+  <Card href="./blockchain/staking#validation-on-the-aptos-blockchain">
+    <Card.Title>How validation works</Card.Title>
+    <Card.Description>Validator-leader proposes and earns rewards on success.</Card.Description>
+  </Card>
+  <Card href="./blockchain/staking#validator-state-and-stake-state">
+    <Card.Title>Validator states</Card.Title>
+    <Card.Description>Learn how a validator gets into a validator set.</Card.Description>
+  </Card>
+</Cards>
+
+### Staking
+
+<Cards>
+  <Card href="./blockchain/staking">
+    <Card.Title>Staking on Aptos</Card.Title>
+    <Card.Description>A comprehensive guide to how staking works on Aptos.</Card.Description>
+  </Card>
+  <Card href="./blockchain/governance">
+    <Card.Title>Governance</Card.Title>
+    <Card.Description>Who can propose, who can vote, and how an AIP is resolved.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-operations">
+    <Card.Title>Owner</Card.Title>
+    <Card.Description>Describes the owner operations performed for staking.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-voter">
+    <Card.Title>Voter</Card.Title>
+    <Card.Description>Describes the voter operations performed for staking.</Card.Description>
+  </Card>
+</Cards>
+
+### Validators and VFNs
+
+A comprehensive guide to deploying nodes, staking operations and participate in consensus.
+
+<Cards>
+  <Card href="./nodes/validator-node/node-requirements">
+    <Card.Title>Node requirements</Card.Title>
+    <Card.Description>Details the compute and storage resources you need. Read this first before anything.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/deploy-nodes">
+    <Card.Title>Running validator node</Card.Title>
+    <Card.Description>In the cloud or on-premises, Docker or source, you will read step-by-step instructions here.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/verify-nodes/node-liveness-criteria">
+    <Card.Title>Node health</Card.Title>
+    <Card.Description>You can verify your node health using several options.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/connect-to-aptos-network">
+    <Card.Title>Connecting to Aptos network</Card.Title>
+    <Card.Description>Steps to connect your nodes to an Aptos network.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-operations">
+    <Card.Title>Staking pool operations</Card.Title>
+    <Card.Description>Step-by-step guide for how to perform staking pool operations.</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/modify-nodes/shutting-down-nodes">
+    <Card.Title>Shutting down nodes</Card.Title>
+    <Card.Description>Leave the validator set first, and then shut down your node.</Card.Description>
+  </Card>
+</Cards>
+
+### Public Fullnodes (PFNs)
+
+A section with detailed, step-by-step instructions on everything related to Aptos PFNs.
+
+<Cards>
+  <Card href="./nodes/full-node/deployments">
+    <Card.Title>Deploy a PFN</Card.Title>
+    <Card.Description>Follow this section to deploy a PFN.</Card.Description>
+  </Card>
+  <Card href="../build/indexer/legacy/indexer-fullnode">
+    <Card.Title>Indexer PFN</Card.Title>
+    <Card.Description>Describes how to run an indexer PFN on the Aptos network.</Card.Description>
+  </Card>
+</Cards>
+
+### Common Operations
+
+<Cards>
+  <Card href="./nodes/localnet/local-development-network">
+    <Card.Title>Develop with localnet</Card.Title>
+    <Card.Description>Run a localnet for development (including validator nodes).</Card.Description>
+  </Card>
+  <Card href="./nodes/full-node/modify/update-fullnode-with-new-releases">
+    <Card.Title>Upgrade your PFN</Card.Title>
+    <Card.Description>Upgrade your node with new releases.</Card.Description>
+  </Card>
+  <Card href="./nodes/bootstrap-fullnode">
+    <Card.Title>Bootstrap from a snapshot</Card.Title>
+    <Card.Description>Use a snapshot to bootstrap a new node.</Card.Description>
+  </Card>
+  <Card href="./nodes/bootstrap-fullnode/aptos-db-restore">
+    <Card.Title>Bootstrap from a backup</Card.Title>
+    <Card.Description>Use data restore to bootstrap a new node.</Card.Description>
+  </Card>
+</Cards>

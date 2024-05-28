@@ -1,0 +1,86 @@
+---
+title: docs.config.js
+---
+
+import { Callout, Steps, FileTree } from 'nextra/components'
+
+# `docs.config.js`
+
+To simplify Nextra setup and organization, each Aptos Docs project comes with a
+setup configuration file called `docs.config.js` that lives at the root of the docs
+site.
+
+Namely it comprises the following
+- i18n config
+- google analytics
+- relevent opengraph information
+
+### Example
+
+<FileTree>
+  <FileTree.Folder name="pages" defaultOpen>
+    <FileTree.File name="_meta.ts" />
+    <FileTree.Folder name="api" />
+    <FileTree.Folder name="en" />
+    <FileTree.Folder name="ru" />
+    <FileTree.File name="_app.tsx" />
+  </FileTree.Folder>
+  <FileTree.File name="docs.config.js" active />
+  <FileTree.File name="package.json" />
+</FileTree>
+
+```js filename="docs.config.js"
+export const i18nConfig = Object.freeze({
+  en: {
+    locale: 'en',
+    name: 'English',
+    direction: 'ltr',
+    title: 'React Hooks for Data Fetching',
+    editText: 'Edit this page on GitHub →',
+    feedbackText: 'Question? Give us feedback →',
+    footerLinkText: 'https://vercel.com/?utm_source=swr',
+    footerLinkElement: undefined,
+    searchPlaceholderText: 'Search documentation',
+    searchLoadingText: 'Loading...',
+    searchEmptyText: 'No results found.',
+    searchErrorText: 'Failed to load search index.',
+    lastUpdatedOn: 'Last updated on',
+  },
+  ru: {
+    locale: 'ru',
+    name: 'Русский',
+    direction: 'ltr',
+    title: 'React хуки для выборки данных',
+    editText: 'Редактировать на GitHub',
+    feedbackText: 'Вопрос? Ваш отзыв →',
+    footerLinkText: 'https://vercel.com/?utm_source=swr_ru',
+    footerLinkElement: undefined,
+    searchPlaceholderText: 'Искать документацию',
+    searchLoadingText: 'Загрузка...',
+    searchEmptyText: 'Ничего не найдено.',
+    searchErrorText: 'Не удалось загрузить поисковый индекс.',
+    lastUpdatedOn: 'Последнее обновление',
+  }
+})
+
+export const docsConfig = Object.freeze({
+  i18nConfig,
+  defaultTitle: 'Aptos Docs',
+  defaultDescription: 'Docs for Aptos',
+  githubUrl: 'https://github.com/aptos-labs/developer-docs',
+  relativeDocsPath: '/apps/nextra',
+  githubNewIssueUrl: 'https://github.com/aptos-labs/nextra/issues/new',
+  googleAnalyticsId: 'G-A1B2C3D4E5',
+  origin: process.env.NEXT_PUBLIC_ORIGIN
+})
+```
+
+### .env
+
+Ensure that environment variables are added to your Vercel project.
+
+Here's an example of a default `.env`.
+
+```env .env
+NEXT_PUBLIC_ORIGIN="http://localhost:3000"
+```

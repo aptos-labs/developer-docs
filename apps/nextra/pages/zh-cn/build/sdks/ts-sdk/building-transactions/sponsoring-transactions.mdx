@@ -1,0 +1,181 @@
+import { Callout, Steps } from 'nextra/components'
+
+# Sponsoring Transactions
+
+Normally, the account that is executing a transaction pays for the gas fees. You can allow another account to cover those charges by sponsoring a transaction.
+
+This can be used to help manage fees from a central account when working with complicated smart contracts.
+
+## How To Sponsor a Transaction
+
+<Steps>
+### Build the transaction with the parameter `withFeePayer: true`.
+    
+```ts filename="sponsor.ts"
+const transaction = await aptos.transaction.build.simple({
+    sender: sender.accountAddress,
+    withFeePayer: true,
+    data: {
+        // All transactions on Aptos are implemented via smart contracts.
+        function: "0x1::aptos_account::transfer",
+        functionArguments: [destination.accountAddress, 100],
+    },
+});
+```
+
+### Sign the transaction with BOTH the sender and the feePayer.
+
+1. Sign with the sender account using `.sign`.
+2. Sign with the sponsor account using `.signAsFeePayer`.
+
+<Callout type="warning">
+The sponsor uses a different function (`.signAsFeePayer`) than the sender to sign!
+</Callout>
+
+```ts filename="sponsor.ts"
+const senderAuthenticator = aptos.transaction.sign({
+    signer: sender,
+    transaction,
+});
+const feePayerAuthenticator = aptos.transaction.signAsFeePayer({
+    signer: feePayer,
+    transaction
+})
+```
+
+### (Optional) When simulating the transaction, include the parameter `feePayerPublicKey: account.publicKey`
+
+<Callout type="warning">
+Currently, simulating a sponsor transaction must happen AFTER signing with the sponsor or it will fail to recognize this transaction has a sponsor.
+</Callout>
+
+```ts filename="sponsor.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+    signerPublicKey: sender.publicKey,
+    feePayerPublicKey: feePayer.publicKey,
+    transaction,
+});
+```
+
+### Submit the transaction by combining both signatures.
+
+```ts filename="sponsor.ts"
+// 4. Submit
+const committedTransaction = await aptos.transaction.submit.simple({
+    transaction,
+    senderAuthenticator: senderAuthenticator,
+    feePayerAuthenticator: feePayerAuthenticator,
+});
+```
+
+### Wait for the transaction to execute.
+
+```ts filename="sponsor.ts"
+// 5. Wait for results
+const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
+```
+</Steps>
+
+## TypeScript Sponsor Transaction Code Sample
+
+```ts filename="sponsor.ts"
+/**
+ * This example shows how to use the Aptos SDK to send a transaction with a sponsor.
+ */
+
+import {
+    Account,
+    Aptos,
+    AptosConfig,
+    Network,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+    console.log("This example will send a sponsored transaction from Alice to Carol.");
+
+    // 0. Setup the client and test accounts
+    const config = new AptosConfig({ network: Network.TESTNET });
+    const aptos = new Aptos(config);
+
+    let alice = Account.generate();
+    let bob = Account.generate();
+    let carol = Account.generate();
+
+    console.log("=== Addresses ===\n");
+    console.log(`Alice's address is: ${alice.accountAddress}`);
+    console.log(`Bob's address is: ${bob.accountAddress}`);
+    console.log(`Carol's address is: ${carol.accountAddress}`);
+
+    console.log("\n=== Funding accounts ===\n");
+    await aptos.fundAccount({
+        accountAddress: alice.accountAddress,
+        amount: 500_000_000,
+    });  
+    await aptos.fundAccount({
+        accountAddress: bob.accountAddress,
+        amount: 500_000_000,
+    });
+    await aptos.fundAccount({
+        accountAddress: carol.accountAddress,
+        amount: 100,
+    });
+    console.log("Funded the accounts!")
+
+    // 1. Build
+    console.log("\n=== 1. Building the transaction ===\n");
+    const transaction = await aptos.transaction.build.simple({
+        sender: alice.accountAddress,
+        withFeePayer: true,
+        data: {
+            // All transactions on Aptos are implemented via smart contracts.
+            function: "0x1::aptos_account::transfer",
+            functionArguments: [carol.accountAddress, 100],
+        },
+    });
+    console.log("Built the transaction!")
+
+    // 2. Sign
+    console.log("\n=== 2. Signing transaction ===\n");
+    const aliceSenderAuthenticator = aptos.transaction.sign({
+        signer: alice,
+        transaction,
+    });
+    const bobSenderAuthenticator = aptos.transaction.signAsFeePayer({
+        signer: bob,
+        transaction
+    })
+    console.log("Signed the transaction!")
+
+    // 3. Simulate (Optional)
+    console.log("\n === 3. Simulating Response (Optional) === \n")
+    const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+        signerPublicKey: alice.publicKey,
+        feePayerPublicKey: bob.publicKey,
+        transaction,
+    });
+    console.log(userTransactionResponse)
+
+    // 4. Submit
+    console.log("\n=== 4. Submitting transaction ===\n");
+    const committedTransaction = await aptos.transaction.submit.simple({
+        transaction,
+        senderAuthenticator: aliceSenderAuthenticator,
+        feePayerAuthenticator: bobSenderAuthenticator,
+    });
+    console.log("Submitted transaction hash:", committedTransaction.hash);
+
+    // 5. Wait for results
+    console.log("\n=== 5. Waiting for result of transaction ===\n");
+    const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
+    console.log(executedTransaction)
+};
+
+example();
+```
+
+## Common Errors
+
+`INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE` :
+
+1. This may be caused by accidentally using `.sign` instead of `.signAsFeePayer` when signing the transaction before submitting on-chain.
+2. Sponsoring a transaction requires that the sponsoring account have enough funds to cover the max possible gas fee. This is often orders of magnitude larger than the expected or actual gas fees required for a transaction to execute. In this case, increase the funds in the account above the `max_gas_amount` **multiplied** by the `gas_unit_price` in the simulated transaction. These must be multiplied because gas is unitless, and so must be multiplied by the conversion rate from gas to octas. You can learn more about gas [here](../../../../network/blockchain/gas-txn-fee.mdx).

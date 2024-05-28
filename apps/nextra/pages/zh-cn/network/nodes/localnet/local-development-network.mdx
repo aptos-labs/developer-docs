@@ -1,0 +1,189 @@
+import { Callout, Steps } from 'nextra/components'
+
+# Running a Local Network via Aptos CLI
+
+Local networks can be helpful when testing your code. They are not connected to any production Aptos networks like mainnet, but they are useful for three main reasons:
+
+1. **No rate limits:** You can interact with hosted services like the Node API, Indexer API, and faucet with no rate-limits to speed up testing.
+2. **Reproducibility:** You can set up specific on-chain scenarios and restart the network from scratch at any point to return to a clean slate.
+3. **High availability**: The Aptos devnet and testnet networks are periodically upgraded, during which time they can be unavailable. Local development networks are also always available even if you have no internet access.
+<br/>
+
+# Starting A Local Network
+
+<Steps>
+### Ensure you have the [Aptos CLI](../../../build/cli/install-cli.mdx) installed.
+### Ensure you have [Docker](https://docs.docker.com/get-docker/) installed.
+   1. This is exclusively needed for making a production-like environment by running the Indexer API. Many downstream tools such as the Aptos SDK depend on the Indexer API.
+   2. Docker recommends that you install via [Docker Desktop](https://www.docker.com/products/docker-desktop/) to get automatic updates.
+### Start Docker.
+### Run the following command in a new terminal to start the private network:
+
+```bash filename="Terminal"
+aptos node run-local-testnet --with-indexer-api
+```
+
+<Callout type="warning">
+Note: Despite the name (`local-testnet`), this has nothing to do with the Aptos testnet, it will run a network entirely local to your machine.
+</Callout>
+
+You should expect to see an output similar to this:
+
+```bash filename="Terminal"
+Readiness endpoint: http://0.0.0.0:8070/
+
+Indexer API is starting, please wait...
+Node API is starting, please wait...
+Transaction stream is starting, please wait...
+Postgres is starting, please wait...
+Faucet is starting, please wait...
+
+Completed generating configuration:
+        Log file: "/Users/dport/.aptos/testnet/validator.log"
+        Test dir: "/Users/dport/.aptos/testnet"
+        Aptos root key path: "/Users/dport/.aptos/testnet/mint.key"
+        Waypoint: 0:397412c0f96b10fa3daa24bfda962671c3c3ae484e2d67ed60534750e2311f3d
+        ChainId: 4
+        REST API endpoint: http://0.0.0.0:8080
+        Metrics endpoint: http://0.0.0.0:9101/metrics
+        Aptosnet fullnode network endpoint: /ip4/0.0.0.0/tcp/6181
+        Indexer gRPC node stream endpoint: 0.0.0.0:50051
+
+Aptos is running, press ctrl-c to exit
+
+Node API is ready. Endpoint: http://0.0.0.0:8080/
+Postgres is ready. Endpoint: postgres://postgres@127.0.0.1:5433/local_testnet
+Transaction stream is ready. Endpoint: http://0.0.0.0:50051/
+Indexer API is ready. Endpoint: http://127.0.0.1:8090/
+Faucet is ready. Endpoint: http://127.0.0.1:8081/
+
+Applying post startup steps...
+
+Setup is complete, you can now use the local testnet!
+```
+
+### Wait for the network to start
+
+Once the terminal says `Setup is complete, you can now use the local testnet!` the local network will be running.
+
+   <Callout type="warning">
+   If you ran into an error, look at the common errors below to debug.
+   </Callout>
+
+<details>
+<summary>Common Errors On Network Startup</summary>
+
+### Address Already In Use
+
+```bash filename="Terminal"
+panicked at 'error binding to 0.0.0.0:8080: error creating server listener: Address already in use (os error 48)'
+```
+
+This means one of the ports needed by the local network is already in use by another process.
+
+To fix this on Unix systems, you can:
+
+1. Identify the name and PID of the process by running `lsof -i :8080`.
+2. Run `kill <pid>` once you know the PID to free up that port.
+
+### Too many open files error
+
+```bash filename="Terminal"
+panicked at crates/aptos/src/node/local_testnet/logging.rs:64:10:
+called \`Result::unwrap()\` on an \`Err\` value: Os { code: 24, kind: Uncategorized, message: \"Too many open files\" }
+```
+
+This means there were too many open files on your system. On many Unix systems you can increase the maximum number of open files by adding something like this to your `.zshrc`:
+
+```bash filename="Terminal"
+ulimit -n 32768
+```
+
+### Docker is not available
+
+```bash filename="Terminal"
+Unexpected error: Failed to apply pre-run steps for Postgres: Docker is not available, confirm it is installed and running. On Linux you may need to use sudo
+```
+
+To debug this, try the below fixes:
+
+1. Make sure you have docker installed by running `docker --version`.
+2. Ensure the Docker daemon is running by running `docker info` (if this errors saying `Cannot connect to the Docker daemon` Docker is NOT running)
+3. Make sure the socket for connecting to Docker is present on your machine in the default location. For example, on Unix systems `/var/run/docker.sock` should exist.
+   1. If that file does not exist, open Docker Desktop and enable `Settings -> Advanced -> Allow the default Docker socket to be used.`
+   2. Or, you can find where the Docker socket is by running `docker context inspect | grep Host`, then symlink that location to the default location by running `sudo ln -s /Users/dport/.docker/run/docker.sock /var/run/docker.sock`
+</details>
+
+As you can see from the example output in step 4, once the local network is running, you have access to the following services:
+{/* TODO: replace API spec link */}
+- [Node API](../aptos-api-spec.mdx): This is a REST API that runs directly on the node. It enables core write functionality such as transaction submission and a limited set of read functionality, such as reading account resources or Move module information.
+- [Indexer API](../../../build/indexer/api.mdx): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
+- [Transaction Stream Service](../../../build/indexer/txn-stream.mdx): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing a [custom processor](../../../build/indexer/custom-processors.mdx).
+- [Postgres](https://www.postgresql.org/): This is the database that the Indexer processors write to. The Indexer API reads from this database.
+- [Faucet](../../glossary.mdx#faucet): You can use this to fund accounts on your local network.
+
+If you do not want to run any of these sub-components of a network, there are flags to disable them.
+
+If you are writing a script and would like to wait for the local network to come up with all services, you can make a GET request to `http://127.0.0.1:8070`. At first this will return http code [503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503). When it returns [200](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200) it means all the services are ready.
+
+For more information on different flags you can pass when starting your local network, or configuration settings such as changing which port certain services run on, run the help command:
+
+```bash filename="Terminal"
+aptos node run-local-testnet --help
+```
+</Steps>
+
+## Using The Local Network
+
+Now that the network is running, you can use it like you would any other network.
+
+So, you can create a local profile like this:
+
+```bash filename="Terminal"
+aptos init --profile <your-profile-name> --network local
+```
+
+You can then use that profile for any commands you want to use going forward. For example, if you wanted to publish a Move module like the [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) package to your local network you could run:
+
+```bash filename="Terminal"
+aptos move publish --profile <your-profile-name> --package-dir /opt/git/aptos-core/aptos-move/move-examples/hello_blockchain --named-addresses HelloBlockchain=local
+```
+
+### Configuring the TypeScript SDK
+
+If you want to use the local network with the TypeScript SDK, you can use local network URLs when initializing the client object (`Aptos`):
+
+```tsx
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const network = Network.LOCAL;
+const config = new AptosConfig({ network });
+const client = new Aptos(config);
+```
+
+### Resetting the local network
+
+Sometimes while developing it is helpful to reset the local network back to its initial state, for example:
+
+- You made backwards incompatible changes to a Move module, and you'd like to redeploy it without renaming it or using a new account.
+- You are building a [custom indexer processor](https://aptos.dev/indexer/custom-processors/) and would like to index using a fresh network.
+- You want to clear all on chain state, e.g. accounts, objects, etc.
+
+To start with a brand new local network, use the `--force-restart` flag:
+
+```bash filename="Terminal"
+aptos node run-local-testnet --force-restart
+```
+
+It will then prompt you if you really want to restart the chain, to ensure that you do not delete your work by accident.
+
+```bash filename="Terminal"
+Are you sure you want to delete the existing chain? [yes/no]
+> yes
+```
+
+If you do not want to be prompted, include `--assume-yes` as well:
+
+```bash filename="Terminal"
+aptos node run-local-testnet --force-restart --assume-yes
+```

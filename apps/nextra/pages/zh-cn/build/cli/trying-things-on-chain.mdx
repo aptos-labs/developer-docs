@@ -1,0 +1,17 @@
+# Trying Things On-Chain With Aptos CLI
+
+The CLI can be a convenient tool for quickly looking up on-chain data and sending transactions from your accounts.
+
+The most common way to specify what accounts you want to interact with is through profiles. You can create a new profile on the cli by running the following command:
+
+```bash filename="Terminal"
+aptos init --profile <your-profile-name>
+```
+
+If any command takes an account, you can pass in the name of a profile instead. If a command implicitly uses the default profile, it will usually have an optional parameter to use a specified profile instead which you can find by running `aptos <your-command> --help`.
+
+With that, the three main things you can use the CLI to do on-chain include:
+
+1. [Looking Up On-Chain Account Info](trying-things-on-chain/looking-up-account-info.mdx)
+2. [Creating test accounts and sending transactions](trying-things-on-chain/create-test-accounts.mdx)
+3. [Securely interacting on-chain via a Hardware Ledger](trying-things-on-chain/ledger.mdx)

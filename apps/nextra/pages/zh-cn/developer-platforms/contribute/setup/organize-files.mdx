@@ -1,0 +1,184 @@
+---
+title: Organize Files
+image: https://assets.vercel.com/image/upload/contentful/image/e5382hct74si/4JmubmYDJnFtstwHbaZPev/23caf8c05363419bb2b94c6c53299cb0/og-dark.png
+---
+
+import { FileTree } from 'nextra/components'
+
+# Organize Files
+
+The Aptos Docs template is an opinionated fork of [Nextra](https://nextra.site) that enables teams to quickly
+and easily create fully-featured docs pages without too much customization. It comes
+with many defaults in place for things like i18n, latex macros, move syntax highlighting,
+search, and more.
+
+Nextra first collects all your Markdown files and configurations from the
+`pages` directory, and then generates the "page map information" of your entire
+site, to render things such as the _navigation bar_ and _sidebar_ below:
+
+## Navigation Bar
+
+The links in the navigation bar are set in the `_meta.ts(x)` file in the docs for a given locale.
+In other words, they live in `pages/<LOCALE>/docs/_meta.ts`, e.g., for english docs, they're set in `pages/en/docs/_meta.ts`, like so:
+
+
+<FileTree>
+  <FileTree.Folder name="pages" defaultOpen>
+    <FileTree.Folder name="api">
+      {/* Additional files and folders if any */}
+    </FileTree.Folder>
+    <FileTree.Folder name="en" defaultOpen>
+      <FileTree.Folder name="about">
+        {/* Additional files and folders if any */}
+      </FileTree.Folder>
+      <FileTree.Folder name="docs" defaultOpen>
+        <FileTree.Folder name="components">
+          {/* Additional files and folders if any */}
+        </FileTree.Folder>
+        <FileTree.Folder name="examples">
+          {/* Additional files and folders if any */}
+        </FileTree.Folder>
+        <FileTree.Folder name="setup">
+          <FileTree.File name="_meta.ts" />
+          <FileTree.File name="get-started.mdx" />
+          <FileTree.File name="maintenance.mdx" />
+          <FileTree.File name="index.mdx" />
+        </FileTree.Folder>
+        <FileTree.File active name="_meta.ts" />
+        <FileTree.File name="index.mdx" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+    <FileTree.Folder name="es">
+      {/* Additional files and folders if any */}
+    </FileTree.Folder>
+    <FileTree.Folder name="ru">
+      <FileTree.Folder name="docs">
+        <FileTree.Folder name="advanced">
+          {/* Additional files and folders if any */}
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+```ts filename="pages/en/docs/_meta.ts"
+export default {
+  index: {
+    title: 'Introduction',
+    type: 'page',
+    display: 'hidden'
+  },
+  docs: {
+    type: 'page',
+    title: 'Docs'
+  },
+  about: {
+    type: 'menu',
+    title: 'About',
+    items: {
+      contributors: {
+        title: 'Contributors',
+        href: 'https://github.com/aptos-labs/nextra/contributors',
+        newWindow: true
+      },
+      team: {
+        title: 'Team'
+      },
+    }
+  },
+  nextra_link: {
+    type: 'page',
+    title: 'Nextra ↗',
+    href: 'https://nextra.site',
+    newWindow: true
+  }
+}
+```
+
+## Page Configuration
+
+By default, each `.mdx` page in `/pages` corresponds to a docs page.
+The page map contains all `.mdx` filenames and the
+directory structure, sorted alphabetically. Then, Nextra will use the
+[title](https://github.com/vercel/title) package to get formatted page names
+from filenames.
+
+## `_meta.ts / _meta.tsx`
+
+It's very common to customize each page's title, rather than just relying on
+filenames. Having a page titled "Index" lacks clarity. It is preferable to
+assign a meaningful title that accurately represents the content, such as
+"Home".
+
+That’s where `_meta.ts` comes in. You can have an `_meta.ts` file in each
+directory, and it will be used to override the default configuration of each
+page:
+
+<FileTree>
+  <FileTree.Folder name="pages" defaultOpen>
+    <FileTree.Folder name="api">
+      {/* Additional files and folders if any */}
+    </FileTree.Folder>
+    <FileTree.Folder name="en" defaultOpen>
+      <FileTree.Folder name="about">
+        {/* Additional files and folders if any */}
+      </FileTree.Folder>
+      <FileTree.Folder name="docs" defaultOpen>
+        <FileTree.Folder name="components" defaultOpen>
+          {/* Additional files and folders if any */}
+          <FileTree.File name="_meta.ts" />
+          <FileTree.File name="codeblock.mdx" active />
+        </FileTree.Folder>
+        <FileTree.Folder name="examples">
+          {/* Additional files and folders if any */}
+        </FileTree.Folder>
+        <FileTree.Folder name="setup">
+          <FileTree.File name="_meta.ts" />
+          <FileTree.File name="get-started.mdx" />
+          <FileTree.File name="maintenance.mdx" />
+          <FileTree.File name="index.mdx" />
+        </FileTree.Folder>
+        <FileTree.File name="_meta.ts" />
+        <FileTree.File name="index.mdx" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+    <FileTree.Folder name="es">
+      {/* Additional files and folders if any */}
+    </FileTree.Folder>
+    <FileTree.Folder name="ru">
+      <FileTree.Folder name="docs">
+        <FileTree.Folder name="advanced">
+          {/* Additional files and folders if any */}
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+And you can put this in your `pages/_meta.ts` file:
+
+```ts filename="pages/en/docs/components/_meta.ts"
+export default {
+  codeblock: 'Codeblock',
+  mermaid: 'Mermaid',
+  npm2yarn: 'Npm2Yarn',
+  latex: 'LaTeX',
+  table: 'Rendering Tables',
+}
+```
+
+It tells Nextra the order of each page, and the correct title. Alternatively,
+you can do it with `title` and have other configurations in there as well:
+
+```ts filename="pages/_meta.ts"
+export default {
+  codeblock: {
+    title: "Codeblock",
+    "...extra configurations...": "..."
+  }
+  mermaid: 'Mermaid',
+  npm2yarn: 'Npm2Yarn',
+  latex: 'LaTeX',
+  table: 'Rendering Tables',
+}
+```

@@ -1,0 +1,85 @@
+---
+title: "PFN Requirements"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# PFN Requirements
+
+To ensure that your public fullnode (PFN) operates smoothly, it should meet the requirements specified in this document.
+
+## Hardware requirements
+
+For running a production-grade PFN, we recommend that your hardware meet the same requirements as a
+validator or VFN. You can see the hardware requirements for these nodes, here: [validator and VFN hardware requirements](../validator-node/node-requirements.mdx#hardware-requirements).
+
+If you wish to run a PFN for development or testing only, lower hardware specs can be used. But, it should not be
+used in production as it will experience degradation under load. Example lower hardware specs for a PFN are:
+
+- **CPU**: 8 cores, 16 threads (Intel Xeon Skylake or newer).
+- **Memory**: 32GB RAM.
+
+<Callout type="warning"> 
+**Minimum hardware requirements**<br />
+Failing to meet the minimum hardware requirements for a production-grade PFN mean that your
+PFN will likely experience degradation under load and general instability in production environments.
+</Callout>
+
+## Network requirements and ports
+
+When you are running a PFN, you are required to open network ports on your nodes to allow other nodes (i.e., peers)
+to connect to you. There are different Aptos network types, and each network type uses a different port. However,
+the only network type that a PFN uses is the public network, where PFNs to connect to other PFNs and VFNs.
+
+Your PFN can be configured so that the public network operates using a specific port on your node. You can configure
+the port settings using the node configuration YAML file. Here is an [example
+configuration file](https://github.com/aptos-labs/aptos-core/blob/main/config/src/config/test_data/public_full_node.yaml#L16) for a PFN
+that configures the public network to use port `6180`.
+
+### Port settings
+
+The recommendations described below assume the default port settings used by PFNs. If you have
+changed the default port settings in your configuration file, then you should adjust the recommendations accordingly.
+
+<Callout type="warning"> 
+**Exposing ports**<br />
+Unless explicitly required, we recommend that you do not expose any other ports while operating a PFN. This is because
+exposing additional ports can increase the attack surface of your node and make it more vulnerable to adversaries.
+</Callout>
+
+#### Running a PFN:
+
+Assuming default ports are used, the following should be configured for PFNs:
+
+- Open the following TCP ports:
+  - `6182` – **Public network**: Open this port publicly to enable other PFNs to connect to your PFN.
+- Close the following TCP ports:
+  - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
+  - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
+  - `80/8080` - **REST API**: Close this port to prevent unauthorized REST API access.
+
+<Callout type="warning"> 
+**Exposing services**<br />
+The inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
+are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
+port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
+to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to
+prevent abuse.
+</Callout>
+
+## Storage requirements
+
+The amount of data stored by Aptos PFNs depends on the ledger history (length) of the blockchain and the number of
+on-chain states (e.g., accounts and resources). Both the ledger history and the number of
+on-chain states depend on several additional factors, including the age of the blockchain, the average transaction
+rate over time, and the configuration of the ledger database pruner. At the time of writing, we estimate
+that testnet and mainnet PFNs require several 100's of GB of storage.
+
+Note that because archival nodes store the entire history of the blockchain, the database size on archival nodes
+will continue to grow unbounded. As a result, we cannot provide a recommendation for archival node storage sizes.
+
+<Callout type="info"> 
+**Devnet blockchain storage**<br />
+The Aptos devnet is currently reset on a weekly basis. If you are deploying a devnet PFN, this means that the storage
+will be reset (i.e., wiped) every week. See the `#devnet-release` channel on the Aptos Discord.
+</Callout>

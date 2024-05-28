@@ -1,0 +1,28 @@
+---
+title: Aptos Developer Documentation
+searchable: false
+---
+
+import { Landing } from "@components/landing";
+import {
+  coinsCodeSnippet,
+  fungibleAssetsCodeSnippet,
+  objectsCodeSnippet
+} from "@components/landing/codeSnippets";
+import { highlightCode } from "utils/highlightCode";
+
+export const getStaticProps = async () => {
+  const codeSnippets = {
+    coinsCodeSnippet: await highlightCode(coinsCodeSnippet),
+    objectsCodeSnippet: await highlightCode(objectsCodeSnippet),
+    fungibleAssetsCodeSnippet: await highlightCode(fungibleAssetsCodeSnippet),
+  };
+
+  return {
+    props: {
+      ssg: codeSnippets,
+    }
+  }
+}
+
+<Landing />

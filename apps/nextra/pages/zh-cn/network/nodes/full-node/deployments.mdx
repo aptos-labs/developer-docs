@@ -1,0 +1,33 @@
+---
+title: "Deploy a PFN"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Deploy a PFN
+
+The following guides provide step-by-step instructions for deploying a PFN on the Aptos networks.
+
+<Callout type="info">
+**Do I have to run a PFN?**<br />
+If you do not wish to run a PFN, but still want to interact with the Aptos blockchain, you can use the REST API
+provided by the Aptos Labs' PFNs (see [Aptos APIs](../../../build/apis.mdx)). Note, however, that Aptos Labs-provided PFNs have rate
+limits, which can impede your development. If you want to avoid such rate limits, you can deploy your own PFN
+and synchronize with the Aptos blockchain directly.
+</Callout>
+
+Select the guide for the deployment method you prefer:
+
+<Callout type="warning">
+**Choose a network**<br />
+These guides default to deploying a PFN in the Aptos mainnet network, but they can easily be used to do
+the same in other networks (e.g., devnet or testnet network). To do so, check out the desired network branch
+and use the `genesis.blob` and `waypoint.txt` node files for the respective branches:
+[mainnet](../configure/node-files-all-networks/node-files-mainnet.mdx),
+[devnet](../configure/node-files-all-networks/node-files-devnet.mdx), and
+[testnet](../configure/node-files-all-networks/node-files-testnet.mdx).
+</Callout>
+
+- ### [Using Source Code](deployments/using-source-code.mdx)
+- ### [Using Docker](deployments/using-docker.mdx)
+- ### [Using GCP](deployments/using-gcp.mdx)

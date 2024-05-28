@@ -1,0 +1,102 @@
+---
+title: "Node Inspection Service"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Node Inspection Service
+
+Aptos nodes collect metrics and system information while running. These metrics provide a way to track,
+monitor and inspect the health and performance of the node dynamically, at runtime. Node metrics and system
+information can be queried or exported via an inspection service that runs on each node.
+To see the list of important metrics and counters, see the [Important Node Metrics](important-metrics.mdx) document.
+
+You can configure various aspects of the node inspection service. This document describes how to expose and see the metrics locally, on the respective node. You may also view these metrics remotely by making the port accessible via firewall rules.
+
+<Callout type="warning">
+If you do make the inspection service port publicly accessible on your node, we
+recommend disabling access when not in use (to prevent unauthorized access and abuse).
+</Callout>
+
+## Examining node metrics
+
+If you'd like to examine the metrics of your node, start running a
+node and review the inspection service locally by loading this URL in your browser:
+
+```bash
+http://localhost:9101/metrics
+```
+
+This will display the values of all the metrics and counters of your node at the time you queried it.
+To see updates to these values, simply refresh the page.
+
+Likewise, if you wish to view the metrics in `json` format, visit the following URL:
+
+```bash
+http://localhost:9101/json_metrics
+```
+
+<Callout type="info">
+Inspection service configuration
+See additional configuration
+details below.
+</Callout>
+
+## Change inspection service port
+
+The inspection service should run on all nodes by default, at port `9101`. To change
+the port the inspection service listens on (e.g., to `1000`), add the following to your node
+configuration file:
+
+```yaml filename="fullnode.yaml"
+inspection_service:
+  port: 1000
+```
+
+## Expose system configuration
+
+The inspection service also provides a way to examine the configuration of your node
+at runtime (i.e., the configuration settings that your node started with).
+
+<Callout type="warning">
+**Proceed with caution**<br />
+By default, the configuration endpoint is disabled as it may expose potentially sensitive
+information about the configuration of your node, e.g., file paths and directories. We
+recommend enabling this endpoint only if the inspection service is not publicly accessible.
+</Callout>
+
+To enable this feature, add the following to your node configuration file:
+
+```yaml filename="fullnode.yaml"
+inspection_service:
+  expose_configuration: true
+```
+
+And visit the configuration URL:
+
+```bash
+http://localhost:9101/configuration
+```
+
+## Expose system information
+
+Likewise, the inspection service also provides a way to examine the system information of your node
+at runtime (i.e., build and hardware information). Simply visit the following URL:
+
+```bash
+http://localhost:9101/system_information
+```
+
+If you'd like to disable this endpoint, add the following to your node configuration file:
+
+```yaml filename="fullnode.yaml"
+inspection_service:
+  expose_system_information: false
+```
+
+<Callout type="info">
+**System information accuracy**<br />
+The system information displayed here is not guaranteed to be 100% accurate due to limitations
+in the way this information is collected. As a result, we recommend not worrying about any
+inaccuracies and treating the information as an estimate.
+</Callout>

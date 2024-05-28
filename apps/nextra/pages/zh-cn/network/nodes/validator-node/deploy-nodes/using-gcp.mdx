@@ -1,0 +1,226 @@
+---
+title: "Using GCP"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Using GCP
+
+This is a step-by-step guide to deploy an Aptos validator and validator fullnode (VFN) using Google Cloud Platform Services (GCP).
+Using this guide, the validator and VFN will be deployed on separate machines.
+
+<Callout type="warning">
+**Prerequisites** <br />
+Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.mdx). Similarly, make sure you have
+installed the [Aptos CLI](../../../../build/cli.mdx),
+[Terraform](https://www.terraform.io/downloads.html),
+[Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/),
+and [Google Cloud CLI](https://cloud.google.com/sdk/docs/install-sdk). This guide assumes that you already have a GCP
+account setup, and have created a new project for deploying your nodes.
+</Callout>
+
+## Deployment steps
+
+1. Create a working directory for your Aptos nodes, and pick a username for your nodes, e.g.,
+
+   ```bash filename="Terminal"
+   export WORKSPACE=mainnet
+   export USERNAME=alice
+   mkdir ~/$WORKSPACE
+   cd ~/$WORKSPACE
+   ```
+
+2. Create a storage bucket for storing the Terraform state on Google Cloud Storage.
+   <Callout type="warning">
+   **Storage bucket name**<br />
+   The name of the Google Cloud storage bucket must be unique.
+   See the Google Cloud Storage documentation, [here](https://cloud.google.com/storage/docs/creating-buckets#prereq-cli).
+   </Callout>
+
+   Use the GCP UI or Google Cloud Storage command to create the bucket:
+
+   ```bash filename="Terminal"
+   gsutil mb gs://BUCKET_NAME
+
+   # Here's an example of creating a bucket
+   gsutil mb gs://<project-name>-aptos-terraform-dev
+   ```
+
+3. Create a Terraform file called `main.tf` in your working directory:
+
+   ```bash filename="Terminal"
+   cd ~/$WORKSPACE
+   vi main.tf
+   ```
+
+4. Modify the `main.tf` file to configure Terraform and create the Terraform module. See the example below:
+
+   ```terraform filename="main.tf"
+   terraform {
+     required_version = "~> 1.3.6"
+     backend "gcs" {
+       bucket = "BUCKET_NAME" # The bucket name created above
+       prefix = "state/aptos-node"
+     }
+   }
+
+   module "aptos-node" {
+     # Download the Terraform module from the aptos-core repository.
+     source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/gcp?ref=mainnet"
+     region        = "us-central1"  # Specify the GCP region
+     zone          = "c"            # Specify the zone suffix
+     project       = "<GCP Project ID>" # Specify your GCP project ID
+     era           = 1  # Bump the era number to wipe the chain data
+     chain_id      = 1  # Use 1 for mainnet, or different values for other networks.
+     image_tag     = "mainnet" # Specify the image tag to use based on the network
+     validator_name = "<Name of your validator>" # Specify the name of your validator
+   }
+   ```
+
+   For all customization options, see:
+
+   - The Terraform variables: [https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf](https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf)
+   - The Helm values: [https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml](https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml).
+
+5. Initialize Terraform in the `$WORKSPACE` directory where you created the `main.tf` file.
+
+   ```bash filename="Terminal"
+   terraform init
+   ```
+
+   This will download all the Terraform dependencies into the `.terraform` folder in your current working directory.
+
+6. Create a new Terraform workspace to isolate your environments, and see the list of workspaces.
+
+   ```bash filename="Terminal"
+   terraform workspace new $WORKSPACE
+
+   # This command will list all workspaces
+   terraform workspace list
+   ```
+
+7. Apply the Terraform configuration.
+
+   ```bash filename="Terminal"
+   terraform apply
+   ```
+
+   This may take a while to finish (e.g., >20 minutes). Terraform will create all the resources on your cloud account.
+
+8. After `terraform apply` finishes, you can check if the resources have been created correctly, by running the following commands:
+
+   - `gcloud container clusters get-credentials aptos-$WORKSPACE --zone <region/zone> --project <project>`: This command will configure access for your k8s cluster.
+   - `kubectl get pods`: This command will output all pods in the cluster. You should see haproxy, the
+     validator and the VFN (with the validator and VFN pod `pending` due to further action in later steps).
+   - `kubectl get svc`: This command will output all services in the cluster. You should see the
+     `validator-lb` and `fullnode-lb`, with an external IP for network connectivity.
+
+9. Next, we need to inject your node's IP information into your environment. You can do this by running the following commands:
+
+   ```bash filename="Terminal"
+   export VALIDATOR_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-validator-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
+
+   export FULLNODE_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-fullnode-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
+   ```
+
+10. Now, generate the key pairs for your nodes in your working directory. You can do this by running
+    the following command with the Aptos CLI:
+
+    ```bash filename="Terminal"
+    aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
+    ```
+
+    This will create 4 key files under `~/$WORKSPACE/keys` directory:
+
+    - `public-keys.yaml`: This file contains all public keys for your validator and VFN, as well as your account address.
+    - `private-keys.yaml`: This file contains all private keys for your validator and VFN.
+    - `validator-identity.yaml`: This file contains the public and private keys for your validator, as well as your account address.
+    - `validator-full-node-identity.yaml`: This file contains the public and private keys for your VFN, as well as your account address.
+
+    <Callout type="warning">
+    **Backup your private keys**<br />
+    Your private keys are important for you to establish ownership of your nodes. Never share your **private** keys with anyone,
+    and make sure to **backup** `private-keys.yaml` somewhere safe.
+    </Callout>
+
+11. Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
+    which may be IP addresses or DNS addresses. This can be done by running the following command:
+
+    ```bash filename="Terminal"
+    aptos genesis set-validator-configuration \
+      --local-repository-dir ~/$WORKSPACE \
+      --username $USERNAME \
+      --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
+      --validator-host $VALIDATOR_ADDRESS:6180 \
+      --full-node-host $FULLNODE_ADDRESS:6182 \
+      --stake-amount 100000000000000
+
+    ```
+
+    Configuring the validator will create two YAML files in the `~/$WORKSPACE/$USERNAME` directory: `owner.yaml` and
+    `operator.yaml`. These will be useful for connecting your nodes to the Aptos network (later).
+
+12. Download the following files by following the instructions on the [Node Files](../../configure/node-files-all-networks.mdx) pages.
+    You will need to select the appropriate network (e.g., `mainnet`, `testnet`, `devnet`) and download the following files:
+
+    - `genesis.blob`
+    - `waypoint.txt`
+
+13. To recap, in your working directory (`~/$WORKSPACE`), you should have a list of files:
+
+    - `main.tf`: The Terraform files to install the `aptos-node` module.
+    - `keys` folder containing:
+      - `public-keys.yaml`: Public keys for both nodes.
+      - `private-keys.yaml`: Private keys for both nodes.
+      - `validator-identity.yaml`: Key and account information for the validator.
+      - `validator-full-node-identity.yaml`: Key and account information for the VFN.
+    - `$username` folder containing:
+      - `owner.yaml`: The owner, operator and voter mappings.
+      - `operator.yaml`: Validator and VFN operator information.
+    - `waypoint.txt`: The waypoint for the genesis transaction on the network you are connecting to.
+    - `genesis.blob` The genesis blob for the network you are connecting to.
+
+14. Finally, insert the `genesis.blob`, `waypoint.txt` and the identity files as secrets into the k8s cluster,
+    by running the following command:
+
+    ```bash filename="Terminal"
+    kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e1 \
+        --from-file=genesis.blob=genesis.blob \
+        --from-file=waypoint.txt=waypoint.txt \
+        --from-file=validator-identity.yaml=keys/validator-identity.yaml \
+        --from-file=validator-full-node-identity.yaml=keys/validator-full-node-identity.yaml
+    ```
+
+    <Callout type="warning">
+    **Era numbers and dangling volumes** <br />
+    The `-e1` suffix in the command above refers to the era number. If you changed the `era` number, make sure it matches
+    when creating the secrets.
+
+    The `era` is a concept relevant only to Kubernetes deployments of an Aptos node.
+    Changing the `era` provides an easy way to wipe your deployment's state (e.g., blockchain data). However, this may
+    lead to dangling persistent volumes. Confirm the existence of any dangling volumes with `kubectl get pvc`
+    and delete any dangling volumes manually to minimize costs.
+    </Callout>
+
+15. Now, we should be able to see that all pods are running, including the validator and VFN. You can check this by
+    executing the following command:
+
+    ```bash filename="Terminal"
+    kubectl get pods
+
+    # Example output
+    NAME                                        READY   STATUS    RESTARTS   AGE
+    node1-aptos-node-0-fullnode-e9-0              1/1     Running   0          4h31m
+    node1-aptos-node-0-haproxy-7cc4c5f74c-l4l6n   1/1     Running   0          4h40m
+    node1-aptos-node-0-validator-0                1/1     Running   0          4h30m
+    ```
+
+<Callout type="warning">
+**Next steps** <br />
+You have now completed setting up your validator and VFN using GCP. However, your nodes will not be able to connect
+to the Aptos network just yet.
+</Callout>
+
+## Connecting to the Aptos Network
+
+You have now completed setting up your validator and VFN using AWS. Proceed to [Connect Nodes](../connect-nodes.mdx) for the next steps.

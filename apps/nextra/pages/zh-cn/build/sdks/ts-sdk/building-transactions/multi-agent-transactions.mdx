@@ -1,0 +1,196 @@
+import { Callout, Steps } from 'nextra/components'
+
+# Multi-Agent Transactions
+
+Multi-agent transactions allow multiple accounts to participate in the logic of a Move contract.
+
+This can be used to require multiple parties agree to a transaction before executing or to use resources from multiple accounts.
+
+## Writing Multi-Agent Transactions
+
+Creating and executing a multi-agent transaction follows a similar flow to the [simple transaction flow](../building-transactions.mdx), but with several notable differences.
+
+<Callout type="info">
+Instead of `.simple`, multi-agent transaction functions use `.multiAgent`.
+</Callout>
+
+<Steps>
+### Build the transaction by including `secondarySignerAddresses` with a list of each additional agent.
+
+<Callout type="info">
+Make sure to replace the `function` field below with your entry function that requires multiple agents to sign.
+</Callout>
+
+```ts filename="multi-agent.ts"
+const transaction = await aptos.transaction.build.multiAgent({
+  sender: alice.accountAddress,
+  secondarySignerAddresses: [bob.accountAddress],
+  data: {
+    // REPLACE WITH YOUR MULTI-AGENT FUNCTION HERE
+    function:
+      "<REPLACE WITH YOUR MULTI AGENT MOVE ENTRY FUNCTION> (Syntax {address}::{module}::{function})",
+    // Pass in arguments for the function you specify above
+    functionArguments: [],
+  },
+});
+```
+
+### Simulate the transaction by passing in all additional public keys to `secondarySignersPublicKeys`. (Optional)
+
+```ts filename="multi-agent.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
+  {
+    signerPublicKey: alice.publicKey,
+    secondarySignersPublicKeys: [bob.publicKey],
+    transaction,
+  },
+);
+```
+
+### Sign once for each agent.
+
+You will combine these signatures in the next step.
+
+```ts filename="multi-agent.ts"
+const aliceSenderAuthenticator = aptos.transaction.sign({
+  signer: alice,
+  transaction,
+});
+// Bob is a secondary signer for this transaction
+const bobSenderAuthenticator = aptos.transaction.sign({
+  signer: bob,
+  transaction,
+});
+```
+
+### Submit the transaction by combining all agent signatures via the `additionalSignerAuthenticators` parameter.
+
+```ts filename="multi-agent.ts"
+const committedTransaction = await aptos.transaction.submit.multiAgent({
+  transaction,
+  senderAuthenticator: aliceSenderAuthenticator,
+  additionalSignersAuthenticators: [bobSenderAuthenticator],
+});
+```
+
+### Lastly, wait for the transaction to resolve.
+
+```ts filename="multi-agent.ts"
+const executedTransaction = await aptos.waitForTransaction({
+  transactionHash: committedTransaction.hash,
+});
+```
+</Steps>
+
+## Full TypeScript Multi-Agent Code Snippet
+
+<Callout type="warning">
+The below snippet needs light editing to work properly! (See below steps)
+</Callout>
+
+1. Install `@aptos-labs/ts-sdk` by running `pnpm i @aptos-labs/ts-sdk` or using whichever package manager is most comfortable for you.
+2. Update the below snippet to build a transaction that requires multi-agent signing.
+    1. Replace the function and parameters below this comment: `// REPLACE WITH YOUR MULTI-AGENT FUNCTION HERE`
+    2. This customization is needed as there are no pre-made Aptos contracts which need multi-agent signatures. If you want to deploy your own example multi-agent contract, you can deploy the ["transfer two by two" example Move contract](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/tests/move/transfer/sources/script_two_by_two.move#L5).
+
+```ts filename="multi-agent.ts"
+/**
+ * This example shows how to use the Aptos SDK to send a transaction.
+ */
+
+import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+async function example() {
+  console.log(
+    "This example will create two accounts (Alice and Bob) and send a transaction transfering APT to Bob's account.",
+  );
+
+  // 0. Setup the client and test accounts
+  const config = new AptosConfig({ network: Network.DEVNET });
+  const aptos = new Aptos(config);
+
+  let alice = Account.generate();
+  let bob = Account.generate();
+  let carol = Account.generate();
+
+  console.log("=== Addresses ===\n");
+  console.log(`Alice's address is: ${alice.accountAddress}`);
+  console.log(`Bob's address is: ${bob.accountAddress}`);
+  console.log(`Carol's address is: ${carol.accountAddress}`);
+
+  console.log("\n=== Funding accounts ===\n");
+  await aptos.fundAccount({
+    accountAddress: alice.accountAddress,
+    amount: 100_000_000,
+  });
+  await aptos.fundAccount({
+    accountAddress: bob.accountAddress,
+    amount: 100_000_000,
+  });
+  await aptos.fundAccount({
+    accountAddress: carol.accountAddress,
+    amount: 100_000_000,
+  });
+  console.log("Done funding Alice, Bob, and Carol's accounts.");
+
+  // 1. Build
+  console.log("\n=== 1. Building the transaction ===\n");
+  const transaction = await aptos.transaction.build.multiAgent({
+    sender: alice.accountAddress,
+    secondarySignerAddresses: [bob.accountAddress],
+    data: {
+      // REPLACE WITH YOUR MULTI-AGENT FUNCTION HERE
+      function:
+        "<REPLACE WITH YOUR MULTI AGENT MOVE ENTRY FUNCTION> (Syntax {address}::{module}::{function})",
+      functionArguments: [],
+    },
+  });
+  console.log("Transaction:", transaction);
+
+  // 2. Simulate (Optional)
+  console.log("\n === 2. Simulating Response (Optional) === \n");
+  const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
+    {
+      signerPublicKey: alice.publicKey,
+      secondarySignersPublicKeys: [bob.publicKey],
+      transaction,
+    },
+  );
+  console.log(userTransactionResponse);
+
+  // 3. Sign
+  console.log("\n=== 3. Signing transaction ===\n");
+  const aliceSenderAuthenticator = aptos.transaction.sign({
+    signer: alice,
+    transaction,
+  });
+  const bobSenderAuthenticator = aptos.transaction.sign({
+    signer: bob,
+    transaction,
+  });
+  console.log(aliceSenderAuthenticator);
+  console.log(bobSenderAuthenticator);
+
+  // 4. Submit
+  console.log("\n=== 4. Submitting transaction ===\n");
+  const committedTransaction = await aptos.transaction.submit.multiAgent({
+    transaction,
+    senderAuthenticator: aliceSenderAuthenticator,
+    additionalSignersAuthenticators: [bobSenderAuthenticator],
+  });
+  console.log("Submitted transaction hash:", committedTransaction.hash);
+
+  // 5. Wait for results
+  console.log("\n=== 5. Waiting for result of transaction ===\n");
+  const executedTransaction = await aptos.waitForTransaction({
+    transactionHash: committedTransaction.hash,
+  });
+  console.log(executedTransaction);
+}
+
+example();
+```
+
+## Common Errors
+
+`NUMBER_OF_SIGNER_ARGUMENTS_MISMATCH` - This happens when you are attempting to do multi-agent signing for a function which does not require that number of accounts. For example, if you try using multiple signatures for a `0x1::aptos_account::transfer` function - it only expects one address, and so produces an error when more than one is provided.

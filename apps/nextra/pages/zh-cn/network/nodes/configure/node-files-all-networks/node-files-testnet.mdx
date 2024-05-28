@@ -1,0 +1,114 @@
+---
+title: "Files For Testnet"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Files For Testnet
+
+When deploying an Aptos node in **testnet**, you may need to download the files listed on this page. The files are
+organized by node type.
+
+<Callout type="info">
+**File access**
+Depending on the type of node your are deploying, and the deployment method, you may need to download some
+or all of the files listed below.
+</Callout>
+
+## Validator Files
+
+All the files listed below are for validator nodes.
+
+### docker-compose.yaml
+
+- **Git repo:** `aptos-core`
+- **Git branch:** `testnet` on https://github.com/aptos-labs/aptos-core
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O docker-compose.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/testnet/docker/compose/aptos-node/docker-compose.yaml
+  ```
+
+### validator.yaml
+
+- **Git repo:** `aptos-core`
+- **Git branch:** `testnet` on https://github.com/aptos-labs/aptos-core
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O validator.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/testnet/docker/compose/aptos-node/validator.yaml
+  ```
+
+### genesis.blob
+
+- **Git repo:** `aptos-networks`
+- **Git branch:** `main` on https://github.com/aptos-labs/aptos-networks
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O genesis.blob https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/genesis.blob
+  ```
+
+### waypoint.txt
+
+- **Git repo:** `aptos-networks`
+- **Git branch:** `main` on https://github.com/aptos-labs/aptos-networks
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O waypoint.txt https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/testnet/waypoint.txt
+  ```
+
+### docker-compose-src.yaml
+
+- **Git repo:** `aptos-core`
+- **Git branch:** `testnet` on https://github.com/aptos-labs/aptos-core
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O docker-compose-src.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/testnet/docker/compose/aptos-node/docker-compose-src.yaml
+  ```
+
+### haproxy.cfg
+
+- **Git repo:** `aptos-core`
+- **Git branch:** `testnet` on https://github.com/aptos-labs/aptos-core
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O haproxy.cfg https://raw.githubusercontent.com/aptos-labs/aptos-core/testnet/docker/compose/aptos-node/haproxy.cfg
+  ```
+
+### blocked.ips
+
+- **Git repo:** `aptos-core`
+- **Git branch:** `testnet` on https://github.com/aptos-labs/aptos-core
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O blocked.ips https://raw.githubusercontent.com/aptos-labs/aptos-core/testnet/docker/compose/aptos-node/blocked.ips
+  ```
+
+## VFN or PFN files
+
+The files listed below are for VFNs or PFNs.
+
+## docker-compose-fullnode.yaml
+
+- **Git repo:** `aptos-core`
+- **Git branch:** `testnet` on https://github.com/aptos-labs/aptos-core
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O docker-compose-fullnode.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/testnet/docker/compose/aptos-node/docker-compose-fullnode.yaml
+  ```
+
+## fullnode.yaml
+
+- **Git repo:** `aptos-core`
+- **Git branch:** `testnet` on https://github.com/aptos-labs/aptos-core
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O fullnode.yaml https://raw.githubusercontent.com/aptos-labs/aptos-core/testnet/docker/compose/aptos-node/fullnode.yaml
+  ```
+
+## haproxy-fullnode.cfg
+
+- **Git repo:** `aptos-core`
+- **Git branch:** `testnet` on https://github.com/aptos-labs/aptos-core
+- **Command to download:**
+  ```bash filename="Terminal"
+  wget -O haproxy-fullnode.cfg https://raw.githubusercontent.com/aptos-labs/aptos-core/testnet/docker/compose/aptos-node/haproxy-fullnode.cfg
+  ```

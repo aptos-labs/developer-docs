@@ -1,0 +1,31 @@
+---
+title: "Indexer GraphQL API"
+---
+
+import { GraphQLEditor } from '@components/index'
+import { Callout } from 'nextra/components'
+
+# Most Commonly Used Indexer Queries
+
+Here are the most commonly used Indexer queries by use case. 
+
+{/* TODO: Link to the reference section once that gets merged */}
+For a list of what the fields in the most commonly used tables mean, you can explore the Indexer Table Reference.
+
+<Callout type="info">
+You can find the servers to send these queries to along with a flexible Hasura query editor [here](api/labs-hosted.mdx).
+</Callout>
+
+## Account Data
+1. [Get Account Coin Balances](common-queries/coin-balances.mdx)
+2. [Get Transactions Impacting an Account](common-queries/account-transactions.mdx)
+3. [Get Account Domain Name](common-queries/ans-lookup.mdx)
+
+## Tokens and Coins
+1. [Get Coin Info](common-queries/coin-info.mdx)
+2. [Get NFT Collections by Account](common-queries/get-nft-collections.mdx)
+3. [Get NFTs by Account](common-queries/get-nfts.mdx)
+4. [Get Token Metadata](common-queries/token-metadata.mdx)
+
+## Staking
+1. [Count Delegators in a Staking Pool](common-queries/get-delegators.mdx)

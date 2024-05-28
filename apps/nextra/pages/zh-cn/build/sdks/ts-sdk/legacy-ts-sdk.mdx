@@ -1,0 +1,50 @@
+import { Callout } from 'nextra/components';
+
+# Legacy TypeScript SDK
+
+<Callout type="info">
+This documentation is for the **Legacy TypeScript SDK**, aka `aptos`. For a more robust SDK with better support, please upgrade to the **new TypeScript SDK** [`@aptos-labs/ts-sdk`](https://github.com/aptos-labs/aptos-ts-sdk). Take a look at the [documentation](../ts-sdk.mdx) and the [migration guide](legacy-ts-sdk/migration-guide.mdx).
+</Callout>
+
+Aptos provides a fully supported Legacy TypeScript SDK with the source code in the [Aptos-core GitHub](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/typescript/sdk) repository.
+
+## Installing the Legacy TypeScript SDK
+
+1. Make sure you [downloaded the latest precompiled binary for the Aptos CLI](../../cli.mdx).
+2. On a terminal run the below command to install the Legacy TypeScript SDK from [npmjs](https://www.npmjs.com/package/aptos):
+
+   ```bash filename="Terminal"
+   npm i aptos
+   ```
+
+   or
+
+   ```bash filename="Terminal"
+   yarn add aptos
+   ```
+
+   or
+
+   ```bash filename="Terminal"
+   pnpm add aptos
+   ```
+
+   <Callout type="info">
+   The above command installs the TS SDK and should not be confused as installing the Aptos CLI.
+   </Callout>
+
+## Using the Legacy TypeScript SDK
+
+{/* TODO: Fix tutorial link */}
+See the [Developer Tutorials](../../../index.mdx) for code examples showing how to use the Legacy Typescript SDK.
+
+## Legacy TypeScript SDK Architecture
+
+See the [Legacy TypeScript SDK Architecture](legacy-ts-sdk/typescript-sdk-overview.mdx) for the components that make up the Legacy TypeScript SDK.
+
+## Additional information
+
+- ### [Legacy TypeScript SDK Source code](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/typescript/sdk)
+- ### [Legacy TypeScript SDK at NPM](https://www.npmjs.com/package/aptos)
+- ### [Legacy TypeScript SDK Reference](https://aptos-labs.github.io/ts-sdk-doc/)
+- ### [Legacy TypeScript SDK Reference Source](https://github.com/aptos-labs/ts-sdk-doc)

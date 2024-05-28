@@ -1,0 +1,83 @@
+---
+title: "Move"
+---
+
+import { RemoteCodeblock, permalinkFetch, Card, Cards } from '@components/index'
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
+  ])
+}
+
+# Smart Contracts on Aptos
+
+Aptos contracts are written using Move, a next generation language for secure, sandboxed, and formally verified programming which is used for multiple chains. 
+Move allows developers to write programs that flexibly manage and transfer assets while providing security and protections against attacks on those assets.
+
+## 📖 Learn Move
+
+<Cards>
+  <Card href="smart-contracts/learn-move/book">
+    <Card.Title>Aptos Move Book</Card.Title>
+    <Card.Description>Learn the Move Language and general Move concepts on Aptos</Card.Description>
+  </Card>
+  <Card href="smart-contracts/learn-move/prover">
+    <Card.Title>Move Prover</Card.Title>
+    <Card.Description>Formal specification and verification of Move contracts on Aptos</Card.Description>
+  </Card>
+  <Card href="smart-contracts/learn-move/first-move-module">
+    <Card.Title>Move on Aptos</Card.Title>
+    <Card.Description>Learn how to use Move on Aptos, how to use objects, fungible assets, publish modules, and more</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-framework/sources">
+    <Card.Title linkType="external">Aptos Framework Move Reference Source</Card.Title>
+    <Card.Description>See the source code for the framework modules and associated spec</Card.Description>
+  </Card>
+</Cards>
+
+## 👨‍💻 Move Examples
+
+<Cards>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples">
+    <Card.Title linkType="external">Aptos Move Examples</Card.Title>
+    <Card.Description>30+ examples on how to develop Move on Aptos</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial">
+    <Card.Title linkType="external">Move Tutorial</Card.Title>
+    <Card.Description>Covers the basics of programming with Move</Card.Description>
+  </Card>
+  <Card href="smart-contracts/learn-move/first-move-module">
+    <Card.Title>Your first Move Module</Card.Title>
+    <Card.Description>A `hello_blockchain` example of how to publish your first move module</Card.Description>
+  </Card>
+</Cards>
+
+Here is a `hello_blockchain` example of move
+
+<RemoteCodeblock 
+  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
+/>
+
+## ⚒️ Developer Resources
+
+### FAQ and Discussions
+
+- [Aptos Dev Discussions](https://github.com/aptos-labs/aptos-developer-discussions/discussions) for Q&A about Move.
+
+### Move IDE plugins
+
+- [Aptos Move Analyzer](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer) for Visual Studio.
+- [Remix IDE Plugin](../community/contributions/remix-ide-plugin.md): {/* TODO: fix reference link */} Offers a web-based development environment. It is a no-setup tool with a graphical interface for developing Move modules.
+- [Move language plugin for JetBrains IDEs](https://plugins.jetbrains.com/plugin/14721-move-language): Supports syntax highlighting, code navigation, renames, formatting, type checks and code generation.
+
+### External Resources
+
+- [Aptos Move by Example](https://move-developers-dao.gitbook.io/aptos-move-by-example)
+- [Teach yourself Move on Aptos](https://github.com/econia-labs/teach-yourself-move).
+- [Formal Verification, the Move Language, and the Move Prover](https://www.certik.com/resources/blog/2wSOZ3mC55AB6CYol6Q2rP-formal-verification-the-move-language-and-the-move-prover)
+- [IMCODING Move Tutorials](https://www.imcoding.online/tutorials?tag=Aptos)
+- [Pontem Move Playground](https://playground.pontem.network/)
+- [Collection of nestable Move resources](https://github.com/taoheorg/taohe)
+
+A new Move compiler and language version is currently in early beta testing. If you are interested to play with it, check [this page](smart-contracts/compiler_v2.mdx).

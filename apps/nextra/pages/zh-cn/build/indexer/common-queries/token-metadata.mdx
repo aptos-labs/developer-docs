@@ -1,0 +1,29 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# Get Token Metadata by Name
+
+`GetTokensDataByName` retrieves metadata URIs for tokens by their names within a specified collection. This query is particularly useful for marketplaces to show metadata from tokens within a collection.
+
+<Callout type="info">
+Explore the capabilities of this query! Modify the variables below to tailor the query to your needs.
+</Callout>
+
+<GraphQLEditor
+  query={`query GetTokensDataByName($name: String, $collectionName: String) {
+  current_token_datas(
+    where: {name: {_eq: $name}, collection_name: {_eq: $collectionName}}
+  ) {
+    metadata_uri
+    __typename
+  }
+}`}
+  variables={`{
+  "name": "The Mexican",
+  "collectionName": "Aptomingos"
+}`}
+/>
+
+#### Variables:
+- `$name`: **String** - The name of the token to search within the collection. Example: `"The Mexican"`.
+- `$collectionName`: **String** - The name of the collection where the token resides. Example: `"Aptomingos"`.

@@ -1,0 +1,38 @@
+---
+title: Deployment
+---
+
+import { Steps } from 'nextra/components'
+
+## Production Checklist
+<br />
+
+- Analytics (see the [analytics guide](analytics.mdx) for more info)
+- Navbar
+    - Ensure `pages/LOCALE/_meta.ts` contains the correct information (see [organize files](organize-files.mdx) for more info)
+- Opengraph
+  - `favicon.ico` is correctly set in `public/favicon.ico`
+- Vercel
+  - ENV variables have been added (see [`docs.config.js`](docs-config.mdx) for more info)
+
+## Deploy to Vercel
+
+<Steps>
+
+### Sign in to Vercel
+
+Navigate to [vercel.com](https://vercel.com) and sign in with your Github account (not necessarily your Aptos Labs email).
+
+> Note: Reach out to a Vercel Admin (PE) to be added to Vercel if you don't have access.
+
+### Add New Project
+
+Once you're authenticated, there will be a button in the top right hand corner to "Add New Project"
+
+### Import Git Repository
+
+In Import Git Repository, search for the repository you're looking for. If it is not found, click on the `Configure Github App` button.
+
+> Note: You may need to request for help from an Aptos Labs Github Admin (PE) to enable your repo to be imported into Vercel
+
+</Steps>

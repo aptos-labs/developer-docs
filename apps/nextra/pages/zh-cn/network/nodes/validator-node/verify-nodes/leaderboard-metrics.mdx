@@ -1,0 +1,64 @@
+---
+title: "Validator Leaderboard"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Validator Leaderboard
+
+This document explains how the rewards performance for validator nodes are calculated and displayed on
+the [Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet).
+
+## Calculating validator rewards
+
+Validators are rewarded for participating in consensus. The rewards are calculated based on the number of successful
+proposals made by the validator, and the rewards performance is the percentage of rewards earned by the validator out
+of the maximum reward earning opportunity.
+
+During an epoch, only the validators in the validator set can propose and vote. The duration of each epoch is set
+by governance and validators are selected as leaders (in rounds) to make proposals. This occurs multiple
+times in each epoch, meaning that validators can be selected as leaders multiple times in a single epoch.
+
+On each successful proposal, the proposing validator earns rewards based on their stake and on the reward rate that is
+configured on-chain. The reward rate is the same for every validator. If all the proposals in an epoch achieve
+quorum consensus, a validator earns the maximum reward for the epoch. If all the proposals in an epoch fail, a
+validator earns zero rewards for that epoch. The reward performance is calculated as a percentage of the
+rewards earned by the validator out of the maximum reward earning opportunity.
+
+Validators are only rewarded for proposing, and not for voting. Rewards are given only at the end of the epoch,
+not on every block.
+
+### Reward calculation example
+
+The reward a leader receives is calculated by multiplying the maximum possible reward with the leader's proposal
+success rate. For example:
+
+- A leader with 8 successful and 2 failed proposals will receive 80% of maximum reward in the epoch.
+- Similarly, another leader with 80 successful and 20 failed proposal will also receive 80% of maximum reward.
+- Also, two leaders with no failures but one with 10 and another with 100 successful proposals will get the same % of the maximum reward.
+
+<Callout type="info">
+**REWARDS RATE**<br />
+Note also that the rewards rate is the same for every validator. Hence, the maximum reward is directly proportional
+to the staking amount, i.e., the more a validator stakes, the more the validator can earn in absolute terms.
+</Callout>
+
+### Rewards performance
+
+The **REWARDS** **PERFORMANCE** column on the
+[Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet) shows the rewards
+performance of a validator. It is calculated as a percentage of the rewards earned by the validator out of the maximum
+reward earning opportunity. This is a cumulative metric across all the epochs,
+i.e., `(rewards earned across all epochs)/(maximum reward opportunity across all epochs)`
+
+A validator can improve their rewards performance by improving their proposal success rate.
+
+### Last epoch performance
+
+The **LAST EPOCH PERFORMANCE** column on the
+[Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet) shows the rewards
+performance of a validator in the last epoch. It is calculated as a percentage of the rewards earned by the validator
+in the last epoch out of the maximum reward earning opportunity in the last epoch, i.e., `(rewards earned in the last
+epoch)/(maximum reward opportunity in the last epoch)`.
+
+This metric provides an early indicator to see if a validator is improving their reward performance.

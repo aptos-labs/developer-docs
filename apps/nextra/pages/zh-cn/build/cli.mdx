@@ -1,0 +1,85 @@
+---
+title: "CLI"
+---
+
+import { Card, Cards } from '@components/index'
+
+# CLI
+
+The Aptos command line interface (CLI) is a tool to help you compile and test Move contracts. It can also help you quickly play with Aptos features on-chain.
+
+For more advanced users, the CLI can also be used to run a private Aptos network (to help test code locally) and can be helpful managing a network node.
+
+## 📥 Install the Aptos CLI
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./cli/install-cli/install-cli-mac" className="flex flex-row gap-4">
+    <Card.Image className="object-contain dark:invert" src="/docs/apple.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Mac</Card.Title>
+      <Card.Description>
+         Install Aptos CLI via homebrew 
+         ```sh
+         brew install aptos
+         ```
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./cli/install-cli/install-cli-windows" className="flex flex-row gap-4">
+    <Card.Image src="/docs/windows.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Windows</Card.Title>
+      <Card.Description>
+         Install Aptos CLI on Windows via python script or pre-compiled binary
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./cli/install-cli/install-cli-linux" className="flex flex-row gap-4">
+    <Card.Image className="object-contain" src="/docs/linux.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Linux</Card.Title>
+      <Card.Description>
+         Install Aptos CLI on Linux via python script or pre-compiled binary
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./cli/install-cli/install-cli-specific-version" className="flex flex-row gap-4">
+    <Card.Image className="dark:invert" src="/docs/advanced.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Advanced (Install Specific Versions)</Card.Title>
+      <Card.Description>
+         Build a specific version of the Aptos CLI from source
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>
+
+## ⚙️ Setup the Aptos CLI
+
+<Cards>
+  <Card href="./cli/setup-cli">
+    <Card.Title>Setup the CLI</Card.Title>
+    <Card.Description>Setup and configure the Aptos CLI </Card.Description>
+  </Card>
+  <Card href="./cli/setup-cli/install-move-prover">
+    <Card.Title>Move Prover</Card.Title>
+    <Card.Description>Setup and install the Move Prover</Card.Description>
+  </Card>
+</Cards>
+
+## 🛠️ Using the Aptos CLI
+
+<Cards>
+  <Card href="./cli/working-with-move-contracts">
+    <Card.Title>Move Contracts</Card.Title>
+    <Card.Description>Compile, Publish, Simulate, and Benchmark Move Contracts </Card.Description>
+  </Card>
+  <Card href="./cli/trying-things-on-chain">
+    <Card.Title>Trying things On-chain</Card.Title>
+    <Card.Description>Interact with Aptos, create accounts, query accounts, use a hardware device like Ledger</Card.Description>
+  </Card>
+  <Card href="./cli/running-a-local-network">
+    <Card.Title>Running a Local Network</Card.Title>
+    <Card.Description>Run a local node / network</Card.Description>
+  </Card>
+</Cards>

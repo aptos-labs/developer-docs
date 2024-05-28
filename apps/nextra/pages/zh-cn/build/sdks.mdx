@@ -1,0 +1,61 @@
+import { Card, Cards } from '@components/index'
+
+# SDKs
+Use these Aptos software development kits (SDKs), in combination with the [Aptos CLI](cli.mdx) for your development on the Aptos blockchain.
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./sdks/ts-sdk" className="flex flex-row gap-4">
+    <Card.Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/2048px-Typescript_logo_2020.svg.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Typescript SDK</Card.Title>
+      <Card.Description>
+        Aptos Typescript SDK (recommended)
+        ```sh
+        pnpm i @aptos-labs/ts-sdk 
+        ```
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./sdks/python-sdk" className="flex flex-row gap-4">
+    <Card.Image src="https://upload.wikimedia.org/wikipedia/commons/archive/c/c3/20220730085403%21Python-logo-notext.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Python SDK</Card.Title>
+      <Card.Description>
+        Aptos Python SDK
+        ```sh
+        pip3 install aptos-sdk
+        ```
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./sdks/rust-sdk" className="flex flex-row gap-4">
+    <Card.Image className="dark:invert" src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Rust SDK</Card.Title>
+      <Card.Description>Aptos Rust SDK</Card.Description>
+    </div>
+  </Card>
+  <Card href="./sdks/unity-sdk" className="flex flex-row gap-4">
+    <Card.Image src="https://cdn-icons-png.freepik.com/512/5969/5969346.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Unity SDK</Card.Title>
+      <Card.Description>Aptos Unity SDK</Card.Description>
+    </div>
+  </Card>
+  <Card href="./sdks/go-sdk" className="flex flex-row gap-4">
+    <Card.Image src="https://go.dev/blog/go-brand/Go-Logo/PNG/Go-Logo_Blue.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Go SDK</Card.Title>
+      <Card.Description>Aptos Go SDK</Card.Description>
+    </div>
+  </Card>
+  <Card href="./sdks/wallet-adapter" className="flex flex-row gap-4">
+    <Card.Image src="/docs/wallet-adapter.svg" className="dark:invert" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Wallet Adapter</Card.Title>
+      <Card.Description>
+        Aptos Wallet Adapter
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>

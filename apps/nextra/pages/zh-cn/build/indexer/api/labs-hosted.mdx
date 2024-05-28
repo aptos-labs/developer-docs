@@ -1,0 +1,44 @@
+---
+title: "Labs-Hosted Indexer API"
+---
+
+# Labs-Hosted Indexer API
+
+import { IndexerBetaNotice, Card, Cards } from '@components/index';
+
+<IndexerBetaNotice />
+
+## GraphQL API Endpoints
+
+When making GraphQL queries to the Labs-Hosted Indexer API, use the following endpoints:
+
+- **Mainnet:** `https://api.mainnet.aptoslabs.com/v1/graphql`
+- **Testnet:** `https://api.testnet.aptoslabs.com/v1/graphql`
+- **Devnet:** `https://api.devnet.aptoslabs.com/v1/graphql`
+
+## Hasura Explorer
+
+Choose a network to explore the Labs-Hosted Indexer API using the Hasura Explorer: 
+
+<Cards>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">
+    <Card.Title linkType="external">**Mainnet**</Card.Title>
+    <Card.Description>Hasura GraphQL Explorer for Aptos Mainnet</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">
+    <Card.Title linkType="external">**Testnet**</Card.Title>
+    <Card.Description>Hasura GraphQL Explorer for Aptos Testnet</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">
+    <Card.Title linkType="external">**Devnet**</Card.Title>
+    <Card.Description>Hasura GraphQL Explorer for Aptos Devnet</Card.Description>
+  </Card>
+</Cards>
+
+## Rate limits
+
+The following rate limit applies for the Aptos Labs hosted indexer API:
+
+- For a web application that calls this Aptos-provided indexer API directly from the client (for example, wallet or explorer), the rate limit is currently 5000 requests per five minutes by IP address. **Note that this limit can change with or without prior notice.**
+
+If you need a higher rate limit, consider running the Aptos Indexer API yourself. See the guide to self-hosting [here](self-hosted.mdx).

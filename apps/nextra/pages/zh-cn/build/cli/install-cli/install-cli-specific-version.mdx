@@ -1,0 +1,31 @@
+import { Steps } from 'nextra/components'
+
+# Install Specific Aptos CLI Versions (Advanced)
+
+If you need a specific version of the Aptos CLI, you can build it directly from the Aptos source code. This installation method is primarily used to interact with specific features on Devnet which may not have made it to Testnet / Mainnet yet. You may also want to follow these steps if you are running an architecture which does not play well with the existing releases / pre-compiled binaries.
+
+If you do not need this advanced method, you can find the normal install steps [here](../install-cli.mdx).
+
+## Install on macOS / Linux
+
+<Steps>
+### Follow the steps to [build Aptos from source](../../../network/nodes/building-from-source.mdx).
+### Ensure you have `cargo` installed by following the steps on [this page](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo).
+### Build the CLI tool: `cargo build --package aptos --profile cli`.
+   The binary will be available at `target/cli/aptos`.
+### (Optional) Move this executable to a place in your PATH.
+### Verify the installation worked by running `target/cli/aptos help`.
+   These help instructions also serve as a useful detailed guide for specific commands.
+</Steps>
+
+## Install on Windows
+
+<Steps>
+### Follow the steps to build Aptos from source here: https://aptos.dev/guides/building-from-source/.
+### Ensure you have `cargo` installed by following the steps on [this page](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo).
+### Build the CLI tool: `cargo build --package aptos --profile cli`.
+   The binary will be available at `target\cli\aptos.exe`.
+### (Optional) Move this executable to a place in your PATH.
+### Verify the installation worked by running `target\cli\aptos.exe help`.
+   These help instructions also serve as a useful detailed guide for specific commands.
+</Steps>

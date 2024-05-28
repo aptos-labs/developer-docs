@@ -1,0 +1,275 @@
+import { Callout } from 'nextra/components'
+
+## Codeblocks
+
+Nextra uses [Shiki](https://shiki.matsu.io) to do syntax highlighting at build
+time. It's very reliable and performant. For example, adding this in your
+Markdown file:
+
+````mdx filename="Markdown"
+```move filename="example.move"
+module 0xCAFE::BasicCoin {
+     // Only included in compilation for testing. Similar to #[cfg(testing)]
+    // in Rust. Imports the `Signer` module from the MoveStdlib package.
+    #[test_only]
+    use std::signer;
+
+    struct Coin has key {
+        value: u64,
+    }
+
+    public fun mint(account: signer, value: u64) {
+        move_to(&account, Coin { value })
+    }
+
+    // Declare a unit test. It takes a signer called `account` with an
+    // address value of `0xC0FFEE`.
+    #[test(account = @0xC0FFEE)]
+    fun test_mint_10(account: signer) acquires Coin {
+        let addr = signer::address_of(&account);
+        mint(account, 10);
+        // Make sure there is a `Coin` resource under `addr` with a value of `10`.
+        // We can access this resource and its value since we are in the
+        // same module that defined the `Coin` resource.
+        assert!(borrow_global<Coin>(addr).value == 10, 0);
+    }
+}
+```
+````
+
+Results in:
+
+```move filename="example.move"
+module 0xCAFE::BasicCoin {
+     // Only included in compilation for testing. Similar to #[cfg(testing)]
+    // in Rust. Imports the `Signer` module from the MoveStdlib package.
+    #[test_only]
+    use std::signer;
+
+    struct Coin has key {
+        value: u64,
+    }
+
+    public fun mint(account: signer, value: u64) {
+        move_to(&account, Coin { value })
+    }
+
+    // Declare a unit test. It takes a signer called `account` with an
+    // address value of `0xC0FFEE`.
+    #[test(account = @0xC0FFEE)]
+    fun test_mint_10(account: signer) acquires Coin {
+        let addr = signer::address_of(&account);
+        mint(account, 10);
+        // Make sure there is a `Coin` resource under `addr` with a value of `10`.
+        // We can access this resource and its value since we are in the
+        // same module that defined the `Coin` resource.
+        assert!(borrow_global<Coin>(addr).value == 10, 0);
+    }
+}
+```
+
+## Features
+
+### Inlined Code
+
+Inlined syntax highlighting like `let x = 1{:jsx}` is also supported via the
+`{:}` syntax:
+
+```mdx copy=false filename="Markdown"
+Inlined syntax highlighting is also supported `let x = 1{:jsx}` via:
+```
+
+### Highlighting Lines
+
+You can highlight specific lines of code by adding a `{}` attribute to the code
+block:
+
+````mdx copy=false filename="Markdown"
+```js {1,4-5}
+import { useState } from 'react'
+
+function Counter() {
+  const [count, setCount] = useState(0)
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```
+````
+
+Result:
+
+```js copy=false {1,4-5}
+import { useState } from 'react'
+
+function Counter() {
+  const [count, setCount] = useState(0)
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```
+
+### Highlighting Substrings
+
+You can highlight specific substrings of code by adding a `//` attribute to the
+code block:
+
+````mdx copy=false filename="Markdown"
+```rust filename="lib.rs" /Person/
+// Define a struct named `Person`
+struct Person {
+    name: String,
+    age: u8,
+}
+
+// Implement methods for the `Person` struct
+impl Person {
+    // Constructor method to create a new `Person`
+    fn new(name: String, age: u8) -> Person {
+        Person { name, age }
+    }
+
+    // Method for the `Person` to greet
+    fn greet(&self) {
+        println!("Hello, my name is {} and I am {} years old.", self.name, self.age);
+    }
+}
+
+fn main() {
+    // Create a new `Person` instance
+    let person = Person::new("Alice".to_string(), 30);
+
+    // Call the `greet` method
+    person.greet();
+}
+```
+````
+
+```rust filename="lib.rs" /Person/
+// Define a struct named `Person`
+struct Person {
+    name: String,
+    age: u8,
+}
+
+// Implement methods for the `Person` struct
+impl Person {
+    // Constructor method to create a new `Person`
+    fn new(name: String, age: u8) -> Person {
+        Person { name, age }
+    }
+
+    // Method for the `Person` to greet
+    fn greet(&self) {
+        println!("Hello, my name is {} and I am {} years old.", self.name, self.age);
+    }
+}
+
+fn main() {
+    // Create a new `Person` instance
+    let person = Person::new("Alice".to_string(), 30);
+
+    // Call the `greet` method
+    person.greet();
+}
+```
+
+You can highlight only a part of the occurrences of that substring by adding a
+number it: `/str/1`, or multiple: `/str/1-3`, `/str/1,3`.
+
+### Copy Button
+
+By adding a `copy` attribute, a copy button will be added to the code block when
+the user hovers over it:
+
+````mdx copy=false filename="Markdown"
+```js copy
+console.log('hello, world')
+```
+````
+
+Renders:
+
+```js copy
+console.log('hello, world')
+```
+
+<Callout type="info">
+  You can enable this feature globally by setting `defaultShowCopyCode: true` in
+  your Nextra configuration (`next.config.mjs` file). Once it's enabled
+  globally, you can disable it via the `copy=false` attribute.
+</Callout>
+
+### Line Numbers
+
+You can add line numbers to your code blocks by adding a `showLineNumbers`
+attribute:
+
+````mdx copy=false filename="Markdown"
+```js showLineNumbers
+import { useState } from 'react'
+
+function Counter() {
+  const [count, setCount] = useState(0)
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```
+````
+
+Renders:
+
+```js copy=false showLineNumbers
+import { useState } from 'react'
+
+function Counter() {
+  const [count, setCount] = useState(0)
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```
+
+### Filenames and Titles
+
+You can add a filename or a title to your code blocks by adding a `filename`
+attribute:
+
+````mdx copy=false filename="Markdown"
+```js filename="example.js"
+console.log('hello, world')
+```
+````
+
+Renders:
+
+```js copy=false filename="example.js"
+console.log('hello, world')
+```
+
+### ANSI Highlighting
+
+You can highlight ANSI escape codes:
+
+````mdx copy=false filename="Markdown"
+```ansi
+[0m [0;32m✓[0m [0;2msrc/[0mindex[0;2m.test.ts (1)[0m
+  [0;2m Test Files [0m [0;1;32m1 passed[0;98m (1)[0m
+  [0;2m      Tests [0m [0;1;32m1 passed[0;98m (1)[0m
+  [0;2m   Start at [0m 23:32:41
+  [0;2m   Duration [0m 11ms
+  [42;1;39;0m PASS [0;32m Waiting for file changes...[0m
+         [0;2mpress [0;1mh[0;2m to show help, press [0;1mq[0;2m to quit
+```
+````
+
+Renders:
+
+```ansi copy=false
+[0m [0;32m✓[0m [0;2msrc/[0mindex[0;2m.test.ts (1)[0m
+  [0;2m Test Files [0m [0;1;32m1 passed[0;98m (1)[0m
+  [0;2m      Tests [0m [0;1;32m1 passed[0;98m (1)[0m
+  [0;2m   Start at [0m 23:32:41
+  [0;2m   Duration [0m 11ms
+  [42;1;39;0m PASS [0;32m Waiting for file changes...[0m
+         [0;2mpress [0;1mh[0;2m to show help, press [0;1mq[0;2m to quit
+```
+
+## Supported Languages
+
+Check [this list](https://github.com/shikijs/shiki/blob/main/docs/languages.md)
+for all supported languages.

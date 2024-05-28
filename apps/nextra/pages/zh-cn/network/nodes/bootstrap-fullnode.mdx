@@ -1,0 +1,10 @@
+---
+title: "Bootstrap a Node"
+---
+
+# Bootstrap a Node with historical data
+
+Bootstrapping a new node usually only depends on [state sync](configure/state-sync.mdx) in its fast sync mode, which synchronises to a recent state with help from its peers and start syncing recent ledger history from there. However, if longer ledger history is needed for any reason, we have these choices:
+
+- ### [Bootstrap from a Snapshot](bootstrap-fullnode.mdx)
+- ### [Bootstrap from a Backup](bootstrap-fullnode/aptos-db-restore.mdx)
