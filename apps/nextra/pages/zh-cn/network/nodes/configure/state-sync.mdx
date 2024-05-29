@@ -1,102 +1,79 @@
 ---
-title: "State Synchronization"
+
+title: "状态同步"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# State Synchronization
+# 状态同步（Synchronization）
 
-Nodes in an Aptos network (e.g., validators, VFNs and PFNs) must always be synchronized to the latest blockchain state.
-The [state synchronization](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10) (state sync) component that runs on each node is responsible for this. State sync
-identifies and fetches new blockchain data from the peers, validates the data and persists it to local storage. This
-document explains how state sync works and how to configure it.
+在 Aptos 网络中的节点（例如，验证器、VFNs 和 PFNs）必须始终与最新的区块链状态同步。在每个节点上运行的[状态同步](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10)（state sync）组件负责此任务。状态同步识别并从同类节点（peers）获取新的区块链数据，验证数据并将其持久化（persists）到本地存储中。本文档解释了状态同步的工作原理以及如何配置它。
 
 <Callout type="warning">
-**Manual configuration**<br />
-Most users should not need to configure state sync. State sync will automatically select the
-best configuration for your node. You should only manually configure state sync if you have a specific use case
-that requires it. Selecting the wrong configuration will lead to slower syncing times and degraded performance.
+**手动配置**<br />
+
+大多数用户不需要配置状态同步。状态同步将自动为您的节点选择最佳配置。只有在您有特定的使用情况需要时才应手动配置状态同步。选择错误的配置会导致同步时间变慢以及性能下降。
+
 </Callout>
 
-## State sync
+## 状态同步（Sync）
 
-At a high-level, state sync operates in two phases. First, all nodes will bootstrap on startup (in the **bootstrapping phase**).
-This allows the node to catch up to the latest state in the Aptos blockchain. Next, the node will stay up-to-date with the blockchain
-by continuously syncing (in the **continuous syncing phase**). Each of these phases has different modes of operation.
+从高层次来说，状态同步分为两个阶段。首先，所有节点将在启动时引导（在**引导阶段**）。这允许节点追赶到 Aptos 区块链的最新状态。接下来，节点将通过持续同步（在**持续同步阶段**）保持与区块链的最新状态同步。这两个阶段都有不同的操作模式。
 
 <Callout type="info">
-Need to start a node quickly?
-If you need to start a node quickly, here's what we recommend by network and use case:
+需要快速启动节点吗？
+如果您需要快速启动节点，以下是我们根据网络和用例推荐的操作：
 
-- **Devnet**: To sync the entire blockchain history, use [intelligent syncing](./state-sync.mdx#intelligent-syncing). Otherwise, use [fast sync](./state-sync.mdx#fast-syncing).
-- **Testnet**: To sync the entire blockchain history, restore from a [backup](../bootstrap-fullnode/aptos-db-restore.mdx). Otherwise, download [a snapshot](../bootstrap-fullnode.mdx) or use [fast sync](./state-sync.mdx#fast-syncing).
-- **Mainnet**: To sync the entire blockchain history, restore from a [backup](../bootstrap-fullnode/aptos-db-restore.mdx). Otherwise, use [fast sync](./state-sync.mdx#fast-syncing).
+- **开发网**：要同步整个区块链历史，请使用[智能同步](./state-sync.mdx#intelligent-syncing)。否则，使用[快速同步](./state-sync.mdx#fast-syncing)。
+- **测试网**：要同步整个区块链历史，请从[备份](../bootstrap-fullnode/aptos-db-restore.mdx)中恢复。否则，下载[快照](../bootstrap-fullnode.mdx)或使用[快速同步](./state-sync.mdx#fast-syncing)。
+- **主网**：要同步整个区块链历史，请从[备份](../bootstrap-fullnode/aptos-db-restore.mdx)中恢复。否则，使用[快速同步](./state-sync.mdx#fast-syncing)。
+
 </Callout>
 
-### Bootstrapping phase
+### 引导阶段
 
-When the node starts, state sync will perform bootstrapping by using the configured bootstrapping mode. There are several
-bootstrapping modes:
+当节点启动时，状态同步将通过使用配置的引导模式执行引导。有几种引导模式：
 
-- **Execute all the transactions since genesis**. In this mode, the node will retrieve from the Aptos network all the
-  transactions since genesis, i.e., since the start of the blockchain's history, and re-execute those transactions.
-  Naturally, this mode takes the longest amount of time because it must process all transactions since the network began.
-- **Apply transaction outputs since genesis**. In this mode, the node will retrieve all the transactions since genesis,
-  but it will skip transaction re-execution and instead apply the outputs of the transactions that were previously
-  produced by validator execution. This mode reduces the amount of CPU time required, but still processes all transactions
-  since the network began.
-- **Intelligent syncing since genesis**. In this mode, the node will retrieve all the transactions
-  since genesis and will either execute the transactions, or apply the transaction outputs, depending on whichever is
-  faster, per data chunk. This allows the node to adapt to CPU and network resource constraints more efficiently.
-  This mode is the default mode for devnet and other testing environments.
-- **Fast syncing**. In this mode, the node will skip the transaction history in the blockchain and will download only
-  the latest blockchain state directly. As a result, the node will not have the historical transaction data, but it will
-  be able to catch up to the Aptos network much more rapidly. This mode is the default mode for testnet and mainnet.
+- **执行自创世（genesis）以来的所有交易**。在此模式中，节点将从 Aptos 网络检索自创世以来的所有交易，即，自区块链历史开始以来的所有交易，并重新执行这些交易。自然地，这种模式需要最长的时间，因为它必须处理自网络开始以来的所有交易。
+- **自创世以来应用交易输出**。在此模式中，节点将检索自创世以来的所有交易，但它不会对交易的重新执行，而是应用以前由验证器执行的交易产生的输出。这种模式减少了所需的 CPU 时间，但仍要处理自网络开始以来的所有交易。
+- **自创世以来智能同步**。在此模式中，节点将检索自创世以来的所有交易，并根据每个数据块的情况执行交易或应用交易输出，具体取决于哪个更快。这允许节点更有效地适应 CPU 和网络资源约束。这是开发网和其他测试环境的默认模式。
+- **快速同步**。在此模式中，节点将跳过区块链中的交易历史，直接下载最新的区块链状态。因此，节点将不会有历史交易数据，但它将能够更快地更新至最新的 Aptos 网络。这是测试网和主网的默认模式。
 
 <Callout type="info">
-**Bootstrapping defaults?** <br />
-The default bootstrapping mode depends on the network type:
+**引导默认值？** <br />
+默认的引导模式取决于网络类型：
 
-- **Testnet and Mainnet**: The default bootstrapping mode is fast sync, because these networks are long-lived
-  and have a large amount of historical data.
-- **Devnet and other networks**: The default bootstrapping mode is intelligent syncing, because these networks are
-  typically short-lived and have a small amount of historical data.
+- **测试网和主网**：默认的引导模式是快速同步，因为这些网络存活时间较长，有大量历史数据。
+- **开发网和其他网络**：默认的引导模式是智能同步，因为这些网络通常存活时间较短，只有较少的历史数据。
+
 </Callout>
 
-### Continuous syncing phase
+### 持续同步阶段
 
-After the node has bootstrapped and caught up to the Aptos network initially, state sync will then move into
-the continuous syncing phase to stay up-to-date with the blockchain. There are several continuous syncing modes:
+在节点最初启动并同步到 Aptos 网络最新状态后，状态同步将转入连续同步阶段，以便与区块链保持同步更新。有多种连续同步的模式：
 
-- **Executing transactions**. This mode will keep the node up-to-date by executing new transactions as they are
-  committed to the blockchain.
-- **Applying transaction outputs**. This mode will keep the node up-to-date by skipping the transaction execution
-  and only applying the outputs of the transactions as previously produced by validator execution.
-- **Intelligent syncing**. This mode will keep the node up-to-date by either executing the transactions, or applying
-  the transaction outputs, depending on whichever is faster, per data chunk. This allows the node to adapt to CPU and
-  network resource constraints more efficiently. This is the default mode for all environments.
+- **执行交易**。此模式将通过执行提交到区块链的新交易使节点保持最新状态。
+- **应用交易输出**。此模式将通过跳过交易执行，并仅应用之前由验证器执行的交易输出，以使节点保持最新状态。
+- **智能同步**。此模式将通过根据每个数据块的情况执行或应用交易输出使节点保持最新状态，具体取决于哪个更快。这使得节点能够更有效地适应 CPU 和网络资源约束。这是所有环境的默认模式。
 
 <Callout type="info">
-**Continuous syncing defaults?**<br />
-The default continuous syncing mode is always intelligent syncing, because this mode is the most performant.
+**持续同步默认值？**<br />
+默认的持续同步模式始终为智能同步，因为该模式性能最佳。
 </Callout>
 
-## Configuring state sync
+## 配置状态同步
 
-The snippets below provide instructions for configuring state sync on your nodes for different use cases.
-These configurations can be added to your node's configuration file, e.g., `fullnode.yaml` or `validator.yaml`.
+下面的片段提供了针对不同用例在节点上配置状态同步的说明。这些配置可以添加到节点的配置文件中，例如 `fullnode.yaml` 或 `validator.yaml`。
 
 <Callout type="warning">
-**Manual configuration**<br />
-You should only manually configure state sync if you have a specific use case that requires it. Selecting the wrong
-configuration will lead to slower syncing times and degraded performance.
+**手动配置**<br />
+只有在您有特定需求的使用情况时才应手动配置状态同步。选择错误的配置会导致同步时间变慢和性能下降。
 </Callout>
 
-### Executing all transactions
+### 执行所有交易
 
-To execute all the transactions since genesis and continue to execute new
-transactions as they are committed, add the following to your node
-configuration file (for example,`fullnode.yaml` or `validator.yaml`):
+要执行自创世以来的所有交易并继续执行提交的新交易，请将以下内容添加到您的节点配置文件中（例如，`fullnode.yaml` 或 `validator.yaml`）：
 
 ```yaml filename="fullnode.yaml"
 state_sync:
@@ -106,16 +83,13 @@ state_sync:
 ```
 
 <Callout type="warning">
-**Verify node syncing**<br />
-While your node is syncing, you'll be able to see the
-[`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) metric gradually increase.
+**验证节点同步**<br />
+在节点同步时，您将能够看到 [`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) 指标逐渐增加。
 </Callout>
 
-### Applying all transaction outputs
+### 应用所有交易输出
 
-To apply all transaction outputs since genesis and continue to apply new
-transaction outputs as transactions are committed, add the following to your
-node configuration file:
+要自创世以来应用所有交易输出并在提交交易时继续应用新的交易输出，请将以下内容添加到您的节点配置文件中：
 
 ```yaml filename="fullnode.yaml"
 state_sync:
@@ -125,16 +99,13 @@ state_sync:
 ```
 
 <Callout type="info">
-**Verify node syncing**<br />
-While your node is syncing, you'll be able to see the
-[`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) metric gradually increase.
+**验证节点同步**<br />
+在节点同步时，您将能够看到 [`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) 指标逐渐增加。
 </Callout>
 
-### Intelligent syncing
+### 智能同步
 
-To execute or apply all transactions and outputs since genesis (and continue to
-do the same as new transactions are committed), add the following to your node
-configuration file:
+要自创世以来执行或应用所有交易和输出（并在提交新交易时继续执行相同操作），请将以下内容添加到您的节点配置文件中：
 
 ```yaml filename="fullnode.yaml"
 state_sync:
@@ -144,24 +115,18 @@ state_sync:
 ```
 
 <Callout type="info">
-**Verify node syncing**<br />
-While your node is syncing, you'll be able to see the
-[`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) metric gradually increase.
+**验证节点同步**<br />
+在节点同步时，您将能够看到 [`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) 指标逐渐增加。
 </Callout>
 
-### Fast syncing
+### 快速同步
 
 <Callout type="warning">
-**Proceed with caution**<br />
-Fast sync should only be used as a last resort for validators and VFNs. This is because fast sync skips the
-blockchain history, and: (i) reduces data availability in the network (as the blockchain history is truncated on
-the fast synced nodes); and (ii) hinders validator consensus performance (if too much data has been skipped).
-Validators that fast sync may require additional running time before they are eligible to participate in consensus.
+**谨慎操作**<br />
+快速同步应仅作为验证器和 VFNs 的最后手段使用。这是因为快速同步跳过了区块链历史记录，并且：（1）减少了网络中的数据可用性（因为快速同步的节点上的区块链历史记录被截断）；以及（2）阻碍了验证器的共识性能（如果跳过了太多数据）。快速同步的验证器可能需要额外的运行时间才能有资格参与共识。
 </Callout>
 
-To download the latest blockchain state and continue to process new
-transactions as they are committed, add the following to your
-node configuration file:
+要下载最新的区块链状态并在提交交易时继续处理新的交易，请将以下内容添加到您的节点配置文件中：
 
 ```yaml filename="fullnode.yaml"
 state_sync:
@@ -171,69 +136,41 @@ state_sync:
 ```
 
 <Callout type="warning">
-**Verify node syncing**<br />
-While your node is syncing, you'll be able to see the
-`aptos_state_sync_version{type="synced_states"}` metric gradually increase.
-However, `aptos_state_sync_version{type="synced"}` will only increase once
-the node has bootstrapped. This may take several hours depending on the
-amount of data, network bandwidth and node resources available.
+**验证节点同步**<br />
+在节点同步时，您将能够看到 `aptos_state_sync_version{type="synced_states"}` 指标逐渐增加。
+但是，只有在节点引导完成后，`aptos_state_sync_version{type="synced"}` 才会增加。这可能需要几个小时，具体取决于数据量、网络带宽和节点资源的情况。
 
-**Note:** If `aptos_state_sync_version{type="synced_states"}` does not
-increase then do the following:
+**注意：**如果 `aptos_state_sync_version{type="synced_states"}` 没有增加，则执行以下操作：
 
-1. Double-check the node configuration file has correctly been updated.
-2. Make sure that the node is starting up with an empty storage database
-   (i.e., that it has not synced any state previously).
+1. 双重检查（Double-check）节点配置文件是否已正确更新。
+2. 确保节点是在空的存储数据库上启动的（即，它之前没有同步任何状态）。
+
 </Callout>
 
-## Archival PFNs
+## 归档 PFNs
 
-To operate an archival PFN (which is a PFN that contains all blockchain data
-since the start of the network, i.e., genesis), you should:
+要运行一个归档 PFN（这是一个包含自网络开始以来的所有区块链数据，即创世）：
 
-1. Make sure that your PFN is **not** using fast syncing as the bootstrapping mode.
-   Fast syncing will skip the transaction history. Instead, using a mode that syncs from genesis,
-   e.g., intelligent syncing from genesis.
-2. Disable the ledger pruner, as described in the [Data Pruning document](./data-pruning.mdx#disable-the-ledger-pruner).
-   This will ensure that no data is deleted and the PFN contains all blockchain data.
+1. 确保您的 PFN **没有**使用快速同步作为引导模式。快速同步将跳过交易历史记录。相反，请使用从创世开始同步的模式，例如，创世智能同步。
+2. 禁用账本裁剪器，如 [数据裁剪文档](./data-pruning.mdx#disable-the-ledger-pruner)中所述。这将确保不删除任何数据，并且 PFN 包含所有区块链数据。
 
-Following these two steps together will ensure that your PFN fetches all data since
-genesis, and continues to synchronize without pruning any data.
+同时执行这两个步骤将确保您的 PFN 从创世以来获取所有数据，并在不裁剪任何数据的情况下继续同步。
 
 <Callout type="warning">
-**Archival nodes are deprecated**<br />
-Running and maintaining archival nodes is expensive and slow, as the amount of data being stored
-on the node will grow endlessly. As a result, archival nodes have officially been deprecated.
-If you wish to store and maintain the entire blockchain history, we recommend using an [Indexer](../../../build/indexer.mdx).
+**归档节点已弃用**<br />
+运行和维护归档节点是昂贵且缓慢的，因为节点上存储的数据量将不断增长。因此，归档节点已正式弃用。如果您希望存储并维护整个区块链历史记录，我们建议使用[索引器](../../../build/indexer.mdx)。
 </Callout>
 
-## Security implications and data integrity
+## 安全影响和数据完整性
 
-Each of the different state sync syncing modes perform data integrity verifications to
-ensure that the data being synced to the node has been correctly produced
-and signed by the validators. This occurs slightly differently for
-each syncing mode:
+每个不同状态同步的同步模式都执行了数据完整性验证，以确保同步到节点的数据已由验证器正确生成和签名。每种同步模式的数据完整性验证稍有不同：
 
-1. **Executing transactions**: Executing transactions from genesis is the most secure syncing mode. It will
-   verify that all transactions since the beginning of time were correctly agreed
-   upon by consensus and that all transactions were correctly executed by the
-   validators. All resulting blockchain state will thus be re-verified by the
-   syncing node.
-2. **Applying transaction outputs**: Applying transaction outputs from genesis is faster than executing all
-   transactions, but it requires that the syncing node trusts the validators to
-   have executed the transactions correctly. However, all other
-   blockchain state is still manually re-verified, e.g., consensus messages,
-   the transaction history and the state hashes are still verified.
-3. **Intelligent syncing**: Intelligent syncing will either execute or apply the transaction outputs
-   depending on whichever is faster, per data chunk. Thus, the security implications of using this mode
-   are identical to those of applying transaction outputs.
-4. **Fast syncing**: Fast syncing skips the transaction history and downloads the latest
-   blockchain state before continuously syncing. To do this, it requires that the
-   syncing node trust the validators to have correctly agreed upon all
-   transactions in the transaction history as well as trust that all transactions
-   were correctly executed by the validators. However, all other blockchain state
-   is still manually re-verified, e.g., epoch changes and the resulting blockchain states.
+1. **执行交易**：从创世开始执行交易是最安全的同步模式。它将验证从时间开始以来所有交易是否由共识正确同意，以及所有交易是否由验证器正确执行。因此，同步节点将重新验证所有产生的区块链状态。
 
-All the syncing modes get their root of trust from the validator set
-and cryptographic signatures from those validators over the blockchain data.
-For more information about how this works, see the [state synchronization blog post](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10).
+2. **应用交易输出**：从创世开始应用交易输出比执行所有交易更快，但它要求同步节点相信验证器已正确执行了交易。然而，所有其他区块链状态仍然需要手动重新验证，例如共识消息、交易历史和状态哈希都会进行验证。
+
+3. **智能同步**：智能同步根据每个数据块的情况，会执行或应用交易输出中的一个，具体取决于哪个更快。因此，使用此模式的安全影响与应用交易输出的模式相同。
+
+4. **快速同步**：快速同步模式会跳过历史交易数据，先下载区块链的最新状态，再继续进行实时同步。为了实现这一模式，要求同步中的节点信任验证者已经对交易历史中的所有交易达成正确的共识，并相信这些交易都已被正确执行。尽管如此，区块链的其他所有状态还需要通过手工验证，例如，纪元（epoch）更迭及其导致的区块链状态变更。
+
+所有同步模式都从验证器集合和这些验证器对区块链数据的加密签名中获得其信任源。有关此工作原理的更多信息，请参阅[状态同步文章](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10)。
