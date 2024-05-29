@@ -2,15 +2,23 @@ const fs = require('fs');
 const path = require('path');
 const { parseStringPromise, Builder } = require('xml2js');
 
+// Function to load the config dynamically
+const loadConfig = async () => {
+  const configModule = await import('./next-sitemap.config.mjs');
+  return configModule.default;
+};
+
+// Define paths
 const sitemapFilePath = path.resolve(__dirname, 'public', 'sitemap.xml');
 const outputDir = path.resolve(__dirname, 'public');
-const languages = ['en'];
 
+// Function to read the sitemap
 const readSitemap = async (filePath) => {
   const xml = fs.readFileSync(filePath, 'utf-8');
   return await parseStringPromise(xml);
 };
 
+// Function to write the sitemap
 const writeSitemap = (filePath, urls) => {
   const builder = new Builder();
   const xml = builder.buildObject({
@@ -23,7 +31,11 @@ const writeSitemap = (filePath, urls) => {
   console.log(`Sitemap written to ${filePath}`);
 };
 
+// Main function to generate language-specific sitemaps
 const generateLanguageSitemaps = async () => {
+  const config = await loadConfig();
+  const languages = config.languages;
+
   const sitemap = await readSitemap(sitemapFilePath);
   if (!sitemap.urlset || !sitemap.urlset.url) {
     console.error('No URLs found in the main sitemap.');
@@ -67,6 +79,7 @@ ${languages.map(lang => `Sitemap: https://preview.aptos.dev/sitemap-${lang}.xml`
   console.log('robots.txt written to public/robots.txt');
 };
 
+// Execute the main function
 generateLanguageSitemaps().then(() => {
   console.log('Language-specific sitemaps and robots.txt generated.');
 }).catch(err => {

@@ -11,4 +11,5 @@ export default {
   generateRobotsTxt: true,
   outDir: "public",
   generateIndexSitemap: false, 
+  languages: ['en'], // Add your supported languages here
 };
