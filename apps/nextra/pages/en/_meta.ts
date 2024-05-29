@@ -35,10 +35,7 @@ export default {
       },
       cli: {
         title: "CLI",
-      },
-      "advanced-guides": {
-        title: "Advanced Guides",
-      },
+      }
     },
   },
   network: {
