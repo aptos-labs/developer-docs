@@ -1,6 +1,4 @@
 import { Callout } from 'nextra/components';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
 # Your First Move Module
 
@@ -24,31 +22,31 @@ After installing the CLI binary, create and fund an account on the Aptos blockch
 
 Start a new terminal and run the following command to initialize a new local account:
 
-```bash
+```bash filename="Terminal"
 aptos init
 ```
 
 You will see output asking to choose a network:
 
-```text
+```bash filename="Terminal"
 Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
 ```
 
 Press **return** to accept the default devnet network or specify the network of your choosing:
 
-```text
+```bash filename="Terminal"
 No network given, using devnet...
 ```
 
 See and respond to the prompt for your private key by accepting the default to create a new or by entering an existing key:
 
-```text
+```bash filename="Terminal"
 Enter your private key as a hex literal (0x...) [Current: None | No input: Generate new key (or keep one if present)]
 ```
 
 Assuming you elected to create a new, you will see:
 
-```text
+```bash filename="Terminal"
 No key given, generating key...
 Account a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a doesn't exist, creating it and funding it with 100000000 Octas
 Account a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a funded successfully
@@ -64,13 +62,13 @@ The account address in the above output `a345dbfb0c94416589721360f207dcc92ecfe4f
 
 Now fund this account by running this command:
 
-```bash
+```bash filename="Terminal"
 aptos account fund-with-faucet --account default
 ```
 
 You will see output resembling:
 
-```text
+```bash filename="Terminal"
 {
   "Result": "Added 100000000 Octas to account a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a"
 }
@@ -82,19 +80,19 @@ You will see output resembling:
 
 Several example Move modules are available in the [aptos-core/aptos-move/move-examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples) directory for your use. Open a terminal and change directories into the [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) directory:
 
-```bash
+```bash filename="Terminal"
 cd aptos-core/aptos-move/move-examples/hello_blockchain
 ```
 
 Run the below command to compile the `hello_blockchain` module:
 
-```bash
+```bash filename="Terminal"
 aptos move compile --named-addresses hello_blockchain=default
 ```
 
 You will see output resembling:
 
-```text
+```bash filename="Terminal"
 {
   "Result": [
     "a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message"
@@ -106,13 +104,13 @@ The `compile` command must contain `--named-addresses` as above because the [`Mo
 
 To test the module run:
 
-```bash
+```bash filename="Terminal"
 aptos move test --named-addresses hello_blockchain=default
 ```
 
 And receive output like:
 
-```text
+```bash filename="Terminal"
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib
 INCLUDING DEPENDENCY MoveStdlib
@@ -128,7 +126,7 @@ Test result: OK. Total tests: 2; passed: 2; failed: 0
 
 To prepare the module for the account created in the previous step, we specify that the named address `hello_blockchain` is set to our account address, using the `default` profile alias.
 
-```toml
+```toml filename="config.toml"
 [addresses]
 hello_blockchain = "_"
 ```
@@ -139,13 +137,13 @@ hello_blockchain = "_"
 
 After the code is compiled and tested, we can publish the module to the account created for this tutorial with the command:
 
-```bash
+```bash filename="Terminal"
 aptos move publish --named-addresses hello_blockchain=default
 ```
 
 You will see the output similar to:
 
-```bash
+```bash filename="Terminal"
 package size 1631 bytes
 {
   "Result": {
@@ -171,7 +169,7 @@ At this point, the module is now stored on the account in the Aptos blockchain.
 
 Move modules expose access points, known as _entry functions_. These entry functions can be called via transactions. The Aptos CLI allows for seamless access to these entry functions. The example Move module `hello_blockchain` exposes a `set_message` entry function that takes in a `string`. This can be called via the CLI:
 
-```bash
+```bash filename="Terminal"
 aptos move run \
   --function-id 'default::message::set_message' \
   --args 'string:hello, blockchain'
@@ -179,7 +177,7 @@ aptos move run \
 
 Upon success, the CLI will print out the following:
 
-```json
+```bash filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x1fe06f61c49777086497b199f3d4acbee9ea58976d37fdc06d1ea48a511a9e82",
@@ -198,14 +196,14 @@ Upon success, the CLI will print out the following:
 
 The `set_message` function modifies the `hello_blockchain` `MessageHolder` resource. A resource is a data structure that is stored in [global storage](../move/book/structs-and-resources.md#storing-resources-in-global-storage). The resource can be read by querying the following REST API:
 
-```bash
+```bash filename="Terminal"
 
 https://api.devnet.aptoslabs.com/v1/accounts/a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a/resource/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder
 ```
 
 After the first execution, this should contain:
 
-```json
+```bash filename="Terminal"
 {
   "type": "0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder",
   "data": {

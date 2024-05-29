@@ -16,7 +16,7 @@ To get started:
 2. In the `client` directory, run: `npm i @aptos-labs/ts-sdk`
 3. In the `App.tsx` file, import the `Aptos` class like so:
 
-```js
+```tsx filename="App.tsx"
 import { Aptos } from "@aptos-labs/ts-sdk";
 ```
 
@@ -28,7 +28,7 @@ Read more about the [`Aptos`](../../sdks/ts-sdk/sdk-configuration.md) class in t
 
 1. In the `App.tsx` file, add:
 
-```js
+```tsx filename="App.tsx"
 const aptos = new Aptos();
 ```
 
@@ -37,7 +37,7 @@ This will initialize a `Aptos` instance for us.
 <Callout type="info">
 By default, `Aptos` will interact with the `devnet` network, to set up a [different network](../../guides/system-integrators-guide.md#choose-a-network), we can use `AptosConfig` class.
 
-```js
+```tsx filename="App.tsx"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
 const aptosConfig = new AptosConfig({ network: Network.MAINNET });
@@ -50,13 +50,13 @@ Our app displays different UIs based on a user resource (i.e if a user has a lis
 
 1. Import wallet from the wallet adapter React provider:
 
-```js
+```tsx filename="App.tsx"
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 ```
 
 2. Extract the account object from the wallet adapter:
 
-```js
+```tsx filename="App.tsx"
 function App (
 	const { account } = useWallet();
 	...
@@ -69,7 +69,7 @@ The `account` object is `null` if there is no account connected; when an account
    Begin by importing `useEffect` by using `jsx import useEffect from "react"; `
    Let’s add a `useEffect` hook to our file that would call a function to fetch the resource whenever our account address changes:
 
-```jsx
+```tsx filename="App.tsx"
 function App() {
   ...
   useEffect(() => {
@@ -81,7 +81,7 @@ function App() {
 
 4. Before creating our `fetchList` function, let’s also create a local state to store whether the account has a list:
 
-```js
+```tsx filename="App.tsx"
 function App (
   ...
   const [accountHasList, setAccountHasList] = useState<boolean>(false);
@@ -94,7 +94,7 @@ also import `useEffect` using
 
 5. Our `useEffect` hook is calling a `fetchList` function; let’s create it:
 
-```jsx
+```tsx filename="App.tsx"
 const fetchList = async () => {
   if (!account) return [];
   // change this to be your module account address
@@ -130,7 +130,7 @@ If the request succeeds and there is a resource for that account, we want to set
 
 7. Let’s update our UI based on the `accountHasList` state:
 
-```jsx
+```tsx filename="App.tsx"
 return (
   <>
     <Layout>

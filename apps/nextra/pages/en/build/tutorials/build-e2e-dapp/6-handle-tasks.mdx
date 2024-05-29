@@ -10,7 +10,7 @@ Let’s finish building our app by implementing fetch tasks and adding a task fu
 
 1. Create a local state `tasks` that will hold our tasks. It will be a state of a Task type (that has the same properties we set on our smart contract):
 
-```ts
+```ts filename="App.tsx"
 type Task = {
   address: string;
   completed: boolean;
@@ -26,7 +26,7 @@ function App() {
 
 2. Update our `fetchList` function to fetch the tasks in the account’s `TodoList` resource:
 
-```js
+```ts filename="App.tsx"
 const fetchList = async () => {
   if (!account) return [];
   try {
@@ -64,7 +64,7 @@ const fetchList = async () => {
 
 Tasks are stored in a table (this is how we built our contract). To fetch a table item (i.e a task), we need that task's table handle. We also need the `task_counter` in that resource so we can loop over and fetch the task with the `task_id` that matches the `task_counter`.
 
-```js
+```ts filename="App.tsx"
 const tableHandle = (TodoListResource as any).data.tasks.handle;
 const taskCounter = (TodoListResource as any).data.task_counter;
 ```
@@ -73,7 +73,7 @@ Now that we have our tasks table handle and our `task_counter` variable, lets lo
 
 We loop while the `counter` is less then the `taskCounter` and fetch the table item and push it to the tasks array:
 
-```js
+```ts filename="App.tsx"
 let tasks = [];
 let counter = 1;
 while (counter <= taskCounter) {
@@ -90,20 +90,20 @@ while (counter <= taskCounter) {
 
 We build a `tableItem` object to fetch. If we take a look at our table structure from the contract:
 
-```rust
+```ts filename="App.tsx"
 tasks: Table<u64, Task>,
 ```
 
 We see that it has a `key` type `u64` and a `value` of type `Task`. And whenever we create a new task, we assign the `key` to be the incremented task counter.
 
-```rust
+```move filename="todolist.move" 
 // adds the new task into the tasks table
 table::upsert(&mut todo_list.tasks, counter, new_task);
 ```
 
 So the object we built is:
 
-```js
+```ts filename="App.tsx"
 {
   key_type: "u64",
   value_type:`${moduleAddress}::todolist::Task`,
@@ -148,7 +148,7 @@ The last thing we want to do is display the tasks we just fetched.
             renderItem={(task: any) => (
               <List.Item actions={[<Checkbox />]}>
                 <List.Item.Meta
-                  title={task.content}
+                  filename="{task.content}
                   description={
                     <a
                       href={`https://explorer.aptoslabs.com/account/${task.address}/`}

@@ -1,6 +1,5 @@
-import { Callout } from 'nextra/components';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+
+import { Callout, Tabs } from 'nextra/components';
 
 # Your First Coin
 
@@ -24,12 +23,12 @@ Install your preferred SDK from the below list:
 
 ## Step 3: Run the example
 
-<Tabs groupId="examples">
+<Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
 
 Clone the `aptos-ts-sdk` repo and build it:
 
-```bash
+```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-ts-sdk.git
 cd aptos-ts-sdk
 pnpm install
@@ -38,25 +37,25 @@ pnpm build
 
 Navigate to the Typescript examples directory:
 
-```bash
+```bash filename="Terminal"
 cd examples/typescript/
 ```
 
 Install the necessary dependencies:
 
-```bash
+```bash filename="Terminal"
 pnpm install
 ```
 
 Run the TypeScript [`your_coin`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/your_coin.ts) example:
 
-```bash
+```bash filename="Terminal"
 pnpm run your_coin
 ```
 
 The application will complete, printing:
 
-```ts
+```bash filename="Terminal"
 Bob's initial MoonCoin balance: 0.
 Alice mints herself 100 MoonCoin.
 Alice transfers 100 MoonCoin to Bob.
@@ -68,26 +67,26 @@ Bob's updated MoonCoin balance: 100.
 
 Clone the `aptos-core` repo:
 
-```bash
+```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-core
 ```
 
 Navigate to the Python SDK directory:
 
-```bash
+```bash filename="Terminal"
 cd aptos-core/ecosystem/python/sdk
 ```
 
 Install the necessary dependencies:
 
-```bash
+```bash filename="Terminal"
 curl -sSL https://install.python-poetry.org | python3
 poetry install
 ```
 
 Run the Python [`your_coin`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/your_coin.py) example:
 
-```bash
+```bash filename="Terminal"
 poetry run python -m examples.your_coin ~/aptos-core/aptos-move/move-examples/moon_coin
 ```
 
@@ -95,7 +94,7 @@ poetry run python -m examples.your_coin ~/aptos-core/aptos-move/move-examples/mo
 
 The example run will pause with the following output:
 
-```
+```bash filename="Terminal"
 === Addresses ===
 Alice: 0x5e603a89cf690d7134cf2f24fdb16ba90c4f5686333721c12e835fb6c76bc7ba
 Bob: 0xc8421fa4a99153f955e50f1de2a6acff2f3fd0bb33aa17ba1f5b32b699f6c825
@@ -105,13 +104,13 @@ Update the package with Alice's address, compile, and press enter.
 
 At this point, open another terminal and change directories to the MoonCoin package's directory:
 
-```bash
+```bash filename="Terminal"
 cd ~/aptos-core/aptos-move/move-examples/moon_coin
 ```
 
 Next, build the package using the CLI:
 
-```bash
+```bash filename="Terminal"
 aptos move compile --named-addresses MoonCoin=0x5e603a89cf690d7134cf2f24fdb16ba90c4f5686333721c12e835fb6c76bc7ba --save-metadata
 ```
 
@@ -125,7 +124,7 @@ Returning to the previous prompt, press ENTER as the package is now ready to be 
 
 The application will complete, printing:
 
-```bash
+```bash filename="Terminal"
 
 Publishing MoonCoin package.
 
@@ -151,7 +150,7 @@ Move contracts are effectively a set of Move modules known as a package. When de
 
 These are read by the example and published to the Aptos blockchain:
 
-<Tabs groupId="examples">
+<Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
 
 In the TypeScript example, we use `aptos move build-publish-payload` command to compile and build the module.
@@ -159,7 +158,7 @@ That command builds the `build` folder that contains the `package-metadata.bcs` 
 
 Compile the package:
 
-```ts
+```ts filename="example.ts"
 export function compilePackage(
   packageDir: string,
   outputFile: string,
@@ -180,7 +179,7 @@ compilePackage("move/moonCoin", "move/moonCoin/moonCoin.json", [
 
 Publish the package to chain:
 
-```ts
+```ts filename="example.ts"
 export function getPackageBytesToPublish(filePath: string) {
   // current working directory - the root folder of this repo
   const cwd = process.cwd();
@@ -217,7 +216,7 @@ await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
   </Tabs.Tab>
   <Tabs.Tab>
 
-```python
+```python filename="example.py"
 module_path = os.path.join(
     moon_coin_path, "build", "Examples", "bytecode_modules", "moon_coin.mv"
 )
@@ -255,7 +254,7 @@ ManagedCoin framework
 [`ManagedCoin`](https://github.com/aptos-labs/aptos-core/blob/f81ccb01f00227f9c0f36856fead4879f185a9f6/aptos-move/framework/aptos-framework/sources/managed_coin.move#L1) is a simple coin management framework for coins directly managed by users. It provides convenience wrappers around `mint` and `burn`.
 </Callout>
 
-```rust
+```move filename="moon_coin.mv"
 module MoonCoin::moon_coin {
     struct MoonCoin {}
 
@@ -294,7 +293,7 @@ The entity that creates a new coin gains the capabilities for minting, burning, 
 
 Once a coin type has been published to the Aptos blockchain, the entity that published that coin type can initialize it:
 
-```rust showLineNumbers
+```rust filename="showNumbers.rs"
 public fun initialize<CoinType>(
     account: &signer,
     name: string::String,
@@ -338,13 +337,13 @@ MoonCoin calls this `initialize` function automatically upon package publishing.
 
 To use a coin, an entity must register a `CoinStore` for it on their account:
 
-```rust
+```rust filename="example.rs"
 public entry fun registerCoinType(account: &signer) {
 ```
 
 MoonCoin uses `ManagedCoin` that provides an entry function wrapper: `managed_coin::register`. Here is an example script for registration:
 
-```rust
+```rust filename="example.rs"
 script {
     fun register(account: &signer) {
         aptos_framework::managed_coin::register<MoonCoin::moon_coin::MoonCoin>(account)
@@ -358,7 +357,7 @@ script {
 
 Minting coins requires the mint capability that was produced during initialization. the function `mint` (see below) takes in that capability and an amount, and returns back a `Coin<T>` struct containing that amount of coins. If the coin tracks supply, it will be updated.
 
-```rust
+```rust filename="mint.rs"
 public fun mint<CoinType>(
     amount: u64,
     _cap: &MintCapability<CoinType>,

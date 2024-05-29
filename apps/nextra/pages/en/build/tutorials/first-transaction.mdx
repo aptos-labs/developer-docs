@@ -1,6 +1,4 @@
-import { Callout } from 'nextra/components';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import { Callout, Tabs } from 'nextra/components';
 
 # Your First Transaction
 
@@ -18,12 +16,12 @@ Install your preferred SDK from the below list:
 
 ## Step 2: Run the example
 
-<Tabs items={["TypeScript", "Python"]}>
+<Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
 
 Clone the `aptos-ts-sdk` repo and build it:
 
-```bash
+```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-ts-sdk.git
 cd aptos-ts-sdk
 pnpm install
@@ -32,19 +30,19 @@ pnpm build
 
 Navigate to the Typescript examples directory:
 
-```bash
+```bash filename="Terminal"
 cd examples/typescript
 ```
 
 Install the necessary dependencies:
 
-```bash
+```bash filename="Terminal"
 pnpm install
 ```
 
 Run the [`transfer_coin`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/transfer_coin.ts) example:
 
-```bash
+```bash filename="Terminal"
 pnpm run transfer_coin
 ```
 
@@ -53,26 +51,26 @@ pnpm run transfer_coin
 
 Clone the `aptos-core` repo:
 
-```bash
+```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-core.git
 ```
 
 Navigate to the Python SDK directory:
 
-```bash
+```bash filename="Terminal"
 cd aptos-core/ecosystem/python/sdk
 ```
 
 Install the necessary dependencies:
 
-```bash
+```bash filename="Terminal"
 curl -sSL https://install.python-poetry.org | python3
 poetry install
 ```
 
 Run the [`transfer-coin`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/transfer_coin.py) example:
 
-```bash
+```bash filename="Terminal"
 poetry run python -m examples.transfer_coin
 ```
 
@@ -81,19 +79,19 @@ poetry run python -m examples.transfer_coin
 
 Clone the `aptos-core` repo:
 
-```bash
+```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-core.git
 ```
 
 Navigate to the Rust SDK directory:
 
-```bash
+```bash filename="Terminal"
 cd aptos-core/sdk
 ```
 
 Run the [`transfer-coin`](https://github.com/aptos-labs/aptos-core/blob/main/sdk/examples/transfer-coin.rs) example:
 
-```bash
+```bash filename="Terminal"
 cargo run --example transfer-coin
 ```
 
@@ -104,11 +102,11 @@ cargo run --example transfer-coin
 
 ## Step 3: Understand the output
 
-<Tabs items={["TypeScript", "Python"]}>
+<Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
     An output very similar to the following will appear after executing the above command:
 
-```yaml
+```bash filename="Terminal"
 === Addresses ===
 
 Alice's address is: 0xbd20517751571ba3fd06326c23761bc0bc69cf450898ffb43412fbe670c28806
@@ -142,7 +140,7 @@ The above output demonstrates that the `transfer-coin` example executes the foll
   <Tabs.Tab>
     An output very similar to the following will appear after executing the above command:
 
-```yaml
+```bash filename="Terminal"
 === Addresses ===
 Alice: 0xbd20517751571ba3fd06326c23761bc0bc69cf450898ffb43412fbe670c28806
 Bob: 0x8705f98a74f5efe17740276ed75031927402c3a965e10f2ee16cda46d99d8f7f
@@ -177,7 +175,7 @@ Now see the below walkthrough of the SDK functions used to accomplish the above 
   <Tabs.Tab>
     An output very similar to the following will appear after executing the above command:
 
-```yaml
+```bash filename="Terminal"
 === Addresses ===
 Alice: 0xbd20517751571ba3fd06326c23761bc0bc69cf450898ffb43412fbe670c28806
 Bob: 0x8705f98a74f5efe17740276ed75031927402c3a965e10f2ee16cda46d99d8f7f
@@ -216,7 +214,7 @@ Now see the below walkthrough of the SDK functions used to accomplish the above 
 
 The `transfer-coin` example code uses helper functions to interact with the [REST API](https://aptos.dev/nodes/aptos-api-spec#/). This section reviews each of the calls and gives insights into functionality.
 
-<Tabs items={["TypeScript", "Python"]}>
+<Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
 
 <Callout type="info">
@@ -241,12 +239,12 @@ See the Rust [`transfer-coin`](https://github.com/aptos-labs/aptos-core/blob/mai
 
 ### Step 4.1: Initializing the clients
 
-<Tabs items={["TypeScript", "Python"]}>
+<Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
 
 In the first step, the `transfer_coin` example initializes the Aptos client:
 
-```ts
+```ts filename="transfer_coin.ts"
 const APTOS_NETWORK: Network =
   NetworkToNetworkName[process.env.APTOS_NETWORK] || Network.DEVNET;
 const config = new AptosConfig({ network: APTOS_NETWORK });
@@ -264,14 +262,14 @@ By default, the Aptos client points to Aptos devnet services. However, it can be
 - The REST client interacts with the REST API.
 - The faucet client interacts with the devnet Faucet service for creating and funding accounts.
 
-```python
+```python filename="transfer-coin.py"
 rest_client = RestClient(NODE_URL)
 faucet_client = FaucetClient(FAUCET_URL, rest_client)
 ```
 
 [`common.py`](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/python/sdk/examples/common.py) initializes these values as follows:
 
-```python
+```python filename="common.py"
 NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")
 FAUCET_URL = os.getenv(
     "APTOS_FAUCET_URL",
@@ -293,20 +291,20 @@ By default, the URLs for both the services point to Aptos devnet services. Howev
 - The REST client interacts with the REST API.
 - The faucet client interacts with the devnet Faucet service for creating and funding accounts.
 
-```rust
+```rust filename="transfer-coin.rs"
 let rest_client = Client::new(NODE_URL.clone());
 let faucet_client = FaucetClient::new(FAUCET_URL.clone(), NODE_URL.clone());
 ```
 
 Using the API client we can create a `CoinClient`, which we use for common coin operations such as transferring coins and checking balances.
 
-```rust
+```rust filename="transfer-coin.rs"
 let coin_client = CoinClient::new(&rest_client);
 ```
 
 In the example we initialize the URL values as such:
 
-```rust
+```rust filename="transfer-coin.rs"
 static NODE_URL: Lazy<Url> = Lazy::new(|| {
     Url::from_str(
         std::env::var("APTOS_NODE_URL")
@@ -345,10 +343,10 @@ By default, the URLs for both the services point to Aptos devnet services. Howev
 
 The next step is to create two accounts locally. [Accounts](../concepts/accounts.md) represent both on and off-chain state. Off-chain state consists of an address and the public/private key pair used to authenticate ownership. This step demonstrates how to generate that off-chain state.
 
-<Tabs items={["TypeScript", "Python"]}>
+<Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
 
-```ts
+```ts filename="example.ts"
 const alice = Account.generate();
 const bob = Account.generate();
 ```
@@ -356,7 +354,7 @@ const bob = Account.generate();
   </Tabs.Tab>
   <Tabs.Tab>
 
-```python
+```python filename="example.py"
 alice = Account.generate()
 bob = Account.generate()
 ```
@@ -364,7 +362,7 @@ bob = Account.generate()
   </Tabs.Tab>
   <Tabs.Tab>
 
-```rust
+```rust filename="example.rs"
 let mut alice = LocalAccount::generate(&mut rand::rngs::OsRng);
 let bob = LocalAccount::generate(&mut rand::rngs::OsRng);
 ```
@@ -378,10 +376,10 @@ let bob = LocalAccount::generate(&mut rand::rngs::OsRng);
 
 In Aptos, each account must have an on-chain representation in order to receive tokens and coins and interact with other dapps. An account represents a medium for storing assets; hence, it must be explicitly created. This example leverages the Faucet to create and fund Alice's account and to create but not fund Bob's account:
 
-<Tabs items={["TypeScript", "Python"]}>
+<Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
 
-```ts
+```ts filename="example.ts"
 await aptos.fundAccount({
   accountAddress: alice.accountAddress,
   amount: 100_000_000,
@@ -391,7 +389,7 @@ await aptos.fundAccount({
   </Tabs.Tab>
   <Tabs.Tab>
 
-```python
+```python filename="example.py"
 alice_fund = faucet_client.fund_account(alice.address(), 100_000_000)
 bob_fund = faucet_client.fund_account(bob.address(), 0)
 ```
@@ -399,7 +397,7 @@ bob_fund = faucet_client.fund_account(bob.address(), 0)
   </Tabs.Tab>
   <Tabs.Tab>
 
-```rust
+```rust filename="example.rs"
 faucet_client
     .fund(alice.address(), 100_000_000)
     .await
@@ -419,17 +417,17 @@ faucet_client
 
 In this step, the SDK translates a single call into the process of querying a resource and reading a field from that resource.
 
-<Tabs items={["TypeScript", "Python"]}>
+<Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
 
-```ts
+```ts filename="example.ts"
 const aliceBalance = await balance("Alice", alice.accountAddress);
 const bobBalance = await balance("Bob", bob.accountAddress);
 ```
 
 Behind the scenes, the `balance` function uses the SDK `getAccountAPTAmount` function that queries the Indexer service and reads the current stored value:
 
-```ts
+```ts filename="example.ts"
 const balance = async (
   name: string,
   accountAddress: AccountAddress,
@@ -445,7 +443,7 @@ const balance = async (
   </Tabs.Tab>
   <Tabs.Tab>
 
-```python
+```python filename="example.py"
 alice_balance = rest_client.account_balance(alice.address())
 bob_balance = rest_client.account_balance(bob.address())
 [alice_balance, bob_balance] = await asyncio.gather(*[alice_balance, bob_balance])
@@ -455,7 +453,7 @@ print(f"Bob: {bob_balance}")
 
 Behind the scenes, the SDK queries the CoinStore resource for the AptosCoin and reads the current stored value:
 
-```python
+```python filename="example.py"
 def account_balance(self, account_address: str) -> int:
     """Returns the test coin balance associated with the account"""
     return self.account_resource(
@@ -466,7 +464,7 @@ def account_balance(self, account_address: str) -> int:
   </Tabs.Tab>
   <Tabs.Tab>
 
-```rust
+```rust filename="example.rs"
 println!(
     "Alice: {:?}",
     coin_client
@@ -485,7 +483,7 @@ println!(
 
 Behind the scenes, the SDK queries the CoinStore resource for the AptosCoin and reads the current stored value:
 
-```rust
+```rust filename="example.rs"
 let balance = self
     .get_account_resource(address, "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>")
     .await?;
@@ -499,10 +497,10 @@ let balance = self
 ### Step 4.5: Transferring
 
 Like the previous step, this is another helper step that constructs a transaction transferring the coins from Alice to Bob. The SDK provides a helper function to generate a `transferCoinTransaction` transaction that can be simulated or submitted to chain. Once a transaction has been submitted to chain, the API will return a transaction hash that can be used in the subsequent step to check on the transaction status. The Aptos blockchain does perform a handful of validation checks on submission; and if any of those fail, the user will instead be given an error. These validations use the transaction signature and unused sequence number, and submitting the transaction to the appropriate chain.
-<Tabs items={["TypeScript", "Python"]}>
+<Tabs items={["TypeScript", "Python", "Rust"]}>
 <Tabs.Tab>
 
-```ts
+```ts filename="example.ts"
 const transaction = await aptos.transferCoinTransaction({
   sender: alice,
   recipient: bob.accountAddress,
@@ -516,7 +514,7 @@ const pendingTxn = await aptos.signAndSubmitTransaction({
 
 Behind the scenes, the `transferCoinTransaction` function generates a transaction payload that can be simulated or submitted to chain:
 
-```ts
+```ts filename="example.ts"
 export async function transferCoinTransaction(args: {
   aptosConfig: AptosConfig;
   sender: Account;
@@ -553,13 +551,13 @@ Breaking the above down into pieces:
   <Tabs.Tab>
 Like the previous step, this is another helper step that constructs a transaction transferring the coins from Alice to Bob. For correctly generated transactions, the API will return a transaction hash that can be used in the subsequent step to check on the transaction status. The Aptos blockchain does perform a handful of validation checks on submission; and if any of those fail, the user will instead be given an error. These validations use the transaction signature and unused sequence number, and submitting the transaction to the appropriate chain.
 
-```python
+```python filename="example.py"
 txn_hash = await rest_client.transfer(alice, bob.address(), 1_000)
 ```
 
 Behind the scenes the Python SDK generates, signs, and submits a transaction:
 
-```python
+```python filename="example.py"
 async def bcs_transfer(
     self,
     sender: Account,
@@ -596,7 +594,7 @@ Breaking the above down into pieces:
   <Tabs.Tab>
 Like the previous step, this is another helper step that constructs a transaction transferring the coins from Alice to Bob. For correctly generated transactions, the API will return a transaction hash that can be used in the subsequent step to check on the transaction status. The Aptos blockchain does perform a handful of validation checks on submission; and if any of those fail, the user will instead be given an error. These validations use the transaction signature and unused sequence number, and submitting the transaction to the appropriate chain.
 
-```rust
+```rust filename="example.rs"
 let txn_hash = coin_client
     .transfer(&mut alice, bob.address(), 1_000, None)
     .await
@@ -605,7 +603,7 @@ let txn_hash = coin_client
 
 Behind the scenes the Rust SDK generates, signs, and submits a transaction:
 
-```rust
+```rust filename="example.rs"
 let chain_id = self
     .api_client
     .get_index()
@@ -658,12 +656,12 @@ Breaking the above down into pieces:
 
 ### Step 4.6: Waiting for transaction resolution
 
-<Tabs items={["TypeScript", "Python"]}>
+<Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
 
 In the TypeScript SDK, just calling `waitForTransaction` is sufficient to wait for the transaction to complete. The function will return the `Transaction` returned by the API once it is processed (either successfully or unsuccessfully) or throw an error if processing time exceeds the timeout.
 
-```ts
+```ts filename="example.ts"
 const response = await aptos.waitForTransaction({
   transactionHash: pendingTxn.hash,
 });
@@ -674,7 +672,7 @@ const response = await aptos.waitForTransaction({
 
 The transaction hash can be used to query the status of a transaction:
 
-```python
+```python filename="example.py"
 await rest_client.wait_for_transaction(txn_hash)
 ```
 
@@ -683,7 +681,7 @@ await rest_client.wait_for_transaction(txn_hash)
 
 The transaction hash can be used to query the status of a transaction:
 
-```rust
+```rust filename="example.rs"
 rest_client
     .wait_for_transaction(&txn_hash)
     .await

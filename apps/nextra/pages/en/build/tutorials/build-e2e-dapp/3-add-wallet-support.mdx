@@ -9,11 +9,11 @@ Aptos provides a [wallet adapter](../../integration/wallet-adapter-concept.md) t
 1. Stop the local server if running.
 2. In the `client` folder, run:
 
-```cmd
+```bash filename="Terminal"
 npm i @aptos-labs/wallet-adapter-react
 ```
 
-```cmd
+```bash filename="Terminal"
 npm i @aptos-labs/wallet-adapter-ant-design
 ```
 
@@ -25,7 +25,7 @@ This installs two packages:
 3. We now need to add wallets to our app. There is a list of [wallets the adapter supports](https://github.com/aptos-labs/aptos-wallet-adapter#supported-wallet-packages); but to keep this tutorial simple, we will use only one wallet.
    Still in the `client` folder, run
 
-```cmd
+```bash filename="Terminal"
 npm i petra-plugin-wallet-adapter
 ```
 
@@ -41,14 +41,14 @@ If you haven't installed the Petra wallet extension yet:
 
 4. Open `Index.tsx` file. At the top of the file, add the following:
 
-```js
+```tsx filename="Index.tsx"
 import { PetraWallet } from "petra-plugin-wallet-adapter";
 import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
 ```
 
 5. Still in `Index.tsx`, add a constant that holds an array of wallets:
 
-```js
+```tsx filename="Index.tsx"
 ...
 const wallets = [new PetraWallet()];
 ...
@@ -56,7 +56,7 @@ const wallets = [new PetraWallet()];
 
 6. Inside the `render` method, update the code with the following:
 
-```jsx
+```tsx filename="Index.tsx"
 ...
 <AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>
   <App />
@@ -68,20 +68,20 @@ That wraps our app with the adapter provider and initializes it with our wallets
 
 7. Open the `App.tsx` file and import the wallet connect UI package we installed in the previous step. At the top of the file add the following:
 
-```js
+```tsx filename="App.tsx"
 import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
 ```
 
 8. The UI package uses a style `.css` file; let's import that one also at the bottom of the import statements.
 
-```js
+```tsx filename="App.tsx"
 ...
 import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
 ```
 
 9. In the `return` statement, remove the `<h1>Connect Wallet</h1>` text and add the `WalletSelector` component:
 
-```jsx
+```tsx filename="App.tsx"
 ...
 <Col span={12} style={{ textAlign: "right", paddingRight: "200px" }}>
   <WalletSelector />

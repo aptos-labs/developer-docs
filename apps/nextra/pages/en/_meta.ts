@@ -36,6 +36,9 @@ export default {
       cli: {
         title: "CLI",
       },
+      "tutorials": {
+        title: "Tutorials",
+      },
       "advanced-guides": {
         title: "Advanced Guides",
       },

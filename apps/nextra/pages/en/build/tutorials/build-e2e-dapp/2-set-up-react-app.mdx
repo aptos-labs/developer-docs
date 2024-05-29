@@ -10,7 +10,7 @@ For the UI, we will use [Ant Design](https://ant.design/). This is just a person
 
 1. In the root folder of the `my-first-dapp` project, run:
 
-```bash
+```bash filename="Terminal"
 npx create-react-app client --template typescript
 ```
 
@@ -28,7 +28,7 @@ That will create a new `client` folder in the current path:
 5. In the `client/src` directory, find all the React app files. Let’s clean it up a bit.
 6. Open the `App.tsx` file and update its content to be:
 
-```js
+```ts filename="App.tsx"
 function App() {
   return <div>My app goes here</div>;
 }
@@ -56,7 +56,7 @@ We will use the [Ant Design](https://ant.design/) library for our UI:
 2. On to the `client` directory and install our UI library package: `npm i antd@5.1.4`
 3. Update `App.tsx` with the initial state UI:
 
-```jsx
+```ts filename="App.tsx"
 return (
   <>
     <Layout>
@@ -75,7 +75,7 @@ return (
 
 4. Don't forget to import the _components_ we just added:
 
-```js
+```ts filename="App.tsx"
 import { Layout, Row, Col } from "antd";
 ```
 

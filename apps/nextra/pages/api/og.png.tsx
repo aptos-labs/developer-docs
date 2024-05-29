@@ -62,7 +62,7 @@ export default async function (req) {
             letterSpacing: -1,
             display: "flex",
             flexDirection: "row",
-            alignItems: 'center',
+            alignItems: "center",
             gap: 24,
           }}
         >

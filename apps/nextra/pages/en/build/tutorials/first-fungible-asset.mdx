@@ -1,6 +1,5 @@
+
 import { Callout } from 'nextra/components';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
 # Your First Fungible Asset
 
@@ -27,12 +26,9 @@ Install your preferred SDK from the below list:
 
 ## Step 3: Run the example
 
-<Tabs groupId="examples">
-  <Tabs.Tab>
-
 Clone the `aptos-ts-sdk` repo and build it:
 
-```bash
+```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-ts-sdk.git
 cd aptos-ts-sdk
 pnpm install
@@ -41,30 +37,27 @@ pnpm build
 
 Navigate to the Typescript examples directory:
 
-```bash
+```bash filename="Terminal"
 cd examples/typescript
 ```
 
 Install the necessary dependencies:
 
-```bash
+```bash filename="Terminal"
 pnpm install
 ```
 
 Run the TypeScript [`your_fungible_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/your_fungible_asset.ts) example:
 
-```bash
+```bash filename="Terminal"
 pnpm run your_fungible_asset
 ```
-
-  </Tabs.Tab>
-</Tabs>
 
 ---
 
 The application will complete, printing:
 
-```bash
+```bash filename="Terminal"
 ===Publishing FAcoin package===
 
 Transaction hash: 0x90fbe811171dde1ffad9157314ce0c4f6070fd5c1095a0e18a0b5634d10d7f48
@@ -99,15 +92,12 @@ Move contracts are effectively a set of Move modules known as a package. When de
 
 These are read by the example and published to the Aptos blockchain:
 
-<Tabs groupId="examples">
-  <Tabs.Tab>
-
 In the TypeScript example, we use `aptos move build-publish-payload` command to compile and build the module.
 That command builds the `build` folder that contains the `package-metadata.bcs` and the bytecode for the `moon_coin.mv` module. The command also builds a publication transaction payload and stores it in a JSON output file that we can later read from to get the `metadataBytes` and `byteCode` to publish the contract to chain with.
 
 Compile the package:
 
-```ts
+```ts filename="compile.ts"
 export function compilePackage(
   packageDir: string,
   outputFile: string,
@@ -128,7 +118,7 @@ compilePackage("move/facoin", "move/facoin/facoin.json", [
 
 Publish the package to chain:
 
-```ts
+```ts filename="publish.ts"
 export function getPackageBytesToPublish(filePath: string) {
   // current working directory - the root folder of this repo
   const cwd = process.cwd();
@@ -161,9 +151,6 @@ const pendingTransaction = await aptos.signAndSubmitTransaction({
 
 await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
 ```
-
-  </Tabs.Tab>
-</Tabs>
 
 ---
 
@@ -200,7 +187,7 @@ So `Withdraw`, `Deposit`, and `Transfer` in the management module have different
 
 After publishing the module to the Aptos blockchain, the entity that published that coin type should initialize a metadata object describing the information about this FA:
 
-```rust title="fa_coin.move snippet"
+```rust filename="fa_coin.move"
 fun init_module(admin: &signer) {
     let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
     primary_fungible_store::create_primary_store_enabled_fungible_asset(
@@ -240,7 +227,7 @@ Different from coin module, FA doesn't require users to register to use it becau
 
 Minting coins requires `MintRef` that was produced during initialization. the function `mint` (see below) takes in the creator and an amount, and returns a `FungibleAsset` struct containing that amount of FA. If the FA tracks supply, it will be updated.
 
-```rust title="fa_coin.move snippet"
+```rust filename="fa_coin.move"
 /// Mint as the owner of metadata object.
 public entry fun mint(admin: &signer, to: address, amount: u64) acquires ManagedFungibleAsset {
     let asset = get_metadata();
