@@ -36,7 +36,7 @@ export default {
       cli: {
         title: "CLI",
       },
-      "tutorials": {
+      tutorials: {
         title: "Tutorials",
       },
       "advanced-guides": {
