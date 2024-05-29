@@ -8,12 +8,6 @@ export default {
       footer: null,
     },
   },
-  learn: {
-    type: "page",
-    title: "Learn ↗",
-    href: "https://learn.aptoslabs.com/",
-    newWindow: true,
-  },
   build: {
     type: "menu",
     title: "Build",
@@ -63,6 +57,12 @@ export default {
     type: "menu",
     title: "Additional Resources",
     items: {
+      learn: {
+        type: "page",
+        title: "Aptos Learn ↗",
+        href: "https://learn.aptoslabs.com/",
+        newWindow: true,
+      },
       forum: {
         title: "Community Forum ↗",
         href: "https://forum.aptosfoundation.org/",
