@@ -1,4 +1,4 @@
-// next-sitemap.config.mjs
+import { i18nConfig } from './docs.config.js';
 
 /**
  * @type {import('next-sitemap').IConfig}
@@ -10,6 +10,6 @@ export default {
   sitemapSize: 5000,
   generateRobotsTxt: true,
   outDir: "public",
-  generateIndexSitemap: false, 
-  languages: ['en'], // Add your supported languages here
+  generateIndexSitemap: false,
+  languages: Object.keys(i18nConfig).map(key => i18nConfig[key].locale),
 };
