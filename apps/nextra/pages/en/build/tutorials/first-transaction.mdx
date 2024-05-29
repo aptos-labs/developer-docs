@@ -265,13 +265,18 @@ By default, the Aptos client points to Aptos devnet services. However, it can be
 - The faucet client interacts with the devnet Faucet service for creating and funding accounts.
 
 ```python
-:!: static/sdks/python/examples/transfer_coin.py section_1
+rest_client = RestClient(NODE_URL)
+faucet_client = FaucetClient(FAUCET_URL, rest_client)
 ```
 
 [`common.py`](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/python/sdk/examples/common.py) initializes these values as follows:
 
 ```python
-:!: static/sdks/python/examples/common.py section_1
+NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")
+FAUCET_URL = os.getenv(
+    "APTOS_FAUCET_URL",
+    "https://faucet.devnet.aptoslabs.com",
+)
 ```
 
 <Callout type="info">
@@ -289,19 +294,39 @@ By default, the URLs for both the services point to Aptos devnet services. Howev
 - The faucet client interacts with the devnet Faucet service for creating and funding accounts.
 
 ```rust
-:!: static/sdks/rust/examples/transfer-coin.rs section_1a
+let rest_client = Client::new(NODE_URL.clone());
+let faucet_client = FaucetClient::new(FAUCET_URL.clone(), NODE_URL.clone());
 ```
 
 Using the API client we can create a `CoinClient`, which we use for common coin operations such as transferring coins and checking balances.
 
 ```rust
-:!: static/sdks/rust/examples/transfer-coin.rs section_1b
+let coin_client = CoinClient::new(&rest_client);
 ```
 
 In the example we initialize the URL values as such:
 
 ```rust
-:!: static/sdks/rust/examples/transfer-coin.rs section_1c
+static NODE_URL: Lazy<Url> = Lazy::new(|| {
+    Url::from_str(
+        std::env::var("APTOS_NODE_URL")
+            .as_ref()
+            .map(|s| s.as_str())
+            .unwrap_or("https://api.devnet.aptoslabs.com"),
+    )
+    .unwrap()
+});
+
+static FAUCET_URL: Lazy<Url> = Lazy::new(|| {
+    Url::from_str(
+        std::env::var("APTOS_FAUCET_URL")
+            .as_ref()
+            .map(|s| s.as_str())
+            .unwrap_or("https://faucet.devnet.aptoslabs.com"),
+    )
+    .unwrap()
+});
+
 ```
 
 <Callout type="info">
@@ -332,14 +357,16 @@ const bob = Account.generate();
   <Tabs.Tab>
 
 ```python
-:!: static/sdks/python/examples/transfer_coin.py section_2
+alice = Account.generate()
+bob = Account.generate()
 ```
 
   </Tabs.Tab>
   <Tabs.Tab>
 
 ```rust
-:!: static/sdks/rust/examples/transfer-coin.rs section_2
+let mut alice = LocalAccount::generate(&mut rand::rngs::OsRng);
+let bob = LocalAccount::generate(&mut rand::rngs::OsRng);
 ```
 
   </Tabs.Tab>
@@ -365,14 +392,22 @@ await aptos.fundAccount({
   <Tabs.Tab>
 
 ```python
-:!: static/sdks/python/examples/transfer_coin.py section_3
+alice_fund = faucet_client.fund_account(alice.address(), 100_000_000)
+bob_fund = faucet_client.fund_account(bob.address(), 0)
 ```
 
   </Tabs.Tab>
   <Tabs.Tab>
 
 ```rust
-:!: static/sdks/rust/examples/transfer-coin.rs section_3
+faucet_client
+    .fund(alice.address(), 100_000_000)
+    .await
+    .context("Failed to fund Alice's account")?;
+faucet_client
+    .create_account(bob.address())
+    .await
+    .context("Failed to fund Bob's account")?;
 ```
 
   </Tabs.Tab>
@@ -411,7 +446,11 @@ const balance = async (
   <Tabs.Tab>
 
 ```python
-:!: static/sdks/python/examples/transfer_coin.py section_4
+alice_balance = rest_client.account_balance(alice.address())
+bob_balance = rest_client.account_balance(bob.address())
+[alice_balance, bob_balance] = await asyncio.gather(*[alice_balance, bob_balance])
+print(f"Alice: {alice_balance}")
+print(f"Bob: {bob_balance}")
 ```
 
 Behind the scenes, the SDK queries the CoinStore resource for the AptosCoin and reads the current stored value:
@@ -428,7 +467,20 @@ def account_balance(self, account_address: str) -> int:
   <Tabs.Tab>
 
 ```rust
-:!: static/sdks/rust/examples/transfer-coin.rs section_4
+println!(
+    "Alice: {:?}",
+    coin_client
+        .get_account_balance(&alice.address())
+        .await
+        .context("Failed to get Alice's account balance the second time")?
+);
+println!(
+    "Bob: {:?}",
+    coin_client
+        .get_account_balance(&bob.address())
+        .await
+        .context("Failed to get Bob's account balance the second time")?
+);
 ```
 
 Behind the scenes, the SDK queries the CoinStore resource for the AptosCoin and reads the current stored value:
@@ -502,13 +554,35 @@ Breaking the above down into pieces:
 Like the previous step, this is another helper step that constructs a transaction transferring the coins from Alice to Bob. For correctly generated transactions, the API will return a transaction hash that can be used in the subsequent step to check on the transaction status. The Aptos blockchain does perform a handful of validation checks on submission; and if any of those fail, the user will instead be given an error. These validations use the transaction signature and unused sequence number, and submitting the transaction to the appropriate chain.
 
 ```python
-:!: static/sdks/python/examples/transfer_coin.py section_5
+txn_hash = await rest_client.transfer(alice, bob.address(), 1_000)
 ```
 
 Behind the scenes the Python SDK generates, signs, and submits a transaction:
 
 ```python
-:!: static/sdks/python/aptos_sdk/async_client.py bcs_transfer
+async def bcs_transfer(
+    self,
+    sender: Account,
+    recipient: AccountAddress,
+    amount: int,
+    sequence_number: Optional[int] = None,
+) -> str:
+    transaction_arguments = [
+        TransactionArgument(recipient, Serializer.struct),
+        TransactionArgument(amount, Serializer.u64),
+    ]
+
+    payload = EntryFunction.natural(
+        "0x1::aptos_account",
+        "transfer",
+        [],
+        transaction_arguments,
+    )
+
+    signed_transaction = await self.create_bcs_signed_transaction(
+        sender, TransactionPayload(payload), sequence_number=sequence_number
+    )
+    return await self.submit_bcs_transaction(signed_transaction)
 ```
 
 Breaking the above down into pieces:
@@ -523,13 +597,50 @@ Breaking the above down into pieces:
 Like the previous step, this is another helper step that constructs a transaction transferring the coins from Alice to Bob. For correctly generated transactions, the API will return a transaction hash that can be used in the subsequent step to check on the transaction status. The Aptos blockchain does perform a handful of validation checks on submission; and if any of those fail, the user will instead be given an error. These validations use the transaction signature and unused sequence number, and submitting the transaction to the appropriate chain.
 
 ```rust
-:!: static/sdks/rust/examples/transfer-coin.rs section_5
+let txn_hash = coin_client
+    .transfer(&mut alice, bob.address(), 1_000, None)
+    .await
+    .context("Failed to submit transaction to transfer coins")?;
 ```
 
 Behind the scenes the Rust SDK generates, signs, and submits a transaction:
 
 ```rust
-:!: static/sdks/rust/src/coin_client.rs section_1
+let chain_id = self
+    .api_client
+    .get_index()
+    .await
+    .context("Failed to get chain ID")?
+    .inner()
+    .chain_id;
+let transaction_builder = TransactionBuilder::new(
+    TransactionPayload::EntryFunction(EntryFunction::new(
+        ModuleId::new(AccountAddress::ONE, Identifier::new("coin").unwrap()),
+        Identifier::new("transfer").unwrap(),
+        vec![TypeTag::from_str(options.coin_type).unwrap()],
+        vec![
+            bcs::to_bytes(&to_account).unwrap(),
+            bcs::to_bytes(&amount).unwrap(),
+        ],
+    )),
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+        + options.timeout_secs,
+    ChainId::new(chain_id),
+)
+.sender(from_account.address())
+.sequence_number(from_account.sequence_number())
+.max_gas_amount(options.max_gas_amount)
+.gas_unit_price(options.gas_unit_price);
+let signed_txn = from_account.sign_with_transaction_builder(transaction_builder);
+Ok(self
+    .api_client
+    .submit(&signed_txn)
+    .await
+    .context("Failed to submit transfer transaction")?
+    .into_inner())
 ```
 
 Breaking the above down into pieces:
@@ -564,7 +675,7 @@ const response = await aptos.waitForTransaction({
 The transaction hash can be used to query the status of a transaction:
 
 ```python
-:!: static/sdks/python/examples/transfer_coin.py section_6
+await rest_client.wait_for_transaction(txn_hash)
 ```
 
   </Tabs.Tab>
@@ -573,7 +684,10 @@ The transaction hash can be used to query the status of a transaction:
 The transaction hash can be used to query the status of a transaction:
 
 ```rust
-:!: static/sdks/rust/examples/transfer-coin.rs section_6
+rest_client
+    .wait_for_transaction(&txn_hash)
+    .await
+    .context("Failed when waiting for the transfer transaction")?;
 ```
 
   </Tabs.Tab>

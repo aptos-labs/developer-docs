@@ -201,7 +201,27 @@ So `Withdraw`, `Deposit`, and `Transfer` in the management module have different
 After publishing the module to the Aptos blockchain, the entity that published that coin type should initialize a metadata object describing the information about this FA:
 
 ```rust title="fa_coin.move snippet"
-:!: static/move-examples/fungible_asset/fa_coin/sources/FACoin.move initialize
+fun init_module(admin: &signer) {
+    let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
+    primary_fungible_store::create_primary_store_enabled_fungible_asset(
+        constructor_ref,
+        option::none(),
+        utf8(b"FA Coin"), /* name */
+        utf8(ASSET_SYMBOL), /* symbol */
+        8, /* decimals */
+        utf8(b"http://example.com/favicon.ico"), /* icon */
+        utf8(b"http://example.com"), /* project */
+    );
+
+    // Create mint/burn/transfer refs to allow creator to manage the fungible asset.
+    let mint_ref = fungible_asset::generate_mint_ref(constructor_ref);
+    let burn_ref = fungible_asset::generate_burn_ref(constructor_ref);
+    let transfer_ref = fungible_asset::generate_transfer_ref(constructor_ref);
+    let metadata_object_signer = object::generate_signer(constructor_ref);
+    move_to(
+        &metadata_object_signer,
+        ManagedFungibleAsset { mint_ref, transfer_ref, burn_ref }
+    )
 ```
 
 This ensures that this FA type has never been initialized before using a named object. Notice the first line create a named object with a static seed, if the metadata object has been created it will abort.
@@ -221,7 +241,14 @@ Different from coin module, FA doesn't require users to register to use it becau
 Minting coins requires `MintRef` that was produced during initialization. the function `mint` (see below) takes in the creator and an amount, and returns a `FungibleAsset` struct containing that amount of FA. If the FA tracks supply, it will be updated.
 
 ```rust title="fa_coin.move snippet"
-:!: static/move-examples/fungible_asset/fa_coin/sources/FACoin.move mint
+/// Mint as the owner of metadata object.
+public entry fun mint(admin: &signer, to: address, amount: u64) acquires ManagedFungibleAsset {
+    let asset = get_metadata();
+    let managed_fungible_asset = authorized_borrow_refs(admin, asset);
+    let to_wallet = primary_fungible_store::ensure_primary_store_exists(to, asset);
+    let fa = fungible_asset::mint(&managed_fungible_asset.mint_ref, amount);
+    fungible_asset::deposit_with_ref(&managed_fungible_asset.transfer_ref, to_wallet, fa);
+}
 ```
 
 `FACoin` makes this easier by providing an entry function `fa_coin::mint` that accesses the required `MintRef` for the creator.

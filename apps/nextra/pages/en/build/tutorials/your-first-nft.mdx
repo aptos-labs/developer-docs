@@ -280,19 +280,24 @@ In the first step, the example initializes both the API and faucet clients.
 - The faucet client interacts with the devnet Faucet service for creating and funding accounts.
 
 ```python
-:!: static/sdks/python/examples/simple_aptos_token.py section_1a
+rest_client = RestClient(NODE_URL)
+faucet_client = FaucetClient(FAUCET_URL, rest_client)
 ```
 
 Using the API client we can create a `TokenClient` that we use for common token operations such as creating collections and tokens, transferring them, claiming them, and so on.
 
 ```python
-:!: static/sdks/python/examples/simple_aptos_token.py section_1b
+token_client = AptosTokenClient(rest_client)
 ```
 
 [`common.py`](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/python/sdk/examples/common.py) initializes these values as follows:
 
 ```python
-:!: static/sdks/python/examples/common.py section_1
+NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")
+FAUCET_URL = os.getenv(
+    "APTOS_FAUCET_URL",
+    "https://faucet.devnet.aptoslabs.com",
+)
 ```
 
 <Callout type="info">
@@ -323,7 +328,8 @@ const bob = Account.generate();
   <Tabs.Tab>
 
 ```python
-:!: static/sdks/python/examples/simple_aptos_token.py section_2
+alice = Account.generate()
+bob = Account.generate()
 ```
 
   </Tabs.Tab>
@@ -357,7 +363,8 @@ await aptos.faucet.fundAccount({
   <Tabs.Tab>
 
 ```python
-:!: static/sdks/python/examples/simple_aptos_token.py section_3
+bob_fund = faucet_client.fund_account(alice.address(), 100_000_000)
+alice_fund = faucet_client.fund_account(bob.address(), 100_000_000)
 ```
 
   </Tabs.Tab>
@@ -408,13 +415,48 @@ export async function createCollectionTransaction(
 Your application will call `create_collection`:
 
 ```python
-:!: static/sdks/python/examples/simple_aptos_token.py section_4
+txn_hash = await token_client.create_collection(
+    alice,
+    "Alice's simple collection",
+    1,
+    collection_name,
+    "https://aptos.dev",
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    0,
+    1,
+)
 ```
 
 This is the function signature of `create_collection`. It returns a transaction hash:
 
 ```python
-:!: static/sdks/python/aptos_sdk/aptos_token_client.py create_collection
+async def create_collection(
+    self,
+    creator: Account,
+    description: str,
+    max_supply: int,
+    name: str,
+    uri: str,
+    mutable_description: bool,
+    mutable_royalty: bool,
+    mutable_uri: bool,
+    mutable_token_description: bool,
+    mutable_token_name: bool,
+    mutable_token_properties: bool,
+    mutable_token_uri: bool,
+    tokens_burnable_by_creator: bool,
+    tokens_freezable_by_creator: bool,
+    royalty_numerator: int,
+    royalty_denominator: int,
+) -> str:
 ```
 
   </Tabs.Tab>
@@ -465,13 +507,28 @@ async mintTokenTransaction(args: {
 Your application will call `mint_token`:
 
 ```python
-:!: static/sdks/python/examples/simple_aptos_token.py section_5
+txn_hash = await token_client.mint_token(
+    alice,
+    collection_name,
+    "Alice's simple token",
+    token_name,
+    "https://aptos.dev/img/nyan.jpeg",
+    PropertyMap([]),
+)
 ```
 
 This is the function signature of `mint_token`. It returns a transaction hash:
 
 ```python
-:!: static/sdks/python/aptos_sdk/aptos_token_client.py mint_token
+async def mint_token(
+    self,
+    creator: Account,
+    collection: str,
+    description: str,
+    name: str,
+    uri: str,
+    properties: PropertyMap,
+) -> str:
 ```
 
   </Tabs.Tab>
@@ -516,13 +573,32 @@ console.log(
 To read a collection's metadata:
 
 ```python
-:!: static/sdks/python/examples/simple_aptos_token.py section_6
+async def get_collection_data(
+    token_client: AptosTokenClient, collection_addr: AccountAddress
+) -> dict[str, str]:
+    collection = (await token_client.read_object(collection_addr)).resources[Collection]
+    return {
+        "creator": str(collection.creator),
+        "name": str(collection.name),
+        "description": str(collection.description),
+        "uri": str(collection.uri),
+    }
 ```
 
 To read a token's metadata:
 
 ```python
-:!: static/sdks/python/examples/simple_aptos_token.py get_token_data
+async def get_token_data(
+    token_client: AptosTokenClient, token_addr: AccountAddress
+) -> dict[str, str]:
+    token = (await token_client.read_object(token_addr)).resources[Token]
+    return {
+        "collection": str(token.collection),
+        "description": str(token.description),
+        "name": str(token.name),
+        "uri": str(token.uri),
+        "index": str(token.index),
+    }
 ```
 
   </Tabs.Tab>
@@ -585,11 +661,13 @@ export async function getOwnedDigitalAssets(args: {
   <Tabs.Tab>
 
 ```python title="Get the object's resources and parse the owner"
-:!: static/sdks/python/examples/simple_aptos_token.py section_7
+obj_resources = await token_client.read_object(token_addr)
+owner = str(get_owner(obj_resources))
+print(f"\nToken owner: {owners[owner]}")
 ```
 
 ```python title="How the owners dictionary is defined"
-:!: static/sdks/python/examples/simple_aptos_token.py owners
+owners = {str(alice.address()): "Alice", str(bob.address()): "Bob"}
 ```
 
   </Tabs.Tab>
@@ -650,23 +728,40 @@ console.log(`Bob's digital assets balance: ${bobDigitalAssetsAfter.length}`);
   <Tabs.Tab>
 
 ```python title="Transfer the token to Bob"
-:!: static/sdks/python/examples/simple_aptos_token.py section_8
+print("\n=== Transferring the token to Bob ===")
+txn_hash = await token_client.transfer_token(
+    alice,
+    token_addr,
+    bob.address(),
+)
+await rest_client.wait_for_transaction(txn_hash)
 ```
 
 ```python title="How the transfer_token function is defined"
-:!: static/sdks/python/aptos_sdk/aptos_token_client.py transfer_token
+async def transfer_token(
+    self, owner: Account, token: AccountAddress, to: AccountAddress
+) -> str:
+    return await self.client.transfer_object(owner, token, to)
 ```
 
 ```python title="Read the owner"
-:!: static/sdks/python/examples/simple_aptos_token.py section_9
+obj_resources = await token_client.read_object(token_addr)
+print(f"Token owner: {owners[str(get_owner(obj_resources))]}")
 ```
 
 ```python title="Transfer the token back to Alice"
-:!: static/sdks/python/examples/simple_aptos_token.py section_10
+print("\n=== Transferring the token back to Alice ===")
+txn_hash = await token_client.transfer_token(
+    bob,
+    token_addr,
+    alice.address(),
+)
+await rest_client.wait_for_transaction(txn_hash)
 ```
 
 ```python title="Read the owner again"
-:!: static/sdks/python/examples/simple_aptos_token.py section_11
+obj_resources = await token_client.read_object(token_addr)
+print(f"Token owner: {owners[str(get_owner(obj_resources))]}\n")
 ```
 
   </Tabs.Tab>

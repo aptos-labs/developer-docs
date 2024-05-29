@@ -218,7 +218,22 @@ await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
   <Tabs.Tab>
 
 ```python
-:!: static/sdks/python/examples/your_coin.py publish
+module_path = os.path.join(
+    moon_coin_path, "build", "Examples", "bytecode_modules", "moon_coin.mv"
+)
+with open(module_path, "rb") as f:
+    module = f.read()
+
+metadata_path = os.path.join(
+    moon_coin_path, "build", "Examples", "package-metadata.bcs"
+)
+with open(metadata_path, "rb") as f:
+    metadata = f.read()
+
+print("\nPublishing MoonCoin package.")
+package_publisher = PackagePublisher(rest_client)
+txn_hash = await package_publisher.publish_package(alice, metadata, [module])
+await rest_client.wait_for_transaction(txn_hash)
 ```
 
   </Tabs.Tab>
