@@ -9,8 +9,8 @@ This tutorial describes how to create and transfer non-fungible assets on the Ap
 
 Install your preferred SDK from the below list:
 
-- [TypeScript SDK](../sdks/ts-sdk/index.md)
-- [Python SDK](../sdks/python-sdk/index.md)
+- [TypeScript SDK](../../index.mdx)
+- [Python SDK](../../index.mdx)
 
 ---
 
@@ -311,7 +311,7 @@ By default, the URLs for both the services point to Aptos devnet services. Howev
 
 ### Step 4.2: Creating local accounts
 
-The next step is to create two accounts locally. [Accounts](../concepts/accounts.md) consist of a public address and the public/private key pair used to authenticate ownership of the account. This step demonstrates how to generate an Account and store its key pair and address in a variable.
+The next step is to create two accounts locally. [Accounts](../../network/blockchain/accounts.mdx) consist of a public address and the public/private key pair used to authenticate ownership of the account. This step demonstrates how to generate an Account and store its key pair and address in a variable.
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
@@ -535,7 +535,7 @@ async def mint_token(
 
 ### Step 4.6: Reading token and collection metadata
 
-Both the collection and token assets are [Objects](../standards/aptos-object) on-chain with unique addresses. Their metadata is stored at the object address. The SDKs provide convenience wrappers around querying this data:
+Both the collection and token assets are [Objects](../smart-contracts/aptos-standards/aptos-object.mdx) on-chain with unique addresses. Their metadata is stored at the object address. The SDKs provide convenience wrappers around querying this data:
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
@@ -768,7 +768,7 @@ print(f"Token owner: {owners[str(get_owner(obj_resources))]}\n")
 
 ## Supporting documentation
 
-- [Account basics](../concepts/accounts.md)
-- [TypeScript SDK](../sdks/ts-sdk/index.md)
-- [Python SDK](../sdks/python-sdk/index.md)
+- [Account basics](../../network/blockchain/accounts.mdx)
+- [TypeScript SDK](../../index.mdx)
+- [Python SDK](../../index.mdx)
 - [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)
