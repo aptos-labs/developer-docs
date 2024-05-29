@@ -261,12 +261,12 @@ module module_owner::lottery {
 }
 ```
 
-Not recommended, but if you intend to expose such a randomness-dependent function to the public, you can bypass the compiler check by annotating your function with `#[lint_allow_unsafe_randomness]`.
+Not recommended, but if you intend to expose such a randomness-dependent function to the public, you can bypass the compiler check by annotating your function with `#[lint::allow_unsafe_randomness]`.
 
 ```move
 module module_owner::lottery {
     // Can compile, but use it at your own risk!
-    #[lint_allow_unsafe_randomness]
+    #[lint::allow_unsafe_randomness]
     public fun decide_winner_internal(lottery_state: &mut lottery_state) {
         let n = std::vector::length(&lottery_state.players);
         let winner_idx = aptos_framework::randomness::u64_range(0, n);
