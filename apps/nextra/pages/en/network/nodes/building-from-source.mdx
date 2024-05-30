@@ -2,8 +2,7 @@
 title: "Building Aptos From Source"
 ---
 
-import { Callout } from 'nextra/components'
-import { Tabs, TabItem } from '@components/tabs/Tabs';
+import { Callout, Tabs } from 'nextra/components'
 
 # Building Aptos From Source
 
@@ -49,22 +48,22 @@ explanation of their differences.
 
 <details>
 <summary>Release Branches</summary>
-<Tabs groupName="release-branches" height="175px">
-  <TabItem value="devnet" defaultChecked={true}>
+<Tabs items={["Devnet", "Testnet", "Mainnet"]}>
+  <Tabs.Tab>
     ```bash filename="Terminal"
     git checkout --track origin/devnet
     ```
-  </TabItem>
-  <TabItem value="testnet">
+  </Tabs.Tab>
+  <Tabs.Tab>
     ```bash filename="Terminal"
     git checkout --track origin/testnet
     ```
-  </TabItem>
-  <TabItem value="mainnet">
+  </Tabs.Tab>
+  <Tabs.Tab>
     ```bash filename="Terminal"
     git checkout --track origin/mainnet
     ```
-  </TabItem>
+  </Tabs.Tab>
 </Tabs>
 </details>
 

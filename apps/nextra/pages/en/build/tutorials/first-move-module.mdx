@@ -1,22 +1,22 @@
----
-title: "Your First Move Module"
----
-
-import { Tabs, Steps, Callout } from 'nextra/components';
+import { Callout } from 'nextra/components';
 
 # Your First Move Module
 
-This tutorial details how to compile, test, publish and interact with Move modules on the Aptos blockchain.
+This tutorial details how to compile, test, publish and interact with Move modules on the Aptos blockchain. The steps in summary are:
 
-<Steps>
+1. Install the precompiled binary for the Aptos CLI.
+2. Create an account on the Aptos blockchain and fund it.
+3. Compile and test a Move module.
+4. Publish a Move module to the Aptos blockchain.
+5. Interact with a Move module.
 
-### Install the CLI
+## Step 1: Install the CLI
 
-[Install the precompiled binary for the Aptos CLI](../../cli.mdx).
+[Install the precompiled binary for the Aptos CLI](../../index.mdx).
 
 ---
 
-### Create an account and fund it
+## Step 2: Create an account and fund it
 
 After installing the CLI binary, create and fund an account on the Aptos blockchain.
 
@@ -28,25 +28,25 @@ aptos init
 
 You will see output asking to choose a network:
 
-```text
+```bash filename="Terminal"
 Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
 ```
 
 Press **return** to accept the default devnet network or specify the network of your choosing:
 
-```text
+```bash filename="Terminal"
 No network given, using devnet...
 ```
 
 See and respond to the prompt for your private key by accepting the default to create a new or by entering an existing key:
 
-```text
+```bash filename="Terminal"
 Enter your private key as a hex literal (0x...) [Current: None | No input: Generate new key (or keep one if present)]
 ```
 
 Assuming you elected to create a new, you will see:
 
-```text
+```bash filename="Terminal"
 No key given, generating key...
 Account a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a doesn't exist, creating it and funding it with 100000000 Octas
 Account a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a funded successfully
@@ -68,7 +68,7 @@ aptos account fund-with-faucet --account default
 
 You will see output resembling:
 
-```json
+```bash filename="Terminal"
 {
   "Result": "Added 100000000 Octas to account a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a"
 }
@@ -76,7 +76,7 @@ You will see output resembling:
 
 ---
 
-### Compile and test the module
+## Step 3: Compile and test the module
 
 Several example Move modules are available in the [aptos-core/aptos-move/move-examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples) directory for your use. Open a terminal and change directories into the [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) directory:
 
@@ -92,7 +92,7 @@ aptos move compile --named-addresses hello_blockchain=default
 
 You will see output resembling:
 
-```json
+```bash filename="Terminal"
 {
   "Result": [
     "a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message"
@@ -110,7 +110,7 @@ aptos move test --named-addresses hello_blockchain=default
 
 And receive output like:
 
-```text
+```bash filename="Terminal"
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib
 INCLUDING DEPENDENCY MoveStdlib
@@ -126,14 +126,14 @@ Test result: OK. Total tests: 2; passed: 2; failed: 0
 
 To prepare the module for the account created in the previous step, we specify that the named address `hello_blockchain` is set to our account address, using the `default` profile alias.
 
-```toml
+```toml filename="config.toml"
 [addresses]
 hello_blockchain = "_"
 ```
 
 ---
 
-### Publish the Move module
+## Step 4: Publish the Move module
 
 After the code is compiled and tested, we can publish the module to the account created for this tutorial with the command:
 
@@ -165,7 +165,7 @@ At this point, the module is now stored on the account in the Aptos blockchain.
 
 ---
 
-### Interact with the Move module
+## Step 5: Interact with the Move module
 
 Move modules expose access points, known as _entry functions_. These entry functions can be called via transactions. The Aptos CLI allows for seamless access to these entry functions. The example Move module `hello_blockchain` exposes a `set_message` entry function that takes in a `string`. This can be called via the CLI:
 
@@ -177,7 +177,7 @@ aptos move run \
 
 Upon success, the CLI will print out the following:
 
-```json
+```bash filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x1fe06f61c49777086497b199f3d4acbee9ea58976d37fdc06d1ea48a511a9e82",
@@ -194,15 +194,16 @@ Upon success, the CLI will print out the following:
 }
 ```
 
-The `set_message` function modifies the `hello_blockchain` `MessageHolder` resource. A resource is a data structure that is stored in [global storage](book/structs-and-resources.mdx#storing-resources-in-global-storage). The resource can be read by querying the following REST API:
+The `set_message` function modifies the `hello_blockchain` `MessageHolder` resource. A resource is a data structure that is stored in [global storage](../move/book/structs-and-resources.md#storing-resources-in-global-storage). The resource can be read by querying the following REST API:
 
 ```bash filename="Terminal"
+
 https://api.devnet.aptoslabs.com/v1/accounts/a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a/resource/0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder
 ```
 
 After the first execution, this should contain:
 
-```json
+```bash filename="Terminal"
 {
   "type": "0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a::message::MessageHolder",
   "data": {
@@ -213,10 +214,16 @@ After the first execution, this should contain:
 
 Notice that the `message` field contains `hello, blockchain`.
 
-Each successful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](https://aptos.dev/concepts/events/#module-events). Module Events for a given account can be accessed via the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
+Each succesful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](https://aptos.dev/concepts/events/#module-events). Module Events for a given account can be accessed via the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
 
-</Steps>
-
-<Callout>
+<Callout type="info">
 Other accounts can reuse the published module by calling the exact same function as in this example. It is left as an exercise to the reader.
 </Callout>
+
+## Supporting documentation
+
+- [Account basics](../../network/blockchain/accounts.mdx)
+- [TypeScript SDK](../../index.mdx)
+- [Python SDK](../../index.mdx)
+- [Rust SDK](../../index.mdx)
+- [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)
