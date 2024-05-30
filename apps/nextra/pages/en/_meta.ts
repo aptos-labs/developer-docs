@@ -39,9 +39,6 @@ export default {
       tutorials: {
         title: "Tutorials",
       },
-      "advanced-guides": {
-        title: "Advanced Guides",
-      },
     },
   },
   network: {
