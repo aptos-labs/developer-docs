@@ -161,8 +161,8 @@ export const i18nConfig = Object.freeze({
     privacyLink: "Privacy",
     termsLink: "Terms",
   },
-  "zh-cn": {
-    locale: "zh-cn",
+  zh: {
+    locale: "zh",
     name: "简体中文",
     direction: "ltr",
     title: "Aptos 文档",
