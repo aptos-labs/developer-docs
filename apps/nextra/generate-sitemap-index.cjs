@@ -8,6 +8,11 @@ const loadConfig = async () => {
   return configModule.default;
 };
 
+const loadDocsConfig = async () => {
+  const docsConfigModule = await import('./docs.config.js');
+  return docsConfigModule;
+};
+
 const getAvailableLanguages = async () => {
   const config = await loadConfig();
   const languages = config.languages;
@@ -16,10 +21,12 @@ const getAvailableLanguages = async () => {
 
 const generateSitemapIndex = async () => {
   const availableLanguages = await getAvailableLanguages();
+  const { getOrigin } = await loadDocsConfig();
+  const origin = getOrigin();
   
   const sitemapIndexContent = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${availableLanguages.map(lang => `<sitemap><loc>https://preview.aptos.dev/sitemap-${lang}.xml</loc></sitemap>`).join('')}
+  ${availableLanguages.map(lang => `<sitemap><loc>${origin}/sitemap-${lang}.xml</loc></sitemap>`).join('')}
 </sitemapindex>`;
 
   fs.writeFileSync(path.resolve(outputDir, 'sitemap.xml'), sitemapIndexContent);

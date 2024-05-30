@@ -8,6 +8,12 @@ const loadConfig = async () => {
   return configModule.default;
 };
 
+// Function to load getOrigin from docs.config.js
+const loadDocsConfig = async () => {
+  const docsConfigModule = await import('./docs.config.js');
+  return docsConfigModule;
+};
+
 // Define paths
 const sitemapFilePath = path.resolve(__dirname, 'public', 'sitemap.xml');
 const outputDir = path.resolve(__dirname, 'public');
@@ -34,7 +40,9 @@ const writeSitemap = (filePath, urls) => {
 // Main function to generate language-specific sitemaps
 const generateLanguageSitemaps = async () => {
   const config = await loadConfig();
+  const { getOrigin } = await loadDocsConfig();
   const languages = config.languages;
+  const origin = getOrigin();
 
   const sitemap = await readSitemap(sitemapFilePath);
   if (!sitemap.urlset || !sitemap.urlset.url) {
@@ -53,12 +61,9 @@ const generateLanguageSitemaps = async () => {
   });
 
   const sitemapIndexContent = `<?xml version="1.0" encoding="UTF-8"?>
-  <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    ${languages.map(lang => `
-      <sitemap>
-        <loc>https://preview.aptos.dev/sitemap-${lang}.xml</loc>
-      </sitemap>`).join('')}
-  </sitemapindex>`;
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${languages.map(lang => `<sitemap><loc>${origin}/sitemap-${lang}.xml</loc></sitemap>`).join('')}
+</sitemapindex>`;
 
   fs.writeFileSync(path.resolve(outputDir, 'sitemap.xml'), sitemapIndexContent);
   console.log('Index sitemap written to public/sitemap.xml');
@@ -68,11 +73,11 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://preview.aptos.dev
+Host: ${origin}
 
 # Sitemaps
-Sitemap: https://preview.aptos.dev/sitemap.xml
-${languages.map(lang => `Sitemap: https://preview.aptos.dev/sitemap-${lang}.xml`).join('\n')}
+Sitemap: ${origin}/sitemap.xml
+${languages.map(lang => `Sitemap: ${origin}/sitemap-${lang}.xml`).join('\n')}
 `;
 
   fs.writeFileSync(path.resolve(outputDir, 'robots.txt'), robotsTxtContent);
