@@ -15,6 +15,7 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
     brand: {
       blue: oklch(78.07, 0.1339, 192.33), // #00D2CE
       lightBlue: oklch(91.54, 0.134, 193.32), // #5BFFFC
+      darkBlue: oklch(70.07, 0.101, 207.76), // #41B0BF
     },
     spectral: {
       red: {
@@ -70,8 +71,8 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         dark: oklch(65.68, 0.023, 218.74), // #82959B
       },
       link: {
-        DEFAULT: { base: "brand-blue", dark: "brand-blue" },
-        hover: { base: "brand-lightBlue", dark: "brand-lightBlue" },
+        DEFAULT: { base: "brand-darkBlue", dark: "brand-blue" },
+        hover: { base: "brand-blue", dark: "brand-lightBlue" },
       },
       label: {
         base: oklch(90.06, 0, 0), // #DEDEDE
@@ -117,7 +118,7 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         },
       },
       divider: {
-        base: oklch(18.01, 0.024, 220.99, 30), // #051419 @ 30%
+        base: oklch(18.01, 0.024, 220.99, 10), // #051419 @ 10%
         dark: "general-white/5",
       },
     },
@@ -139,18 +140,28 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
     button: {
       primary: {
         DEFAULT: {
-          background: { base: "general-white" },
-          text: { base: "general-black" },
+          background: {
+            base: oklch(18.01, 0.024, 220.99), // #051419
+            dark: "general-white",
+          },
+          text: { base: "general-white", dark: "general-black" },
           border: {
-            base: oklch(65.68, 0.023, 218.74), // #82959B
+            DEFAULT: {
+              base: oklch(65.68, 0.023, 218.74), // #82959B
+              dark: oklch(65.68, 0.023, 218.74), // #82959B
+            },
+            inset: {
+              base: oklch(95.87, 0.009, 214.34), // #EBF3F5
+              dark: oklch(18.01, 0.024, 220.99), // #051419
+            },
           },
         },
         hovered: {
-          background: { base: "brand-blue" },
+          background: { base: "brand-darkBlue", dark: "brand-blue" },
           text: { base: "general-black" },
         },
         pressed: {
-          background: { base: "brand-lightBlue" },
+          background: { base: "brand-blue", dark: "brand-lightBlue" },
           text: { base: "general-black" },
         },
         disabled: {
@@ -164,12 +175,15 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
         DEFAULT: {
           background: { base: "general-transparent" },
           text: { base: "general-black", dark: "general-white" },
-          border: { base: "general-black", dark: "general-white" },
+          border: {
+            base: oklch(18.01, 0.024, 220.99), // #051419
+            dark: "general-white",
+          },
         },
         hovered: {
           background: { base: "general-transparent" },
-          text: { base: "brand-blue" },
-          border: { base: "brand-blue" },
+          text: { base: "brand-darkBlue", dark: "brand-blue" },
+          border: { base: "brand-darkBlue", dark: "brand-blue" },
         },
         pressed: {
           background: { base: "general-transparent" },
@@ -198,12 +212,27 @@ const { themeColors, colorsPlugin } = createOklchColors((oklch) => ({
           dark: oklch(50.66, 0.078, 221.71), // #266F85
         },
       },
-    },
-    chainVector: {
-      fill: {
-        base: oklch(46.19, 0.016, 214.47), // #4F5B5E
-        dark: "general-white",
+      arrow: {
+        base: oklch(18.01, 0.024, 220.99, 50), // #051419 @ 50%
+        dark: oklch(92.05, 0.007, 106.53, 50), // #E5E5E0 @ 50%
       },
+    },
+    illustration: {
+      line: {
+        DEFAULT: {
+          base: oklch(46.19, 0.016, 214.47), // #4F5B5E
+          dark: "general-white",
+        },
+        secondary: {
+          base: oklch(18.01, 0.024, 220.99), // #051419
+          dark: oklch(92.05, 0.007, 106.53), // #E5E5E0
+        },
+      },
+      bg: {
+        base: oklch(98.86, 0.0088, 214.34), // #F5FDFF
+        dark: oklch(18.01, 0.024, 220.99), // #051419
+      },
+      shadow: { base: "general-black/50", dark: "general-black" },
     },
   },
 }));
@@ -278,6 +307,14 @@ module.exports = {
         "accordion-open": "accordion-open 0.25s ease",
         "accordion-close": "accordion-close 0.25s ease",
         "spin-subtle": "spin 20s linear infinite",
+        "scale-up-from-t": "scale-up-from-t 4s ease-out infinite",
+        "scale-up-from-br": "scale-up-from-br 4s ease-out infinite",
+        "scale-up-from-bl": "scale-up-from-bl 4s ease-out infinite",
+        "fade-in-first": "fade-in-first 4s linear infinite",
+        "fade-in-second": "fade-in-second 4s linear infinite",
+        "scale-group-a": "scale-group-a 4s ease-out infinite",
+        "scale-group-b": "scale-group-b 4s ease-out infinite",
+        "scale-group-c": "scale-group-c 4s ease-out infinite",
       },
       keyframes: {
         "accordion-open": {
@@ -287,6 +324,66 @@ module.exports = {
         "accordion-close": {
           "0%": { height: "var(--radix-accordion-content-height)" },
           "100%": { height: 0 },
+        },
+        "scale-up-from-t": {
+          "0%": { transform: "translate(-22px, 22px) scale(2)" },
+          "16.65%": { transform: "translate(-22px, 22px) scale(2)" },
+          "33.3%": { transform: "translate(0px, 0px) scale(1)" },
+          "83.25%": { transform: "translate(0px, 0px) scale(1)" },
+          "100%": { transform: "translate(-22px, 22px) scale(2)" },
+        },
+        "scale-up-from-br": {
+          "0%": { transform: "translate(0px, 0px) scale(1)" },
+          "16.65%": { transform: "translate(0px, 0px) scale(1)" },
+          "33.3%": { transform: "translate(-22px, -22px) scale(2)" },
+          "49.95%": { transform: "translate(-22px, -22px) scale(2)" },
+          "66.6%": { transform: "translate(0px, 0px) scale(1)" },
+          "100%": { transform: "translate(0px, 0px) scale(1)" },
+        },
+        "scale-up-from-bl": {
+          "0%": { transform: "translate(0px, 0px) scale(1)" },
+          "49.95%": { transform: "translate(0px, 0px) scale(1)" },
+          "66.6%": { transform: "translate(22px, -22px) scale(2)" },
+          "83.25%": { transform: "translate(22px, -22px) scale(2)" },
+          "100%": { transform: "translate(0px, 0px) scale(1)" },
+        },
+        "fade-in-first": {
+          "0%": { opacity: 0 },
+          "10%": { opacity: 0 },
+          "20%": { opacity: 1 },
+          "80%": { opacity: 1 },
+          "90%": { opacity: 0 },
+          "100%": { opacity: 0 },
+        },
+        "fade-in-second": {
+          "0%": { opacity: 0 },
+          "40%": { opacity: 0 },
+          "50%": { opacity: 1 },
+          "80%": { opacity: 1 },
+          "90%": { opacity: 0 },
+          "100%": { opacity: 0 },
+        },
+        "scale-group-a": {
+          "0%": { transform: "scale(1.06)" },
+          "16.65%": { transform: "scale(1.06)" },
+          "33.3%": { transform: "scale(1)" },
+          "83.25%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1.06)" },
+        },
+        "scale-group-b": {
+          "0%": { transform: "scale(1)" },
+          "16.65%": { transform: "scale(1)" },
+          "33.3%": { transform: "scale(1.06)" },
+          "49.95%": { transform: "scale(1.06)" },
+          "66.6%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "scale-group-c": {
+          "0%": { transform: "scale(1)" },
+          "49.95%": { transform: "scale(1)" },
+          "66.6%": { transform: "scale(1.06)" },
+          "83.25%": { transform: "scale(1.06)" },
+          "100%": { transform: "scale(1)" },
         },
       },
     },
@@ -390,13 +487,21 @@ module.exports = {
         // Title Text Styles
         ".title-100": {
           fontFamily: theme("fontFamily.landing"),
+          fontSize: theme("fontSize.16"),
+          lineHeight: theme("lineHeight.22"),
+          fontWeight: theme("fontWeight.medium"),
+          textTransform: "uppercase",
+          letterSpacing: "2px",
+        },
+        ".title-200": {
+          fontFamily: theme("fontFamily.landing"),
           fontSize: theme("fontSize.20"),
           lineHeight: theme("lineHeight.32"),
           fontWeight: theme("fontWeight.regular"),
           textTransform: "uppercase",
           letterSpacing: "3px",
         },
-        ".title-200": {
+        ".title-300": {
           fontFamily: theme("fontFamily.landing"),
           fontSize: theme("fontSize.26"),
           lineHeight: theme("lineHeight.34"),

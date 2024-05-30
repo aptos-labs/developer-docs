@@ -1,0 +1,123 @@
+import { Callout, FileTree } from "nextra/components";
+
+# Replaying Past Transactions
+
+## Basics
+You can replay past transactions locally using the `aptos move replay` command.
+The command is fairly straightforward but it requires you to specify two pieces of required information:
+- `--network`
+  - This is the network you want to replay on
+  - Possible values: `mainnet`, `testnet`, `devnet` or `<URL TO CUSTOM REST ENDPOINT>`
+- `--txn-id`
+  - This is the id of the transaction you want to replay
+  - This is also sometimes being referred to as `version` on explorers
+  - Specifically it is NOT the hexadecimal transaction hash
+
+
+Let's use mainnet transaction [581400718](https://explorer.aptoslabs.com/txn/581400718?network=mainnet) (a simple coin transfer transaction) as an example. 
+```bash filename="Terminal"
+aptos move replay --network mainnet --txn-id 581400718
+```
+
+<details>
+<summary>Output</summary>
+```bash
+Got 1/1 txns from RestApi.
+Replaying transaction...
+{
+  "Result": {
+    "transaction_hash": "0x1ba73d03a0442a845735a17c7be46f3b51e2acb0e5cf68749305c5a17539ac63",
+    "gas_used": 7,
+    "gas_unit_price": 100,
+    "sender": "c94e16736910cc160347d01de345407fe2d350fce5635ac1150319b0fbf5630e",
+    "sequence_number": 14637,
+    "success": true,
+    "version": 581400718,
+    "vm_status": "status EXECUTED of type Execution"
+  }
+}
+```
+</details>
+
+Alternatively, if you want to simulate a new transaction, check out [Local Simulation, Benchmarking and Gas Profiling](working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx).
+
+## Alternate Modes
+Similar to local simulations, the replay command can be enhanced with one of the following options:
+- `--benchmark`: Benchmark the transaction and report the running time(s).
+- `--profile-gas` Profile the transaction for detailed gas usage.
+
+### Benchmarking
+```bash filename="Terminal"
+aptos move replay --network mainnet --txn-id 581400718 --benchmark
+```
+
+<details>
+<summary>Output</summary>
+```bash
+Got 1/1 txns from RestApi.
+Benchmarking transaction...
+Running time (cold code cache): 914.821µs
+Running time (warm code cache): 820.189µs
+{
+  "Result": {
+    "transaction_hash": "0x1ba73d03a0442a845735a17c7be46f3b51e2acb0e5cf68749305c5a17539ac63",
+    "gas_used": 7,
+    "gas_unit_price": 100,
+    "sender": "c94e16736910cc160347d01de345407fe2d350fce5635ac1150319b0fbf5630e",
+    "sequence_number": 14637,
+    "success": true,
+    "version": 581400718,
+    "vm_status": "status EXECUTED of type Execution"
+  }
+}
+```
+</details>
+
+It's worth noting that these running times serve only as informational references, as they are contingent upon the specifications of your local machine and may be influenced by noise or other random factors.
+
+**If you are aiming to optimize your contract, you should base your decisions on the gas profiling results.**
+
+<Callout type="info" emoji="ℹ️">
+To minimize measurement errors, the benchmark harness executes the same transaction multiple times. For this reason, it may take a while for the benchmark task to complete.
+</Callout>
+
+### Gas Profiling
+The Aptos Gas Profiler is a powerful tool that can help you understand the gas usage of Aptos transactions. Once activated, it will simulate transactions using an instrumented VM, and generate a web-based report.
+
+The gas profiler can also double as a debugger since the report also includes a full execution trace.
+
+```bash filename="Terminal"
+aptos move replay --network mainnet --txn-id 581400718 --profile-gas
+```
+<details>
+<summary>Output</summary>
+```bash
+Got 1/1 txns from RestApi.
+Profiling transaction...
+Gas report saved to gas-profiling/txn-1ba73d03-0x1-aptos_account-transfer.
+{
+  "Result": {
+    "transaction_hash": "0x1ba73d03a0442a845735a17c7be46f3b51e2acb0e5cf68749305c5a17539ac63",
+    "gas_used": 7,
+    "gas_unit_price": 100,
+    "sender": "c94e16736910cc160347d01de345407fe2d350fce5635ac1150319b0fbf5630e",
+    "sequence_number": 14637,
+    "success": true,
+    "version": 581400718,
+    "vm_status": "status EXECUTED of type Execution"
+  }
+}
+```
+</details>
+
+You can then find the [generated gas report](/gas-profiling/sample-report-2/index.html) in the directory gas-profiling:
+<FileTree>
+    <FileTree.Folder name="gas-profiling" defaultOpen>
+      <FileTree.Folder name="txn-1ba73d03-0x1-aptos_account-transfer" defaultOpen>
+        <FileTree.Folder name="assets" defaultOpen />
+        <FileTree.File name="index.html" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+</FileTree>
+
+To understand the gas report, please refer to [this section](working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx#understanding-the-gas-report) of the local simulation tutorial.

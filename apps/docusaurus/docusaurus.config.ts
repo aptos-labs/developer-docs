@@ -49,6 +49,14 @@ const themeConfig: Preset.ThemeConfig = {
       hideable: true,
     },
   },
+  announcementBar: {
+    id: "preview",
+    content:
+      '🎉 We are revamping our docs! <a target="_blank" rel="noopener noreferrer" href="https://preview.aptos.dev">See the preview of the new docs at preview.aptos.dev</a>',
+    backgroundColor: "#fafbfc",
+    textColor: "#091E42",
+    isCloseable: false,
+  },
   head: [
     {
       tagName: "script",

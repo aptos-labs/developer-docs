@@ -490,14 +490,15 @@ Since paired FAs are integrated into the `coin` module, off-chain migration invo
 If a coin has a paired FA, a user may possess both as the same asset. So the balance has to be updated from coin balance only to the sum
 of coin balance and its paired FA balance.
 
-- For Aptos Indexer users, utilize a new table called `current_migrated_coin_balance` to obtain the latest sum of coin balance and FA balance representing the same asset type.
-- For users employing Node API or other customized indexing, they should add the balance of the paired FA in users' `PrimaryFungibleStore` if it exists to the coin balance.
+- For Aptos Indexer users, utilize a new table called `current_unified_fungible_asset_balances` to obtain the latest sum of coin balance and FA balance representing the same asset type.
+- For users employing Node API or other customized indexing, they should add the balance of the paired FA in users' `FungibleStore` and `ConcurrentFungibleBalance` if any of them exists to the coin balance.
 
 To retrieve the balance of the `PrimaryFungibleStore` of the paired FA of coin type CoinType for a user:
 
 1. Call `paired_metadata<CoinType>()` to obtain the paired FA metadata object address, which is immutable, allowing for storage or caching to enhance performance.
-2. Retrieve the balance of the paired FA by calling [getCurrentFungibleAssetBalances](https://github.com/aptos-labs/aptos-ts-sdk/blob/c01a26ff899235fac1c31c6cc3fe504b764e5b91/src/api/fungibleAsset.ts#L115);
-3. Alternatively, determine the address of the `PrimaryFungibleStore`, which is deterministic as `sha3(32-byte account address | 32-byte metadata object address | 0xFC)`, and obtain the `PrimaryFungibleStore` resource at this address to fetch the balance.
+2. Retrieve the balance of the paired FA:
+   - Call [getCurrentFungibleAssetBalances](https://github.com/aptos-labs/aptos-ts-sdk/blob/c01a26ff899235fac1c31c6cc3fe504b764e5b91/src/api/fungibleAsset.ts#L115);
+   - Alternatively, determine the address of the primary `FungibleStore`, which is deterministic as `sha3_256(32-byte account address | 32-byte metadata object address | 0xFC)`, and obtain the `FungibleStore` resource at this address to fetch the balance. If it is non-zero, this is the final balance of this FA. Otherwise, try to get `ConcurrentFungibleBalance` resource at the same address and get the balance there instead or 0 If `ConcurrentFungibleBalance` does not exist.
 
 ### Event
 

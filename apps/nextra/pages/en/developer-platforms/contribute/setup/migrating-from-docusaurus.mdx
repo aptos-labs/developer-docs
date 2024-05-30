@@ -1,0 +1,220 @@
+---
+title: Migrating from Docusaurus
+---
+
+import { Callout, Steps } from "nextra/components";
+
+# Migrating from Docusaurus
+
+This is designed as a self-help guide for those who are helping with the Docusaurus -> Nextra 
+migration. I've summarized a few of the specific things to look out for when migrating docs.
+
+## File Based Routing
+
+<Callout>
+**I highly recommend** viewing the section on [Organize Files](organize-files.mdx) and 
+[Organize Files (Advanced)](organize-files-advanced.mdx) for more information
+on how to setup routing in Nextra.
+</Callout>
+
+Docusaurus handles routing differently than Nextra. Namely, `_meta.ts(x)` is used to organize
+the ordering of documents within a section. Each file includes an `export default` of the
+mapping between the markdown file name (without the `.mdx` extension) and the title of the 
+file (what shows up in the sidebar).
+
+Here's an example:
+
+```tsx filename="_meta.tsx"
+export default {
+  'migrating-from-docusaurus': "Migrating from Docusaurus",
+  'organize-files': 'Organize Files',
+  'organize-files-advanced': 'Organize Files (Advanced)',
+  'docs-config': 'Docs Config',
+  'SEO': 'SEO',
+  'analytics': 'Analytics',
+  'i18n': 'i18n',
+  'maintenance': 'Maintenance',
+  'deployment': 'Deployment',
+  'troubleshooting': 'Troubleshooting',
+}
+```
+
+## `.md` -> `.mdx`
+
+Use `.mdx` instead of `.md` for file extensions when migrating.
+
+## Links
+
+Please use **relative** paths for links to other docs sections rather than **absolute** paths.
+
+Absolute paths do not work well with `i18n` since we often have paths that are prefixed with the
+localStorage, such as `/en/docs/setup/...`. 
+
+## Codeblocks
+
+In docusaurus, [Codeblock](../components/codeblock.mdx) components are rendered differently 
+than in Nextra. When possible, try to add relevent `filename` information to help users understand
+the context in which that code snippet is relevant.
+
+For example, if the docs ask the user to use the `CLI`, instead of doing
+
+````text
+```bash
+aptos install ...
+```
+````
+
+you could add `filename="Terminal"` to the codeblock
+
+````text
+```bash filename="Terminal"
+aptos install ...
+```
+````
+
+which ultimately renders the following:
+
+```bash filename="Terminal"
+aptos install ...
+```
+
+## Callout
+
+In docusaurus, [Callout](../components/callout.mdx) components are represented 
+differently than in Nextra. Here is an example:
+
+```md filename="staking.md"
+:::note
+Currently, slashing is not implemented.
+:::
+```
+
+Here is the equivalent in Nextra
+
+```mdx filename="staking.mdx"
+import { Callout } from "nextra/components";
+
+...
+
+<Callout type="info">
+Currently, slashing is not implemented.
+</Callout>
+```
+
+## ThemedImage
+
+You will often see usages of [ThemedImage](../components/themed-image.mdx) like so in docusaurus
+
+
+```md filename="staking.md"
+import ThemedImage from '@theme/ThemedImage';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+...
+
+<ThemedImage
+  alt="Staking Flow"
+  sources={{
+    light: useBaseUrl('/img/docs/staking-light.svg'),
+    dark: useBaseUrl('/img/docs/staking-dark.svg'),
+  }}
+/>
+```
+
+In Nextra the `useBaseUrl` hook is not needed. Images are placed in the `public` folder at the root
+of the project. Thus, it should look something like this instead
+
+```mdx filename="staking.mdx"
+import { ThemedImage } from '@components/index'
+
+...
+
+<ThemedImage
+  alt="Signed Transaction Flow"
+  sources={{
+    light: '/docs/stake-state.svg',
+    dark: '/docs/stake-state-dark.svg',
+  }}
+/>
+```
+
+## Steps
+
+A [Steps](../components/steps.mdx) component exists in Nextra that did not exist in docusaurus.
+It helps to clearly layout a sequence of actions for the user, which we often
+do throughout our docs. Content managers can take advantage of this to write clear, 
+sequenced instructions.
+
+Instead of
+
+````md filename="node-health-checker.md"
+### Step 1: Download the baseline configuration YAML
+
+Download a baseline configuration YAML file for a devnet fullnode. The below command will download the `devnet_fullnode.yaml` configuration file:
+
+```
+mkdir /tmp/nhc
+cd /tmp/nhc
+wget https://raw.githubusercontent.com/aptos-labs/aptos-core/main/ecosystem/node-checker/configuration_examples/devnet_fullnode.yaml
+```
+
+### Step 2: Start the NHC service
+
+Start the NHC service by providing the above-downloaded `devnet_fullnode.yaml` baseline configuration YAML file:
+
+```
+docker run -v /tmp/nhc:/nhc -p 20121:20121 -t aptoslabs/node-checker:nightly /usr/local/bin/aptos-node-checker server run --baseline-config-paths /nhc/devnet_fullnode.yaml
+```
+````
+
+You can instead do
+
+````mdx filename="node-health-checker.mdx"
+import { Steps } from 'nextra/components'
+
+...
+
+<Steps>
+
+### Download the baseline configuration YAML
+
+Download a baseline configuration YAML file for a devnet fullnode. The below command will download the `devnet_fullnode.yaml` configuration file:
+
+```bash filename="Terminal"
+mkdir /tmp/nhc
+cd /tmp/nhc
+wget https://raw.githubusercontent.com/aptos-labs/aptos-core/main/ecosystem/node-checker/configuration_examples/devnet_fullnode.yaml
+```
+
+### Start the NHC service
+
+Start the NHC service by providing the above-downloaded `devnet_fullnode.yaml` baseline configuration YAML file:
+
+```bash filename="Terminal"
+docker run -v /tmp/nhc:/nhc -p 20121:20121 -t aptoslabs/node-checker:nightly /usr/local/bin/aptos-node-checker server run --baseline-config-paths /nhc/devnet_fullnode.yaml
+```
+</Steps>
+````
+
+This will render something like this:
+
+<Steps>
+
+### Download the baseline configuration YAML
+
+Download a baseline configuration YAML file for a devnet fullnode. The below command will download the `devnet_fullnode.yaml` configuration file:
+
+```bash filename="Terminal"
+mkdir /tmp/nhc
+cd /tmp/nhc
+wget https://raw.githubusercontent.com/aptos-labs/aptos-core/main/ecosystem/node-checker/configuration_examples/devnet_fullnode.yaml
+```
+
+### Start the NHC service
+
+Start the NHC service by providing the above-downloaded `devnet_fullnode.yaml` baseline configuration YAML file:
+
+```bash filename="Terminal"
+docker run -v /tmp/nhc:/nhc -p 20121:20121 -t aptoslabs/node-checker:nightly /usr/local/bin/aptos-node-checker server run --baseline-config-paths /nhc/devnet_fullnode.yaml
+```
+</Steps>

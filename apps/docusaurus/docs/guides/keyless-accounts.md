@@ -46,8 +46,8 @@ To provide feedback, get support, or be a design partner as we enhance Aptos Key
 
 # Keyless Account Integration Steps
 
-:::info Only devnet is supported
-Currently Aptos Keyless is only supported in devnet. Testnet and mainnet support to come in the following weeks.
+:::info Only devnet and testnet is supported
+Currently Aptos Keyless is only supported in devnet and testnet. Mainnet support to come in the following weeks.
 :::
 
 At a high level, there are three steps to follow in order to integrate Keyless Accounts.
@@ -171,17 +171,10 @@ export const getLocalEphemeralKeyPairs = (): StoredEphemeralKeyPairs => {
  * Encoding for the EphemeralKeyPair class to be stored in localStorage
  */
 const EphemeralKeyPairEncoding = {
-  decode: (e: any) =>
-    new EphemeralKeyPair({
-      blinder: new Uint8Array(e.blinder),
-      expiryDateSecs: BigInt(e.expiryDateSecs),
-      privateKey: new Ed25519PrivateKey(e.privateKey),
-    }),
+  decode: (e: any) => EphemeralKeyPair.fromBytes(e.data),
   encode: (e: EphemeralKeyPair) => ({
     __type: "EphemeralKeyPair",
-    blinder: Array.from(e.blinder),
-    expiryDateSecs: e.expiryDateSecs.toString(),
-    privateKey: e.privateKey.toString(),
+    data: e.bcsToBytes(),
   }),
 };
 
@@ -193,6 +186,8 @@ export const encodeEphemeralKeyPairs = (
 ): string =>
   JSON.stringify(keyPairs, (_, e) => {
     if (typeof e === "bigint") return { __type: "bigint", value: e.toString() };
+    if (e instanceof Uint8Array)
+      return { __type: "Uint8Array", value: Array.from(e) };
     if (e instanceof EphemeralKeyPair)
       return EphemeralKeyPairEncoding.encode(e);
     return e;
@@ -206,6 +201,7 @@ export const decodeEphemeralKeyPairs = (
 ): StoredEphemeralKeyPairs =>
   JSON.parse(encodedEphemeralKeyPairs, (_, e) => {
     if (e && e.__type === "bigint") return BigInt(e.value);
+    if (e && e.__type === "Uint8Array") return new Uint8Array(e.value);
     if (e && e.__type === "EphemeralKeyPair")
       return EphemeralKeyPairEncoding.decode(e);
     return e;
@@ -351,7 +347,7 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
         ```tsx
         import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
-        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET}));  // Only devnet supported as of now.
+        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET}));  // Only devnet and testnet supported as of now.
         const keylessAccount = await aptos.deriveKeylessAccount({
             jwt,
             ephemeralKeyPair,

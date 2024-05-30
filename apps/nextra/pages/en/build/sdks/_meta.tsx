@@ -11,4 +11,13 @@ export default {
   "unity-sdk": {
     title: "Unity SDK",
   },
+  "go-sdk": {
+    title: "Go SDK",
+  },
+  "cpp-sdk": {
+    title: "C++ / Unreal SDK",
+  },
+  "wallet-adapter": {
+    title: "Wallet Adapter",
+  },
 };

@@ -1,0 +1,33 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# Get Name From Address
+
+`getNameFromAddress` looks for a registered domain name for a given account. For example, a user could register their account with the Aptos Name Service to be associated to `love.apt`. You can learn more by going to https://www.aptosnames.com/.
+
+<Callout type="warning">
+This only returns *active* names. Name registrations can expire if not renewed, which may explain some empty results. 
+</Callout>
+
+<Callout type="info">
+Try it yourself! You can customize the variables at the bottom of the editor.
+</Callout>
+
+<GraphQLEditor
+  query={`query getNameFromAddress($registered_address: String) {
+  current_aptos_names(
+    where: {registered_address: {_eq: $registered_address}, is_active: {_eq: true}},
+    order_by: [{is_primary: desc}, {last_transaction_version: desc}, {expiration_timestamp: desc}],
+    limit: 1
+  ) {
+    domain
+    subdomain
+  }
+}`}
+  variables={`{
+  "registered_address": "0xca4349ce902a656570a4f344cc8f360fb13fd41b5fae77bcc9ee82252d67539e"
+}`}
+/>
+
+#### Variables:
+- `$registered_address`: **String** - The account address you want to find any associated active domain names for. Ex. `"0xca4349ce902a656570a4f344cc8f360fb13fd41b5fae77bcc9ee82252d67539e"`.

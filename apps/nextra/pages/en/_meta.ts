@@ -5,6 +5,7 @@ export default {
     display: "hidden",
     theme: {
       layout: "raw",
+      footer: null,
     },
   },
   learn: {
@@ -20,7 +21,7 @@ export default {
       "quick-start": {
         title: "Quick Start",
       },
-      move: {
+      "smart-contracts": {
         title: "Smart Contracts",
       },
       apis: {
@@ -34,13 +35,7 @@ export default {
       },
       cli: {
         title: "CLI",
-      },
-      standards: {
-        title: "Standards",
-      },
-      "advanced-guides": {
-        title: "Advanced Guides",
-      },
+      }
     },
   },
   network: {
@@ -61,7 +56,7 @@ export default {
       },
     },
   },
-  developer_platforms: {
+  "developer-platforms": {
     type: "menu",
     title: "Additional Resources",
     items: {
@@ -83,16 +78,16 @@ export default {
         newWindow: true,
         type: "page",
       },
-      token_hub: {
-        title: "Token Hub ↗",
-        href: "",
+      aptos_foundation: {
+        title: "Aptos Foundation ↗",
+        href: "https://aptosfoundation.org/",
         newWindow: true,
         type: "page",
       },
+      contribute: {
+        title: "Contribute",
+        type: "page",
+      },
     },
-  },
-  docs: {
-    type: "page",
-    title: "Docs Help",
   },
 };

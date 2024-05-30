@@ -159,8 +159,8 @@ struct DeleteRefStore has key {
     delete_ref: DeleteRef,
 }
 
-public fun delete_liquidity_pool(liquidity_pool: Object<LiquidityPool>) {
-    let liquidity_pool_address = object::object_address(liquidity_pool);
+public fun delete_liquidity_pool(liquidity_pool: Object<LiquidityPool>) acquires LiquidityPool, DeleteRefStore {
+    let liquidity_pool_address = object::object_address(&liquidity_pool);
     // Remove all resources added to the liquidity pool object.
     let LiquidityPool {
         token_a: _,
@@ -170,7 +170,7 @@ public fun delete_liquidity_pool(liquidity_pool: Object<LiquidityPool>) {
     } = move_from<LiquidityPool>(liquidity_pool_address);
     let DeleteRefStore { delete_ref } = move_from<DeleteRefStore>(liquidity_pool_address);
     // Delete the object itself.
-    object::delete_object(delete_ref);
+    object::delete(delete_ref);
 }
 ```
 
@@ -184,15 +184,15 @@ struct TransferRefStore has key {
     transfer_ref: TransferRef,
 }
 
-public fun disable_owner_transfer(liquidity_pool: Object<LiquidityPool>) {
-    let liquidity_pool_address = object::object_address(liquidity_pool);
-    let transfer_ref = &borrow_global_mut<TransferRefStore>(liquidity_pool_address).transfer_ref;
+public fun disable_owner_transfer(liquidity_pool: Object<LiquidityPool>) acquires TransferRefStore {
+    let liquidity_pool_address = object::object_address(&liquidity_pool);
+    let transfer_ref = &borrow_global<TransferRefStore>(liquidity_pool_address).transfer_ref;
     object::disable_ungated_transfer(transfer_ref);
 }
 
-public fun creator_transfer(liquidity_pool: Object<LiquidityPool>, new_owner: address) {
-    let liquidity_pool_address = object::object_address(liquidity_pool);
-    let transfer_ref = &borrow_global_mut<TransferRefStore>(liquidity_pool_address).transfer_ref;
+public fun creator_transfer(liquidity_pool: Object<LiquidityPool>, new_owner: address) acquires TransferRefStore {
+    let liquidity_pool_address = object::object_address(&liquidity_pool);
+    let transfer_ref = &borrow_global<TransferRefStore>(liquidity_pool_address).transfer_ref;
     object::transfer_with_ref(object::generate_linear_transfer_ref(transfer_ref), new_owner);
 }
 ```
@@ -200,8 +200,9 @@ public fun creator_transfer(liquidity_pool: Object<LiquidityPool>, new_owner: ad
 Once the resources have been created on an object, they can be modified by the creator modules without the refs/ Example:
 
 ```rust
-public entry fun modify_reserves(liquidity_pool: Object<LiquidityPool>) {
-    let liquidity_pool = &mut borrow_global_mut<LiquidityPool>(liquidity_pool);
+public entry fun modify_reserves(liquidity_pool: Object<LiquidityPool>) acquires LiquidityPool {
+    let liquidity_pool_address = object::object_address(&liquidity_pool);
+    let liquidity_pool = borrow_global_mut<LiquidityPool>(liquidity_pool_address);
     liquidity_pool.reserves_a = liquidity_pool.reserves_a + 1000;
 }
 ```
@@ -247,23 +248,30 @@ struct CreateLiquidtyPoolEvent {
     reserves_b: u128,
 }
 
-public entry fun create_liquidity_pool_with_events() {
+public entry fun create_liquidity_pool_with_events(
+        token_a: Object<FungibleAsset>,
+        token_b: Object<FungibleAsset>,
+        reserves_a: u128,
+        reserves_b: u128
+) {
     let exchange_signer = &get_exchange_signer();
     let liquidity_pool_constructor_ref = &object::create_object_from_account(exchange_signer);
     let liquidity_pool_signer = &object::generate_signer(liquidity_pool_constructor_ref);
     let event_handle = object::new_event_handle<CreateLiquidtyPoolEvent>(liquidity_pool_signer);
-    event::emit<CreateLiquidtyPoolEvent>(event_handle, CreateLiquidtyPoolEvent {
-        token_a: token_a,
-        token_b: token_b,
-        reserves_a: reserves_a,
-        reserves_b: reserves_b,
+    event::emit_event<CreateLiquidtyPoolEvent>(&mut event_handle, CreateLiquidtyPoolEvent {
+        token_a: object::object_address(&token_a),
+        token_b: object::object_address(&token_b),
+        reserves_a,
+        reserves_b,
     });
-    let liquidity_pool = move_to(liquidity_pool_signer, LiquidityPool {
-        token_a: token_a,
-        token_b: token_b,
-        reserves_a: reserves_a,
-        reserves_b: reserves_b,
-        create_events: event_handle,
+    move_to(liquidity_pool_signer, LiquidityPool {
+        token_a,
+        token_b,
+        reserves_a,
+        reserves_b
+    });
+    move_to(liquidity_pool_signer, LiquidityPoolEventStore {
+        create_events: event_handle
     });
 }
 ```

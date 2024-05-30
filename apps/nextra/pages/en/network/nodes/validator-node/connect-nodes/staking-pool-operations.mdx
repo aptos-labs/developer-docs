@@ -6,7 +6,7 @@ import { Callout, Steps } from 'nextra/components';
 
 # Staking Pool Operations
 
-This document describes how to perform [staking](../../../blockchain/learn-about-aptos/staking.mdx) pool operations. Note that a staking pool can only accept stake
+This document describes how to perform [staking](../../../blockchain/staking.mdx) pool operations. Note that a staking pool can only accept stake
 from the stake pool owner. You can stake only when you meet the minimum staking requirement.
 
 <Callout type="info">
@@ -15,7 +15,7 @@ The current minimum staking requirement is 1 million APT.
 </Callout>
 
 See also the related
-[Delegation Pool Operations](./delegation-pool-operations.mdx) instructions to accept stake from multiple delegators in order to reach the minimum
+[Delegation Pool Operations](delegation-pool-operations.mdx) instructions to accept stake from multiple delegators in order to reach the minimum
 staking requirement.
 
 <Callout type="warning">
@@ -29,7 +29,7 @@ delegation pool must be created.
 <Callout type="info">
 **TESTNET VS MAINNET**<br/>
 The Aptos CLI commands below target mainnet. Change the `--network` value for testnet and devnet.
-View the values in [Aptos Blockchain Networks](../../../nodes/networks.mdx) to see how profiles can be configured based on the network.
+View the values in [Aptos Blockchain Networks](../../networks.mdx) to see how profiles can be configured based on the network.
 </Callout>
 
 Before initializing a staking pool, ensure that there is an existing owner account with 1 Million APT.
@@ -54,7 +54,7 @@ aptos stake create-staking-contract \
   --profile mainnet-owner
 ```
 
-3. Once the staking pool has been initialized, you can proceed to [connect to the Aptos Network](./connect-to-aptos-network.mdx).
+3. Once the staking pool has been initialized, you can proceed to [connect to the Aptos Network](connect-to-aptos-network.mdx).
 
 ## Perform pool owner operations
 
@@ -147,7 +147,7 @@ Once the beneficiary address is set, the beneficiary can claim the operator comm
 ## Checking your stake pool information
 
 <Callout type="info">
-Before you proceed, see [Validation on the Aptos blockchain](../../../blockchain/learn-about-aptos/staking.mdx#validation-on-the-aptos-blockchain) for a brief overview.
+Before you proceed, see [Validation on the Aptos blockchain](../../../blockchain/staking.mdx#validation-on-the-aptos-blockchain) for a brief overview.
 </Callout>
 
 To check the details of your stake pool, run the below CLI command with the `get-stake-pool` option by providing the `--owner-address` and `--url` fields.
@@ -155,7 +155,7 @@ To check the details of your stake pool, run the below CLI command with the `get
 The below command is for an example owner address `e7be097a90c18f6bdd53efe0e74bf34393cac2f0ae941523ea196a47b6859edb`.
 
 <Callout type="info">
-For testnet or devnet `--url` field values, see [Aptos Blockchain Networks](../../../nodes/networks.mdx).
+For testnet or devnet `--url` field values, see [Aptos Blockchain Networks](../../networks.mdx).
 </Callout>
 
 ```bash filename="Terminal"
@@ -311,7 +311,7 @@ Example output:
 
 **current_epoch_successful_proposals**
 
-- Successful leader-validator proposals during the current epoch. Also see [Validation on the Aptos blockchain](../../../blockchain/learn-about-aptos/staking.mdx#validation-on-the-aptos-blockchain) for the distinction between leader-validator and the voter-validator.
+- Successful leader-validator proposals during the current epoch. Also see [Validation on the Aptos blockchain](../../../blockchain/staking.mdx#validation-on-the-aptos-blockchain) for the distinction between leader-validator and the voter-validator.
 
 **previous_epoch_rewards**
 
@@ -334,5 +334,5 @@ aptos node analyze-validator-performance \
 
 `DistributeEvent` is emitted when there is a transfer from staking_contract to
 the operator or staker (owner). Rewards can be tracked either by listening to
-`DistributeEvent` or by using the View function {/* TODO: This link doesn't exist anymore! [View function](../../../../build/apis.mdx#reading-state-with-the-view-function) */}
+`DistributeEvent` or by using the [View function](../../../../build/apis.mdx#reading-state-with-the-view-function)
 to call `staking_contract_amounts`. This will return `accumulated_rewards` and `commission_amount`.

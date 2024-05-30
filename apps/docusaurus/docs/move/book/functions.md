@@ -581,8 +581,9 @@ There are plans to loosen some of these restrictions in the future, but for now,
 
 - Only inline functions can have function parameters.
 - Only explicit lambda expressions can be passed as an argument to an inline function's function parameters.
-- Inline functions and lambda expressions cannot have `return`, `break`, or `continue` expressions.
-- Inline functions or lambda expressions cannot return lambda expressions.
+- Inline functions and lambda expressions:
+  - cannot have `return` expressions; or free `break` or `continue` expressions (occurring outside of a loop).
+  - cannot return lambda expressions.
 - Cyclic recursion involving only inline functions is not allowed.
 - Parameters in lambda expressions must not be type annotated (e.g., `|x: u64| x + 1` is not allowed): their types are inferred.
 
@@ -593,3 +594,63 @@ There are plans to loosen some of these restrictions in the future, but for now,
 - Avoid marking large functions that are called at different locations as inline. Also avoid inline functions calling lots of other inline functions transitively.
   These may lead to excessive inlining and increase the bytecode size.
 - Inline functions can be useful for returning references to global storage, which non-inline functions cannot do.
+
+### Inline functions and references
+
+As mentioned briefly [in a "tip" above](#return-type) `inline` functions can use references more freely than normal functions.
+
+For example, actual arguments to a call to a non-`inline` function may not be aliased unsafely
+(multiple `&` parameters referring to the same object, with at least one of them `&mut`),
+but calls to `inline` functions do not necessarily have that restriction, as long as no reference
+usage conflicts remain after the function is inlined.
+
+```move
+inline fun add(dest: &mut u64, a: &u64, b: &u64) {
+    *dest = *a + *b;
+}
+
+fun user(...) {
+    ...
+    x = 3;
+    add(&mut x, &x, &x);  // legal only because of inlining
+    ...
+}
+```
+
+A reference-typed value returned from a non-inline function must be derived from a reference parameter
+passed to the function, but this need not be the case for an inline function, as long as the referred
+value is in the function scope after inlining.
+
+The exact details of reference safety and "borrow checking" are complex and documented elsewhere.
+Advanced Move users find new expressiveness by understanding that
+"borrow checking" happens only after all `inline` function calls are expanded.
+
+However, with this power comes new responsibility: documentation of a nontrivial `inline` function should
+probably explain any underlying restrictions on reference parameters and results at a call site.
+
+## Dot (receiver) function call style
+
+_Since language version 2.0_
+
+By using the well-known name `self` as the first parameter for a function declaration, one can enable calling this function with the `.` syntax -- often also called receiver style syntax. Example:
+
+```move
+module 0x42::example {
+    struct S {}
+
+    fun foo(self: &S, x: u64) { /* ... */ }
+
+    //...
+
+    fun example() {
+        let s = S {};
+        s.foo(1);
+    }
+}
+```
+
+The call `s.foo(1)` is syntactic sugar for `foo(&s, 1)`. Notice that the compiler automatically inserts the reference operator. The 2nd, old notation is still available for `foo`, so one can incrementally introduce the new call style without breaking existing code.
+
+The type of the `self` argument can be a struct or an immutable or mutable reference to a struct. The struct must be declared in the same module as the function.
+
+Notice that you do not need to `use` the modules which introduce receiver functions. The compiler will find those functions automatically based on the argument type of `s` in a call like `s.foo(1)`. This, in combination with the automatic insertion of reference operators, can make code using this syntax significantly more concise.

@@ -1,0 +1,252 @@
+---
+title: "TypeScript SDK Quickstart"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# TypeScript SDK Quickstart
+
+<Steps>
+### Install the TypeScript SDK using the package manager of your choice:
+
+```bash npm2yarn
+npm i @aptos-labs/ts-sdk
+```
+
+### Set up the `Aptos` client
+
+You can use the `Aptos` object to handle everything that requires a connection to the Aptos network. A connection is established as soon as you create the object.
+
+```ts filename="quickstart.ts"
+import { Aptos, AptosConfig} from "@aptos-labs/ts-sdk"
+
+// Specify which network to connect to via AptosConfig
+const aptosConfig = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(aptosConfig);
+```
+
+<Callout type="info">
+(Advanced) If you need to connect to a specific node, you can set that in the `AptosConfig` by specifying the `fullnode` url. Ex. `fullnode: http://localhost:8080/v1`.
+</Callout>
+
+### Fetch data from on-chain
+
+You can use the `Aptos` client to fetch all sorts of data from on-chain such as information about the network itself or account-specific information.
+
+```ts filename="quickstart.ts"
+const ledgerInfo = await aptos.getLedgerInfo();
+const modules = await aptos.getAccountModules({ accountAddress: "0x123" });
+const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
+```
+
+### Send Transactions
+
+You can send transactions to change the state of the ledger. Transactions let you send tokens like APT, trigger Move modules, trade NFTs, and more. You can find an in-depth tutorial on transactions [here](ts-sdk/building-transactions.mdx).
+
+To begin with though, here’s how you can send a basic transaction to transfer APT.
+
+#### 1. Create an Account
+
+To create a new account, you first generate new credentials then fund the account. On test networks you can fund an account programmatically by asking a "faucet" which has a lot of test APT to send some to your new account.
+
+```ts filename="quickstart.ts"
+// Generate a new account key pair
+const alice: Account = Account.generate();
+
+// Fund the account on chain. Funding an account creates it on-chain.
+await aptos.fundAccount({
+  accountAddress: alice.accountAddress,
+  amount: 100000000,
+});
+
+// Also create a second account to transfer tokens to
+const bob: Account = Account.generate();
+
+// Fund the account on chain
+await aptos.fundAccount({
+  accountAddress: bob.accountAddress,
+  amount: 100000000,
+});
+```
+
+#### 2. Build the Transaction
+
+You can build transactions with `aptos.transaction.build.simple({...})` by specifying:
+
+1. `sender` - The account that’s sending the transaction. This account will pay the gas fees.
+2. `data` - The information needed for Aptos to identify what transaction to execute.
+    1. `function` - Which smart contract on chain to call. This has the format `<account_address>::<move_module>::<function>`.
+    2. `functionArguments` - These are specific to the function being called. You can look up what parameters a function needs by searching for the account and module on chain with an explorer [like this](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000001/modules/code/aptos_account?network=mainnet).
+
+For example:
+
+```ts filename="quickstart.ts"
+const transaction = await aptos.transaction.build.simple({
+  sender: alice.accountAddress,
+  data: {
+	  // The Move entry-function
+    function: "0x1::aptos_account::transfer",
+    functionArguments: [bob.accountAddress, 100],
+  },
+});
+```
+
+<Callout type="info">
+For some situations, you can also use simplified functions in the SDK such as [`transferCoinTransaction`](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000001/modules/code/aptos_account?network=mainnet).
+</Callout>
+
+#### 3. Sign and Submit
+
+Signing proves that you own or manage the account that is executing the transaction. This is important since the sender must pay gas fees for the work the network does to execute the transaction.
+
+Once signed, you can submit to the network for on chain verification and execution.
+
+You can use `aptos.signAndSubmitTransaction` which combines those two steps into one:
+
+```ts filename="quickstart.ts"
+// Both signs and submits (although these can be done separately too)
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction,
+});
+```
+
+#### 4. Wait for completion
+
+You can run `aptos.waitForTransaction` to guarantee your code executes after the transaction has been processed and applied.
+
+This also helps you get any errors that may occur after submitting, such as the transaction being rejected.
+
+```ts filename="quickstart.ts"
+const executedTransaction = await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
+```
+</Steps>
+
+## Full Quickstart Code
+```ts filename="quickstart.ts"
+/**
+ * This example shows how to use the Aptos client to create accounts, fund them, and transfer between them.
+ */
+
+import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const APTOS_COIN = "0x1::aptos_coin::AptosCoin";
+const COIN_STORE = `0x1::coin::CoinStore<${APTOS_COIN}>`;
+const ALICE_INITIAL_BALANCE = 100_000_000;
+const BOB_INITIAL_BALANCE = 100;
+const TRANSFER_AMOUNT = 100;
+
+async function example() {
+  console.log(
+    "This example will create two accounts (Alice and Bob), fund them, and transfer between them.",
+  );
+
+  // Setup the client
+  const config = new AptosConfig({ network: Network.TESTNET });
+  const aptos = new Aptos(config);
+
+  // Generate two account credentials
+  // Each account has a private key, a public key, and an address
+  const alice = Account.generate();
+  const bob = Account.generate();
+
+  console.log("=== Addresses ===\n");
+  console.log(`Alice's address is: ${alice.accountAddress}`);
+  console.log(`Bob's address is: ${bob.accountAddress}`);
+
+  // Fund the accounts using a faucet
+  console.log("\n=== Funding accounts ===\n");
+
+  await aptos.fundAccount({
+    accountAddress: alice.accountAddress,
+    amount: ALICE_INITIAL_BALANCE,
+  });
+
+  await aptos.fundAccount({
+    accountAddress: bob.accountAddress,
+    amount: BOB_INITIAL_BALANCE,
+  });
+  console.log("Alice and Bob's accounts have been funded!");
+
+  // Look up the newly funded account's balances
+  console.log("\n=== Balances ===\n");
+  const aliceAccountBalance = await aptos.getAccountResource({
+    accountAddress: alice.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const aliceBalance = Number(aliceAccountBalance.coin.value);
+  console.log(`Alice's balance is: ${aliceBalance}`);
+
+  const bobAccountBalance = await aptos.getAccountResource({
+    accountAddress: bob.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const bobBalance = Number(bobAccountBalance.coin.value);
+  console.log(`Bob's balance is: ${bobBalance}`);
+
+  // Send a transaction from Alice's account to Bob's account
+  const txn = await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      // All transactions on Aptos are implemented via smart contracts.
+      function: "0x1::aptos_account::transfer",
+      functionArguments: [bob.accountAddress, 100],
+    },
+  });
+
+  console.log("\n=== Transfer transaction ===\n");
+  // Both signs and submits
+  const committedTxn = await aptos.signAndSubmitTransaction({
+    signer: alice,
+    transaction: txn,
+  });
+  // Waits for Aptos to verify and execute the transaction
+  const executedTransaction = await aptos.waitForTransaction({
+    transactionHash: committedTxn.hash,
+  });
+  console.log("Transaction hash:", executedTransaction.hash);
+
+  console.log("\n=== Balances after transfer ===\n");
+  const newAliceAccountBalance = await aptos.getAccountResource({
+    accountAddress: alice.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const newAliceBalance = Number(newAliceAccountBalance.coin.value);
+  console.log(`Alice's balance is: ${newAliceBalance}`);
+
+  const newBobAccountBalance = await aptos.getAccountResource({
+    accountAddress: bob.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const newBobBalance = Number(newBobAccountBalance.coin.value);
+  console.log(`Bob's balance is: ${newBobBalance}`);
+
+  // Bob should have the transfer amount
+  if (newBobBalance !== TRANSFER_AMOUNT + BOB_INITIAL_BALANCE)
+    throw new Error("Bob's balance after transfer is incorrect");
+
+  // Alice should have the remainder minus gas
+  if (newAliceBalance >= ALICE_INITIAL_BALANCE - TRANSFER_AMOUNT)
+    throw new Error("Alice's balance after transfer is incorrect");
+}
+
+example();
+```
+
+## Summary
+
+All told, you just learned how to transfer APT via a transaction by:
+
+1. Connecting to the network using the `Aptos` client.
+2. Creating an account.
+3. Looking up data from on-chain using client helper functions like [`aptos.getAccountModules`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.13.1/classes/Aptos.html#getAccountModules).
+4. Signing and submitting a transaction to the network.
+5. Waiting for Aptos to execute the transaction.
+
+To see all this in action, you can copy and run the full working code snippet for this quickstart above.
+
+<Callout type="info">
+For future development, make sure to bookmark the [reference docs](https://aptos-labs.github.io/aptos-ts-sdk/) to look up specific function signatures.
+
+Note that most helper functions are listed on the [`Aptos` client object](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.13.1/classes/Aptos.html).
+</Callout>

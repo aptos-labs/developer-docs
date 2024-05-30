@@ -2,12 +2,11 @@ export default {
   "indexer-reference": {
     title: "Indexer API Table Reference"
   },
-  "graphql-api": {
-    title: "GraphQL API",
-    theme: {
-      toc: false,
-      layout: "full",
-    },
+  "common-queries": {
+    title: "Common Indexer Queries",
+  },
+  architecture: {
+    title: "Architecture",
   },
   api: {
     title: "Indexer API",

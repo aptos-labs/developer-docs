@@ -11,11 +11,7 @@ export function TitleSection() {
   const quickStartButtonProps: ButtonProps = {
     variant: "primary",
     asChild: true,
-    children: (
-      <Link href={`${locale}/build/quick-start`}>
-        Quick Start <IconArrowTopRight />
-      </Link>
-    ),
+    children: <Link href={`/${locale}/build/quick-start`}>Quick Start</Link>,
   };
 
   const learnButtonProps: ButtonProps = {

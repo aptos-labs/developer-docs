@@ -77,6 +77,10 @@ Integrating with the AIP-62 wallet standard is pretty simple and straightforward
 To be compatible with AIP-62 wallet standard and for be able to be detected by dapps, wallets must implement and support [required features](https://github.com/aptos-labs/wallet-standard/blob/main/src/detect.ts#L16)
 :::
 
+:::note
+Make sure you use the [@aptos-labs/ts-sdk](https://www.npmjs.com/package/@aptos-labs/ts-sdk) SDK package
+:::
+
 ### AptosWallet interface implementation
 
 A wallet must implement an `AptosWallet` interface with the wallet provider info and features:
@@ -153,3 +157,20 @@ const myWallet = new MyWallet();
 
 registerWallet(myWallet);
 ```
+
+## My wallet is compatible with the AIP-62 standard, now what?
+
+If your wallet supports the AIP-62 Standard, you should be able to include it with the [aptos-wallet-adapter](https://github.com/aptos-labs/aptos-wallet-adapter) tool for a broad ecosystem visibility and support.
+
+### Is your wallet a chrome extension wallet?
+
+If your wallet is a chrome extension based wallet, please open up a PR against the [aptos-wallet-adapter](https://github.com/aptos-labs/aptos-wallet-adapter) repo and add your wallet to the [Adapter Wallet Registry](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/registry.ts#L15) so the tool can detect the wallet even if it is not istalled on the user machine
+
+### Is your wallet a SDK (npm package) wallet?
+
+If your wallet is a SDK based wallet, please open up a PR against the [aptos-wallet-adapter](https://github.com/aptos-labs/aptos-wallet-adapter) repo and
+
+- Add the wallet npm package as a dependency in the [adapter-core package](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/package.json)
+- Import your wallet and add it to the wallets array in the [adapter-core-package](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/sdkWallets.ts#L6)
+
+This will make sure you wallet is being added to the Adapter SDK Wallets list so the tool can add your wallet as part of the all suggested wallets

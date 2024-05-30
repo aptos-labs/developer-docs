@@ -1,0 +1,109 @@
+---
+title: GraphQL Editor
+---
+
+import { GraphQLEditor, Cards, Card } from '@components/index'
+import { Steps } from 'nextra/components'
+
+# GraphQL Editor
+
+`<GraphQLEditor />` is a custom component designed to be an interactive editor that enables users to make GraphQL queries to 
+Aptos Labs' hosted Hasura indexer.
+
+<GraphQLEditor
+query={`query MyQuery {
+  current_coin_balances(
+    where: { 
+      owner_address: {
+        _eq: "0x239589c5cfb0cc96f76fa59165a7cbb6ef99ad50d0acc34cf3a2585d861511be"
+      }
+    }
+  ) {
+    owner_address
+    amount
+  }
+}
+`}
+/>
+
+## Core Features
+
+The GraphQLEditor component includes several custom features that make it incredibly for developers to use
+
+### Network Switch
+
+Easily toggle between the public hasura endpoints for `mainnet`, `testnet`, and `devnet`. The network switch
+is located in the top right corner of the GraphQL Editor.
+
+### GraphQL Schema Docs
+
+The component automatically handles the loading of the GraphQL schema, searching, and more without extra effort
+from the docs writer.
+
+Easily inspect the attributes of your query by holding `⌘` and clicking on an attribute or table name.
+
+You can also search through the docs by clicking on the `Documentation Explorer` icon in the top right hand corner.
+
+### Dark Mode
+
+This component has been configured to work seamlessly with Nextra / Tailwind's dark mode and light mode without
+requiring any extra effort on behalf of the docs writer.
+
+## Usage
+
+Here is an example of how to use `<GraphQLEditor />`.
+
+<Steps>
+
+### Acquire GraphQL Query
+
+<Cards>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://indexer.mainnet.aptoslabs.com/v1/graphql">
+    <Card.Title linkType="external">Mainnet</Card.Title>
+    <Card.Description>GraphQL Mainnet Indexer Hasura Playground</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">
+    <Card.Title linkType="external">Testnet</Card.Title>
+    <Card.Description>GraphQL Testnet Indexer Hasura Playground</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">
+    <Card.Title linkType="external">Devnet</Card.Title>
+    <Card.Description>GraphQL Devnet Indexer Hasura Playground</Card.Description>
+  </Card>
+</Cards>
+
+### Add GraphQlEditor Component
+
+```mdx filename="indexer.mdx"
+import { GraphQLEditor } from '@components/index'
+
+...
+
+<GraphQLEditor
+query={`query MyQuery {
+  current_coin_balances(
+    where: { 
+      owner_address: {
+        _eq: "0x239589c5cfb0cc96f76fa59165a7cbb6ef99ad50d0acc34cf3a2585d861511be"
+      }
+    }
+  ) {
+    owner_address
+    amount
+  }
+}
+`}
+/>
+```
+
+</Steps>
+
+## API
+
+The `GraphQLEditor` component takes the following props:
+
+### `query`
+
+A stringified GraphQL query.
+
+- Type: `string`
