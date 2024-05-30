@@ -1,10 +1,10 @@
-import { i18nConfig } from './docs.config.js';
+import { i18nConfig, getOrigin } from './docs.config.js';
 
 /**
  * @type {import('next-sitemap').IConfig}
  */
 export default {
-  siteUrl: process.env.SITE_URL || "https://preview.aptos.dev",
+  siteUrl: getOrigin() || "https://preview.aptos.dev",
   changefreq: 'daily',
   priority: 0.7,
   sitemapSize: 5000,
