@@ -2,7 +2,7 @@
 // Unfortunately making this a .ts file is not easily doable atm
 // TODO: revisit this if time allows
 
-const getOrigin = () => {
+export const getOrigin = () => {
   if (process.env.NEXT_PUBLIC_ORIGIN) {
     return process.env.NEXT_PUBLIC_ORIGIN;
   } else {

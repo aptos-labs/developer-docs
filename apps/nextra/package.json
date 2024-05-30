@@ -11,7 +11,7 @@
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "dev": "next -p 3030",
     "prebuild": "node nextra-remote-filepaths/fetch.js",
-    "postbuild": "node postbuild.js && next-sitemap --config next-sitemap.config.mjs",
+    "postbuild": "next-sitemap --config next-sitemap.config.mjs; node generate-language-sitemaps.cjs; node generate-sitemap-index.cjs",
     "predev": "pnpm prebuild",
     "start": "next start -p 3030",
     "types:check": "tsc --noEmit",
@@ -44,7 +44,8 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.2",
     "react-intersection-observer": "^8.26.2",
-    "tailwind-merge": "^2.2.2"
+    "tailwind-merge": "^2.2.2",
+    "xml2js": "^0.6.2"
   },
   "dependenciesMeta": {
     "nextra": {
