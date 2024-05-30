@@ -35,7 +35,7 @@ export default {
       },
       cli: {
         title: "CLI",
-      }
+      },
     },
   },
   network: {
