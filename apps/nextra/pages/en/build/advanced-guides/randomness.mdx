@@ -114,7 +114,10 @@ where:
 - `let winner_idx = aptos_framework::randomness::u64_range(0, n);` is the a randomness API call that returns a u64 integer in range `[0, n)` uniformly at random.
 - `#[randomness]` is a required attribute to enable the API call at runtime.
 
-Note: there are security nuances to consider, explained in more details in "Security Considerations" section. Compiler helps with test and abort attacks by requiring functions using randomness to be private. On the other hand, randomness API currently doesn’t prevent undergassing attacks, and so code needs to be written in a specific way to avoid it.
+<Callout type="info">
+### Security Considerations
+Compiler helps with test and abort attacks, requiring functions using randomness to be private.  However, the randomness API current does not prevent undergassing attacks.  The smart contract will be need to be written in a certain way to avoid it.
+</Callout>
 
 ## How to use Aptos randomness API
 
@@ -140,7 +143,9 @@ alias aptos=target/debug/aptos
 
 ### Keep undergasing attacks in mind
 
-**WARNING: randomness API currently doesn’t prevent undergassing attacks.** Carefully read undergassing section to understand undergassing attack and how to prevent it, to make sure you, as a dApp developer, design applications using randomness in the safe way.
+<Callout type="warning">
+**The randomness API currently doesn’t prevent undergassing attacks.** Carefully read the undergassing section to understand about undergassing attacks and how to prevent them. As a dApp developer, you will need to design applications using randomness with safety in mind.
+</Callout>
 
 ### Identify randomness-dependent entry functions and make them compliant
 
@@ -286,7 +291,7 @@ module module_owner::lottery {
 Imagine such a dApp. It defines a private entry function for a user to:
 
 1. toss a coin (gas cost: 9), then
-2. get a reward (gas cost: 10) if coin=1, do some cleanup (gas cost: 100) otherwise.
+2. get a reward (gas cost: 10) if coin=1, or do some cleanup (gas cost: 100) otherwise.
 
 A malicious user can control its account balance so it covers at most 108 gas units (or set transaction parameter `max_gas=108`),
 and the cleanup branch (total gas cost: 110) will always abort with an out-of-gas error.
