@@ -1,0 +1,132 @@
+---
+title: "Developer Setup"
+---
+
+import { Tabs, Tab, Steps } from 'nextra/components'
+import { Cards, Card } from '@components/index'
+
+# Developer Setup
+
+Here is an easy way to setup your environment depending on the type of development.
+
+<Tabs items={['Frontend', 'Smart Contract']}>
+{/* Frontend */}
+<Tabs.Tab>
+<Steps>
+
+### Initialize Frontend Project
+
+Here are some examples of popular choices:
+
+<Tabs items={['Next.js', 'Vite (TS)']}>
+<Tabs.Tab>
+```bash filename="Terminal"
+pnpx create-next-app@latest
+```
+</Tabs.Tab>
+<Tabs.Tab>
+```bash filename="Terminal"
+pnpx create vite my-aptos-app --template react-ts
+```
+</Tabs.Tab>
+</Tabs>
+
+### Install `@aptos-labs/ts-sdk`
+
+```bash npm2yarn
+npm i @aptos-labs/ts-sdk
+```
+
+### Setup TS SDK
+
+<Cards>
+  <Card href="../sdks/ts-sdk/quickstart">
+    <Card.Title>TS SDK Quickstart</Card.Title>
+    <Card.Description>See how to setup your account, network, use the faucet, send / simulate transactions, and more</Card.Description>
+  </Card>
+</Cards>
+
+### Build your app!
+
+The developer setup for using Aptos in your frontend is now complete.
+Checkout our other tools that streamline the development process
+
+<Cards>
+  <Card href="../indexer">
+    <Card.Title>Indexer</Card.Title>
+    <Card.Description>Efficiently query for on-chain state like balances, transaction activity, token data, and more</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript">
+    <Card.Title linkType="external">TS SDK Examples</Card.Title>
+    <Card.Description>20+ Examples of how to use the TS SDK</Card.Description>
+  </Card>
+  <Card href="https://developers.aptoslabs.com/">
+    <Card.Title linkType="external">API Gateway</Card.Title>
+    <Card.Description>Hitting rate limits for Fullnode API / Indexers? Get an API Key here</Card.Description>
+  </Card>
+</Cards>
+
+</Steps>
+</Tabs.Tab>
+
+{/* Smart Contract */}
+<Tabs.Tab>
+<Steps>
+
+### Install CLI
+
+<Cards>
+  <Card href="../cli">
+    <Card.Title>Aptos CLI</Card.Title>
+    <Card.Description>
+      Instructions for how to install Aptos CLI
+    </Card.Description>
+  </Card>
+</Cards>
+
+### Setup Editor or IDE
+
+Add the following extensions to your editor of choice to make Move Development easier
+
+<Tabs items={['JetBrains IDE', 'VSCode']}>
+  <Tabs.Tab>
+    <Cards>
+      <Card href="https://plugins.jetbrains.com/plugin/14721-move-language">
+        <Card.Title linkType="external">Move Language</Card.Title>
+        <Card.Description>Language server and syntax highlighter for JetBrains IDEs like CLion, Rust Rover, WebStorm, IntelliJ</Card.Description>
+      </Card>
+    </Cards>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <Cards>
+      <Card href="https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer">
+        <Card.Title linkType="external">Aptos Move Analyzer</Card.Title>
+        <Card.Description>Language server and syntax highlighter for VSCode</Card.Description>
+      </Card>
+    </Cards>
+  </Tabs.Tab>
+</Tabs>
+
+### Create Smart Contract
+
+Navigate to your application folder and initialize a new smart contract by doing:
+
+```sh filename="Terminal"
+aptos move init --name my_todo_list
+```
+
+### Build, Compile, and Deploy Smart Contract!
+
+The developer setup for using Aptos for smart contracts is now complete.
+For more info see the link to the Dapp tutorial below
+
+<Cards>
+  <Card href="../tutorials/build-e2e-dapp/1-create-smart-contract#what-is-a-movetoml-file">
+    <Card.Title>Create Smart Contract Tutorial</Card.Title>
+    <Card.Description>An easy todo list tutorial for how to setup a smart contract with Move</Card.Description>
+  </Card>
+</Cards>
+
+</Steps>
+</Tabs.Tab>
+</Tabs>
