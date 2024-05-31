@@ -7,14 +7,14 @@ export default {
     },
   },
   "---": {
-    type: "separator"
+    type: "separator",
   },
   "ethereum-cheatsheet": {
-    title: "Ethereum to Aptos Cheatsheet"
+    title: "Ethereum to Aptos Cheatsheet",
   },
   "solana-cheatsheet": {
-    title: "Solana to Aptos Cheatsheet"
-  }
+    title: "Solana to Aptos Cheatsheet",
+  },
   // TODO: Will uncomment when ready for use
   // "create-aptos-dapp": {
   //   title: "create-aptos-dapp",

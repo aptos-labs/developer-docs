@@ -2,27 +2,28 @@
 title: "Get Started"
 ---
 
-import { Cards, Card, } from '@components/index';
+import { Cards, Card, GraphQLEditor } from '@components/index';
 
 # Get Started
 
-A quick start by asking questions that describe what you are looking for.
-
-{ /* TODO add highlights before the rest */ }
 ## What would you like to learn?
 
-{/* TODO: Do we go more in depth? */}
+<Cards>
+  <Card href="./smart-contracts">
+    <Card.Title>Smart Contracts</Card.Title>
+    <Card.Description>Learn how to write smart contracts on Aptos with the Move programming language.</Card.Description>
+  </Card>
+  <Card href="./indexer">
+    <Card.Title>Query Data</Card.Title>
+    <Card.Description>Use the Aptos Indexer to query for on-chain data efficiently.</Card.Description>
+  </Card>
+  <Card href="../network/blockchain/blockchain-deep-dive">
+    <Card.Title>Blockchain Infrastructure</Card.Title>
+    <Card.Description>Learn the different components of the Aptos blockchain's infrastructure.</Card.Description>
+  </Card>
+</Cards>
 
-Let's start by choosing which question you're asking
-
-* [Looking for how to write Smart Contracts?](#looking-for-how-to-write-smart-contracts)
-* [Looking for how to connect your app to the Blockchain?](#looking-for-how-to-connect-your-app-to-the-blockchain)
-* [Looking to learn more about the Aptos Blockchain?](#looking-to-learn-more-about-the-aptos-blockchain)
-* [Looking on how to set up a full node or validator?](#looking-on-how-to-set-up-a-full-node-or-validator)
-* [Not sure what I am looking for?](#not-sure-what-i-am-looking-for)
-
-
-## Developer Tools
+## What developer tools should I use?
 
 <Cards>
   <Card href="./sdks">
@@ -39,79 +40,110 @@ Let's start by choosing which question you're asking
   </Card>
 </Cards>
 
-## Looking for how to write Smart Contracts?
+Here's an interactive example of our [Indexer](indexer) and how you can query for the Current Coin Balances of an account. More usage examples can be found in [common queries](indexer/common-queries.mdx).
 
-We provide three ways to learn Move, the Smart Contract language.  You can learn
-by tutorials, examples, or by reference documentation.
+<GraphQLEditor
+  query={`query GetCoinBalances($address: String, $offset: Int) {
+  current_coin_balances(
+    where: {owner_address: {_eq: $address}},
+    offset: $offset,
+    limit: 100,
+    order_by: {amount: desc}
+  ) {
+    coin_type
+    amount
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "offset": 0
+}`}
+/>
 
-### Learn by Interactive Tutorials
+## Coming from another ecosystem?
 
-Learn Move with interactive tutorials from these
+Quickly ramp up on some of the differences and similarities between Aptos and other ecosystems.
 
-- Basic and advanced tutorials on [Aptos Learn](https://learn.aptoslabs.com/tutorials)
-- Learn about Move with a friendly spider mascot by [Move Spiders](https://movespiders.com)
-- Have fun learning Move with [Aptos Shores](https://www.aptosshores.com)
+<Cards>
+  <Card href="./get-started/ethereum-cheatsheet">
+    <Card.Title>Ethereum / EVM to Aptos Cheatsheet</Card.Title>
+    <Card.Description></Card.Description>
+  </Card>
+  <Card href="./get-started/solana-cheatsheet">
+    <Card.Title>Solana / SVM to Aptos Cheatsheet</Card.Title>
+    <Card.Description></Card.Description>
+  </Card>
+  <Card href="../network/blockchain/move#comparison-to-other-vms">
+    <Card.Title>VM Comparison</Card.Title>
+    <Card.Description></Card.Description>
+  </Card>
+</Cards>
 
-### Learn by Examples
+## Do you have any examples?
 
-Check out some examples of code in the Move language to learn how common tasks
-can be done in Move!
+We've got all kinds of examples and tutorials, catered to what you're looking for.
 
-- Some Move examples on [Aptos Learn](https://learn.aptoslabs.com/examples)
-- A set of Move examples in the [Aptos core move examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples)
+### End-to-end tutorials
 
+<Cards>
+  <Card href="./tutorials/first-transaction">
+    <Card.Title>Your First Transaction</Card.Title>
+    <Card.Description>This tutorial describes how to generate and submit transactions to the Aptos blockchain, and verify these submitted transactions.</Card.Description>
+  </Card>
+  <Card href="./tutorials/your-first-nft">
+    <Card.Title>Your First NFT</Card.Title>
+    <Card.Description>This tutorial describes how to create and transfer non-fungible assets on the Aptos blockchain.</Card.Description>
+  </Card>
+    <Card href="./tutorials/first-fungible-asset">
+    <Card.Title>Your First Fungible Asset</Card.Title>
+    <Card.Description>This tutorial introduces how you can compile, deploy, and mint your own fungible asset (FA), named FACoin.</Card.Description>
+  </Card>
+</Cards>
 
-### Learn by Reference Documentation
+### Smart Contract Tutorials
 
-Check out these more involved docs to learn how to code in Move:
+See the [Smart Contract](./smart-contracts) section for more info
 
-- [Learn via the Move Book](smart-contracts/learn-move/book.mdx)
-- [Learn more details on Move on Aptos](smart-contracts.mdx)
-- [Learn about the Move Prover](smart-contracts/learn-move/prover.mdx)
+<Cards>
+  <Card href="./tutorials/build-e2e-dapp/1-create-smart-contract">
+    <Card.Title>Create a Smart Contract</Card.Title>
+    <Card.Description>This is the first chapter of the tutorial on building an end-to-end dapp on Aptos.</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples">
+    <Card.Title linkType="external">Aptos Move Examples</Card.Title>
+    <Card.Description>30+ examples on how to develop Move on Aptos</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial">
+    <Card.Title linkType="external">Move Tutorial</Card.Title>
+    <Card.Description>Covers the basics of programming with Move</Card.Description>
+  </Card>
+</Cards>
 
-## Looking for how to connect your app to the Blockchain?
+### Interactive tutorials
 
-We provide documentation around three main areas for applications.  How to build
-an app on Aptos, how to integrate your wallet with the blockchain (and apps),
-and how to integrate your existing app to the blockchain.
+<Cards>
+  <Card href="https://learn.aptoslabs.com/tutorials">
+    <Card.Title linkType="external">Aptos Learn</Card.Title>
+    <Card.Description>Basic and advanced tutorials</Card.Description>
+  </Card>
+  <Card href="https://movespiders.com">
+    <Card.Title linkType="external">Move Spiders</Card.Title>
+    <Card.Description>Learn about Move with a friendly spider mascot by Move Spiders</Card.Description>
+  </Card>
+  <Card href="https://www.aptosshores.com">
+    <Card.Title linkType="external">Aptos Shores</Card.Title>
+    <Card.Description>Learn about Move with Aptos Shores</Card.Description>
+  </Card>
+</Cards>
 
-### Build your app
+## How do I setup a full node or validator?
 
-{/* TODO add the e2e dapp tutorial? /*}
-- Language specific [SDK documentation](sdks.mdx)
-- Interactive [Aptos CLI](cli.mdx) for compiling contracts and interacting with the blockchain
-- Learn about the [Node APIs](apis.mdx) and how they interact with the blockchain
-- Learn about [indexing](indexer.mdx) and how it can help your application scale
-- Learn about [standards on the Aptos blockchain](smart-contracts/aptos-standards.mdx)
-- Learn about how to [develop locally with a localnet](cli/running-a-local-network.mdx)
-
-### Build your wallet
-
-{/* TODO add new wallet standards */}
-- Learn about the [wallet adapter](sdks/wallet-adapter.mdx)
-
-### Integrate your existing app
-
-{/* TODO add more in depth / better guides */}
-- Learn about [integrating your existing application directly](advanced-guides/system-integrators-guide.mdx)
-
-## Looking to learn more about the Aptos blockchain?
-
-Here are some documents on concepts and how the blockchain works:
-
-- Start with [learning about aptos](../network/blockchain.mdx)
-- Read the [Aptos white paper](../network/blockchain/aptos-white-paper.mdx)
-
-## Looking on how to set up a full node or validator?
-
-Here are two sections on how to run and troubleshoot nodes:
-
-- [Setup a full node](../network/nodes/full-node.mdx)
-- [Setup a validator](../network/nodes/validator-node.mdx)
-
-## Not sure what I am looking for?
-
-If you're not sure what you're looking for, feel free to:
-- [Submit your first transaction](https://learn.aptoslabs.com/my-first-series/transaction)
-- Start with [learning about aptos](../network/blockchain.mdx)
-- Try some other basic tutorials on [Aptos Learn](https://learn.aptoslabs.com/tutorials)
+<Cards>
+  <Card href="../network/nodes/full-node">
+    <Card.Title>Setup a full node</Card.Title>
+  </Card>
+  <Card href="../network/nodes/validator-node">
+    <Card.Title>Setup a validator</Card.Title>
+  </Card>
+</Cards>
