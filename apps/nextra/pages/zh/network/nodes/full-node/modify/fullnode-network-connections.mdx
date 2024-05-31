@@ -1,75 +1,67 @@
 ---
-title: "Customize PFN Networks"
+
+title: "自定义 PFN 网络"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Customize PFN Networks
+# 自定义 PFN 网络
 
 <Callout type="warning">
-**Advanced customization**<br />
-Most PFN operators will not need to customize their PFN's network connections. This is only required
-for advanced use cases, such as connecting to specific peers, or configuring a private PFN. If you do
-not have a relevant use case, you should avoid making changes to your PFN's network connections.
+**高级自定义**<br />
+大多数 PFN 运营者不需要自定义他们的 PFN 网络连接。只有在一些特殊的高级场景下才需要进行此类配置，例如连接到特定的对等节点（peers），或者配置一个私有的 PFN。如非特定应用场景所需，请避免对您的 PFN 网络连接作出修改。
+
 </Callout>
 
-When running a PFN, you can configure your node's network connections for a few different purposes.
-For example, you can add a seed peer to your node's configuration to connect your node to a specific
-peer of your choosing. Or you can leverage a static network identity for your PFN to allow other nodes
-to connect to you, as described in [Generate a PFN Identity](network-identity-fullnode.mdx).
+在运行 PFN 的过程中，您可以出于不同的目的来设置节点的网络连接配置。比如，您可以向节点的配置中添加一条种子节点信息，以实现您的节点与您挑选的特定对等节点（peer）建立连接。或者，您还可以如[生成 PFN 身份](network-identity-fullnode.mdx)文档中描述的那样，设置一个静态的网络身份，让其他节点能够连接到您的 PFN。
 
-This document outlines how to configure the network of your PFN for different use cases, including:
+本文档概述了如何根据不同的情况配置您的 PFN 网络，包括：
 
-- Allowing nodes to connect to your PFN.
-- Connecting your PFN to seed peers.
-- Configuring priority access for other PFNs.
-- Configuring your PFN as a private PFN.
+- 允许节点连接到您的 PFN。
+- 将您的 PFN 连接到种子对等节点（seed peer）。
+- 为其他 PFN 配置优先访问。
+- 配置您的 PFN 作为私有 PFN。
 
-## Allowing PFN connections
+## 允许 PFN 连接
 
 <Callout type="info">
-**Generate a static identity**<br />
-Before allowing other nodes to connect to your PFN, you will need to create a static identity. See [Generate a PFN Identity](network-identity-fullnode.mdx).
+**生成静态身份**<br />
+在允许其他节点连接到您的 PFN 之前，您需要创建一个静态身份。见[生成 PFN 身份](network-identity-fullnode.mdx)。
 </Callout>
 
-Once you start your PFN with a static identity you can allow others to connect to your PFN:
+一旦您使用静态身份启动了 PFN，您可以允许其他人连接到您的 PFN：
 
 <Callout type="info">
-**Default port settings**<br />
-In the steps below, the port numbers used are for illustration only. You can use your choice of port numbers.
-See [PFN Requirements](../pfn-requirements.mdx) for more information on port settings.
+**默认端口设置**<br />
+以下步骤中出现的端口号只是作为演示使用的实例，您可以根据个人需求选择不同的端口号。更多关于端口配置的详细信息，请参阅[PFN 要求](../pfn-requirements.mdx)。
 </Callout>
 
-- Make sure you open the TCP port of the network you wish to allow external connections on (e.g., `6180` or `6182`).
-  This is required to allow other nodes to connect to your PFN.
-- If you are using Docker, simply add `- "6180:6180"` or `- "6182:6182"` under ports in your `docker-compose.yaml` file.
-- Share your PFN static network identity with others. They can then use it in the `seeds` key of their node's
-  configuration file to connect to your PFN. See the section below.
-- Make sure the port number you put in the `addresses` matches the one you have in the PFN configuration file
-  (for example, `6180` or `6182`).
+- 请确保开放您想要允许外部连接使用的 TCP 端口（如 `6180` 或 `6182` ）。这一步骤对于让其他节点能够连接到您的 PFN 是必须的。
+- 如果您正在使用 Docker，在 `docker-compose.yaml` 文件的端口部分只需要添加 `- "6180:6180"` 或 `- "6182:6182"` 。
+- 与他人分享您的 PFN 静态网络身份。然后，他们可以在节点的配置文件的 `seeds` 键中使用它连接到您的 PFN。详见以下部分。
+- 确保您在 `addresses` 中配置的端口号与您在 PFN 配置文件中配置的端口号相匹配（例如， `6180 `或 `6182`）。
 
 <Callout type="info">
-You can share your PFN's network identity in our Discord to advertise your node for others to connect to. Note:
-this is optional (and not required!).
+您可以通过我们的 Discord 分享您的 PFN 的网络身份，以宣传您的节点供其他人连接。这项操作是可选的，不是强制性要求。
 </Callout>
 
-The snippets below show the configuration file entries and format for allowing other nodes to connect to your PFN.
-The format of each seed peer entry should have a unique `peer_id`, list of `addresses`, and a `role`:
+下面的片段显示了允许其他节点连接到您的 PFN 的配置文件条目和格式。每个种子对等节点（seed peer）条目的格式应具有唯一的 `peer_id`、 `addresses` 列表和 `role`：
 
 ```yaml filename="docker-compose.yaml"
 <Peer_ID>:
   addresses:
-  # with DNS
+  # 使用 DNS
   - "/dns4/<DNS_Name>/tcp/<Port_Number>/noise-ik/<Public_Key>/handshake/0"
   role: Upstream
 <Peer_ID>:
   addresses:
-  # with IP
+  # 使用 IP
   - "/ip4/<IP_Address>/tcp/<Port_Number>/noise-ik/<Public_Key>/handshake/0"
   role: Upstream
 ```
 
-For example:
+例如：
 
 ```yaml filename="docker-compose.yaml"
 B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813:
@@ -82,25 +74,20 @@ B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813:
   role: "Upstream"
 ```
 
-## Connecting to seed peers
+## 连接到种子对等节点
 
 <Callout type="warning">
-**Seeds are not required**<br />
-Seed peers are not required for your PFN to connect to any Aptos network. All networks (e.g., devnet, testnet
-and mainnet) are automatically discoverable. Adding seed peers should only be done if you wish to
-connect to a specific peer (or set of peers), and are confident that the peers are high quality.
-</Callout>
+**种子（seed）不是必须的**<br />
+您的 PFN 无需依赖种子对等节点（seed peer）也能连接到任意 Aptos 网络。无论是开发网（devnet）、测试网（testnet）还是主网（mainnet），系统都能自动识别它们。您仅在希望连接特定的高质量节点（或节点集，set of peer）时，才需要添加种子对等节点。
 
-To add seed peers to your PFN, the seed peers' addresses should be added to your PFN configuration file, under
-the `seeds` key in the public network configuration. Each seed peer entry should have a unique `peer_id`, list of
-`addresses`, and a `role` (e.g., `Upstream`). The snippet below shows an example
-of a configuration file with seed peers manually added:
+</Callout>
+要把种子对等节点添加到您的 PFN，您需要在 PFN 的配置文件中添加种子对等节点的地址，具体位置是公共网络配置中的 `seeds` 配置项。每一个种子对等节点的信息包括一个独一无二的 `peer_id`、`addresses` 列表，以及 `role` 的角色（比如 `Upstream`）。以下是一个配置文件的示例，其中手动添加了种子对等节点：
 
 ```yaml
 full_node_networks:
   - discovery_method: "onchain"
     listen_address: ...
-    seeds: # All seeds are declared below
+    seeds: # 所有种子都在下面声明
       bb14af025d226288a3488b4433cf5cb54d6a710365a2d95ac6ffbd9b9198a86a:
         addresses:
           - "/dns4/pfn0.node.devnet.aptoslabs.com/tcp/6182/noise-ik/bb14af025d226288a3488b4433cf5cb54d6a710365a2d95ac6ffbd9b9198a86a/handshake/0"
@@ -115,48 +102,42 @@ full_node_networks:
         role: "Upstream"
 ```
 
-## Configuring priority access
+## 配置优先访问
 
-To configure your PFN to allow other nodes to connect to it even when your PFN has hit the maximum number
-of available network connections, follow this method:
+要配置您的 PFN 允许其他节点即使在您的 PFN 达到最大可用网络连接数时也能连接到它，请遵循以下方法：
 
-In the configuration file for your PFN add the other node as a seed peer with the `Downstream` role.
-This will allow the other node to connect directly to you with priority access. For example:
+在您的 PFN 的配置文件中，将其他节点作为种子对等节点添加，并使用 `Downstream` 角色。这将允许其他节点直接连接到您，并获得优先访问权。例如：
 
 ```yaml
 seeds:
-  <other node's peer id>
+  <其他节点的对等ID>
     addresses:
-    - <address of the other node>
-    role: Downstream # Allows the node to connect to us
+    - <其他节点的地址>
+    role: Downstream # 允许节点连接到我们
 ```
 
-Similarly, to make the other node dial out to your PFN, add the following to the other node's configuration file:
+类似地，要使其他节点主动连接到您的 PFN，请让其他节点的配置文件中添加以下内容：
 
 ```yaml
 seeds:
-  <your node's peer id>
+  <您的节点的对等ID>
     addresses:
-    - <address of your npde>
-    role: PreferredUpstream # Allows the node to connect to the seed peer
+    - <您的节点的地址>
+    role: PreferredUpstream # 允许节点连接到种子对等节点
 ```
 
-## Configuring private PFNs
+## 配置私有 PFN
 
-You can also configure your PFN as a private PFN should you wish. What this means is that your PFN will
-not allow unauthenticated connections, specifically, any node that is not a validator, VFN or seed peer
-will be unable to connect to your PFN.
+如果您希望，您也可以将您的 PFN 配置为私有 PFN。这意味着您的 PFN 将不允许未经身份验证的连接，具体来说，任何不是验证器、VFN 或种子对等节点的节点都将无法连接到您的 PFN。
 
-To configure your PFN as a private PFN, add the following to your PFN configuration file. Note, you
-should add this to the public network entry in the `full_node_networks` configuration:
+要将您的 PFN 配置为私有 PFN，请在您的 PFN 配置文件中添加以下内容。注意，您应该将其添加到 `full_node_networks` 配置中的公共网络条目中：
 
 ```yaml
 ...
 full_node_networks:
   - discovery_method: "onchain"
     listen_address: ...
-    max_inbound_connections: 0  # Prevents any unauthenticated inbound connections
-    mutual_authentication: true  # Requires authenticated connections
-    ...
+    max_inbound_connections: 0  # 防止任何未经身份验证的传入连接
+    mutual_authentication: true  # 需要身份验证的连接
 ...
 ```

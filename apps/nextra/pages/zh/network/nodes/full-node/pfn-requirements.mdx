@@ -1,85 +1,67 @@
 ---
-title: "PFN Requirements"
+
+title: "PFN 需求"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# PFN Requirements
+# PFN 需求
 
-To ensure that your public fullnode (PFN) operates smoothly, it should meet the requirements specified in this document.
+为确保您的公共全节点（PFN）运行顺畅，它应满足本文档中指定的要求。
 
-## Hardware requirements
+## 硬件需求
 
-For running a production-grade PFN, we recommend that your hardware meet the same requirements as a
-validator or VFN. You can see the hardware requirements for these nodes, here: [validator and VFN hardware requirements](../validator-node/node-requirements.mdx#hardware-requirements).
+对于运行生产级的 PFN，我们建议您的硬件与验证器或 VFN 的配置相同。您可以在这里查看这些节点的硬件要求：[验证器和 VFN 的硬件要求](../validator-node/node-requirements.mdx#hardware-requirements)。
 
-If you wish to run a PFN for development or testing only, lower hardware specs can be used. But, it should not be
-used in production as it will experience degradation under load. Example lower hardware specs for a PFN are:
+如果您只想为开发或测试运行 PFN，可以使用较低的硬件规格。但是，它不应该在生产环境使用。例如：
 
-- **CPU**: 8 cores, 16 threads (Intel Xeon Skylake or newer).
-- **Memory**: 32GB RAM.
+- **CPU**: 8 核，16 线程（Intel Xeon Skylake 或更新版本）。
+- **内存**: 32GB RAM。
 
 <Callout type="warning"> 
-**Minimum hardware requirements**<br />
-Failing to meet the minimum hardware requirements for a production-grade PFN mean that your
-PFN will likely experience degradation under load and general instability in production environments.
+**最低硬件要求**<br />
+如果您的 PFN 没有达到生产环境所必需的最低硬件标准，那么在面对高负荷工作时，PFN 很可能会出现运行缓慢和稳定性方面的问题。
 </Callout>
 
-## Network requirements and ports
+## 网络要求和端口
 
-When you are running a PFN, you are required to open network ports on your nodes to allow other nodes (i.e., peers)
-to connect to you. There are different Aptos network types, and each network type uses a different port. However,
-the only network type that a PFN uses is the public network, where PFNs to connect to other PFNs and VFNs.
+运行 PFN 的时候，您必须开放节点的网络端口，这样其他节点（对等节点，Peers）才可以连接到您的节点。Aptos 网络有多种类型，每种类型都使用不同的端口。不过，PFN 使用的是公共网络类型，使得各个 PFN 与 VFN（验证器全节点）之间能够互相连接。
 
-Your PFN can be configured so that the public network operates using a specific port on your node. You can configure
-the port settings using the node configuration YAML file. Here is an [example
-configuration file](https://github.com/aptos-labs/aptos-core/blob/main/config/src/config/test_data/public_full_node.yaml#L16) for a PFN
-that configures the public network to use port `6180`.
+您可以配置 PFN，以便公共网络能在您的节点上使用特定的端口。您可以使用节点配置 YAML 文件配置端口设置。这里是一个 PFN 的[示例配置文件](https://github.com/aptos-labs/aptos-core/blob/main/config/src/config/test_data/public_full_node.yaml#L16)，配置公共网络时，使用的端口是 `6180`。
 
-### Port settings
+### 端口设置
 
-The recommendations described below assume the default port settings used by PFNs. If you have
-changed the default port settings in your configuration file, then you should adjust the recommendations accordingly.
+以下建议是基于 PFN （公共全节点）使用默认端口设置的前提提出的。如果您已经在配置文件中修改了默认的端口设置，那么你需要根据实际情况来适当调整这些建议中的描述，以使其适用于您的配置。
 
 <Callout type="warning"> 
-**Exposing ports**<br />
-Unless explicitly required, we recommend that you do not expose any other ports while operating a PFN. This is because
-exposing additional ports can increase the attack surface of your node and make it more vulnerable to adversaries.
+**暴露端口**<br />
+除特别指明的情况外，我们建议您在运行 PFN（公共全节点）时，不要开放任何非必需的其他网络端口。这样做的原因是，额外开放的端口可能会增大您节点的面临的风险，从而让节点更容易受到潜在风险引起的攻击。
 </Callout>
 
-#### Running a PFN:
+#### 运行 PFN：
 
-Assuming default ports are used, the following should be configured for PFNs:
+假设使用了默认端口，以下是 PFN 应配置的：
 
-- Open the following TCP ports:
-  - `6182` – **Public network**: Open this port publicly to enable other PFNs to connect to your PFN.
-- Close the following TCP ports:
-  - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
-  - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
-  - `80/8080` - **REST API**: Close this port to prevent unauthorized REST API access.
+- 打开以下 TCP 端口：
+  - `6182` – **公共网络**：打开此端口，并公开以允许其他 PFN 连接到您的 PFN。
+- 关闭以下 TCP 端口：
+  - `9101` – **检查服务**：关闭此端口以防止未经授权的指标检查。
+  - `9102` – **管理服务**：关闭此端口以防止未经授权的管理服务交互。
+  - `80/8080` - **REST API**：关闭此端口以防止未经授权的 REST API 访问。
 
 <Callout type="warning"> 
-**Exposing services**<br />
-The inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
-are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
-port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
-to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to
-prevent abuse.
+**暴露服务**<br />
+请注意，对于您的内部网络而言，如应用开发和调试，检查服务端口（9101）、管理服务端口（9102）以及 REST API 端口（80 或 8080）可能会很有帮助。然而，检查服务端口和管理服务端口绝对不能公开到外网，因为很容易被滥用。同样地，如果您决定将 REST API 端点公开到外网，您应当部署额外的安全措施，比如认证机制或流量限制，以避免被滥用。
 </Callout>
 
-## Storage requirements
+## 存储需求
 
-The amount of data stored by Aptos PFNs depends on the ledger history (length) of the blockchain and the number of
-on-chain states (e.g., accounts and resources). Both the ledger history and the number of
-on-chain states depend on several additional factors, including the age of the blockchain, the average transaction
-rate over time, and the configuration of the ledger database pruner. At the time of writing, we estimate
-that testnet and mainnet PFNs require several 100's of GB of storage.
+Aptos 的全节点（PFN）所需存储的数据量，既取决于区块链的账本历史长度，也受到链上状态数量（如帐户和资源）的影响。这些因素的变化受到区块链存在时长、平均交易率的变化，以及账本数据库裁剪器的配置等多重因素的影响。根据目前的状况来说，不论是测试网络还是主网络的全节点，都需要数百 GB 的存储空间。
 
-Note that because archival nodes store the entire history of the blockchain, the database size on archival nodes
-will continue to grow unbounded. As a result, we cannot provide a recommendation for archival node storage sizes.
+值得一提的是，由于存档节点保留了区块链的所有历史记录，这类节点数据库的大小将会持续增长，没有上限。因此，对于存档节点的存储容量，我们难以提出具体的推荐标准。
 
 <Callout type="info"> 
-**Devnet blockchain storage**<br />
-The Aptos devnet is currently reset on a weekly basis. If you are deploying a devnet PFN, this means that the storage
-will be reset (i.e., wiped) every week. See the `#devnet-release` channel on the Aptos Discord.
+**Devnet区块链存储**<br />
+Aptos devnet 目前每周重置一次。如果您正在部署 devnet PFN，这意味着存储每周都会重置（即，清除）。请参阅 Aptos Discord 上的 `#devnet-release` 频道。
 </Callout>

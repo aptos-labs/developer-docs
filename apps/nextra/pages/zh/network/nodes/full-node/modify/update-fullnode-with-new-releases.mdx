@@ -1,129 +1,128 @@
 ---
-title: "Upgrade your PFN"
+
+title: "更新您的 PFN"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Upgrade your PFN
+# 更新您的 PFN
 
-This document outlines the process for updating your PFN with new Aptos releases. All PFNs will need to be updated
-when new releases are available. For PFNs running in `devnet`, an additional data wipe step is required as `devnet`
-is wiped on every new release.
+本文档详细介绍了如何在 Aptos 发布新版本时进行 PFN 更新。所有的 PFN 一旦新版本发布都需要执行更新操作。对于在 devnet 上运行的 PFN，需要进行一项额外的操作，即在每次新版本发布时对 devnet 执行数据清理。
 
-## Source code deployment
+## 源代码部署
 
-If you run your PFN from the [aptos-core][aptos-labs/aptos-core] source code, you can update your PFN by
-following these steps:
+如果您是从 [aptos-core][aptos-labs/aptos-core] 源代码运行您的 PFN，您也可以通过以下步骤来更新您的 PFN：
 
-1.  Stop your PFN by running the command below (or killing the `aptos-node` process manually):
+1.  通过运行以下命令停止您的 PFN（或手动停止 `aptos-node` 进程）：
 
     ```bash filename="Terminal"
     cargo stop aptos-node
     ```
 
-1.  Fetch the latest release appropriate for your network, e.g., `devnet`, `testnet`, or `mainnet`. Be sure to replace
-    `[network_branch]` with the appropriate branch name below:
+2.  获取适用于您的网络的最新版本，例如 `devnet`、`testnet` 或 `mainnet`。确保将 `[network_branch]` 替换为以下适当的分支名称：
 
         ```bash filename="Terminal"
         git checkout [network_branch] && git pull
         ```
 
-1.  Rebuild the binary as you did during the initial setup.
+3.  按照您最初设置时的方式，重新编译二进制文件。
 
-1.  If your PFN is running in `devnet`, follow the additional steps in the [Data Wipe and Reset](#upgrade-with-data-wipe-devnet-only) section below.
+4.  如果您的 PFN 在 `devnet` 上运行，请按照下面的[数据擦除和重置](#devnet-only-data-wipe-and-reset)部分中的附加步骤进行操作。
 
-1.  Restart your PFN by running the same deployment command as before. For example:
+5.  通过运行与之前相同的部署命令重新启动您的 PFN。例如：
 
     ```bash filename="Terminal"
     cargo run -p aptos-node --release -- -f ./fullnode.yaml
     ```
 
-### (Devnet) Data Wipe and Reset
+### (Devnet) 数据擦除和重置
 
 <Callout type="warning">
-**Devnet only wipe**<br />
-Only follow these additional steps if your PFN is running in `devnet`. Other networks (e.g., `testnet` and `mainnet`)
-don't require this step (as data is never wiped)!
+**仅限 Devnet 擦除**<br />
+仅当您的 PFN 在 `devnet` 上运行时，请遵循这些附加步骤。其他网络（例如 `testnet` 和 `mainnet`）不需要执行此步骤（因为数据不会被擦除）！
 </Callout>
 
-If your PFN is running in `devnet`, follow these additional steps after stopping your PFN (and before restarting it!):
+如果您的 PFN 在 `devnet` 上运行，请在停止 PFN（在重新启动之前）后遵循这些附加步骤：
 
-1. Delete the data folder (the directory path is what you specified in the configuration file, e.g., `fullnode.yaml`).
+1. 删除数据文件夹（目录路径是您在配置文件中指定的，例如 `fullnode.yaml`）。
 
-   - The default data folder is `/opt/aptos/data`.
+   - 默认数据文件夹是 `/opt/aptos/data`。
 
-2. Delete the `genesis.blob` file and `waypoint.txt` file (depending on how you configured it, you might not have this file and may instead have a `waypoint` directly in your configuration file).
+2. 删除 `genesis.blob` 文件和 `waypoint.txt` 文件（取决于您的配置方式，您可能没有此文件，而是在配置文件中直接有 `waypoint` ）。
 
-3. Download the new [genesis.blob](../../configure/node-files-all-networks/node-files-mainnet.mdx#genesisblob) file and the new [waypoint](../../configure/node-files-all-networks/node-files-mainnet.mdx#waypointtxt).
+3. 下载新的 [genesis.blob](../../configure/node-files-all-networks/node-files-mainnet.mdx#genesisblob) 文件和新的 [waypoint](../../configure/node-files-all-networks/node-files-mainnet.mdx#waypointtxt)。
 
-4. Update the configuration file (e.g., `fullnode.yaml`) with the new genesis.blob and waypoint files.
+4. 使用新的 `genesis.blob` 和 `waypoint` 文件更新配置文件（例如 `fullnode.yaml`）。
 
-5. Restart your PFN by running the same deployment command as before.
+5. 通过运行与之前相同的部署命令重新启动您的 PFN。
 
-## Docker deployment
+## Docker 部署
 
-If you run your PFN from a Docker image, you can update your PFN by:
+如果您是通过 Docker 镜像运行您的 PFN，您可以通过以下方式更新您的 PFN：
 
-1. Stop your PFN by running the command below:
+1. 通过运行以下命令停止您的 PFN：
+
    ```bash filename="Terminal"
    docker compose down --volumes
    ```
-2. (Devnet only!) If your PFN is running in `devnet`, delete the entire directory which holds your PFN config and data directory.
-3. Re-install and configure those files as during the original setup.
-4. Restart your PFN by running the same deployment command as before. For example:
+
+2. (仅限 Devnet！) 如果您的 PFN 在 `devnet` 上运行，请删除包含您的 PFN 配置和数据目录的整个目录。
+
+3. 按照最初的设置重新安装和配置这些文件。
+
+4. 通过运行与之前相同的部署命令重新启动您的 PFN。例如：
    ```bash filename="Terminal"
    docker compose up -d
    ```
 
-## GCP deployment
+## GCP 部署
 
-If you run your PFN in GCP, follow the steps below to update your PFN. Note: if your PFN is
-running in `devnet`, an additional data wipe step is required.
+如果您在 GCP 上运行您的 PFN，请按照以下步骤更新您的 PFN。注意：如果您的 PFN 在 `devnet` 上运行，则需要额外执行数据擦除步骤。
 
-### Upgrade with data wipe (devnet only)
+### 带数据擦除的升级（仅限 Devnet）
 
 <Callout type="warning">
-**Devnet only wipe**<br />
-Only follow these steps if your PFN is running in `devnet`. Other networks don't require this step (as data is never wiped)
-and we recommend not wiping your data in these networks.
+**仅限 Devnet 擦除**<br />
+仅当您的 PFN 在 `devnet` 上运行时，请遵循这些步骤。其他网络不需要执行此步骤（因为数据不会被擦除）我们建议不要在这些网络上擦除数据。
 </Callout>
 
-If you are running a `devnet` PFN, follow these steps to update:
+如果您正在运行 `devnet` PFN，请按照以下步骤进行更新：
 
-1. Increase the `era` number in `main.tf` to trigger a new data volume creation, which will start the PFN on a new DB.
+1. 在 `main.tf` 中增加 `era` 编号以触发新数据卷的创建，这将使 PFN 在新的 DB 上启动。
 
-2. Update the `image_tag` in `main.tf` to contain the new release version.
+2. 在 `main.tf` 中更新 `image_tag` 以包含新版本号。
 
-3. Update the Terraform module for the PFN (run this in the same directory of your `main.tf` file):
-
-```bash filename="Terminal"
-terraform get -update
-```
-
-4. Apply the Terraform changes:
-
-```bash filename="Terminal"
-terraform apply
-```
-
-### Upgrade without data wipe
-
-If you are not running a `devnet` PFN, follow these steps to update:
-
-1. Update the `image_tag` in `main.tf`.
-
-2. Update the Terraform module for the PFN (run this in the same directory of your `main.tf` file):
+3. 更新 PFN 的 Terraform 模块（在 `main.tf` 文件的同一目录下运行此命令）：
 
 ```bash filename="Terminal"
 terraform get -update
 ```
 
-3. Apply the Terraform changes:
+4. 应用 Terraform 更改：
+
+```bash filename="Terminal"
+terraform apply
+```
+
+### 无数据擦除的升级
+
+如果您没有运行 `devnet` PFN，请按照以下步骤进行更新：
+
+1. 在 `main.tf` 中更新 `image_tag`。
+
+2. 更新 PFN 的 Terraform 模块（在 `main.tf `文件的同一目录下运行此命令）：
+
+```bash filename="Terminal"
+terraform get -update
+```
+
+3. 应用 Terraform 更改：
 
 ```bash filename="Terminal"
 terraform apply
 
-# If you didn't update the image tag, terraform will show nothing to change, in this case, force a helm update
+# 如果您没有更新镜像标签，Terraform 将显示无更改，在这种情况下，强制执行 helm 更新
 terraform apply -var force_helm_update=true
 ```
 

@@ -1,78 +1,81 @@
 ---
-title: "Using Source Code"
+
+title: "使用源码"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Deploy a PFN using Source Code
+# 使用源代码部署 PFN
 
-To deploy a PFN using the `aptos-core` source code, first, see [Building Aptos From Source](../../building-from-source.mdx) for instructions
-on how to download the `aptos-core` repository and build the binary. Then, follow the steps below:
+要使用 `aptos-core` 源代码部署 PFN，请先查看[从源代码构建 Aptos](../../building-from-source.mdx) 中的说明，了解如何下载 `aptos-core` 仓库并构建二进制文件。然后，按照下面的步骤操作：
 
-1. Make sure your current working directory is `aptos-core`.
-1. Check out the `mainnet` branch using `git checkout --track origin/mainnet`; remember, you may instead use `devnet` or `testnet`
-   if you wish to run your PFN in a different network.
-1. Next, download the `genesis.blob` and `waypoint.txt` files for the network your PFN will connect to:
+1. 确保您当前的工作目录是 `aptos-core`。
+2. 使用 `git checkout --track origin/mainnet` 检出 `mainnet` 分支；记住，如果您希望在不同的网络上运行您的 PFN，您也可以使用 `devnet` 或 `testnet`。
+3. 接下来，为您的 PFN 将要连接的网络下载 `genesis.blob` 和 `waypoint.txt` 文件：
 
-   - Run this command to download the genesis blob (for mainnet):
+   - 运行此命令下载创世区块（genesis blob）文件（对于主网）：
 
      ```bash filename="Terminal"
      curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/genesis.blob
      ```
 
-   - Run this command to download the waypoint file (for mainnet):
+   - 运行此命令下载路标（waypoint）文件（对于主网）：
      ```bash filename="Terminal"
      curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/waypoint.txt
      ```
 
    <Callout type="warning">
-   **Don't want to connect to mainnet?**<br />
-   To connect to other networks (e.g., `devnet` and `testnet`), you can find the genesis and waypoint here ➜ https://github.com/aptos-labs/aptos-networks.
-   Be sure to download the `genesis.blob` and `waypoint.txt` for those networks, instead of using the genesis
-   and waypoint pointed to by the `curl` commands above.
+   **不想连接到主网？**<br />
+   要连接到其他网络（例如 `devnet` 和 `testnet`），您可以在这里找到创世区块和路标文件 ➜ https://github.com/aptos-labs/aptos-networks。
+   请确保下载这些网络的 `genesis.blob` 和 `waypoint.txt`，而不是使用上面`curl`命令直接下载的创世区块和路标文件。
+
    </Callout>
 
-1. Next, run the command below to create a copy of the PFN configuration YAML template:
+4. 接下来，运行下面的命令创建 PFN 配置 YAML 模板的副本：
+
    ```bash filename="Terminal"
    cp config/src/config/test_data/public_full_node.yaml fullnode.yaml
    ```
-1. Finally, edit the `fullnode.yaml` configuration file to ensure that your PFN: (i) contains the genesis blob
-   and waypoint file you just downloaded; and (ii) saves the synchronized blockchain data to the location of your
-   choice (on your local machine). To do this:
 
-   1. Specify the correct path to the `genesis.blob` file you just downloaded by editing `execution.genesis_file_location` in the `fullnode.yaml` configuration. By default, it points to `genesis.blob` in the current working directory.
+5. 最后，编辑 `fullnode.yaml` 配置文件以确保您的 PFN：(1) 包含您刚刚下载的创世区块和路标文件；(2) 将同步的区块链数据保存到您选择的位置（在您的本地机器上）。你需要这样做：
+
+   1. 通过编辑 `fullnode.yaml` 配置中的 `execution.genesis_file_location` 来指定您刚刚下载的 `genesis.blob` 的正确路径。默认情况下，它指向当前工作目录中的 `genesis.blob`。
+
       ```yaml filename="fullnode.yaml"
       execution:
         genesis_file_location: "./genesis.blob"
       ```
-   1. Specify the correct path to the `waypoint.txt` file you just downloaded by editing `base.waypoint.from_file` in the `fullnode.yaml` configuration. By default, it points to `waypoint.txt` in the current working directory. For example:
+
+   2. 通过编辑 `fullnode.yaml` 配置中的 `base.waypoint.from_file` 来指定您刚刚下载的 `waypoint.txt` 的正确路径。默认情况下，它指向当前工作目录中的 `waypoint.txt`。例如：
+
       ```yaml filename="fullnode.yaml"
       base:
         waypoint:
           from_file: "./waypoint.txt"
       ```
-   1. Specify the directory on your local machine that you want to store the blockchain database by editing the `base.data_dir` in the `fullnode.yaml` configuration. For example, you can create a directory `my-full-node/data` in your home directory and specify it as:
+
+   3. 通过编辑 `fullnode.yaml` 配置中的 `base.data_dir` 来指定您希望在本地机器上存储区块链数据库的目录。例如，您可以在您的主目录中创建一个目录 `my-full-node/data` 并指定它为：
       ```yaml filename="fullnode.yaml"
       base:
         data_dir: "</path/to/my/homedir/my-full-node/data>"
       ```
 
-1. Start your local public fullnode by running the below command:
+6. 通过运行下面的命令启动您的本地公共全节点：
 
 ```bash filename="Terminal"
 cargo run -p aptos-node --release -- -f ./fullnode.yaml
 ```
 
 <Callout type="info">
-**Debugging?**<br />
-The command above will build a release binary for `aptos-node` at: `aptos-core/target/release/aptos-node`. The release
-binaries tend to be substantially faster than debug binaries but lack debugging information useful for development.
-To build a debug binary, omit the `--release` flag from the command above.
+**调试？**<br />
+上面的命令将在：`aptos-core/target/release/aptos-node` 构建 `aptos-node` 的二进制发行文件。二进制发行文件通常比二进制调试文件快得多，但缺乏对开发有用的调试信息。
+要构建二进制调试文件，请省略上面的命令中的 `--release` 标志。
 </Callout>
 
-You have now successfully configured and started running a PFN in the Aptos mainnet.
+您现在已经成功配置并在 Aptos 主网上开始运行 PFN。
 
 <Callout type="info">
-**Verify your PFN**<br />
-If you want to verify that your PFN is running correctly, you can follow the instructions in the [Verify a PFN](../verify-pfn.mdx) guide.
+**验证您的PFN**<br />
+如果您想要验证您的 PFN 是否正确运行，您可以按照[验证 PFN](../verify-pfn.mdx) 指南中的说明进行验证。
 </Callout>

@@ -1,39 +1,43 @@
 ---
-title: 身份和配置
+
+title: "身份和配置"
+
 ---
 
 # 节点身份和配置
 
 在 Aptos 网络上安装节点时，安装的过程中需要您处理身份和配置。本文档描述了如何理解术语 **身份** 和 **配置**，并提供了身份 YAML 文件的说明。
 
+在 Aptos 网络中安装节点时，您将需要配置身份和系统设置。本文档将指导您如何理解**身份（identity）**和**配置（configuration）**这两个术语，并详细介绍了身份相关的 YAML 配置文件。
+
 ## 概念
 
-本节提供了身份和配置的思想模型视图。它的目的是帮助简化节点的安装过程。
+本节提供了关于身份和配置的概念模型，旨在帮助您更轻松地完成节点的安装过程。
 
 术语**身份**和**配置**应按以下方式理解：
 
-- **验证者节点**、**全节点**和**验证者全节点**：指的是机器（物理或虚拟）。
+- **验证者节点**、**全节点**和**验证者全节点**：指的是物理或虚拟主机（machine）。
 - **运营者**、**所有者**和**投票者**：指的是角色。
-- 机器具有身份和配置。它们分别在单独的 YAML 文件中定义。角色的身份和配置被合并到一个 YAML 文件中。
+- 主机具有身份和配置。它们分别在单独的 YAML 文件中定义。角色的身份和配置被合并到一个 YAML 文件中。
 
-### 机器
+### 主机
 
 #### 身份
 
-机器**身份**在 YAML 文件中定义。身份通过密钥建立。机器身份 YAML 仅包含私钥。此外，身份 YAML 始终包含相关的区块链账户地址。
+主机的身份信息是通过一个 YAML 文件来定义的。这个身份的确立依赖于一组特定的密钥。在这样的一个 YAML 文件中，只会包含私有密钥。而且，身份文件还会总是携带与之相对应的区块链账户地址。
 
-机器身份 YAML 在其名称中包含字符串 `identity`。例如：
+主机身份 YAML 在其名称中包含字符串 `identity`。例如：
 
 - validator-**identity**.yaml 包含验证节点的私钥。
 - validator-full-node-**identity**.yaml 包含验证者全节点和公共全节点的私钥。
 
-因此，如果您正在寻找机器的私钥，请查找名称中包含`identity`的 YAML 文件。
+因此，如果您正在寻找主机的私钥，请查找名称中包含`identity`的 YAML 文件。
 
 #### 配置
 
-机器**配置**也在 YAML 文件中定义。机器配置 YAML**从不包含任何密钥，公共或私有**。例如，配置 YAML 文件 validator.yaml、fullnode.yaml、docker-compose.yaml 和 docker-compose-fullnode.yaml**不包含任何密钥**。
+主机的**配置**信息也是通过 YAML 文件来定义的。不同于身份文件，主机配置 YAML 文件**绝不包括任何形式的密钥，无论公钥还是私钥**。举例来说，如 validator.yaml、fullnode.yaml、docker-compose.yaml 以及 docker-compose-fullnode.yaml 这些配置文件，它们都**不会包含密钥信息**。
 
-如前所述，机器具有身份和配置。因此：
+如前所述，主机具有身份和配置。因此：
 
 - 对于验证者节点，身份在 validator-**identity**.yaml 中定义，配置在 validator.yaml 中。
 - 对于验证者全节点，其身份在 validator-full-node-**identity**.yaml 中定义，其配置在 fullnode.yaml 中。
@@ -44,9 +48,11 @@ title: 身份和配置
 
 角色有一个单一的 YAML，结合了角色的身份和配置信息。例如，对于三个角色 —— 所有者、运营者和投票者：
 
-- 所有者的身份配置在 ***owner.yaml*** 中定义。owner.yaml 包含所有者、运营商和投票者的公钥和区块链账户地址，以及一些特定于所有者的配置，如质押金额和佣金比例。
-- 运营者的身份配置在 ***operator.yaml*** 中定义。operator.yaml 包含运营者的公钥和区块链账户地址，以及一些机器配置信息加上共识公钥和共识持有证明公钥。**只有运营商拥有共识密钥。** 所有者和投票者都没有共识密钥。
-- 投票者的身份配置，即 *voter.yaml*，不存在。
+每个角色都拥有一个独立的 YAML 文件，该文件融合了角色的身份认证和配置信息。例如，三种角色：拥有者（owner）、运营者（operator）以及投票者（voter）：
+
+- 所有者的身份及其配置详细信息均在 **owner.yaml** 文件中进行了定义。该文件不仅包括所有者、操作者以及投票者的公钥和区块链账户地址，还规定了一些特别针对拥有者角色的配置项，比如质押金额和佣金的比例。
+- 运营者的身份信息及配置设置都记录在 **operator.yaml** 文件中。这个文件详细列出了操作者的公钥和区块链账户地址，以及与设备相关的配置信息，并特别包括了共识用的公钥和证明所有权的密钥。**唯一拥有这些共识关键信息的是运营者**，而不是所有者或投票者。
+- 投票者的身份配置，即 _voter.yaml_，不存在。
 
 ## 身份 YAML 文件的描述
 
@@ -57,9 +63,7 @@ title: 身份和配置
 - `validator-identity.yaml`.
 - `validator-full-node-identity.yaml`.
 
-以下是用于生成上述密钥和身份 YAML 文件的命令。
-例如，[使用 AWS 部署验证者节点时的步骤 10](validator-node/deploy-nodes/using-aws.mdx)，
-或在[使用 GCP 时的步骤 10](full-node/deployments/using-gcp.mdx)。
+要生成上面提到的密钥和身份 YAML 文件，可以使用下列命令。具体操作可以参见部署验证节点时，在[亚马逊云服务（AWS）下的第 10 步](validator-node/deploy-nodes/using-aws.mdx)，或者是在[谷歌云平台（GCP）下的第 10 步](full-node/deployments/using-gcp.mdx)。
 
 ```bash filename="Terminal"
 aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
@@ -67,7 +71,7 @@ aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
 
 请参阅下图，它展示了如何从私钥和公钥派生验证者节点和验证者全节点的身份：
 
-{/* <ThemedImage
+{/*<ThemedImage
 alt="Signed Transaction Flow"
 sources={{
     light: useBaseUrl('/img/docs/key-yamls.svg'),
@@ -98,14 +102,14 @@ validator_network_public_key: "0x71f2642aeaa6cbfacf75663cf14d2f6e9e1bd890f9bc1c9
 
 #### 描述
 
-| public-keys.yaml | 描述 |
-| ---- | ---- |
-| account_address  | 运营者的 Aptos 区块链账户地址，即部署验证者节点的角色。 |
-| account_public_key | 与区块链账户关联的公钥。 |
-| consensus_public_key | 仅由运营者用于验证目的。 |
-| consensus_proof_of_possession | 仅由运营者用于验证目的。 |
-| full_node_network_public_key | 用于识别 Aptos 网络中 VFN（验证者全节点）或 PFN（公共全节点）的全节点公钥。 |
-| validator_network_public_key | 验证者节点的公钥，用于在 Aptos 网络中识别验证者节点。 |
+| public-keys.yaml              | 描述                                                                        |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| account_address               | 运营者的 Aptos 区块链账户地址，即部署验证者节点的角色。                     |
+| account_public_key            | 与区块链账户关联的公钥。                                                    |
+| consensus_public_key          | 仅由运营者用于验证目的。                                                    |
+| consensus_proof_of_possession | 仅由运营者用于验证目的。                                                    |
+| full_node_network_public_key  | 用于识别 Aptos 网络中 VFN（验证者全节点）或 PFN（公共全节点）的全节点公钥。 |
+| validator_network_public_key  | 验证者节点的公钥，用于在 Aptos 网络中识别验证者节点。                       |
 
 ### private-keys.yaml
 
@@ -129,11 +133,11 @@ validator_network_private_key: "0xa03ec46b24f2f1066d7980dc13b4baf722ba60c367e498
 
 #### 描述
 
-| private-keys.yaml | 描述 |
-| ----- | ----- |
-| account_address | 运营者的 Aptos 区块链账户地址，即部署验证者节点的角色。 |
-| account_private_key | 与区块链账户关联的私钥。 |
-| consensus_private_key | 仅由运营者用于验证目的和轮换共识密钥的共识私钥。 |
+| private-keys.yaml             | 描述                                                                          |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| account_address               | 运营者的 Aptos 区块链账户地址，即部署验证者节点的角色。                       |
+| account_private_key           | 与区块链账户关联的私钥。                                                      |
+| consensus_private_key         | 仅由运营者用于验证目的和轮换共识密钥的共识私钥。                              |
 | full_node_network_private_key | 全节点的私钥。持有此私钥的人将能够在 Aptos 网络中拥有对 VFN 和 PFN 的所有权。 |
 | validator_network_private_key | 验证者节点的私钥。持有此私钥的人将能够在 Aptos 网络中拥有验证者节点的所有权。 |
 
@@ -158,12 +162,12 @@ network_private_key: "0xa03ec46b24f2f1066d7980dc13b4baf722ba60c367e498e47a657ba0
 
 #### 描述
 
-| validator-identity.yaml | 描述 |
-| ----- | ----- |
-| account_address | 运营商的 Aptos 区块链账户地址，即部署验证者节点的角色。 |
-| account_private_key | 与区块链账户关联的私钥。 |
-| consensus_private_key | 仅由运营商用于验证目的和轮换共识密钥的共识私钥。 |
-| network_private_key | 验证者节点的私钥。持有此私钥的人将能够在 Aptos 网络中建立验证者节点的所有权。 |
+| validator-identity.yaml | 描述                                                                          |
+| ----------------------- | ----------------------------------------------------------------------------- |
+| account_address         | 运营商的 Aptos 区块链账户地址，即部署验证者节点的角色。                       |
+| account_private_key     | 与区块链账户关联的私钥。                                                      |
+| consensus_private_key   | 仅由运营商用于验证目的和轮换共识密钥的共识私钥。                              |
+| network_private_key     | 验证者节点的私钥。持有此私钥的人将能够在 Aptos 网络中建立验证者节点的所有权。 |
 
 ### validator-full-node-identity.yaml
 
@@ -184,7 +188,7 @@ network_private_key: "0x689c11c6e5405219b5eae1312086c801e3a044946afc74429e5157b4
 
 #### 描述
 
-| validator-full-node-identity.yaml | 描述  |
-| ----- | ----- |
-| account_address | 运营者的 Aptos 区块链账户地址，即部署验证者节点的角色。 |
-| network_private_key | 全节点的私钥。持有此私钥的人将能够在 Aptos 网络中拥有对 VFN 和 PFN 的所有权。 |
+| validator-full-node-identity.yaml | 描述                                                                          |
+| --------------------------------- | ----------------------------------------------------------------------------- |
+| account_address                   | 运营者的 Aptos 区块链账户地址，即部署验证者节点的角色。                       |
+| network_private_key               | 全节点的私钥。持有此私钥的人将能够在 Aptos 网络中拥有对 VFN 和 PFN 的所有权。 |

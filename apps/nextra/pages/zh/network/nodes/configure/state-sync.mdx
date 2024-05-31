@@ -140,7 +140,7 @@ state_sync:
 在节点同步时，您将能够看到 `aptos_state_sync_version{type="synced_states"}` 指标逐渐增加。
 但是，只有在节点引导完成后，`aptos_state_sync_version{type="synced"}` 才会增加。这可能需要几个小时，具体取决于数据量、网络带宽和节点资源的情况。
 
-**注意：**如果 `aptos_state_sync_version{type="synced_states"}` 没有增加，则执行以下操作：
+**注意**：如果 `aptos_state_sync_version{type="synced_states"}` 没有增加，则执行以下操作：
 
 1. 双重检查（Double-check）节点配置文件是否已正确更新。
 2. 确保节点是在空的存储数据库上启动的（即，它之前没有同步任何状态）。

@@ -1,95 +1,84 @@
 ---
-title: "Verify a PFN"
+
+title: "验证 PFN"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Verify a PFN
+# 验证 PFN
 
-After deploying your PFN, you can verify that it is operating correctly by checking several of the PFN's metrics.
-This document describes the common types of checks that you might wish to perform.
+部署您的公共全节点（PFN）后，您可以通过检查 PFN 的几个指标来验证其是否正常运行。本文档描述了您可能想要执行的常见检查类型。
 
 <Callout type="info">
-You can learn more about Aptos metrics in the [Node Inspection Service](../measure/node-inspection-service.mdx) documents.
+您可以在[节点检查服务](../measure/node-inspection-service.mdx)文档中了解更多关于 Aptos 指标的信息。
 </Callout>
 
-### Verify synchronization
+### 验证同步状态
 
-During the initial synchronization of your PFN, there may be a lot of data to transfer (read more about how state
-sync works in the [state sync](../configure/state-sync.mdx) guide). You can monitor state sync progress
-by querying the metrics port to see what version your node is currently synced to. Run the following example
-command to see the currently synced version of your node:
+在您的 PFN 初始同步期间，可能需要传输大量数据（有关状态同步工作原理的更多信息，请参见[状态同步](../configure/state-sync.mdx)指南）。您可以通过查询指标端口来监控状态同步进度，查看节点当前同步到的版本。运行以下示例命令以查看节点当前同步的版本：
 
 ```bash filename="Terminal"
 curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_state_sync_version{.*\"synced\"}" | awk '{print $2}'
 ```
 
-The command will output the current synced version of your node. For example:
+该命令将输出节点当前同步的版本。例如：
 
 ```bash filename="Terminal"
 71000
 ```
 
-Compare the synced version returned by this command (e.g., `71000`) with the highest version shown on the
-[Aptos explorer page](https://explorer.aptoslabs.com/?network=mainnet). If your node is catching up to the highest
-version, it is synchronizing correctly. It is fine if the explorer page differs by a few versions, as the explorer
-nodes may sync with some variance.
+请将命令返回的同步版本号（如 `71000`）与 [Aptos explorer 页面](https://explorer.aptoslabs.com/?network=mainnet)上显示的最新版本号进行比较。如果您的节点版本正在迅速接近最新版本，说明它的同步是正常的。浏览器页面上的版本号与您的节点相差几个版本是正常现象，因为浏览器节点本身可能存在一定的同步延迟。
 
 <Callout type="warning">
-**Using fast sync?**<br />
-If your node is fast syncing, the command may show `0` until it has finally caught up. To verify that the node is
-fast syncing, run the following command:
+**使用快速同步？**
+如果您的节点正在进行快速同步，该命令可能在最终更新到最新版本之前一直显示`0`。要验证节点是否正在进行快速同步，请运行以下命令：
 
 ```bash filename="Terminal"
 curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_state_sync_version{.*\"synced_states\"}" | awk '{print $2}'
 ```
 
-This should show an increasing number of synced states. It may take several hours for your node to fast sync to the
-latest version. Eventually, once fast syncing is complete, the `aptos_state_sync_version{.*"synced"}` command will
-return the current synced version of your node.
+这应该显示同步状态数量的增加。您的节点可能需要几个小时才能快速同步到最新版本。最终，一旦快速同步完成，`aptos_state_sync_version{.*"synced"}`命令将返回节点当前同步的版本。
 
-You can read more about fast syncing here: [State sync bootstrapping](../configure/state-sync.mdx#bootstrapping-phase).
+您可以在此处阅读有关快速同步的更多信息：[状态同步引导](../configure/state-sync.mdx#bootstrapping-phase)。
 </Callout>
 
-### (Optional) Verify outbound network connections
+### （可选）验证出站网络连接
 
-If you wish, you can also check the outbound network connections for your PFN. The number of outbound network
-connections should be more than `0` for healthy PFNs. Run the following command:
+如果您愿意，您还可以检查您的 PFN 的出站网络连接。健康 PFN 的出站网络连接数量应该大于`0`。运行以下命令：
 
 ```bash filename="Terminal"
 curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_connections{direction=\"outbound\""
 ```
 
-The above command will output the number of outbound network connections for your node. For example:
+上述命令将输出节点的出站网络连接数量。例如：
 
 ```bash filename="Terminal"
 curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_connections{direction=\"outbound\""
 aptos_connections{direction="outbound",network_id="Public",peer_id="aabd651f",role_type="full_node"} 3
 ```
 
-If the number of outbound connections returned is `0`, then it means your node cannot connect to the Aptos blockchain. If this happens to you, follow these steps to resolve the issue:
+如果返回的出站连接数量为 `0`，则意味着您的节点无法连接到 Aptos 区块链。如果遇到这种情况，请按照以下步骤解决问题：
 
-1. Update your node to the latest release by following the [Update your Node](modify/update-fullnode-with-new-releases.mdx).
-2. Remove any `seed` peers you may have added to your configuration file. The seeds may be preventing you from
-   connecting to the network. Seed peers are discussed in the [Connecting your PFN to seed peers](../full-node/modify/fullnode-network-connections.mdx#connecting-to-seed-peers) section.
-3. Ensure that you have used the correct `genesis.blob` and `waypoint.txt` files for your network. This is a common error.
+1. 按照[更新您的节点](modify/update-fullnode-with-new-releases.mdx)更新到最新版本。
+2. 从配置文件中删除可能已添加的任何 `seed` 对等节点（Peers）。这些 `seed` 可能阻碍您连接到网络。`seed` 对等节点在[连接您的全节点至 seed 节点](../full-node/modify/fullnode-network-connections.mdx#connecting-your-fullnode-to-seed-peers)部分中有讨论。
+3. 确保您的网络使用了正确的 `genesis.blob` 和 `waypoint.txt` 文件。这是容易犯的错误。
 
-### (Optional) Examine Docker ledger size
+### （可选）检查 Docker 账本大小
 
-If you are running your PFN using Docker, you can monitor the size of the blockchain ledger by entering the Docker
-container and checking the size. This will allow you to see how much storage the blockchain ledger is currently consuming.
+如果您使用 Docker 来运行您的 PFN，可以通过进入 Docker 容器并查询文件大小，来监控区块链账本占用的存储空间。这样，您便可了解到当前区块链账本所占用的存储空间。
 
-- First, run `docker container ls` on your terminal and copy the NAME field output. This will be a string similar to `public_full_node_fullnode_1`.
-- Next, run these commands to check the storage size consumed by the ledger, using the NAME field you copied over in place of `public_full_node_fullnode_1`:
+- 首先，在终端上运行`docker container ls`，并复制 NAME 字段的输出。这将是一个类似于 `public_full_node_fullnode_1` 的字符串。
+- 接下来，运行这些命令以检查账本占用的存储空间大小，使用您在上一步中复制的 NAME 字段替换 `public_full_node_fullnode_1`：
 
 ```bash filename="Terminal"
-# Obtain the container ID:
+# 获取容器ID：
 id=$(docker container ls | grep public_full_node_fullnode_1 | grep -oE "^[0-9a-zA-Z]+")
 
-# Enter the container:
+# 进入容器：
 docker exec -it $id /bin/bash
 
-# Observe the volume (ledger) size:
+# 观察卷（账本）大小：
 du -cs -BM /opt/aptos/data
 ```
 

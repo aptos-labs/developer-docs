@@ -1,5 +1,7 @@
 ---
-title: 从源代码构建 Aptos
+
+title: "从源代码构建 Aptos"
+
 ---
 
 import { Callout } from 'nextra/components'
@@ -11,7 +13,7 @@ import { Tabs, TabItem } from '@components/tabs/Tabs';
 
 ## 支持的操作系统
 
-Aptos 可以在包括 Linux、macOS 和 Windows 在内的各种操作系统上构建。Aptos 在 Linux 和 macOS 上经过了广泛的测试，而在 Windows 上的测试较少。这里是我们使用的版本：
+Aptos 可以在包括 Linux、macOS 和 Windows 在内的各种操作系统上构建。Aptos 在 Linux 和 macOS 上经过了广泛的测试，而在 Windows 上的测试较少。这是我们使用的版本：
 
 - Linux - Ubuntu 20.04 和 22.04 版本
 - macOS - macOS Monterey 及更高版本
@@ -28,7 +30,7 @@ Aptos 可以在包括 Linux、macOS 和 Windows 在内的各种操作系统上�
    git clone https://github.com/aptos-labs/aptos-core.git
    ```
 
-3. 现在让我们`cd`进入目录`aptos-core`：
+3. 现在让我们 `cd` 进入 `aptos-core` 目录：
    ```bash filename="Terminal"
    cd aptos-core
    ```
@@ -63,15 +65,15 @@ Aptos 可以在包括 Linux、macOS 和 Windows 在内的各种操作系统上�
 ## 设置构建依赖
 
 通过安装构建（build）、测试（test）和检查（inspect） Aptos Core 所需的依赖项来准备你的开发环境。
-无论你选择哪种机制来安装这些依赖项，**你必须保持你的整个工具链为最新版本**。
-如果你稍后遇到问题，请更新所有的包然后重试。
+无论你选择哪种方式来安装这些依赖项，**你必须让你的整个工具链为最新版本**。
+如果你稍后遇到了问题，请更新所有的包然后重试。
 
 <details>
 <summary>macOS</summary>
 
 **> 使用自动化脚本**
 
-1. 确保你安装了`brew`包管理器：https://brew.sh/
+1. 确保你安装了 `brew` 包管理器：https://brew.sh/
 2. 运行开发设置脚本来准备你的环境：
 
 ```bash filename="Terminal"
@@ -85,13 +87,13 @@ source ~/.cargo/env
 ```
 
 <Callout type="info">
-你可以通过运行
+如果要查看脚本的可用选项，你可以通过运行：
 
   ```bash filename="Terminal"
   ./scripts/dev_setup.sh --help
   ```
 
-来查看脚本的可用选项。
+
 </Callout>
 
 **> 手动安装依赖项**
@@ -123,7 +125,7 @@ source ~/.cargo/env
 ```
 
 <Callout type="info">
-如果想要查看脚本的可用选项，你可以通过运行：
+如果想要查看脚本的可用选项，你可以运行：
 
   ```bash filename="Terminal"
   ./scripts/dev_setup.sh --help
@@ -169,7 +171,7 @@ PowerShell -ExecutionPolicy Bypass -File ./scripts/windows_dev_setup.ps1
 
 ### 附加工具
 
-如果你对 macOS 或 Linux 设置使用了 `scripts/dev_setup.sh`，附加工具是可选用的。
+如果你对 macOS 或 Linux 设置使用了 `scripts/dev_setup.sh`，附加工具则是可选用的。
 
 ## 构建 Aptos
 

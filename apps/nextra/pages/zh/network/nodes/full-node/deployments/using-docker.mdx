@@ -1,42 +1,39 @@
 ---
-title: "Using Docker"
+
+title: "使用 Docker"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Deploy a PFN using Docker
+# 使用 Docker 部署 PFN
 
-This section describes how to configure and run your PFN using Docker.
+本节描述了如何使用 Docker 配置和运行您的 PFN。
 
 <Callout type="warning">
-**Supported only on x86-64 CPUs**<br />
-Running aptos-core via Docker is currently only supported on x86-64 CPUs. If you have an Apple M1/M2 (ARM64) Mac, use
-the aptos-core source code approach (above). If M1/M2 support is important to you, comment on this
-issue: https://github.com/aptos-labs/aptos-core/issues/1412
+**仅支持x86-64 CPU**<br />
+目前，仅支持 x86-64 CPU 通过 Docker 运行 aptos-core。如果您有 Apple M1/M2（ARM64）Mac，请使用上面介绍的 aptos-core 源代码编译的方法。如果对 M1 / M2 的支持对您很重要，请在此问题下发表您的讨论：https://github.com/aptos-labs/aptos-core/issues/1412 
 </Callout>
 
-1. First, install [Docker](https://docs.docker.com/get-docker/).
-2. Next, run the following script to prepare your local configuration and data directory for mainnet. This will
-   download the `fullnode.yaml` configuration file, the `genesis.blob` and `waypoint.txt` files for your PFN, and
-   create a `data` directory to store the blockchain database:
+1. 首先，安装 [Docker](https://docs.docker.com/get-docker/)。
+2. 接下来，运行以下脚本准备您的本地配置和主网数据目录。这将为您的 PFN 下载 `fullnode.yaml` 配置文件、`genesis.blob` 和 `waypoint.txt` 文件，并创建一个 `data` 目录来存储区块链数据库：
 
 ```bash filename="Terminal"
 mkdir mainnet && cd mainnet
 mkdir data && \
-curl -O https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/fullnode.yaml && \
-curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/waypoint.txt && \
+curl -O https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/fullnode.yaml  && \
+curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/waypoint.txt  && \
 curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/genesis.blob
 ```
 
 <Callout type="warning">
-**Don't want to connect to mainnet?**<br />
-To connect to other networks (e.g., `devnet` and `testnet`), you can find the genesis and waypoint here ➜ https://github.com/aptos-labs/aptos-networks.
-Be sure to download the `genesis.blob` and `waypoint.txt` for those networks, instead of using the genesis
-and waypoint pointed to by the `curl` commands above.
+**不想连接到主网？**<br />
+要连接到其他网络（例如 `devnet` 和 `testnet`），您可以在此处找到创世区块和路标文件 ➜ https://github.com/aptos-labs/aptos-networks。
+请确保下载这些网络的 `genesis.blob` 和 `waypoint.txt` ，而不是使用上面 `curl` 命令下载创世区块和路标文件。
 </Callout>
 
-3. Next, make sure that the `fullnode.yaml` configuration file that you downloaded above contains only the following content.
-   This will ensure that this configuration is for a PFN and not for another node type (e.g., validator or VFN):
+3. 接下来，确保您上面下载的`fullnode.yaml`配置文件只包含以下内容。
+   这将确保此配置是用于 PFN 而不是其他节点类型（例如，验证器或 VFN）：
 
 ```yaml filename="fullnode.yaml"
 base:
@@ -59,11 +56,11 @@ api:
 ```
 
 <Callout type="warning">
-**Don't want to allow inbound connections?** <br />
-Override the following if you do not want other PFNs connecting to yours: `listen_address: "/ip4/127.0.0.1/tcp/6182"`.
+**不希望被连接？**<br />
+如果您不希望其他 PFN 连接到您的节点，请重写以下设置：`listen_address: "/ip4/127.0.0.1/tcp/6182"`。
 </Callout>
 
-4. Next, run the following `docker` command:
+4. 接下来，运行以下 `docker` 命令：
 
 ```bash filename="Terminal"
 docker run --pull=always \
@@ -76,19 +73,19 @@ docker run --pull=always \
 ```
 
 <Callout type="warning">
-**Sudo access**<br />
-Note: you may need to prefix the docker command with `sudo` depending on your configuration.
+**需要 sudo 访问**<br />
+注意：根据您的配置，您可能需要在 docker 命令前加上 `sudo`。
 </Callout>
 
 <Callout type="info">
-**Docker tags**<br />
-The `mainnet` tag always refers to the latest official Docker image tag. You can find the latest hash for comparison at:
-https://github.com/aptos-labs/aptos-networks/tree/main/mainnet
+**Docker 标签**<br />
+`mainnet` 标签始终指向最新的官方 Docker 镜像标签。您可以在以下位置找到最新的哈希值进行比较：
+https://github.com/aptos-labs/aptos-networks/tree/main/mainnet 
 </Callout>
 
-You have now successfully configured and started running a PFN in the Aptos mainnet.
+您现在已经成功配置并在 Aptos 主网上开始运行 PFN。
 
 <Callout type="info">
-**Verify your PFN**
-If you want to verify that your PFN is running correctly, you can follow the instructions in the [Verify a PFN](../verify-pfn.mdx) guide.
+**验证您的 PFN**
+如果您想要验证您的 PFN 是否正确运行，您可以按照[验证 PFN](../verify-pfn.mdx)指南中的说明进行。
 </Callout>

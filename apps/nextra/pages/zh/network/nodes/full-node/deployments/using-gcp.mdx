@@ -1,216 +1,205 @@
 ---
-title: "Using GCP"
+
+title: "使用 GCP"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Deploy a PFN using GCP
+# 使用 GCP 部署 PFN
 
-This tutorial explains how to configure and deploy a PFN using Google Cloud (GCP). Running a PFN in the cloud
-usually provides better stability and availability compared to running it on your laptop.
+本教程解释了如何使用 Google Cloud Platform（GCP）配置和部署 PFN。与在笔记本电脑上运行相比，在云中运行 PFN 通常提供更好的稳定性和可用性。
 
 <Callout type="warning">
-**Don't want to connect to devnet?**<br />
-This tutorial defaults to deploying a PFN in the Aptos `devnet` network. To connect to other networks
-(e.g., `mainnet` and `testnet`), replace all instances of `devnet` with the appropriate network name.
+**不想连接到 devnet？**<br />
+本教程默认在 Aptos `devnet` 网络上部署 PFN 。要连接到其他网络（例如，`mainnet` 和 `testnet`），请将所有 `devnet` 实例替换为适当的网络名称。
 </Callout>
 
-## Prerequisites
+## 前提条件
 
-You can run the commands in this guide to deploy your PFN on Google Kubernetes Engine from any machine you want, e.g.
-a [VM on GCP](https://cloud.google.com/compute), [Google Cloud Shell](https://cloud.google.com/shell), or your personal computer.
+你可以在任何你想要运行的设备上运行本指南中的命令来在 Google Kubernetes Engine 上部署你的 PFN，例如：
+[GCP 上的 VM](https://cloud.google.com/compute)、[Google Cloud Shell](https://cloud.google.com/shell) 或你的个人电脑。
 
-The following packages are pre-installed with Cloud Shell. **Make sure to review** the
-[documentation around ephemeral mode](https://cloud.google.com/shell/docs/using-cloud-shell/#choose_ephemeral_mode) if
-you choose to use Cloud Shell. However, if you are running the installation from your laptop or another machine,
-you need to install:
+以下软件包已随 Cloud Shell 预安装。如果你选择使用 Cloud Shell，请务必查阅[关于临时模式的文档](https://cloud.google.com/shell/docs/using-cloud-shell/#choose_ephemeral_mode)。
+然而，如果你从笔记本电脑或其他设备部署，那么你需要安装：
 
 - Terraform 1.3.6: https://www.terraform.io/downloads.html
 - Kubernetes CLI: https://kubernetes.io/docs/tasks/tools/
 - Google Cloud CLI: https://cloud.google.com/sdk/docs/install-sdk
 
-After you have installed the gcloud CLI, [log into GCP using gcloud](https://cloud.google.com/sdk/gcloud/reference/auth/login):
+安装 gcloud CLI 后，[使用 gcloud 登录 GCP](https://cloud.google.com/sdk/gcloud/reference/auth/login)：
 
 ```bash filename="Terminal"
 gcloud auth login --update-adc
 ```
 
 <Callout type="info">
-**Already have a GCP account set up?**<br />
-If you already have a GCP account setup, skip to [Getting Started](#getting-started). If you do not have a GCP account, then follow
-the below sections to create and configure your GCP account.
+**已经有设置好的 GCP 账户？**<br />
+如果你已经设置好了 GCP 账户，请从[入门](#入门)部分继续操作。如果你没有 GCP 账户，请按照以下部分创建和配置你的 GCP 账户。
 </Callout>
 
-### GCP setup
+### GCP 设置
 
-#### Sign up for the 90-day free trial
+#### 新注册用户 90 天免费试用
 
-Google Cloud offers a [90 day, \$300 free trial for every new user](https://cloud.google.com/free/docs/gcp-free-tier/#free-trial). The $300 are given as credits to your
-account and you can use them to get a sense of Google Cloud products. Some GCP feature such as GPUs and Windows
-servers are not available in the free trial. Sign up for the credits, [here](https://cloud.google.com/free).
+Google Cloud 为每位新用户提供 [90 天，$300 免费试用期](https://cloud.google.com/free/docs/gcp-free-tier/#free-trial)，期间您将获得价值 300 美元的信用额度，以便深入了解并实践 Google Cloud 的各类产品。需要注意的是，免费试用并不包括部分 GCP 服务，例如 GPU 和 Windows 服务器等。点击[注册领取您的信用额度](https://cloud.google.com/free)。
 
-#### Create a new GCP project
+#### 创建新的 GCP 项目
 
-- Create a new project on the GCP Console or using the gcloud command from the Google Cloud CLI. Be sure to
-  familiarize yourself with the [resource hierarchy on GCP](https://cloud.google.com/resource-manager/docs/cloud-platform-resource-hierarchy).
-- [Follow these instructions to setup a new project](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project).
+- 在 GCP 控制台或使用 Google Cloud CLI 中的 gcloud 命令创建新项目。务必熟悉 [GCP 上的资源层次结构](https://cloud.google.com/resource-manager/docs/cloud-platform-resource-hierarchy)。
+- [按照这些说明设置一个新项目](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project)。
 
-#### Enable billing, upgrade your account
+#### 启用计费并升级您的账户
 
-You will still be able to use the free trial credits, but enabling billing allows you to have full access to all the
-features of GCP and not experience any interruption to your nodes. [Upgrade your account by following the steps outlined here.](https://cloud.google.com/free/docs/gcp-free-tier#how-to-upgrade)
+您不仅可以继续使用免费试用中的信用额度，而且还能解锁 GCP 所有功能的完整访问权限，确保您在使用云服务期间，您的节点能稳定运行，无需担心中断。具体升级步骤，请参照[指南操作](https://cloud.google.com/free/docs/gcp-free-tier#how-to-upgrade)。
 
-#### Additional GCP resources
+#### 额外的 GCP 资源
 
-This should be enough to get your GCP setup ready to start deploying your PFN. But if you are new to GCP, you may want
-to check out some of their [guides](https://cloud.google.com/docs/get-started/quickstarts) and [Google Cloud Skills Boost](https://www.cloudskillsboost.google/catalog).
+这些建议足以帮助您准备好 GCP 环境，并着手部署您的 PFN。对于刚接触 GCP 的用户，您还可以通过浏览官方提供的[一些指南](https://cloud.google.com/docs/get-started/quickstarts)和 [Google Cloud Skills Boost](https://www.cloudskillsboost.google/catalog) 来提高自己的技能。
 
-## Getting started
+## 入门
 
 <Callout type="info">
-**Before you proceed**<br />
-From here on, this guide assumes that you have already set up your GCP account, and have created a new project for
-deploying an Aptos PFN.
+**请先做好准备**<br />
+从这里开始，本指南假设你已经设置好了你的 GCP 账户，并为部署 Aptos PFN 创建了一个新的项目。
 </Callout>
 
-You can deploy a PFN on GCP by using the Aptos Terraform module.
+你可以通过使用 Aptos Terraform 模块在 GCP 上部署 PFN。
 
-1. Create a working directory for your configuration.
+1. 为你的配置创建一个工作目录。
 
-   - Choose a workspace name e.g. `devnet`. **Note**: This defines the Terraform workspace name, which in turn is used
-     to form resource names. Feel free to choose a different name if you are connecting to a different network.
+   - 请选择一个工作区的名称，例如 devnet。
+
+   **注意**：您选定的名字会成为 Terraform 工作区的名称，并且会用于构建资源的名称。如果您需要连接到其他网络环境，请根据需要选择适合的名称。
 
    ```bash filename="Terminal"
    export WORKSPACE=devnet
    ```
 
-   - Create a directory for the workspace
+   - 为工作区创建一个目录
 
    ```bash filename="Terminal"
    mkdir -p ~/$WORKSPACE
    ```
 
-2. Create a storage bucket for storing the Terraform state on Google Cloud Storage. Use the console or this gcs command
-   to create the bucket. The name of the bucket must be unique. See the Google Cloud Storage documentation,
-   [here](https://cloud.google.com/storage/docs/creating-buckets#prereq-cli).
+2. 创建一个存储桶（storage bucket），用于在 Google Cloud Storage 上存储 Terraform 状态。使用控制台或此 gcs 命令创建存储桶。存储桶名称必须是唯一的。点击[查看 Google Cloud Storage 文档](https://cloud.google.com/storage/docs/creating-buckets#prereq-cli)。
 
 ```bash filename="Terminal"
 gsutil mb gs://BUCKET_NAME
-# for example
+# 例如
 gsutil mb gs://<project-name>-aptos-terraform-dev
 ```
 
-3. Create Terraform file called `main.tf` in your working directory:
+3. 在你的工作目录中创建一个名为 `main.tf` 的 Terraform 文件：
 
 ```bash filename="Terminal"
 cd ~/$WORKSPACE
 touch main.tf
 ```
 
-4. Modify the `main.tf` file to configure Terraform and create a PFN from the Terraform module.
+4. 修改 `main.tf` 文件以配置 Terraform 并从 Terraform 模块创建 PFN。
 
-**Note:** If you are using a different version of Terraform, you will need to use the `tfenv` command to change the required version.
+**注意**：如果你正在使用不同版本的 Terraform，你需要使用 `tfenv` 命令更改为所需的版本。
 
-You can find the Docker image tag for `devnet` on the [Aptos Docker Hub](https://hub.docker.com/r/aptoslabs/validator/tags?page=1&ordering=last_updated&name=devnet).
+你可以在 [Aptos Docker Hub](https://hub.docker.com/r/aptoslabs/validator/tags?page=1&ordering=last_updated&name=devnet) 上找到 `devnet` 的 Docker 镜像标签。
 
 <Callout type="warning">
-**Want to connect to a different network?**<br />
-If you wish to connect to a different network than `devnet`, you will need to find the appropriate Docker image
-tag for that network and replace all references to it.
+**想连接到不同的网络？**<br />
+如果您想要接入除 devnet 之外的其他网络，那么您需要找到适配该网络的 Docker 镜像标签，并且替换所有相关的引用。
 </Callout>
 
-Example content for `main.tf`:
+`main.tf` 的示例内容：
 
 ```terraform filename="main.tf"
 terraform {
   required_version = "~> 1.3.6"
   backend "gcs" {
-    bucket = "BUCKET_NAME" # bucket name created in step 2
+    bucket = "BUCKET_NAME" # 第 2 步中创建的存储桶名称
     prefix = "state/fullnode"
   }
 }
 
 module "fullnode" {
-  # download Terraform module from aptos-labs/aptos-core repo
+  # 从 aptos-labs/aptos-core 仓库下载 Terraform 模块
   source        = "github.com/aptos-labs/aptos-core.git//terraform/fullnode/gcp?ref=main"
-  region        = "us-central1"  # Specify the region
-  zone          = "c"            # Specify the zone suffix
-  project       = "gcp-fullnode" # Specify your GCP project ID
-  fullnode_name = "BUCKET_NAME" #bucket name created in step 2
-  era           = 1              # bump era number to wipe the chain
-  image_tag     = "devnet" # Specify the docker image tag
+  region        = "us-central1"  # 指定区域
+  zone          = "c"            # 指定区域后缀
+  project       = "gcp-fullnode" # 指定你的 GCP 项目 ID
+  fullnode_name = "BUCKET_NAME" # 第 2 步中创建的存储桶名称
+  era           = 1              # 将 era 号码增加（bump），以重置区块链数据。
+  image_tag     = "devnet" # 指定 Docker 镜像标签
 }
 ```
 
-5. Initialize Terraform in the same directory of your `main.tf` file:
+5. 在 `main.tf` 文件的同一目录中初始化 Terraform：
 
 ```bash filename="Terminal"
 terraform init
 ```
 
-This will download all the Terraform dependencies into the `.terraform` folder.
+这将下载所有 Terraform 依赖项到 `.terraform` 文件夹中。
 
-6. Create a new Terraform workspace to isolate your environments:
+6. 创建一个新的 Terraform 工作区以隔离你的环境：
 
 ```bash filename="Terminal"
 terraform workspace new $WORKSPACE
-# This command will list all workspaces
+# 此命令将列出所有工作区
 terraform workspace list
 ```
 
-7. Apply the configuration:
+7. 应用配置：
 
 ```bash filename="Terminal"
 terraform apply
 ```
 
-This might take a while to finish (10 - 20 minutes), Terraform will create all the resources on your cloud account.
+这可能需要一段时间才能完成（10-20 分钟），Terraform 将在你的云账户上创建所有资源。
 
-## Validation
+## 验证
 
-Once Terraform apply finishes, you can follow this section to validate your deployment.
+一旦 Terraform 执行完成，你可以按照本节的指引验证你的部署状况。
 
-1. Configure your Kubernetes client to access the cluster you just deployed:
+1. 配置你的 Kubernetes 客户端以访问你刚刚部署的集群：
 
 ```bash filename="Terminal"
 gcloud container clusters get-credentials aptos-$WORKSPACE --zone <region_zone_name> --project <project_name>
-# for example:
+# 例如：
 gcloud container clusters get-credentials aptos-devnet --zone us-central1-a --project aptos-fullnode
 ```
 
-2. Check that your PFN pods are now running (this may take a few minutes):
+2. 检查你的 PFN pod（容器） 现在是否正在运行（这可能需要几分钟）：
 
 ```bash filename="Terminal"
 kubectl get pods -n aptos
 ```
 
-You should see this:
+你应该看到这样的内容：
 
 ```bash filename="Terminal"
 NAME                       READY   STATUS    RESTARTS   AGE
 devnet0-aptos-fullnode-0   1/1     Running   0          56s
 ```
 
-3. Get your PFN IP:
+3. 获取你的 PFN IP：
 
 ```bash filename="Terminal"
 kubectl get svc -o custom-columns=IP:status.loadBalancer.ingress -n aptos
 ```
 
-You should see something like this:
+你应该看到这样的内容：
 
 ```IP
 [map[ip:104.198.36.142]]
 ```
 
-4. Check the REST API, make sure that the ledger version is increasing:
+4. 检查 REST API，确保账本的版本在增加：
 
 ```bash filename="Terminal"
 curl http://<IP>/v1
-# Example command syntax: curl http://104.198.36.142/v1
+# 示例命令语法：curl http://104.198.36.142/v1
 ```
 
-You should see this something like this:
+你应该看到这样的内容：
 
 ```json filename="Terminal"
 {
@@ -225,58 +214,56 @@ You should see this something like this:
 }
 ```
 
-5. To verify the correctness of your PFN, you will need to:
+5. 要验证你的 PFN 是否正确，你需要：
 
-   - Set up a port-forwarding mechanism directly to the Aptos pod in one ssh terminal, and
-   - Test it in another ssh terminal.
+   - 在一个 SSH 终端中直接设置到 Aptos pod 的端口转发机制，
+   - 在另一个 SSH 终端中进行测试。
 
-   Follow the below steps:
+   你可以按照以下步骤操作：
 
-   - Set up the port-forwarding to the aptos-fullnode pod. Use `kubectl get pods -n aptos` to get the name of the pod:
+   - 设置到 aptos-fullnode pod 的端口转发。使用 `kubectl get pods -n aptos` 获取 pod 的名称：
 
      ```bash filename="Terminal"
-     kubectl port-forward -n aptos <pod-name> 9101:9101
-     # for example:
+     kubectlport-forward -n aptos <pod-name> 9101:9101
+     # 例如：
      kubectl port-forward -n aptos devnet0-aptos-fullnode-0 9101:9101
      ```
 
-   - Open a new ssh terminal. Execute the following curl calls to verify the correctness:
+   - 打开一个新的 SSH 终端。执行以下 curl 命令来验证 PFN 是否正确：
 
      ```bash filename="Terminal"
      curl -v http://0:9101/metrics 2> /dev/null | grep "aptos_state_sync_version{type=\"synced\"}"
 
-     curl -v http://0:9101/metrics 2> /dev/null | grep "aptos_connections{direction=\"outbound\""
+     curl -v http://0:9101/metrics 2> /dev/null | grep "aptos_connections{direction=\"outbound\"
      ```
 
-   - Exit port-forwarding when you are done by entering control-c in the terminal.
+   - 完成时通过在终端中输入 control-c 退出端口转发。
 
-## PFN identity and seed peers
+## PFN 身份和种子对等节点（seed peers）
 
-### Static identity
+### 静态身份
 
-If you want to configure your node with a static identity, first see the [Generate a PFN Identity](../modify/network-identity-fullnode.mdx) tutorial
-to generate a static identity, and then follow the below instructions to configure your Terraform file.
+如果你想为你的节点配置静态身份，首先请参阅[生成 PFN 身份](../modify/network-identity-fullnode.mdx)教程以生成静态身份，然后按照以下说明配置你的 Terraform 文件。
 
-1. Generate a static identity for your PFN by following the guide: [Creating a static identity for a PFN](../modify/network-identity-fullnode.mdx#generate-a-static-identity).
+1. 按照指南为你的 PFN 生成静态身份：[为 PFN 创建静态身份](../modify/network-identity-fullnode.mdx#generate-a-static-identity)。
 
-2. Modify the `main.tf` to add `fullnode_identity` entries in `fullnode_helm_values`. This will configure the identity
-   for the PFN. Insert the correct values for your PFN's identity attributes. For example:
+2. 修改 `main.tf` 文件，以便在 `fullnode_helm_values` 中增添 `fullnode_identity` 的配置项。此操作将设置 PFN 的身份认证信息。请确保为您的 PFN 身份属性填入正确的数据。举例来说：
 
 ```terraform filename="main.tf"
 module "fullnode" {
-  # download Terraform module from aptos-labs/aptos-core repo
+  # 从aptos-labs/aptos-core仓库下载Terraform模块
   source        = "github.com/aptos-labs/aptos-core.git//terraform/fullnode/gcp?ref=main"
-  region        = "us-central1"  # Specify the region
-  zone          = "c"            # Specify the zone suffix
-  project       = "gcp-fullnode" # Specify your GCP project name
-  era           = 1              # bump era number to wipe the chain
-  image_tag     = "devnet"       # Specify the docker image tag to use
+  region        = "us-central1"  # 指定区域
+  zone          = "c"            # 指定区域后缀
+  project       = "gcp-fullnode" # 指定你的GCP项目名称
+  era           = 1              # 提高时代编号以清除链
+  image_tag     = "devnet"       # 指定要使用的Docker镜像标签
 
   fullnode_helm_values = {
     chain = {
       name = "devnet"
     }
-    # create fullnode from this identity config, so it will always have same peer id and address
+    # 从这个身份配置创建PFN，因此它将始终具有相同的对等 ID 和地址
     fullnode_identity = {
       type = "from_config"
       key = "B8BD811A91D8E6E0C6DAC991009F189337378760B55F3AD05580235325615C74"
@@ -286,33 +273,32 @@ module "fullnode" {
 }
 ```
 
-3. Apply Terraform changes:
+3. 应用 Terraform 更改：
 
 ```bash filename="Terminal"
 terraform apply
 ```
 
-### Seed peers
+### 种子对等节点（Seed peers）
 
-You can add seed peers to allow your PFN to connect to specific nodes. See the guide
-[Customize PFN Networks](../modify/fullnode-network-connections.mdx) for more information.
+你可以添加种子对等节点，以允许你的 PFN 连接到特定节点。更多信息请查看指南：[自定义 PFN 网络](../modify/fullnode-network-connections.mdx)。
 
-1. Obtain the seed peer information.
+1. 获取种子对等节点信息。
 
-2. Modify the `main.tf` to add the seed peers in `fullnode_helm_values`. This will configure the seeds for the PFN. For example:
+2. 修改 `main.tf` 在 `fullnode_helm_values` 中添加种子对等节点。这将为 PFN 配置种子。例如：
 
 ```terraform filename="main.tf"
 module "fullnode" {
-  # download Terraform module from aptos-labs/aptos-core repo
+  # 从 aptos-labs/aptos-core 仓库下载 Terraform 模块
   source        = "github.com/aptos-labs/aptos-core.git//terraform/fullnode/gcp?ref=main"
-  region        = "us-central1"  # Specify the region
-  zone          = "c"            # Specify the zone suffix
-  project       = "gcp-fullnode" # Specify your GCP project name
-  era           = 1              # bump era number to wipe the chain
-  image_tag     = "dev_5b525691" # Specify the docker image tag to use
+  region        = "us-central1"  # 指定区域
+  zone          = "c"            # 指定区域后缀
+  project       = "gcp-fullnode" # 指定你的 GCP 项目名称
+  era           = 1              # 提高时代编号以清除链
+  image_tag     = "dev_5b525691" # 指定要使用的 Docker 镜像标签
 
   fullnode_helm_values = {
-    # add a list of peers as upstream
+    # 将上游的对等节点列表添加为种子
     aptos_chains = {
       devnet = {
         seeds = {
@@ -335,61 +321,61 @@ module "fullnode" {
 }
 ```
 
-3. Apply Terraform changes:
+3. 应用 Terraform 更改：
 
 ```bash filename="Terminal"
 terraform apply
 ```
 
-## Check logging
+## 检查日志
 
-To check the logs of the pod, use the following commands:
+要检查 pod 的日志，请使用以下命令：
 
 ```bash filename="Terminal"
-# Get a list of the pods
+# 获取 pod 列表
 kubectl get pods -n aptos
 
-# Get logs of the pod
+# 获取 pod 的日志
 kubectl logs <pod-name> -n aptos
-# for example:
+# 例如：
 kubectl logs devnet0-aptos-fullnode-0 -n aptos
 ```
 
-When using GKE, the logs of the cluster and pod will automatically show up in the Google Cloud console. From the console menu, choose `Kubernetes Engine`. From the side menu, choose `Workloads`. You will see all the pods from the cluster listed.
+当使用 GKE 时，集群和 pod 的日志将自动显示在 Google Cloud 控制台中。从控制台菜单中选择 `Kubernetes Engine`。从侧边菜单中选择 `Workloads`。你将看到列出了集群中的所有 pod。
 
-![GKE Workloads screenshot](/docs/tutorial-gcp-logging1.png "GKE Workloads screenshot")
+![GKE Workloads截图](/docs/tutorial-gcp-logging1.png "GKE Workloads截图")
 
-The `devnet0-aptos-fullnode` is the pod that is running the aptos fullnode container. Click on the pod to view details. You will see some metrics and other details about the pod.
+`devnet0-aptos-fullnode` 是运行 aptos fullnode 容器的 pod。点击 pod 查看详细信息。你将看到一些指标和其他关于 pod 的详细信息。
 
-![GKE Workloads Pod screenshot](/docs/tutorial-gcp-logging2.png "GKE Workloads Pod screenshot")
+![GKE Workloads Pod截图](/docs/tutorial-gcp-logging2.png "GKE Workloads Pod截图")
 
-Click the `LOGS` tab to view the logs directly from the pod. If there are errors in the pod, you will see them here.
+点击 `LOGS` 标签直接从 pod 查看日志。如果 pod 中有错误，你能在这里看到。
 
-![GKE Workloads Pod Logs screenshot](/docs/tutorial-gcp-logging3.png "GKE Workloads Pod Logs screenshot")
+![GKE Workloads Pod Logs截图](/docs/tutorial-gcp-logging3.png "GKE Workloads Pod Logs截图")
 
-Click the `open in new window` icon to view the logs in the Log Explorer. This screen allows advanced searching in the logs.
+点击 `open in new window` 图标在 Log Explorer 中查看日志。此界面允许在日志中进行高级搜索。
 
-![GKE Workloads Pod Logs Explorer screenshot](/docs/tutorial-gcp-logging4.png "GKE Workloads Pod Logs Explorer screenshot")
+![GKE Workloads Pod Logs Explorer截图](/docs/tutorial-gcp-logging4.png "GKE Workloads Pod Logs Explorer截图")
 
-Other logging insights are available in the Logs Dashboard
+其他的日志分析功能可以在日志仪表板 (Logs Dashboard) 中查看。
 
-![GKE Workloads Pod Logs Dashboard screenshot](/docs/tutorial-gcp-logging5.png "GKE Workloads Pod Logs Dashboard screenshot")
+![GKE Workloads Pod Logs Dashboard截图](/docs/tutorial-gcp-logging5.png "GKE Workloads Pod Logs Dashboard截图")
 
-Additional [features](https://cloud.google.com/logging/docs) are available through [Cloud Logging](https://cloud.google.com/logging), including creating log-based metrics, logging sinks and log buckets.
+通过 [Cloud Logging](https://cloud.google.com/logging)，您能够访问更多[功能](https://cloud.google.com/logging/docs)，包括但不限于：创建基于日志的性能指标、配置日志接收器以及设置专用的日志存桶。
 
-## Check monitoring
+## 检查监控（Monitoring）
 
-Google cloud captures many metrics from the cluster and makes them easily viewable in the console. From the console menu, choose `Kubernetes Engine`. Click on the cluster that aptos is deployed to. Click on the `Operations` link at the top right. Click on the `Metrics` sub-tab to view specific cluster metrics.
+Google Cloud 能够从集群中收集众多指标，并且可以在控制台中轻松地进行查看。您可以在控制台菜单中选择 `Kubernetes Engine`，然后点击您部署了 aptos 应用的集群。接着点击右上角的 `Operations` 链接。最后点击 `Metrics` 子标签，即可查阅具体的集群指标。
 
-![GKE Monitoring metrics screenshot](/docs/tutorial-gcp-mon1.png "GKE Monitoring metrics screenshot")
+![GKE Monitoring metrics截图](/docs/tutorial-gcp-mon1.png "GKE Monitoring metrics截图")
 
-Click the `View in Cloud Monitoring` link at the top to view the built-in GKE [dashboard](https://cloud.google.com/stackdriver/docs/solutions/gke/observing) for the cluster.
+点击顶部的 `View in Cloud Monitoring` 链接，查看集群的内置 GKE [仪表板](https://cloud.google.com/stackdriver/docs/solutions/gke/observing)。
 
-![GKE Monitoring dashboard screenshot](/docs/tutorial-gcp-mon2.png "GKE Monitoring dashboard screenshot")
+![GKE Monitoring dashboard截图](/docs/tutorial-gcp-mon2.png "GKE Monitoring dashboard截图")
 
-Google Cloud [Monitoring](https://cloud.google.com/monitoring) has many other features to easily monitor the cluster and pods. You can configure [uptime checks](https://cloud.google.com/monitoring/uptime-checks/introduction) for the services and configure [alerts](https://cloud.google.com/monitoring/alerts/using-alerting-ui) for when the metrics reach a certain [threshold](https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/sli-metrics/overview).
+Google Cloud [监控（Monitoring）](https://cloud.google.com/monitoring) 提供了众多功能，便于您轻松地监控集群（cluster）和容器（Pod）。您可以为服务设置[在线时间监测](https://cloud.google.com/monitoring/uptime-checks/introduction)，并且可以设定[警报](https://cloud.google.com/monitoring/alerts/using-alerting-ui)，以便在性能指标超过预设的[阈值](https://cloud.google.com/stackdriver/docs/solutions/slo-monitoring/sli-metrics/overview)时及时得到通知。
 
 <Callout type="info">
-**Verify your PFN**<br />
-If you want to verify that your PFN is running correctly, you can follow the instructions in the [Verify a PFN](../verify-pfn.mdx) guide.
+**验证你的PFN**<br />
+如果你想验证你的 PFN 是否运行正确，你可以按照[验证PFN](../verify-pfn.mdx) 指南中的说明进行操作。
 </Callout>

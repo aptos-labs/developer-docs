@@ -1,55 +1,48 @@
 ---
-title: "Generate a PFN Identity"
+
+title: "生成 PFN 身份"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Generate a PFN Identity
+# 生成 PFN 身份
 
 <Callout type="warning">
-Validators and VFNs have their identities initialized when first created and their identities are long-lived (immutable).
-PFN identities are more ephemeral and can be regenerated on demand. As such, generating an identity using this
-guide **should only be done for PFNs**, and not for validators or VFNs.
+验证者和 VFN 的身份一旦初始化便长期保持不变。相比之下，PFN 的身份具有更短的生命周期，可以根据需要随时重新生成。因此，按照本指南生成身份的操作只**应该用于 PFN**，而不适合用于验证者或 VFN。
 </Callout>
 
-Public fullnodes (PFNs) will automatically start up with a randomly generated (ephemeral) network identity. This works well for
-regular PFNs. However, you may want to generate and assign a static network identity to your PFN. This is useful when:
+公共全节点（PFN）在启动时会自动采用一个随机产生的（临时的）网络标识。这对绝大多数 PFN 而言是合适的。但在某些情境下，你可能需要为您的 PFN 生成并设置一个固定的网络标识，特别是在以下这些情况中：
 
-- You wish to advertise your PFN as a seed (i.e., for other Aptos PFNs to connect to).
-- You wish to add your PFN to an allowlist of known identities on an upstream PFN or VFN.
-- You wish to fix the identity of your PFN across restarts and releases so that telemetry and other monitoring tools can track your PFN over time.
+- 您希望将您的 PFN 作为种子进行广告宣传（即，供其他 Aptos PFN 连接）。
+- 您希望将您的 PFN 添加到上游 PFN 或 VFN 的已知身份允许列表（allowlist）中。
+- 您希望在重启和发布过程中固定您的 PFN 身份，以便遥测（telemetry）和其他监控（monitoring）工具能够随着时间追踪您的 PFN。
 
-This guide will show you how to generate a static network identity and start your PFN with this identity.
+本指南将向您展示如何生成静态网络身份并以此身份启动您的 PFN。
 
 <Callout type="warning">
-Before you proceed, make sure that you already know how to start your local PFN. See [Run a PFN](../../full-node.mdx) for detailed documentation.
+在继续之前，请确保您已经知道如何启动您的本地 PFN。详见[运行 PFN](../../full-node.mdx) 的详细文档。
 </Callout>
 
-## Generate a static identity
+## 生成静态身份
 
-To create a static identity for your PFN, you will first need to generate a private and public key pair. You will then
-need to derive the `peer_id` from the public key, and use the `peer_id` in your configuration file
-(e.g., `fullnode.yaml`) to configure the static network identity for your PFN.
+要为您的 PFN 创建静态身份，您首先需要生成一对私钥和公钥。然后，您需要从公钥派生出 `peer_id`，并在配置文件中使用 `peer_id`（例如 `fullnode.yaml`）来配置您的 PFN 的静态网络身份。
 
-The steps below will guide you through the process of generating a static identity for your PFN. The exact steps depend
-on whether you are using the `aptos-core` source code to run your PFN, or Docker.
+下面的步骤将指导您完成为您的 PFN 生成静态身份的过程。确切的步骤取决于您是使用 `aptos-core` 源代码运行还是使用 Docker 运行您的 PFN。
 
-### Using the aptos-core source code
+### 使用 aptos-core 源代码
 
-If you use the `aptos-core` source code to run your PFN, follow these steps:
+如果您使用 `aptos-core` 源代码运行您的 PFN，请按照以下步骤操作：
 
-1. **Generate the private key**
+1. **生成私钥**
 
-First, use the [Aptos CLI](../../../../build/cli.mdx) (`aptos`) to produce a hex encoded static
-x25519 private key. This will be the private key for your network identity. Run the following `aptos` CLI command:
+首先，使用 [Aptos CLI](../../../../build/cli.mdx) (`aptos`) 生成一个十六进制编码的静态 x25519 私钥。这将是您网络身份的私钥。运行以下 `aptos` CLI 命令：
 
 ```bash filename="Terminal"
 aptos key generate --key-type x25519 --output-file /path/to/private-key.txt
 ```
 
-This command will create a file `private-key.txt` with the private key in it, and a corresponding
-`private-key.txt.pub` file with the public key in it. An example `private-key.txt` file and
-`private-key.txt.pub` file are shown below:
+此命令将创建一个包含私钥的 `private-key.txt` 文件，以及一个包含公钥的相应 `private-key.txt.pub` 文件。下面展示了一个示例 `private-key.txt` 文件和 `private-key.txt.pub` 文件：
 
     ```bash filename="Terminal"
     cat ~/private-key.txt
@@ -59,11 +52,9 @@ This command will create a file `private-key.txt` with the private key in it, an
     B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813%
     ```
 
-2. **Retrieve the peer identity**
+2. **检索对等（peer）身份**
 
-Next, retrieve the peer identity from the public key using the `aptos` CLI. The `--host` flag in
-the command will provide the host information to output a network address for your PFN. Run the following command
-(be sure to update the `--host` flag with your actual host information):
+接下来，请使用 `aptos CLI` 通过公钥获取对应的对等（peer）身份。在命令中加入 `--host` 参数，指定您的主机信息，这样才能生成并输出您 PFN 的网络地址。请按照下面的格式执行命令（记得将 `--host` 后的内容替换成您真实的主机信息）：
 
 ```bash filename="Terminal"
 aptos key extract-peer --host example.com:6180 \
@@ -71,7 +62,7 @@ aptos key extract-peer --host example.com:6180 \
     --output-file peer-info.yaml
 ```
 
-This command will output the public identity information for your PFN to a file `peer-info.yaml`. For example:
+此命令将把您的 PFN 的公共身份信息输出到 `peer-info.yaml` 文件中。例如：
 
 ```json
 {
@@ -89,12 +80,11 @@ This command will output the public identity information for your PFN to a file 
 }
 ```
 
-In this example, `B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813` is the `peer_id`.
+在这个示例中，`B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813` 是 `peer_id`。
 
-3. **Start a PFN with the identity**
+3. **以静态网络身份启动 PFN**
 
-After extracting the peer identity from the public key, you can start your PFN with the identity using the
-public key in the `peer_id` field of the configuration file (e.g., `fullnode.yaml`). For example:
+从公钥提取对等身份后，您可以使用配置文件中的 `peer_id` 字段中的公钥启动您的 PFN（例如 `fullnode.yaml`）。例如：
 
 ```yaml filename="fullnode.yaml"
 full_node_networks:
@@ -106,7 +96,7 @@ identity:
   peer_id: "<PEER_ID>"
 ```
 
-In our example (from above), the configuration file (`fullnode.yaml`) should now have the following information:
+在我们的例子中（来自上面的），配置文件（`fullnode.yaml`）现在应该包含以下信息：
 
 ```yaml filename="fullnode.yaml"
 full_node_networks:
@@ -118,27 +108,26 @@ full_node_networks:
       peer_id: "B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813"
 ```
 
-Starting your PFN with this configuration will assign your PFN with the static network identity you generated.
+按照这个配置启动您的 PFN，可以确保您的 PFN 被赋予之前生成的静态网络身份。
 
-### Using Docker
+### 使用 Docker
 
-If you use Docker to run your PFN, follow these steps:
+如果您使用 Docker 运行您的 PFN，请按照以下步骤操作：
 
-1. **Prepare your tools**
+1. **准备您的工具**
 
-First, `cd` into the directory for your local PFN and start a Docker container with the latest tools, for example:
+首先，`cd` 进入您的本地 PFN 目录，并启动一个包含最新工具的 Docker 容器，例如：
 
 ```bash filename="Terminal"
 cd ~/my-full-node
 docker run -it aptoslabs/tools:devnet /bin/bash
 ```
 
-2. **Generate the private key**
+2. **生成私钥**
 
-Next, follow the remaining steps from inside the `aptoslabs/tools` Docker container.
+接下来，按照在`aptoslabs/tools` Docker 容器内的剩余步骤进行操作。
 
-Open a new terminal and `cd` into the directory where you started the Docker container for your PFN. Making
-sure to provide the **full path** to where you want the private key file to be stored, run the command:
+打开一个新的终端窗口并 `cd` 进入您启动 PFN 的 Docker 容器的目录。确保提供您希望私钥文件存储的**完整路径**，运行命令：
 
 ```bash filename="Terminal"
 aptos key generate \
@@ -146,11 +135,9 @@ aptos key generate \
     --output-file /path/to/private-key.txt
 ```
 
-3. **Retrieve the peer identity**
+3. **检索对等（peer）身份**
 
-Next, retrieve the peer identity from the public key using the `aptos` CLI. The `--host` flag in
-the command will provide the host information to output a network address for your PFN. Run the following command
-(be sure to update the `--host` flag with your actual host information):
+接下来，请使用 `aptos CLI` 通过公钥获取对应的对等（peer）身份。在命令中加入 `--host` 参数，指定您的主机信息，这样才能生成并输出您 PFN 的网络地址。请按照下面的格式执行命令（记得将 `--host` 后的内容替换成您真实的主机信息）：
 
 ```bash filename="Terminal"
 aptos key extract-peer --host example.com:6180 \
@@ -158,7 +145,7 @@ aptos key extract-peer --host example.com:6180 \
     --output-file peer-info.yaml
 ```
 
-This command will output the public identity information for your PFN to a file `peer-info.yaml`. For example:
+此命令将把您的 PFN 的公共身份信息输出到 `peer-info.yaml` 文件中。例如：
 
 ```json
 {
@@ -176,12 +163,11 @@ This command will output the public identity information for your PFN to a file 
 }
 ```
 
-In this example, `B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813` is the `peer_id`.
+在这个示例中，`B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813` 是 `peer_id`。
 
-4. **Start a PFN with the identity**
+4. **以静态网络身份启动 PFN**
 
-After extracting the peer identity from the public key, you can start your PFN with the identity using the
-public key in the `peer_id` field of the configuration file (e.g., `fullnode.yaml`). For example:
+从公钥提取对等身份后，您可以使用配置文件中的 `peer_id` 字段中的公钥启动您的 PFN（例如 `fullnode.yaml`）。例如：
 
 ```yaml
 full_node_networks:
@@ -193,7 +179,7 @@ identity:
   peer_id: "<PEER_ID>"
 ```
 
-In our example (from above), the configuration file (`fullnode.yaml`) should now have the following information:
+在我们（上面的）的例子中，配置文件（`fullnode.yaml`）现在应该包含以下信息：
 
 ```yaml
 full_node_networks:
@@ -205,4 +191,4 @@ full_node_networks:
       peer_id: "B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813"
 ```
 
-Starting your PFN with this configuration will assign your PFN with the static network identity you generated.
+按照这个配置启动您的 PFN，可以确保您的 PFN 被赋予之前生成的静态网络身份。

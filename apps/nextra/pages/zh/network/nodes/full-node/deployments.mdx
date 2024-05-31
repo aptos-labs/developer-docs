@@ -1,33 +1,34 @@
 ---
-title: "Deploy a PFN"
+
+title: "部署 PFN"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Deploy a PFN
+# 部署 PFN
 
-The following guides provide step-by-step instructions for deploying a PFN on the Aptos networks.
+以下指南提供了在 Aptos 网络上部署 PFN 的步骤。
 
 <Callout type="info">
-**Do I have to run a PFN?**<br />
-If you do not wish to run a PFN, but still want to interact with the Aptos blockchain, you can use the REST API
-provided by the Aptos Labs' PFNs (see [Aptos APIs](../../../build/apis.mdx)). Note, however, that Aptos Labs-provided PFNs have rate
-limits, which can impede your development. If you want to avoid such rate limits, you can deploy your own PFN
-and synchronize with the Aptos blockchain directly.
+**我必须运行 PFN 吗？**<br />
+
+如果您不想运行 PFN，但仍然想与 Aptos 区块链交互，您可以使用 Aptos Labs 提供的 REST API (见 [Aptos API](../../../build/apis.mdx))。不过，请注意，Aptos Labs 提供的 PFN 有速率限制，这可能会妨碍您的开发。如果您想避免这样的速率限制，您可以部署自己的 PFN 并与 Aptos 区块链直接同步。
+
 </Callout>
 
-Select the guide for the deployment method you prefer:
+选择您喜欢的部署方法：
 
 <Callout type="warning">
-**Choose a network**<br />
-These guides default to deploying a PFN in the Aptos mainnet network, but they can easily be used to do
-the same in other networks (e.g., devnet or testnet network). To do so, check out the desired network branch
-and use the `genesis.blob` and `waypoint.txt` node files for the respective branches:
-[mainnet](../configure/node-files-all-networks/node-files-mainnet.mdx),
-[devnet](../configure/node-files-all-networks/node-files-devnet.mdx), and
-[testnet](../configure/node-files-all-networks/node-files-testnet.mdx).
+**选择一个网络**<br />
+
+这些指南默认将 PFN 部署在 Aptos 主网网络上，但它们也可以很容易地在其他网络（例如，devnet 或 testnet 网络）中执行相同的操作。在这样做时，请检出所需的网络分支，并使用相应分支的 `genesis.blob` 和 `waypoint.txt` 节点文件：
+[主网](../configure/node-files-all-networks/node-files-mainnet.mdx)、
+[devnet](../configure/node-files-all-networks/node-files-devnet.mdx) 和
+[testnet](../configure/node-files-all-networks/node-files-testnet.mdx) 。
+
 </Callout>
 
-- ### [Using Source Code](deployments/using-source-code.mdx)
-- ### [Using Docker](deployments/using-docker.mdx)
-- ### [Using GCP](deployments/using-gcp.mdx)
+- ### [使用源代码](deployments/using-source-code.mdx)
+- ### [使用 Docker](deployments/using-docker.mdx)
+- ### [使用 GCP](deployments/using-gcp.mdx)
