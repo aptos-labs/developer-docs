@@ -1,0 +1,149 @@
+---
+title: "Get Started"
+---
+
+import { Cards, Card, GraphQLEditor } from '@components/index';
+
+# Get Started
+
+## What would you like to learn?
+
+<Cards>
+  <Card href="./smart-contracts">
+    <Card.Title>Smart Contracts</Card.Title>
+    <Card.Description>Learn how to write smart contracts on Aptos with the Move programming language.</Card.Description>
+  </Card>
+  <Card href="./indexer">
+    <Card.Title>Query Data</Card.Title>
+    <Card.Description>Use the Aptos Indexer to query for on-chain data efficiently.</Card.Description>
+  </Card>
+  <Card href="../network/blockchain/blockchain-deep-dive">
+    <Card.Title>Blockchain Infrastructure</Card.Title>
+    <Card.Description>Learn the different components of the Aptos blockchain's infrastructure.</Card.Description>
+  </Card>
+</Cards>
+
+## What developer tools should I use?
+
+<Cards>
+  <Card href="./sdks">
+    <Card.Title>SDKs</Card.Title>
+    <Card.Description>Use our TypeScript, Python, Rust, and other SDKs to submit transactions and read on-chain data.</Card.Description>
+  </Card>
+  <Card href="./indexer">
+    <Card.Title>Indexer</Card.Title>
+    <Card.Description>Query for on-chain data like account balances, historical transactions, NFTs by account, and more.</Card.Description>
+  </Card>
+  <Card href="./cli">
+    <Card.Title>CLI</Card.Title>
+    <Card.Description>Compile and profile Move smart contracts, run a local network, and more with the Aptos CLI.</Card.Description>
+  </Card>
+</Cards>
+
+Here's an interactive example of our [Indexer](indexer) and how you can query for the Current Coin Balances of an account. More usage examples can be found in [common queries](indexer/common-queries.mdx).
+
+<GraphQLEditor
+  query={`query GetCoinBalances($address: String, $offset: Int) {
+  current_coin_balances(
+    where: {owner_address: {_eq: $address}},
+    offset: $offset,
+    limit: 100,
+    order_by: {amount: desc}
+  ) {
+    coin_type
+    amount
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "offset": 0
+}`}
+/>
+
+## Coming from another ecosystem?
+
+Quickly ramp up on some of the differences and similarities between Aptos and other ecosystems.
+
+<Cards>
+  <Card href="./get-started/ethereum-cheatsheet">
+    <Card.Title>Ethereum / EVM to Aptos Cheatsheet</Card.Title>
+    <Card.Description></Card.Description>
+  </Card>
+  <Card href="./get-started/solana-cheatsheet">
+    <Card.Title>Solana / SVM to Aptos Cheatsheet</Card.Title>
+    <Card.Description></Card.Description>
+  </Card>
+  <Card href="../network/blockchain/move#comparison-to-other-vms">
+    <Card.Title>VM Comparison</Card.Title>
+    <Card.Description></Card.Description>
+  </Card>
+</Cards>
+
+## Do you have any examples?
+
+We've got all kinds of examples and tutorials, catered to what you're looking for.
+
+### End-to-end tutorials
+
+<Cards>
+  <Card href="./tutorials/first-transaction">
+    <Card.Title>Your First Transaction</Card.Title>
+    <Card.Description>This tutorial describes how to generate and submit transactions to the Aptos blockchain, and verify these submitted transactions.</Card.Description>
+  </Card>
+  <Card href="./tutorials/your-first-nft">
+    <Card.Title>Your First NFT</Card.Title>
+    <Card.Description>This tutorial describes how to create and transfer non-fungible assets on the Aptos blockchain.</Card.Description>
+  </Card>
+    <Card href="./tutorials/first-fungible-asset">
+    <Card.Title>Your First Fungible Asset</Card.Title>
+    <Card.Description>This tutorial introduces how you can compile, deploy, and mint your own fungible asset (FA), named FACoin.</Card.Description>
+  </Card>
+</Cards>
+
+### Smart Contract Tutorials
+
+See the [Smart Contract](./smart-contracts) section for more info
+
+<Cards>
+  <Card href="./tutorials/build-e2e-dapp/1-create-smart-contract">
+    <Card.Title>Create a Smart Contract</Card.Title>
+    <Card.Description>This is the first chapter of the tutorial on building an end-to-end dapp on Aptos.</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples">
+    <Card.Title linkType="external">Aptos Move Examples</Card.Title>
+    <Card.Description>30+ examples on how to develop Move on Aptos</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial">
+    <Card.Title linkType="external">Move Tutorial</Card.Title>
+    <Card.Description>Covers the basics of programming with Move</Card.Description>
+  </Card>
+</Cards>
+
+### Interactive tutorials
+
+<Cards>
+  <Card href="https://learn.aptoslabs.com/tutorials">
+    <Card.Title linkType="external">Aptos Learn</Card.Title>
+    <Card.Description>Basic and advanced tutorials</Card.Description>
+  </Card>
+  <Card href="https://movespiders.com">
+    <Card.Title linkType="external">Move Spiders</Card.Title>
+    <Card.Description>Learn about Move with a friendly spider mascot by Move Spiders</Card.Description>
+  </Card>
+  <Card href="https://www.aptosshores.com">
+    <Card.Title linkType="external">Aptos Shores</Card.Title>
+    <Card.Description>Learn about Move with Aptos Shores</Card.Description>
+  </Card>
+</Cards>
+
+## How do I setup a full node or validator?
+
+<Cards>
+  <Card href="../network/nodes/full-node">
+    <Card.Title>Setup a full node</Card.Title>
+  </Card>
+  <Card href="../network/nodes/validator-node">
+    <Card.Title>Setup a validator</Card.Title>
+  </Card>
+</Cards>

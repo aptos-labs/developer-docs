@@ -11,7 +11,7 @@ export function TitleSection() {
   const quickStartButtonProps: ButtonProps = {
     variant: "primary",
     asChild: true,
-    children: <Link href={`/${locale}/build/quick-start`}>Quick Start</Link>,
+    children: <Link href={`/${locale}/build/get-started`}>Get Started</Link>,
   };
 
   const learnButtonProps: ButtonProps = {
@@ -51,25 +51,23 @@ export function TitleSection() {
         <div className="flex flex-col md:flex-row gap-6 md:gap-4 w-[250px] md:w-[unset] md:[&_a]:w-[170px] lg:[&_a]:w-[200px]">
           {/* Unfortunately, there isn't an elegant way to change size variants on breakpoints */}
           <Button size="sm" className="md:hidden" {...quickStartButtonProps} />
-          <Button size="sm" className="md:hidden" {...learnButtonProps} />
-
+          {/* <Button size="sm" className="md:hidden" {...learnButtonProps} /> */}
           <Button
             size="md"
             className="hidden md:flex lg:hidden"
             {...quickStartButtonProps}
           />
-          <Button
+          {/* <Button
             size="md"
             className="hidden md:flex lg:hidden"
             {...learnButtonProps}
-          />
-
+          /> */}
           <Button
             size="lg"
             className="hidden lg:flex"
             {...quickStartButtonProps}
           />
-          <Button size="lg" className="hidden lg:flex" {...learnButtonProps} />
+          {/* <Button size="lg" className="hidden lg:flex" {...learnButtonProps} /> */}
         </div>
       </div>
     </div>
