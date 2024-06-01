@@ -2,13 +2,13 @@ import { Callout } from 'nextra/components';
 
 # 4. Fetch Data from Chain
 
-In the fourth chapter of the tutorial on [building an end-to-end dapp on Aptos](../../../index.mdx), you will be learning to fetch data from chain.
+In the fourth chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx), you will be learning to fetch data from chain.
 
 Our UI logic relies on whether the connected account has created a todo list. If the account has created a todo list, our app should display that list; if not, the app should display a button offering the option to create a new list.
 
 For that, we first need to check if the connected account has a `TodoList` resource. In our smart contract, whenever someone creates a todo list we create and assign a `TodoList` resource to their account.
 
-To fetch data from chain, we can use the [Aptos TypeScript SDK](../../../index.mdx). The SDK provides classes and functions for us to easily interact and query the Aptos chain.
+To fetch data from chain, we can use the [Aptos TypeScript SDK](../sdks/ts-sdk.mdx). The SDK provides classes and functions for us to easily interact and query the Aptos chain.
 
 To get started:
 
@@ -23,7 +23,7 @@ import { Aptos } from "@aptos-labs/ts-sdk";
 The TypeScript SDK provides us with a `Aptos` class which is the main entry point into Aptos's API. By initializing `Aptos` we can query the Aptos chain.
 
 <Callout type="info">
-Read more about the [`Aptos`](../../sdks/ts-sdk/sdk-configuration.md) class in the Aptos TypeScript SDK docs.
+Read more about the [`Aptos`](../../sdks/ts-sdk.mdx) class in the Aptos TypeScript SDK docs.
 </Callout>
 
 1. In the `App.tsx` file, add:
@@ -35,7 +35,7 @@ const aptos = new Aptos();
 This will initialize a `Aptos` instance for us.
 
 <Callout type="info">
-By default, `Aptos` will interact with the `devnet` network, to set up a [different network](../../guides/system-integrators-guide.md#choose-a-network), we can use `AptosConfig` class.
+By default, `Aptos` will interact with the `devnet` network, to set up a [different network](../../advanced-guides/system-integrators-guide.mdx#choose-a-network), we can use `AptosConfig` class.
 
 ```tsx filename="App.tsx"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";

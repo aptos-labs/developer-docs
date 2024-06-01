@@ -2,11 +2,11 @@ import { Callout } from 'nextra/components';
 
 # Your First Multisig
 
-This tutorial introduces assorted [K-of-N multi-signer authentication](../concepts/accounts.md#multied25519-authentication) operations and supplements content from the following tutorials:
+This tutorial introduces assorted [K-of-N multi-signer authentication](../../network/blockchain/accounts.mdx#multied25519-authentication) operations and supplements content from the following tutorials:
 
 - [Your First Transaction](first-transaction.mdx)
 - [Your First Coin](first-coin.mdx)
-- [Your First Move Module](../smart-contracts/learn-move/first-move-module.mdx)
+- [Your First Move Module](first-move-module.mdx)
 
 
 <Callout type="info">
@@ -15,9 +15,9 @@ Try out the above tutorials (which include dependency installations) before movi
 
 ## Step 1: Pick an SDK
 
-This tutorial, a community contribution, was created for the [Python SDK](../../index.mdx).
+This tutorial, a community contribution, was created for the [Python SDK](../sdks/python-sdk.mdx).
 
-Other developers are invited to add support for the [TypeScript SDK](../../index.mdx), [Rust SDK](../../index.mdx), and [Unity SDK](../../index.mdx)!
+Other developers are invited to add support for the [TypeScript SDK](../sdks/ts-sdk.mdx), [Rust SDK](../sdks/rust-sdk.mdx), and [Unity SDK](../sdks/unity-sdk.mdx)!
 
 ## Step 2: Start the example
 
@@ -82,11 +82,11 @@ Bob:   0xcf21e85337a313bdac33d068960a3e52d22ce0e6190e9acc03a1c9930e1eaf3e
 Chad:  0xa1a2aef8525eb20655387d3ed50b9a3ea1531ef6117f579d0da4bcf5a2e1f76d
 ```
 
-For each user, note the [account address](../concepts/accounts.md#account-address) and [authentication key](../concepts/accounts.md#authentication-key) are identical, but the [public key](../concepts/accounts.md#creating-an-account) is different.
+For each user, note the [account address](../../network/blockchain/accounts.mdx#account-address) and [authentication key](../../network/blockchain/accounts.mdx#authentication-key) are identical, but the [public key](../../network/blockchain/accounts.mdx#creating-an-account) is different.
 
 ## Step 4: Generate a multisig account
 
-Next generate a [K-of-N multi-signer](../concepts/accounts.md#multied25519-authentication) public key and account address for a multisig account requiring two of the three signatures:
+Next generate a [K-of-N multi-signer](../../network/blockchain/accounts.mdx#multied25519-authentication) public key and account address for a multisig account requiring two of the three signatures:
 
 ```python filename="multisig.py"
 threshold = 2

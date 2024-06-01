@@ -9,14 +9,14 @@ This tutorial describes how to create and transfer non-fungible assets on the Ap
 
 Install your preferred SDK from the below list:
 
-- [TypeScript SDK](../../index.mdx)
-- [Python SDK](../../index.mdx)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
 
 ---
 
 ## Step 2: Run the example
 
-<Tabs items={['typescript', 'python']}>
+<Tabs items={['TypeScript', 'Python']}>
   <Tabs.Tab>
 
 Clone the `aptos-ts-sdk` repo and build it:
@@ -41,7 +41,7 @@ pnpm install
 pnpm build
 ```
 
-Run the Typescript [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) example:
+Run the TypeScript [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) example:
 
 ```bash filename="Terminal"
 pnpm run simple_digital_asset
@@ -50,16 +50,10 @@ pnpm run simple_digital_asset
   </Tabs.Tab>
   <Tabs.Tab>
 
-Clone the `aptos-core` repo:
+Clone the `aptos-python-sdk` repo:
 
 ```bash filename="Terminal"
-git clone https://github.com/aptos-labs/aptos-core.git
-```
-
-Navigate to the Python SDK directory:
-
-```bash filename="Terminal"
-cd aptos-core/ecosystem/python/sdk
+git clone https://github.com/aptos-labs/aptos-python-sdk.git
 ```
 
 Install the necessary dependencies:
@@ -69,7 +63,7 @@ curl -sSL https://install.python-poetry.org | python3
 poetry install
 ```
 
-Run the Python [`simple_aptos_token`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/simple_aptos_token.py) example:
+Run the Python [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/examples/simple_aptos_token.py) example:
 
 ```bash filename="Terminal"
 poetry run python -m examples.simple_aptos_token
@@ -87,7 +81,7 @@ poetry run python -m examples.simple_aptos_token
 
 The following output should appear after executing the `simple_digital_asset` example, though some values will be different:
 
-```yaml
+```bash filename="Terminal"
 === Addresses ===
 
 Alice's address is: 0x770dbeb6101056eac5a19de9a73ad72fac512e0de909e7bcb13a9d9241d1d162
@@ -180,7 +174,7 @@ Bob's digital assets balance: 1
 
 The following output should appear after executing the `simple_aptos_token` example, though some values will be different:
 
-```yaml
+```bash filename="Terminal"
 === Addresses ===
 Alice: 0x391f8b07439768674023fb87ae5740e90fb8508600486d8ee9cc411b4365fe89
 Bob: 0xfbca055c91d12989dc6a2c1a5e41ae7ba69a35454b04c69f03094bbccd5210b4
@@ -242,7 +236,7 @@ Token owner: Alice
 </Tabs.Tab>
 <Tabs.Tab>
   <Callout type="info">
-  See [`simple_aptos_token`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/simple_aptos_token.py) for the complete code as you follow the below steps.
+  See [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/examples/simple_aptos_token.py) for the complete code as you follow the below steps.
   </Callout>
 </Tabs.Tab>
 </Tabs>
@@ -287,7 +281,7 @@ Using the API client we can create a `TokenClient` that we use for common token 
 token_client = AptosTokenClient(rest_client)
 ```
 
-[`common.py`](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/python/sdk/examples/common.py) initializes these values as follows:
+[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/examples/common.py) initializes these values as follows:
 
 ```python filename="example.py"
 NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")
@@ -502,7 +496,7 @@ async mintTokenTransaction(args: {
   <Tabs.Tab>
 
 Your application will call `mint_token`:
-
+    {/* TODO: NEed to ensure image is still hosted */}
 ```python filename="example.py"
 txn_hash = await token_client.mint_token(
     alice,
@@ -711,7 +705,7 @@ const alicesDigitalAssetsAfter = await aptos.getOwnedDigitalAssets({
   minimumLedgerVersion: BigInt(pendingTxn.version),
 });
 console.log(
-  `Alices's digital assets balance: ${alicesDigitalAssetsAfter.length}`,
+  `Alice's digital assets balance: ${alicesDigitalAssetsAfter.length}`,
 );
 
 const bobDigitalAssetsAfter = await aptos.getOwnedDigitalAssets({
@@ -769,6 +763,6 @@ print(f"Token owner: {owners[str(get_owner(obj_resources))]}\n")
 ## Supporting documentation
 
 - [Account basics](../../network/blockchain/accounts.mdx)
-- [TypeScript SDK](../../index.mdx)
-- [Python SDK](../../index.mdx)
-- [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+- [REST API specification](../../network/nodes/aptos-api-spec.mdx)

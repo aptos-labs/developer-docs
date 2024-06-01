@@ -12,15 +12,13 @@ Make sure you have understood FA before moving on to the tutorial. If not, it is
 
 Install your preferred SDK from the below list:
 
-- [TypeScript SDK](../../index.mdx)
-- [Python SDK](../../index.mdx)
-- [Rust SDK](../../index.mdx)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
 
 ---
 
 ## Step 2: Install the CLI
 
-[Install the precompiled binary for the Aptos CLI](../../index.mdx).
+[Install the precompiled binary for the Aptos CLI](../cli.mdx).
 
 ---
 
@@ -35,7 +33,7 @@ pnpm install
 pnpm build
 ```
 
-Navigate to the Typescript examples directory:
+Navigate to the TypeScript examples directory:
 
 ```bash filename="Terminal"
 cd examples/typescript
@@ -119,6 +117,9 @@ compilePackage("move/facoin", "move/facoin/facoin.json", [
 Publish the package to chain:
 
 ```ts filename="publish.ts"
+import path from "path";
+import fs from "fs";
+
 export function getPackageBytesToPublish(filePath: string) {
   // current working directory - the root folder of this repo
   const cwd = process.cwd();
@@ -187,28 +188,31 @@ So `Withdraw`, `Deposit`, and `Transfer` in the management module have different
 
 After publishing the module to the Aptos blockchain, the entity that published that coin type should initialize a metadata object describing the information about this FA:
 
-```rust filename="fa_coin.move"
-fun init_module(admin: &signer) {
-    let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
-    primary_fungible_store::create_primary_store_enabled_fungible_asset(
-        constructor_ref,
-        option::none(),
-        utf8(b"FA Coin"), /* name */
-        utf8(ASSET_SYMBOL), /* symbol */
-        8, /* decimals */
-        utf8(b"http://example.com/favicon.ico"), /* icon */
-        utf8(b"http://example.com"), /* project */
-    );
+```move filename="fa_coin.move"
+module deploy_addr::fa_coin {
+    fun init_module(admin: &signer) {
+        let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
+        primary_fungible_store::create_primary_store_enabled_fungible_asset(
+            constructor_ref,
+            option::none(),
+            utf8(b"FA Coin"), /* name */
+            utf8(ASSET_SYMBOL), /* symbol */
+            8, /* decimals */
+            utf8(b"https://example.com/favicon.ico"), /* icon */
+            utf8(b"https://example.com"), /* project */
+        );
 
-    // Create mint/burn/transfer refs to allow creator to manage the fungible asset.
-    let mint_ref = fungible_asset::generate_mint_ref(constructor_ref);
-    let burn_ref = fungible_asset::generate_burn_ref(constructor_ref);
-    let transfer_ref = fungible_asset::generate_transfer_ref(constructor_ref);
-    let metadata_object_signer = object::generate_signer(constructor_ref);
-    move_to(
-        &metadata_object_signer,
-        ManagedFungibleAsset { mint_ref, transfer_ref, burn_ref }
-    )
+        // Create mint/burn/transfer refs to allow creator to manage the fungible asset.
+        let mint_ref = fungible_asset::generate_mint_ref(constructor_ref);
+        let burn_ref = fungible_asset::generate_burn_ref(constructor_ref);
+        let transfer_ref = fungible_asset::generate_transfer_ref(constructor_ref);
+        let metadata_object_signer = object::generate_signer(constructor_ref);
+        move_to(
+            &metadata_object_signer,
+            ManagedFungibleAsset { mint_ref, transfer_ref, burn_ref }
+        )
+  }
+}
 ```
 
 This ensures that this FA type has never been initialized before using a named object. Notice the first line create a named object with a static seed, if the metadata object has been created it will abort.
@@ -227,14 +231,16 @@ Different from coin module, FA doesn't require users to register to use it becau
 
 Minting coins requires `MintRef` that was produced during initialization. the function `mint` (see below) takes in the creator and an amount, and returns a `FungibleAsset` struct containing that amount of FA. If the FA tracks supply, it will be updated.
 
-```rust filename="fa_coin.move"
-/// Mint as the owner of metadata object.
-public entry fun mint(admin: &signer, to: address, amount: u64) acquires ManagedFungibleAsset {
-    let asset = get_metadata();
-    let managed_fungible_asset = authorized_borrow_refs(admin, asset);
-    let to_wallet = primary_fungible_store::ensure_primary_store_exists(to, asset);
-    let fa = fungible_asset::mint(&managed_fungible_asset.mint_ref, amount);
-    fungible_asset::deposit_with_ref(&managed_fungible_asset.transfer_ref, to_wallet, fa);
+```move filename="fa_coin.move"
+module deploy_addr::fa_coin {
+    /// Mint as the owner of metadata object.
+    public entry fun mint(admin: &signer, to: address, amount: u64) acquires ManagedFungibleAsset {
+        let asset = get_metadata();
+        let managed_fungible_asset = authorized_borrow_refs(admin, asset);
+        let to_wallet = primary_fungible_store::ensure_primary_store_exists(to, asset);
+        let fa = fungible_asset::mint(&managed_fungible_asset.mint_ref, amount);
+        fungible_asset::deposit_with_ref(&managed_fungible_asset.transfer_ref, to_wallet, fa);
+  }
 }
 ```
 
@@ -258,9 +264,7 @@ There are two separate withdraw and deposit events instead of a single transfer 
 
 ## Supporting documentation
 
-- [Aptos CLI](../../index.mdx)
+- [Aptos CLI](../cli.mdx)
 - [Fungible Asset](../smart-contracts/aptos-standards/fungible-asset.mdx)
-- [TypeScript SDK](../../index.mdx)
-- [Python SDK](../../index.mdx)
-- [Rust SDK](../../index.mdx)
-- [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [REST API specification](../../network/nodes/aptos-api-spec.mdx)

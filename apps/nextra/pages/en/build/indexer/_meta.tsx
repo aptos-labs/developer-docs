@@ -1,6 +1,6 @@
 export default {
   "indexer-reference": {
-    title: "Indexer API Table Reference"
+    title: "Indexer API Table Reference",
   },
   "common-queries": {
     title: "Common Indexer Queries",
