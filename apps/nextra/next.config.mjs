@@ -39,7 +39,7 @@ export default withBundleAnalyzer(
     reactStrictMode: true,
     transpilePackages: [
       "@aptos-labs/aptos-nextra-config",
-      "@aptos-labs/docs-code-cache",
+      "@aptos-labs/github-fetch",
     ],
     redirects: async () => [
       {
