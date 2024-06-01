@@ -2,15 +2,17 @@ import { Callout, Tabs } from 'nextra/components';
 
 # Your First Transaction
 
-This tutorial describes how to generate and submit transactions to the Aptos blockchain, and verify these submitted transactions. The `transfer-coin` example used in this tutorial is built with the Aptos SDKs.
+This tutorial describes how to generate and submit transactions to the Aptos
+blockchain, and verify these submitted transactions. The `transfer-coin` example
+used in this tutorial is built with the Aptos SDKs.
 
 ## Step 1: Pick an SDK
 
 Install your preferred SDK from the below list:
 
-- [TypeScript SDK](../../index.mdx)
-- [Python SDK](../../index.mdx)
-- [Rust SDK](../../index.mdx)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+- [Rust SDK](../sdks/rust-sdk.mdx)
 
 ---
 
@@ -49,16 +51,10 @@ pnpm run transfer_coin
   </Tabs.Tab>
   <Tabs.Tab>
 
-Clone the `aptos-core` repo:
+Clone the `aptos-python-sdk` repo:
 
 ```bash filename="Terminal"
-git clone https://github.com/aptos-labs/aptos-core.git
-```
-
-Navigate to the Python SDK directory:
-
-```bash filename="Terminal"
-cd aptos-core/ecosystem/python/sdk
+git clone https://github.com/aptos-labs/aptos-python-sdk.git
 ```
 
 Install the necessary dependencies:
@@ -68,7 +64,7 @@ curl -sSL https://install.python-poetry.org | python3
 poetry install
 ```
 
-Run the [`transfer-coin`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/transfer_coin.py) example:
+Run the [`transfer-coin`](https://github.com/aptos-labs/aptos-python-sdk/examples/transfer_coin.py) example:
 
 ```bash filename="Terminal"
 poetry run python -m examples.transfer_coin
@@ -212,7 +208,7 @@ Now see the below walkthrough of the SDK functions used to accomplish the above 
 
 ## Step 4: The SDK in depth
 
-The `transfer-coin` example code uses helper functions to interact with the [REST API](https://aptos.dev/nodes/aptos-api-spec#/). This section reviews each of the calls and gives insights into functionality.
+The `transfer-coin` example code uses helper functions to interact with the [REST API](../../network/nodes/aptos-api-spec.mdx). This section reviews each of the calls and gives insights into functionality.
 
 <Tabs items={["TypeScript", "Python", "Rust"]}>
   <Tabs.Tab>
@@ -224,7 +220,7 @@ See the TypeScript [`transfer_coin`](https://github.com/aptos-labs/aptos-ts-sdk/
 <Tabs.Tab>
 
 <Callout type="info">
-See the Python [`transfer_coin`](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/transfer_coin.py) for the complete code as you follow the below steps.
+See the Python [`transfer_coin`](https://github.com/aptos-python-sdk/examples/transfer_coin.py) for the complete code as you follow the below steps.
 </Callout>
 </Tabs.Tab>
 <Tabs.Tab>
@@ -267,7 +263,7 @@ rest_client = RestClient(NODE_URL)
 faucet_client = FaucetClient(FAUCET_URL, rest_client)
 ```
 
-[`common.py`](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/python/sdk/examples/common.py) initializes these values as follows:
+[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/examples/common.py) initializes these values as follows:
 
 ```python filename="common.py"
 NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")
@@ -694,7 +690,7 @@ rest_client
 ## Supporting documentation
 
 - [Account basics](../../network/blockchain/accounts.mdx)
-- [TypeScript SDK](../../index.mdx)
-- [Python SDK](../../index.mdx)
-- [Rust SDK](../../index.mdx)
-- [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+- [Rust SDK](../sdks/rust-sdk.mdx)
+- [REST API specification](../../network/nodes/aptos-api-spec.mdx)

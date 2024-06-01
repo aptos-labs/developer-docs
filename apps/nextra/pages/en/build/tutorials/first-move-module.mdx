@@ -12,7 +12,7 @@ This tutorial details how to compile, test, publish and interact with Move modul
 
 ## Step 1: Install the CLI
 
-[Install the precompiled binary for the Aptos CLI](../../index.mdx).
+[Install the precompiled binary for the Aptos CLI](../cli.mdx).
 
 ---
 
@@ -194,7 +194,7 @@ Upon success, the CLI will print out the following:
 }
 ```
 
-The `set_message` function modifies the `hello_blockchain` `MessageHolder` resource. A resource is a data structure that is stored in [global storage](../move/book/structs-and-resources.md#storing-resources-in-global-storage). The resource can be read by querying the following REST API:
+The `set_message` function modifies the `hello_blockchain` `MessageHolder` resource. A resource is a data structure that is stored in [global storage](../move/book/structs-and-resources.mdx#storing-resources-in-global-storage). The resource can be read by querying the following REST API:
 
 ```bash filename="Terminal"
 
@@ -214,7 +214,7 @@ After the first execution, this should contain:
 
 Notice that the `message` field contains `hello, blockchain`.
 
-Each succesful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](https://aptos.dev/concepts/events/#module-events). Module Events for a given account can be accessed via the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
+Each successful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](../../network/blockchain/events.mdx#module-events). Module Events for a given account can be accessed via the [GraphQL API](../indexer.mdx).
 
 <Callout type="info">
 Other accounts can reuse the published module by calling the exact same function as in this example. It is left as an exercise to the reader.
@@ -223,7 +223,5 @@ Other accounts can reuse the published module by calling the exact same function
 ## Supporting documentation
 
 - [Account basics](../../network/blockchain/accounts.mdx)
-- [TypeScript SDK](../../index.mdx)
-- [Python SDK](../../index.mdx)
-- [Rust SDK](../../index.mdx)
-- [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [REST API specification](../../network/nodes/aptos-api-spec.mdx)

@@ -9,15 +9,14 @@ This tutorial introduces how you can compile, deploy, and mint your own coin, na
 
 Install your preferred SDK from the below list:
 
-- [TypeScript SDK](../../index.mdx)
-- [Python SDK](../../index.mdx)
-- [Rust SDK](../../index.mdx)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
 
 ---
 
 ## Step 2: Install the CLI
 
-[Install the precompiled binary for the Aptos CLI](../../index.mdx).
+[Install the precompiled binary for the Aptos CLI](../cli.mdx).
 
 ---
 
@@ -35,7 +34,7 @@ pnpm install
 pnpm build
 ```
 
-Navigate to the Typescript examples directory:
+Navigate to the TypeScript examples directory:
 
 ```bash filename="Terminal"
 cd examples/typescript/
@@ -150,7 +149,7 @@ Move contracts are effectively a set of Move modules known as a package. When de
 
 These are read by the example and published to the Aptos blockchain:
 
-<Tabs items={["TypeScript", "Python", "Rust"]}>
+<Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
 
 In the TypeScript example, we use `aptos move build-publish-payload` command to compile and build the module.
@@ -236,11 +235,6 @@ await rest_client.wait_for_transaction(txn_hash)
 ```
 
   </Tabs.Tab>
-  <Tabs.Tab>
-
-    Coming soon.
-
-  </Tabs.Tab>
 </Tabs>
 
 ---
@@ -293,35 +287,37 @@ The entity that creates a new coin gains the capabilities for minting, burning, 
 
 Once a coin type has been published to the Aptos blockchain, the entity that published that coin type can initialize it:
 
-```rust filename="showNumbers.rs"
-public fun initialize<CoinType>(
-    account: &signer,
-    name: string::String,
-    symbol: string::String,
-    decimals: u8,
-    monitor_supply: bool,
-): (BurnCapability<CoinType>, FreezeCapability<CoinType>, MintCapability<CoinType>) {
-    let account_addr = signer::address_of(account);
+```move
+module 0x1::coin {
+    public fun initialize<CoinType>(
+        account: &signer,
+        name: string::String,
+        symbol: string::String,
+        decimals: u8,
+        monitor_supply: bool,
+    ): (BurnCapability<CoinType>, FreezeCapability<CoinType>, MintCapability<CoinType>) {
+        let account_addr = signer::address_of(account);
 
-    assert!(
-        coin_address<CoinType>() == account_addr,
-        error::invalid_argument(ECOIN_INFO_ADDRESS_MISMATCH),
-    );
+        assert!(
+            coin_address<CoinType>() == account_addr,
+            error::invalid_argument(ECOIN_INFO_ADDRESS_MISMATCH),
+        );
 
-    assert!(
-        !exists<CoinInfo<CoinType>>(account_addr),
-        error::already_exists(ECOIN_INFO_ALREADY_PUBLISHED),
-    );
+        assert!(
+            !exists<CoinInfo<CoinType>>(account_addr),
+            error::already_exists(ECOIN_INFO_ALREADY_PUBLISHED),
+        );
 
-    let coin_info = CoinInfo<CoinType> {
-        name,
-        symbol,
-        decimals,
-        supply: if (monitor_supply) { option::some(optional_aggregator::new(MAX_U128, false)) } else { option::none() },
-    };
-    move_to(account, coin_info);
+        let coin_info = CoinInfo<CoinType> {
+            name,
+            symbol,
+            decimals,
+            supply: if (monitor_supply) { option::some(optional_aggregator::new(MAX_U128, false)) } else { option::none() },
+        };
+        move_to(account, coin_info);
 
-    (BurnCapability<CoinType>{ }, FreezeCapability<CoinType>{ }, MintCapability<CoinType>{ })
+        (BurnCapability<CoinType>{ }, FreezeCapability<CoinType>{ }, MintCapability<CoinType>{ })
+  }
 }
 ```
 
@@ -337,13 +333,13 @@ MoonCoin calls this `initialize` function automatically upon package publishing.
 
 To use a coin, an entity must register a `CoinStore` for it on their account:
 
-```rust filename="example.rs"
+```move"
 public entry fun registerCoinType(account: &signer) {
 ```
 
 MoonCoin uses `ManagedCoin` that provides an entry function wrapper: `managed_coin::register`. Here is an example script for registration:
 
-```rust filename="example.rs"
+```move
 script {
     fun register(account: &signer) {
         aptos_framework::managed_coin::register<MoonCoin::moon_coin::MoonCoin>(account)
@@ -357,22 +353,24 @@ script {
 
 Minting coins requires the mint capability that was produced during initialization. the function `mint` (see below) takes in that capability and an amount, and returns back a `Coin<T>` struct containing that amount of coins. If the coin tracks supply, it will be updated.
 
-```rust filename="mint.rs"
-public fun mint<CoinType>(
-    amount: u64,
-    _cap: &MintCapability<CoinType>,
-): Coin<CoinType> acquires CoinInfo {
-    if (amount == 0) {
-        return zero<CoinType>()
-    };
+```move
+module 0x1::coin {
+    public fun mint<CoinType>(
+        amount: u64,
+        _cap: &MintCapability<CoinType>,
+    ): Coin<CoinType> acquires CoinInfo {
+        if (amount == 0) {
+            return zero<CoinType>()
+        };
 
-    let maybe_supply = &mut borrow_global_mut<CoinInfo<CoinType>>(coin_address<CoinType>()).supply;
-    if (option::is_some(maybe_supply)) {
-        let supply = option::borrow_mut(maybe_supply);
-        optional_aggregator::add(supply, (amount as u128));
-    };
+        let maybe_supply = &mut borrow_global_mut<CoinInfo<CoinType>>(coin_address<CoinType>()).supply;
+        if (option::is_some(maybe_supply)) {
+            let supply = option::borrow_mut(maybe_supply);
+            optional_aggregator::add(supply, (amount as u128));
+        };
 
-    Coin<CoinType> { value: amount }
+        Coin<CoinType> { value: amount }
+    }
 }
 ```
 
@@ -394,8 +392,7 @@ There are two separate withdraw and deposit events instead of a single transfer 
 
 ## Supporting documentation
 
-- [Aptos CLI](../../index.mdx)
-- [TypeScript SDK](../../index.mdx)
-- [Python SDK](../../index.mdx)
-- [Rust SDK](../../index.mdx)
-- [REST API specification](https://aptos.dev/nodes/aptos-api-spec#/)
+- [Aptos CLI](../cli.mdx)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+- [REST API specification](../../network/nodes/aptos-api-spec.mdx)

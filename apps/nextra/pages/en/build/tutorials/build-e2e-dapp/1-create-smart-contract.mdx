@@ -2,7 +2,7 @@ import { Callout } from 'nextra/components';
 
 # 1. Create a Smart Contract
 
-This is the first chapter of the tutorial on [building an end-to-end dapp on Aptos](../../../index.mdx). If you haven’t done it, review that introduction, and ensure your environment meets the [prerequisites](../../../index.mdx) listed there.
+This is the first chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx). If you haven’t done it, review that introduction, and ensure your environment meets the [prerequisites](../build-e2e-dapp.mdx#prerequisites) listed there.
 
 Now that you are all set up and at your terminal:
 
@@ -76,7 +76,7 @@ module todolist_addr::todolist {
 <Callout type="info">
 A Move module is stored under an address (so when it published anyone can access it using that address); the syntax for a Move module is
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 module <account-address>::<module-name> {
 
 }
@@ -95,7 +95,7 @@ Before jumping into writing code, let’s first understand what we want our smar
 3. Let an account mark their task as completed.
 
 <Callout type="info">
-Creating an event is not mandatory yet useful if dapps/users want to monitor data, such as how many people create a new task, using the [Aptos Indexer](../../indexer/indexer-landing.md).
+Creating an event is not mandatory yet useful if dapps/users want to monitor data, such as how many people create a new task, using the [Aptos Indexer](../../indexer.mdx).
 </Callout>
 
 We can start with defining a `TodoList` struct, that holds the:
@@ -113,7 +113,7 @@ And also create a `Task` struct that holds:
 
 On the `todolist.move` file, update the content in the module with:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 ...
 struct TodoList has key {
     tasks: Table<u64, Task>,
@@ -164,7 +164,7 @@ We have some errors on `Unbound type`- this is happening because we used some ty
 
 3. On the top of the module, import those types by adding:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 ...
 use aptos_framework::event;
 use std::string::String;
@@ -200,7 +200,7 @@ Creating a list is essentially submitting a transaction, and so we need to know 
 
 1. Add a `create_list` function that accepts a `signer`
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 public entry fun create_list(account: &signer){
 
 }
@@ -220,7 +220,7 @@ The `create_list` function can handle that `TodoList` resource creation.
 
 2. Add the following to the `create_list` function
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 public entry fun create_list(account: &signer){
   let tasks_holder = TodoList {
     tasks: table::new(),
@@ -240,7 +240,7 @@ As mentioned before, our contract has a create task function that lets an accoun
 
 1. Add a `create_task` function that accepts a `signer` and task `content` and the function logic.
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 public entry fun create_task(account: &signer, content: String) acquires TodoList {
     // gets the signer address
     let signer_address = signer::address_of(account);
@@ -270,7 +270,7 @@ public entry fun create_task(account: &signer, content: String) acquires TodoLis
 2. Since we now use two new modules - signer and table (you can see it being used in `signer::` and `table::`) - we need to import these modules.
    At the top of the file, add those two use statements:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 use std::signer;
 use aptos_std::table::{Self, Table}; // This one we already have, need to modify it
 ```
@@ -290,7 +290,7 @@ Another function we want our contract to hold is the option to mark a task as co
 
 1. Add a `complete_task` function that accepts a `signer` and a `task_id`:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 public entry fun complete_task(account: &signer, task_id: u64) acquires TodoList {
   // gets the signer address
   let signer_address = signer::address_of(account);
@@ -314,7 +314,7 @@ Now try to compile the code:
 2. Run: `aptos move compile`
 3. Another `Unbound` error? To fix this, add a `use` statement to use the `account` module.
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 use aptos_framework::account;
 ```
 
@@ -326,7 +326,7 @@ As this code now compiles, we want to have some validations and checks before cr
 
 1. Add a check to the `create_task` function to make sure the signer account has a list:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 public entry fun create_task(account: &signer, content: String) acquires TodoList {
   // gets the signer address
   let signer_address = signer::address_of(account);
@@ -345,7 +345,7 @@ public entry fun create_task(account: &signer, content: String) acquires TodoLis
 
 With:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 public entry fun complete_task(account: &signer, task_id: u64) acquires TodoList {
   // gets the signer address
   let signer_address = signer::address_of(account);
@@ -370,7 +370,7 @@ If you noticed, `assert` accepts two arguments: the first is what to check for, 
 
 On the top of the module file (under the `use` statements), add those error declarations:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 // Errors
 const E_NOT_INITIALIZED: u64 = 1;
 const ETASK_DOESNT_EXIST: u64 = 2;
@@ -379,7 +379,7 @@ const ETASK_IS_COMPLETED: u64 = 3;
 
 Now we can update our asserts with these constants:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 public entry fun create_task(account: &signer, content: String) acquires TodoList {
   // gets the signer address
   let signer_address = signer::address_of(account);
@@ -435,7 +435,7 @@ Test functions use the `#[test]` annotation.
 
 1. Add the following code to the bottom of the file:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 #[test]
 public entry fun test_flow() {
 
@@ -449,7 +449,7 @@ we need to use `entry` here because we are testing an `entry` function.
 2. For simplicity, and because we don't have much code to test, we use one function to test the whole flow of the app.
    The test steps are:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
   // create a list
   // create a task
   // update task as completed
@@ -457,7 +457,7 @@ we need to use `entry` here because we are testing an `entry` function.
 
 Update the test function to be:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 #[test(admin = @0x123)]
 public entry fun test_flow(admin: signer) acquires TodoList {
   // creates an admin @todolist_addr account for test
@@ -508,13 +508,13 @@ Before running the tests again, we need to import (`use`) some new modules we ar
 
 3. At the top of the file, add this `use` statement:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 use std::string::{Self, String}; // already have it, need to modify
 ```
 
 4. Run the `aptos move test` command. If all goes right, we should see a success message like:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 Running Move unit tests
 [ PASS    ] 0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018::todolist::test_flow
 Test result: OK. Total tests: 1; passed: 1; failed: 0
@@ -525,7 +525,7 @@ Test result: OK. Total tests: 1; passed: 1; failed: 0
 
 5. Let’s add one more test to make sure our `complete_task` function works as expected. Add another test function with:
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 #[test(admin = @0x123)]
 #[expected_failure(abort_code = E_NOT_INITIALIZED)]
 public entry fun account_can_not_update_task(admin: signer) acquires TodoList {
@@ -568,7 +568,7 @@ To fix it, we can add a `use` statement that would be used only in tests.
 
 Add the following `use` statement where we have all of our import statements.
 
-```move filename="todolist.move" 
+```move filename="todolist.move"
 use std::string::String; // change to this
 ...
 #[test_only]

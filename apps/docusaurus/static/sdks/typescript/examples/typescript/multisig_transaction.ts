@@ -46,7 +46,7 @@ const FAUCET_URL =
   );
 
   // Each Aptos account stores an auth key. Initial account address can be derived from auth key.
-  // See https://aptos.dev/concepts/accounts for more details.
+  // See https://aptos.dev/en/network/blockchain/accounts for more details.
   const authKey =
     TxnBuilderTypes.AuthenticationKey.fromMultiEd25519PublicKey(
       multiSigPublicKey,

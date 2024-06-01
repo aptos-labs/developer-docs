@@ -189,7 +189,9 @@ aptos node run-local-testnet --force-restart --assume-yes
 ```
 
 ## Running in a container
+
 If you want to run the localnet using a Docker container, you can do it like this:
+
 ```sh
 docker run \
    --platform linux/amd64 \
