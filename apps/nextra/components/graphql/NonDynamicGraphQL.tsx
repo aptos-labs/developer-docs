@@ -1040,7 +1040,7 @@ const getFetcher: (network: ReturnType<typeof getNetworkUrl>) => Fetcher =
       body: JSON.stringify(graphQLParams),
       credentials: "same-origin",
     });
-    return data.json<any>().catch(() => data.text());
+    return data.json().catch(() => data.text());
   };
 
 type Network = "mainnet" | "devnet" | "testnet";
