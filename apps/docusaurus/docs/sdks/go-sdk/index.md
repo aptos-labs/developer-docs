@@ -18,13 +18,6 @@ To use the Go SDK, get the main package here:
 go get github.com/aptos-labs/aptos-go-sdk
 ```
 
-You can additionally add the `bcs` or `crypto` libraries
-
-```bash
-go get github.com/aptos-labs/aptos-go-sdk/bcs
-go get github.com/aptos-labs/aptos-go-sdk/crypto
-```
-
 ## Using the Go SDK
 
 ### Creating a client
@@ -32,15 +25,21 @@ go get github.com/aptos-labs/aptos-go-sdk/crypto
 You can create a client by importing the aptos-go-sdk, and creating a `Client`
 
 ```go
-package example
+package main
 
 import (
-    github.com/aptos-labs/aptos-go-sdk
+	"fmt"
+	"github.com/aptos-labs/aptos-go-sdk"
 )
 
-func test() {
-  client := aptos.NewClient(aptos.DevnetConfig)
+func main() {
+	client, err := aptos.NewClient(aptos.DevnetConfig)
+	if err != nil {
+		panic("Failed to create client:" + err.Error())
+	}
+	fmt.Println("client", client)
 }
+
 ```
 
 You can configure the network with the `aptos.NetworkConfig`, or use a
