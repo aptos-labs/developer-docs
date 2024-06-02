@@ -1,168 +1,132 @@
 ---
-title: "Node Requirements"
+title: 节点要求
 ---
 
-import { Callout, Steps } from 'nextra/components';
+import {Callout, Steps} from 'nextra/components';
 
-# Node Requirements
+# 节点要求
 
-To ensure that your validator and validator fullnode (VFN) operate smoothly, both nodes should meet the
-requirements specified in this document.
+为确保您的验证节点和验证者全节点（VFN）顺利运行，这两个节点应满足本文档中指定的要求。
 
 <Callout type="warning">
-**Failure to meet requirements**<br />
-Failure to meet the requirements outlined in this document will result in your nodes experiencing degradation under load,
-consensus failures, reward losses, and general instability.
+**未满足要求**<br />
+如果您的节点未能达到文档中的要求，可能会在承受工作负载时性能降低，出现共识故障，奖励减少，以及整体上的不稳定现象。
 </Callout>
 
-## Resource isolation
+## 资源隔离
 
-When running an Aptos validator and VFN, we strongly recommend that the nodes run on two separate and
-independent machines. These machines should be well-provisioned, meet the requirements outlined below and
-be isolated from each other. Maintaining resource isolation between the validator and the VFN is important
-for security and to ensure that the nodes do not encounter performance degradation, instability or failures when
-under load.
+当运行 Aptos 验证器和 VFN 时，我们强烈推荐将这些节点部署在两台相互独立的机器上。这些机器应当配置充良好，并满足下文所述的各项要求，同时保持彼此独立。确保验证器与 VFN 之间的资源得到有效隔离，这对于增强系统的安全性至关重要，同时也可防止节点在处理高负载时性能下降、出现不稳定或其他故障。
 
 <Callout type="info">
-For deploying the validator and VFN in the cloud, we provide Terraform support on two cloud providers: **GCP** and **AWS**.
-See [**Running Validator Node**](deploy-nodes.mdx).
+若要在云环境中部署验证器和 VFN，我们为 **GCP** 和 **AWS** 这两家云服务提供商提供了 Terraform 的支持。详情请查阅[**运行验证节点**](deploy-nodes.mdx)文档。
 </Callout>
 
-## Hardware requirements
+## 硬件要求
 
-For running an Aptos validator and VFN in mainnet, we recommend that your hardware be performant enough to maintain
-~30,000 transactions per second (TPS). There are two ways to evaluate if your hardware meets this requirement:
+为了在主网上运行Aptos验证器和 VFN，我们建议您的硬件需要具备足够的性能，能够支持维持大约每秒 30,000 笔交易（TPS）。判断您的硬件是否符合此性能要求，有以下两种评估方式：
 
-1. Use the reference specs provided below.
-1. Run the performance benchmarking tool provided by Aptos.
+1. 使用下面提供的参考规格。
+2. 运行 Aptos 提供的性能基准测试工具。
 
-Note that both the validator and VFN require sufficient hardware separately (i.e., two separate machines that
-satisfy the requirements outlined below).
+需要特别注意的是，验证器和 VFN 各自都必须配备独立且充足的硬件资源（也就是说，需要两台独立主机分别满足以下条件）。
 
-### Reference specs
+### 参考规格
 
-**Specifications for Running an Aptos Validator and VFN on Mainnet**
+**在主网上运行 Aptos 验证节点和 VFN 的规格**
 
-| Component          | Specification                                              |
-|--------------------|------------------------------------------------------------|
-| CPU                | 32 cores, 2.8GHz or faster, AMD Milan EPYC or Intel Xeon Platinum |
-| Memory             | 64GB RAM                                                   |
-| Storage            | 2T SSD with at least 60K IOPS and 200MiB/s bandwidth       |
-| Networking Bandwidth | 1Gbps                                                    |
+| 组件     | 规格                                                        |
+| -------- | ----------------------------------------------------------- |
+| CPU      | 32 核，2.8GHz 或更快，AMD Milan EPYC 或 Intel Xeon Platinum |
+| 内存     | 64GB RAM                                                    |
+| 存储     | 2T SSD，至少 60K IOPS 和 200MiB/s 带宽                      |
+| 网络带宽 | 1Gbps                                                       |
 
-**Example Machine Types on Various Clouds**
+**各云服务提供商上的示例主机类型**
 
-| Cloud Provider | Machine Type                       | Notes                                 |
-|----------------|------------------------------------|---------------------------------------|
-| AWS            | c6id.16xlarge                      | If using a local SSD                  |
-| AWS            | c6i.16xlarge + io2 EBS volume      | With 60K IOPS                         |
-| GCP            | t2d-standard-60 + pd-ssd           | With 60K IOPS                         |
-| Azure          | Standard_D64_v5                    | With 64K IOPS                         |
+| 云服务提供商 | 机器类型                  | 备注             |
+| ------------ | ------------------------- | ---------------- |
+| AWS          | c6id.16xlarge             | 如果使用本地 SSD |
+| AWS          | c6i.16xlarge + io2 EBS 卷 | 带有 60K IOPS    |
+| GCP          | t2d-standard-60 + pd-ssd  | 带有 60K IOPS    |
+| Azure        | Standard_D64_v5           | 带有 64K IOPS    |
 
+### 性能基准测试
 
-### Performance benchmarking
+如果您需要评估硬件的性能是否足够，可以使用性能基准测试工具。首先，克隆 `aptos-core` 库并安装必要的依赖（详见[**克隆 aptos-core**](../building-from-source.mdx#clone-the-aptos-core-repo)一节）。接着，根据下面的步骤执行命令进行基准测试：
 
-If you'd prefer to evaluate your hardware for sufficient performance, you can use the performance benchmarking
-tool. First, clone the `aptos-core` repository and install the required dependencies (see the
-[**Cloning aptos-core**](../building-from-source.mdx#clone-the-aptos-core-repo) section).
-Then, execute the following commands to run the benchmark:
-
-```bash filename="Terminal"
+```bash filename="终端"
 TABULATE_INSTALL=lib-only pip install tabulate
 
 ./testsuite/performance_benchmark.sh --short
 ```
 
-Once the benchmark finishes, it will print out a table, with a column `"t/s"`, which shows the TPS achieved by your
-hardware. The evaluation criteria is encoded in the tool, and the tool will display a warning if your hardware does
-not meet the requirements.
+当基准测试完成后，系统会生成一份表格，其中 `t/s` 一列将展示您的硬件实际达到的每秒交易数（TPS）。该工具内置了评估标准，若您的硬件未达标，系统将会提示警告信息。
 
-**Local SSD vs. network storage**
+**本地 SSD 与网络存储**
 
-Cloud deployments require choosing between local storage or network storage, such as, AWS EBS and GCP PD.
-Loosely speaking, a local SSD often provides lower latency and cost, especially relative to IOPS (input/output
-operations per second), while network storage requires CPU support to scale IOPS. However, network
-storage provides better support for backups and offers improved reliability for nodes that stop or fail, thus enabling
-higher availability. The choice between local SSD and network storage depends on your specific requirements and
-constraints.
+云部署时，您需要选择使用本地存储还是网络存储，比如 AWS EBS 或 GCP PD。简单来说，本地 SSD 在延迟和成本上通常更有优势，尤其是在每秒输入 / 输出操作数（IOPS）方面。而网络存储则需要 CPU 的支持来提升IOPS。不过，网络存储在备份方面做得更好，为那些停止运行或出错的节点提供了更高的可靠性，因而能够提供更高的系统可用性。您需要根据您的具体需求和考虑，选择使用本地 SSD 还是网络存储。
 
-### Motivating hardware requirements
+### 硬件要求的动机
 
-Hardware requirements for Aptos nodes depend on: (i) the transaction workload being executed; and (ii) the size of the
-database on each machine. The current hardware requirements have been set using an estimated transaction workload
-(e.g., 30,000 TPS) and an estimated database growth rate for 2024. These may be subject to change. It is also worth
-noting that transaction workloads can change frequently, and thus it is necessary to provision your hardware to meet the
-requirements of the most demanding transaction workloads. This will ensure that your nodes can perform well under
-load and remain stable.
+Aptos 节点的硬件需求主要受两个因素的影响：（1）交易工作量，（2）每台机器上数据库的大小。目前设定的硬件要求基于对交易工作量（如每秒 30,000 笔交易）和 2024 年数据库增长速度的预估值。但请注意，这些要求可能随着实际情况的变化而调整。鉴于交易工作量往往会频繁变动，因此配置硬件以应对最高交易需求显得尤为重要，这样可以确保您的节点即使面对高负载也能保持高效稳定的运行状态。
 
-Generally, the size of the database on each machine is a function of the ledger history (i.e., the number
-of transactions in the blockchain history) and the number of on-chain states (e.g., accounts and resources).
-Both the ledger history and the number of on-chain states depend on several additional factors, including the age
-of the blockchain, the average transaction rate over time, and the configuration of the ledger database pruner.
-At the time of writing, we estimate that testnet and mainnet require several 100's of GB of storage.
+一般来说，每台机器上数据库的容量主要由两部分构成：一是账本的历史记录（也就是区块链历史中的交易数量），二是链上状态的数量（比如账户和资源）。这两部分的数据量都会受到区块链的使用年限、时间段内的平均交易频率以及账本数据库裁剪器配置等多种因素的影响。目前我们预测，测试网络和主网络大约需要数百 GB 的存储空间。
 
-Note that because archival nodes store the entire history of the blockchain, the database size on archival nodes will
-continue to grow unbounded. As a result, we cannot provide a recommendation for archival node storage sizes.
+请注意，由于归档节点存储了区块链的整个历史，归档节点上的数据库大小将无限制地增加。因此，我们无法为归档节点存储空间的大小提供建议。
 
-## Network requirements and ports
 
-When you are running a validator and a VFN, you are required to open network ports on your nodes to allow other
-nodes (i.e., peers) to connect to you. There are different Aptos network types, and each network type uses a different port (see below).
+## 网络要求和端口
 
-### Network types
+当您运行验证节点和 VFN 时，您需要在节点上打开网络端口以允许其他节点（即，peer，对等节点）连接到您。Aptos 有不同类型的网络，每种网络类型都使用不同的端口（见下文）。
 
-There are three types of Aptos networks:
+### 网络类型
 
-1. **Validator network:** Validators connect to each other over this network. Validator fullnodes (VFNs) and public fullnodes (PFNs) do not use this network.
-1. **VFN network:** The validator fullnode (VFN) network allows a validator and VFN pair to connect to each other. This network is private between the validator and the VFN.
-1. **Public network:** The public network allows VFNs and public fullnodes (PFNs) to connect to other VFNs and PFNs. This allows public node operators to access the blockchain.
+Aptos 有三种网络类型：
 
-Your node can be configured so that each of these networks can operate using a different port on your node. You can configure
-the port settings using the node configuration YAML file. Here is an [example
-configuration file](https://github.com/aptos-labs/aptos-core/blob/4ce85456853c7b19b0a751fb645abd2971cc4c0c/docker/compose/aptos-node/fullnode.yaml#L10) for a VFN node
-that configures the VFN network to use port `6181` and the public network to use port `6182`.
+1. **验证者网络：** 验证者通过此网络相互连接。验证全节点（VFN）和公共全节点（PFN）不使用此网络。
+2. **VFN 网络：** 验证全节点（VFN）网络允许验证者和 VFN 配对相互连接。此网络在验证者和 VFN 之间是私有的。
+3. **公共网络：** 公共网络允许 VFN 和公共全节点（PFN）连接到其他 VFN 和 PFN。这允许公共节点操作者访问区块链。
 
-### Port settings
+您可以配置您的节点，使得不同的网络在节点上通过不同的端口运行。通过编辑节点的 YAML 配置文件，您便可以进行端口的设置。以下是一个[示例配置文件](https://github.com/aptos-labs/aptos-core/blob/4ce85456853c7b19b0a751fb645abd2971cc4c0c/docker/compose/aptos-node/fullnode.yaml#L10)：它将VFN网络的端口设置为 `6181`，而公共网络的端口设置为 `6182`。
 
-The recommendations described below assume the default port settings used by validators, VFNs and PFNs. If you have
-changed the default port settings in your configuration file, then you should adjust the recommendations accordingly.
+### 端口设置
+
+下面描述的建议假设您使用了验证者节点、VFN 和 PFN 的默认端口设置。如果您在配置文件中更改了默认端口设置，则应将建议中提及的内容做相应的更改。
 
 <Callout type="warning">
-**Exposing ports**<br />
-Unless explicitly required, we recommend that you do not expose any other ports while operating a node. This is because
-exposing additional ports can increase the attack surface of your node and make it more vulnerable to adversaries.
+**暴露端口**<br />
+我们建议，除非有特别的要求，否则在运行节点的过程中不要开放任何额外的端口。这样做是因为开放过多的端口有可能让您的节点面临更多的安全威胁，导致更容易遭受攻击者的侵害。
 </Callout>
 
-#### Running a validator:
+#### 运行验证者：
 
-Assuming default ports are used, the following should be configured for validator nodes:
+假设使用默认端口，验证节点应配置以下端口：
 
-- Open the following TCP ports:
-  - `6180` - **Validator network**: Open this port publicly to enable the validator to connect to other validators in the network.
-  - `6181` – **VFN network**: Open this port privately to only be accessible by your VFN.
-- Close the following TCP ports:
-  - `6182` – **Public network**: Close this port to prevent PFN connections.
-  - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
-  - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
-  - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
+- 打开以下 TCP 端口：
+  - `6180` - **验证者网络**：公开，打开此端口以使验证者能够连接到网络中的其他验证者。
+  - `6181` – **VFN 网络**：私有，打开此端口将仅允许您的 VFN 访问。
+- 关闭以下 TCP 端口：
+  - `6182` – **公共网络**：关闭此端口以防止 PFN 连接。
+  - `9101` – **检查服务**：关闭此端口以防止未经授权的指标检查。
+  - `9102` – **管理服务**：关闭此端口以防止未经授权的管理服务交互。
+  - `80/8080` **REST API**：关闭此端口以防止未经授权的 REST API 访问。
 
-#### Running a VFN:
+#### 运行 VFN：
 
-Assuming default ports are used, the following should be configured for VFN nodes:
+假设使用默认端口，VFN 节点应配置以下端口：
 
-- Open the following TCP ports:
-  - `6181` – **VFN network**: Open this port privately to only be accessible by your validator.
-  - `6182` – **Public network**: Open this port publicly to enable PFNs to connect to your VFN.
-- Close the following TCP ports:
-  - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
-  - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
-  - `80/8080` **REST API**: Close this port to prevent unauthorized REST API access.
+- 打开以下 TCP 端口：
+  - `6181` – **VFN 网络**：私有，打开此端口，仅允许您的验证者访问。
+  - `6182` – **公共网络**：公开，打开此端口以使 PFN 能够连接到您的 VFN。
+- 关闭以下 TCP 端口：
+  - `9101` – **检查服务**：关闭此端口以防止未经授权的指标检查。
+  - `9102` – **管理服务**：关闭此端口以防止未经授权的管理服务交互。
+  - `80/8080` **REST API**：关闭此端口以防止未经授权的 REST API 访问。
 
 <Callout type="warning">
-**Exposing services**<br />
-The inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
-are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
-port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
-to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to
-prevent abuse.
+**暴露服务**<br />
+检查服务端口（`9101`）、管理服务端口（`9102`）和REST API端口（`80` 或 `8080`）
+可能对您的内部网络有用，例如，应用开发和调试。然而，检查服务端口和管理服务端口永远不应公开暴露，因为它们容易被滥用。同样，如果您选择公开暴露REST API端点，您应该部署额外的认证或速率限制机制以防止滥用。
+
+检查服务端口（`9101`）、管理服务端口（`9102`）以及 REST API 端口（`80` 或 `8080`）在您的内部网络中，可能会非常有用，比如说用于应用开发和调试时。但是，检查服务端口和管理服务端口绝对不能公开，因为这会很容易被滥用。同样，如果您决定将 REST API 端口公开，那么您应当部署额外的认证或限速措施，以避免滥用。
 </Callout>

@@ -1,93 +1,81 @@
 ---
-title: "Node Inspection Service"
+
+title: "节点检查服务"
+
 ---
 
-import { Callout, Steps } from 'nextra/components';
+import {Callout, Steps} from 'nextra/components';
 
-# Node Inspection Service
+# 节点检查服务
 
-Aptos nodes collect metrics and system information while running. These metrics provide a way to track,
-monitor and inspect the health and performance of the node dynamically, at runtime. Node metrics and system
-information can be queried or exported via an inspection service that runs on each node.
-To see the list of important metrics and counters, see the [Important Node Metrics](important-metrics.mdx) document.
+Aptos 节点在运行时会收集各种指标和系统信息，这些指标是动态跟踪、监控并检查节点健康和性能的重要手段。可以通过每个节点上的检查服务查询或导出这些节点的指标和系统信息。想了解关键的指标和计数列表的详细信息，可以查阅[重要节点指标](important-metrics.mdx)文档。
 
-You can configure various aspects of the node inspection service. This document describes how to expose and see the metrics locally, on the respective node. You may also view these metrics remotely by making the port accessible via firewall rules.
+你可以配置节点检查服务的各个方面。本文档描述了如何在本地暴露并查看相应节点上的指标。你也可以通过配置防火墙规则，使端口可访问，以远程查看这些指标。
 
 <Callout type="warning">
-If you do make the inspection service port publicly accessible on your node, we
-recommend disabling access when not in use (to prevent unauthorized access and abuse).
+如果你确实需要使你的节点上的检查服务端口公开可访问，我们建议在不使用时禁用访问（以防止未经授权的访问和滥用）。
 </Callout>
 
-## Examining node metrics
+## 检查节点指标
 
-If you'd like to examine the metrics of your node, start running a
-node and review the inspection service locally by loading this URL in your browser:
+如果你想检查你的节点的指标，请启动一个节点并通过在浏览器中加载以下URL来本地查看检查服务：
 
 ```bash
 http://localhost:9101/metrics
 ```
 
-This will display the values of all the metrics and counters of your node at the time you queried it.
-To see updates to these values, simply refresh the page.
+这将在你查询时显示你节点的所有指标和计数器的值。要查看这些值的最新值，只需刷新页面。
 
-Likewise, if you wish to view the metrics in `json` format, visit the following URL:
+同样，如果你想以 `json` 格式查看指标，请访问以下 URL：
 
 ```bash
 http://localhost:9101/json_metrics
 ```
 
 <Callout type="info">
-Inspection service configuration
-See additional configuration
-details below.
+检查服务配置，请参阅下面的额外配置详细信息。
 </Callout>
 
-## Change inspection service port
+## 更改检查服务端口
 
-The inspection service should run on all nodes by default, at port `9101`. To change
-the port the inspection service listens on (e.g., to `1000`), add the following to your node
-configuration file:
+检查服务默认应在所有节点上运行，端口为 `9101`。要更改检查服务监听的端口（例如，改为 `1000`），请在节点配置文件中添加以下内容：
 
 ```yaml filename="fullnode.yaml"
 inspection_service:
   port: 1000
 ```
 
-## Expose system configuration
-
-The inspection service also provides a way to examine the configuration of your node
-at runtime (i.e., the configuration settings that your node started with).
+## 公开系统配置
+此外，检查服务也允许用户在运行时检视节点的初始配置（即，你的节点启动时的配置）。
 
 <Callout type="warning">
-**Proceed with caution**<br />
-By default, the configuration endpoint is disabled as it may expose potentially sensitive
-information about the configuration of your node, e.g., file paths and directories. We
-recommend enabling this endpoint only if the inspection service is not publicly accessible.
+**谨慎操作**<br />
+默认情况下，配置端点（endpoint）是禁用的，因为它可能会暴露有关你节点配置的潜在敏感信息，例如文件路径和目录。我们建议只有当检查服务不是公开可访问的时才启用此端点。
+
 </Callout>
 
-To enable this feature, add the following to your node configuration file:
+要启用此功能，请在节点配置文件中添加以下内容：
 
 ```yaml filename="fullnode.yaml"
 inspection_service:
   expose_configuration: true
 ```
 
-And visit the configuration URL:
+并访问配置 URL：
 
 ```bash
 http://localhost:9101/configuration
 ```
 
-## Expose system information
+## 公开系统信息
 
-Likewise, the inspection service also provides a way to examine the system information of your node
-at runtime (i.e., build and hardware information). Simply visit the following URL:
+同样，检查服务还提供了可以在运行时检查你节点的系统信息（即，构建和硬件信息）的方式。只需访问以下 URL：
 
 ```bash
 http://localhost:9101/system_information
 ```
 
-If you'd like to disable this endpoint, add the following to your node configuration file:
+如果你想禁用此端点，请在节点配置文件中添加以下内容：
 
 ```yaml filename="fullnode.yaml"
 inspection_service:
@@ -95,8 +83,6 @@ inspection_service:
 ```
 
 <Callout type="info">
-**System information accuracy**<br />
-The system information displayed here is not guaranteed to be 100% accurate due to limitations
-in the way this information is collected. As a result, we recommend not worrying about any
-inaccuracies and treating the information as an estimate.
+**系统信息准确性**<br />
+请注意，这里显示的系统信息未必绝对准确，由于收集方式的限制，可能存在误差。因此，我们建议您不要过于关注这些可能的不准确处，而是把这些信息当作大致的参考。
 </Callout>

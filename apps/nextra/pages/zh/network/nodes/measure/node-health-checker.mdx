@@ -1,33 +1,32 @@
 ---
-title: "Node Health Checker"
+
+title: "节点健康检查器"
+
 ---
 
-import { Callout, Steps } from 'nextra/components';
+import {Callout, Steps} from 'nextra/components';
 
-# Node Health Checker 
+# 节点健康检查器
 
-The Aptos Node Health Checker (NHC) service can be used to check the health of any Aptos fullnodes (VFNs or PFNs).
-If you are a node operator, use the NHC service to check if your node is running correctly. The NHC service evaluates
-your node's health by comparing against a baseline node configuration, and outputs the evaluation results.
+Aptos 节点健康检查器（NHC, Aptos Node Health Checker）服务能够检测任何 Aptos 全节点（例如验证全节点 VFNs 或对等全节点 PFNs）的健康状态。作为节点运营者，您可以利用 NHC 服务来确认您的节点是否正常运作。NHC 服务通过将您节点的配置与基础配置进行对比，来判定节点健康状态，并提供评估报告。
 
-This document describes how to run NHC locally when you are operating a node.
+本文档描述了当你操作节点时如何本地运行 NHC。
 
 <Callout type="info">
-If you don't want to run the NHC service yourself, you can use the
-[publicly available NHC service](https://nodetools.aptosfoundation.org/#/node_checker) run by the Aptos Foundation.
+如果你不想自己运行 NHC 服务，你可以使用由 Aptos Foundation 运行的[公用 NHC 服务](https://nodetools.aptosfoundation.org/#/node_checker)。
 </Callout>
 
-## Quickstart
+## 快速开始
 
-Before you get into the details of how NHC works, you can run the below steps to start the NHC service and send it a request. This tutorial uses a baseline configuration for a devnet fullnode, i.e., it will evaluate your node against a devnet fullnode that is configured with the baseline configuration YAML.
+在您深入探索 NHC 工作原理之前，您先可以按照以下步骤启动 NHC 服务并发起一个请求。本教程采用了一个针对开发网络（devnet）全节点的基础配置，即您的节点将与一个已按基础配置 YAML 文件设置的开发网络全节点进行比较评估。
 
-**Important**: If your local node is not a devnet fullnode, you must use a different baseline config. See [the configuration examples in aptos-core](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples) for other such example configs.
+**重要**：如果你的本地节点不是 devnet 全节点，你必须使用不同的基础配置。查看 [aptos-core 中的配置示例](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples) 以获取其他示例配置。
 
 <Steps>
 
-### Download the baseline configuration YAML
+### 下载基础配置 YAML
 
-Download a baseline configuration YAML file for a devnet fullnode. The below command will download the `devnet_fullnode.yaml` configuration file:
+为 devnet 全节点下载一个基础配置 YAML 文件。下面的命令将下载 `devnet_fullnode.yaml` 配置文件：
 
 ```bash filename="Terminal"
 mkdir /tmp/nhc
@@ -35,23 +34,23 @@ cd /tmp/nhc
 wget https://raw.githubusercontent.com/aptos-labs/aptos-core/main/ecosystem/node-checker/configuration_examples/devnet_fullnode.yaml
 ```
 
-### Start the NHC service
+### 启动 NHC 服务
 
-Start the NHC service by providing the above-downloaded `devnet_fullnode.yaml` baseline configuration YAML file:
+通过提供上述下载的 `devnet_fullnode.yaml` 基础配置 YAML 文件来启动 NHC 服务：
 
 ```bash filename="Terminal"
 docker run -v /tmp/nhc:/nhc -p 20121:20121 -t aptoslabs/node-checker:nightly /usr/local/bin/aptos-node-checker server run --baseline-config-paths /nhc/devnet_fullnode.yaml
 ```
 
-### Send a request to NHC service
+### 向 NHC 服务发送请求
 
-Finally, send a request to the NHC service you started above. The following command runs health checks of your node that is at `node_url=http://mynode.mysite.com` and compares these results with the node configured in the baseline configuration `devnet_fullnode`:
+最后，向你启动的 NHC 服务发送请求。下面的命令将运行你的节点的健康检查，该节点位于 `node_url=http://mynode.mysite.com`，并将这些结果与基础配置 `devnet_fullnode` 中配置的节点进行比较：
 
 ```bash filename="Terminal"
 curl 'http://localhost:20121/check?node_url=http://mynode.mysite.com&api_port=80&baseline_configuration_id=devnet_fullnode'
 ```
 
-You will see output similar to this:
+你将看到类似于这样的输出：
 
 ```json filename="Terminal"
 {
@@ -85,90 +84,91 @@ You will see output similar to this:
 
 </Steps>
 
-## How NHC works
+## NHC 如何工作
 
-The NHC runs as a service. When you want to run a health check of your node, you send the HTTP requests to this service.
+NHC 作为一个服务运行。当你想要运行你的节点的健康检查时，你向这个服务发送 HTTP 请求。
 
-A single NHC instance can be configured to check the health of multiple node configurations, each of different type, for example:
+单个 NHC 实例能被配置，以检测多种不同类型的节点配置的健康，例如：
 
-- A public fullnode connected to the Aptos mainnet.
-- A validator node connected to the Aptos testnet.
-- A node running in a single node testnet.
+- 连接到 Aptos 主网的公共全节点。
+- 连接到 Aptos 测试网的验证节点。
+- 在单节点测试网中运行的节点。
 
-### Baseline configuration
+### 基础配置
 
-In all the above cases, a baseline node is used to compare your node's health. For example, for a public fullnode connected to the Aptos devnet, the baseline node might be a node run by the Aptos team and this node demonstrates optimal performance and participation characteristics.
+在以上所有例子中，都会使用一个基础节点作为参照，来判断您的节点健康状况。例如，对于接入Aptos开发网络（devnet）的公共全节点，基础节点可能是 Aptos 团队维护的一个节点，这个节点具有优异的性能和良好的参与度。
 
-You will download the baseline configuration YAML before running the NHC service for your node. The baseline node's configuration YAML describes where to find this baseline node (URL + port), what evaluators (e.g. metrics checks, TPS tests, API validations, etc.) the NHC service should run, what parameters the NHC should use for those evaluators, what name the configuration has, and so on. See these [example baseline configuration YAML files](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples).
+在启动您节点的NHC服务前，您需要先下载基础配置的 YAML 文件。这份配置 YAML 文件将指明如何找到基础节点（包含 URL 和端口号）、NHC 服务需要执行哪些评价指标（比如指标检查、TPS 测试、API 验证等）、针对这些指标 NHC 应使用何种参数、配置文件的名称等信息。您可以查看这些[示例基础配置 YAML 文件](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples)。
 
-When you send requests to the NHC service, you must include a baseline configuration. For example, a request to NHC to use `devnet_fullnode` as the baseline configuration will look like this:
+当你向 NHC 服务发送请求时，你必须包括一个基础配置。例如，一个请求 NHC 使用 `devnet_fullnode` 作为基础配置的请求将如下所示：
 
 ```bash filename="Terminal"
 curl 'http://nhc.aptoslabs.com/check?node_url=http://myfullnode.mysite.com&baseline_configuration_id=devnet_fullnode'
 ```
 
-### Getting baseline configurations ready
+### 准备基础配置
 
-In order to run the NHC service, you must have a baseline configuration that the service can use. You have two options here:
+为了运行 NHC 服务，你必须有一个服务可以使用的基础配置。这里你有两个选项：
 
-#### Configure a pre-existing YAML
+#### 配置一个预先存在的 YAML
 
-You can find a few [example baseline configuration YAML files](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples) that work for each of the above use cases and more.
+您能找到若干适合上述场景及其他情况的[示例基础配置 YAML 文件](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples)。
 
-Next, download these configuration YAML files into the `/etc/nhc` folder in your host system. For example:
+接下来，将这些配置 YAML 文件下载到你的主机系统的 `/etc/nhc` 文件夹中。例如：
 
 ```bash filename="Terminal"
 mkdir /tmp/nhc
 cd /tmp/nhc
-configs=(devnet_fullnode testnet_fullnode mainnet_fullnode); for c in ${configs[@]}; do wget https://raw.githubusercontent.com/aptos-labs/aptos-core/main/ecosystem/node-checker/configuration_examples/$c.yaml; done
+configs=(devnet_fullnode testnet_fullnode mainnet_fullnode); for c in ${configs[@]}; do wget https://raw.githubusercontent.com/aptos-labs/aptos-core/main/ecosystem/node-checker/configuration_examples/$c.yaml;  done
 ```
 
-These configurations are not quite ready to be used as they are. You will need to modify certain fields, such as the baseline node address or evaluator set (`evaluators` and `evaluator_args` in the YAML) used. The best way to iterate on this is to run the NHC with a downloaded baseline configuration and see what it says on startup.
+这些配置文件初始状态下无法直接使用。您需要更改一些特定的字段，如基础节点的地址或是评估器设置（YAML 文件中的 `evaluators` 和 `evaluator_args`）。为了更好地优化这些配置，建议下载基础配置后运行 NHC 服务，并注意其启动时的提示信息。
 
-### Required files
+### 需要的文件
 
-For some NHC configurations, you will need accompanying files, e.g. `mint.key` to use for running a TPS test against a validator. You should make sure these files are also available to NHC, either on disk or mounted into your container. NHC expects them on startup at a path specified in the baseline configuration YAML.
+某些 NHC 配置需附加文件支持，如 `mint.key`，该文件用于执行对验证器的 TPS 测试。您需要确保 NHC 能访问这些文件，无论是存储于磁盘还是挂载在您的容器内。按照基础配置 YAML 所指定的路径，NHC 在启动时会寻找这些必需的文件。
 
-## Running NHC: Docker
+## 运行 NHC：Docker
 
 <Callout type="info">
-While the Aptos team hosts our own instances of this service, we encourage node operators to run their own instances.
+尽管Aptos团队自行托管了这项服务的实例，但我们还是鼓励节点运营者建立并运行自己的实例。
 </Callout>
 
-When you are ready with baseline configuration YAML and the required files, you can run the NHC server with a command like this, for example, with Docker:
+准备好基线配置的 YAML 文件及必需的文件之后，你就可以通过以下的命令运行 NHC 服务器，例如使用 Docker：
 
 ```bash filename="Terminal"
 docker run -v /etc/nhc:/etc/nhc -p 20121:20121 -t aptoslabs/node-checker:nightly /usr/local/bin/aptos-node-checker server run --baseline-config-paths /tmp/nhc/devnet_fullnode.yaml /tmp/nhc/testnet_fullnode.yaml /tmp/nhc/mainnet/fullnode.yaml
 ```
 
 <Callout type="info">
-You may want to include other environment variables such as `RUST_LOG=info`. As you can see, by default NHC runs on port 20121. Make sure to publish it from the container, as shown in the above command, and ensure the port is open on your host. You may change the port NHC runs on with `--listen-port`.
+您也许想要添加其他的环境变量，例如设置 `RUST_LOG=info`。默认情况下，NHC 服务是在 20121 端口上运行的。请确保按照上述命令，从容器内发布到此端口，并且检查您主机上该端口是否已开放。如果需要，您可以通过 `--listen-port` 参数修改 NHC 监听的端口。
 </Callout>
 
-## Running NHC: Source
+## 运行 NHC：源代码
 
-First, check out the source:
+首先，切换到源代码：
 
 ```bash filename="Terminal"
 git clone git@github.com:aptos-labs/aptos-core.git
 cd aptos-core
 ```
 
-Depending on your setup, you may want to check out a particular branch, to ensure NHC is compatible with your node, e.g. `git checkout --track devnet`.
+根据你的设置，你可能想要切换到特定的分支，以确保 NHC 与你的节点兼容，例如 `git checkout --track devnet`。
 
-Run NHC:
+运行 NHC：
 
 ```bash filename="Terminal"
 cargo run -p aptos-node-checker --release -- server run --baseline-config-paths /tmp/nhc/devnet_fullnode.yaml
 ```
 
-## Generating the OpenAPI specs
+## 生成 OpenAPI 规范
 
-To generate the OpenAPI specs, run the following commands from `ecosystem/node-checker`:
+要生成 OpenAPI 规范，请从 `ecosystem/node-checker` 运行以下命令：
 
 ```bash filename="Terminal"
 cargo run -- server generate-openapi -f yaml > doc/spec.yaml
 cargo run -- server generate-openapi -f json > doc/spec.json
 ```
 
-You can also hit the `/spec.yaml` and `/spec.json` endpoints of the running service.
+你也可以访问运行服务的`/spec.yaml`和`/spec.json`端点。
+您也可以对运行中的服务发起请求，访问 `/spec.yaml` 和 `/spec.json` 这两个端点（endpoint）。
