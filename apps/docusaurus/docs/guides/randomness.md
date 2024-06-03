@@ -114,7 +114,7 @@ where:
 - `let winner_idx = aptos_framework::randomness::u64_range(0, n);` is the a randomness API call that returns a u64 integer in range `[0, n)` uniformly at random.
 - `#[randomness]` is a required attribute to enable the API call at runtime.
 
-Note: there are security nuances to consider, explained in more details in "Security Considerations" section. Compiler helps with test and abort attacks by requiring functions using randomness to be private. On the other hand, randomness API currently doesn’t prevent undergassing attacks, and so code needs to be written in a specific way to avoid it.
+Note: there are security nuances to consider, explained in more details in "Security Considerations" section. Compiler helps with test and abort attacks by requiring functions using randomness to be private. On the other hand, randomness API currently doesn’t prevent undergasing attacks, and so code needs to be written in a specific way to avoid it.
 
 ## How to use Aptos randomness API
 
@@ -140,7 +140,7 @@ alias aptos=target/debug/aptos
 
 ### Keep undergasing attacks in mind
 
-**WARNING: randomness API currently doesn’t prevent undergassing attacks.** Carefully read undergassing section to understand undergassing attack and how to prevent it, to make sure you, as a dApp developer, design applications using randomness in the safe way.
+**WARNING: randomness API currently doesn’t prevent undergasing attacks.** Carefully read undergasing section to understand undergasing attack and how to prevent it, to make sure you, as a dApp developer, design applications using randomness in the safe way.
 
 ### Identify randomness-dependent entry functions and make them compliant
 
@@ -297,7 +297,7 @@ where an attacker can control how much gas is left for the entry function to exe
 and so can arbitrarily decide to abort paths that cost more gas,
 biasing the outcome (i.e. effectively changing the distribution of random numbers).
 
-**WARNING: randomness API currently doesn’t prevent undergassing attacks.**
+**WARNING: randomness API currently doesn’t prevent undergasing attacks.**
 As a dApp developer, you need to be very careful in your design to avoid this type of attack.
 Here are some ideas of how to prevent undergasing attack generally.
 
@@ -307,7 +307,7 @@ Here are some ideas of how to prevent undergasing attack generally.
 - Make the path that is most beneficial have the highest gas (as attacker can only abort paths with gas above a threshold he chooses.
   NOTE: that this can be tricky to get right, and gas schedule can change, and is even harder to get right when there are more than 2 possible outcomes.
 
-Note that everything that doesn’t fall in above categories can be susceptible to undergassing attack in a subtle ways. Reach out if you need help.
+Note that everything that doesn’t fall in above categories can be susceptible to undergasing attack in a subtle ways. Reach out if you need help.
 
 We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergasing attacks.
 

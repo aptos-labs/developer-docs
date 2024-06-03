@@ -31,15 +31,26 @@ To participate as a voter in the Aptos governance, follow these steps:
 
 If you staked to a [delegation pool](../../../blockchain/delegated-staking.mdx), you can vote proportional to your stake amount in the delegation pool or delegate your votes to another voter address.
 
-To participate as a voter, follow the steps below:
+### Using Governance UI
+
+To participate as a voter, follow these steps:
+
+1. Go to the [Proposals section](https://govscan.live/aptos-proposals) on Govscan.
+2. Connect your wallet by clicking on **CONNECT WALLET**
+3. Make sure that wallet is set to connect to Mainnet.
+4. View the proposals. When you are ready to vote on a proposal, click on the proposal and vote.
+5. You will see a green bar indicating that the voting transaction is successful.
+
+### Using the Aptos CLI
 
 1. Get your delegation pool address from the [Aptos Explorer page](https://explorer.aptoslabs.com/validators/delegation?network=mainnet).
 2. To see the list of proposals, execute: `aptos governance list-proposals --url https://api.mainnet.aptoslabs.com`.
 3. To set up your voter profile, run: `aptos init`.
 4. To vote on a proposal, execute: `aptos move run --function-id 0x1::delegation_pool::vote --args address:<pool-address> u64:<proposal-id> u64:<voting-power> bool:<true or false>`.
 
-To delegate your voting power, follow the steps below:
+To delegate your voting power, follow these steps:
 
 1. Get your delegation pool address from the [Aptos Explorer page](https://explorer.aptoslabs.com/validators/delegation?network=mainnet).
 2. To set up your voter profile, run: `aptos init`.
 3. To delegate voting power, run: `aptos move run --function-id 0x1::delegation_pool::delegate_voting_power --args address:<pool-address> address:<delegated-voter-address>`.
+4. The new delegated voter will take effect in the next lockup cycle after the current lockup cycle ends. To view delegated voter, run `aptos move view --profile delegator --function-id 0x1::delegation_pool::calculate_and_update_delegator_voter --args address:<pool-address> address:<delegator-address>`.

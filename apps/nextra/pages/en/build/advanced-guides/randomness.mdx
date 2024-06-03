@@ -117,7 +117,7 @@ where:
 
 <Callout type="info">
 ### Security Considerations
-Compiler helps with test and abort attacks, requiring functions using randomness to be private.  However, the randomness API currently does not prevent undergassing attacks.  The smart contract will need to be written in a certain way to avoid it.
+Compiler helps with test and abort attacks, requiring functions using randomness to be private.  However, the randomness API currently does not prevent undergasing attacks.  The smart contract will need to be written in a certain way to avoid it.
 </Callout>
 
 ## How to use Aptos randomness API
@@ -142,10 +142,10 @@ cargo build -p aptos
 alias aptos=target/debug/aptos
 ```
 
-### Keep undergassing attacks in mind
+### Keep undergasing attacks in mind
 
 <Callout type="warning">
-**The randomness API currently does not prevent undergassing attacks.** Carefully read the undergassing section to understand about undergassing attacks and how to prevent them. As a dApp developer, you will need to design applications using randomness with safety in mind.
+**The randomness API currently does not prevent undergasing attacks.** Carefully read the undergasing section to understand about undergasing attacks and how to prevent them. As a dApp developer, you will need to design applications using randomness with safety in mind.
 </Callout>
 
 ### Identify randomness-dependent entry functions and make them compliant
@@ -316,15 +316,15 @@ A malicious user can control its account balance, so it covers at most 108 gas u
 and the cleanup branch (total gas cost: 110) will always abort with an out-of-gas error.
 The user then repeatedly call the entry function until it gets the reward.
 
-Formally, this is referred to as an [undergassing attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#undergassing-attacks),
+Formally, this is referred to as an [undergasing attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#undergasing-attacks),
 where an attacker can control how much gas is left for the entry function to execute,
 and so can arbitrarily decide to abort paths that cost more gas,
 biasing the outcome (i.e. effectively changing the distribution of random numbers).
 
 <Callout type="Warning">
-  **WARNING: randomness API currently does not prevent undergassing attacks.**
+  **WARNING: randomness API currently does not prevent undergasing attacks.**
   As a dApp developer, you need to be very careful in your design to avoid this type of attack.
-  Here are some ideas of how to prevent undergassing attack generally.
+  Here are some ideas of how to prevent undergasing attack generally.
 
   - Make your entry function gas independent from the randomness outcome.
   The simplest example is to not "act" on the randomness outcome, i.e. read it and store it for later. Note that calling any other functions  can have variable gas costs. For example, when calling randomness to decide which player should win, and then depositing the winnings to the winner might seem like a fixed gas cost. But, `0x1::coin::transfer` / `0x1::fungible_asset::transfer` can have a variable cost based on the user's on-chain state.
@@ -332,9 +332,9 @@ biasing the outcome (i.e. effectively changing the distribution of random number
   - Make the path that is most beneficial have the highest gas (as attacker can only abort paths with gas above a threshold he chooses.
   NOTE: that this can be tricky to get right, and gas schedule can change, and is even harder to get right when there are more than 2 possible outcomes.
 
-  Note that everything that does not fall in above categories can be susceptible to undergassing attack in a subtle ways. Reach out if you need help.
+  Note that everything that does not fall in above categories can be susceptible to undergasing attack in a subtle ways. Reach out if you need help.
 
-  We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergassing attacks.
+  We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergasing attacks.
 </Callout>
 
 ### It's random, but not a secret
