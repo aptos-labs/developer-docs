@@ -1,75 +1,66 @@
 ---
-title: "Shutdown Nodes"
+
+title: "关闭节点"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Shutdown Nodes
+# 关闭节点
 
-If you want to shut down your validator and validator fullnode (VFN), follow the instructions below to leave the
-validator set and clean up the resources used by the nodes.
+如果你打算停止运行你的验证者及验证者全节点（VFN），请遵循以下步骤，从验证者集合中移除自己并清理节点使用的资源。
 
 <Callout type="warning">
-**LEAVE THE VALIDATOR SET FIRST**<br />
-It is important to leave the validator set before shutting down your nodes. Otherwise, you will reduce stake
-participation in the network and risk degrading network health.
+**首先离开验证者集合**<br />
+在关闭你的节点之前退出验证者名单至关重要。否则，你将会减少你在网络中的质押参与度，这可能会损害网络的健康状况。
 </Callout>
 
-## Leave the validator set
+## 退出验证者集合
 
-Before shutting down your nodes, you must leave the validator set. This will ensure that your node is no longer
-responsible for participating in consensus. Validator nodes can leave the validator set at any time. This also
-happens automatically when there is insufficient stake in the validator account.
+在关闭节点之前，您必须离开验证者集合。这将确保您的节点不再负责参与共识。验证者节点可以随时离开验证者集合。当验证者账户中的质押不足时，也会自动发生这种情况。
 
-When you leave the validator set, your node will be marked as "inactive" in the next epoch. To leave the validator set,
-run the following command using the Aptos CLI. You will need to set the `profile` and `owner-address` flags.
+当您离开验证者集合时，您的节点将在下一个纪元被标记为“不活跃（inactive）”。要离开验证者集合，请使用 Aptos CLI 运行以下命令。您需要设置 `profile` 和 `owner-address` 参数。
 
 ```bash filename="Terminal"
 aptos node leave-validator-set --profile <operator-profile> --pool-address <owner-address>
 ```
 
 <Callout type="warning">
-**WAITING FOR EPOCH CHANGES**<br />
-If you leave the validator set, it will only take effect at the beginning of the next epoch. You will
-need to wait for the next epoch to start before shutting down your nodes. Similarly, if you leave
-the validator set and then rejoin in the same epoch, the rejoin will fail. You should wait for the
-next epoch to start before rejoining the validator set.
+**等待纪元（epoch）变化**<br />
+如果你决定退出验证者名单，这个操作将在下一个纪元（epoch）开始时才正式生效。因此，在下一个纪元启动之前，请不要关闭你的节点。同样的，如果在同一个纪元内你退出后又尝试重新加入验证者名单，这个重新加入的尝试将不会成功。你应该等到下一个纪元开始后，再考虑重新加入验证者名单。
 </Callout>
 
-## Shutdown methods
+## 关闭方法
 
-Once you have successfully left the validator set, you can shut down your nodes. The method for shutting down your
-nodes depends on how you deployed them. Choose the appropriate section below to shut down your nodes.
+成功退出验证者集合后，您可以关闭节点。关闭节点的方法取决于您部署它们的方式。选择下面您使用的部署的方式来关闭您的节点。
 
-## Using Source Code
+## 使用源代码
 
-1. Stop your node by killing the `aptos-node` process. This is sufficient to shut down your node.
-2. (Optional) If you wish to free up space, remove the data directory, e.g., `rm -r <your-data-directory>`.
-3. (Optional) If you wish to reuse your node identity, you should keep the configuration files:
+1. 通过杀死 `aptos-node` 进程来停止您的节点。这足以关闭您的节点。
+2. （可选）如果您想释放空间，请删除数据目录，例如，`rm -r <your-data-directory>`。
+3. （可选）如果您想重用您的节点身份，请保留配置文件：
    - `public-keys.yaml`
    - `private-keys.yaml`
    - `validator-identity.yaml`
    - `validator-full-node-identity.yaml`
 
-## Using Docker
+## 使用 Docker
 
-1. Stop your node and remove the data volumes by running the command: `docker compose down --volumes`.
-   This is sufficient to shut down your node.
-2. (Optional) If you wish to reuse your node identity, you should keep the configuration files:
+1. 通过运行命令 `docker compose down --volumes` 停止您的节点并删除所有数据卷。这足以关闭您的节点。
+2. （可选）如果您想重用您的节点身份，请保留配置文件：
    - `public-keys.yaml`
    - `private-keys.yaml`
    - `validator-identity.yaml`
    - `validator-full-node-identity.yaml`
 
-## Using Terraform
+## 使用 Terraform
 
 <Callout type="info">
-Terraform is commonly used to setup nodes on cloud providers like AWS, Azure, and GCP.
+Terraform 通常用于在 AWS、Azure 和 GCP 等云服务提供商上设置节点。
 </Callout>
 
-1. Stop your node and delete all the resources by running the command: `terraform destroy`. This
-   is sufficient to shut down your node.
-2. (Optional) If you wish to reuse your node identity, you should keep the configuration files:
+1. 通过运行命令 `terraform destroy` 停止您的节点并删除所有资源。这足以关闭您的节点。
+2. （可选）如果您想重用您的节点身份，请保留配置文件：
    - `public-keys.yaml`
    - `private-keys.yaml`
    - `validator-identity.yaml`

@@ -1,34 +1,32 @@
 ---
-title: "Using AWS"
+
+title: "使用 AWS"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Using AWS
+# 使用 AWS
 
-This is a step-by-step guide to deploy an Aptos validator and validator fullnode (VFN) using Amazon Web Services (AWS). Using this guide,
-the validator and VFN will be deployed on separate machines.
+这是一个使用亚马逊网络服务 (AWS) 来部署 Aptos 验证节点和验证器全节点 (VFN) 的分步指南。根据这一指南，验证节点和验证器全节点将被部署在两台不同的计算机上。
 
 <Callout type="warning">
-**Prerequisites**<br />
-Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.mdx). Similarly, make sure you have
-installed the [Aptos CLI](../../../../build/cli.mdx),
-[Terraform](https://www.terraform.io/downloads.html),
-[Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/),
-and [AWS CLI](https://aws.amazon.com/cli/). This guide assumes that you already have an AWS account setup.
+**先决条件**<br />
+在开始之前，请确保阅读并理解[节点要求](../node-requirements.mdx)。同样，请确保您已经安装了 [Aptos CLI](../../../../build/cli.mdx)，
+[Terraform](https://www.terraform.io/downloads.html)，
+[Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/)，
+和 [AWS CLI](https://aws.amazon.com/cli/)。本指南假设您已经设置了 AWS 账户。
 </Callout>
 
-## Deployment steps
+## 部署步骤
 
 <Callout type="info">
-**Default connection to mainnet**<br />
-If you follow the default setup in this document, then your validator and VFN will be connected to the Aptos mainnet.
-To connect to a different Aptos network, such as testnet, make sure you download the correct genesis and waypoint
-files for the network you want to connect to. Similarly, you will need to modify the Terraform files to use the
-correct configurations (e.g., `source`, `image_tag` and `chain_id`).
+**默认连接到主网**<br />
+如果您按照本文档中的默认设置操作，那么您的验证器和 VFN 将连接到 Aptos 主网。
+要连接到不同的 Aptos 网络，如测试网，请确保您下载了您想要连接的网络的正确创世区块和路标文件。同样，您需要修改 Terraform 文件以使用正确的配置（例如，`source`，`image_tag` 和 `chain_id`）。
 </Callout>
 
-1.  Create a working directory for your Aptos nodes, and pick a username for your nodes, e.g.,
+1.  为您的 Aptos 节点创建一个工作目录，并为您的节点选择一个用户名，例如，
 
     ```bash filename="Terminal"
     export WORKSPACE=mainnet
@@ -37,21 +35,20 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
     cd ~/$WORKSPACE
     ```
 
-2.  Create an S3 storage bucket for storing the Terraform state on AWS. You can do this on the AWS UI or using the
-    command below:
+2.  在 AWS 上创建一个 S3 存储桶，用于存储 Terraform 状态。您可以在 AWS UI 上执行此操作，或使用以下命令：
 
     ```bash filename="Terminal"
     aws s3 mb s3://<bucket name> --region <region name>
     ```
 
-3.  Create a Terraform file called `main.tf` in your working directory:
+3.  在您的工作目录中创建一个名为 `main.tf` 的 Terraform 文件：
 
     ```bash filename="Terminal"
     cd ~/$WORKSPACE
     vi main.tf
     ```
 
-4.  Modify the `main.tf` file to configure Terraform and create the Terraform module. See the example below:
+4.  修改 `main.tf` 文件以配置 Terraform 并创建 Terraform 模块。请参阅以下示例：
 
     ```terraform filename="main.tf"
     terraform {
@@ -68,56 +65,54 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
     }
 
     module "aptos-node" {
-      # Download the Terraform module from the aptos-core repository.
+      # 从aptos-core仓库下载Terraform模块。
       source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/aws?ref=mainnet"
-      region        = <aws region>  # Specify the AWS region
-      # zone_id     = "<Route53 zone id>"  # Use Route53 if you want to use DNS
-      era           = 1  # Bump the era number to wipe the chain data
-      chain_id      = 1  # Use 1 for mainnet, or different values for other networks.
-      image_tag     = "mainnet" # Specify the image tag to use based on the network
-      validator_name = "<Name of your validator>" # Specify the name of your validator
+      region        = <aws region>  # 指定AWS区域
+      # zone_id     = "<Route53 zone id>"  # 如果您想使用DNS，请使用Route53
+      era           = 1  # 提高时代编号以清除链数据
+      chain_id      = 1  # 对于主网使用1，或对于其他网络使用不同的值。
+      image_tag     = "mainnet" # 根据网络指定要使用的镜像标签
+      validator_name = "<Name of your validator>" # 指定您的验证器名称
     }
     ```
 
-    For all customization options, see:
+    有关所有自定义选项，请参见：
 
-    - The Terraform variables: [https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf](https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf)
-    - The Helm values: [https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml](https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml).
+    - Terraform 变量：[https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf](https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/aws/variables.tf)
+    - Helm 值：[https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml](https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml).
 
-5.  Initialize Terraform in the `$WORKSPACE` directory where you created the `main.tf` file.
+5.  在您创建了 `main.tf` 文件的 `$WORKSPACE` 目录中初始化 Terraform。
 
     ```bash filename="Terminal"
     terraform init
     ```
 
-    This will download all the Terraform dependencies into the `.terraform` folder in your current working directory.
+    这将把 Terraform 的所有依赖项下载到当前工作目录中的 `.terraform` 文件夹中。
 
-6.  Create a new Terraform workspace to isolate your environments, and see the list of workspaces.
+6.  创建一个新的 Terraform 工作区以隔离您的环境，并查看工作区列表。
 
     ```bash filename="Terminal"
     terraform workspace new $WORKSPACE
 
-    # This command will list all workspaces
+    # 此命令将列出所有工作区
     terraform workspace list
     ```
 
-7.  Apply the Terraform configuration.
+7.  应用 Terraform 配置。
 
     ```bash filename="Terminal"
     terraform apply
     ```
 
-    This may take a while to finish (e.g., >20 minutes). Terraform will create all the resources on your cloud account.
+    这可能需要一段时间才能完成（例如，>20 分钟）。Terraform 将在您的云账户上创建所有资源。
 
-8.  After `terraform apply` finishes, you can check if the resources have been created correctly, by running the following commands:
+8.  `terraform apply` 完成后，您可以通过运行以下命令来检查资源是否已正确创建：
 
-    - `aws eks update-kubeconfig --name aptos-$WORKSPACE`: This command will configure access for your k8s cluster.
-    - `kubectl get pods`: This command will output all pods in the cluster. You should see haproxy, the
-      validator and the VFN (with the validator and VFN pod `pending` due to further action in later steps).
-    - `kubectl get svc`: This command will output all services in the cluster. You should see the
-      `validator-lb` and `fullnode-lb`, with an external IP for network connectivity.
+    - `aws eks update-kubeconfig --name aptos-$WORKSPACE`：此命令将为您的 k8s 集群配置访问权限。
+    - `kubectl get pods`：执行此命令会展示出 Kubernetes 集群中所有的 Pod。你将会看到 haproxy、验证节点及验证器全节点（VFN）（由于需要进行后续步骤的操作，验证节点和验证器全节点的 Pod 目前处于 `pending` 状态）。
+    - `kubectl get svc`：此命令将输出集群中的所有服务。您应该看到 `validator-lb` 和 `fullnode-lb`，以及用于网络连接的外部 IP。
 
-9.  Next, we need to inject your node's IP information into your environment. You can do this by running the following commands:
+9.  接下来，我们需要将节点的 IP 信息注入到您的环境。您可以通过运行以下命令来执行此操作：
 
     ```bash filename="Terminal"
     export VALIDATOR_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-validator-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
@@ -125,28 +120,25 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
     export FULLNODE_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-fullnode-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
     ```
 
-10. Now, generate the key pairs for your nodes in your working directory. You can do this by running
-    the following command with the Aptos CLI:
+10. 现在，在您的工作目录中为您的节点生成密钥对。您可以通过运行以下命令并使用 Aptos CLI 来执行此操作：
 
     ```bash filename="Terminal"
     aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
     ```
 
-    This will create 4 key files under `~/$WORKSPACE/keys` directory:
+    这将在 `~/$WORKSPACE/keys` 目录下创建 4 个密钥文件：
 
-    - `public-keys.yaml`: This file contains all public keys for your validator and VFN, as well as your account address.
-    - `private-keys.yaml`: This file contains all private keys for your validator and VFN.
-    - `validator-identity.yaml`: This file contains the public and private keys for your validator, as well as your account address.
-    - `validator-full-node-identity.yaml`: This file contains the public and private keys for your VFN, as well as your account address.
+    - `public-keys.yaml`：此文件包含您的验证器和 VFN 的所有公钥，以及您的账户地址。
+    - `private-keys.yaml`：此文件包含您的验证器和 VFN 的所有私钥。
+    - `validator-identity.yaml`：此文件包含验证器的公钥和私钥，以及您的账户地址。
+    - `validator-full-node-identity.yaml`：此文件包含 VFN 的公钥和私钥，以及您的账户地址。
 
     <Callout type="warning">
-    **Backup your private keys**<br />
-    Your private keys are important for you to establish ownership of your nodes. Never share your **private** keys with anyone,
-    and make sure to **backup** `private-keys.yaml` somewhere safe.
+    **备份您的私钥**<br />
+    私钥是确认你对节点所有权的关键。切记，绝对不要向他人透露你的**私钥**，并且务必将 `private-keys.yaml` 文件**备份**在安全的地方。
     </Callout>
 
-11. Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
-    which may be IP addresses or DNS addresses. This can be done by running the following command:
+11. 接下来，您需要设置验证器的配置。这包括设置验证器和 VFN 的主机名，这些可能是 IP 地址或 DNS 地址。您可以通过运行以下命令来完成此操作：
 
     ```bash filename="Terminal"
     aptos genesis set-validator-configuration \
@@ -158,31 +150,29 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
       --stake-amount 100000000000000
     ```
 
-    Configuring the validator will create two YAML files in the `~/$WORKSPACE/$USERNAME` directory: `owner.yaml` and
-    `operator.yaml`. These will be useful for connecting your nodes to the Aptos network (later).
+    配置验证器将在 `~/$WORKSPACE/$USERNAME` 目录中创建两个 YAML 文件：`owner.yaml` 和 `operator.yaml`。这些将有助于（稍后）将您的节点连接到 Aptos 网络。
 
-12. Download the following files by following the instructions on the [Node Files](../../configure/node-files-all-networks.mdx) pages.
-    You will need to select the appropriate network (e.g., `mainnet`, `testnet`, `devnet`) and download the following files:
+12. 按照[节点文件](../../configure/node-files-all-networks.mdx)页面上的说明下载以下文件。
+    您需要选择适当的网络（例如，`mainnet`，`testnet`，`devnet`）并下载以下文件：
 
     - `genesis.blob`
     - `waypoint.txt`
 
-13. To recap, in your working directory (`~/$WORKSPACE`), you should have a list of files:
+13. 总之，在您的工作目录（`~/$WORKSPACE`）中，您应该有以下文件列表：
 
-    - `main.tf`: The Terraform files to install the `aptos-node` module.
-    - `keys` folder containing:
-      - `public-keys.yaml`: Public keys for both nodes.
-      - `private-keys.yaml`: Private keys for both nodes.
-      - `validator-identity.yaml`: Key and account information for the validator.
-      - `validator-full-node-identity.yaml`: Key and account information for the VFN.
-    - `$username` folder containing:
-      - `owner.yaml`: The owner, operator and voter mappings.
-      - `operator.yaml`: Validator and VFN operator information.
-    - `waypoint.txt`: The waypoint for the genesis transaction on the network you are connecting to.
-    - `genesis.blob` The genesis blob for the network you are connecting to.
+    - `main.tf`：安装 `aptos-node` 模块的 Terraform 文件。
+    - 包含以下内容的 `keys` 文件夹：
+      - `public-keys.yaml`：两个节点的公钥。
+      - `private-keys.yaml`：两个节点的私钥。
+      - `validator-identity.yaml`：验证器的密钥和账户信息。
+      - `validator-full-node-identity.yaml`：VFN 的密钥和账户信息。
+    - 包含以下内容的 `$username` 文件夹：
+      - `owner.yaml`：所有者、运营者和投票者映射。
+      - `operator.yaml`：验证器和 VFN 运营者信息。
+    - `waypoint.txt`：您正在连接的网络上创世区块交易的路标文件。
+    - `genesis.blob`：你正在连接的网络的创世区块（genesis blob）。
 
-14. Finally, insert the `genesis.blob`, `waypoint.txt` and the identity files as secrets into the k8s cluster,
-    by running the following command:
+14. 最后，通过运行以下命令，将 `genesis.blob`，`waypoint.txt` 和身份文件作为密钥插入到 k8s 集群中：
 
     ```bash filename="Terminal"
     kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e1 \
@@ -193,23 +183,18 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
     ```
 
     <Callout type="warning">
-    **Era numbers and dangling volumes**<br />
-    The `-e1` suffix in the command above refers to the era number. If you changed the `era` number, make sure it matches
-    when creating the secrets.
+    **era 编号和 dangling 卷**<br />
+    上面命令中的 `-e1` 后缀代表 era 编号。如果你修改了 `ear` 编号，在创建密钥时务必保证它们相匹配。
 
-    The `era` is a concept relevant only to Kubernetes deployments of an Aptos node.
-    Changing the `era` provides an easy way to wipe your deployment's state (e.g., blockchain data). However, this may
-    lead to dangling persistent volumes. Confirm the existence of any dangling volumes with `kubectl get pvc`
-    and delete any dangling volumes manually to minimize costs.
+    在 Aptos 节点的 Kubernetes 部署过程中，`era` 是一个特定的概念。更换 era 可以轻松地重置你的部署状态，比如清空区块链数据。但是，这个操作可能会留下 dabgling 的持久化数据卷。通过运行 `kubectl get pvc` 来检查是否有 dangling 数据卷，并手动删除它们来降低成本。
     </Callout>
 
-15. Now, we should be able to see that all pods are running, including the validator and VFN. You can check this by
-    executing the following command:
+15. 现在，我们应该能够看到所有 pod 都在运行，包括验证器和 VFN。您可以通过执行以下命令来检查这一点：
 
         ```bash filename="Terminal"
         kubectl get pods
 
-        # Example output
+        # 示例输出
         NAME                                        READY   STATUS    RESTARTS   AGE
         node1-aptos-node-0-fullnode-e9-0              1/1     Running   0          4h31m
         node1-aptos-node-0-haproxy-7cc4c5f74c-l4l6n   1/1     Running   0          4h40m
@@ -217,11 +202,10 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
         ```
 
 <Callout type="warning">
-**Next steps**<br />
-You have now completed setting up your validator and VFN using AWS. However, your nodes will not be able to connect
-to the Aptos network just yet.
+**下一步**<br />
+您现在已经使用 AWS 完成了验证器和 VFN 的设置。然而，您的节点还不能连接到 Aptos 网络。
 </Callout>
 
-## Connecting to the Aptos Network
+## 连接到 Aptos 网络
 
-You have now completed setting up your validator and VFN using AWS. Proceed to [Connect Nodes](../connect-nodes.mdx) for the next steps.
+您现在已经使用 AWS 完成了验证器和 VFN 的设置。请继续进行[连接节点](../connect-nodes.mdx)的操作。

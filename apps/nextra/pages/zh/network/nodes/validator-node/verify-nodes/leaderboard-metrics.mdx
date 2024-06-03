@@ -1,64 +1,46 @@
 ---
-title: "Validator Leaderboard"
+
+title: "验证者排行榜"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Validator Leaderboard
+# 验证者排行榜
 
-This document explains how the rewards performance for validator nodes are calculated and displayed on
-the [Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet).
+本文档解释了验证者节点的奖励绩效（performance）是如何计算的，以及如何在 [Aptos 验证者排行榜](https://explorer.aptoslabs.com/validators/all?network=mainnet) 上显示。
 
-## Calculating validator rewards
+## 计算验证者奖励
 
-Validators are rewarded for participating in consensus. The rewards are calculated based on the number of successful
-proposals made by the validator, and the rewards performance is the percentage of rewards earned by the validator out
-of the maximum reward earning opportunity.
+验证者因参与共识而获得奖励。奖励是根据验证者所提出的成功提案数量来计算的，而奖励绩效是验证者获得的奖励占最大奖励获取机会的百分比。
 
-During an epoch, only the validators in the validator set can propose and vote. The duration of each epoch is set
-by governance and validators are selected as leaders (in rounds) to make proposals. This occurs multiple
-times in each epoch, meaning that validators can be selected as leaders multiple times in a single epoch.
+在每一个纪元（epoch）中，只有特定的验证者集合有权进行提案和投票。这个纪元的时长是由整个网络的管理机制来决定的，而在这段时间内，一些验证者会轮流作为领导者提出提案。在一个纪元内，这样的过程不止发生一次，这意味着同一个验证者有可能在同一纪元内多次被选为领导者，以引导网络前进。
 
-On each successful proposal, the proposing validator earns rewards based on their stake and on the reward rate that is
-configured on-chain. The reward rate is the same for every validator. If all the proposals in an epoch achieve
-quorum consensus, a validator earns the maximum reward for the epoch. If all the proposals in an epoch fail, a
-validator earns zero rewards for that epoch. The reward performance is calculated as a percentage of the
-rewards earned by the validator out of the maximum reward earning opportunity.
+每当有一个提案成功被批准，提出该提案的验证者就能根据其在网络中投入的质押额以及链上设置的统一奖励率来赚取奖励。所有验证者享受相同的奖励率。如果在一个纪元内，所有提案都顺利达到了共识，那么该验证者就能获得该纪元的最高奖励。相反，如果所有的提案都未能通过，那么该验证者在该纪元内将不会获得任何奖金。验证者的奖励绩效是基于其所得奖金与可能获得的最高奖金之间的百分比来计算的。
 
-Validators are only rewarded for proposing, and not for voting. Rewards are given only at the end of the epoch,
-not on every block.
+验证器仅在其成功提交提案之后才能获得奖励，仅仅参与投票是不会收到奖励的。这些奖励不是在每产生一个区块时发放，而是会在每个纪元结束后统一发放。
 
-### Reward calculation example
+### 奖励计算示例
 
-The reward a leader receives is calculated by multiplying the maximum possible reward with the leader's proposal
-success rate. For example:
+领导者收到的奖励是通过将最大可能的奖励乘以领导者的提案成功率来计算的。例如：
 
-- A leader with 8 successful and 2 failed proposals will receive 80% of maximum reward in the epoch.
-- Similarly, another leader with 80 successful and 20 failed proposal will also receive 80% of maximum reward.
-- Also, two leaders with no failures but one with 10 and another with 100 successful proposals will get the same % of the maximum reward.
+- 一个有 8 个成功和 2 个失败提案的领导者将在纪元中获得最大奖励的 80%。
+- 类似地，另一个有 80 个成功和 20 个失败提案的领导者也将获得最大奖励的 80%。
+- 另外，两个没有失败的领导者，其中一个有 10 个成功的提案，而另一个有 100 个成功的提案，将获得相同百分比的最大奖励。
 
 <Callout type="info">
-**REWARDS RATE**<br />
-Note also that the rewards rate is the same for every validator. Hence, the maximum reward is directly proportional
-to the staking amount, i.e., the more a validator stakes, the more the validator can earn in absolute terms.
+**奖励率**<br />
+需要特别指出的是，所有验证器获得的基础奖励率是一致的。这意味着验证器能获得的最大奖金与他们在网络中质押的资金量直接相关：质押得越多，绝对收益就越大。
 </Callout>
 
-### Rewards performance
+### 奖励绩效
 
-The **REWARDS** **PERFORMANCE** column on the
-[Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet) shows the rewards
-performance of a validator. It is calculated as a percentage of the rewards earned by the validator out of the maximum
-reward earning opportunity. This is a cumulative metric across all the epochs,
-i.e., `(rewards earned across all epochs)/(maximum reward opportunity across all epochs)`
+[Aptos 验证者排行榜](https://explorer.aptoslabs.com/validators/all?network=mainnet) 上的 **REWARDS PERFORMANCE** 列显示了验证者的奖励绩效。它是按验证者获得的奖励占最大奖励赚取机会的百分比来计算的。这是一个跨越所有纪元的累积指标，即 `(所有纪元中获得的奖励) / (所有纪元中的最大奖励机会)`
 
-A validator can improve their rewards performance by improving their proposal success rate.
+验证者可以通过提高他们的提案成功率来提高他们的奖励绩效。
 
-### Last epoch performance
+### 上一个纪元的表現
 
-The **LAST EPOCH PERFORMANCE** column on the
-[Aptos Validator Leaderboard](https://explorer.aptoslabs.com/validators/all?network=mainnet) shows the rewards
-performance of a validator in the last epoch. It is calculated as a percentage of the rewards earned by the validator
-in the last epoch out of the maximum reward earning opportunity in the last epoch, i.e., `(rewards earned in the last
-epoch)/(maximum reward opportunity in the last epoch)`.
+[Aptos 验证者排行榜](https://explorer.aptoslabs.com/validators/all?network=mainnet) 上的 **LAST EPOCH PERFORMANCE** 列显示了验证者在上一个纪元中的奖励绩效。它是按验证者在上一个纪元中获得的奖励占上一个纪元中最大奖励获取机会的百分比来计算的，即 `(上一个纪元中获得的奖励)/(上一个纪元中的最大奖励机会)`。
 
-This metric provides an early indicator to see if a validator is improving their reward performance.
+此指标是一个重要信号，用于判断验证器是否正在提高他们的奖励绩效。

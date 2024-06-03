@@ -1,72 +1,64 @@
 ---
-title: "Connect to a Network"
+
+title: "连接到网络"
+
 ---
 
-import { Callout, Steps } from 'nextra/components';
+import {Callout, Steps} from 'nextra/components';
 
-# Connect to a Network
+# 连接到网络
 
-This document describes how to connect your validator and validator fullnode (VFN) to an Aptos network.
+本文档描述了如何将您的验证者节点和验证者全节点（VFN）连接到 Aptos 网络。
 
 <Callout type="warning">
-**MINIMUM STAKING REQUIREMENTS**<br />
-You should only follow these instructions if your validator is able to meet the minimum
-[staking requirements](../../../blockchain/staking.mdx#minimum-and-maximum-stake) for the
-network. The current required minimum staking requirement is 1 Million APT tokens.
+**最小质押要求**<br />
+只有当您的验证节点能够满足网络的最小[质押要求](../../../blockchain/staking.mdx#minimum-and-maximum-stake)时，您才应遵循这些说明。当前所需的最小质押要求为 100 万 APT Token。
 </Callout>
 
-At a high-level, there are four steps required to connect your nodes to an Aptos network:
+从高层次来看，将节点连接到 Aptos 网络需要四个步骤：
 
 <Steps>
 
-### Initialize stake pool
+### 初始化质押池（stake pool）
 
-First, you will need to initialize the stake pool.
+首先，您需要初始化质押池。
 
-### Join validator set
+### 加入验证者集合（validator set）
 
-Second, you will need to join the validator set.
+其次，您需要加入验证者集合。
 
-### Update identities
+### 更新身份（identities）
 
-Third, you will need to update your node identity configurations to match the pool address.
+第三，您需要更新节点身份配置以匹配质押池地址。
 
-### Bootstrap your nodes
+### 引导节点（Bootstrap）
 
-Finally, you will need to bootstrap your nodes, so they can connect to the network and start syncing.
+最后，您需要引导节点，以便它们可以连接到网络并开始同步。
 
 </Steps>
 
-We will go through each of these steps in detail below.
+我们将在下面详细说明每一步。
 
-## Initialize the stake pool
+## 初始化质押池
 
-To begin, you will need to initialize the staking pool for your nodes. There are two types of pools you
-can initialize, a staking pool or a delegation pool. You can read more about the differences between these
-pools in the [Staking](../../../blockchain/staking.mdx) and [Delegated Staking](../../../blockchain/delegated-staking.mdx) sections.
+首先，您需要为节点初始化质押池。您可以初始化两种类型的池 ———— 质押池或委托池。您可以在[质押](../../../blockchain/staking.mdx)和[委托质押](../../../blockchain/delegated-staking.mdx)部分阅读有关这些池之间差异的更多信息。
 
-To initialize a staking pool, follow the instructions in
-[staking pool operations](../../../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#initialize-a-staking-pool). Otherwise,
-to initialize a delegation pool, follow the instructions in
-[delegation pool operations](../../../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx#initialize-a-delegation-pool).
+要初始化质押池，请按照[质押池操作](../../../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#initialize-a-staking-pool)中的说明进行。如果是要初始化委托池，请按照[委托池操作](../../../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx#initialize-a-delegation-pool)中的说明进行。
 
-## Join the validator set
+## 加入验证者集合
 
-Next, you will need to join the validator set. Follow the steps below:
+接下来，您需要加入验证者集合。请按照以下步骤操作：
 
 <Callout type="warning">
-**MAINNET VS TESTNET**<br />
-The commands shown below are for the Aptos mainnet. If you are connecting to a different
-network, you will need to change the `--network` value in the commands accordingly. You can view the
-values in [Aptos Blockchain Networks](../../networks.mdx) to see how profiles can be configured based on the network.
+**主网与测试网**<br />
+下面显示的命令适用于 Aptos 主网。如果您要连接到不同的网络，您需要在命令中相应更改 `--network` 值。您可以查看 [Aptos 区块链网络](../../networks.mdx)中的值，以了解如何根据不同的网络设置配置文件。
 </Callout>
 
-### 1. Initialize the Aptos CLI
+### 1. 初始化 Aptos CLI
 
-First, initialize the Aptos CLI with your operator account private key. This can be found in your `private-keys.yaml` file
-under the entry `account_private_key`.
+首先，使用您的运营者账户私钥初始化 Aptos CLI。这可以在 `private-keys.yaml` 文件下的 `account_private_key` 条目中找到。
 
-Replace `<operator_account_private_key>` with the value from the file in the command below:
+将下面命令中的 `<operator_account_private_key>` 替换为文件中的值，并运行：
 
 ```bash filename="Terminal"
 aptos init --profile mainnet-operator \
@@ -75,16 +67,15 @@ aptos init --profile mainnet-operator \
    --skip-faucet
 ```
 
-### 2. Check your account balance
+### 2. 检查账户余额
 
-Next, make sure you have enough funds to pay for transaction gas on the network. You can check this using the CLI, by
-running the command below:
+接下来，确保您有足够的资金支付网络上的交易手续费。您可以通过 CLI 运行下面的命令来检查：
 
 ```bash filename="Terminal"
 aptos account list --profile mainnet-operator
 ```
 
-This will show you the coin balance you have in the validator account. You will see an output like below:
+这将显示您的验证账户中的代币余额。您将看到类似以下的输出：
 
 ```json filename="Terminal"
 "coin": {
@@ -92,19 +83,16 @@ This will show you the coin balance you have in the validator account. You will 
 }
 ```
 
-### 3. Update on-chain network addresses
+### 3. 更新链上网络地址
 
-Next, you will need to update the network addresses for your validator and VFN. This is required to ensure that your nodes
-are able to connect to other peers in the network. First, fetch the pool address for your nodes, by running the command below.
-Note: the owner address is the address of the account that owns the stake pool, and was used to initialize the stake pool.
+接下来，您需要更新验证器和 VFN 的网络地址。这是为了确保您的节点能够连接到网络中的其他对等节点（peer）。首先，通过运行下面的命令获取节点的池地址。
+注意：所有者地址（owner_address）是拥有质押池账户的地址，并用于初始化质押池。
 
 ```bash filename="Terminal"
 aptos node get-stake-pool --owner-address <owner_address>
 ```
 
-Using the pool address from the command above, you will need to update the network addresses for your nodes. You can
-do this by running the command below. Note that it requires the `operator.yaml` file, which was created when you first
-deployed your nodes.
+根据上面的命令得到的池地址，您需要为您的节点更新网络地址。这可以通过执行以下命令完成。需要注意的是，执行这个操作需要使用到 `operator.yaml` 文件，这个文件是在您第一次部署节点时生成的。
 
 ```bash filename="Terminal"
 aptos node update-validator-network-addresses  \
@@ -114,17 +102,13 @@ aptos node update-validator-network-addresses  \
 ```
 
 <Callout type="info">
-**UPDATING THE NETWORK ADDRESSES**<br />
-Updating your network addresses on-chain requires waiting for the next epoch to begin. This is because the network
-addresses are updated at the end of the current epoch. Before the next epoch, your nodes will not be able to connect
-to other peers in the network.
+**更新网络地址**<br />
+要在区块链上更新节点的网络地址，您必须等待下一个纪元（epoch）的开始，因为每个纪元结束时才进行网络地址的更新。在下一个纪元开始前，您的节点是无法与网络中其它节点建立连接的。
 </Callout>
 
-### 4. Update on-chain consensus key
+### 4. 更新链上共识密钥
 
-Next, you will need to update the consensus key for your nodes. This is required to ensure that your nodes are able to
-participate in consensus. You can do this by running the command below. Note that it requires the pool address and
-the `operator.yaml` file (similar to above).
+接下来，您需要更新节点的共识密钥。这是为了确保您的节点能够参与共识。您可以通过运行下面的命令来完成。注意，它需要池地址和 `operator.yaml` 文件（与上述类似）。
 
 ```bash filename="Terminal"
 aptos node update-consensus-key  \
@@ -134,14 +118,13 @@ aptos node update-consensus-key  \
 ```
 
 <Callout type="info">
-**UPDATING THE CONSENSUS KEY**<br />
-Updating your consensus key on-chain requires waiting for the next epoch to begin. This is because the consensus key
-is updated at the end of the current epoch. Before the next epoch, your nodes will not be able to participate in consensus.
+**更新共识密钥**<br />
+要在链上更新您的共识密钥，您必须等待下一个纪元（epoch）开始，因为共识密钥更新是在当前纪元结束时进行的。在下一个纪元到来之前，您的节点将不能参与到共识过程中。
 </Callout>
 
-### 5. Join the validator set
+### 5. 加入验证者集合
 
-Finally, you will need to join the validator set. You can do this by running the command below:
+最后，您需要加入验证者集合。您可以通过运行下面的命令来完成：
 
 ```bash filename="Terminal"
 aptos node join-validator-set \
@@ -149,102 +132,91 @@ aptos node join-validator-set \
    --profile mainnet-operator
 ```
 
-The validator set is updated at the end of every epoch. You will need to wait for the next epoch to begin before your
-validator node is able to join the validator set.
+在区块链中，验证节点集合（validator set）是在每个纪元（epoch）结束时进行更新的。因此，您需要等到下一个纪元开始，您的验证者节点才有机会加入这个集合。
 
 <Callout type="info">
-**IDENTIFYING THE NEXT EPOCH**<br />
-You can identify the next epoch by checking the [Aptos Explorer](https://explorer.aptoslabs.com/validators/all?network=mainnet) or by running the command `aptos node get-stake-pool`.
+**识别下一个纪元**<br />
+您可以通过检查 [Aptos Explorer](https://explorer.aptoslabs.com/validators/all?network=mainnet)或运行命令 `aptos node get-stake-pool` 来识别下一个时代。
 </Callout>
 
-### 6. Check the validator set
+### 6. 检查验证者集合
 
-When you execute the command to join the validator set, your validator will be in a "Pending Active" state until the
-next epoch occurs. You can run the command below to look for your validator in the `pending_active` list.
+当您执行加入验证者集合的命令时，您的验证者节点将处于“待激活”状态，直到下一个纪元发生。您可以运行下面的命令，在 `pending_active` 列表中查找您的验证者节点。
 
 ```bash filename="Terminal"
 aptos node show-validator-set --profile mainnet-operator | jq -r '.Result.pending_active' | grep <pool_address>
 ```
 
-When the next epoch occurs, the node will be moved into `active_validators` list. Run the command
-below to see your validator in the "active_validators" list:
+当下一个纪元到来时，节点将被移入 `active_validators` 列表。运行下面的命令，在 “active_validators” 列表中查看您的验证节点：
 
 ```bash filename="Terminal"
 aptos node show-validator-set --profile mainnet-operator | jq -r '.Result.active_validators' | grep <pool_address>
 ```
 
-## Update identities
+## 更新身份
 
-After joining the validator set, you will need to update your node identity configuration files to match the pool address.
-This is required to ensure that your nodes are able to connect to other peers in the network.
+成为验证者集合的一部分后，您需要更新节点的身份认证配置，使其与池地址相匹配。这一步骤对于保证您的节点能够与区块链网络中的对等节点（peer）顺利连接是必不可少的。
 
 <Callout type="warning">
-**UPDATING THE POOL ADDRESS**<br />
-It is a common error to forget to update the pool address in the node identity configurations. If you do not
-update the pool address for **both your validator and VFN identity files**, your nodes will not be able to connect to
-other peers in the network.
+**更新池地址**<br />
+在节点的身份配置过程中忘记更新池地址是一个常犯的错误。如果您没能同时更新**验证节点和 VFN 的身份文件**中的池地址，将会导致您的节点无法与区块链网络中的对等节点（peer）建立连接。
 </Callout>
 
-Follow the steps below to update your node identity configurations, depending on the deployment method you used.
+根据您使用的部署方法，按照以下步骤更新您的节点身份配置。
 
-### Using Source Code
+### 使用源代码
 
-If you used the source code to deploy your nodes, follow these steps:
+如果您使用源代码部署节点，请按照以下步骤操作：
 
-1. Stop your validator and VFN and remove the data directory from both nodes. Make sure to remove the
-   `secure-data.json` file on the validator, too. You can see the location of the `secure-data.json` file in your
-   validator's configuration file.
-2. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
-3. Restart the validator and VFN.
+1. 停止您的验证节点和 VFN，并从两个节点中删除数据目录。确保同时删除验证节点上的 `secure-data.json` 文件。您可以在验证者节点的配置文件中看到 `secure-data.json` 文件的位置。
+2. 在 `validator-identity.yaml` 和 `validator-fullnode-identity.yaml` 文件中将您的 `account_address` 更新为您的**池地址**。不要更改其他任何内容。
+3. 重新启动验证者节点和 VFN。
 
-### Using Docker
+### 使用 Docker
 
-If you used Docker to deploy your nodes, follow these steps:
+如果您使用 Docker 部署节点，请按照以下步骤操作：
 
-1. Stop your node and remove the data volumes: `docker compose down --volumes`. Make sure to remove the
-   `secure-data.json` file on the validator, too. You can see the location of the `secure-data.json` file in your
-   validator's configuration file.
-2. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**.
-   Do not change anything else.
-3. Restart the nodes with: `docker compose up`
+1. 停止您的节点并删除数据卷：`docker compose down --volumes`。确保同时删除验证者节点上的 `secure-data.json` 文件。您可以在验证节点的配置文件中看到 `secure-data.json` 文件的位置。
+2. 在 `validator-identity.yaml` 和 `validator-fullnode-identity.yaml` 文件中将您的 `account_address` 更新为您的**池地址**。不要更改其他任何内容。
+3. 使用：`docker compose up` 重新启动节点。
 
-### Using Terraform
+### 使用 Terraform
 
-If you used Terraform to deploy your nodes (e.g., for AWS, Azure or GCP), follow these steps:
+如果您使用 Terraform 部署节点（例如，对于 AWS、Azure 或 GCP），请按照以下步骤操作：
 
-1. Increase the `era` number in your Terraform configuration. When this configuration is applied, it will wipe the data.
+1. 在 Terraform 配置中增加 `era` 编号。应用此配置时，将清除数据。
 
-2. Set the `enable_monitoring` variable in your terraform module. For example:
+2. 在您的 terraform 模块中设置 `enable_monitoring` 变量。例如：
 
    ```terraform filename="config.tf"
    module "aptos-node" {
      ...
      enable_monitoring           = true
-     utility_instance_num        = 3  # this will add one more utility instance to run monitoring component
+     utility_instance_num        = 3  # 这将添加一个额外的实用程序实例来运行监控组件
    }
    ```
 
-3. Apply the changes with: `terraform apply` You will see a new pod getting created. Run `kubectl get pods` to check.
+3. 使用：`terraform apply` 应用更改。您将看到创建了一个新的 pod。运行 `kubectl get pods` 进行检查。
 
-4. Find the IP/DNS for the monitoring load balancer, using:
+4. 使用以下命令找到监控负载均衡器的 IP/DNS：
 
    ```bash filename="Terminal"
    kubectl get svc ${WORKSPACE}-mon-aptos-monitoring --output jsonpath='{.status.loadBalancer.ingress[0]}'
    ```
 
-   You will be able to access the Terraform dashboard on `http://<ip/DNS>`.
+   您将能够通过 `http://<ip/DNS>` 访问 Terraform 仪表板。
 
-5. Pull the latest of the terraform module `terraform get -update`, and then apply the Terraform: `terraform apply`.
-6. Download the `genesis.blob` and `waypoint.txt` files for your network. See [Node Files](../../configure/node-files-all-networks.mdx) for locations and commands to download these files.
-7. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
-8. Recreate the secrets. Make sure the secret name matches your `era` number, e.g. if you have `era = 3`, then you should replace the secret name to be:
+5. 拉取最新的 terraform 模块 `terraform get -update`，然后应用 Terraform：`terraform apply`。
+6. 下载您的网络的 `genesis.blob`  和`waypoint.txt` 文件。查看[节点文件](../../configure/node-files-all-networks.mdx)了解下载这些文件的位置和命令。
+7. 在 `validator-identity.yaml` 和 `validator-fullnode-identity.yaml` 文件中将您的 `account_address` 更新为您的**池地址**。不要更改其他任何内容。
+8. 重新创建密钥。确保密钥名称与您的 `era` 编号匹配，例如，如果您有 `era = 3`，则应将密钥名称替换为：
 
 ```bash filename="Terminal"
 ${WORKSPACE}-aptos-node-0-genesis-e3
 ```
 
 ```bash filename="Terminal"
-export WORKSPACE=<your workspace name>
+export WORKSPACE=<您的工作空间名称>
 
 kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e2 \
     --from-file=genesis.blob=genesis.blob \
@@ -253,19 +225,15 @@ kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e2 \
     --from-file=validator-full-node-identity.yaml=keys/validator-full-node-identity.yaml
 ```
 
-## Bootstrap your nodes
+## 引导节点
 
-After joining the validator set and updating your node identity configurations to match the pool address,
-you will need to bootstrap your nodes to connect to the network. To do this, follow the steps below:
+在加入验证者集合并更新节点身份配置以匹配池地址后，您需要引导节点连接到网络。要做到这一点，请按照以下步骤操作：
 
-1. Start the VFN. The VFN will connect to the network and start syncing. See [State Synchronization](../../configure/state-sync.mdx) for more information.
-2. Once the VFN is synced, restart the validator. It will sync from the VFN and then connect to other validators
-   in the network and start participating in consensus.
+1. 启动 VFN。VFN 将连接到网络并开始同步。更多信息，请参见[状态同步](../../configure/state-sync.mdx)。
+2. VFN 同步完成后，重新启动验证节点。它将从 VFN 同步，然后连接到网络中的其他验证者并开始参与共识。
 
-Once both of these steps are complete, your nodes will be connected to the network and participating in consensus.
+完成这两个步骤后，您的节点将连接到网络并参与共识。
 
-## Next steps
+## 后续步骤
 
-Congratulations! You have successfully connected your nodes to the Aptos network. To verify that your nodes are running
-correctly, visit the [Node Health](../verify-nodes/node-liveness-criteria.mdx) document. This document describes how you can verify and
-monitor the health of your validator and VFN, including an initial node verification section.
+祝贺您！您已成功将节点连接到 Aptos 网络。要验证您的节点是否运行正确，请访问[节点健康](../verify-nodes/node-liveness-criteria.mdx)文档。该文档描述了如何验证和监控您的验证节点和 VFN 的健康状况，包括初始节点验证部分。

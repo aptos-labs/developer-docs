@@ -1,37 +1,33 @@
 ---
-title: "Using Docker"
+
+title: "使用 Docker"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Using Docker
+# 使用 Docker
 
 <Callout type="warning">
-**Apple M1+ Users** <br />
-Docker deployment has only been tested on Linux, Windows, and Intel macOS. If you are on M1+ macOS, you will
-need to deploy using [source code](../../full-node/deployments/using-source-code.mdx).
+**苹果 M1+ 用户** <br />
+Docker 部署仅在 Linux、Windows 和 Intel macOS 上进行了测试。如果您使用的是 M1+ macOS，您将需要使用 [源代码](../../full-node/deployments/using-source-code.mdx) 进行部署。
 </Callout>
 
-This is a step-by-step guide to deploy an Aptos validator and validator fullnode (VFN) using Docker. Using this guide, the validator
-and VFN will be deployed on separate machines.
+这是一份分步指南，用于使用 Docker 部署 Aptos 验证器和验证器全节点（VFN）。按照本指南，验证器和 VFN 将部署在不同的机器上。
 
 <Callout type="warning">
-**Prerequisites** <br />
-Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.mdx). Similarly, make sure you have
-installed the [Aptos CLI](../../../../build/cli.mdx), and [Docker with Docker Compose](https://docs.docker.com/engine/install/).
+**先决条件** <br />
+在开始之前，请确保阅读并理解 [节点要求](../node-requirements.mdx)。同样，请确保您已经安装了 [Aptos CLI](../../../../build/cli.mdx)，以及 [Docker 与 Docker Compose](https://docs.docker.com/engine/install/)。
 </Callout>
 
-## Deployment steps
+## 部署步骤
 
 <Callout type="info">
-**Default connection to mainnet**<br />
-If you follow the default setup in this document, then your validator and VFN will be connected to the Aptos mainnet.
-To connect to a different Aptos network, such as testnet, make sure you download the correct genesis and waypoint
-files for the network you want to connect to. Similarly, you will need to modify the docker compose files to use the
-correct docker images by network name.
+**默认连接到主网**<br />
+遵循本文档的默认配置，你的验证节点和全节点后端（VFN）将会接入 Aptos 主网。如果想接入到 Aptos 的其他网络，如测试网，你需要确保下载了目标网络相应的创世数据块和路标文件。此外，根据所选网络，需调整 docker compose 文件，以确保使用到相匹配的 docker 镜像。
 </Callout>
 
-1. Create a working directory for your Aptos nodes, and pick a username for your nodes, e.g.,
+1. 为您的 Aptos 节点创建一个工作目录，并为您的节点选择一个用户名，例如：
 
    ```bash filename="Terminal"
    export WORKSPACE=mainnet
@@ -40,77 +36,70 @@ correct docker images by network name.
    cd ~/$WORKSPACE
    ```
 
-2. Generate the key pairs for your nodes in your working directory. You can do this by running
-   the following command with the Aptos CLI:
+2. 在您的工作目录中为您的节点生成密钥对。您可以通过运行以下命令并使用 Aptos CLI 来执行此操作：
 
    ```bash filename="Terminal"
    aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
    ```
 
-   This will create 4 key files under `~/$WORKSPACE/keys` directory:
+   这将在 `~/$WORKSPACE/keys` 目录下创建 4 个密钥文件：
 
-   - `public-keys.yaml`: This file contains all public keys for your validator and VFN, as well as your account address.
-   - `private-keys.yaml`: This file contains all private keys for your validator and VFN.
-   - `validator-identity.yaml`: This file contains the public and private keys for your validator, as well as your account address.
-   - `validator-full-node-identity.yaml`: This file contains the public and private keys for your VFN, as well as your account address.
-
-   <Callout type="warning">
-   **Backup your private keys** <br />
-   Your private keys are important for you to establish ownership of your nodes. Never share your **private** keys with anyone,
-   and make sure to **backup** `private-keys.yaml` somewhere safe.
-   </Callout>
-
-3. Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
-   which may be IP addresses or DNS addresses.
+   - `public-keys.yaml`：此文件包含您的验证器和 VFN 的所有公钥，以及您的账户地址。
+   - `private-keys.yaml`：此文件包含您的验证器和 VFN 的所有私钥。
+   - `validator-identity.yaml`：此文件包含验证器的公钥和私钥，以及您的账户地址。
+   - `validator-full-node-identity.yaml`：此文件包含 VFN 的公钥和私钥，以及您的账户地址。
 
    <Callout type="warning">
-   **DNS addresses**<br />
-   Using DNS is recommended over IP addresses, as it enables more efficient node migrations and is more resilient
-   to host changes.
+   **备份您的私钥** <br />
+   私钥是确认你对节点所有权的关键。切记，绝对不要向他人透露你的**私钥**，并且务必将 `private-keys.yaml` 文件**备份**在安全的地方。
    </Callout>
 
-   You can set your validator configuration by running the following command with the Aptos CLI:
+3. 接下来，您需要设置验证器的配置。这包括设置验证器和 VFN 的主机名，这些可能是 IP 地址或 DNS 地址。
+
+   <Callout type="warning">
+   **DNS 地址**<br />
+   相比于使用 IP 地址，推荐使用 DNS，因为这样能够更便捷地进行节点迁移，并且当主机发生变化时，系统的适应性更强。
+   </Callout>
+
+   您可以通过运行以下命令并使用 Aptos CLI 来设置验证器配置：
 
    ```bash filename="Terminal"
-
-   # Replace <validator node IP / DNS address> and <Full Node IP / DNS address> below,
-   # with the appropriate IP or DNS address for your nodes.
+   # 使用适当的 IP 或 DNS 地址替换下面的 <validator node IP / DNS address> 和 <Full Node IP / DNS address>。
 
    cd ~/$WORKSPACE
    aptos genesis set-validator-configuration \
-       --local-repository-dir ~/$WORKSPACE \
-       --username $USERNAME \
-       --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
-       --validator-host <validator node IP / DNS address>:<Port> \
-       --full-node-host <Full Node IP / DNS address>:<Port> \
-       --stake-amount 100000000000000
+      --local-repository-dir ~/$WORKSPACE \
+      --username $USERNAME \
+      --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
+      --validator-host <validator node IP / DNS address>:<Port> \
+      --full-node-host <Full Node IP / DNS address>:<Port> \
+      --stake-amount 100000000000000
 
    # For example, if you are using IP addresses:
 
    aptos genesis set-validator-configuration \
-       --local-repository-dir ~/$WORKSPACE \
-       --username $USERNAME \
-       --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
-       --validator-host 35.232.235.205:6180 \
-       --full-node-host 34.135.169.144:6182 \
-       --stake-amount 100000000000000
+      --local-repository-dir ~/$WORKSPACE \
+      --username $USERNAME \
+      --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
+      --validator-host 35.232.235.205:6180 \
+      --full-node-host 34.135.169.144:6182 \
+      --stake-amount 100000000000000
 
    # Otherwise, if you are using DNS addresses:
 
    aptos genesis set-validator-configuration \
-       --local-repository-dir ~/$WORKSPACE \
-       --username $USERNAME \
-       --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
-       --validator-host bot.aptosdev.com:6180 \
-       --full-node-host fn.bot.aptosdev.com:6182 \
-       --stake-amount 100000000000000
+      --local-repository-dir ~/$WORKSPACE \
+      --username $USERNAME \
+      --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
+      --validator-host bot.aptosdev.com:6180 \
+      --full-node-host fn.bot.aptosdev.com:6182 \
+      --stake-amount 100000000000000
    ```
 
-   Configuring the validator will create two YAML files in the `~/$WORKSPACE/$USERNAME` directory: `owner.yaml` and
-   `operator.yaml`. These will be useful for connecting your nodes to the Aptos network (later).
+   配置验证器将在 `~/$WORKSPACE/$USERNAME` 目录中创建两个 YAML 文件：`owner.yaml` 和 `operator.yaml`。这些（稍后）将有助于将您的节点连接到 Aptos 网络。
 
-4. Download the following files by following the instructions on the [Node Files](../../configure/node-files-all-networks.mdx) pages.
-   You will need to select the appropriate network (e.g., `mainnet`, `testnet`, `devnet`) and download the following files:
+4. 按照 [节点文件](../../configure/node-files-all-networks.mdx) 页面上的说明下载以下文件。
+   您需要选择适当的网络（例如，`mainnet`，`testnet`，`devnet`）并下载以下文件：
 
    - `validator.yaml`
    - `fullnode.yaml`
@@ -122,75 +111,64 @@ correct docker images by network name.
    - `genesis.blob`
    - `waypoint.txt`
 
-5. To recap, in your working directory (`~/$WORKSPACE`), you should have a list of files:
+5. 总之，您的工作目录（`~/$WORKSPACE`）中应该有以下文件列表：
 
-   - `docker-compose.yaml`: The docker compose file to run the validator.
-   - `docker-compose-fullnode.yaml`: The docker compose file to run the VFN.
-   - `keys` folder containing:
-     - `public-keys.yaml`: Public keys for both nodes.
-     - `private-keys.yaml`: Private keys for both nodes.
-     - `validator-identity.yaml`: Key and account information for the validator.
-     - `validator-full-node-identity.yaml`: Key and account information for the VFN.
-   - `$username` folder containing:
-     - `owner.yaml`: The owner, operator and voter mappings.
-     - `operator.yaml`: Validator and VFN operator information.
-   - `waypoint.txt`: The waypoint for the genesis transaction on the network you are connecting to.
-   - `genesis.blob` The genesis blob for the network you are connecting to.
+   - `docker-compose.yaml`：运行验证器的 docker compose 文件。
+   - `docker-compose-fullnode.yaml`：运行 VFN 的 docker compose 文件。
+   - `keys` 文件夹包含：
+     - `public-keys.yaml`：两个节点的公钥。
+     - `private-keys.yaml`：两个节点的私钥。
+     - `validator-identity.yaml`：验证器的密钥和账户信息。
+     - `validator-full-node-identity.yaml`：VFN 的密钥和账户信息。
+   - `$username` 文件夹包含：
+     - `owner.yaml`：所有者、运营者和投票者映射。
+     - `operator.yaml`：验证器和 VFN 运营者信息。
+   - `waypoint.txt`：您正在连接的网络上创世交易的路标文件。
+   - `genesis.blob`：您正在连接的网络的创世区块（genesis blob）。
 
-6. To start the validator node, run the following command in your working directory:
+6. 要启动验证器节点，在您的工作目录中运行以下命令：
 
    ```bash filename="Terminal"
-   docker-compose up (or `docker compose up` depends on your version)
+   docker-compose up （或根据您的版本使用 `docker compose up`）
    ```
 
-   This will start the validator node using the docker compose file and the images specified in the
-   `docker-compose.yaml` file. If you wish to change the network you are connecting to, you will need to modify
-   the file to use the correct docker images by network name.
+   这将使用 `docker-compose.yaml` 文件中指定的 docker compose 文件和镜像启动验证器节点。如果您希望更改要连接的网络，您需要修改文件以按网络名称使用正确的 docker 镜像。
 
-7. Before you can start the VFN, you will need to modify the `fullnode.yaml` file to update the host address for the
-   validator node. For example, if you are using IP addresses, you will need to update the `full_node_networks`
-   `addresses` for the `vfn` network as follows:
+7. 在启动 VFN 之前，你需先调整 `fullnode.yaml` 配置文件，以便更新验证器节点的主机地址。比如，如果您使用的是 IP 地址，就需要按照以下方式，修改 vfn 网络的 `full_node_networks` 的地址信息：
 
    ```yaml filename="fullnode.yaml"
    ---
    addresses:
-     - "/ip4/100.100.100.100/tcp/6181/noise-ik/..." # Set the IP Address of the validator
+     - "/ip4/100.100.100.100/tcp/6181/noise-ik/..." # 设置验证器的 IP 地址
    ```
 
-   Otherwise, if you are using DNS addresses, you will need to update the `addresses` field as follows:
+   否则，如果您使用 DNS 地址，您需要按如下方式更新 `addresses` 字段：
 
    ```yaml filename="fullnode.yaml"
    ---
    addresses:
-     - "/dns/example.com/tcp/6181/noise-ik/..." # Set the DNS Address of the validator
+     - "/dns/example.com/tcp/6181/noise-ik/..." # 设置验证器的 DNS 地址
    ```
 
-8. To start your VFN, run the following commands on a separate, dedicated VFN machine. You will need to copy across
-   the keys, configuration and docker compose files from the validator machine.
-
+8. 为了启动你的 VFN，请在一台独立的、专为 VFN 设置的计算机上执行以下命令。你需要从验证节点的计算机那里复制密钥、配置文件和 docker compose 文件过来。
    <Callout type="warning">
-   **VFN identity**<br />
-   You should copy the keys and configuration
-   files across to the VFN machine from the working location where they were generated. Do not attempt to generate
-   another set of keys or files for the VFN, as these will not be recognized by the network.
+   **VFN 身份**<br />
+   你应从这些密钥和配置文件最初生成的地方，将它们复制到 VFN 的机器上。不要试图为 VFN 生成另外一组密钥或配置文件，因为验证网络将无法识别这些新生成的文件。
    </Callout>
 
-   To start the VFN, run the following command in your working directory:
+   要启动 VFN，请在您的工作目录中运行以下命令：
 
    ```bash filename="Terminal"
    docker-compose -f docker-compose-fullnode.yaml up
    ```
 
-   This will start the VFN using the docker compose file and the images specified in the
-   `docker-compose-fullnode.yaml` file. If you wish to change the network you are connecting to, you will need to modify
-   the file to use the correct docker images by network name.
+   通过使用 docker-compose 文件和 `docker-compose-fullnode.yaml` 文件中指定的镜像，将会启动 VFN。如果你想要连接到不同的网络，那么你需要根据网络名称，修改这个文件来指定正确的 Docker 镜像。
 
    <Callout type="warning">
-   **Next steps**<br />
-   You have now completed setting up your validator and VFN using Docker. However, your nodes will not be able to connect
-   to the Aptos network just yet.
+   **下一步**<br />
+   您现在已经使用 Docker 完成了验证器和 VFN 的设置。然而，您的节点还不能连接到 Aptos 网络。
    </Callout>
 
-## Connecting to the Aptos Network
+## 连接到 Aptos 网络
 
-You have now completed setting up your validator and VFN using Docker. Proceed to [Connect Nodes](../connect-nodes.mdx) for the next steps.
+您现在已经使用 Docker 完成了验证器和 VFN 的设置。请继续进行 [连接节点](../connect-nodes.mdx) 的操作。

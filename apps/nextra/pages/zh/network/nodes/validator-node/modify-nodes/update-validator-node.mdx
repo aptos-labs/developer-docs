@@ -1,85 +1,64 @@
 ---
-title: "Upgrade Nodes"
+
+title: "升级节点"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Upgrade Nodes
+# 升级节点
 
-This section contains tutorials for upgrading your validator and validator fullnode (VFN). Upgrades are a
-common operation for maintaining your nodes. Aptos Labs frequently releases new versions of the
-Aptos node software, and you should keep your nodes up to date to ensure they are secure and reliable.
+本节包含有关升级您的验证者和验证者全节点（VFN）的教程。升级是维护您的节点的常规操作。Aptos Labs 经常发布 Aptos 节点软件的新版本，您应该保持您的节点为最新版本以确保它们的安全性和可靠性。
 
 <Callout type="warning">
-Running old node versions and failing to update your nodes can lead to security vulnerabilities, performance
-degradation, and network instability. It is important to keep your nodes up to date.
+运行旧版本的节点并且未及时更新您的节点可能会导致安全漏洞、性能下降和网络不稳定。保持您的节点为最新版本非常重要。
 </Callout>
 
-There are two primary ways to upgrade your nodes. The first is a **simple** **upgrade** of the node software, and the
-second is a more **complex** **failover** process between your validator and VFN. The failover process is useful for
-minimizing validator downtime when you need to upgrade.
+更新你的节点主要有两种方法。第一种是直接升级节点软件，这是一种**简单升级**的操作。第二种则涉及更为**复杂的故障转移**的机制，即在你的验证者和验证者全节点（VFN）之间进行故障转移，这一步骤在升级过程中特别有助于减少验证者节点的停机时间。
 
-## Simple Upgrade
+## 简单升级
 
-To perform a simple node upgrade, you can upgrade the validator and VFN individually, one at a time.
-This process is straightforward and can be repeated for each node. The steps are as follows:
+要执行简单的节点升级，您可以逐步升级验证者节点和 VFN。这个过程简单明了，并且可以为每个节点重复执行。步骤如下：
 
-1. First, stop the node manually (e.g., the validator or VFN). To stop the node, it will depend on your deployment method.
-2. Next, update the node software to the latest version. This may require downloading the latest binary or Docker image,
-   or recompiling the source code. Depending on your deployment method, you can perform this step in the background while the node is still running.
-   This should help minimize downtime.
-3. Finally, once you have updated the node software, restart the node using the latest software version and the original
-   commands you used to start the node.
+1. 首先，手动停止节点（例如，验证者或 VFN）。要停止节点，将取决于您的部署方法。
+2. 接下来，将节点软件更新到最新版本。这可能需要下载最新的二进制文件或 Docker 镜像，或者重新编译源代码。根据您的部署方法，您可以在节点仍在运行的时候在后台执行此步骤。这应该有助于最小化停机时间。
+3. 最后，一旦您更新了节点软件，使用最新的软件版本和您用于启动节点的原始命令重新启动节点。
 
    <Callout type="info">
-   **REPEAT FOR EACH NODE**<br />
-   You will need to perform the simple upgrade process for each node individually. This means you will need to upgrade
-   the validator and VFN separately.
+   **对每个节点重复操作**<br />
+   您需要为每个节点单独执行简单升级过程。这意味着您需要分别升级验证者和 VFN。
    </Callout>
 
 <br />
 
-## Upgrade via VFN Failover
+## 通过 VFN 故障转移升级
 
-To minimize validator downtime, you can perform a failover process between your validator and VFN. This process involves
-upgrading the VFN to the latest version and converting it to the validator. Once the VFN has been converted to the new
-validator, you can then upgrade the original validator and convert it into the new VFN.
+为了尽可能减少验证者的非停机时间，你可以在你的验证者与 VFN 之间进行故障转移。具体来说，先将 VFN 升级至最新版本，并使之成为新的验证者。这一步完成后，旧的验证者再进行升级，并转变为新的 VFN。通过这样的方式，可以确保在整个过程中，系统的稳定性和可用性得到最大程度的保障。
 
-The benefit of this approach is that it minimizes validator downtime by allowing you to prepare the new
-validator while the original validator is still running.
+采用这种升级方式的优势在于，它可以让你在当前验证者还在运行时，就开始准备新的验证者，从而尽量减少验证者的停机时间。
 
 <Callout type="warning">
-**Node differences**<br />
-Before you begin the failover process, it is important to understand that the data maintained by the two nodes
-(i.e., validator and VFN) is not identical. The VFN is missing the `consensus_db` and the `secure-data.json`
-file, and both nodes use different configuration files (including identities).
+**节点差异**<br />
+在开始故障转移过程之前，了解两个节点（即验证者和 VFN）维护的数据并不相同非常重要。VFN 缺少 `consensus_db` 和 `secure-data.json` 文件，并且两个节点使用不同的配置文件（包括身份）。
 
-If you are not comfortable with the failover process, you should consider performing a simple upgrade instead.
+如果您对故障转移过程不熟悉，您应该考虑执行简单升级。
 </Callout>
 
-To perform a VFN failover upgrade, you should follow these steps:
+要执行 VFN 故障转移升级，您应该按照以下步骤操作：
 
-1. Update your DNS to swap the [network addresses](../../validator-node/connect-nodes/connect-to-aptos-network.mdx#3-update-on-chain-network-addresses) between the validator and VFN.
-2. Stop the VFN and update the node software to the latest version. This may require downloading the latest binary or Docker image,
-   or recompiling the source code. In addition, you will need to copy the `consensus_db` and `secure-data.json` file from the validator to the VFN,
-   as well as the validator configuration file (including validator identities).
-3. Once the VFN is primed to become the new validator, you can stop the old validator, and start the new validator
-   immediately. This will minimize validator downtime.
+1. 更新您的 DNS，以交换验证者和 VFN 之间的[网络地址](../../validator-node/connect-nodes/connect-to-aptos-network.mdx#3-update-on-chain-network-addresses)。
+2. 停止 VFN 并将节点软件更新到最新版本。这可能需要下载最新的二进制文件或 Docker 镜像，或者重新编译源代码。此外，您需要从验证者节点复制 `consensus_db` 和 `secure-data.json` 文件到 VFN，以及验证者节点的配置文件（包括验证者身份）。
+3. 一旦 VFN 准备好成为新的验证者，您可以停止旧的验证者，并立即启动新的验证者。这将最小化验证者的停机时间。
 
    <Callout type="warning">
-   **ONLY ONE VALIDATOR AT A TIME** <br />
-   It is important to ensure that only a single validator is running at any given time. If you fail to stop
-   the original validator before starting the new validator, you will have two validators running at the same time,
-   and this will lead to consensus failures and performance issues on your nodes.
+   **一次只有一个验证者运行** <br />
+   非常重要的一点是，要确保任何时候系统中只运行着一台验证者。如果在新验证者启动之前没有先停掉原有的验证者，将会出现两台验证者同时运行的情况，这样的状况会导致节点共识失败，进而引发性能问题。
    </Callout>
 
-4. Now, you will have a validator running the new code version. Observe that before DNS changes take effect your new
-   validator will only have outbound connections.
-5. Next, prepare the original validator to become the new VFN. This will involve updating the node software to the latest
-   version, and copying the VFN configuration file (including VFN identities) across.
-6. Once the original validator is ready to become the new VFN, you can start the new VFN.
+4. 、此时，你的系统中会运行着一个安装了新版本代码的验证者。重要的是需要注意，在 DNS 的更改生效之前，新验证者只能建立出站的连接。
+5. 接下来，准备原始验证者成为新的 VFN。这将涉及将节点软件更新到最新版本，并复制 VFN 配置文件（包括 VFN 身份）。
+6. 一旦原始验证者准备好成为新的 VFN，您可以启动新的 VFN。
 
 <Callout type="info">
-Once you have completed the failover process, you should monitor the new validator and VFN to ensure they are running
-correctly, and that your validator is still participating in consensus.
+完成故障转移过程后，您应该监控新的验证者和 VFN 以确保它们运行正常，并确保您的验证者仍在参与共识。
 </Callout>

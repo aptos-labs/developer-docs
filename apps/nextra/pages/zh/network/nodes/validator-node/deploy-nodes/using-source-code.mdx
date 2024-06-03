@@ -1,183 +1,171 @@
 ---
-title: "Using Source Code"
+
+title: "使用源代码"
+
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Using Source Code
+# 使用源代码
 
-This is a step-by-step guide to deploy an Aptos validator and validator fullnode (VFN) using source code. Using this guide, the validator
-and VFN will be deployed on separate machines.
+这是一份分步指南，用于使用源代码部署 Aptos 验证器和验证器全节点（VFN）。按照本指南，验证器和 VFN 将部署在不同的机器上。
 
 <Callout type="warning">
-**Prerequisites**<br />
-Before you begin, make sure to read and understand the [Node Requirements](../node-requirements.mdx). Similarly, make sure you have
-installed the [Aptos CLI](../../../../build/cli.mdx), as you will need it to setup your nodes.
+**先决条件**<br />
+在开始之前，请确保阅读并理解了 [节点要求](../node-requirements.mdx)。同样，请确保您已经安装了 [Aptos CLI](../../../../build/cli.mdx)，因为您将需要它来设置您的节点。
 </Callout>
 
-## Deployment Steps
+## 部署步骤
 
 <Callout type="info">
-**Default connection to mainnet**<br />
-If you follow the default setup in this document, then your validator and VFN will be connected to the Aptos mainnet.
-To connect to a different Aptos network, such as testnet, make sure you select the appropriate source code branch
-when you build the binary, and download the correct genesis and waypoint files for the network you want to connect to.
+**默认连接到主网**<br />
+如果您按照本文档中的默认设置操作，那么您的验证器和 VFN 将连接到 Aptos 主网。
+要连接到不同的 Aptos 网络，例如测试网，请确保在构建二进制文件时选择适当的源代码分支，并下载您想要连接的网络的正确创世区块和路标文件。
 </Callout>
 
-1.  Follow the steps in [Building Aptos From Source](../../building-from-source.mdx) to download the `aptos-core` repository and source code.
+1. 按照 [从源代码构建 Aptos](../../building-from-source.mdx) 中的步骤下载 `aptos-core` 存储库和源代码。
 
-2.  Checkout the `mainnet` branch using `git checkout --track origin/mainnet`. Note: if you want to deploy a validator
-    and VFN on another network, use the appropriate branch name (e.g., `testnet`).
+2. 使用 `git checkout --track origin/mainnet` 检出 `mainnet` 分支。注意：如果您想在另一个网络上部署验证器和 VFN，请使用适当的分支名称（例如，`testnet`）。
 
-3.  Create a working directory for your Aptos nodes, and pick a username for your nodes, e.g.,
+3. 为您的 Aptos 节点创建一个工作目录，并为您的节点选择一个用户名，例如，
 
-    ```bash filename="Terminal"
-    export WORKSPACE=mainnet
-    export USERNAME=alice
-    mkdir ~/$WORKSPACE
-    ```
+   ```bash filename="Terminal"
+   export WORKSPACE=mainnet
+   export USERNAME=alice
+   mkdir ~/$WORKSPACE
+   ```
 
-4.  Generate the key pairs for your nodes in your working directory. You can do this by running
-    the following command with the Aptos CLI:
+4. 在您的工作目录中为您的节点生成密钥对。您可以通过运行以下命令并使用 Aptos CLI 来执行此操作：
 
-    ```bash filename="Terminal"
-    aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
-    ```
+   ```bash filename="Terminal"
+   aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
+   ```
 
-    This will create 4 key files under `~/$WORKSPACE/keys` directory:
+   这将在 `~/$WORKSPACE/keys` 目录下创建 4 个密钥文件：
 
-    - `public-keys.yaml`: This file contains all public keys for your validator and VFN, as well as your account address.
-    - `private-keys.yaml`: This file contains all private keys for your validator and VFN.
-    - `validator-identity.yaml`: This file contains the public and private keys for your validator, as well as your account address.
-    - `validator-full-node-identity.yaml`: This file contains the public and private keys for your VFN, as well as your account address.
+   - `public-keys.yaml`：此文件包含您的验证器和 VFN 的所有公钥，以及您的账户地址。
+   - `private-keys.yaml`：此文件包含您的验证器和 VFN 的所有私钥。
+   - `validator-identity.yaml`：此文件包含验证器的公钥和私钥，以及您的账户地址。
+   - `validator-full-node-identity.yaml`：此文件包含 VFN 的公钥和私钥，以及您的账户地址。
 
-    <Callout type="warning">
-    **Backup your private keys** <br />
-    Your private keys are important for you to establish ownership of your nodes. Never share your **private** keys with anyone,
-    and make sure to **backup** `private-keys.yaml` somewhere safe.
-    </Callout>
+   <Callout type="warning">
+   **备份您的私钥** <br />
+   私钥是确认你对节点所有权的关键。切记，绝对不要向他人透露你的**私钥**，并且务必将 `private-keys.yaml` 文件**备份**在安全的地方。
+   </Callout>
 
-5.  Next, you will need to set your validator configuration. This includes setting the validator and VFN host names,
-    which may be IP addresses or DNS addresses.
+5. 接下来，您需要设置验证器的配置。这包括设置验证器和 VFN 的主机名，这些可能是 IP 地址或 DNS 地址。
 
-    <Callout type="info">
-    **DNS addresses** <br />
-    Using DNS is recommended over IP addresses, as it enables more efficient node migrations and is more resilient
-    to host changes.
-    </Callout>
+   <Callout type="info">
+   **DNS 地址** <br />
+   相比于使用 IP 地址，推荐使用 DNS，因为这样能够更便捷地进行节点迁移，并且当主机发生变化时，系统的适应性更强。
+   </Callout>
 
-    You can set your validator configuration by running the following command with the Aptos CLI:
+   您可以通过运行以下命令并使用 Aptos CLI 来设置验证器配置：
 
-    ```bash filename="Terminal"
+   ```bash filename="Terminal"
 
-    # Replace <validator node IP / DNS address> and <Full Node IP / DNS address> below,
-    # with the appropriate IP or DNS address for your nodes.
+   # 将下面的 <validator node IP / DNS address> 和 <Full Node IP / DNS address> 替换为，
+   # 您的节点适当的 IP 或 DNS 地址。
 
-    cd ~/$WORKSPACE
-    aptos genesis set-validator-configuration \
-        --local-repository-dir ~/$WORKSPACE \
-        --username $USERNAME \
-        --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
-        --validator-host <validator node IP / DNS address>:<Port> \
-        --full-node-host <Full Node IP / DNS address>:<Port> \
-        --stake-amount 100000000000000
+   cd ~/$WORKSPACE
+   aptos genesis set-validator-configuration \
+       --local-repository-dir ~/$WORKSPACE \
+       --username $USERNAME \
+       --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
+       --validator-host <validator node IP / DNS address>:<Port> \
+       --full-node-host <Full Node IP / DNS address>:<Port> \
+       --stake-amount 100000000000000
 
-    # For example, if you are using IP addresses:
+   # 例如，如果您使用 IP 地址：
 
-    aptos genesis set-validator-configuration \
-        --local-repository-dir ~/$WORKSPACE \
-        --username $USERNAME \
-        --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
-        --validator-host 35.232.235.205:6180 \
-        --full-node-host 34.135.169.144:6182 \
-        --stake-amount 100000000000000
+   aptos genesis set-validator-configuration \
+       --local-repository-dir ~/$WORKSPACE \
+       --username $USERNAME \
+       --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
+       --validator-host 35.232.235.205:6180 \
+       --full-node-host 34.135.169.144:6182 \
+       --stake-amount 100000000000000
 
-    # Otherwise, if you are using DNS addresses:
+   # 否则，如果您使用 DNS 地址：
 
-    aptos genesis set-validator-configuration \
-        --local-repository-dir ~/$WORKSPACE \
-        --username $USERNAME \
-        --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
-        --validator-host bot.aptosdev.com:6180 \
-        --full-node-host fn.bot.aptosdev.com:6182 \
-        --stake-amount 100000000000000
-    ```
+   aptos genesis set-validator-configuration \
+       --local-repository-dir ~/$WORKSPACE \
+       --username $USERNAME \
+       --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
+       --validator-host bot.aptosdev.com:6180 \
+       --full-node-host fn.bot.aptosdev.com:6182 \
+       --stake-amount 100000000000000
+   ```
 
-    Configuring the validator will create two YAML files in the `~/$WORKSPACE/$USERNAME` directory: `owner.yaml` and
-    `operator.yaml`. These will be useful for connecting your nodes to the Aptos network (later).
+   配置验证器将在 `~/$WORKSPACE/$USERNAME` 目录中创建两个 YAML 文件：`owner.yaml` 和 `operator.yaml`。这些将有助于将您的节点连接到 Aptos 网络（稍后）。
 
-6.  Download the following files by following the instructions on the [Node Files](../../configure/node-files-all-networks.mdx) pages.
-    You will need to select the appropriate network (e.g., `mainnet`, `testnet`, `devnet`) and download the following files:
+6. 按照 [节点文件](../../configure/node-files-all-networks.mdx) 页面上的说明下载以下文件。
+   您需要选择适当的网络（例如，`mainnet`，`testnet`，`devnet`）并下载以下文件：
 
-    - `validator.yaml`
-    - `fullnode.yaml`
-    - `genesis.blob`
-    - `waypoint.txt`
+   - `validator.yaml`
+   - `fullnode.yaml`
+   - `genesis.blob`
+   - `waypoint.txt`
 
-7.  Next, copy the `validator.yaml` and `fullnode.yaml` template files (that were just downloaded) into the
-    `~/$WORKSPACE/config/` directory. This can be done by running the following commands:
+7. 接下来，将刚刚下载的 `validator.yaml` 和 `fullnode.yaml` 模板文件复制到
+   `~/$WORKSPACE/config/` 目录中。这可以通过运行以下命令完成：
 
-    ```bash filename="Terminal"
-    mkdir ~/$WORKSPACE/config
-    cp validator.yaml ~/$WORKSPACE/config/validator.yaml
-    cp fullnode.yaml ~/$WORKSPACE/config/fullnode.yaml
-    ```
+   ```bash filename="Terminal"
+   mkdir ~/$WORKSPACE/config
+   cp validator.yaml ~/$WORKSPACE/config/validator.yaml
+   cp fullnode.yaml ~/$WORKSPACE/config/fullnode.yaml
+   ```
 
-    These will be the primary configuration files for your validator and VFN, respectively.
+   这些将分别是您的验证器和 VFN 的主要配置文件。
 
-8.  Now, modify the `validator.yaml` and `fullnode.yaml` template files to contain the appropriate information
-    and working directories for your validator and VFN.
+8. 现在，修改 `validator.yaml` 和 `fullnode.yaml` 模板文件以包含适用于您的验证器和 VFN 的信息和工作目录。
 
-    For the `validator.yaml` file, you will need to modify the following fields:
+   对于 `validator.yaml` 文件，您需要修改以下字段：
 
-    - `base.data_dir`: The directory where the blockchain data will be stored.
-    - `base.waypoint`: The waypoint for the genesis transaction on the network you are connecting to.
-    - `consensus.initial_safety_rules_config`: The waypoint for the genesis transaction on the network you are connecting to,
-      as well as the `validator-identity.yaml` file location.
-    - `execution.genesis_file_location`: The genesis blob for the network you are connecting to.
-    - `validator_network.identity`: The `validator-identity.yaml` file location.
+   - `base.data_dir`：区块链数据将存储在此目录。
+   - `base.waypoint`：您连接的网络上创世交易的路标。
+   - `consensus.initial_safety_rules_config`：您连接的网络上创世交易的路标文件，以及 `validator-identity.yaml` 文件位置。
+   - `execution.genesis_file_location`：您连接的网络的创世区块（fenesis blob）。
+   - `validator_network.identity`：`validator-identity.yaml` 文件位置。
 
-    For the `fullnode.yaml` file, you will need to modify the following fields:
+   对于 `fullnode.yaml` 文件，您需要修改以下字段：
 
-    - `base.data_dir`: The directory where the blockchain data will be stored.
-    - `base.waypoint`: The waypoint for the genesis transaction on the network you are connecting to.
-    - `execution.genesis_file_location`: The genesis blob for the network you are connecting to.
-    - `full_node_networks`: - The `public` network will need to be updated with the `validator-full-node-identity.yaml`
-      file location. - The `vfn` network will need to be updated with the correct IP address or DNS address of the validator.
-      For example, if you are using IP addresses, you will need to update the `addresses` field as follows:
+   - `base.data_dir`：区块链数据将存储在此目录。
+   - `base.waypoint`：您连接的网络上创世交易的航点。
+   - `execution.genesis_file_location`：您连接的网络的创世 blob。
+   - `full_node_networks`：- 需要更新 `public` 网络与 `validator-full-node-identity.yaml` 文件位置。 - 需要更新 `vfn` 网络与验证器的正确 IP 地址或 DNS 地址。例如，如果您使用 IP 地址，您需要按如下方式更新 `addresses` 字段：
 
-      ```yaml filename="fullnode.yaml"
-      ---
-      addresses:
-        - "/ip4/100.100.100.100/tcp/6181/noise-ik/..." # Set the IP Address of the validator
-      ```
+     ```yaml filename="fullnode.yaml"
+     ---
+     addresses:
+       - "/ip4/100.100.100.100/tcp/6181/noise-ik/..." # 设置验证器的 IP 地址
+     ```
 
-      Otherwise, if you are using DNS addresses, you will need to update the `addresses` field as follows:
+     否则，如果您使用 DNS 地址，您需要按如下方式更新 `addresses` 字段：
 
-      ```yaml filename="fullnode.yaml"
-      ---
-      addresses:
-        - "/dns/example.com/tcp/6181/noise-ik/..." # Set the DNS Address of the validator
-      ```
+     ```yaml filename="fullnode.yaml"
+     ---
+     addresses:
+       - "/dns/example.com/tcp/6181/noise-ik/..." # 设置验证器的 DNS 地址
+     ```
 
-9.  To recap, in your working directory (`~/$WORKSPACE`), you should have a list of files:
+9. 总之，在您的工作目录（`~/$WORKSPACE`）中，您应该有以下文件列表：
 
-    - `config` folder containing:
-      - `validator.yaml`: The validator config file.
-      - `fullnode.yaml`: The VFN config file.
-    - `keys` folder containing:
-      - `public-keys.yaml`: Public keys for both nodes.
-      - `private-keys.yaml`: Private keys for both nodes.
-      - `validator-identity.yaml`: Key and account information for the validator.
-      - `validator-full-node-identity.yaml`: Key and account information for the VFN.
-    - `$username` folder containing:
-      - `owner.yaml`: The owner, operator and voter mappings.
-      - `operator.yaml`: Validator and VFN operator information.
-    - `waypoint.txt`: The waypoint for the genesis transaction on the network you are connecting to.
-    - `genesis.blob` The genesis blob for the network you are connecting to.
+   - `config` 文件夹包含：
+     - `validator.yaml`：验证器配置文件。
+     - `fullnode.yaml`：VFN 配置文件。
+   - `keys` 文件夹包含：
+     - `public-keys.yaml`：两个节点的公钥。
+     - `private-keys.yaml`：两个节点的私钥。
+     - `validator-identity.yaml`：验证器的密钥和账户信息。
+     - `validator-full-node-identity.yaml`：VFN 的密钥和账户信息。
+   - `$username` 文件夹包含：
+     - `owner.yaml`：所有者、运营者和投票者映射关系。
+     - `operator.yaml`：验证器和 VFN 运营者信息。
+   - `waypoint.txt`：您连接的网络上创世交易的路标文件。
+   - `genesis.blob`：您连接的网络的创世区块（genesis blob）。
 
-10. Now that you have set up your configuration files, you can start your validator and VFN.
-    To start your validator, run the following commands, with the paths assuming you are in the root of the `aptos-core` directory:
+10. 现在您已经设置好了配置文件，可以启动您的验证器和 VFN 了。要启动您的验证器，请在 `aptos-core` 目录根目录下运行以下命令：
 
     ```bash filename="Terminal"
     cargo clean
@@ -186,18 +174,14 @@ when you build the binary, and download the correct genesis and waypoint files f
     aptos-node -f ~/$WORKSPACE/config/validator.yaml
     ```
 
-    To start your VFN, run the following commands on a separate, dedicated VFN machine. You will need to download the
-    `aptos-core` source code and build the binary on the VFN machine. Likewise, you will need to copy across
-    the keys and configuration files from the validator machine.
+    要在单独的专用 VFN 机器上启动您的 VFN，请在该机器上下载 `aptos-core` 源代码并构建二进制文件。同样，您需要从验证器机器复制密钥和配置文件。
 
     <Callout type="warning">
-    **VFN identity** <br />
-    You should copy the keys and configuration
-    files across to the VFN machine from the working location where they were generated. Do not attempt to generate
-    another set of keys or files for the VFN, as these will not be recognized by the network.
+    **VFN 身份** <br />
+    你应该将密钥和配置文件从它们初始生成的位置复制到 VFN 服务器的相应目录中。不要为 VFN 重新生成一套新的密钥或配置文件，否则网络将无法识别它们。
     </Callout>
 
-    Start your VFN by running the following commands, with the paths assuming you are in the root of the `aptos-core` directory:
+    通过在 `aptos-core` 目录的根目录下运行以下命令来启动您的 VFN：
 
     ```bash filename="Terminal"
     cargo clean
@@ -207,20 +191,17 @@ when you build the binary, and download the correct genesis and waypoint files f
     ```
 
     <Callout type="warning">
-    **Next steps** <br />
-    You have now completed setting up your validator and VFN using source code. However, your nodes will not be able to connect
-    to the Aptos network just yet.
+    **下一步** <br />
+    您现在已经使用源代码完成了验证器和 VFN 的设置。然而，您的节点还不能连接到 Aptos 网络。
     </Callout>
 
-### (Optional) Running as a Service
+### （可选）作为服务运行
 
-If you want to run `aptos-node` as a service, you can set it up to run as a service controlled by `systemctl`.
-This is optional, and can be done using the service template below. You will need to modify the template
-to match your environment and configuration.
+如果您想将 `aptos-node` 作为服务运行，您可以设置它作为由 `systemctl` 控制的服务运行。这是可选的，可以使用下面的服务模板完成。您需要修改模板以匹配您的环境和配置。
 
 ```bash filename="/etc/systemd/system/aptos-node.service"
 [Unit]
-Description=Aptos Node Service
+Description=Aptos Node 服务
 
 [Service]
 User=nodeuser
@@ -243,7 +224,6 @@ SyslogIdentifier=aptos-node
 WantedBy=multi-user.target
 ```
 
-## Connecting to the Aptos Network
+## 连接到 Aptos 网络
 
-You have now completed setting up your validator and VFN using source code. Proceed to [Connect Nodes](../connect-nodes.mdx)
-for the next steps.
+您现在已经使用源代码完成了验证器和 VFN 的设置。请继续进行 [连接节点](../connect-nodes.mdx) 的操作。

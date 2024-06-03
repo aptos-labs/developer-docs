@@ -1,45 +1,45 @@
 ---
-title: "Staking Pool Voter"
+
+title: "质押池投票者"
+
 ---
 
-# Staking Pool Voter
+# 质押池投票者
 
-If you are a [staking pool](../../../blockchain/staking.mdx) voter, then we recommend strongly that you do not store your Aptos voter keys with a
-custodian before the custodian supports this function. Until then, we suggest you store your voter keys in an Aptos
-wallet like [Petra](https://petra.app/).
+如果您是[质押池](../../../blockchain/staking.mdx)的投票者，我们强烈建议您在委托人支持此功能之前，不要将您的 Aptos 投票密钥存储在委托人处。在那之前，我们建议您将投票密钥存储在像 [Petra](https://petra.app/) 这样的 Aptos 钱包中。
 
-This document describes how to perform staking voter operations while in the Aptos mainnet using an Aptos wallet.
+本文档描述了如何使用 Aptos 钱包以及在 Aptos 主网上执行质押投票的操作。
 
-### Using Governance UI
+### 使用治理 UI
 
-To participate as a voter in the Aptos governance, follow these steps:
+要作为投票者参与 Aptos 治理，请按照以下步骤操作：
 
-1. Go to the [Proposals section](https://governance.aptosfoundation.org/) of the Aptos Governance page.
-2. Connect your wallet by clicking on **CONNECT WALLET** (top-right).
-3. Make sure that wallet is set to connect to Mainnet.
-4. View the proposals. When you are ready to vote on a proposal, click on the proposal and vote.
-5. You will see a green bar indicating that the voting transaction is successful.
+1. 转到 Aptos 治理页面的[提案部分](https://governance.aptosfoundation.org/)。
+2. 点击页面右上角的**CONNECT WALLET**连接您的钱包。
+3. 确保钱包设置为连接到主网（mainnet）。
+4. 查看提案。当您准备好对提案进行投票时，点击提案并投票。
+5. 您将看到一个绿色条，表示投票交易成功。
 
-### Using the Aptos CLI
+### 使用 Aptos CLI
 
-1. Get your stake pool info using: `aptos node get-stake-pool --owner-address <owner-address> --url <REST API for the network>`.
-2. To see the list of proposals, execute: `aptos governance list-proposals --url https://api.mainnet.aptoslabs.com`.
-3. To set up your voter profile, run: `aptos init`.
-4. To vote on a proposal, execute: `aptos governance vote --proposal-id <PROPOSAL_ID> --pool-address <POOL_ADDRESS> --url <URL> --profile <profile>`.
+1. 使用以下命令获取您的质押池信息：`aptos node get-stake-pool --owner-address <owner-address> --url <REST API for the network>`。
+2. 要查看提案列表，请执行：`aptos governance list-proposals --url https://api.mainnet.aptoslabs.com`。
+3. 设置您的投票者配置文件，运行：`aptos init`。
+4. 要对提案进行投票，请执行：`aptos governance vote --proposal-id <PROPOSAL_ID> --pool-address <POOL_ADDRESS> --url <URL> --profile <profile>`。
 
-## Delegation Pool Voter
+## 委托池投票者
 
-If you staked to a [delegation pool](../../../blockchain/delegated-staking.mdx), you can vote proportional to your stake amount in the delegation pool or delegate your votes to another voter address.
+如果您在[委托池](../../../blockchain/delegated-staking.mdx)中进行了质押，您可以根据您在委托池中的质押金额比例进行投票，或者将您的投票权委托给另一个投票者地址。
 
-To participate as a voter, follow the steps below:
+要作为投票者参与，请按照以下步骤操作：
 
-1. Get your delegation pool address from the [Aptos Explorer page](https://explorer.aptoslabs.com/validators/delegation?network=mainnet).
-2. To see the list of proposals, execute: `aptos governance list-proposals --url https://api.mainnet.aptoslabs.com`.
-3. To set up your voter profile, run: `aptos init`.
-4. To vote on a proposal, execute: `aptos move run --function-id 0x1::delegation_pool::vote --args address:<pool-address> u64:<proposal-id> u64:<voting-power> bool:<true or false>`.
+1. 从 [Aptos Explorer 页面](https://explorer.aptoslabs.com/validators/delegation?network=mainnet)获取您的委托池地址。
+2. 要查看提案列表，请执行：`aptos governance list-proposals --url https://api.mainnet.aptoslabs.com`。
+3. 设置您的投票者配置文件，运行：`aptos init`。
+4. 要对提案进行投票，请执行：`aptos move run --function-id 0x1::delegation_pool::vote --args address:<pool-address> u64:<proposal-id> u64:<voting-power> bool:<true or false>`。
 
-To delegate your voting power, follow the steps below:
+要委托您的投票权，请按照以下步骤操作：
 
-1. Get your delegation pool address from the [Aptos Explorer page](https://explorer.aptoslabs.com/validators/delegation?network=mainnet).
-2. To set up your voter profile, run: `aptos init`.
-3. To delegate voting power, run: `aptos move run --function-id 0x1::delegation_pool::delegate_voting_power --args address:<pool-address> address:<delegated-voter-address>`.
+1. 从 [Aptos Explorer 页面](https://explorer.aptoslabs.com/validators/delegation?network=mainnet)获取您的委托池地址。
+2. 设置您的投票者配置文件，运行：`aptos init`。
+3. 要委托投票权，请运行：`aptos move run --function-id 0x1::delegation_pool::delegate_voting_power --args address:<pool-address> address:<delegated-voter-address>`。
