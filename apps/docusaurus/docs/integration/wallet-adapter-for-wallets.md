@@ -164,7 +164,7 @@ If your wallet supports the AIP-62 Standard, you should be able to include it wi
 
 ### Is your wallet a chrome extension wallet?
 
-If your wallet is a chrome extension based wallet, please open up a PR against the [aptos-wallet-adapter](https://github.com/aptos-labs/aptos-wallet-adapter) repo and add your wallet to the [Adapter Wallet Registry](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/registry.ts#L15) so the tool can detect the wallet even if it is not istalled on the user machine
+If your wallet is a chrome extension based wallet, please open up a PR against the [aptos-wallet-adapter](https://github.com/aptos-labs/aptos-wallet-adapter) repo and add your wallet to the [Adapter Wallet Registry](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/registry.ts#L15) so the tool can detect the wallet even if it is not installed on the user machine
 
 ### Is your wallet a SDK (npm package) wallet?
 
