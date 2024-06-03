@@ -18,7 +18,7 @@ Any transaction execution on the Aptos blockchain requires a processing fee. As 
 
 - This covers the cost to persistently store validated record in the distributed blockchain storage.
 - It is measured in fixed APT prices, so the permanent storage cost stays stable even as the gas unit price fluctuates with the network's transient load.
-- The storage fee can be refunded when the allocated storage space is deleted. The refund amount may be full or partial, based on the size and duration of the storage used.
+- - The storage fee can be refunded when the allocated storage slot is deleted. Currently, the network is configured to refund the entirety of the storage fee paid over the lifetime of a state storage slot.
 - To keep system implementation simple, this portion of gas is burned and minted again upon refund.
 
 <Callout type="info">
@@ -123,14 +123,11 @@ There also exists some global per-category limits:
 
 ## Calculating Storage Fees
 
-The storage fee for a transaction is calculated based on the following factors:
+The storage fee for a transaction is charged according to the number of new slots allocated in the global state and the size increase in the existing slots.
 
-1. The size of the transaction itself
-2. The number of new storage slots used and bytes written
-3. The events emitted
-   For details, see [How Base Gas Works](base-gas.mdx).
+There are some nuances with regard to price changing and legacy slots which didn't pay for the size of the slot below a historical "free quota". Refer to [AIP-65](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-65.md#specification) for more details.
 
-It should be noted that due to some backward compatibility reasons, the total storage fee of a transaction is currently presented to the client as part of the total `gas_used`. This means, this amount could vary based on the gas unit price even for the same transaction.
+It should also be noted that due to some backward compatibility reasons, the total storage fee of a transaction is currently presented to the client as part of the total `gas_used`. This means, this amount could vary based on the gas unit price even for the same transaction.
 
 Here is an example. Suppose we have a transaction that costs `100` gas units in execution & IO, and `5000` Octa in storage fees. The network will show that you have used
 
@@ -141,7 +138,7 @@ We are aware of the confusion this might create, and plan to present these as se
 
 ## Calculating Storage Deletion Refund
 
-If a transaction deletes state items, a refund is issued to the transaction payer for the released storage slots. Currently, a full refund is issued for the slot's fee, excluding any fees for excess bytes beyond a set quota (e.g., 1KB). However, fees for event emissions are not refundable.
+If a transaction deletes state items, a refund is issued to the transaction payer for the released storage slots. Currently, a full refund is issued -- that is, all storage fee paid for the slot and bytes of the item over the lifetime of it.
 
 The refund amount is denominated in APT and is not converted to gas units or included in the total `gas_used`. Instead, this refund amount is specifically detailed in the `storage_fee_refund_octas` field of the [`FeeStatement`](#the-fee-statement). As a result, the transaction's net effect on the payer's APT balance is determined by `gas_used * gas_unit_price - storage_refund`. If the result is positive, there is a deduction from the account balance; if negative, there is a deposit.
 
