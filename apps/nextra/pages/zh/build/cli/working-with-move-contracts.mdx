@@ -1,69 +1,75 @@
-import { Callout } from 'nextra/components'
+---
 
-# Working With Move Contracts
+title: "关于 Move 合约的工作"
 
-The Aptos CLI is mostly used to compile, test, and formally verify Move contracts. If you have not installed the Aptos CLI yet, you can do so by following the steps here [Install the Aptos CLI](../cli#-install-the-aptos-cli).
+---
 
-You can jump to specific sections by using the table of contents on the right.
+import {Callout} from 'nextra/components'
 
-To see how to chain together Move contracts on-chain using the CLI, you can follow this ["CLI Arguments" tutorial](working-with-move-contracts/arguments-in-json-tutorial.mdx).
+# 使用 Move 合约
+
+Aptos CLI 主要被用来编译、测试以及对 Move 合约进行形式化验证工作。如果你尚未安装 Aptos CLI，可以按照[安装 Aptos CLI](../cli#-install-the-aptos-cli)提供的步骤进行安装。
+
+您可以通过右侧的目录跳转到特定部分。
+
+要了解如何使用 CLI 在链上链接 Move 合约，可以按照这个[“CLI 参数”教程](working-with-move-contracts/arguments-in-json-tutorial.mdx)。
 
 <Callout type="info" emoji="ℹ️">
-Throughout this document there are parts of commands you will have to modify to fit your situation. Those variables will be wrapped in triangle brackets `<like this>`.
+在本文档中，有些命令部分需要您修改以适应您的情况。这些变量将用三角括号`<像这样>`包裹起来。
 </Callout>
 
-## 1. Compiling Move
+## 1. 编译 Move
 
-You can compile a Move package by running:
+您可以通过运行以下命令来编译 Move 包：
 
 ```bash filename="Terminal"
 aptos move compile --package-dir <your-package-directory>
 ```
 
 <Callout type="info" emoji="ℹ️">
-The package directory is the folder which contains the `Move.toml` file.
+包目录是包含 `Move.toml` 文件的文件夹。
 </Callout>
 
-Based on the settings in your `Move.toml` file, you may need to pass in additional information to that compile command.
+根据您的 `Move.toml` 文件中的配置，您可能需要向该编译命令传递额外参数（information）。
 
-For example, if you look at the [hello_blockchain example Move contract](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain), in the `Move.toml` file it specifies a variable named address called `hello_blockchain`.
+例如，如果您查看[hello_blockchain 示例 Move 合约](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)，在`Move.toml`文件中它指定了一个名为`hello_blockchain`的变量。
 
 ```toml filename="Move.toml"
 [addresses]
 hello_blockchain = "_"
 ```
 
-So, to compile this, you will need to pass in the value for `hello_blockchain` with the `--named-addresses` parameter.
+因此，要编译这个，您需要使用 `--named-addresses` 参数传递 `hello_blockchain` 的值。
 
 ```bash filename="Terminal"
 aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=superuser
 ```
 
-You can learn more about optional parameters when compiling Move contracts by running `aptos move compile --help`.
+您可以通过运行 `aptos move compile --help` 了解更多关于编译 Move 合约时的可选参数。
 
-## 2. Unit Testing Move Contracts
+## 2. Move 合约的单元测试
 
-The Aptos CLI can also be used to compile and run unit tests locally by running:
+Aptos CLI 还可以用来编译并在本地运行单元测试：
 
 ```bash filename="Terminal"
-aptos move test --package-dir <your-package-directory>
+aptos move test --package-dir <您的包目录>
 ```
 
-This command both compiles and runs tests, so it needs all the same optional parameters you use when compiling.
+此命令既编译又运行测试，因此它需要使用与编译时相同的所有可选参数。
 
-You can learn more about the optional parameters for testing move contracts by running `aptos move test --help`.
+您可以通过运行 `aptos move test --help` 了解更多关于测试 Move 合约的可选参数。
 
-### Printing Debugging Information
+### 打印调试信息
 
-When writing tests, it can be helpful to print out debug information or stack traces. You can do that by using `debug::print` and `debug::print_stack_trace` to print information when you use `aptos move test`. See an example of how they are used in [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move).
+在编写测试时，打印调试信息或堆栈跟踪可能会很有帮助。您可以通过使用 `debug::print` 和 `debug::print_stack_trace` 函数在合约中标记打印调试内容，然后在命令行使用 `aptos move test` 打印调试信息。在[DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move)可以查看如何使用示例。
 
-To see the output of testing [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move)’s package:
+如果要查看测试[DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move)包的输出，请按照以下方式操作：
 
-1. Clone `[aptos-core](https://github.com/aptos-labs/aptos-core)`.
-2. Navigate to the [debug-move-example](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos/debug-move-example) by running `cd crates/aptos/debug-move-example`.
-3. Run `aptos move test`.
+1. 克隆 `[aptos-core](https://github.com/aptos-labs/aptos-core)`。
+2. 通过运行 `cd crates/aptos/debug-move-example` 进入到 [debug-move-example](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos/debug-move-example)。
+3. 然后运行 `aptos move test`。
 
-You should see:
+您应该看到：
 
 ```bash filename="Terminal"
 Running Move unit tests
@@ -85,65 +91,69 @@ Call Stack:
 Operand Stack:
 ```
 
-For more on how to write unit tests with Move, follow this [Move tutorial](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial) (step 2 focuses on unit tests).
+有关如何使用 Move 编写单元测试的更多信息，请按照这个 [Move 教程](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial)（第 2 步重点介绍了单元测试）。
 
-## 3. Generating Test Coverage Reports
+## 3. 生成测试覆盖率报告
 
-The Aptos CLI can be used to analyze and improve the testing of your Move modules. To use this feature:
+Aptos CLI 可用于分析和改进您的 Move 模块的测试。要使用此功能：
 
-To see the code coverage of your tests run the following command from your Move package’s directory:
+要从您的 Move 包目录运行测试覆盖率，请运行以下命令：
 
 ```bash filename="Terminal"
 aptos move test --coverage
 ```
 
-If you would like to focus your coverage down to specific packages, you can do so with the `--filter` option. To narrow even further to specific Move modules, use the `--module` parameter.
+如果您希望将覆盖范围缩小到指定的包，可以使用 `--filter` 选项。要进一步缩小到指定的 Move 模块，请使用 `--module` 参数。
 
-For more detailed / advanced coverage information (such as your test coverage in the compiled bytecode) you can run `aptos move coverage` . With that command, the CLI will prompt you for more details on what specifically you would like more coverage information about.
+有关更详细 / 高级的覆盖信息（例如编译字节码中的测试覆盖率），您可以运行 `aptos move coverage`。使用该命令时，CLI 将提示您提供更多关于您希望获得更详细覆盖信息的具体内容。
 
-You can learn more about optional parameters for test coverage by running `aptos move test --help` and `aptos move coverage --help`.
+您可以通过运行 `aptos move test --help` 和 `aptos move coverage --help` 了解更多关于测试覆盖率的可选参数。
 
-## 4. Publishing Move Contracts
+## 4. 发布 Move 合约
 
-To publish a Move contract, you will need to run:
+要发布 Move 合约，您需要运行：
 
 ```bash filename="Terminal"
-aptos move publish --package-dir <your-package-directory>
+aptos move publish --package-dir <您的包目录>
 ```
 
-Note that when you are publishing on the main network, the credentials you pass into optional parameters like `--named-addresses` will need to reflect accounts on that network instead of test credentials.
+请注意，当您在主网上发布时，您传递到可选参数如 `--named-addresses` 中的凭据需要反映该网络上的账户，而不是测试凭据。
 
-The package will be published to your default profile in the CLI. You can override that to specify which account to publish to using `--profile` in the command. To generate a new profile for a specific account, use `aptos init --profile <name_of_profile>` and follow the prompts.
+请注意，在主网络发布时，您通过可选参数传入的账户信息（如 `--named-addresses`）必须是主网络上的实际账户，不能使用测试环境下的账户。
 
-Please also note that when publishing Move modules, if multiple modules are in one package, then all modules in that package must use the same account. If they use different accounts, then the publishing will fail at the transaction level.
+包将发布到 CLI 中的默认配置文件。您可以使用命令中的 `--profile` 覆盖它以指定要发布到哪个账户。要为特定账户生成新的配置文件，请使用 `aptos init --profile <name_of_profile>` 并按照提示操作。
 
-You can estimate the gas fees associated with publishing your Move contract by using the [Gas Profiler](../../move/move-on-aptos/gas-profiling.mdx). {/* TODO: Fix this link */}
+另外请注意，当发布 Move 模块时，如果一个包中有多个模块，则该包中的所有模块必须使用相同的账户。如果它们使用不同的账户，则发布将在交易级别失败。
+
+另外，请注意，在发布 Move 模块的过程中，若一个软件包中有多个模块，则这些模块都必需使用同一个账户进行发布。不然，如果使用不同账户，则该软件包的发布操作将在交易处理的阶段遭遇失败。
+
+您可以使用 [Gas Profiler](../../move/move-on-aptos/gas-profiling.mdx)估算与发布 Move 合约相关的 Gas 费用。{/* TODO: 修复这个链接 */}
 
 <Callout type="warning">
-By default Move contracts publish their source code. To avoid publishing with source code, publish with the `--included-artifacts none` argument.
+默认情况下，Move 合约会发布其源代码。要避免发布源代码，请使用 `--included-artifacts none` 参数发布。
 
-Since the Aptos blockchain is inherently open by design, note that even without source access it is possible to regenerate Move source from published Move bytecode.
+由于 Aptos 区块链的设计本质上是开源的，请注意，即使没有源代码访问权限，也可以从发布的 Move 字节码重新生成 Move 源代码。
 </Callout>
 
-## 5. Running Published Contracts
+## 5. 运行已发布合约
 
-Now that you have published your Move package, you can run it directly from the CLI.
+现在您已经发布了 Move 包，您可以直接从 CLI 运行它。
 
-You will first need to construct your `function-id` by combining:
+您首先需要通过组合来构建您的`function-id`：
 
 ```jsx
 <the-address-you-published-to>::<module_name>::<function_name>
 ```
 
-You can then pass in args by using the `--args` parameter.
+然后，您可以使用 `--args` 参数传递参数。
 
-As an example, if you were to have published the [hello_blockchain example package](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) to an account with an address `b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb` you could run its `set_message` function via the following command:
+例如，如果您已经发布了 [hello_blockchain 示例包](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)到一个地址为 `b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb` 的账户，您可以通过以下命令运行它的 `set_message` 函数：
 
 ```bash filename="Terminal"
 aptos move run --function-id 0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb::message::set_message --args string:hello!
 ```
 
-Which should result in:
+结果应该是：
 
 ```json
 {
@@ -221,16 +231,16 @@ Which should result in:
 }
 ```
 
-## 6. (Optional) Formally Verifying Move Scripts
+## 6. （可选）形式化验证 Move 脚本
 
-For cases where you want to guarantee that your code works as expected beyond unit testing, you can use the [Move Prover](../../smart-contracts/learn-move/prover.mdx) to formally verify your Move contract code.
+对于您希望在单元测试之外保证代码按预期工作的情况，您可以使用 [Move Prover](../../smart-contracts/learn-move/prover.mdx)来形式化验证您的 Move 合约代码。
 
-You can install the Move Prover by following [these steps](./setup-cli/install-move-prover.mdx).
+您可以通过按照[这些步骤](./setup-cli/install-move-prover.mdx)来安装 Move Prover。
 
-Once you have installed the Move Prover, you can use it from the Aptos CLI by running:
+安装 Move Prover 后，您可以通过运行来使用它从 Aptos CLI：
 
 ```bash filename="Terminal"
 aptos move prove --package-dir <your-package-directory>
 ```
 
-To learn how to formally verify your code, please follow the in-depth Move tutorial [here](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial) (step 7 and 8 cover how to use the Move Prover and write formal specifications in the example code).
+想要学习如何对你的代码进行形式化验证，请参考[深入学习 Move 教程](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial)中的内容（特别是第 7 步和第 8 步，其中介绍了如何运用 Move Prover 工具并在示例代码中撰写正式规范）。

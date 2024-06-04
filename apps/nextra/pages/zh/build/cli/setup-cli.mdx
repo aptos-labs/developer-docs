@@ -1,18 +1,24 @@
-import { Callout } from 'nextra/components'
+---
 
-# Setup CLI Initial Configuration
+title: "设置 CLI 初始配置"
 
-If you are using the CLI to try things out on-chain, you will need to configure the network, faucet, and credentials you want the CLI to use.
+---
 
-This makes using the CLI easier and more secure as you will not be forced to repeatedly copy addresses or private keys.
+import {Callout} from 'nextra/components'
+
+# 设置 CLI 初始配置
+
+如果您使用 CLI 在链上尝试操作，您需要配置网络、水龙头和凭据，以便 CLI 使用。
+
+这使得使用 CLI 更加方便和安全，因为您不会被迫重复复制地址或私钥。
 
 <Callout type="warning">
-If you still need to install the CLI, follow [these steps](install-cli/install-cli-specific-version.mdx).
+如果您仍然需要安装CLI，请按照[这些步骤](install-cli/install-cli-specific-version.mdx)。
 </Callout>
 
-1. Run `aptos init` and follow the instructions in the command line.
-  <Callout type="info" emoji="ℹ️">
-   To use default settings, you can provide no input and just press "Enter". For example:
+1. 运行 `aptos init` 并按照命令行中的指示操作。
+   <Callout type="info" emoji="ℹ️">
+   如果要使用默认设置，您可以不提供任何输入，只需按 "Enter"。例如：
    </Callout>
 
    ```bash filename="Terminal"
@@ -32,20 +38,21 @@ If you still need to install the CLI, follow [these steps](install-cli/install-c
    Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696!  Run `aptos help` for more information about commands
 
    {
-     "Result": "Success"
+      "Result": "Success"
    }
    ```
 
-2. Later, if you want to update these settings, you can do so by running `aptos init` again.
-3. The rest of these configuration steps are optional / quality of life. To continue to use the CLI for your specific use case, follow the [usage guide here](../cli#%EF%B8%8F-using-the-aptos-cli).
+2. 稍后，如果您想更新这些设置，可以通过再次运行 `aptos init` 来完成。
+3. 这些额外的配置步骤不是必需的，主要是为了改善用户体验。若想根据您的需求继续使用命令行界面（CLI），请参照这里的使用指南。
 
-## (Optional) Creating Named Configurations (Profiles)
+## （可选）创建命名配置（配置文件）
 
-For testing more complicated scenarios, you will often want multiple accounts on-chain. One way to do this is to create a named configuration which we call a profile.
+对于测试更复杂的情况，您通常希望在链上有多个账户。实现此目的的一种方法是创建一个我们称为配置文件的命名配置。
+在进行复杂场景测试时，你往往需要创建多个区块链账户。为此，你可以为此创建一个配置文件。
 
-To create a profile, run `aptos init --profile <name_of_profile>`. The configuration you generate will be usable when calling CLI commands as replacements for arguments.
+要创建一个配置文件，运行 `aptos init --profile <配置文件名称>`。您生成的配置将在调用 CLI 命令时用作参数的替代品。
 
-For example:
+例如：
 
 ```bash filename="Terminal"
 aptos init --profile bob
@@ -56,37 +63,37 @@ aptos account fund-with-faucet --profile bob
 }
 ```
 
-## (Optional) Setting Up Shell Completion
+## （可选）设置 Shell 补全
 
-One quality of life feature you can enable is shell auto-completions.
+您可以启用的一项生活质量功能是 shell 自动补全。
 
-1. Determine which shell you are using (you can run `echo $SHELL` if you are unsure).
-2. Look up where configuration files for shell completions go for that shell (it varies from shell to shell). The supported shells are `[bash, zsh, fish, PowerShell, elvish]`.
-3. Run the following command with your specific shell and the output file for completions using your shell:
+1. 确定您正在使用哪个 shell（如果您不确定，可以运行 `echo $SHELL`）。
+2. 查找该 shell 的 shell 补全配置文件的位置（每个 shell 都不同）。支持补全的 shell 是 `[bash, zsh, fish, PowerShell, elvish]`。
+3. 结合您所使用的 Shell 环境及相应的补全输出文件来执行以下命令：
 
 ```bash filename="Terminal"
-aptos config generate-shell-completions --shell <YOUR_SHELL_HERE> --output-file <OUTPUT_DESTINATION_FOR_YOUR_SHELL>
+aptos config generate-shell-completions --shell <YOUR_SHELL_HERE> --output-file <YOUR_SHELL_OUTPUT_DESTINATION>
 ```
 
-Example command for [`oh my zsh`](https://ohmyz.sh/):
+[`oh my zsh`](https://ohmyz.sh/) 的示例命令：
 
 ```bash filename="Terminal"
 aptos config generate-shell-completions --shell zsh --output-file ~/.oh-my-zsh/completions/_aptos
 ```
 
-## (Optional) Global Config
+## （可选）全局配置
 
-By default, the CLI will look for a configuration in `.aptos/config.yaml` in each workspace directory. If you would like to use a shared configuration for all workspaces, you can follow these steps:
+默认情况下，CLI 会在每个工作区目录中的 `.aptos/config.yaml` 查找配置。如果您想为所有工作区使用共享配置，可以按照以下步骤操作：
 
-1. Create a folder in your home directory called `.aptos` (so it has the path `~/.aptos`).
-2. Create a yaml file inside `.aptos` called `global_config.yaml`.
-3. Run the command:
+1. 在您的主目录中创建一个名为 `.aptos` 的文件夹（因此路径为 `~/.aptos`）。
+2. 在 `.aptos` 内部创建一个名为 `global_config.yaml` 的 yaml 文件。
+3. 运行命令：
 
 ```bash filename="Terminal"
 aptos config set-global-config --config-type global
 ```
 
-You should see:
+您应该看到：
 
 ```json
 {
