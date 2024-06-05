@@ -12,7 +12,65 @@ This guide addresses this gap by detailing common anti-patterns and their secure
 
 ---
 
-### Object Access Control
+### Object Ownership Check
+
+Every `Object<T>` can be accessed by anyone, which means any `Object<T>` can be passed to any function, even if the caller doesn't own it.
+It's important to verify that the `signer` is the rightful owner of the object.
+
+#### Example Insecure Code
+
+In this example, a user must make a payment before being able to perform actions within the module. The user need to invoke `buy_action` to purchase an `Object<Action>`, which they can then use for executing operations later on.
+
+```move
+module user::obj{
+
+    public entry fun buy_action(user:&signer,amount_of_action: u64){
+        let price = calc_price(amount_of_action);
+        deposit(user,price);
+
+        let user_address = address_of(user);
+        let constructor_ref = object::create_object(user_address);
+        let object_signer = object::generate_signer(&constructor_ref);
+        move_to(&object_signer, Action {amount_of_action });
+    }
+
+    public entry fun perform_action(user:&signer,obj: Object<Action>){
+        // Perform the action
+        [...]
+    }
+
+}
+```
+
+In this insecure example, `perform_action` does not verify if the user actually owns `obj` passed to it.
+
+#### Example Secure Code
+
+```move
+module user::obj{
+
+    public entry fun buy_action(user:&signer,amount_of_action: u64){
+        let price = calc_price(amount_of_action);
+        deposit(user,price);
+
+        let user_address = address_of(user);
+        let constructor_ref = object::create_object(user_address);
+        let object_signer = object::generate_signer(&constructor_ref);
+        move_to(&object_signer, Action {amount_of_action });
+    }
+
+    public entry fun perform_action(user: &signer, obj: Object<Action>){
+        // Ensure the caller owns the object
+        assert!(object::owner(&obj) == address_of(user),ENOT_OWNER);
+
+        // Perform the action
+        [...]
+    }
+
+}
+```
+
+### Global Storage Access Control
 
 Accepting a `&signer` is not always sufficient for access control purposes. Be sure to assert that the signer is the expected account, especially when performing sensitive operations.
 
@@ -589,3 +647,104 @@ public fun main(user: &signer) {
 ### Smart contract publishing key management
 
 Using the same account for testnet and mainnet poses a security risk, as testnet private keys, often stored in less secure environments (ex. laptops), can be more easily exposed or leaked. An attacker that can obtain the private key for the testnet smart contract would be able to upgrade the mainnet one.
+
+## Randomness
+
+---
+
+### Randomness - test-and-abort
+
+If a `public` function directly or indirectly invokes the randomness API, a malicious user can abuse the composability of this function and aborting the transaction if the result is not as desired. This allows the user to keep trying until they achieve a beneficial outcome, undermining the randomness.
+
+#### Example Vulnerable code
+
+```move
+module user::lottery {
+    fun mint_to_user(user: &signer){
+        move_to(address_of(user),WIN{});
+    }
+
+    #[randomness]
+    public entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            mint_to_user(user);
+        }
+    }
+}
+```
+
+In this example, the `play` function is `public`, allowing it to be composed with other modules. A malicious user can invoke this function and then check if they have won. If they have not won, they can abort the transaction and try again.
+
+```move
+module attacker::exploit {
+    public entry fun exploit(attacker: &signer) {
+        @user::lottery::play(attacker);
+        assert!(exists<@user::lottery::WIN>(address_of(attacker)));
+    }
+}
+```
+
+To resolve the possible issue, is sufficient to set the visibility of all functions that invoke the randomness API, either directly or indirectly, to `entry` rather than `public` or `public entry`.
+
+#### Example Secure Code
+
+```move
+module user::lottery {
+    fun mint_to_user(user: &signer){
+        move_to(address_of(user),Object_for_the_winner{});
+    }
+
+    #[randomness]
+    entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            mint_to_user(user);
+        }
+    }
+}
+```
+
+> At Aptos, We are always security-first. During compilation, we ensure that no randomness API is invoked from a public function. However, we still allow users to make this choice by adding the attribute `#[lint::allow_unsafe_randomness]` to the public function.
+
+### Randomness - undergasing
+
+When different code paths in a function consume different amounts of gas, an attacker can manipulate the gas limit to bias the outcome.
+
+If the "lose" path consumes more gas than the "win" path, an attacker can set the gas limit such that the "lose" path will run out of gas. The transaction will be aborted and the user will never lose.
+
+#### Example Vulnerable code
+
+```
+module user::lottery {
+    fun win(user: &signer) {
+        [...]
+    }
+
+    fun lose(user: &signer) {
+        [...]
+    }
+    #[randomness]
+    entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            win(user);
+        } else {
+            lose(user);
+        }
+    }
+}
+```
+
+In this lottery-example, `win` and `lose` consume different amounts of gas.
+If `lose` consumes more gas than `win`, an attacker can set the gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the "lose" path is taken, ensuring that the user never submit a valid transaction for the "lose" path.
+
+#### Example Secure Code
+
+There are different way to secure the code:
+
+1. Make sure better outcomes use more gas.
+2. Allows only admin addresses to invoke randomness API.
+3. Make entry functions work regardless of random outcomes. Avoid immediate actions based on randomness for consistent gas use.
+
+> We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergasing attacks.
