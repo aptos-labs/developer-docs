@@ -1,26 +1,32 @@
-import { Callout } from 'nextra/components'
+---
 
-# Create Test Accounts and Send Transactions From Aptos CLI
+title: "从 Aptos CLI 创建测试账户和发送交易"
+
+---
+
+import {Callout} from 'nextra/components'
+
+# 从 Aptos CLI 创建测试账户并发送交易
 
 <Callout type="info" emoji="ℹ️">
-You can install the Aptos CLI by following [these steps](../../install-cli.mdx) if you have not done so already.
+如果您尚未安装 Aptos CLI，可以按照[这些步骤](../install-cli.mdx)进行安装。
 </Callout>
 
-In general, to make a new account on-chain, you will need to generate keys and then fund the account. On test networks, you can fund a new account by asking a "faucet" account with test Aptos tokens to send them to your account.
+通常，要在链上创建一个新账户，您需要先生成密钥，然后为该账户充值。在测试网络上，您可以通过向持有测试 Aptos token 的“水龙头（faucet）”账户请求，让它将 Token 发送到您的账户来为新账户充值。
 
-Using the CLI, you can generate and fund a test account using:
+使用 CLI，您可以使用以下命令生成并为测试账户注资：
 
 ```bash filename="Terminal"
 aptos init --profile <your-profile-name>
 ```
 
-Once you have a funded account you can send coins between accounts with the `transfer` command like this:
+一旦您拥有了一个有资金的账户，您可以使用 `transfer` 命令在账户之间发送 Coin，如下所示：
 
 ```bash filename="Terminal"
 aptos account transfer --account superuser --amount 100
 ```
 
-You should see a result like:
+您应该会看到类似这样的结果：
 
 ```json filename="Output"
 {
@@ -82,13 +88,13 @@ You should see a result like:
 }
 ```
 
-This can be useful for manual testing of Move contracts or just to try seeing how the chain works in practice.
+这对于手动测试 Move 合约或仅仅尝试了解链在实践中的工作原理非常有用。
 
 <Callout type="info" emoji="ℹ️">
-To have more control over what your generated credentials look like, instead of `aptos init`, you can use:
+如果你希望对生成的凭证（credentials）的具体格式有更精细的控制，可以用以下命令来代替 `aptos init`：
 
 1. `aptos key generate --vanity-prefix 0x<your-prefix>`
 2. `aptos account fund-with-faucet --account <your-newly-generated-account-address>`
 
-Note however that addresses are different than keys.
+但请注意，地址和密钥是不同的。
 </Callout>

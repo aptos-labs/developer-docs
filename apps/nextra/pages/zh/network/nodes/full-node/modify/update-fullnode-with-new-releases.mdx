@@ -28,7 +28,7 @@ import { Callout, Steps } from 'nextra/components';
 
 3.  按照您最初设置时的方式，重新编译二进制文件。
 
-4.  如果您的 PFN 在 `devnet` 上运行，请按照下面的[数据擦除和重置](#devnet-only-data-wipe-and-reset)部分中的附加步骤进行操作。
+4.  如果您的 PFN 在 `devnet` 上运行，请按照下面的[带数据擦除的升级](#带数据擦除的升级仅限-devnet)部分中的附加步骤进行操作。
 
 5.  通过运行与之前相同的部署命令重新启动您的 PFN。例如：
 
@@ -36,7 +36,7 @@ import { Callout, Steps } from 'nextra/components';
     cargo run -p aptos-node --release -- -f ./fullnode.yaml
     ```
 
-### (Devnet) 数据擦除和重置
+### 数据擦除和重置（Devnet） 
 
 <Callout type="warning">
 **仅限 Devnet 擦除**<br />

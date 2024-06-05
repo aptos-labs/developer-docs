@@ -18,13 +18,10 @@ import {Callout, Steps} from 'nextra/components'
 # 启动一个本地网络
 
 <Steps>
-### 确保您已安装 [Aptos CLI](../install-cli.mdx)
+### 确保您已安装 [Aptos CLI](install-cli.mdx)
 ### 确保您已安装 [Docker](https://docs.docker.com/get-docker/)
-   1. 这仅适用于通过运行 Indexer API 创建类似于生产环境的场景。许多下游工具（如Aptos SDK）依赖于Indexer API。
-   2. Docker建议通过 [Docker Desktop](https://www.docker.com/products/docker-desktop/) 安装以获得自动更新。
-
-1.  仅当你需要创建一个与生产环境相似的环境时，运行 Indexer API 才是必需的。诸如 Aptos SDK 之类的许多下游工具都需要依赖 Indexer API 才能正常工作。
-2.  如果你使用 Docker 则建议你通过安装 Docker Desktop 来实现自动更新，以便更便捷地维护和更新。
+   1.  仅当你需要创建一个与生产环境相似的环境时，运行 Indexer API 才是必需的。诸如 Aptos SDK 之类的许多下游工具都需要依赖 Indexer API 才能正常工作。
+   2.  如果你使用 Docker 则建议你通过安装[Docker Desktop](https://www.docker.com/products/docker-desktop/) 来实现自动更新，以便更便捷地维护和更新。
 
 ### 启动 Docker
 
@@ -128,11 +125,11 @@ Unexpected error: Failed to apply pre-run steps for Postgres: Docker is not avai
 
 正如第 4 步中的示例输出所示，一旦本地网络成功运行，您就可以访问以下服务：
 
-- [Node API](../../../network/nodes/aptos-api-spec.mdx)：这是一个直接部署在节点上的 REST API，它允许进行核心的数据写入操作，比如提交交易，同时也支持有限的数据读取操作，例如查询账户资源或 Move 模块的信息。
-- [Indexer API](../../indexer/api.mdx)：这是一个 [GraphQL](https://graphql.org/) API，它提供了丰富的操作，以允许您读取索引了的区块链数据。点击上述的 Indexer API URL，默认是 [http://127.0.0.1:8090](http://127.0.0.1:8090/)，即可打开 Hasura 控制台。这是一个 Web 界面，便于您查询 Indexer GraphQL API。
-- [Transaction Stream Service](../../indexer/txn-stream.mdx)：这是一个通过 Indexer API 实现的 gRPC 交易流。仅当您在开发[自定义处理器](../../indexer/custom-processors.mdx)时，此信息对您才有相关性。
+- [Node API](../../network/nodes/aptos-api-spec.mdx)：这是一个直接部署在节点上的 REST API，它允许进行核心的数据写入操作，比如提交交易，同时也支持有限的数据读取操作，例如查询账户资源或 Move 模块的信息。
+- [Indexer API](../indexer/api.mdx)：这是一个 [GraphQL](https://graphql.org/) API，它提供了丰富的操作，以允许您读取索引了的区块链数据。点击上述的 Indexer API URL，默认是 [http://127.0.0.1:8090](http://127.0.0.1:8090/)，即可打开 Hasura 控制台。这是一个 Web 界面，便于您查询 Indexer GraphQL API。
+- [交易流服务](../indexer/txn-stream.mdx)：这是一个通过 Indexer API 实现的 gRPC 交易流。仅当您在开发[自定义处理器](../../indexer/custom-processors.mdx)时，此信息对您才有相关性。
 - [Postgres](https://www.postgresql.org/)：这是 Indexer 处理器用来存储数据的数据库，而 Indexer API 则从此数据库中读取信息。
-- [Faucet](../../../network/glossary.mdx#faucet)：您可以使用它为您的本地网络中的账户提供资金。
+- [水龙头（Faucet）](../../../network/glossary.mdx#faucet)：您可以使用它为您的本地网络中的账户提供资金。
 
 如果您不想运行网络的任何这些子组件，可以使用一些参数来禁用它们。
 
@@ -179,7 +176,7 @@ const client = new Aptos(config);
 在开发过程中，有时将本地网络重置回初始状态很有帮助，例如：
 
 - 您对 Move 模块进行了不能向后兼容的更改，您希望重新部署它，同时不用重命名它或使用新的账户。
-- 您正在构建一个[自定义索引处理器](../../indexer/custom-processors.mdx)，您希望使用一个全新的网络进行索引。
+- 您正在构建一个[自定义索引处理器](../indexer/custom-processors.mdx)，您希望使用一个全新的网络进行索引。
 - 您想清除所有链上状态，例如账户、对象等。
 
 要开始一个全新的本地网络，请使用 `--force-restart` 标志：

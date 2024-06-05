@@ -114,7 +114,7 @@ Aptos devnet 目前每周重置一次。如果您正在部署 devnet PFN，这�
 
    <Callout type="warning">
    **不想连接到主网？**<br />
-   如果您想连接到其他的网络，如开发网（devnet）和测试网（testnet），您可以通过这个链接找到它们的 `genesis.blob`（创世区块）和 `waypoint.txt`（路标文件）：https://github.com/aptos-labs/aptos-networks。记得为这些网络分别下载 `genesis.blob` 和 `waypoint.txt` 文件，而不是直接使用前面提到的 `curl` 命令中的链接地址。
+   如果您想连接到其他的网络，如开发网（devnet）和测试网（testnet），您可以通过这个链接找到它们的 `genesis.blob`（创世区块）和 `waypoint.txt`（路标文件）：https://github.com/aptos-labs/aptos-networks 。记得为这些网络分别下载 `genesis.blob` 和 `waypoint.txt` 文件，而不是直接使用前面提到的 `curl` 命令中的链接地址。
 
    </Callout>
 
@@ -184,7 +184,7 @@ curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet
 
 <Callout type="warning">
 **不想连接到主网？**<br />
-要连接到其他网络（例如 `devnet` 和 `testnet`），您可以在此处找到创世区块和路标文件 ➜ https://github.com/aptos-labs/aptos-networks。
+要连接到其他网络（例如 `devnet` 和 `testnet`），您可以在此处找到创世区块和路标文件 ➜ https://github.com/aptos-labs/aptos-networks 。
 请确保下载这些网络的 `genesis.blob` 和 `waypoint.txt` ，而不是使用上面 `curl` 命令下载创世区块和路标文件。
 </Callout>
 
@@ -287,8 +287,8 @@ aptos_connections{direction="outbound",network_id="Public",peer_id="aabd651f",ro
 
 如果返回的出站连接数量为`0`，则意味着您的节点无法连接到 Aptos 区块链。如果遇到这种情况，请按照以下步骤解决问题：
 
-1. 按照[为全节点安装新版本更新](modify/update-fullnode-with-new-releases.mdx)中的描述，更新您的节点到最新版本。
-2. 从配置文件中删除可能已添加的任何 `seed` 对等节点（Peers）。这些 `seed` 可能阻碍您连接到网络。`seed` 对等节点在[连接您的全节点至 seed 节点](../full-node/modify/fullnode-network-connections.mdx#connecting-your-fullnode-to-seed-peers)部分中有讨论。
+1. 按照[更新您的 PFN](modify/update-fullnode-with-new-releases.mdx)中的描述，更新您的节点到最新版本。
+2. 从配置文件中删除可能已添加的任何 `seed` 对等节点（Peers）。这些 `seed` 可能阻碍您连接到网络。`seed` 对等节点在[连接到种子对等节点](../full-node/modify/fullnode-network-connections.mdx#连接到种子对等节点)部分中有讨论。
 3. 确保您的网络使用了正确的 `genesis.blob` 和 `waypoint.txt` 文件。这是一个容易犯错的地方。
 
 ### （可选）检查 Docker 账本大小

@@ -61,7 +61,7 @@ aptos_connections{direction="outbound",network_id="Public",peer_id="aabd651f",ro
 如果返回的出站连接数量为 `0`，则意味着您的节点无法连接到 Aptos 区块链。如果遇到这种情况，请按照以下步骤解决问题：
 
 1. 按照[更新您的节点](modify/update-fullnode-with-new-releases.mdx)更新到最新版本。
-2. 从配置文件中删除可能已添加的任何 `seed` 对等节点（Peers）。这些 `seed` 可能阻碍您连接到网络。`seed` 对等节点在[连接您的全节点至 seed 节点](../full-node/modify/fullnode-network-connections.mdx#connecting-your-fullnode-to-seed-peers)部分中有讨论。
+2. 从配置文件中删除可能已添加的任何 `seed` 对等节点（Peers）。这些 `seed` 可能阻碍您连接到网络。`seed` 对等节点在[连接到种子对等节点](../full-node/modify/fullnode-network-connections.mdx#连接到种子对等节点)部分中有讨论。
 3. 确保您的网络使用了正确的 `genesis.blob` 和 `waypoint.txt` 文件。这是容易犯的错误。
 
 ### （可选）检查 Docker 账本大小

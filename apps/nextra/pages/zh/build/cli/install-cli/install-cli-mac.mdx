@@ -1,34 +1,41 @@
-import { Callout, Steps } from 'nextra/components'
+---
 
-# Install the Aptos CLI on Mac
+title: "在 Mac 上安装 Aptos CLI"
 
-For Mac, the easiest way to install the Aptos CLI is with the package manager `brew`.
+---
 
-# Installation
+import {Callout, Steps} from 'nextra/components'
+
+# 在 Mac 上安装 Aptos CLI
+
+对于 Mac，安装 Aptos CLI 的最简单方法是使用包管理器 `brew`。
+
+# 安装
 
 <Steps>
-### Ensure you have `brew` installed https://brew.sh/.
-### Open a new terminal and enter the following commands.
+### 确保您安装了 `brew` https://brew.sh/
+### 打开一个新的终端并输入以下命令。
 
 ```bash filename="Terminal"
 brew update
 brew install aptos
 ```
 
-### Open another terminal and run `aptos help` to verify the CLI is installed.
+### 打开另一个终端并运行 `aptos help` 来验证 CLI 是否安装。
 
 ```bash filename="Terminal"
 aptos help
 ```
+
 </Steps>
 
 <Callout type="warning">
-If `brew` does not work for you, you can try the steps here: [Install Specific Aptos CLI Versions (Advanced)](install-cli-specific-version.mdx)
+如果 `brew` 对您不起作用，您可以尝试这里提供的步骤：[安装特定版本的 Aptos CLI（高级）](install-cli-specific-version.mdx)
 </Callout>
 
-# Upgrading the CLI
+# 升级 CLI
 
-Upgrading the CLI with brew just takes 2 commands:
+使用 brew 升级 CLI 只需 2 个命令：
 
 ```bash filename="Terminal"
 brew update

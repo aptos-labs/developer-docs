@@ -128,7 +128,7 @@ Unexpected：Failed to apply pre-run steps for Postgres: Docker is not available
 {/* TODO: 替换 API 规范链接 */}
 
 - [Node API](../aptos-api-spec.mdx)：这是一个运行在节点上的 REST API，它提供核心的写操作功能，比如提交事务，以及一些读操作功能，但较为有限，如读取账户资源或获取 Move 模块的信息。
-- [Indexer API](../../../build/indexer/api.mdx)：这是一个提供丰富读访问功能的 [GraphQL API]((https://graphql.org/))，专门用于索引区块链数据。点击上述 Indexer API 的链接（默认为 http://127.0.0.1:8090），即可打开 Hasura Console。这是一个 Web 界面，能帮助你方便地查询 Indexer GraphQL API。
+- [Indexer API](../../../build/indexer/api.mdx)：这是一个提供丰富读访问功能的 [GraphQL API]((https://graphql.org/))，专门用于索引区块链数据。点击上述 Indexer API 的链接（默认为 http://127.0.0.1:8090 ），即可打开 Hasura Console。这是一个 Web 界面，能帮助你方便地查询 Indexer GraphQL API。
 - [Transaction Stream Service](../../../build/indexer/txn-stream.mdx)：这是 Indexer API 所用的 gRPC 事务流，仅在你构建[自定义处理器](../../../build/indexer/custom-processors.mdx)时才需要关注。
 - [Postgres](https://www.postgresql.org/)：这是 Indexer 处理器写入的数据库。Indexer API 从这个数据库读取。
 - [Faucet](../../glossary.mdx#faucet)：您可以使用它为您本地网络中的帐户提供资金。

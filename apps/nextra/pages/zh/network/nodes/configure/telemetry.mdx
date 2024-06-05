@@ -23,13 +23,13 @@ Aptos 节点二进制文件**不**收集任何个人信息，如用户名或电�
 
 下面的列表显示了 Aptos 节点遥测收集的信息类别：
 
-- **核心指标：** 核心指标是由 `aptos-node` 二进制文件的核心组件发出的。这些包括状态同步、共识、内存池和存储。您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/core_metrics.rs#L14-L29)看到完整的核心指标列表。
+- **核心指标：** 核心指标是由 `aptos-node` 二进制文件的核心组件发出的。这些包括状态同步、共识、内存池和存储。您可以查看[完整的核心指标列表](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/core_metrics.rs#L14-L29)。
 
-- **构建信息：** 也会收集 Rust 构建信息，包括 Rust、cargo 的版本、目标架构和构建标签。您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20)看到完整的构建信息列表。
+- **构建信息：** 也会收集 Rust 构建信息，包括 Rust、cargo 的版本、目标架构和构建标签。您可以查看[完整的构建信息列表](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20)。
 
-- **系统信息：** 节点遥测也会收集系统信息。这包括资源信息（例如，CPU、RAM、磁盘和网络规格）以及操作系统信息。您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/system_information.rs#L14-L32)看到完整的系统信息列表。
+- **系统信息：** 节点遥测也会收集系统信息。这包括资源信息（例如，CPU、RAM、磁盘和网络规格）以及操作系统信息。您可以查看[完整的系统信息列表](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/system_information.rs#L14-L32)。
 
-- **网络指标：** 节点遥测也会收集网络指标。这些包括网络信息，如连接的对等节点数量、进出消息的数量以及发送和接收的消息大小。您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/network_metrics.rs#L12-L17)看到完整的网络指标列表。
+- **网络指标：** 节点遥测也会收集网络指标。这些包括网络信息，如连接的对等节点数量、进出消息的数量以及发送和接收的消息大小。您可以查看[完整的网络指标列表](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/network_metrics.rs#L12-L17)。
 
 - **Prometheus 指标：** 节点遥测也会收集 Prometheus 指标。这些包括 `aptos-node` 二进制文件所有组件的运行时指标。您可以通过使用[节点检查服务](../measure/node-inspection-service.mdx)访问节点上的指标端点来查看 Prometheus 指标的完整列表。
 
@@ -41,10 +41,10 @@ Aptos 节点二进制文件**不**收集任何个人信息，如用户名或电�
 Aptos CLI 工具也会收集遥测数据。下面的列表显示了 CLI 遥测收集的信息类别：
 
 - **命令指标：** 当执行命令时，CLI 会发出命令指标。这些包括命令本身、命令的延迟以及命令的成功或失败。
-  您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/cli_metrics.rs#L12-L15)看到完整的 CLI 指标列表。
+  您可以查看[完整的 CLI 指标列表](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-telemetry/src/cli_metrics.rs#L12-L15)。
 
 - **构建信息：** 对于 CLI，也会收集 Rust 构建信息，包括 Rust、cargo 的版本、目标架构和构建标签。
-  您可以在[这里](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20)看到完整的构建信息列表。
+  您可以查看[完整的构建信息列表](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-build-info/src/lib.rs#L8-L20)。
 
 ## 禁用遥测
 

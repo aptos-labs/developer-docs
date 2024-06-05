@@ -16,11 +16,6 @@ import {Callout} from 'nextra/components'
 
 `aptos` 工具通过一个特别的流程，即创世仪式，来启动新的区块链。这个过程的核心是执行一系列 move 指令，以便为区块链的在线部署做好准备。这个流程涉及到以下几个输入要素：
 
-- 一组验证器及其配置
-- 初始的移动模块集合，称为框架
-- 一个独特的 `ChainId` (u8)，以区别于其他网络
-- 对于测试链，还有一个账户负责铸造 AptosCoin
-
 - 一系列验证者及其配置信息。
 - 称为框架的初始 Move 模块集。
 - 一个独特的 ChainId (u8)，用来识别不同的网络。
@@ -38,7 +33,7 @@ import {Callout} from 'nextra/components'
 
 ### 准备 aptos-core
 
-以下部分依赖于 Aptos 源代码中的工具。见[从源代码构建 Aptos](../../../network/nodes/building-from-source.mdx)进行设置。
+以下部分依赖于 Aptos 源代码中的工具。见[从源代码构建 Aptos](../../network/nodes/building-from-source.mdx)进行设置。
 
 ### `layout` 文件
 
@@ -120,7 +115,7 @@ cargo run --package aptos -- \
 
 3. 最后一个命令将生成一个 `bob.yaml` 文件，这需要被分发给其他参与者用于 `genesis.blob` 生成。
 
-### 生成创世和路标文件
+### 生成创世区块和路标文件
 
 在获取到 `layout` 文件、各个 `ValidatorConfiguration` 配置文件以及框架版本之后，我们就可以开始生成 `genesis.blob` 以及相应的路标文件。务必就检查此前阶段提供的 `ValidatorConfiguration` 文件与生成 `genesis.blob` 时使用的版本是否一致。一旦出现不一致情况，必须及时通知所有的参与者。
 

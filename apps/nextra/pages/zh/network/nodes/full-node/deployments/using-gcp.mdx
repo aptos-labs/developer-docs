@@ -20,14 +20,14 @@ import { Callout, Steps } from 'nextra/components';
 你可以在任何你想要运行的设备上运行本指南中的命令来在 Google Kubernetes Engine 上部署你的 PFN，例如：
 [GCP 上的 VM](https://cloud.google.com/compute)、[Google Cloud Shell](https://cloud.google.com/shell) 或你的个人电脑。
 
-以下软件包已随 Cloud Shell 预安装。如果你选择使用 Cloud Shell，请务必查阅[关于临时模式的文档](https://cloud.google.com/shell/docs/using-cloud-shell/#choose_ephemeral_mode)。
+以下软件包已随 Cloud Shell 预安装。如果你选择使用 Cloud Shell，请务必查阅[关于暂存模式的文档](https://cloud.google.com/shell/docs/using-cloud-shell/#choose_ephemeral_mode)。
 然而，如果你从笔记本电脑或其他设备部署，那么你需要安装：
 
 - Terraform 1.3.6: https://www.terraform.io/downloads.html
 - Kubernetes CLI: https://kubernetes.io/docs/tasks/tools/
 - Google Cloud CLI: https://cloud.google.com/sdk/docs/install-sdk
 
-安装 gcloud CLI 后，[使用 gcloud 登录 GCP](https://cloud.google.com/sdk/gcloud/reference/auth/login)：
+安装 Gcloud CLI 后，[使用 Gcloud 登录 GCP](https://cloud.google.com/sdk/gcloud/reference/auth/login)：
 
 ```bash filename="Terminal"
 gcloud auth login --update-adc
@@ -47,15 +47,15 @@ Google Cloud 为每位新用户提供 [90 天，$300 免费试用期](https://cl
 #### 创建新的 GCP 项目
 
 - 在 GCP 控制台或使用 Google Cloud CLI 中的 gcloud 命令创建新项目。务必熟悉 [GCP 上的资源层次结构](https://cloud.google.com/resource-manager/docs/cloud-platform-resource-hierarchy)。
-- [按照这些说明设置一个新项目](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project)。
+- [按照这些说明创建一个新项目](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project)。
 
 #### 启用计费并升级您的账户
 
-您不仅可以继续使用免费试用中的信用额度，而且还能解锁 GCP 所有功能的完整访问权限，确保您在使用云服务期间，您的节点能稳定运行，无需担心中断。具体升级步骤，请参照[指南操作](https://cloud.google.com/free/docs/gcp-free-tier#how-to-upgrade)。
+您不仅可以继续使用免费试用中的信用额度，而且还能解锁 GCP 所有功能的完整访问权限，确保您在使用云服务期间，您的节点能稳定运行，无需担心中断。具体升级步骤，请参照[指南](https://cloud.google.com/free/docs/gcp-free-tier#how-to-upgrade)操作。
 
 #### 额外的 GCP 资源
 
-这些建议足以帮助您准备好 GCP 环境，并着手部署您的 PFN。对于刚接触 GCP 的用户，您还可以通过浏览官方提供的[一些指南](https://cloud.google.com/docs/get-started/quickstarts)和 [Google Cloud Skills Boost](https://www.cloudskillsboost.google/catalog) 来提高自己的技能。
+这些建议足以帮助您准备好 GCP 环境，并着手部署您的 PFN。对于刚接触 GCP 的用户，您还可以通过浏览官方提供的一些[快速入门教程](https://cloud.google.com/docs/get-started/quickstarts)和 [Google Cloud Skills Boost](https://www.cloudskillsboost.google/catalog) 来提高自己的技能。
 
 ## 入门
 

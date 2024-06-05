@@ -46,7 +46,7 @@ import { Callout, Steps } from 'nextra/components';
 
 要执行 VFN 故障转移升级，您应该按照以下步骤操作：
 
-1. 更新您的 DNS，以交换验证者和 VFN 之间的[网络地址](../../validator-node/connect-nodes/connect-to-aptos-network.mdx#3-update-on-chain-network-addresses)。
+1. 更新您的 DNS，以交换验证者和 VFN 之间的[网络地址](../../validator-node/connect-nodes/connect-to-aptos-network#3-更新链上网络地址)。
 2. 停止 VFN 并将节点软件更新到最新版本。这可能需要下载最新的二进制文件或 Docker 镜像，或者重新编译源代码。此外，您需要从验证者节点复制 `consensus_db` 和 `secure-data.json` 文件到 VFN，以及验证者节点的配置文件（包括验证者身份）。
 3. 一旦 VFN 准备好成为新的验证者，您可以停止旧的验证者，并立即启动新的验证者。这将最小化验证者的停机时间。
 

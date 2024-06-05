@@ -1,91 +1,106 @@
-import { Callout, Steps } from 'nextra/components'
+---
 
-# Use Hardware Ledger via the Aptos CLI
+title: "通过 Aptos CLI 使用硬件钱包 Ledger"
 
-Using a hardware wallet like Ledger is the most secure way to sign transactions on `mainnet` as your private key never leaves your device.
+---
+
+import {Callout, Steps} from 'nextra/components'
+
+# 通过 Aptos CLI 使用硬件钱包 Ledger
+
+使用像 Ledger 这样的硬件钱包是在 `mainnet` 上签署交易最安全的方式，因为您的私钥永远不会离开您的设备。
 
 <Callout type="warning">
-The `Ledger Nano S` has limited memory and may not be able to sign many transactions on Aptos. If you are trying to sign a transaction that is too big for your device to handle, you will get the error `Wrong raw transaction length`.
+`Ledger Nano S` 的内存有限，可能无法在 Aptos 上签署太多的交易。如果您尝试签署的交易数量太大，超出了您的设备处理能力，您将收到错误 `Wrong raw transaction length`
 </Callout>
 
-## Initial Setup
+## 初始设置
 
-You will need to do a few steps of configuration for the Aptos CLI and your Ledger device to sign transactions.
+您需要对 Aptos CLI 和您的 Ledger 设备进行一些配置步骤，以签署交易。
 <Steps>
-### Ensure you have the Aptos CLI installed. 
-   You can install the Aptos CLI by following [these steps](../../install-cli.mdx) if you have not done so already.
-### Ensure you have done the basic setup for your Ledger device.
-   You can find those steps on [Ledger’s website](https://www.ledger.com/). For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
-### Plug your Ledger device into your computer.
-### Install the Aptos App on your Ledger device by following [this guide](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true).
-### Unlock your Ledger device and open the Aptos app.
 
-   <Callout type="info" emoji="ℹ️">
-   Whenever you want to sign using your Ledger you will need to plug it in, unlock it, and open the Aptos app before running any CLI commands.
-   </Callout>
+### 确保您已经安装了 Aptos CLI
 
-### Create a new Ledger profile in the Aptos CLI
+如果您尚未安装，可以按照[安装步骤](../install-cli.mdx)进行安装。
 
-   ```bash filename="Terminal"
-   aptos init --profile <your-profile> --ledger
-   ```
+### 请确认你已经按照指南完成了 Ledger 设备的初始配置
 
-   Then follow the terminal prompts like so:
+您可以在 [Ledger 的网站](https://www.ledger.com/)上找到这些步骤。例如，这里是 [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true) 的设置说明。
 
-   ```bash filename="Terminal"
-   Configuring for profile <your-profile>
-   Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
+### 将您的 Ledger 设备连接到电脑
 
-   No network given, using devnet...
-   Please choose an index from the following 5 ledger accounts, or choose an arbitrary index that you want to use:
-   [0] Derivation path: m/44'/637'/0'/0'/0' (Address: 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb)
-   [1] Derivation path: m/44'/637'/1'/0'/0' (Address: 21563230cf6d69ee72a51d21920430d844ee48235e708edbafbc69708075a86e)
-   [2] Derivation path: m/44'/637'/2'/0'/0' (Address: 667446181b3b980ef29f5145a7a2cc34d433fc3ee8c97fc044fd978435f2cb8d)
-   [3] Derivation path: m/44'/637'/3'/0'/0' (Address: 2dcf037a9f31d93e202c074229a1b69ea8ee4d2f2d63323476001c65b0ec4f31)
-   [4] Derivation path: m/44'/637'/4'/0'/0' (Address: 23c579a9bdde1a59f1c9d36d8d379aeefe7a5997b5b58bd5a5b0c12a4f170431)
+### 按照[这个指南](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true)在您的 Ledger 设备上安装 Aptos 应用程序。
 
-   0
-   Account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb has been already found on-chain
-
-   ---
-   Aptos CLI is now set up for account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb as profile <your-profile>!  Run `aptos --help` for more information about commands
-   {
-     "Result": "Success"
-   }
-   ```
-
-   In the example, they chose to use the first ledger account by entering `0` after the `aptos init` command. You may choose whichever account you want.
-
-   **Common errors:**
-
-   1. If you see the error `Device Not Found`, make sure to unlock your Ledger then try this step again.
-   2. If you see the error `Aptos ledger app is not opened`, make sure to open the Aptos app on your Ledger, then try this step again.
-
-### Finally, you will need to enable blind signing on your Ledger device by following [these steps](https://medium.com/@DavidLehman24/how-to-enable-disable-blind-signing-on-ledger-wallet-99113a85cdad).
-   1. Blind signing allows you to confirm a smart contract interaction you cannot verify through a human-readable language.
-   2. This is needed to execute transactions without limitation as some payloads are too big to display.
-</Steps>
-
-## Signing Using Ledger
-
-After doing the initial setup, you can sign transactions by following these steps:
-
-1. Plug in your ledger.
-2. Unlock it.
-3. Open the Aptos app.
-4. Run the Aptos CLI command which requires a signature.
+### 解锁您的 Ledger 设备并打开 Aptos 应用程序
 
 <Callout type="info" emoji="ℹ️">
-This process works for any command that requires a signature, whether that’s to transfer coins, publish a Move contract, interact with a contract, etc.
+无论何时您想使用 Ledger 进行签名，都需要将其连接、解锁，并在运行任何 CLI 命令之前打开 Aptos 应用程序。
 </Callout>
 
-For example, if you wanted to publish a Move package like the `[hello_blockchain](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)` demo contract you could follow the above steps then run:
+### 在 Aptos CLI 中创建一个新的 Ledger 配置文件
+
+```bash filename="Terminal"
+aptos init --profile <your-profile> --ledger
+```
+
+然后按照 Terminal 提示操作，如下所示：
+
+```bash filename="Terminal"
+Configuring for profile <your-profile>
+Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
+
+No network given, using devnet...
+Please choose an index from the following 5 ledger accounts, or choose an arbitrary index that you want to use:
+[0] Derivation path: m/44'/637'/0'/0'/0' (Address: 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb)
+[1] Derivation path: m/44'/637'/1'/0'/0' (Address: 21563230cf6d69ee72a51d21920430d844ee48235e708edbafbc69708075a86e)
+[2] Derivation path: m/44'/637'/2'/0'/0' (Address: 667446181b3b980ef29f5145a7a2cc34d433fc3ee8c97fc044fd978435f2cb8d)
+[3] Derivation path: m/44'/637'/3'/0'/0' (Address: 2dcf037a9f31d93e202c074229a1b69ea8ee4d2f2d63323476001c65b0ec4f31)
+[4] Derivation path: m/44'/637'/4'/0'/0' (Address: 23c579a9bdde1a59f1c9d36d8d379aeefe7a5997b5b58bd5a5b0c12a4f170431)
+
+0
+Account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb has been already found on-chain
+
+---
+Aptos CLI is now set up for account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb as profile <your-profile>!  Run `aptos --help` for more information about commands
+{
+  "Result": "Success"
+}
+```
+
+在这个示例中，使用者选择通过在 `aptos init` 命令后输入 `0` 来选择 Ledger 设备上的第一个账户。你可以根据需要选取任意账户。
+
+**常见错误：**
+
+1.  如果您看到错误 `Device Not Found`，请确保解锁您的 Ledger，然后重试。
+2.  如果您看到错误 `Aptos ledger app is not opened`，请确保在您的 Ledger 上打开 Aptos 应用程序，然后重试。
+
+### 最后，您需要按照[这些步骤](https://medium.com/@DavidLehman24/how-to-enable-disable-blind-signing-on-ledger-wallet-99113a85cdad)在您的 Ledger 设备上启用盲签。
+
+1.  盲签名功能允许你确认那些无法通过人类可理解的语言进行核验的智能合约操作。
+2.  在进行交易时，如果某些数据信息过于庞大以致无法直接显示，这一功能是必不可少的，以确保交易能够执行而不受这种限制。
+
+</Steps>
+
+## 使用 Ledger 签署（Signing）交易
+
+完成初始设置后，您可以通过遵循以下步骤签署交易：
+
+1. 插入您的 Ledger 设备。
+2. 解锁它。
+3. 打开 Aptos 应用程序。
+4. 运行需要签名的 Aptos CLI 命令。
+
+<Callout type="info" emoji="ℹ️">
+这个过程适用于任何需要签名的命令，无论是转移 coin、发布 Move 合约、与合约交互等。
+</Callout>
+
+例如，如果您想发布一个像 `[hello_blockchain](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)` 这样的 Move 包，您可以按照上述步骤，然后运行：
 
 ```bash filename="Terminal"
 aptos move publish --profile <your-ledger-profile-name> --named-addresses hello_blockchain=<your-ledger-profile-name>
 ```
 
-You should see a response like:
+您应该会看到像这样的响应：
 
 ```bash filename="Terminal"
 Compiling, may take a little while to download git dependencies...
@@ -114,6 +129,6 @@ yes
 
 ```
 
-After you have approved publishing this package you will be prompted to sign the transaction on your Ledger device. Once signed, the package will be published to the network!
+在您批准发布此包后，系统会提示您在 Ledger 设备上签署交易。一旦签署，包将被发布到网络！
 
-One error you might run into is `Error: Wrong raw transaction length`. This means that the transaction or package size was too big for your device to sign. Currently the Aptos Ledger app can only support transactions that are smaller than 20kb. The `Ledger Nano S` device has less memory than that, which is why it is more likely to produce this error.
+你可能遇到的一个错误是 `Error: Wrong raw transaction length`。这表示交易大小或者数据包对你的设备来说过大，无法被签名。目前，Aptos Ledger 应用只支持 20kb 以下的交易量。由于 `Ledger Nano S` 设备的内存更小，这就是为什么它更有可能产生这个错误的原因。

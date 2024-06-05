@@ -1,10 +1,16 @@
+---
+
+title: "JSON 教程中的参数设置"
+
+---
+
 import { Callout } from 'nextra/components';
 
-# Arguments in JSON Tutorial
+# JSON 教程中的参数设置
 
-## Package info
+## 软件包信息
 
-This section references the [`CliArgs` example package](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args), which contains the following manifest:
+本小节涉及 [`CliArgs` 示例软件包](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args)，你可以在此包的清单文件中找到相关信息：
 
 ```toml filename="move.toml"
 [package]
@@ -19,26 +25,26 @@ test_account = "_"
 AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }
 ```
 
-Here, the package is deployed under the named address `test_account`.
+这个包部署于名为 `test_account` 的地址。
 
 <Callout type="info" emoji="ℹ️">
-Set your working directory to [`aptos-move/move-examples/cli_args`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args) to follow along:
+为了跟随本教程，请将你的工作目录切换到 [`aptos-move/move-examples/cli_args`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args)。
 
 ```bash filename="Terminal"
 cd <aptos-core-parent-directory>/aptos-core/aptos-move/move-examples/cli_args
 ```
+
 </Callout>
 
-## Deploying the package
+## 开始部署包
 
-Start by mining a vanity address for Ace, who will deploy the package:
+首先，为 Ace 创建一个好记的特殊地址，让 Ace 使用这个地址来部署包：
 
 ```bash filename="Terminal"
 aptos key generate \
     --vanity-prefix 0xace \
     --output-file ace.key
 ```
-
 
 <details>
 <summary>Output</summary>
@@ -54,23 +60,22 @@ aptos key generate \
 ```
 
 <Callout type="info" emoji="ℹ️">
-The exact account address should vary for each run, though the vanity prefix should not.
+确切的账户地址每次生成时可能会不同，但是特定的前缀是固定的。
 </Callout>
 </details>
 
-Store Ace's address in a shell variable, so you can call it inline later on:
+你需要将 Ace 的地址设置成一个 shell 变量，以便之后可以方便地引用：
 
 ```bash filename="Terminal"
-# Your exact address will vary
+# Y请注意，你实际的地址可能会与其他人的不同。
 ace_addr=0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46
 ```
 
-Fund Ace's account with the faucet (either devnet or testnet):
+通过测试网络（devnet）或测试环境（testnet）的水龙头（faucet）为 Ace 的账户添加资金：
 
 ```bash filename="Terminal"
 aptos account fund-with-faucet --account $ace_addr
 ```
-
 
 <details>
 <summary>Output</summary>
@@ -83,7 +88,7 @@ aptos account fund-with-faucet --account $ace_addr
 
 </details>
 
-Now publish the package under Ace's account:
+紧接着，在 Ace 的账户下部署该软件包：
 
 ```bash filename="Terminal"
 aptos move publish \
@@ -91,7 +96,6 @@ aptos move publish \
     --private-key-file ace.key \
     --assume-yes
 ```
-
 
 <details>
 <summary>Output</summary>
@@ -111,11 +115,12 @@ aptos move publish \
   }
 }
 ```
+
 </details>
 
-## Entry functions
+## 入口函数（Entry）
 
-The only module in the package, `cli_args.move`, defines a simple `Holder` resource with fields of various data types:
+该软件包中唯一的模块 `cli_args.move` 定义了一个名为 `Holder` 的简单资源，该资源包含了多种不同数据类型的字段：
 
 ```move filename="Holder in cli_args.move"
 module test_account::cli_args {
@@ -131,13 +136,13 @@ module test_account::cli_args {
       address_vec_vec: vector<vector<address>>,
       type_info_1: TypeInfo,
       type_info_2: TypeInfo,
-  } 
+  }
 ```
 
-A public entry function with multi-nested vectors can be used to set the fields:
+可以使用一个带有多重嵌套向量 (vectors) 的公共入口函数来设置数据字段：
 
 ```move filename="Setter function in cli_args.move"
-/// Set values in a `Holder` under `account`.
+/// 在特定账户 (`account`) 下设置 `Holder` 资源的值
 public entry fun set_vals<T1, T2>(
     account: signer,
     u8_solo: u8,
@@ -162,13 +167,13 @@ public entry fun set_vals<T1, T2>(
 }
 ```
 
-After the package has been published, `aptos move run` can be used to call `set_vals()`:
+软件包部署之后，你可以通过 `aptos move run` 命令来执行 `set_vals()` 函数：
 
 <Callout type="info" emoji="ℹ️">
-To pass vectors (including nested vectors) as arguments from the command line, use JSON syntax escaped with quotes!
+要通过命令行输入 vectors（包括嵌套的 vectors）作为参数时，记得使用带双引号的 JSON 格式,以确保输入正确。
 </Callout>
 
-```bash filename="Running function with nested vector arguments from CLI"
+```bash filename="在 CLI 中执行有嵌套 vector 参数的函数"
 aptos move run \
     --function-id $ace_addr::cli_args::set_vals \
     --type-args \
@@ -183,7 +188,6 @@ aptos move run \
     --private-key-file ace.key \
     --assume-yes
 ```
-
 
 <details>
 <summary>Output</summary>
@@ -203,9 +207,10 @@ aptos move run \
   }
 }
 ```
+
 </details>
 
-The function ID, type arguments, and arguments can alternatively be specified in a JSON file:
+函数的身份标识 (function ID)、类型参数 (type arguments) 和具体参数 (arguments) 也可以在一个 JSON 文件里进行设置：
 
 ```json filename="entry_function_arguments.json"
 {
@@ -253,15 +258,14 @@ The function ID, type arguments, and arguments can alternatively be specified in
 }
 ```
 
-Here, the call to `aptos move run` looks like:
+在这里，执行 `aptos move run` 命令的格式如下：
 
-```bash filename="Running function with JSON input file"
+```bash filename="通过使用 JSON 格式的输入文件来执行函数"
 aptos move run \
     --json-file entry_function_arguments.json \
     --private-key-file ace.key \
     --assume-yes
 ```
-
 
 <details>
 <summary>Output</summary>
@@ -285,12 +289,12 @@ aptos move run \
 </details>
 
 <Callout type="info" emoji="ℹ️">
-If you are trying to run the example yourself don't forget to substitute Ace's actual address for `<test_account>` in `entry_function_arguments.json`!
+如果你想要亲自尝试这个例子，别忘了在 `entry_function_arguments.json` 文件中将 `<test_account>` 替换成 Ace 的实际账户地址！
 </Callout>
 
-## View functions
+## View 函数
 
-Once the values in a `Holder` have been set, the `reveal()` view function can be used to check the first three fields, and to compare type arguments against the last two fields:
+在 `Holder` 中的值被设置之后，可以使用 `reveal()` 函数来查看开头的三个字段，并比较这些字段的类型参数是否与最后两个字段一致：
 
 ```move filename="View function"
 struct RevealResult has drop {
@@ -304,10 +308,9 @@ struct RevealResult has drop {
 }
 
 #[view]
-/// Pack into a `RevealResult` the first three fields in host's
-/// `Holder`, as well as two `bool` flags denoting if `T1` & `T2`
-/// respectively match `Holder.type_info_1` & `Holder.type_info_2`,
-/// then return the `RevealResult`.
+/// 把 `Holder` 的前三个字段以及两个布尔值（bool）标志整理到一个 `RevealResult` 结果中，
+/// 这两个布尔值分别指出 `T1` 和 `T2` 是否与 `Holder` 中的 `type_info_1` 和 `type_info_2` 字段匹配，
+/// 然后返回这个 `RevealResult`
 public fun reveal<T1, T2>(host: address): RevealResult acquires Holder {
     let holder_ref = borrow_global<Holder>(host);
     RevealResult {
@@ -324,9 +327,9 @@ public fun reveal<T1, T2>(host: address): RevealResult acquires Holder {
 }
 ```
 
-This view function can be called with arguments specified either from the CLI or from a JSON file:
+可以通过命令行或者一个 JSON 文件来指定参数，从而调用这个 view 函数：
 
-```bash filename="Arguments via CLI"
+```bash filename="通过 CLI 进行参数传递"
 aptos move view \
     --function-id $ace_addr::cli_args::reveal \
     --type-args \
@@ -335,12 +338,12 @@ aptos move view \
     --args address:$ace_addr
 ```
 
-```bash filename="Arguments via JSON file"
+```bash filename="通过 JSON 文件进行参数传递"
 aptos move view --json-file view_function_arguments.json
 ```
 
 <Callout type="info" emoji="ℹ️">
-If you are trying to run the example yourself don't forget to substitute Ace's actual address for `<test_account>` in `view_function_arguments.json` (twice)!
+ 如果你打算亲自尝试这个示例，请不要忘记将 `view_function_arguments.json` 文件中的两个 `<test_account>` 替换为 Ace 的真实的账户地址！
 </Callout>
 
 ```json filename="view_function_arguments.json"
@@ -389,9 +392,9 @@ If you are trying to run the example yourself don't forget to substitute Ace's a
 }
 ```
 
-## Script functions
+## 脚本函数
 
-The package also contains a script, `set_vals.move`, which is a wrapper for the setter function:
+这个包里还包括一个脚本 `set_vals.move`，它实际上是一个设定器（setter）函数的包装器：
 
 ```move filename="script"
 script {
@@ -403,6 +406,9 @@ script {
     /// corresponding element in `u8_vec` is greater than `u8_solo`.
     /// Then pack `address_solo` in a `vector<vector<<address>>` and
     /// pass resulting argument set to public entry function.
+
+    /// 创建一个 `bool` 向量（vector），其中每个元素的值为 `true`，表示这个元素在 `u8_vec` 向量中的对应值大于 `u8_solo`。
+    /// 接着，把 `address_solo` 封装到 `vector<vector<address>>` 中，并将这些参数集合传给一个公共的入口函数。
     fun set_vals<T1, T2>(
         account: signer,
         u8_solo: u8,
@@ -418,12 +424,11 @@ script {
 }
 ```
 
-First compile the package (this will compile the script):
+先编译这个包（这个步骤会同时编译脚本）：
 
 ```bash filename="Compilation"
 aptos move compile --named-addresses test_account=$ace_addr
 ```
-
 
 <details>
 <summary>Output</summary>
@@ -438,9 +443,9 @@ aptos move compile --named-addresses test_account=$ace_addr
 
 </details>
 
-Next, run `aptos move run-script`:
+然后，执行 `aptos move run-script` 命令：
 
-```bash filename="Arguments via CLI"
+```bash filename="通过 CLI 传递参数"
 aptos move run-script \
     --compiled-script-path build/CliArgs/bytecode_scripts/set_vals.mv \
     --type-args \
@@ -455,7 +460,6 @@ aptos move run-script \
     --private-key-file ace.key \
     --assume-yes
 ```
-
 
 <details>
 <summary>Output</summary>
@@ -478,14 +482,13 @@ aptos move run-script \
 
 </details>
 
-```bash filename="Arguments via JSON file"
+```bash filename="通过 JSON 文件进行参数传递"
 aptos move run-script \
     --compiled-script-path build/CliArgs/bytecode_scripts/set_vals.mv \
     --json-file script_function_arguments.json \
     --private-key-file ace.key \
     --assume-yes
 ```
-
 
 <details>
 <summary>Output</summary>
@@ -544,9 +547,9 @@ aptos move run-script \
 }
 ```
 
-Both such script function invocations result in the following `reveal()` view function output:
+这两种脚本函数的调用都会得到 `reveal()` view 函数的以下输出结果：
 
-```bash filename="View function call"
+```bash filename="调用 View 函数"
 aptos move view \
     --function-id $ace_addr::cli_args::reveal \
     --type-args \
@@ -555,7 +558,7 @@ aptos move view \
     --args address:$ace_addr
 ```
 
-```json filename="View function output"
+```json filename="调用 View 函数的输出"
 {
   "Result": [
     {
@@ -572,5 +575,5 @@ aptos move view \
 ```
 
 <Callout type="info" emoji="ℹ️">
-As of the time of this writing, the `aptos` CLI only supports script function arguments for vectors of type `u8`, and only up to a vector depth of 1. Hence `vector<address>` and `vector<vector<u8>>` are invalid script function argument types.
+在本文写作之时，`aptos` 命令行界面仅支持 `u8` 类型向量作为脚本函数的参数。因此，`vector<address>` 和 `vector<vector<u8>>` 是不被支持的脚本函数参数类型。
 </Callout>

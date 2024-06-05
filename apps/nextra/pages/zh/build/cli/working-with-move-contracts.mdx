@@ -69,7 +69,7 @@ aptos move test --package-dir <您的包目录>
 2. 通过运行 `cd crates/aptos/debug-move-example` 进入到 [debug-move-example](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos/debug-move-example)。
 3. 然后运行 `aptos move test`。
 
-您应该看到：
+您应该能够看到：
 
 ```bash filename="Terminal"
 Running Move unit tests
@@ -117,13 +117,9 @@ aptos move test --coverage
 aptos move publish --package-dir <您的包目录>
 ```
 
-请注意，当您在主网上发布时，您传递到可选参数如 `--named-addresses` 中的凭据需要反映该网络上的账户，而不是测试凭据。
-
 请注意，在主网络发布时，您通过可选参数传入的账户信息（如 `--named-addresses`）必须是主网络上的实际账户，不能使用测试环境下的账户。
 
 包将发布到 CLI 中的默认配置文件。您可以使用命令中的 `--profile` 覆盖它以指定要发布到哪个账户。要为特定账户生成新的配置文件，请使用 `aptos init --profile <name_of_profile>` 并按照提示操作。
-
-另外请注意，当发布 Move 模块时，如果一个包中有多个模块，则该包中的所有模块必须使用相同的账户。如果它们使用不同的账户，则发布将在交易级别失败。
 
 另外，请注意，在发布 Move 模块的过程中，若一个软件包中有多个模块，则这些模块都必需使用同一个账户进行发布。不然，如果使用不同账户，则该软件包的发布操作将在交易处理的阶段遭遇失败。
 
@@ -233,11 +229,11 @@ aptos move run --function-id 0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f9
 
 ## 6. （可选）形式化验证 Move 脚本
 
-对于您希望在单元测试之外保证代码按预期工作的情况，您可以使用 [Move Prover](../../smart-contracts/learn-move/prover.mdx)来形式化验证您的 Move 合约代码。
+对于您希望在单元测试之外保证代码按预期工作的情况，您可以使用 [Move Prover](../smart-contracts/learn-move/prover.mdx)来形式化验证您的 Move 合约代码。
 
-您可以通过按照[这些步骤](./setup-cli/install-move-prover.mdx)来安装 Move Prover。
+您可以通过按照[这些步骤](setup-cli/install-move-prover.mdx)来安装 Move Prover。
 
-安装 Move Prover 后，您可以通过运行来使用它从 Aptos CLI：
+安装 Move Prover 之后，你就可以执行下面的命令通过 Aptos CLI 来使用它了：
 
 ```bash filename="Terminal"
 aptos move prove --package-dir <your-package-directory>
