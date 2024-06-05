@@ -5,7 +5,7 @@ title: "Object Code Deployment"
 # Object Code Deployment
 
 This document goes through how you can deploy code to [Objects](objects.mdx). This is the recommended way to deploy code to the blockchain, as this reduces deployment complexity,
-and safely manages access control policies for the code owner.
+and safely manages access control policies for the code owner. Note that in this context, code refers to [packages](../book/packages.mdx). 
 
 Deploying code to objects will guarantee the following:
 - Each deployment publishes to a new address.
@@ -24,36 +24,36 @@ import { Steps } from 'nextra/components'
 
 ### Compile code
 
-Make sure `<your_module_name>` is left as a placeholder `_`. This is needed as the CLI command will override the address.
-Here is an example as `<your_module_name>` with the value `my_module`.
+Make sure `<your_account_name>` is left as a placeholder `_`. This is needed as the CLI command will override the address. `<your_account_name>` represents the owner of the code, or the owner of the object to deploy the code to. 
+Here is an example as `<your_account_name>` with the value `my_account`.
 
 ```toml filename="Move.toml"
 [addresses]
-my_module = "_"
+my_account = "_"
 ```
 
 Compile your move code running the below command.
-- Replace `<your_module_name>` with the module name of your program.
+- Replace `<your_account_name>` with the desired name of the account.
 - Replace `<your_address>` with the address of your account.
 
 ```bash filename="Terminal"
-aptos move compile --named-addresses <your_module_name>=<your_address>
+aptos move compile --named-addresses <your_account_name>=<your_address>
 ```
 
 ### Deploy code to an object
 
 Deploy the compiled code to an an object via the command:
-- Replace `<your_module_name>` with the module name of your code.
+- Replace `<your_account_name>` with the desired name of the account.
 - Replace `<your_address>` with the address of your account.
 
 ```bash filename="Terminal"
-aptos move create-object-and-publish-package --address-name <your_module_name> --named-addresses <your_module_name>=<your_address>
+aptos move create-object-and-publish-package --address-name <your_account_name> --named-addresses <your_account_name>=<your_address>
 ```
 
 **An example can be found below:**
 
 ```bash filename="Terminal"
-aptos move create-object-and-publish-package --address-name my_module --named-addresses my_module=0xa0f0b100f243cbda3df93ceb42c0b9464c359a0853ed98f2bce558be9605e88b
+aptos move create-object-and-publish-package --address-name my_account --named-addresses my_account=0xa0f0b100f243cbda3df93ceb42c0b9464c359a0853ed98f2bce558be9605e88b
 ```
 
 This will ask if you want to publish the code under the specified object address.
@@ -64,24 +64,25 @@ This will ask if you want to publish the code under the specified object address
 Do you want to publish this package at object address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab [yes/no] >
 ```
 
-#### Congrats, you have deployed your code to a new object with a unique address!
+#### Congrats, you have deployed your code to a new object with a unique address! 
+Take note of the object address as you will need it later for upgrades. 
 
-### 3. Upgrade code in an existing package
+### Upgrade code in an existing package
 
 If you wish to upgrade the code in the object deployed, run the following:
 - Replace `<object_address>` with the address of the object hosting the code.
-- Replace `<your_module_name>` with the address of your account.
+- Replace `<your_account_name>` with the existing name of your account.
 
-Note: the module name should equal the object address, as the module is now deployed to that object address.
+Note: the value for the account name should _now_ be the object address, as the package containing the module(s) is now deployed to that address. 
 
 ```bash filename="Terminal"
-aptos move upgrade-object-package --object-address <object_address> --named-addresses <your_module_name>=<object_address>
+aptos move upgrade-object-package --object-address <object_address> --named-addresses <your_account_name>=<object_address>
 ```
 
 Example of the command above:
 
 ```bash filename="Terminal"
-aptos move upgrade-object-package --object-address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab --named-addresses my_module=0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab
+aptos move upgrade-object-package --object-address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab --named-addresses my_account=0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab
 ```
 
 This will ask if you want to upgrade the existing code deployed at the object address.

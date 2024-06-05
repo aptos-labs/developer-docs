@@ -10,7 +10,7 @@ import { BundledLanguage } from "shiki";
 import {
   fetchCodeSnippetFromGithub,
   parsePermalink,
-} from "@aptos-labs/docs-code-cache";
+} from "@aptos-labs/github-fetch";
 
 const baseRoute = "https://code-cache.petra-wallet.workers.dev";
 const Origin = "http://localhost";

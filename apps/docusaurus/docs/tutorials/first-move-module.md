@@ -220,7 +220,7 @@ After the first execution, this should contain:
 
 Notice that the `message` field contains `hello, blockchain`.
 
-Each succesful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](https://aptos.dev/concepts/events/#module-events). Module Events for a given account can be accessed via the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
+Each successful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](https://aptos.dev/concepts/events/#module-events). Module Events for a given account can be accessed via the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
 
 :::tip
 Other accounts can reuse the published module by calling the exact same function as in this example. It is left as an exercise to the reader.

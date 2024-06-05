@@ -12,7 +12,7 @@ Local networks can be helpful when testing your code. They are not connected to 
 # Starting A Local Network
 
 <Steps>
-### Ensure you have the [Aptos CLI](../install-cli.mdx) installed.
+### Ensure you have the [Aptos CLI](install-cli.mdx) installed.
 ### Ensure you have [Docker](https://docs.docker.com/get-docker/) installed.
    1. This is exclusively needed for making a production-like environment by running the Indexer API. Many downstream tools such as the Aptos SDK depend on the Indexer API.
    2. Docker recommends that you install via [Docker Desktop](https://www.docker.com/products/docker-desktop/) to get automatic updates.
@@ -116,9 +116,9 @@ To debug this, try the below fixes:
 
 As you can see from the example output in step 4, once the local network is running, you have access to the following services:
 
-- [Node API](../../../network/nodes/aptos-api-spec.mdx): This is a REST API that runs directly on the node. It enables core write functionality such as transaction submission and a limited set of read functionality, such as reading account resources or Move module information.
-- [Indexer API](../../indexer/api.mdx): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
-- [Transaction Stream Service](../../indexer/txn-stream.mdx): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing a [custom processor](../../indexer/custom-processors.mdx).
+- [Node API](../../network/nodes/aptos-api-spec.mdx): This is a REST API that runs directly on the node. It enables core write functionality such as transaction submission and a limited set of read functionality, such as reading account resources or Move module information.
+- [Indexer API](../indexer/api.mdx): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
+- [Transaction Stream Service](../indexer/txn-stream.mdx): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing a [custom processor](../indexer/custom-processors.mdx).
 - [Postgres](https://www.postgresql.org/): This is the database that the Indexer processors write to. The Indexer API reads from this database.
 - [Faucet](../../../network/glossary.mdx#faucet): You can use this to fund accounts on your local network.
 
@@ -166,7 +166,7 @@ const client = new Aptos(config);
 Sometimes while developing it is helpful to reset the local network back to its initial state, for example:
 
 - You made backwards incompatible changes to a Move module, and you'd like to redeploy it without renaming it or using a new account.
-- You are building a [custom indexer processor](../../indexer/custom-processors.mdx) and would like to index using a fresh network.
+- You are building a [custom indexer processor](../indexer/custom-processors.mdx) and would like to index using a fresh network.
 - You want to clear all on chain state, e.g. accounts, objects, etc.
 
 To start with a brand new local network, use the `--force-restart` flag:

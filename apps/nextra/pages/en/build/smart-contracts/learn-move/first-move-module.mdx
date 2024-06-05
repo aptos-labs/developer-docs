@@ -1,8 +1,8 @@
 ---
 title: "Your First Move Module"
 ---
-
-import { Tabs, TabItem, Steps, Callout } from 'nextra/components';
+{/* TODO this one is a duplicate of the tutorial in the tutorials folder, it shoud be consolidated to one*/}
+import { Tabs, Steps, Callout } from 'nextra/components';
 
 # Your First Move Module
 
@@ -213,7 +213,7 @@ After the first execution, this should contain:
 
 Notice that the `message` field contains `hello, blockchain`.
 
-Each succesful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](https://aptos.dev/concepts/events/#module-events). Module Events for a given account can be accessed via the [GraphQL API](https://aptos.dev/guides/system-integrators-guide/#production-network-access).
+Each successful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](../../../network/blockchain/events.mdx#module-events). Module Events for a given account can be accessed via the [GraphQL API](../../advanced-guides/system-integrators-guide/#production-network-access).
 
 </Steps>
 

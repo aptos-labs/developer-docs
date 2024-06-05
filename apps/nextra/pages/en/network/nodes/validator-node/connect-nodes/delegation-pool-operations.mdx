@@ -45,8 +45,6 @@ Before initializing a delegation pool, you need to know the delegation pool addr
    - `u64:1000` represents `operator_commission_percentage` - 1000 is equivalent to 10% and 10000 is 100%.
    - `string:00` represents `delegation_pool_creation_seed` - a number chosen by you to create a resource account associated with your owner address; this account is used to host the delegation pool resource. You should use the same number here as the `--seed` you used in the previous step to create the delegation pool.
 
-   Note that once `operator_commission_percentage` is set, it cannot be changed.
-
 2. Once this command is executed without error an account for resources is established using the `owner` signer and a provided `delegation_pool_creation_seed` to hold the `delegation pool resource` and possess the underlying stake pool.
 
 3. The `owner` is granted authority over assigning the `operator` and `voter` roles, which are initially held by the `owner`.
@@ -100,14 +98,6 @@ Delegation pool owners have access to specific methods designed for modifying th
   ```bash filename="Terminal"
   aptos move run --profile delegation_pool_owner \
     --function-id 0x1::delegation_pool::set_operator \
-    --args address:<new_operator_address>
-  ```
-
-- Set the delegated voter address for the delegation pool:
-
-  ```bash filename="Terminal"
-  aptos move run --profile delegation_pool_owner \
-    --function-id 0x1::delegation_pool::set_delegated_voter \
     --args address:<new_operator_address>
   ```
 

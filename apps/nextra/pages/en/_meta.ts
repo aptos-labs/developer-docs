@@ -8,18 +8,12 @@ export default {
       footer: null,
     },
   },
-  learn: {
-    type: "page",
-    title: "Learn ↗",
-    href: "https://learn.aptoslabs.com/",
-    newWindow: true,
-  },
   build: {
     type: "menu",
     title: "Build",
     items: {
-      "quick-start": {
-        title: "Quick Start",
+      "get-started": {
+        title: "Get Started",
       },
       "smart-contracts": {
         title: "Smart Contracts",
@@ -36,8 +30,8 @@ export default {
       cli: {
         title: "CLI",
       },
-      "advanced-guides": {
-        title: "Advanced Guides",
+      tutorials: {
+        title: "Tutorials",
       },
     },
   },
@@ -63,6 +57,12 @@ export default {
     type: "menu",
     title: "Additional Resources",
     items: {
+      learn: {
+        type: "page",
+        title: "Aptos Learn ↗",
+        href: "https://learn.aptoslabs.com/",
+        newWindow: true,
+      },
       forum: {
         title: "Community Forum ↗",
         href: "https://forum.aptosfoundation.org/",

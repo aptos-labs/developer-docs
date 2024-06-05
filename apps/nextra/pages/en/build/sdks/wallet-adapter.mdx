@@ -2,6 +2,8 @@
 title: "Wallet Adapter"
 ---
 
+import { Callout } from 'nextra/components';
+
 # Wallet Adapter
 
 Decentralized applications often run through a browser extension or mobile
@@ -63,7 +65,7 @@ This structure offers the following benefits:
   logic is implemented in the core package.
 - Flexibility - for wallets in creating and implementing custom functions.
 
-:::note
+<Callout type="info">
 Following the
 new [Wallet Standard AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md)
 the wallet adapter supports the old wallet adapter standard and the new wallet
@@ -72,7 +74,7 @@ standard. Dapps can follow the integration
 guide [here](wallet-adapter/dapp.mdx#aip-62-wallet-standard) and Wallets
 can follow the integration
 guide [here](wallet-adapter/wallets.mdx#aip-62-wallet-standard)
-:::
+</Callout>
 
 ### Adapter Core package
 
@@ -91,12 +93,12 @@ package for the dapp to use.
 Wallets should implement their own plugin class that extends the basic plugin
 class (properties + events) interface that lives in the core package.
 
-:::tip
+<Callout type="info">
 If a wallet supports functions that are not part of the basic plugin interface,
 a pull request should be made to the core package to include this function, so
 it can support it. You can take a look at the `signTransaction` on the wallet
 core package for guidance.
-:::
+</Callout>
 
 ### Adapter React provider
 

@@ -141,7 +141,7 @@ export async function fetchCodeSnippetFromGithub(permalink: string) {
     throw new Error(`GitHub API responded with status code ${response.status}`);
   }
 
-  const responseJson = await response.json<GitHubFileDetail>();
+  const responseJson: GitHubFileDetail = await response.json();
   const content = atob(responseJson.content);
   const codeSnippet = trimCodeSnippet({ content, startLine, endLine });
 

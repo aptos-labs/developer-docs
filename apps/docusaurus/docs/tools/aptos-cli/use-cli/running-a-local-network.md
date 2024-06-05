@@ -187,3 +187,25 @@ If you do not want to be prompted, include `--assume-yes` as well:
 ```bash
 aptos node run-local-testnet --force-restart --assume-yes
 ```
+
+## Running in a container
+
+If you want to run the localnet using a Docker container, you can do it like this:
+
+```sh
+docker run \
+   --platform linux/amd64 \
+   -v /var/run/docker.sock:/var/run/docker.sock \
+   --network host \
+   -v /tmp/testnet:/testnet \
+   aptoslabs/tools:nightly \
+   aptos node run-local-testnet \
+   --test-dir /testnet \
+   --with-indexer-api
+```
+
+Instead of `nightly` you can use any tag from [here](https://hub.docker.com/r/aptoslabs/tools/tags).
+
+Note: `-v /var/run/docker.sock:/var/run/docker.sock` allows the CLI to run other containers using the host Docker daemon, for example Postgres and Hasura for the indexer API. You don't have to do this if you are not setting `--with-indexer-api`.
+
+Note: If this fails because `/var/run/docker.sock` doesn't exist, see the [Docker is not available](#docker-is-not-available) section above.

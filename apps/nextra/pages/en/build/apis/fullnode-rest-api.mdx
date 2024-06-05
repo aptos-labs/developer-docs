@@ -94,7 +94,7 @@ A function does not have to be immutable to be tagged as `#[view]`, but if the f
 state mutation when called from the API. If you want to tag a mutable function as `#[view]`, consider making it private
 so that it cannot be maliciously called during runtime.
 
-In order to use the View functions, you need to [publish the module](../cli/use-cli/working-with-move-contracts.mdx)
+In order to use the View functions, you need to [publish the module](../cli/working-with-move-contracts.mdx)
 through the [Aptos CLI](../cli/use-cli.mdx).
 
 In the Aptos CLI, a view function request would look like this:

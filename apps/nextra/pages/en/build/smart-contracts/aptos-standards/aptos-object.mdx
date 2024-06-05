@@ -291,7 +291,8 @@ creator modules without the refs/ Example:
 ```move
 module 0x42::example {
   public entry fun modify_reserves(liquidity_pool: Object<LiquidityPool>) acquires LiquidityPool {
-    let liquidity_pool = borrow_global_mut<LiquidityPool>((object::object_address(&liquidity_pool)));
+    let liquidity_pool_address = object::object_address(&liquidity_pool);
+    let liquidity_pool = borrow_global_mut<LiquidityPool>(liquidity_pool_address);
     liquidity_pool.reserves_a = liquidity_pool.reserves_a + 1000;
   }
 }

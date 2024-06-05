@@ -1,4 +1,4 @@
-# [Aptos Docs Site](https://docs.aptos.dev)
+# [Aptos Docs Site](https://aptos.dev)
 
 The official website for [Aptos Docs](https://github.com/aptos-labs/nextra).
 

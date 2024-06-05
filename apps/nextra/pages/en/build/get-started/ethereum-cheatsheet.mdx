@@ -1,0 +1,57 @@
+---
+title: "Ethereum to Aptos Cheatsheet"
+---
+
+# Ethereum to Aptos Cheatsheet
+
+### High Level Overview
+
+| Feature                    | Ethereum                                                                                                                       | Aptos                                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Smart Contracts**        | Solidity, EVM                                                                                                                  | Move, MoveVM                                                                                                                          |
+| **Benefits**               | Mature, wide adoption                                                                                                          | Scalability, low latency, predictable fees                                                                                            |
+| **Transaction Fees**       | Variable, can be high                                                                                                          | Lower and more predictable                                                                                                            |
+| **Account Addresses**      | 160-bit                                                                                                                        | 256-bit                                                                                                                               |
+| **Account Structure**      | Balance in a single field, uses nonce                                                                                          | Modules and resources, uses sequence number                                                                                           |
+| **Data Storage**           | Patricia Merkle Trees                                                                                                          | Global storage with resources and modules                                                                                             |
+| **Storage Mindset**        | Contract-based storage                                                                                                         | Account centric mindset for code and data                                                                                             |
+| **Example Code**           | [ERC-20](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20)                             | [Fungible Asset](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) |
+| **Caller ID**              | `msg.sender`                                                                                                                   | `&signer` reference                                                                                                                   |
+| **Upgradeability**         | Proxy patterns                                                                                                                 | Direct module upgrades                                                                                                                |
+| **Safety & Security**      | Vulnerable to attacks like reentrancy                                                                                          | Mitigates common vulnerabilities                                                                                                      |
+| **Dispatch Type**          | Dynamic dispatch                                                                                                               | Static dispatch                                                                                                                       |
+| **FT Standard**            | [ERC-20](https://docs.openzeppelin.com/contracts/4.x/erc20)                                                                    | [Coin](../smart-contracts/aptos-standards/aptos-coin) (legacy) and [Fungible Asset](../smart-contracts/aptos-standards/fungible-asset)  |
+| **NFT Standards**          | [ERC-721](https://docs.openzeppelin.com/contracts/4.x/erc721), [ERC-1155](https://docs.openzeppelin.com/contracts/4.x/erc1155) | [Digital Asset](../smart-contracts/aptos-standards/digital-asset)                                                                      |
+| **Blockchain Interaction** | [Ethers.js library](https://docs.ethers.org/v6/)                                                                               | [Aptos Typescript SDK](../sdks/ts-sdk)                                                                                |
+
+<br />
+
+### Comparing Token Standards in Detail
+
+|                        | Solidity                                                          | Move (Aptos)                                                                                                                                                    |
+| ---------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Token Structure**    | Each token is its own contract.                                   | Every token is a typed `Coin` or `FungibleAsset` using a single, reusable contract.                                                                             |
+| **Token Standard**     | Must conform to standards like ERC20; implementations can vary.   | Uniform interface and implementation for all tokens.                                                                                                            |
+| **Balance Storage**    | Balances stored in contract using a mapping structure.            | **Resource-Oriented Balance**: Balances stored as a resource in the user's account. Resources cannot be arbitrarily created, ensuring integrity of token value. |
+| **Transfer Mechanism** | Tokens can be transferred without receiver's explicit permission. | Except for specific cases (like AptosCoin), Tokens generally require receiver's `signer` authority for transfer.                                                |
+
+<br />
+
+### Comparing EVM and Move VM in Detail
+
+- **EVM**: Known for its flexibility and dynamic dispatch, which allows a wide range of smart contract behaviors. This flexibility, however, can lead to complexities in parallel execution and network operations.
+- **Move VM**: Focuses on safety and efficiency with a more integrated approach between the VM and the programming language. Its data storage model allows for better parallelization, and its static dispatch method enhances security and predictability.
+
+<br />
+
+|                                 | EVM (Ethereum Virtual Machine)                                         | Move VM (Move Virtual Machine)                                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Data Storage**                | Data is stored in the smart contract's storage space.                  | Data is stored across smart contracts, user accounts, and objects.                                                 |
+| **Parallelization**             | Parallel execution is limited due to shared storage space.             | More parallel execution enabled due to flexible split storage design.                                              |
+| **VM and Language Integration** | Separate layers for EVM and smart contract languages (e.g., Solidity). | Seamless integration between VM layer and Move language, with native functions written in Rust executable in Move. |
+| **Critical Network Operations** | Implementation of network operations can be complex and less direct.   | Critical operations like validator set management natively implemented in Move, allowing for direct execution.     |
+| **Function Calling**            | Dynamic dispatch allows for arbitrary smart contract calls.            | Static dispatch aligns with a focus on security and predictable behavior.                                          |
+| **Type Safety**                 | Contract types provide a level of type safety.                         | Module structs and generics in Move offer robust type safety.                                                      |
+| **Transaction Safety**          | Uses nonces for transaction ordering and safety.                       | Uses sequence numbers for transaction ordering and safety.                                                         |
+| **Authenticated Storage**       | Yes, with smart contract storage.                                      | Yes, leveraging Move’s resource model.                                                                             |
+| **Object Accessibility**        | Objects are not globally accessible; bound to smart contract scope.    | Guaranteed global accessibility of objects.                                                                        |

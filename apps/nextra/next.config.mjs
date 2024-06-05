@@ -39,7 +39,7 @@ export default withBundleAnalyzer(
     reactStrictMode: true,
     transpilePackages: [
       "@aptos-labs/aptos-nextra-config",
-      "@aptos-labs/docs-code-cache",
+      "@aptos-labs/github-fetch",
     ],
     redirects: async () => [
       {
@@ -125,11 +125,6 @@ export default withBundleAnalyzer(
       {
         source: "/nodes/networks",
         destination: "/en/network/nodes/networks",
-        permanent: true,
-      },
-      {
-        source: "/tutorials/first-move-module",
-        destination: "/en/build/smart-contracts/learn-move/first-move-module",
         permanent: true,
       },
       {
@@ -794,6 +789,212 @@ export default withBundleAnalyzer(
       {
         source: "/reference/glossary",
         destination: "/en/network/glossary",
+        permanent: true,
+      },
+      {
+        source: "/indexer/api/example-queries",
+        destination: "/en/build/indexer/common-queries",
+        permanent: true,
+      },
+      {
+        source: "/guides/explore-aptos",
+        destination: "/en/network/glossary#aptos-explorer",
+        permanent: true,
+      },
+      {
+        source: "/aptos-white-paper/aptos-white-paper-in-korean",
+        destination: "/en/network/blockchain/aptos-white-paper",
+        permanent: true,
+      },
+      {
+        source: "/aptos-white-paper/aptos-white-paper-in-japanese",
+        destination: "/en/network/blockchain/aptos-white-paper",
+        permanent: true,
+      },
+      {
+        source: "/move/move-on-aptos/gas-profiling",
+        destination:
+          "/en/build/cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk/sdk-configuration",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk/fetch-data-from-chain",
+        destination: "/en/build/sdks/ts-sdk/fetch-data-via-sdk",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk/transaction-builder",
+        destination: "/en/build/sdks/ts-sdk/building-transactions",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk/http-client",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk/move-types",
+        destination: "/en/build/sdks/ts-sdk/building-transactions/bcs-format",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk/testing",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk/typescript",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true,
+      },
+      {
+        source: "/tools/aptos-cli/cli-configuration",
+        destination: "/en/build/cli/setup-cli",
+        permanent: true,
+      },
+      {
+        source: "/tools/aptos-cli/use-cli/public-network/run-public-network",
+        destination: "/en/build/cli/public-network",
+        permanent: true,
+      },
+      {
+        source: "/guides/nfts/aptos-token-overview",
+        destination: "/en/build/smart-contracts/aptos-standards/tokens",
+        permanent: true,
+      },
+      {
+        source: "/integration/wallet-adapter-for-dapp",
+        destination: "/en/build/sdks/wallet-adapter/dapp",
+        permanent: true,
+      },
+      {
+        source: "/integration/wallet-adapter-for-wallets",
+        destination: "/en/build/sdks/wallet-adapter/wallets",
+        permanent: true,
+      },
+      {
+        source: "/integration/aptos-names-service-package",
+        destination: "/en/build/advanced-guides/aptos-name-service",
+        permanent: true,
+      },
+      {
+        source: "/nodes/nodes-landing",
+        destination: "/en/network/nodes",
+        permanent: true,
+      },
+      {
+        source: "/nodes/validator-node/voter/index",
+        destination:
+          "/en/network/nodes/validator-node/connect-nodes/staking-pool-voter",
+        permanent: true,
+      },
+      {
+        source: "/nodes/node-files-all-networks/node-files",
+        destination:
+          "/en/network/nodes/configure/node-files-all-networks/node-files-mainnet",
+        permanent: true,
+      },
+      {
+        source: "/move/book/introduction",
+        destination: "/en/build/smart-contracts/learn-move/book",
+        permanent: true,
+      },
+      {
+        source: "/move/book/creating-coins",
+        destination: "/en/build/smart-contracts/learn-move/book/move-tutorial",
+        permanent: true,
+      },
+      {
+        source: "/tutorials",
+        destination: "/en/build/tutorials",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/your-first-transaction",
+        destination: "/en/build/tutorials/first-transaction",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/your-first-nft",
+        destination: "/en/build/tutorials/your-first-nft",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/your-first-coin",
+        destination: "/en/build/tutorials/first-coin",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/your-first-fungible-asset",
+        destination: "/en/build/tutorials/first-fungible-asset",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/first-move-module",
+        destination: "/en/build/tutorials/first-move-module",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/your-first-multisig",
+        destination: "/en/build/tutorials/first-multisig",
+        permanent: true,
+      },
+      {
+        source: "/community/site-updates",
+        destination: "/en/developer-platforms/contribute",
+        permanent: true,
+      },
+      {
+        source: "/community/aptos-style",
+        destination: "/en/developer-platforms/contribute",
+        permanent: true,
+      },
+      {
+        source: "/community/contributors",
+        destination: "/en/developer-platforms/contribute",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/e2e-dapp-index",
+        destination: "/en/build/tutorials/build-e2e-dapp",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/create-a-smart-contract",
+        destination:
+          "/en/build/tutorials/build-e2e-dapp/1-create-smart-contract",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/set-up-react-app",
+        destination: "/en/build/tutorials/build-e2e-dapp/2-set-up-react-app",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/add-wallet-support",
+        destination: "/en/build/tutorials/build-e2e-dapp/3-add-wallet-support",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/fetch-data-from-chain",
+        destination:
+          "/en/build/tutorials/build-e2e-dapp/4-fetch-data-from-chain",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/submit-data-to-chain",
+        destination:
+          "/en/build/tutorials/build-e2e-dapp/5-submit-data-to-chain",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/handle-tasks",
+        destination: "/en/build/tutorials/build-e2e-dapp/6-handle-tasks",
         permanent: true,
       },
     ],

@@ -1,9 +1,9 @@
 export default {
-  "quickstart": {
-    title: "Quickstart"
+  quickstart: {
+    title: "Quickstart",
   },
   "---": {
-    type: "separator"
+    type: "separator",
   },
   "fetch-data-via-sdk": {
     title: "Fetch Data via the TypeScript SDK",

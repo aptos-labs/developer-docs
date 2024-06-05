@@ -142,7 +142,7 @@ Staking pool operators can set beneficiary addresses to receive the operator com
 
 Any existing unpaid commission rewards will be paid to the new beneficiary. To ensures payment to the current beneficiary, one should first call `distribute` before switching the beneficiary. In case an operator operates multiple staking pools, the operator can set one beneficiary for all the staking pools, not a separate one for each pool.
 
-Once the beneficiary address is set, the beneficiary can claim the operator commission by `request_commission`.
+Once the beneficiary address is set, either the operator or the beneficiary can request the operator commission by `request_commission`.
 
 ## Checking your stake pool information
 

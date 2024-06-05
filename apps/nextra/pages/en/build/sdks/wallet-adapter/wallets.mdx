@@ -70,11 +70,11 @@ it [here](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md).
 
 ### Why integrating with the AIP-62 wallet standard?
 
-:::note
+<Callout type="info">
 In the near future and as wallets onboard to the new standard, the wallet
 adapter will deprecate the legacy standard and keep only the AIP-62 wallet
 standard support.
-:::
+</Callout>
 
 The AIP-62 wallet standard eliminates the current issues wallets have:
 
@@ -208,7 +208,7 @@ If your wallet supports the AIP-62 Standard, you should be able to include it wi
 
 ### Is your wallet a chrome extension wallet?
 
-If your wallet is a chrome extension based wallet, please open up a PR against the [aptos-wallet-adapter](https://github.com/aptos-labs/aptos-wallet-adapter) repo and add your wallet to the [Adapter Wallet Registry](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/registry.ts#L15) so the tool can detect the wallet even if it is not istalled on the user machine
+If your wallet is a chrome extension based wallet, please open up a PR against the [aptos-wallet-adapter](https://github.com/aptos-labs/aptos-wallet-adapter) repo and add your wallet to the [Adapter Wallet Registry](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/registry.ts#L15) so the tool can detect the wallet even if it is not installed on the user machine
 
 ### Is your wallet a SDK (npm package) wallet?
 

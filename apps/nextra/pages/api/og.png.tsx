@@ -6,7 +6,7 @@ export const config = {
   runtime: "edge",
 };
 
-const font = fetch(new URL("./Inter-SemiBold.otf", import.meta.url)).then(
+const font = fetch(new URL("./Satoshi-Medium.otf", import.meta.url)).then(
   (res) => res.arrayBuffer(),
 );
 
@@ -24,7 +24,7 @@ export const contentType = "image/png";
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image
  */
 export default async function (req) {
-  const inter = await font;
+  const satoshi = await font;
 
   const { searchParams } = new URL(req.url);
 
@@ -45,7 +45,7 @@ export default async function (req) {
           alignItems: "flex-start",
           justifyContent: "center",
           padding: 160,
-          backgroundColor: "#030303",
+          backgroundColor: "#051419",
           backgroundSize: "100px 100px",
           backgroundPosition: "-30px -10px",
           fontWeight: 600,
@@ -58,10 +58,11 @@ export default async function (req) {
             bottom: 140,
             left: 160,
             margin: 0,
-            fontSize: 60,
+            fontSize: 64,
             letterSpacing: -1,
             display: "flex",
             flexDirection: "row",
+            alignItems: "center",
             gap: 24,
           }}
         >
@@ -93,7 +94,7 @@ export default async function (req) {
         </span>
         <h1
           style={{
-            fontSize: 164,
+            fontSize: 172,
             margin: "0 0 40px -2px",
             lineHeight: 1.1,
             textShadow: "0 2px 30px #000",
@@ -113,7 +114,7 @@ export default async function (req) {
       fonts: [
         {
           name: "inter",
-          data: inter,
+          data: satoshi,
           style: "normal",
         },
       ],

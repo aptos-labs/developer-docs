@@ -166,7 +166,7 @@ const client = new Aptos(config);
 Sometimes while developing it is helpful to reset the local network back to its initial state, for example:
 
 - You made backwards incompatible changes to a Move module, and you'd like to redeploy it without renaming it or using a new account.
-- You are building a [custom indexer processor](https://aptos.dev/indexer/custom-processors/) and would like to index using a fresh network.
+- You are building a [custom indexer processor](../../../build/indexer.mdx) and would like to index using a fresh network.
 - You want to clear all on chain state, e.g. accounts, objects, etc.
 
 To start with a brand new local network, use the `--force-restart` flag:
@@ -187,3 +187,23 @@ If you do not want to be prompted, include `--assume-yes` as well:
 ```bash filename="Terminal"
 aptos node run-local-testnet --force-restart --assume-yes
 ```
+
+## Running in a container
+If you want to run the localnet using a Docker container, you can do it like this:
+```sh
+docker run \
+   --platform linux/amd64 \
+   -v /var/run/docker.sock:/var/run/docker.sock \
+   --network host \
+   -v /tmp/testnet:/testnet \
+   aptoslabs/tools:nightly \
+   aptos node run-local-testnet \
+   --test-dir /testnet \
+   --with-indexer-api
+```
+
+Instead of `nightly` you can use any tag from [here](https://hub.docker.com/r/aptoslabs/tools/tags).
+
+Note: `-v /var/run/docker.sock:/var/run/docker.sock` allows the CLI to run other containers using the host Docker daemon, for example Postgres and Hasura for the indexer API. You don't have to do this if you are not setting `--with-indexer-api`.
+
+Note: If this fails because `/var/run/docker.sock` doesn't exist, see the [Docker is not available](#docker-is-not-available) section above.

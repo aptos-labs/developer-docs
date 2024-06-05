@@ -13,18 +13,11 @@ import { Callout } from "nextra/components";
 </Callout>
 
 Aptos provides an official Go SDK in
-the [Aptos-core GitHub](https://github.com/aptos-labs/aptos-go-sdk) repository.
+the [aptos-go-sdk GitHub](https://github.com/aptos-labs/aptos-go-sdk) repository.
 To use the Go SDK, get the main package here:
 
 ```bash
 go get github.com/aptos-labs/aptos-go-sdk
-```
-
-You can additionally add the `bcs` or `crypto` libraries
-
-```bash
-go get github.com/aptos-labs/aptos-go-sdk/bcs
-go get github.com/aptos-labs/aptos-go-sdk/crypto
 ```
 
 ## Using the Go SDK
@@ -34,14 +27,19 @@ go get github.com/aptos-labs/aptos-go-sdk/crypto
 You can create a client by importing the aptos-go-sdk, and creating a `Client`
 
 ```go
-package example
+package main
 
 import (
-    github.com/aptos-labs/aptos-go-sdk
+	"fmt"
+	"github.com/aptos-labs/aptos-go-sdk"
 )
 
-func test() {
-  client := aptos.NewClient(aptos.DevnetConfig)
+func main() {
+	client, err := aptos.NewClient(aptos.DevnetConfig)
+	if err != nil {
+		panic("Failed to create client:" + err.Error())
+	}
+	fmt.Println("client", client)
 }
 ```
 
