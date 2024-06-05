@@ -19,7 +19,7 @@ It's important to verify that the `signer` is the rightful owner of the object.
 
 #### Example Insecure Code
 
-In this example, a user must make a payment before being able to perform actions within the module. The user need to invoke `buy_action` to purchase an `Object<Action>`, which they can then use for executing operations later on.
+In this example, a user must make a payment before being able to perform actions within the module. The user needs to invoke `buy_action` to purchase an `Object<Action>`, which they can then use for executing operations later on.
 
 ```move
 module user::obj{
@@ -42,7 +42,7 @@ module user::obj{
 }
 ```
 
-In this insecure example, `perform_action` does not verify if the user actually owns `obj` passed to it.
+In this insecure example, `perform_action` does not verify if the user owns `obj` passed to it.
 
 #### Example Secure Code
 
@@ -654,7 +654,7 @@ Using the same account for testnet and mainnet poses a security risk, as testnet
 
 ### Randomness - test-and-abort
 
-If a `public` function directly or indirectly invokes the randomness API, a malicious user can abuse the composability of this function and aborting the transaction if the result is not as desired. This allows the user to keep trying until they achieve a beneficial outcome, undermining the randomness.
+If a `public` function directly or indirectly invokes the randomness API, a malicious user can abuse the composability of this function and abort the transaction if the result is not as desired. This allows the user to keep trying until they achieve a beneficial outcome, undermining the randomness.
 
 #### Example Vulnerable code
 
@@ -737,11 +737,11 @@ module user::lottery {
 ```
 
 In this lottery-example, `win` and `lose` consume different amounts of gas.
-If `lose` consumes more gas than `win`, an attacker can set the gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the "lose" path is taken, ensuring that the user never submit a valid transaction for the "lose" path.
+If `lose` consumes more gas than `win`, an attacker can set the gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the "lose" path is taken, ensuring that the user never submits a valid transaction for the "lose" path.
 
 #### Example Secure Code
 
-There are different way to secure the code:
+There are different ways to secure the code:
 
 1. Make sure better outcomes use more gas.
 2. Allows only admin addresses to invoke randomness API.
