@@ -2,7 +2,7 @@
 title: "Account Key Rotation"
 ---
 
-import { Callout } from "nextra/components";
+import { Callout, Steps } from "nextra/components";
 
 # Account Key Rotation
 
@@ -16,7 +16,7 @@ ability to sign for an account can be transferred to another private key without
 changing its public address.
 
 In this guide, we show examples of how to rotate an account's authentication key
-using a few of the various Aptos SDKs.
+using the CLI and few of the various Aptos SDKs.
 
 Here are the installation links for the SDKs we will cover in this example:
 
@@ -25,97 +25,263 @@ Here are the installation links for the SDKs we will cover in this example:
 - [Python SDK](../sdks/python-sdk.mdx)
 
 <Callout type="warning">
-  Some of the following examples use private keys. Do not share your private
-  keys
-  with anyone.
+Some of the following examples use private keys. Do not share your private
+keys with anyone.
 </Callout>
 
-## How to rotate an account's authentication key
+## Aptos CLI
 
-### Aptos CLI
-    Run the following to initialize two test profiles. Leave the inputs blank
-    both times you're prompted for a private key.
+<Steps>
 
-    {/*TODO: something is wrong with code caching<Steps>*/}
-      ### Initialize two test profiles on devnet
-      ```bash filename="Terminal"
-      aptos init --profile test_profile_1 --network devnet --assume-yes
-      aptos init --profile test_profile_2 --network devnet --assume-yes
-      ```
+### Initialize devnet profiles
 
-      ### Rotate the authentication key for test_profile_1 to test_profile_2's
-      authentication key
-      ```bash filename="Terminal"
-      aptos account rotate-key --profile test_profile_1
-      --new-private-key [TEST_PROFILE_2_PRIVATE_KEY]
-      ```
+Run the following to initialize test profiles. Leave the inputs blank each time
+you're prompted for a private key.
 
+```bash filename="Terminal"
+aptos init --profile test-profile-1 --network devnet --assume-yes
+aptos init --profile test-profile-2 --network devnet --assume-yes
+aptos init --profile test-profile-3 --network devnet --assume-yes
+```
 
-      <Callout type="info">
-        ### Where do I view the private key for a profile?
-        Public, private, and authentication keys for Aptos CLI profiles are
-        stored
-        in `~/.aptos/config.yaml` if your config is set to `Global`
-        and `
-        [local_directory]/.aptos/config.yaml` if it's set to `Workspace`. To
-        see your config settings, run `aptos config show-global-config`.
-      </Callout>
+### Get private key
 
-      ### Confirm yes and create a new profile so that you can continue to sign
-      for the resource account
-      ```bash filename="Terminal"
-      Do you want to submit a transaction for a range of [52000 - 78000] Octas
-      at a gas unit price of 100 Octas? [yes/no] >
-      yes
-      ...
+To view `test-profile-2` with its private key hidden:
 
-      Do you want to create a profile for the new key? [yes/no] >
-      yes
-      ...
+```bash filename="Terminal"
+aptos config show-profiles --profile test-profile-2
+```
 
-      Enter the name for the profile
-      test_profile_1_rotated
+To show the profile's private key:
 
-      Profile test_profile_1_rotated is saved.
-      ```
+```bash filename="Terminal"
+aptos config show-private-key --profile test-profile-2
+```
 
-      You can now use the profile like any other account.
+<Callout type="default" emoji="🧠">
+If your machine has `jq`, a lightweight and flexible command-line JSON
+processor, you can pipe the private key directly into an environment variable:
 
-      In your `config.yaml` file, `test_profile_1_rotated` will retain its
-      original public address but have a new public and private key that
-      matches `test_profile_2`.
+```bash filename="Terminal"
+export TEST_PROFILE_2_PRIVATE_KEY=$(
+    aptos config show-private-key --profile test-profile-2 \
+        | jq -r '.Result'
+)
+echo $TEST_PROFILE_2_PRIVATE_KEY
+```
 
-      The authentication keys aren't shown in the `config.yaml` file, but we can
-      verify the change with the following commands:
+Otherwise, manually copy and paste:
 
-      ### Verify the authentication keys are now equal with view functions
-      ```bash filename="Terminal"
-      # View the authentication key of `test_profile_1_rotated`
-      aptos move view --function-id 0x1::account::get_authentication_key --args
-      address:test_profile_1_rotated
+```bash filename="Terminal"
+export TEST_PROFILE_2_PRIVATE_KEY=0x...
+```
+</Callout>
 
-      # View the authentication key of `test_profile_2`, it should equal the
-      above.
-      aptos move view --function-id 0x1::account::get_authentication_key --args
-      address:test_profile_2
-      ```
+### Rotate authentication key
 
-      ### Example output from the previous two commands
-      ```bash filename="Terminal"
-      {
-        "Result": [
-        "0x458fba533b84717c91897cab05047c1dd7ac2ea73e75c77281781f5b7fec180c"
-        ]
-      }
-      {
-        "Result": [
-        "0x458fba533b84717c91897cab05047c1dd7ac2ea73e75c77281781f5b7fec180c"
-        ]
-      }
-      ```
-    {/*</Steps>*/}
+Rotate the account address associated with `test-profile-1` to authenticate via
+the private key from `test-profile-2` private key:
 
-### TypeScript
+```bash filename="Terminal"
+aptos account rotate-key \
+    --new-private-key $TEST_PROFILE_2_PRIVATE_KEY \
+    --profile test-profile-1 \
+    --save-to-profile test-profile-1-rotated
+```
+
+Once the transaction completes, compare the profiles:
+
+```bash filename="Terminal"
+aptos config show-profiles --profile test-profile-1
+aptos config show-profiles --profile test-profile-1-rotated
+aptos config show-profiles --profile test-profile-2
+```
+
+Note that `test-profile-1` has a different public key from
+`test-profile-1-rotated`, which has the same public key as `test-profile-2`.
+This is because `test-profile-1` is an outdated representation of the account
+that is now accurately represented by `test-profile-1-rotated`, which is
+authenticated via the same private key as `test-profile-2`.
+
+<Callout type="default" emoji="🧠">
+If your machine has `jq`, you can easily compare the public keys via:
+
+```bash filename="Terminal"
+export PROFILE_1_PUB_KEY=$(
+    aptos config show-profiles --profile test-profile-1 \
+        | jq -r '.Result["test-profile-1"].public_key'
+)
+export PROFILE_1_ROTATED_PUB_KEY=$(
+    aptos config show-profiles --profile test-profile-1-rotated \
+        | jq -r '.Result["test-profile-1-rotated"].public_key'
+)
+export PROFILE_2_PUB_KEY=$(
+    aptos config show-profiles --profile test-profile-2 \
+        | jq -r '.Result["test-profile-2"].public_key'
+)
+echo $PROFILE_1_PUB_KEY
+echo $PROFILE_1_ROTATED_PUB_KEY
+echo $PROFILE_2_PUB_KEY
+```
+</Callout>
+
+### Compare authentication keys listed onchain
+
+First you'll need to get the account addresses. Note that `test-profile-1` and
+`test-profile-1-rotated` have the same account address.
+
+<Callout type="default" emoji="🧠">
+If your machine has `jq`, you can easily store account addresses via the
+following:
+
+```bash filename="Terminal"
+export TEST_ADDRESS_1=$(
+    aptos config show-profiles --profile test-profile-1 \
+        | jq -r '.Result["test-profile-1"].account'
+)
+export TEST_ADDRESS_2=$(
+    aptos config show-profiles --profile test-profile-2 \
+        | jq -r '.Result["test-profile-2"].account'
+)
+echo $TEST_ADDRESS_1
+echo $TEST_ADDRESS_2
+```
+
+Otherwise, you'll need to re-run the `show-profiles` commands from the last step
+and manually copy the addresses:
+
+```bash filename="Terminal"
+export TEST_ADDRESS_1=0x...
+export TEST_ADDRESS_2=0x...
+```
+</Callout>
+
+To view the authentication keys of the two accounts onchain:
+
+```bash filename="Terminal"
+aptos move view \
+    --args address:0x$TEST_ADDRESS_1 \
+    --function-id 0x1::account::get_authentication_key \
+    --profile test-profile-1
+aptos move view \
+    --args address:0x$TEST_ADDRESS_2 \
+    --function-id 0x1::account::get_authentication_key \
+    --profile test-profile-1
+```
+
+Note that `--profile test-profile-1` is repeated across both calls since in this
+case the profile is only used to specify the REST URL for the query.
+
+### Inspect lookup addresses
+
+The onchain originating address table is a reverse lookup table that maps from
+an authentication key to an account address.
+
+The originating address table is only updated upon key rotation, and maps from
+an authentication key to at most _one_ account address, which means that
+theoretically a given private key can authenticate up to two accounts at the
+same time:
+
+1. The account address derived from the private key during standard account
+   generation, assuming the account has not undergone any key rotations
+   (`test-profile-2`).
+1. A second arbitrary address, which has had its authentication key rotated to
+   the given private key (`test-profile-1-rotated`).
+
+The command `aptos account lookup-address` checks if a there is an entry in the
+originating address table for a given private key, and if so, returns the
+reverse lookup address. If not, it simply returns the account address derived
+from the private key, hence the following commands all return `TEST_ADDRESS_1`:
+
+```bash filename="Terminal"
+aptos account lookup-address --profile test-profile-1
+aptos account lookup-address --profile test-profile-2
+aptos account lookup-address --profile test-profile-1-rotated
+```
+
+```bash filename="Terminal"
+echo $TEST_ADDRESS_1
+```
+
+This is because the private key in `test-profile-1` doesn't have a corresponding
+authentication key entry in the originating address able, while the private key
+that authenticates both `test-profile-2` and `test-profile-1-rotated` _does_
+have a corresponding entry, which maps to `TEST_ADDRESS_1` due to the key
+rotation.
+
+### Attempt invalid rotations
+
+Since the private key that authenticates `test-profile-2` and
+`test-profile-1-rotated` is now in the originating address table, it is not
+possible to perform a key rotation operation that rotates either to _or_ from
+the corresponding authentication key.
+
+For example, `test-profile-2` may not be rotated to authenticate with the
+private key of `test-profile-1`:
+
+<Callout type="default" emoji="🧠">
+If your machine has `jq`, you can pipe the private key of `test-profile-1`
+directly into an environment variable:
+
+```bash filename="Terminal"
+export TEST_PROFILE_1_PRIVATE_KEY=$(
+    aptos config show-private-key --profile test-profile-1 \
+        | jq -r '.Result'
+)
+echo $TEST_PROFILE_1_PRIVATE_KEY
+```
+
+Otherwise, manually copy and paste:
+
+```bash filename="Terminal"
+aptos config show-private-key --profile test-profile-1
+```
+
+```bash filename="Terminal"
+export TEST_PROFILE_1_PRIVATE_KEY=0x...
+```
+</Callout>
+
+Attempt an invalid rotation from `TEST_ADDRESS_2`, which is authenticated by the
+private key that also authenticates `TEST_ADDRESS_1`:
+
+```bash filename="Terminal"
+aptos account rotate-key \
+    --new-private-key $TEST_PROFILE_1_PRIVATE_KEY \
+    --profile test-profile-2 \
+    --save-to-profile test-profile-2-rotated
+```
+
+This command fails because the underlying Move logic for key rotation expects
+that the originating address table maps from the given authentication key to the
+address that is rotating its authentication key, which is not the case here
+(because the table was initialized with an entry mapping to `TEST_ADDRESS_1`,
+not `TEST_ADDRESS_2`):
+
+Similarly, it is not possible to rotate a different account address to the
+private key that authenticates `test-profile-2` and `test-profile-1-rotated`.
+
+```bash filename="Terminal"
+aptos account rotate-key \
+    --new-private-key $TEST_PROFILE_2_PRIVATE_KEY \
+    --profile test-profile-3 \
+    --save-to-profile test-profile-3-rotated
+```
+
+Hence it is best practice to only authenticate _one_ account with a given
+private key at a time.
+
+### Delete the test profiles
+
+```bash filename="Terminal"
+aptos config delete-profile --profile test-profile-1
+aptos config delete-profile --profile test-profile-2
+aptos config delete-profile --profile test-profile-1-rotated
+aptos config delete-profile --profile test-profile-3
+```
+</Steps>
+
+## TypeScript
     This program creates two accounts on devnet, Alice and Bob, funds them, then
     rotates the Alice's authentication key to that of Bob's.
 
@@ -148,7 +314,7 @@ Here are the installation links for the SDKs we will cover in this example:
     Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
     ```
 
-### Python
+## Python
     This program creates two accounts on devnet, Alice and Bob, funds them, then
     rotates the Alice's authentication key to that of Bob's.
 
