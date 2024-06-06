@@ -31,6 +31,7 @@ body {
   /* Style footer */
   footer {
     background-color: var(--background-primary);
+
     hr {
       border-color: var(--border-divider);
     }
@@ -64,7 +65,46 @@ code.text-\[\.9em\] {
   .home-content p {
     font-size: 0.9rem;
   }
+
   .home-content .hide-small {
     display: none;
+  }
+}
+
+/* Scalar API Reference Styling */
+
+.token {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+
+.scalar-codeblock-pre.line-numbers {
+  padding-left: 2.5em !important;
+}
+
+.scalar-api-reference {
+  background-color: inherit !important;
+  /* height: unset !important; */
+}
+
+.references-rendered {
+  background-color: inherit !important;
+}
+
+.sidebar {
+  background-color: inherit !important;
+}
+
+.darklight-reference {
+  display: none !important;
+}
+
+.references-navigation-list {
+  background-color: inherit !important;
+}
+
+@media (max-width: 1000px) {
+  .references-navigation-list {
+    background-color: var(--scalar-background-1) !important;
   }
 }
