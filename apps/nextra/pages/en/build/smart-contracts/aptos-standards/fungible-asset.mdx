@@ -196,30 +196,30 @@ FAs have three events emitted from the above basic functions:
 
 1. `Deposit`: Emitted when FAs are deposited into a store.
     
-    ```move filename="deposit_event"
-    struct Deposit has drop, store {
-    		store: address,
-        amount: u64,
-    }
-   ```
+```move filename="deposit_event"
+struct Deposit has drop, store {
+    store: address,
+    amount: u64,
+}
+```
     
 2. `Withdraw`: Emitted when FAs are withdrawn from a store.
     
-    ```move filename="withdraw_event"
-    struct Withdraw has drop, store {
-    		store: address,
-        amount: u64,
-    }
-   ```
+```move filename="withdraw_event"
+struct Withdraw has drop, store {
+    store: address,
+    amount: u64,
+}
+```
     
 3. `Frozen`: Emitted when the frozen status of a fungible store is updated.
     
-    ```move filename="frozen_event"
-    struct Frozen has drop, store {    
-    		store: address,
-    		frozen: bool,
-    }
-   ```
+```move filename="frozen_event"
+struct Frozen has drop, store {    
+    store: address,
+    frozen: bool,
+}
+```
     
 
 ## Managing Stores (Advanced)
