@@ -213,11 +213,13 @@ rotation.
 
 Since the private key that authenticates `test-profile-2` and
 `test-profile-1-rotated` is now in the originating address table, it is not
-possible to perform a key rotation operation that rotates either to _or_ from
-the corresponding authentication key.
+possible to perform a key rotation operation that rotates either _to_ the
+corresponding authentication key, or _from_ the corresponding authentication
+key for an account besides `TEST_ADDRESS_1`.
 
 For example, `test-profile-2` may not be rotated to authenticate with the
-private key of `test-profile-1`:
+private key of `test-profile-1` (rotate from the authentication key for an
+account other than `TEST_ADDRESS_1`):
 
 <Callout type="default" emoji="🧠">
 If your machine has `jq`, you can pipe the private key of `test-profile-1`
@@ -259,7 +261,8 @@ address that is rotating its authentication key, which is not the case here
 not `TEST_ADDRESS_2`):
 
 Similarly, it is not possible to rotate a different account address to the
-private key that authenticates `test-profile-2` and `test-profile-1-rotated`.
+private key that authenticates `test-profile-2` and `test-profile-1-rotated`
+(rotate to authentication key that is already in the originating address table):
 
 ```bash filename="Terminal"
 aptos account rotate-key \
