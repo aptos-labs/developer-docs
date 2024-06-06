@@ -249,7 +249,7 @@ To create a secondary store, you must:
 2. Call:
     
 ```move filename="create_store"
-public fun create_store<T: key>(    constructor_ref: &ConstructorRef,    metadata: Object<T>,): Object<FungibleStore>
+public fun create_store<T: key>(constructor_ref: &ConstructorRef, metadata: Object<T>): Object<FungibleStore>
 ```
     
 
