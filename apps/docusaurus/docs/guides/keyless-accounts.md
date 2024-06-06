@@ -1,42 +1,42 @@
 ---
-title: "Keyless Accounts Developer Documentation"
+title: "Keyless Accounts"
 ---
 
 ## Introduction
 
-Keyless accounts represent a pivotal advancement within the Aptos ecosystem, revolutionizing the way users onboard and interact with decentralized applications (dApps). Aptos Keyless allows users to gain ownership of an Aptos blockchain account from their existing OpenID Connect (OIDC) account(s) (e.g., Sign in with Google; Sign in with Apple), rather than from a traditional secret key or mnemonic. In a nutshell, with Aptos Keyless, a user’s blockchain account is their OIDC account. Over time, Keyless will evolve to support many IdPs who support the OIDC standard, but we will begin with support for the providers listed [here TOD](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md). 
+Keyless accounts represent a pivotal advancement within the Aptos ecosystem, revolutionizing the way users onboard and interact with decentralized applications (dApps). Aptos Keyless allows users to gain ownership of an Aptos blockchain account from their existing OpenID Connect (OIDC) account(s) (e.g., Sign in with Google; Sign in with Apple), rather than from a traditional secret key or mnemonic. In a nutshell, with Aptos Keyless, a user’s blockchain account is their OIDC account. Over time, Keyless will evolve to support many IdPs who support the OIDC standard, but we will begin with support for the providers listed [here](https://aptos.dev/guides/keyless-accounts/#oidc-support).
 
 At the core of the keyless accounts paradigm lies a deep understanding of user experience and security challenges prevalent in traditional blockchain systems. Managing private keys, the cornerstone of user identity and asset ownership, often proves cumbersome and error-prone for users, particularly those lacking technical expertise. Keyless accounts offer an elegant solution by obviating the need for users to grapple with the intricacies of private key management. Instead, users authenticate themselves through access to common social sign in options like Google, Apple, and many more. With this new system comes some important tradeoffs to understand on behalf of your users before implementing Keyless in your application. The following pages will expand on the benefits of Keyless accounts, how to integrate, the system architecture, and FAQs. For a more verbose and technical dive into Keyless accounts, please see [AIP-61-Keyless Accounts](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md).
 
-There are two ways to interact with Keyless accounts in the Aptos ecosystem. Developers are able to either 1) integrate the Aptos Keyless SDK directly into their dApp or 2) integrate a wallet, like Aptos Connect, that supports Keyless account creation.  This documentation will focus on case #1 and more details on #2 can be found here. Please note that a direct integration of the Keyless SDK will result in user accounts being domain specific to your dApp whereas the use of a wallet integration will allow your users to carry their accounts to any application that supports that wallet. 
+There are two ways to interact with Keyless accounts in the Aptos ecosystem. Developers are able to either 1) integrate the Aptos Keyless SDK directly into their dApp or 2) integrate a wallet, like Aptos Connect, that supports Keyless account creation. This documentation will focus on case #1 and more details on #2 can be found here. Please note that a direct integration of the Keyless SDK will result in user accounts being domain specific to your dApp whereas the use of a wallet integration will allow your users to carry their accounts to any application that supports that wallet.
 
-Note: the Aptos Keyless SDK and Aptos Connect are representative examples of the aforementioned product experience, but developers in our ecosystem are building alternatives, like a Keyless Unity SDK and alternative wallet products with Keyless integration. 
+Note: the Aptos Keyless SDK and Aptos Connect are representative examples of the aforementioned product experience, but developers in our ecosystem are building alternatives, like a Keyless Unity SDK and alternative wallet products with Keyless integration.
 
 ## Aptos Keyless Benefits
 
 Keyless accounts are revolutionary to users for the following reasons:
 
-1. Simplified login user experience: "1-click" account creation via familiar Web2 logins like Sign In with Google.
-2. Enhanced dApp user experience: Ability to transact on the Aptos blockchain without needing to navigate away from the application experience to download a wallet.
-3. Secure key management: Requires no manual secret key management by the user. Users sign transactions with the JSON Web Token (JWT) token issued by OIDC providers. As such, blockchain account access is synonymous with access to one’s OIDC account
-4. Improved account recovery: Web2-like recovery flows are available to regain access to one’s blockchain account in case the user ever loses access to their OIDC account.
-5. Seamless cross-device experiences: Users log in with their OIDC account no matter what device they are on - no need to download wallet software on each device, import their keys and encrypt them with a password, which must be maintained.
+1. **Simplified login user experience**: "1-click" account creation via familiar Web2 logins like Sign In with Google.
+2. **Enhanced dApp user experience**: Ability to transact on the Aptos blockchain without needing to navigate away from the application experience to download a wallet.
+3. **Secure key management**: Requires no manual secret key management by the user. Users sign transactions with the JSON Web Token (JWT) token issued by OIDC providers. As such, blockchain account access is synonymous with access to one’s OIDC account
+4. **Improved account recovery**: Web2-like recovery flows are available to regain access to one’s blockchain account in case the user ever loses access to their OIDC account.
+5. **Seamless cross-device experiences**: Users log in with their OIDC account no matter what device they are on - no need to download wallet software on each device, import their keys and encrypt them with a password, which must be maintained.
 
 With these benefits, come some important structural components of Keyless accounts for developers to be aware of. You can see more on this in our FAQs.
 
 ## OIDC Support
 
-Aptos Keyless supports the following IdPs on our network(s). Support for additional IdPs to come. Please reach out if you have need for coverage for a specific use case. 
+Aptos Keyless supports the following IdPs on our network(s). Support for additional IdPs to come. Please reach out if you have need for coverage for a specific use case.
 
-| Identity Provider | Devnet | Testnet | Mainnet
-| ----------------- | -------|---------|---------|
-| Google            | Live   | Live    | Live |
-| Apple             | Live   | Live    | - |
-| Microsoft         | In review | - | - |
-| Github            | In review | - | - |
-| Facebook          | In review | - | - |
+| Identity Provider | Devnet    | Testnet | Mainnet |
+| ----------------- | --------- | ------- | ------- |
+| Google            | Live      | Live    | Live    |
+| Apple             | Live      | Live    | -       |
+| Microsoft         | In review | -       | -       |
+| Github            | In review | -       | -       |
+| Facebook          | In review | -       | -       |
 
-To integrate Aptos Keyless into your dApp, you must register your dApp with at least one of the available identity providers via their OIDC registration process. Each respective registration process will assign a Client ID to your application, which will serve as an identifier for your application in the Keyless architecture.  
+To integrate Aptos Keyless into your dApp, you must register your dApp with at least one of the available identity providers via their OIDC registration process. Each respective registration process will assign a Client ID to your application, which will serve as an identifier for your application in the Keyless architecture.
 
 ### Registering your dApp with Google
 
@@ -48,7 +48,7 @@ To integrate Aptos Keyless into your dApp, you must register your dApp with at l
 **Step 2: Create a New Project**
 
 1. If you don't have an existing project, click on the "Select a project" dropdown menu at the top of the page and choose "New Project."
-2.  Enter a name for your project and click "Create." Detailed instructions can be found [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project).
+2. Enter a name for your project and click "Create." Detailed instructions can be found [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project).
 
 **Step 3: Configure Consent Screen**
 
@@ -61,9 +61,13 @@ To integrate Aptos Keyless into your dApp, you must register your dApp with at l
 **Step 4: Register Your Application**
 
 1. In the left sidebar, navigate to "APIs & Services" > "Credentials."
+![Google Credentials navigation screenshot](../../static/keyless/google1.png "Google Credentials navigation screenshot")
+
 2. Click on "Create Credentials" and select "OAuth client ID."
+![Google create credentials screenshot](../../static/keyless/google2.png "Google create credentials screenshot")
+
 3. Choose the application type (e.g., Web application, Desktop app, or Mobile app).
-4. Enter the necessary details such as the name of your application and the authorized redirect URIs. For OIDC, the redirect URIs should follow the format https://your-app-domain.com/auth/google/callback. 
+4. Enter the necessary details such as the name of your application and the authorized redirect URIs. For OIDC, the redirect URIs should follow the format https://your-app-domain.com/auth/google/callback.
 5. Click "Create."
 
 **Step 5: Obtain Client ID and Client Secret**
@@ -83,6 +87,8 @@ To integrate Aptos Keyless into your dApp, you must register your dApp with at l
 
 1. Go to the [Apple Developer website](https://developer.apple.com/).
 2. Sign in with your Apple ID.
+3. Enroll in the Apple Developer Program if not already.
+![Apple enrollment screenshot](../../static/keyless/apple1.png "Apple enrollment screenshot")
 
 **Step 2: Create a New App ID**
 
@@ -115,7 +121,7 @@ To integrate Aptos Keyless into your dApp, you must register your dApp with at l
 ## Aptos Keyless Integration Guide
 
 :::info Only devnet and testnet is supported
-Currently Aptos Keyless is only supported in devnet and testnet. Mainnet support scheduled for June 7.
+Currently Aptos Keyless is only supported in devnet and testnet. Mainnet support scheduled for June 10.
 :::
 
 :::tip Keyless Account Scoping
@@ -150,14 +156,9 @@ The implicit flow (no authorization code exchange) is the preferred method of au
 ### Step 2. Install the Aptos TypeScript SDK
 
 ```bash
-# Experimental SDK version with Keyless support.
+# Keyless is supported in version 1.18.1 and above
 pnpm install @aptos-labs/ts-sdk
 ```
-
-:::info SDK is experimental
-The API and SDK is still experimental and being actively developed under the '@zeta' tag.
-If your integration stops working please try upgrading the package to the latest '@zeta' version of the SDK. This version may lack features of the non-experimental SDK.
-:::
 
 ### Step 3. Client Integration Steps
 
@@ -458,6 +459,8 @@ At a very high level, a successful sign-in into the dApp via the OIDC provider w
 
 Now, assume that the user’s blockchain account address is (more or less) a hash of the user’s identity in “sub” and the dApp’s identity in “aud” from above.
 
+![Apple enrollment screenshot](../../static/keyless/keyless_relation.png "Apple enrollment screenshot")
+
 Then, the key observation is that the signed JWT effectively acts as a digital certificate, temporarily binding the blockchain address to the EPK, and allowing the EPK to sign TXNs for it. In other words, it securely delegates TXN signing rights for this blockchain account to the EPK. (Note: The EPK contains an expiration date and is thus short-lived.)
 
 Importantly, if the user loses their ESK, the user can obtain a new signed JWT over a new EPK via the application by simply signing in again via the OIDC provider. (Or, in some cases, by requesting a new signed JWT using an OAuth refresh token.)
@@ -467,6 +470,8 @@ With this system, the challenge is maintaining privacy, since revealing the JWT 
 We explain below how Keyless accounts work and how they address these challenges.
 Flow: Deriving a keyless account for a user in a dApp
 First, let us look at how a dApp can sign-in a user via (say) Google, derive that user’s keyless blockchain address and, for example, send that user an asset.
+
+![Apple enrollment screenshot](../../static/keyless/keyless.png "Apple enrollment screenshot")
 
 Step 1: The user generates an ephemeral key pair: an EPK with an expiration date, and its associated ESK. The dApp keeps the EPK and safely stores the ESK on the user-side (e.g., in the browser’s local storage, or in a trusted enclave if the ESK is a WebAuthn passkey).
 
@@ -492,6 +497,7 @@ In the previous flow, we showed how a dApp can sign in a Google user and derive 
 
 Next, we show how this dApp can obtain a zero-knowledge proof (ZKP), which will allow it to authorize transactions from this address for the user. Importantly, the transaction will hide the user’s identifying information (e.g., the "sub" field).
 
+![Apple enrollment screenshot](../../static/keyless/keyless2.png "Apple enrollment screenshot")
 
 Step 1: The dApp sends all the necessary public information (i.e., epk, GPK) and private information (i.e., JWT, signature σG from Google, EPK blinding factor ⍴, and pepper r) to the prover service.
 
@@ -501,14 +507,13 @@ The ZKP will be used to convince the validators that the user is in possession o
 
 More formally, the ZKP π convinces a verifier, who has public inputs (addr, epk, GPK), that the prover knows secret inputs (jwt, σG, ⍴, r) such that the relation 𝓡keyless depicted below holds:
 
-
-
 Recall from before that the signed JWT acts as a digital certificate, temporarily binding the blockchain address addr to the EPK, and allowing the epk to sign TXNs for it. However, the JWT would leak the user’s identity, so The ZKP serves to hide the JWT (and other private information) while arguing that the proper checks hold.
 
 Next, we show how the dApp can now authorize TXNs from addr.
 Flow: Sending a TXN from a keyless account
 The previous flow explained how a dApp can obtain a ZKP from the prover service. Next, we describe how the dApp leverages this ZKP to transact for the account.
 
+![Apple enrollment screenshot](../../static/keyless/keyless3.png "Apple enrollment screenshot")
 
 Step 1: The dApp obtains an ephemeral signature σeph over the TXN from the user. This could be done behind the user’s back, by the dApp itself who might manage the ESK. Or, it could be an actual signing request sent to the user, such as when the ESK is a WebAuthn passkey, which is stored on the user’s trusted hardware.
 
@@ -548,11 +553,11 @@ The best way to use Keyless accounts depends on your use case. If seamless accou
 
 Does Keyless work with sponsored transactions or do my users always need to pay for their own gas?
 
-Yes, Keyless works with sponsored transactions like any regular private key based account. 
+Yes, Keyless works with sponsored transactions like any regular private key based account.
 
 If I use the Aptos Keyless SDK, can my user’s use their accounts across other dApps?
 
-Keyless accounts are scoped to the domain they are created with as the address derivation includes a unique identifier for the application. 
+Keyless accounts are scoped to the domain they are created with as the address derivation includes a unique identifier for the application.
 
 What is Aptos Connect? Account Management Infrastructure: Central to the keyless accounts paradigm is a robust account management infrastructure that facilitates the creation, deletion, and management of user accounts, alongside the storage and retrieval of associated metadata.
 
