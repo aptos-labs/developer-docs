@@ -737,7 +737,7 @@ module user::lottery {
 ```
 
 In this lottery-example, `win` and `lose` consume different amounts of gas.
-If `lose` consumes more gas than `win`, an attacker can set the gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the "lose" path is taken, ensuring that the user never submits a valid transaction for the "lose" path.
+If the `lose` function consumes more gas than the `win` function, an attacker can set the max gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the `lose` path is taken, ensuring that the user will never execute the `lose` path.  Then, the user can call the function repeatedly until they win.
 
 #### Example Secure Code
 
