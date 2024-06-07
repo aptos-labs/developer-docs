@@ -19,54 +19,72 @@ It's important to verify that the `signer` is the rightful owner of the object.
 
 #### Example Insecure Code
 
-In this example, a user must make a payment before being able to perform actions within the module. The user needs to invoke `buy_action` to purchase an `Object<Action>`, which they can then use for executing operations later on.
+In this module, a user must purchase a subscription before performing certain actions. The user invokes the registration function to acquire an `Object<Subscription>`, which they can later use to execute operations.
+
 
 ```move
-module user::obj{
+module user::obj {
 
-    public entry fun buy_action(user:&signer,amount_of_action: u64){
-        let price = calc_price(amount_of_action);
-        deposit(user,price);
+    struct Subscription has key {
+        end_subscription: u64
+    }
+
+    entry fun registration(user: &signer, end_subscription: u64) {
+        let price = calculate_subscription_price(end_subscription);
+        payment(user,price);
 
         let user_address = address_of(user);
         let constructor_ref = object::create_object(user_address);
-        let object_signer = object::generate_signer(&constructor_ref);
-        move_to(&object_signer, Action {amount_of_action });
+        let subscription_signer = object::generate_signer(&constructor_ref);
+        move_to(&subscription_signer, Subscription { end_subscription });
     }
 
-    public entry fun perform_action(user:&signer,obj: Object<Action>){
-        // Perform the action
+    entry fun execute_action_with_valid_subscription(
+        user: &signer, obj: Object<Subscription>
+    ) acquires Subscription {
+        let object_address = object::object_address(&obj);
+        let subscription = borrow_global<Subscription>(object_address);
+        assert!(subscription.end_subscription >= aptos_framework::timestamp::now_seconds(),1);
+        // Use the subscription
         [...]
     }
-
 }
 ```
 
-In this insecure example, `perform_action` does not verify if the user owns `obj` passed to it.
+In this insecure example, `execute_action_with_valid_subscription` does not verify if the user owns the `obj` passed to it. Consequently, anyone can use another person's subscription, bypassing the payment requirement.
 
 #### Example Secure Code
 
-```move
-module user::obj{
+Ensure that the signer owns the object.
 
-    public entry fun buy_action(user:&signer,amount_of_action: u64){
-        let price = calc_price(amount_of_action);
-        deposit(user,price);
+```move
+module user::obj {
+
+    struct Subscription has key {
+        end_subscription: u64
+    }
+
+    entry fun registration(user: &signer, end_subscription: u64) {
+        let price = calculate_subscription_price(end_subscription);
+        payment(user,price);
 
         let user_address = address_of(user);
         let constructor_ref = object::create_object(user_address);
-        let object_signer = object::generate_signer(&constructor_ref);
-        move_to(&object_signer, Action {amount_of_action });
+        let subscription_signer = object::generate_signer(&constructor_ref);
+        move_to(&subscription_signer, Subscription { end_subscription });
     }
 
-    public entry fun perform_action(user: &signer, obj: Object<Action>){
-        // Ensure the caller owns the object
-        assert!(object::owner(&obj) == address_of(user),ENOT_OWNER);
-
-        // Perform the action
+    entry fun execute_action_with_valid_subscription(
+        user: &signer, obj: Object<Subscription>
+    ) acquires Subscription {
+        //ensure that the signer owns the object.
+        assert!(object::owner(&obj)==address_of(user),ENOT_OWNWER);
+        let object_address = object::object_address(&obj);
+        let subscription = borrow_global<Subscription>(object_address);
+        assert!(subscription.end_subscription >= aptos_framework::timestamp::now_seconds(),1);
+        // Use the subscription
         [...]
     }
-
 }
 ```
 
@@ -654,17 +672,19 @@ Using the same account for testnet and mainnet poses a security risk, as testnet
 
 ### Randomness - test-and-abort
 
+> At Aptos, We are always security-first. During compilation, we ensure that no randomness API is invoked from a public function. However, we still allow users to make this choice by adding the attribute `#[lint::allow_unsafe_randomness]` to the public function.
+
 If a `public` function directly or indirectly invokes the randomness API, a malicious user can abuse the composability of this function and abort the transaction if the result is not as desired. This allows the user to keep trying until they achieve a beneficial outcome, undermining the randomness.
 
 #### Example Vulnerable code
 
 ```move
 module user::lottery {
-    fun mint_to_user(user: &signer){
-        move_to(address_of(user),WIN{});
+    fun mint_to_user(user: &signer) {
+        move_to(user, WIN {});
     }
 
-    #[randomness]
+    #[lint::allow_unsafe_randomness]
     public entry fun play(user: &signer) {
         let random_value = aptos_framework::randomness::u64_range(0, 100);
         if (random_value == 42) {
@@ -678,7 +698,7 @@ In this example, the `play` function is `public`, allowing it to be composed wit
 
 ```move
 module attacker::exploit {
-    public entry fun exploit(attacker: &signer) {
+    entry fun exploit(attacker: &signer) {
         @user::lottery::play(attacker);
         assert!(exists<@user::lottery::WIN>(address_of(attacker)));
     }
@@ -691,11 +711,11 @@ To resolve the possible issue, is sufficient to set the visibility of all functi
 
 ```move
 module user::lottery {
-    fun mint_to_user(user: &signer){
-        move_to(address_of(user),Object_for_the_winner{});
+    fun mint_to_user(user: &signer) {
+        move_to(user, WIN {});
     }
 
-    #[randomness]
+    #[lint::allow_unsafe_randomness]
     entry fun play(user: &signer) {
         let random_value = aptos_framework::randomness::u64_range(0, 100);
         if (random_value == 42) {
@@ -704,8 +724,6 @@ module user::lottery {
     }
 }
 ```
-
-> At Aptos, We are always security-first. During compilation, we ensure that no randomness API is invoked from a public function. However, we still allow users to make this choice by adding the attribute `#[lint::allow_unsafe_randomness]` to the public function.
 
 ### Randomness - undergasing
 
@@ -737,7 +755,7 @@ module user::lottery {
 ```
 
 In this lottery-example, `win` and `lose` consume different amounts of gas.
-If `lose` consumes more gas than `win`, an attacker can set the gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the "lose" path is taken, ensuring that the user never submits a valid transaction for the "lose" path.
+If the `lose` function consumes more gas than the `win` function, an attacker can set the max gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the `lose` path is taken, ensuring that the user will never execute the `lose` path.  Then, the user can call the function repeatedly until they win.
 
 #### Example Secure Code
 
