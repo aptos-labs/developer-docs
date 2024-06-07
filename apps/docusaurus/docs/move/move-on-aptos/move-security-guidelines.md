@@ -760,7 +760,7 @@ If the `lose` function consumes more gas than the `win` function, an attacker ca
 There are different ways to secure the code:
 
 1. Ensure better outcomes use more or the same gas as worse outcomes.
-2. Allows only admin addresses to invoke randomness API.
+2. Allow only admin addresses to invoke the randomness API.
 3. Make entry functions work regardless of random outcomes. Avoid immediate actions based on randomness for consistent gas use.
 
 > We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergasing attacks.
