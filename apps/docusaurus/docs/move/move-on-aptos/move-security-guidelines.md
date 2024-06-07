@@ -727,9 +727,7 @@ module user::lottery {
 
 ### Randomness - undergasing
 
-When different code paths in a function consume different amounts of gas, an attacker can manipulate the gas limit to bias the outcome.
-
-If the "lose" path consumes more gas than the "win" path, an attacker can set the gas limit such that the "lose" path will run out of gas. The transaction will be aborted and the user will never lose.
+When different code paths in a function consume different amounts of gas, an attacker can manipulate the gas limit to bias the outcome.  Let's look at an example of how different paths can consume different amounts of gas.
 
 #### Example Vulnerable code
 
