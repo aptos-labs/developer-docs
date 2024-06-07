@@ -120,7 +120,7 @@ As you can see from the example output in step 4, once the local network is runn
 - [Indexer API](../indexer/api.mdx): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
 - [Transaction Stream Service](../indexer/txn-stream.mdx): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing a [custom processor](../indexer/custom-processors.mdx).
 - [Postgres](https://www.postgresql.org/): This is the database that the Indexer processors write to. The Indexer API reads from this database.
-- [Faucet](../../../network/glossary.mdx#faucet): You can use this to fund accounts on your local network.
+- [Faucet](../advanced-guides/system-integrators-guide#integrating-with-the-faucet): You can use this to fund accounts on your local network.
 
 If you do not want to run any of these sub-components of a network, there are flags to disable them.
 
