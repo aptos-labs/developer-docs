@@ -122,7 +122,7 @@ export const i18nConfig = Object.freeze({
     // Testimonials Section
     testimonialsSectionHeadline: "Hear From The Ecosystem",
     testimonial1Body:
-      "Building on Aptos has been transformative, offering unmatched transaction speed and reliability. We love the vibrant community and overall direction that the Aptos ecosystem is heading.",
+      "Building on Aptos has been transformative, offering unmatched transaction speed and reliability. We love the vibrant community and overall direction that the Aptos ecosystem is heading towards.",
     testimonial1Author: "–Muhd Dahlan, CEO Zabava Labs",
     testimonial2Body:
       "Aptin Finance drives secure, intuitive, and seamless financial interactions for Aptos users. Aligned with Aptos' vision, we aim to establish a nexus of Omni-chain DeFi opportunities for a diverse global community.'",
