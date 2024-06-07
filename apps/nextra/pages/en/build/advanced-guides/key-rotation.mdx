@@ -8,7 +8,8 @@ import { Callout, Steps } from "nextra/components";
 
 Aptos Move accounts have a public address, an authentication key, a public key,
 and a private key. The public address is permanent, always matching the
-account's initial authentication key.
+account's initial authentication key, which is derived from the original private
+key.
 
 The Aptos account model facilitates the unique ability to rotate an account's
 private key. Since an account's address is the _initial_ authentication key, the
@@ -29,7 +30,75 @@ Some of the following examples use private keys. Do not share your private
 keys with anyone.
 </Callout>
 
-## Aptos CLI
+## Proven and unproven key rotations
+
+The onchain logic for key rotation is implemented through two Move APIs:
+
+1. [`account::rotate_authentication_key`], which executes a "proven" rotation.
+1. [`account::rotate_authentication_key_call`], which executes an "unproven"
+   rotation.
+
+### Proven key rotations
+
+The [`account::rotate_authentication_key`] API requires a signed
+[`account::RotationProofChallenge`], which proves that the rotation operation is
+approved by the private key from both before _and_ after the operation. When the
+operation is successful, the [`account::OriginatingAddress`] table is updated
+with an entry that maps from the new authentication key to the corresponding
+account address.
+
+The [`account::OriginatingAddress`] table is a reverse lookup table that allows
+users to query an account address associated with a given authentication key,
+and only allows for one entry per authentication key. Hence the requirement of a
+signed [`account::RotationProofChallenge`] to ensure that a malicious actor does
+not rotate an account's authentication key to a key that is already in the
+table, as this attack that would prevent lookup of the valid originating address
+that the holder of an authentication key had previously approved.
+
+Notably, the [`account::OriginatingAddress`] table is _only_ updated upon key
+rotation, not upon standard account generation. This means that with proven key
+rotations, a given private key can theoretically authenticate up to two accounts
+at the same time:
+
+1. The account address derived from the private key during standard account
+   generation, assuming the account has not undergone any key rotations.
+1. A second arbitrary address, which has had its authentication key rotated to
+   the given private key.
+
+However, it is considered best practice to only authenticate _one_ account with
+a given private key at a time, because whenever the
+[`account::OriginatingAddress`] table is updated, the underlying logic first
+checks if the rotating account's initial authentication key is in the table, and
+if so, verifies that the rotating account's address is the one mapped to in the
+table.
+
+This means that if an arbitary account's authentication key is rotated to
+a given private key, the standard account whose address is originally derived
+from the private key will not be able to execute its first authentication key
+rotation while the associated authentication key is mapped to a second arbitrary
+account address in the [`account::OriginatingAddress`] table, because this
+operation would fail the check that the rotating account's address is the one
+mapped to in the table (since the table is only updated upon during rotation,
+not upon standard account generation).
+
+### Unproven key rotations
+
+Unlike [`account::rotate_authentication_key`], the
+[`account::rotate_authentication_key_call`] does _not_ require a signed
+[`account::RotationProofChallenge`]. This means that the operation is not proven
+in the sense the the private key from _after_ the operation has approved the
+key rotation. Hence the [`account::OriginatingAddress`] table is _not_ updated
+for unproven key rotations, and there is thus no restriction on the number of
+accounts that can be authenticated with a given private key. Note that the
+`aptos` CLI does not currently support unproven key rotations.
+
+<Callout type="default" emoji="🧠">
+The [`account::rotate_authentication_key_call`] was introduced to support
+non-standard key algorith, like passkeys, which cannot produce proofs of
+knowledge during rotation operations.
+</Callout>
+
+## Key rotation with the Aptos CLI
 
 <Steps>
 
@@ -284,7 +353,7 @@ aptos config delete-profile --profile test-profile-3
 ```
 </Steps>
 
-## TypeScript
+## TypeScript key rotation example
     This program creates two accounts on devnet, Alice and Bob, funds them, then
     rotates the Alice's authentication key to that of Bob's.
 
@@ -317,7 +386,7 @@ aptos config delete-profile --profile test-profile-3
     Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
     ```
 
-## Python
+## Python key rotation example
     This program creates two accounts on devnet, Alice and Bob, funds them, then
     rotates the Alice's authentication key to that of Bob's.
 
@@ -350,3 +419,7 @@ aptos config delete-profile --profile test-profile-3
     Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
     ```
 
+[`account::rotate_authentication_key`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L326
+[`account::rotate_authentication_key_call`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L294
+[`account::RotationProofChallenge`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L79
+[`account::OriginatingAddress`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L70
