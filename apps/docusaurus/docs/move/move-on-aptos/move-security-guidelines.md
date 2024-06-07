@@ -21,7 +21,6 @@ It's important to verify that the `signer` is the rightful owner of the object.
 
 In this module, a user must purchase a subscription before performing certain actions. The user invokes the registration function to acquire an `Object<Subscription>`, which they can later use to execute operations.
 
-
 ```move
 module user::obj {
 
@@ -668,6 +667,8 @@ Using the same account for testnet and mainnet poses a security risk, as testnet
 
 ## Randomness
 
+For more information on randomness and why it is crucial for preventing the predictability of random numbers, please refer to this page: [Randomness Guide](https://aptos.dev/guides/randomness/).
+
 ---
 
 ### Randomness - test-and-abort
@@ -727,19 +728,32 @@ module user::lottery {
 
 ### Randomness - undergasing
 
-When different code paths in a function consume different amounts of gas, an attacker can manipulate the gas limit to bias the outcome.  Let's look at an example of how different paths can consume different amounts of gas.
+When different code paths in a function consume different amounts of gas, an attacker can manipulate the gas limit to bias the outcome. Let's look at an example of how different paths can consume different amounts of gas.
 
 #### Example Vulnerable code
 
 ```
 module user::lottery {
+
+    //transfer 10 aptos from admin to user
     fun win(user: &signer) {
-        [...]
+        let admin_signer = &get_admin_signer();
+        let aptos_metadata = get_aptos_metadata();
+        primary_fungible_store::transfer(admin_signer, aptos_metadata, address_of(user),10);
     }
 
+    //transfer 10 aptos from user to admin, then 1 aptos from admin to fee_admin
     fun lose(user: &signer) {
-        [...]
+
+        //user to admin
+        let aptos_metadata = get_aptos_metadata();
+        primary_fungible_store::transfer(user, aptos_metadata, @admin, 10);
+
+        //admin to fee_admin
+        let admin_signer = &get_admin_signer();
+        primary_fungible_store::transfer(admin_signer, aptos_metadata, @fee_admin, 1);
     }
+
     #[randomness]
     entry fun play(user: &signer) {
         let random_value = aptos_framework::randomness::u64_range(0, 100);
@@ -753,7 +767,7 @@ module user::lottery {
 ```
 
 In this lottery-example, `win` and `lose` consume different amounts of gas.
-If the `lose` function consumes more gas than the `win` function, an attacker can set the max gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the `lose` path is taken, ensuring that the user will never execute the `lose` path.  Then, the user can call the function repeatedly until they win.
+The `lose` function consumes more gas than the `win` function. An attacker can set the max gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the `lose` path is taken, ensuring that the user will never execute the `lose` path. Then, the user can call the function repeatedly until they win.
 
 #### Example Secure Code
 
