@@ -1,8 +1,8 @@
 ---
-title: "Aptos Roll: on-chain public instant randomness API"
+title: "Randomness API"
 ---
 
-# Aptos Roll: on-chain public instant randomness API
+# Randomness API
 
 ## What does it do: a quick example
 
