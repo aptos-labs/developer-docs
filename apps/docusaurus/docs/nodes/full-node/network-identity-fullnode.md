@@ -11,14 +11,20 @@ PFN identities are more ephemeral and can be regenerated on demand. As such, gen
 guide **should only be done for PFNs**, and not for validators or VFNs.
 :::
 
-Public fullnodes (PFNs) will automatically start up with a randomly generated (ephemeral) network identity. This works well for
-regular PFNs. However, you may want to generate and assign a static network identity to your PFN. This is useful when:
+## Ephemeral vs. Static Identities
+Public fullnodes (PFNs) will automatically start up with a randomly generated (ephemeral) network identity unless a static identity is provided. This works well for
+regular PFNs. However, there are cases where you may want to generate and assign a static network identity to your PFN.
 
+### Ephemeral Identity
+
+- Automatically generated on startup. The same ephemeral identity is used across restarts if the identity key file already exists.
+- Stored at `/opt/aptos/data/db/ephemeral_identity_key`.
+
+### Static Identity
+This is useful when:
 - You wish to advertise your PFN as a seed (i.e., for other Aptos PFNs to connect to).
 - You wish to add your PFN to an allowlist of known identities on an upstream PFN or VFN.
 - You wish to fix the identity of your PFN across restarts and releases so that telemetry and other monitoring tools can track your PFN over time.
-
-This guide will show you how to generate a static network identity and start your PFN with this identity.
 
 :::caution
 Before you proceed, make sure that you already know how to start your local PFN. See [Run a PFN](./index.md) for detailed documentation.
