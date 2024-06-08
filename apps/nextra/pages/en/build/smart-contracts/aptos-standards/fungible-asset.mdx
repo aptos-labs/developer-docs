@@ -4,6 +4,7 @@ id: "fungible-asset"
 ---
 
 import { Callout } from "nextra/components";
+import { ThemedImage } from "@components/index";
 
 # Aptos Fungible Asset (FA) Standard
 
@@ -17,6 +18,14 @@ It does so by using two Move Objects:
 
 1. `Object<Metadata>` - This represents details about the fungible asset itself, including information such as the `name`, `symbol`, and `decimals`.
 2. `Object<FungibleStore>` - This stores a count of fungible asset units owned by this account. Fungible assets are interchangeable with any other fungible asset that has the same metadata. An account *may* own more than one `FungibleStore` for a single Fungible Asset, but that is only for advanced use cases.
+
+<ThemedImage
+alt="FA Object Relationship"
+sources={{
+    light: '/docs/fa-diagram-light.png',
+    dark: '/docs/fa-diagram-dark.png',
+  }}
+/>
 
 [This implementation](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) is an improvement on the `coin` Standard because Move Objects are more customizable and extensible via smart contract. See the advanced guides on writing [Move Objects](aptos-object.mdx) for more details.
 
