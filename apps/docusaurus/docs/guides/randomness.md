@@ -1,8 +1,8 @@
 ---
-title: "Aptos Roll: on-chain public instant randomness API"
+title: "Randomness API"
 ---
 
-# Aptos Roll: on-chain public instant randomness API
+# Randomness API
 
 ## What does it do: a quick example
 
@@ -115,7 +115,8 @@ where:
 - `#[randomness]` is a required attribute to enable the API call at runtime.
 
 ### Security Considerations
-Compiler helps with test and abort attacks, requiring functions using randomness to be private.  However, the randomness API currently does not prevent undergasing attacks.  The smart contract will need to be written in a certain way to avoid it.
+
+Compiler helps with test and abort attacks, requiring functions using randomness to be private. However, the randomness API currently does not prevent undergasing attacks. The smart contract will need to be written in a certain way to avoid it.
 
 ## How to use Aptos randomness API
 
@@ -319,10 +320,10 @@ As a dApp developer, you need to be very careful in your design to avoid this ty
 Here are some ideas of how to prevent undergasing attack generally.
 
 - Make your entry function gas independent from the randomness outcome.
-The simplest example is to not "act" on the randomness outcome, i.e. read it and store it for later. Note that calling any other functions  can have variable gas costs. For example, when calling randomness to decide which player should win, and then depositing the winnings to the winner might seem like a fixed gas cost. But, `0x1::coin::transfer` / `0x1::fungible_asset::transfer` can have a variable cost based on the user's on-chain state.
+  The simplest example is to not "act" on the randomness outcome, i.e. read it and store it for later. Note that calling any other functions can have variable gas costs. For example, when calling randomness to decide which player should win, and then depositing the winnings to the winner might seem like a fixed gas cost. But, `0x1::coin::transfer` / `0x1::fungible_asset::transfer` can have a variable cost based on the user's on-chain state.
 - If your dApp involves a trusted admin/admin group, only allow the trusted to execute randomness transaction (i.e. require an admin signer).
 - Make the path that is most beneficial have the highest gas (as attacker can only abort paths with gas above a threshold he chooses.
-NOTE: that this can be tricky to get right, and gas schedule can change, and is even harder to get right when there are more than 2 possible outcomes.
+  NOTE: that this can be tricky to get right, and gas schedule can change, and is even harder to get right when there are more than 2 possible outcomes.
 
 Note that everything that does not fall in above categories can be susceptible to undergasing attack in a subtle ways. Reach out if you need help.
 

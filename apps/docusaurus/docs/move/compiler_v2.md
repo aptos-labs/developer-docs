@@ -16,7 +16,6 @@ Note that compiler v2 is not yet applying many code optimizations. As a result, 
 
 We award a bounty for each unique semantic bug identified in the compiler. Bugs need to surface as a difference of execution outcome of the v1 and v2 compilers, as demonstrated by a Move unit test. Try your existing Move tests with the new compiler, it is as easy as calling `aptos move test --compiler-version=2`! Not all differences in the compiler behavior count for the program, [head over here](https://hackenproof.com/audit-programs/aptos-labs/move-on-aptos-beta-compiler) for details of the bounty program. Even if a difference in behavior does not qualify for a bounty, we encourage you to open an issue using the link below.
 
-
 ## Reporting an Issue
 
 If you run into issues, please use [this link to create a github issue][bug]. If you are able to provide a small piece of Move code which reproduces the issue, debugging and fixing it will be easier for us.
@@ -42,7 +41,7 @@ aptos move prove --compiler-version=2
 
 ## Using Move 2
 
-Compiler v2 implements some first features of *Move 2*, the new edition of Move on Atpos. The scope of Move 2 is described in the blog [The Future of Move at Aptos](https://medium.com/aptoslabs/the-future-of-move-at-aptos-17d0656dcc31). The growing list of new features is documented below and will be extended as new features are added:
+Compiler v2 implements some first features of _Move 2_, the new edition of Move on Atpos. The scope of Move 2 is described in the blog [The Future of Move at Aptos](https://medium.com/aptoslabs/the-future-of-move-at-aptos-17d0656dcc31). The growing list of new features is documented below and will be extended as new features are added:
 
 - Receiver style function calls (see the [Move Book](./book/functions.md) for more details)
 
