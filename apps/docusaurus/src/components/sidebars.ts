@@ -475,7 +475,7 @@ const sidebars: SidebarsConfig = {
         {
           type: "category",
           label: "Aptos Keyless",
-          link: { type: "doc", id: "keyless/aptos-keyless-overview" },
+          link: { type: "doc", id: "keyless/index" },
           items: [
             "keyless/introduction",
             "keyless/oidc-support",

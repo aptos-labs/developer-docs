@@ -18,24 +18,28 @@ At a high level, there are three steps to follow in order to integrate Keyless A
    2. Instantiate the user’s `KeylessAccount`
    3. Sign and submit transactions via the `KeylessAccount`.
 
-### Step 1. Configure your OpenID integration with your IdP
+## Example Implementaion
+
+You can find an example app demonstrating basic Keyless integration with Google in the [aptos-keyless-example repository](https://github.com/aptos-labs/aptos-keyless-example/). Follow the directions in the README to start with the example. For more detailed instructions on keyless, please read the rest of this integration guide.
+
+## Step 1. Configure your OpenID integration with your IdP
 
 The first step is to setup the configuration with your IdP(s).
 
 [Follow the intructions here](oidc-support.md)
 
-### Step 2. Install the Aptos TypeScript SDK
+## Step 2. Install the Aptos TypeScript SDK
 
 ```bash
 # Keyless is supported in version 1.18.1 and above
 pnpm install @aptos-labs/ts-sdk
 ```
 
-### Step 3. Client Integration Steps
+## Step 3. Client Integration Steps
 
 Below are the default steps for a client to integrate Keyless Accounts
 
-#### 1. Present the user with a "Sign In with [IdP]" button on the UI
+### 1. Present the user with a "Sign In with [IdP]" button on the UI
 
     1. In the background, we create an ephemeral key pair. Store this in local storage.
 
@@ -162,7 +166,7 @@ export const decodeEphemeralKeyPairs = (
 
     5. When the user clicks the login button, redirect the user to the `loginUrl` that was created in step 1.4.
 
-#### 2. Handle the callback by parsing the token and create a Keyless account for the user
+### 2. Handle the callback by parsing the token and create a Keyless account for the user
 
     1. Once the user completes the login flow, they will be redirected to the `redirect_uri` set in step 1. The JWT will be set in the URL as a search parameter in a URL fragment, keyed by `id_token`. Extract the JWT from the `window` by doing the following:
 
