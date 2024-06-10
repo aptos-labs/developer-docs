@@ -286,7 +286,7 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
         ```tsx
         import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
-        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET}));  // Only devnet and testnet supported as of now.
+        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET})); // Configure your network here
         const keylessAccount = await aptos.deriveKeylessAccount({
             jwt,
             ephemeralKeyPair,
