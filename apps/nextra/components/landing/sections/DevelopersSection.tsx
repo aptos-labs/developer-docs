@@ -28,10 +28,10 @@ export function DevelopersSection() {
           href="https://github.com/aptos-labs/aptos-developer-discussions/discussions"
         />
         <DevelopersCard
-          label={t.officeHoursLabel}
-          description={t.officeHoursDescription}
-          linkLabel={t.officeHoursLink}
-          href="" // TODO: Add link to relevant docs page
+          label={t.aptosLearnLabel}
+          description={t.aptosLearnDescription}
+          linkLabel={t.aptosLearnLink}
+          href="https://learn.aptoslabs.com/"
         />
         <DevelopersCard
           label={t.grantsLabel}

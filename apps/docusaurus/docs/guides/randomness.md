@@ -1,8 +1,8 @@
 ---
-title: "Aptos Roll: on-chain public instant randomness API"
+title: "Randomness API"
 ---
 
-# Aptos Roll: on-chain public instant randomness API
+# Randomness API
 
 ## What does it do: a quick example
 
@@ -41,11 +41,11 @@ The implementation above is insecure in multiple ways:
 - a malicious user may bias the result by picking the transaction submission time;
 - a malicious validator can bias the result easily by selecting which block the `decide_winner` transaction goes to.
 
-Other dApps may have chosen to use a external secure randomness source
+Other dApps may have chosen to use an external secure randomness source
 (e.g., [drand](https://drand.love/)), which is typically a complicated flow:
 
 1. The participants agree on using a future randomness seed promised by the randomness source to determine the winner.
-2. Once the randomness seed is revealed, the clients fetch the it and derive the winner locally.
+2. Once the randomness seed is revealed, the clients fetch it and derive the winner locally.
 3. One of the participants submits the seed and the winner on chain.
 
 ```move
@@ -111,10 +111,12 @@ module module_owner::lottery {
 
 where:
 
-- `let winner_idx = aptos_framework::randomness::u64_range(0, n);` is the a randomness API call that returns a u64 integer in range `[0, n)` uniformly at random.
+- `let winner_idx = aptos_framework::randomness::u64_range(0, n);` is the randomness API call that returns an u64 integer in range `[0, n)` uniformly at random.
 - `#[randomness]` is a required attribute to enable the API call at runtime.
 
-Note: there are security nuances to consider, explained in more details in "Security Considerations" section. Compiler helps with test and abort attacks by requiring functions using randomness to be private. On the other hand, randomness API currently doesn’t prevent undergasing attacks, and so code needs to be written in a specific way to avoid it.
+### Security Considerations
+
+Compiler helps with test and abort attacks, requiring functions using randomness to be private. However, the randomness API currently does not prevent undergasing attacks. The smart contract will need to be written in a certain way to avoid it.
 
 ## How to use Aptos randomness API
 
@@ -140,7 +142,7 @@ alias aptos=target/debug/aptos
 
 ### Keep undergasing attacks in mind
 
-**WARNING: randomness API currently doesn’t prevent undergasing attacks.** Carefully read undergasing section to understand undergasing attack and how to prevent it, to make sure you, as a dApp developer, design applications using randomness in the safe way.
+**WARNING: The randomness API currently does not prevent undergasing attacks.** Carefully read the undergasing section to understand about undergasing attacks and how to prevent them. As a dApp developer, you will need to design applications using randomness with safety in mind.
 
 ### Identify randomness-dependent entry functions and make them compliant
 
@@ -163,7 +165,8 @@ module module_owner::lottery {
 ```
 
 At runtime, when randomness API is called, the VM checks whether the outermost of the callstack is a private entry function with `#[randomness]` attribute.
-**If not, the enture transaction is aborted.**
+**If not, the entire transaction is aborted.**
+
 NOTE: It also means randomness API calls are supported only in entry function-based transactions.
 (For example, using randomness API in a Move script is impossible.)
 
@@ -188,18 +191,33 @@ The above example uses function `u64_range()` but many other basic types are als
 Here's a quick overview of all the API, where `T` can be one of `u8, u16, u32, u64, u128, u256`.
 
 ```move
-/// Generates an T uniformly at random.
-fun T_integer(): T
+module aptos_framework::randomness {
+    /// Generates an number uniformly at random.
+    fun u8_integer(): u8 {}
 
-/// Generates a number `[min_incl, max_excl)` uniformly at random.
-fun T_range(min_incl, ): T
+    /// Generates an number uniformly at random.
+    fun u16_integer(): u16 {}
 
-/// Generates a sequence of bytes uniformly at random
-fun bytes(n: u64): vector<u8>;
+    // fun u32_integer(), fun u64_integer() ...
 
-/// Generate a permutation of `[0, 1, ..., n-1]` uniformly at random.
-/// If n is 0, returns the empty vector.
-fun permutation(n: u64): vector<u64>;
+    /// Generates a number `[min_incl, max_excl)` uniformly at random.
+    fun u8_range(min_incl: u8, max_excl: u8): u8 {}
+
+    /// Generates a number `[min_incl, max_excl)` uniformly at random.
+    fun u16_range(min_incl: u16, max_excl: u16): u16 {}
+
+    // fun u32_range(), fun u64_range() ...
+
+    /// Generates a sequence of bytes uniformly at random
+    /// n is the number of bytes
+    /// If n is 0, returns the empty vector.
+    fun bytes(n: u64): vector<u8> {}
+
+    /// Generate a permutation of `[0, 1, ..., n-1]` uniformly at random.
+    /// n is the number of bytes
+    /// If n is 0, returns the empty vector.
+    fun permutation(n: u64): vector<u64> {}
+}
 ```
 
 The full API function list and documentation can be found [here](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/randomness.md).
@@ -245,8 +263,8 @@ If `decide_winner_internal()` were accidentally marked public,
 malicious players can deploy their own contract to:
 
 1. call`decide_winner_internal()`;
-1. read the lottery result (assuming the `lottery` module has some getter functions for the result);
-1. abort if the result is not in their favor.
+2. read the lottery result (assuming the `lottery` module has some getter functions for the result);
+3. abort if the result is not in their favor.
    By repeatedly calling their own contract until a txn succeeds,
    malicious users can bias the uniform distribution of the winner (dApp developer's initial design).
    This is referred to as a [test-and-abort attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#test-and-abort-attacks).
@@ -286,34 +304,34 @@ module module_owner::lottery {
 Imagine such a dApp. It defines a private entry function for a user to:
 
 1. toss a coin (gas cost: 9), then
-2. get a reward (gas cost: 10) if coin=1, do some cleanup (gas cost: 100) otherwise.
+2. get a reward (gas cost: 10) if coin=1, or do some cleanup (gas cost: 100) otherwise.
 
-A malicious user can control its account balance so it covers at most 108 gas units (or set transaction parameter `max_gas=108`),
+A malicious user can control its account balance, so it covers at most 108 gas units (or set transaction parameter `max_gas=108`),
 and the cleanup branch (total gas cost: 110) will always abort with an out-of-gas error.
-The user then repeatedly call the the entry function until it gets the reward.
+The user then repeatedly call the entry function until it gets the reward.
 
 Formally, this is referred to as an [undergasing attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#undergasing-attacks),
 where an attacker can control how much gas is left for the entry function to execute,
 and so can arbitrarily decide to abort paths that cost more gas,
 biasing the outcome (i.e. effectively changing the distribution of random numbers).
 
-**WARNING: randomness API currently doesn’t prevent undergasing attacks.**
+**WARNING: randomness API currently does not prevent undergasing attacks.**
 As a dApp developer, you need to be very careful in your design to avoid this type of attack.
 Here are some ideas of how to prevent undergasing attack generally.
 
 - Make your entry function gas independent from the randomness outcome.
-  Simplest example is to not “act” on the randomness outcome, i.e. read it and store it for later. Note that calling any framework functions or functions not completely understood can have variable gas costs. For example, calling randomness to decide which of the two players should get the winnings, and then depositing winnings to the target address might seem like a fixed gas cost, but coin::transfer / fungible_asset::transfer can have variable cost based on the user's onchain state.
+  The simplest example is to not "act" on the randomness outcome, i.e. read it and store it for later. Note that calling any other functions can have variable gas costs. For example, when calling randomness to decide which player should win, and then depositing the winnings to the winner might seem like a fixed gas cost. But, `0x1::coin::transfer` / `0x1::fungible_asset::transfer` can have a variable cost based on the user's on-chain state.
 - If your dApp involves a trusted admin/admin group, only allow the trusted to execute randomness transaction (i.e. require an admin signer).
 - Make the path that is most beneficial have the highest gas (as attacker can only abort paths with gas above a threshold he chooses.
   NOTE: that this can be tricky to get right, and gas schedule can change, and is even harder to get right when there are more than 2 possible outcomes.
 
-Note that everything that doesn’t fall in above categories can be susceptible to undergasing attack in a subtle ways. Reach out if you need help.
+Note that everything that does not fall in above categories can be susceptible to undergasing attack in a subtle ways. Reach out if you need help.
 
 We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergasing attacks.
 
 ### It's random, but not a secret
 
-While the randomness API mimics the stdlibs you use to implement a private centralized server,
+While the randomness API mimics the standard libraries you use to implement a private centralized server,
 keep in mind that **the seed is public, and so is your transaction execution**,
 and not every randomness-dependent logic in your private centralized server can be transferred on chain safely,
 **especially when it involves a secret that only the server should see**.

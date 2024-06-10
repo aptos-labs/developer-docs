@@ -8,7 +8,9 @@ export default {
   "building-from-source": "Building Aptos from Source",
   networks: {
     title: "Networks",
-    toc: false,
-    typesetting: "article",
+    theme: {
+      toc: false,
+      layout: "full",
+    },
   },
 };
