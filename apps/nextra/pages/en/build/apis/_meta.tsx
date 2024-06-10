@@ -12,5 +12,8 @@ export default {
     title: "Indexer GraphQL API",
     href: "/en/build/indexer",
   },
+  "faucet-api": {
+    title: "Faucet API",
+  },
   "aptos-labs-developer-portal": "Developer Portal",
 };
