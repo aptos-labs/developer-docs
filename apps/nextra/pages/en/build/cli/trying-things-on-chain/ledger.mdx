@@ -200,10 +200,17 @@ aptos key generate \
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+{
+  "Result": {
+    "PublicKey Path": "private-key-a.pub",
+    "PrivateKey Path": "private-key-a",
+    "Account Address:": "0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5"
+  }
+}
 ```
 </details>
 
-Use the private key to initialize `hot-wallet-1` on the localnet:
+Use the private key to initialize a `hot-wallet-1` profile on the localnet:
 
 ```sh filename="Terminal"
 aptos init \
@@ -216,6 +223,17 @@ aptos init \
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+Configuring for profile hot-wallet-1
+Configuring for network Local
+Using command line argument for private key
+Account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 doesn\'t exist, creating it and funding it with 100000000 Octas
+Account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 funded successfully
+
+---
+Aptos CLI is now set up for account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 as profile hot-wallet-1!  Run `aptos --help` for more information about commands
+{
+  "Result": "Success"
+}
 ```
 </details>
 
@@ -249,6 +267,22 @@ Approve rotation proof challenge signature on your Ledger device
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile ledger-wallet-1000",
+    "transaction": {
+      "transaction_hash": "0x1a6df99651ac170bda10cfb9898fa196321d80a928033791b9d2231f77738bb2",
+      "gas_used": 448,
+      "gas_unit_price": 100,
+      "sender": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "sequence_number": 0,
+      "success": true,
+      "timestamp_us": 1717986382369736,
+      "version": 186,
+      "vm_status": "Executed successfully"
+    }
+  }
+}
 ```
 </details>
 
@@ -277,10 +311,8 @@ rm private-key-*
 ```
 </Callout>
 
-### Compare and recover profiles
-
 Now that you have successfully rotated the authentication key of the hot wallet,
-you can delete both profiles:
+you can delete the profiles too:
 
 ```sh filename="Terminal"
 aptos config delete-profile --profile hot-wallet-1
@@ -290,12 +322,21 @@ aptos config delete-profile --profile ledger-wallet-1000
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+{
+  "Result": "Deleted profile hot-wallet-1"
+}
+{
+  "Result": "Deleted profile ledger-wallet-1000"
+}
 ```
 </details>
 
+### Recover profile
+
 Since you know that you rotated the authentication key of the hot wallet to the
-Ledger, and since you used the best practice of [BIP44 account index] offset of
-1000, you can easily recover the profile using the [BIP44 account index] alone.
+Ledger, and since you used the best practice of a [BIP44 account index] offset
+of 1000, you can easily recover the profile using the [BIP44 account index]
+alone:
 
 ```sh filename="Terminal"
 aptos init \
@@ -308,6 +349,39 @@ aptos init \
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+Configuring for profile ledger-wallet-1000-recovered
+Configuring for network Local
+Account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 has been already found onchain
+
+---
+Aptos CLI is now set up for account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 as profile ledger-wallet-1000-recovered!  Run `aptos --help` for more information about commands
+{
+  "Result": "Success"
+}
+```
+</details>
+
+Note that this profile corresponds to the specified `0xaaa...` vanity account
+address:
+
+```sh filename="Terminal"
+aptos config show-profiles --profile ledger-wallet-1000-recovered
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "ledger-wallet-1000-recovered": {
+      "has_private_key": false,
+      "public_key": "0x20ba83f9b9fdab73b0ace8fda26ce24c98cf55060b72b69cfbd25add6a25d09b",
+      "account": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
 ```
 </details>
 
@@ -339,6 +413,13 @@ aptos key generate \
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+{
+  "Result": {
+    "PublicKey Path": "private-key-b.pub",
+    "PrivateKey Path": "private-key-b",
+    "Account Address:": "0xbbbede2b4f1d49eff0b156ab0756889a6f2bb68f215399d5015da9ac45921b47"
+  }
+}
 ```
 </details>
 
@@ -366,6 +447,21 @@ Approve transaction on your Ledger device
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile temporary-hot-wallet",
+    "transaction": {
+      "transaction_hash": "0xe49782e92d8fd824fd6dce8f6ed42a11cf8ee84c201f3aa639c435e737c80eaa",
+      "gas_used": 449,
+      "gas_unit_price": 100,
+      "sender": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "sequence_number": 1,
+      "success": true,
+      "timestamp_us": 1717986617911082,
+      "version": 631,
+      "vm_status": "Executed successfully"
+    }
+  }
 ```
 </details>
 
@@ -381,6 +477,9 @@ aptos config rename-profile \
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+{
+  "Result": "Renamed profile ledger-wallet-1000-recovered to ledger-wallet-1000-stale"
+}
 ```
 </details>
 
@@ -407,6 +506,22 @@ Approve rotation proof challenge signature on your Ledger device
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile ledger-wallet-1000",
+    "transaction": {
+      "transaction_hash": "0x9503819d4ea13bcd9eafed25984807d86d22e8a9837565a7495b54d13890d103",
+      "gas_used": 449,
+      "gas_unit_price": 100,
+      "sender": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "sequence_number": 2,
+      "success": true,
+      "timestamp_us": 1717986672963544,
+      "version": 742,
+      "vm_status": "Executed successfully"
+    }
+  }
+}
 ```
 </details>
 
@@ -426,6 +541,18 @@ aptos config delete-profile --profile temporary-hot-wallet
 aptos config delete-profile --profile ledger-wallet-1000-stale
 ```
 
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": "Deleted profile temporary-hot-wallet"
+}
+{
+  "Result": "Deleted profile ledger-wallet-1000-stale"
+}
+```
+</details>
+
 Since you no longer need the temporary private key, delete it too.
 
 <Callout type="info" emoji="🧠">
@@ -435,12 +562,6 @@ If you are using a UNIX-like machine:
 rm private-key-*
 ```
 </Callout>
-
-<details>
-<summary>Example output</summary>
-```sh filename="Terminal"
-```
-</details>
 
 ### Clean up
 
