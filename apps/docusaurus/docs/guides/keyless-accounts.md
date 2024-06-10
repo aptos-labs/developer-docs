@@ -143,7 +143,7 @@ At a high level, there are three steps to follow in order to integrate Keyless A
 
 #### Supported Identity Providers
 
-TODOTODO
+TODOTODO   
 
 Currently only Google is supported. We will support additional OIDC providers in the future (e.g., Apple, Kakaotalk, Microsoft, etc.).
 
