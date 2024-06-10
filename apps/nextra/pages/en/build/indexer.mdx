@@ -12,7 +12,7 @@ import { Tabs } from 'nextra/components'
 Most applications **require** an indexer to efficiently query for on-chain state as the [Aptos Node API](apis/fullnode-rest-api.mdx) provides only a basic, stable API and does not support data shaping required for rich user experiences.
 The Aptos Indexer processes raw blockchain data for app-specific needs, enabling low-latency and enhanced experiences for end-user applications.
 
-Here's an interactive example of how you can query for the Current Coin Balances of an account. More usage examples can be found in [common queries](indexer/common-queries.mdx).
+Here's an interactive example of how you can query for the Current Coin Balances of an account. More usage examples can be found in example queries.
 
 <GraphQLEditor
   query={`query GetCoinBalances($address: String, $offset: Int) {
@@ -55,12 +55,20 @@ Here's an interactive example of how you can query for the Current Coin Balances
   </Card>
 </Cards>
 
-## Query Examples
+## Example Queries
 
 <Cards>
-  <Card href="indexer/common-queries">
-    <Card.Title>Common Indexer Queries</Card.Title>
-    <Card.Description>8+ example queries for accounts, tokens, coins, staking and more</Card.Description>
+  <Card href="indexer/account-transactions">
+    <Card.Title>Account Transactions Query</Card.Title>
+    <Card.Description>Retrieves `transaction_version`s of transactions that affect a specified account address, ordered in descending order</Card.Description>
+  </Card>
+  <Card href="indexer/coin-balances">
+    <Card.Title>Coin Balances Query</Card.Title>
+    <Card.Description>Retrieves the current balances for various coin types associated with a specified account address</Card.Description>
+  </Card>
+  <Card href="indexer/get-nfts">
+    <Card.Title>NFTs Query</Card.Title>
+    <Card.Description>Retrieves a list of NFTs owned by a specified account address</Card.Description>
   </Card>
 </Cards>
 
