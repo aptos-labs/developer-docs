@@ -287,7 +287,7 @@ Approve rotation proof challenge signature on your Ledger device
 </details>
 
 Compare the `hot-wallet-1` and `ledger-wallet-1000` profiles, noting that they
-have the same `account` address:
+have the same `account` address but different `public_key` values:
 
 ```sh filename="Terminal"
 aptos config show-profiles --profile hot-wallet-1
@@ -297,6 +297,28 @@ aptos config show-profiles --profile ledger-wallet-1000
 <details>
 <summary>Example output</summary>
 ```sh filename="Terminal"
+{
+  "Result": {
+    "hot-wallet-1": {
+      "has_private_key": true,
+      "public_key": "0xffb1240fd1267207cc3ed2e1b5386e090a9ca2c844d7f9e0077b3d7dd5d5e430",
+      "account": "aaa271bca468fb8518f73a732a484b29a1bc296ebcb23f15639d4865a5cebe87",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+{
+  "Result": {
+    "ledger-wallet-1000": {
+      "has_private_key": false,
+      "public_key": "0x20ba83f9b9fdab73b0ace8fda26ce24c98cf55060b72b69cfbd25add6a25d09b",
+      "account": "aaa271bca468fb8518f73a732a484b29a1bc296ebcb23f15639d4865a5cebe87",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
 ```
 </details>
 
