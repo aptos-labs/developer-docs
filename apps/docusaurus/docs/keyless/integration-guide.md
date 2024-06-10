@@ -3,10 +3,6 @@ title: "Integration Guide"
 # id: "Aptos Keyless Integration Guide"
 ---
 
-:::info Only devnet and testnet is supported
-Currently Aptos Keyless is only supported in devnet and testnet. Mainnet support scheduled for June 10.
-:::
-
 :::tip Keyless Account Scoping
 Use of the **_Aptos Keyless Integration Guide_** will allow for the integration of keyless accounts directly into your application. This means that blockchain accounts are scoped to your application's domain (logging in with your Google account on dApp A and logging in with your Google account on dApp B will create separate accounts). Stay tuned for more to come on Aptos’ plan to allow Keyless accounts to be used portably across applications.
 
@@ -24,17 +20,9 @@ At a high level, there are three steps to follow in order to integrate Keyless A
 
 ### Step 1. Configure your OpenID integration with your IdP
 
-#### Supported Identity Providers
+The first step is to setup the configuration with your IdP(s).
 
-TODOTODO
-
-Currently only Google is supported. We will support additional OIDC providers in the future (e.g., Apple, Kakaotalk, Microsoft, etc.).
-
-| Identity Provider | Auth URL                                                                                                                                                                       |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Google            | https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=id_token&scope=openid%20email&nonce=${NONCE} |
-
-The implicit flow (no authorization code exchange) is the preferred method of authentication. The integration steps assume use of implicit flow.
+[Follow the intructions here](oidc-support.md)
 
 ### Step 2. Install the Aptos TypeScript SDK
 
