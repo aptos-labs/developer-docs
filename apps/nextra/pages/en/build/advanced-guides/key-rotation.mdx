@@ -766,6 +766,8 @@ out as descriptive of an error as the actual transaction.)
 
 ### Clean up
 
+Delete the test profiles:
+
 ```shell filename="Terminal"
 aptos config delete-profile --profile test-profile-1
 aptos config delete-profile --profile test-profile-2
@@ -788,6 +790,12 @@ kill $LOCALNET_PID
 rm -fr localnet-data
 ```
 </Callout>
+
+### Rotate keys for a Ledger
+
+You can also perform authentication key rotation with a private key that is
+securely stored on a Ledger hardware wallet. For more information, see the
+[Ledger authentication key rotation guide](../cli/trying-things-on-chain/ledger.mdx#authentication-key-rotation).
 
 </Steps>
 
