@@ -2,32 +2,66 @@
 title: "Aptos APIs"
 ---
 
+import { Cards, Card } from '@components/index'
+
 # Aptos APIs
 
 The Aptos Blockchain network can be accessed by several APIs, depending on your use-case.
 
-1. #### [Aptos Fullnode-embedded REST API](apis/fullnode-rest-api.mdx).
+## Aptos Fullnode
 
-   This API - embedded into Fullnodes - provides a simple, low latency, yet low-level way of _reading_ state and
+This API - embedded into Fullnodes - provides a simple, low latency, yet low-level way of _reading_ state and
 _submitting_ transactions to the Aptos Blockchain. It also supports transaction simulation.
 
-2. #### [Aptos Indexer-powered GraphQL API](indexer.mdx).
+<Cards>
+   <Card href="./apis/fullnode-rest-api-reference?network=mainnet">
+      <Card.Title>Aptos Fullnode REST API (Mainnet)</Card.Title>
+      <Card.Description>Mainnet API playground for Aptos Fullnode REST API</Card.Description>
+   </Card>
+   <Card href="./apis/fullnode-rest-api-reference?network=testnet">
+      <Card.Title>Aptos Fullnode REST API (Testnet)</Card.Title>
+      <Card.Description>Testnet API playground for Aptos Fullnode REST API</Card.Description>
+   </Card>
+   <Card href="./apis/fullnode-rest-api-reference?network=devnet">
+      <Card.Title>Aptos Fullnode REST API (Devnet)</Card.Title>
+      <Card.Description>Devnet API playground for Aptos Fullnode REST API</Card.Description>
+   </Card>
+</Cards>
 
-   This API provides a high-level, opinionated GraphQL API to _read_ state from the Aptos Blockchain. If your app needs
-to interact with high level constructs, such as NFTs, Aptos Objects or custom Move contracts, you likely want to
-incorporate the Aptos GraphQL Indexer API in some fashion. Learn more about the Indexer-powered GraphQL API here.
+## Indexer
 
-3. #### [Aptos GRPC Transaction Stream API](indexer/txn-stream.mdx)
+<Cards>
+   <Card href="./indexer">
+      <Card.Title>Indexer GraphQL API</Card.Title>
+      <Card.Description>
+         This GraphQL API offers a high-level, opinionated GraphQL interface to read state from the Aptos Blockchain. 
+         It's ideal for interacting with NFTs, Aptos Objects, or custom Move contracts. 
+         Learn more about the Indexer-powered GraphQL API here.
+      </Card.Description>
+   </Card>
+   <Card href="./indexer/txn-stream">
+      <Card.Title>Transaction Stream API</Card.Title>
+      <Card.Description>
+         This GRPC API streams historical and real-time transaction data to an indexing processor. 
+         It's used by Aptos Core Indexing and can also support custom app-specific indexing processors 
+         for real-time blockchain data processing. Learn more here.
+      </Card.Description>
+   </Card>
+</Cards>
 
-   This API provides a way to stream historical and current transaction data in real-time to an indexing processor. This
-API is used by the Aptos Core Indexing infrastructure itself but also can be used to build app-specific custom indexing
-processors that process blockchain data in real-time. Learn more here.
+## Faucet (Only Testnet/Devnet)
 
-4. #### Faucet API (Only Testnet/Devnet)
+<Cards>
+   <Card href="./advanced-guides/system-integrators-guide#integrating-with-the-faucet">
+      <Card.Title>Faucet API</Card.Title>
+      <Card.Description>
+         This API provides the ability to receive test tokens on devnet and testnet. Its primary purpose is the development
+         and testing of applications and Move contracts before deploying them to mainnet.
+      </Card.Description>
+   </Card>
+</Cards>
 
-   This API provides the ability to receive test tokens on devnet and testnet. Its primary purpose is the development
-   and testing of applications and Move contracts before deploying them to mainnet.
-
+   
 The code of each of the above-mentioned APIs is open-sourced on [GitHub](https://github.com/aptos-labs/aptos-core). As
 such anyone can operate these APIs and many independent operators and builders worldwide choose to do so.
 

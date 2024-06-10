@@ -12,12 +12,6 @@ The Indexer API allows you to access rich data about tokens, accounts, transacti
 
 You can interactively explore the data discussed here using Hasura explorers here:
 
-- Mainnet: https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql
-- Testnet: https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql
-- Devnet: https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql
-
-Or via code at the following endpoints:
-
 <Cards>
   <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">
     <Card.Title>**Mainnet**</Card.Title>
@@ -32,6 +26,12 @@ Or via code at the following endpoints:
     <Card.Description>Hasura GraphQL Explorer for Aptos Devnet</Card.Description>
   </Card>
 </Cards>
+
+Or via code at the following endpoints:
+
+- **Mainnet:** `https://api.mainnet.aptoslabs.com/v1/graphql`
+- **Testnet:** `https://api.testnet.aptoslabs.com/v1/graphql`
+- **Devnet:** `https://api.devnet.aptoslabs.com/v1/graphql`
 
 You can also find a list of the most common queries using these tables [here](common-queries.mdx).
 
@@ -60,12 +60,12 @@ This table maps accounts and transactions that interact with that account.
 
 | Field                         | Type    | Primary Key | Description                                                                                                |
 | ----------------------------- | ------- | ----------- | ---------------------------------------------------------------------------------------------------------- |
-| coin_activities               | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                 |
-| coin_activities_aggregate     | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                 |
-| delegated_staking_activities  | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                 |
+| coin_activities               | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                 |
+| coin_activities_aggregate     | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                 |
+| delegated_staking_activities  | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                 |
 | fungible_asset_activities     | Join    |             | References [fungible_asset_activities](#fungible_asset_activities).                                        |
-| token_activities              | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                 |
-| token_activities_aggregate    | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                 |
+| token_activities              | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                 |
+| token_activities_aggregate    | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                 |
 | token_activities_v2           | Join    |             | References [token_activities_v2](#token_activities_v2).                                                    |
 | token_activities_v2_aggregate | Join    |             | References [token_activities_v2](#token_activities_v2).                                                    |
 | account_address               | String! | Yes         | This is an Aptos account address. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
@@ -102,11 +102,11 @@ This table tracks token activities and is especially useful for tracking NFT act
 
 | Field                      | Type    | Primary Key | Description                                                                                                                              |
 | -------------------------- | ------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| aptos_names_from           | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
-| aptos_names_from_aggregate | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
-| aptos_names_to             | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
-| aptos_names_to_aggregate   | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
-| current_token_data         | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                               |
+| aptos_names_from           | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                               |
+| aptos_names_from_aggregate | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                               |
+| aptos_names_to             | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                               |
+| aptos_names_to_aggregate   | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                               |
+| current_token_data         | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                               |
 | after_value                | String  |             | The value of a token property after the transaction. Ex. "100"                                                                           |
 | before_value               | String  |             | The value of a token property before the transaction. Ex. "50"                                                                           |
 | entry_function_id_str      | String  |             | The identifier of the function called in this transaction. Ex. "0x1::aptos_account::transfer"                                            |
@@ -168,10 +168,10 @@ This table tracks the metadata associated with each NFT (Ex. URI, supply, etc.).
 
 | Field                              | Type    | Primary Key | Description                                                                                                                      |
 | ---------------------------------- | ------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| cdn_asset_uris                     | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                       |
-| current_collection                 | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                       |
-| current_token_ownerships           | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                       |
-| current_token_ownerships_aggregate | Join    |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                       |
+| cdn_asset_uris                     | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                       |
+| current_collection                 | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                       |
+| current_token_ownerships           | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                       |
+| current_token_ownerships_aggregate | Join    |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                       |
 | aptos_name                         | String  |             | This is a name tied to this token using the Aptos Name Service (ANS). Ex. "EpicDragon"                                           |
 | collection_id                      | String  | Yes         | Identifier for the collection that includes this token. Ex. "0x360f6eeabb4d7a9d2fab1f35b01e02831e3b5c4b73c7fd6c98dcc1c301c817c8" |
 | decimals                           | bigint  |             | Number of decimal places for token value, typically for fungible tokens. Ex. 18                                                  |
@@ -184,7 +184,7 @@ This table tracks the metadata associated with each NFT (Ex. URI, supply, etc.).
 | supply                             | bigint  |             | Current supply of the token in circulation. Ex. 500000                                                                           |
 | token_data_id                      | String  |             | Unique identifier for the token's data. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"                 |
 | token_name                         | String  |             | The formal name of the token. Ex. "Mystic Dragon"                                                                                |
-| token_properties                   | Object  |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                       |
+| token_properties                   | Object  |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                       |
 | token_standard                     | String  |             | Aptos standard that the collection adheres to. Ex. "v1"                                                                          |
 | token_uri                          | String  |             | URI linking to further information about the token. Ex. "https://example.com/tokens/987654321"                                   |
 
@@ -194,7 +194,7 @@ This table tracks the metadata associated with each NFT collection (Ex. collecti
 
 | Field                      | Type   | Primary Key | Description                                                                                                                            |
 | -------------------------- | ------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| cdn_asset_uris             | Join   |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                             |
+| cdn_asset_uris             | Join   |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                             |
 | collection_id              | String | Yes         | Unique identifier for the collection. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b88"                         |
 | collection_name            | String |             | The formal name of the collection. Ex. "Mythic Dragons"                                                                                |
 | creator_address            | String |             | This is an Aptos account address that created the collection. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0x50bc83f01d48ab3b9c00048542332201ab9cbbea61bda5f48bf81dc506caa78a" |
@@ -218,7 +218,7 @@ This table maps collections to who owns them and helps count how much of a colle
 
 | Field                    | Type   | Primary Key | Description                                                                                                                            |
 | ------------------------ | ------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| current_collection       | Join   |             | Use the [Hasura explorer](#indexer-api-reference) to see these sub-fields.                                                             |
+| current_collection       | Join   |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see these sub-fields.                                                             |
 | collection_id            | String | Yes         | Unique identifier for the collection. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
 | collection_name          | String |             | The formal name of the collection. Ex. "Mythic Dragons"                                                                                |
 | collection_uri           | String |             | URI linking to further information about the collection. Ex. "https://example.com/collections/9876543210"                              |
@@ -267,7 +267,7 @@ This tracks the activity of fungible assets. It includes v1 token data.
 | is_frozen                   | Boolean |             | True if this activity is a freeze asset activity. Ex. null                                                                                           |
 | is_gas_fee                  | Boolean |             | Indicates whether this activity involved a gas fee. Ex. True                                                                                         |
 | is_transaction_success      | Boolean |             | Indicates whether the transaction was successful. Ex. True                                                                                           |
-| metadata                    | Object  |             | Use the [Hasura explorer](#indexer-api-reference) to see fields for `metadata` in this table.                                                        |
+| metadata                    | Object  |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see fields for `metadata` in this table.                                                        |
 | owner_address               | String  |             | This is an Aptos account address that owns the asset. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
 | storage_id                  | String  |             | Identifier for the storage used in the transaction. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
 | storage_refund_amount       | bigint  |             | Amount refunded for storage after the transaction. This is always in APT octas. Ex. 50                                                                |
@@ -290,7 +290,7 @@ This tracks the asset balances of each account on-chain. It includes v1 token da
 | is_primary                 | Boolean |             | Indicates whether this is the primary balance of the owner. Ex. True                                                              |
 | last_transaction_timestamp | String  |             | Timestamp of the last transaction involving this balance. Ex. "2024-04-17T02:14:25.68771"                                         |
 | last_transaction_version   | bigint  |             | Blockchain version of the last transaction involving this balance. Ex. 30000000                                                   |
-| metadata                   | Object  |             | Use the [Hasura explorer](#indexer-api-reference) to see fields for `metadata` in `current_fungible_asset_balances`.              |
+| metadata                   | Object  |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see fields for `metadata` in `current_fungible_asset_balances`.              |
 | owner_address              | String  |             | This is an Aptos account address that owns the asset. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"    |
 | storage_id                 | String  | Yes         | Identifier for the storage associated with this balance. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
 | token_standard             | String  |             | Aptos standard that the collection adheres to. Ex. "v1"                                                                           |
