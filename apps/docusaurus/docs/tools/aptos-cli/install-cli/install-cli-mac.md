@@ -8,7 +8,7 @@ For Mac, the easiest way to install the Aptos CLI is with the package manager `b
 
 # Installation
 
-1. Ensure you have `brew` installed https://brew.sh/.
+1. Ensure you have `brew` installed https://brew.sh/.
 2. Open a new terminal and enter the following commands.
 
 ```bash

@@ -52,7 +52,7 @@ You can learn more about optional parameters when compiling Move contracts by ru
 
 ## 2. Unit Testing Move Contracts
 
-The Aptos CLI can also be used to compile and run unit tests locally by running:
+The Aptos CLI can also be used to compile and run unit tests locally by running:
 
 ```bash
 aptos move test --package-dir <your-package-directory>
@@ -64,7 +64,7 @@ You can learn more about the optional parameters for testing move contracts by r
 
 ### Printing Debugging Information
 
-When writing tests, it can be helpful to print out debug information or stack traces. You can do that by using `debug::print` and `debug::print_stack_trace` to print information when you use `aptos move test`. See an example of how they are used in [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move).
+When writing tests, it can be helpful to print out debug information or stack traces. You can do that by using `debug::print` and `debug::print_stack_trace` to print information when you use `aptos move test`. See an example of how they are used in [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move).
 
 To see the output of testing [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move)’s package:
 
@@ -98,7 +98,7 @@ For more on how to write unit tests with Move, follow this [Move tutorial](https
 
 ## 3. Generating Test Coverage Reports
 
-The Aptos CLI can be used to analyze and improve the testing of your Move modules. To use this feature:
+The Aptos CLI can be used to analyze and improve the testing of your Move modules. To use this feature:
 
 To see the code coverage of your tests run the following command from your Move package’s directory:
 

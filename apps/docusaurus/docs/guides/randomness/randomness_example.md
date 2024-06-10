@@ -1,12 +1,10 @@
 ---
-title: "Aptos Roll: on-chain public instant randomness API"
+title: "Randomness Example: Lottery"
 ---
 
-# Aptos Roll: on-chain public instant randomness API
+# Randomness Example: Lottery
 
-## What does it do: a quick example
-
-### How random numbers have been obtained, insecurely/awkwardly
+## How random numbers have been obtained, insecurely/awkwardly
 
 Building a lottery system and pick a random winner from `n` participants is trivial, at least in the centralized world with a trusted server: the backend simply calls a `random.randint(0, n-1)` (this is a python example).
 
@@ -82,7 +80,7 @@ module module_owner::lottery {
 }
 ```
 
-### Achieve simplicity + security with Aptos randomness API
+## Achieve simplicity + security with Aptos randomness API
 
 Using Aptos randomness API, the implementation will look like this:
 

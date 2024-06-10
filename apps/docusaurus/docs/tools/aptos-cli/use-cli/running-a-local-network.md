@@ -24,7 +24,7 @@ aptos node run-local-testnet --with-indexer-api
 ```
 
 :::caution
-Note: Despite the name (`local-testnet`), this has nothing to do with the Aptos testnet, it will run a network entirely local to your machine.
+Note: Despite the name (`local-testnet`), this has nothing to do with the Aptos testnet, it will run a network entirely local to your machine.
 :::
 
 You should expect to see an output similar to this:
@@ -71,8 +71,8 @@ Setup is complete, you can now use the localnet!
 As you can see from the above example output, once the local network is running, you have access to the following services:
 
 - [Node API](../../../nodes/aptos-api-spec.md): This is a REST API that runs directly on the node. It enables core write functionality such as transaction submission and a limited set of read functionality, such as reading account resources or Move module information.
-- [Indexer API](../../../indexer/api/index.md): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
-- [Transaction Stream Service](../../../indexer/txn-stream/index.md): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing a [custom processor](../../../indexer/custom-processors/index.md).
+- [Indexer API](../../../indexer/api/index.md): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
+- [Transaction Stream Service](../../../indexer/txn-stream/index.md): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing a [custom processor](../../../indexer/custom-processors/index.md).
 - [Postgres](https://www.postgresql.org/): This is the database that the Indexer processors write to. The Indexer API reads from this database.
 - [Faucet](../../../reference/glossary.md#faucet): You can use this to fund accounts on your local network.
 
@@ -165,10 +165,10 @@ const client = new Aptos(config);
 Sometimes while developing it is helpful to reset the local network back to its initial state, for example:
 
 - You made backwards incompatible changes to a Move module, and you'd like to redeploy it without renaming it or using a new account.
-- You are building a [custom indexer processor](https://aptos.dev/indexer/custom-processors/) and would like to index using a fresh network.
+- You are building a [custom indexer processor](https://aptos.dev/indexer/custom-processors/) and would like to index using a fresh network.
 - You want to clear all on chain state, e.g. accounts, objects, etc.
 
-To start with a brand new local network, use the `--force-restart` flag:
+To start with a brand new local network, use the `--force-restart` flag:
 
 ```bash
 aptos node run-local-testnet --force-restart
@@ -182,7 +182,7 @@ Are you sure you want to delete the existing chain? [yes/no]
 > yes
 ```
 
-If you do not want to be prompted, include `--assume-yes` as well:
+If you do not want to be prompted, include `--assume-yes` as well:
 
 ```bash
 aptos node run-local-testnet --force-restart --assume-yes
