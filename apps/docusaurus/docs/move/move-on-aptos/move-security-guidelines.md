@@ -14,7 +14,7 @@ This guide addresses this gap by detailing common anti-patterns and their secure
 
 ### Object Access Control
 
-Accepting a `&signer` is not always sufficient for access control purposes. Be sure to assert that the signer is the expected account, especially when performing sensitive operations.
+Accepting a `&signer` is not always sufficient for access control purposes. Be sure to assert that the signer is the expected account, especially when performing sensitive operations.
 
 Users without proper authorization can execute privileged actions.
 
@@ -95,7 +95,7 @@ To summarize:
 |                | Module itself | Other Modules                     | Aptos CLI/SDK |
 | -------------- | ------------- | --------------------------------- | ------------- |
 | private        | ✅            | ⛔                                | ⛔            |
-| public(friend) | ✅            | ✅ if friend<br></br>⛔ otherwise | ⛔            |
+| public(friend) | ✅            | ✅ if friend<br></br>⛔ otherwise | ⛔            |
 | public         | ✅            | ✅                                | ⛔            |
 | entry          | ✅            | ⛔                                | ✅            |
 
@@ -285,7 +285,7 @@ public fun calculate_protocol_fees(size: u64): (u64) {
 }
 ```
 
-If `size` is less than `10000 / PROTOCOL_FEE_BPS`, the fee will round down to 0, effectively enabling a user to interact with the protocol without incurring any fees.
+If `size` is less than `10000 / PROTOCOL_FEE_BPS`, the fee will round down to 0, effectively enabling a user to interact with the protocol without incurring any fees.
 
 #### Example Secure Code
 
