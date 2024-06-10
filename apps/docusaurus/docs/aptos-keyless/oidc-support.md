@@ -38,10 +38,10 @@ To integrate Aptos Keyless into your dApp, you must register your dApp with at l
 **Step 4: Register Your Application**
 
 1. In the left sidebar, navigate to "APIs & Services" > "Credentials."
-![Google Credentials navigation screenshot](../../static/keyless/google1.png "Google Credentials navigation screenshot")
+![Google Credentials navigation screenshot](../../static/aptos-keyless/google-credentials-nav.png "Google Credentials navigation screenshot")
 
 2. Click on "Create Credentials" and select "OAuth client ID."
-![Google create credentials screenshot](../../static/keyless/google2.png "Google create credentials screenshot")
+![Google create credentials screenshot](../../static/aptos-keyless/google-create-credentials.png "Google create credentials screenshot")
 
 3. Choose the application type (e.g., Web application, Desktop app, or Mobile app).
 4. Enter the necessary details such as the name of your application and the authorized redirect URIs. For OIDC, the redirect URIs should follow the format https://your-app-domain.com/auth/google/callback.
@@ -65,7 +65,7 @@ To integrate Aptos Keyless into your dApp, you must register your dApp with at l
 1. Go to the [Apple Developer website](https://developer.apple.com/).
 2. Sign in with your Apple ID.
 3. Enroll in the Apple Developer Program if not already.
-![Apple enrollment screenshot](../../static/keyless/apple1.png "Apple enrollment screenshot")
+![Apple developer program enrollment screenshot](../../static/aptos-keyless/apple-dev-program.png "Apple developer program enrollment screenshot")
 
 **Step 2: Create a New App ID**
 

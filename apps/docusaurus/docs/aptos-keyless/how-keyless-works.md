@@ -15,7 +15,7 @@ At a very high level, a successful sign-in into the dApp via the OIDC provider w
 
 Now, assume that the user’s blockchain account address is (more or less) a hash of the user’s identity in “sub” and the dApp’s identity in “aud” from above.
 
-![Apple enrollment screenshot](../../static/keyless/keyless_relation.png "Apple enrollment screenshot")
+![Keyless relation diagram](../../static/aptos-keyless/keyless_relation.png "Keyless relation diagram")
 
 Then, the key observation is that the signed JWT effectively acts as a digital certificate, temporarily binding the blockchain address to the EPK, and allowing the EPK to sign TXNs for it. In other words, it securely delegates TXN signing rights for this blockchain account to the EPK. (Note: The EPK contains an expiration date and is thus short-lived.)
 
@@ -27,7 +27,7 @@ We explain below how Keyless accounts work and how they address these challenges
 Flow: Deriving a keyless account for a user in a dApp
 First, let us look at how a dApp can sign-in a user via (say) Google, derive that user’s keyless blockchain address and, for example, send that user an asset.
 
-![Apple enrollment screenshot](../../static/keyless/keyless.png "Apple enrollment screenshot")
+![Keyless account diagram](../../static/aptos-keyless/keyless-account.png "Keyless account diagram")
 
 Step 1: The user generates an ephemeral key pair: an EPK with an expiration date, and its associated ESK. The dApp keeps the EPK and safely stores the ESK on the user-side (e.g., in the browser’s local storage, or in a trusted enclave if the ESK is a WebAuthn passkey).
 
@@ -53,7 +53,7 @@ In the previous flow, we showed how a dApp can sign in a Google user and derive 
 
 Next, we show how this dApp can obtain a zero-knowledge proof (ZKP), which will allow it to authorize transactions from this address for the user. Importantly, the transaction will hide the user’s identifying information (e.g., the "sub" field).
 
-![Apple enrollment screenshot](../../static/keyless/keyless2.png "Apple enrollment screenshot")
+![Keyless proof diagram](../../static/aptos-keyless/keyless-proof.png "Keyless proof diagram")
 
 Step 1: The dApp sends all the necessary public information (i.e., epk, GPK) and private information (i.e., JWT, signature σG from Google, EPK blinding factor ⍴, and pepper r) to the prover service.
 
@@ -69,7 +69,7 @@ Next, we show how the dApp can now authorize TXNs from addr.
 Flow: Sending a TXN from a keyless account
 The previous flow explained how a dApp can obtain a ZKP from the prover service. Next, we describe how the dApp leverages this ZKP to transact for the account.
 
-![Apple enrollment screenshot](../../static/keyless/keyless3.png "Apple enrollment screenshot")
+![Keyless signing diagram](../../static/aptos-keyless/keyless-signing.png "Keyless signing diagram")
 
 Step 1: The dApp obtains an ephemeral signature σeph over the TXN from the user. This could be done behind the user’s back, by the dApp itself who might manage the ESK. Or, it could be an actual signing request sent to the user, such as when the ESK is a WebAuthn passkey, which is stored on the user’s trusted hardware.
 
