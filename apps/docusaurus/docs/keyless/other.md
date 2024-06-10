@@ -1,5 +1,5 @@
 ---
-title: "Keyless Accounts"
+title: "Terminology and FAQ"
 ---
 
 ## Terminology

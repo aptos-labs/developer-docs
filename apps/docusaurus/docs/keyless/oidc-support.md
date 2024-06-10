@@ -1,8 +1,7 @@
 ---
-title: "Keyless Accounts"
+title: "OIDC Support"
+# id: "Configure Your OIDC Provider"
 ---
-
-## OIDC Support
 
 Aptos Keyless supports the following IdPs on our network(s). Support for additional IdPs to come. Please reach out if you have need for coverage for a specific use case.
 

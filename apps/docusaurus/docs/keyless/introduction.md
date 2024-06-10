@@ -1,8 +1,7 @@
 ---
-title: "Keyless Accounts"
+title: "Introduction"
+# id: "Introduction"
 ---
-
-## Introduction
 
 Keyless accounts represent a pivotal advancement within the Aptos ecosystem, revolutionizing the way users onboard and interact with decentralized applications (dApps). Aptos Keyless allows users to gain ownership of an Aptos blockchain account from their existing OpenID Connect (OIDC) account(s) (e.g., Sign in with Google; Sign in with Apple), rather than from a traditional secret key or mnemonic. In a nutshell, with Aptos Keyless, a user’s blockchain account is their OIDC account. Over time, Keyless will evolve to support many IdPs who support the OIDC standard, but we will begin with support for the providers listed [here](https://aptos.dev/guides/keyless-accounts/#oidc-support).
 

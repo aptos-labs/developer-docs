@@ -1,8 +1,7 @@
 ---
-title: "Keyless Accounts"
+title: "Integration Guide"
+# id: "Aptos Keyless Integration Guide"
 ---
-
-## Aptos Keyless Integration Guide
 
 :::info Only devnet and testnet is supported
 Currently Aptos Keyless is only supported in devnet and testnet. Mainnet support scheduled for June 10.
