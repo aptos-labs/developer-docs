@@ -517,6 +517,10 @@ const config: Config = {
             from: "/tools/aptos-cli/use-cli/cli-configuration",
             to: "/tools/aptos-cli/cli-configuration",
           },
+          {
+            from: "/guides/keyless-accounts",
+            to: "/aptos-keyless/integration-guide",
+          },
         ],
         // Create redirects for all the move pages
         createRedirects(existingPath) {

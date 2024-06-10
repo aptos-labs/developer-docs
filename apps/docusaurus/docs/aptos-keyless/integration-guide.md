@@ -1,53 +1,12 @@
 ---
-title: "Aptos Keyless"
+title: "Integration Guide"
+# id: "Aptos Keyless Integration Guide"
 ---
-
-## Aptos Keyless Integration Guide
-
-Aptos Keyless allows your users to set up an Aptos blockchain account from their existing Google accounts, rather than from a traditional secret key or mnemonic. In a nutshell, with Aptos Keyless, a user’s blockchain account is their Google account. In the future, Aptos Keyless will support many OpenID Connect (OIDC) providers, not just Google.
-
-Importantly, Aptos Keyless maintains user privacy in two ways:
-
-1. A user’s email address is not revealed on-chain to anybody, including other users and validators.
-2. A user’s blockchain address and associated transaction history is hidden from the identity provider (e.g. Google).
-
-Keyless accounts are revolutionary to users for the following reasons:
-
-1. "1-click" account creation via familiar Web2 logins like `Sign In with Google`.
-2. Ability to transact on the Aptos blockchain without needing to navigate away from the application experience to download a wallet.
-3. Requires no secret key management by the user. This means blockchain account access is synonymous with access to one’s OIDC account and Web2-like recovery flows are available to regain access to one’s blockchain account in case the user ever loses access to their OIDC account.
-4. Seamless cross-device experiences; users log in with their OIDC account no matter what device they are on - no need to download wallet software on each device, import their keys and encrypt them with a password, which must be maintained.
 
 :::tip Keyless Account Scoping
 Use of the **_Aptos Keyless Integration Guide_** will allow for the integration of keyless accounts directly into your application. This means that blockchain accounts are scoped to your application's domain (logging in with your Google account on dApp A and logging in with your Google account on dApp B will create separate accounts). Stay tuned for more to come on Aptos’ plan to allow Keyless accounts to be used portably across applications.
 
 To provide feedback, get support, or be a design partner as we enhance Aptos Keyless, join us here: https://t.me/+h5CN-W35yUFiYzkx
-:::
-
-## Terminology
-
-- **OpenID Connect (OIDC)**: is the identity authentication protocol used to enable federated identity verification. This protocol is what is used when a user goes through the "Sign in with Google" flow for example.
-- **Identity Provider (IdP)**: is the trusted authority who authenticates your identity via OIDC. Supported example includes: Google.
-- **JSON Web Token (JWT):** is an open standard used to share security information between two parties — a client and a server. Each JWT contains encoded JSON objects, including a set of claims. JWTs are signed using a cryptographic algorithm to ensure that the claims cannot be altered after the token is issued.
-  - `iss`, an identifier for the OIDC provider (e.g., https://accounts.google.com)
-  - `aud`, the OAuth `client_id` of the application that the user is signing in to (e.g., [Notion.so](https://notion.so))
-  - `sub`, an identifier that the OIDC provider uses to identify the user
-    - This could be an identifier specific to this `client_id`
-    - Or, it could be an identifier shared across different `client_id`'s (e.g., Facebook’s OIDC does this)
-  - `email`, some providers might also expose the user’s email as one of the fields (e.g., Google)
-    - in addition, an `email_verified` field will be exposed to indicate if the provider has verified that the user owns this email address
-  - `nonce`, arbitrary data that the application wants the OIDC provider to sign over
-  - `iat`, the time the JWT was issued at.
-- **Ephemeral Key Pair:** a temporary public/private key pair that is used to sign transactions for an Aptos Keyless account. The public key and its expiration date are committed in the JWT token via the `nonce` field.
-- **Keyless Account:** a blockchain account that is directly-derived from (1) a user’s OIDC account (e.g., `alice@gmail.com`) and (2) an associated application’s OAuth client_id (e.g., Notion.so). Users authenticate through the OIDC flow.
-- **JSON Web Key (JWK):** is the cryptographic public key of the OIDC provider. This public key is used to verify the signature on the JWTs that the OIDC provider issues to the client application. This way, the client application can verify the authenticity of the tokens and ensure that they have not been tampered with.
-- **client_id:** the OAuth identifier for your application that you will receive from the IdP after registering your application with them. This will be used in our keyless architecture in the address derivation for your users.
-- **redirect_uri:** the URI of the callback handler once the user successfully authenticates. Needs to be registered with your IdP.
-
-# Keyless Account Integration Steps
-
-:::info Only devnet and testnet is supported
-Currently Aptos Keyless is only supported in devnet and testnet. Mainnet support to come in the following weeks.
 :::
 
 At a high level, there are three steps to follow in order to integrate Keyless Accounts.
@@ -59,42 +18,22 @@ At a high level, there are three steps to follow in order to integrate Keyless A
    2. Instantiate the user’s `KeylessAccount`
    3. Sign and submit transactions via the `KeylessAccount`.
 
+## Example Implementaion
+
+You can find an example app demonstrating basic Keyless integration with Google in the [aptos-keyless-example repository](https://github.com/aptos-labs/aptos-keyless-example/). Follow the directions in the README to start with the example. For more detailed instructions on keyless, please read the rest of this integration guide.
+
 ## Step 1. Configure your OpenID integration with your IdP
 
-### Supported Identity Providers
+The first step is to setup the configuration with your IdP(s).
 
-Currently only Google is supported. We will support additional OIDC providers in the future (e.g., Apple, Kakaotalk, Microsoft, etc.).
-
-| Identity Provider | Auth URL                                                                                                                                                                       |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Google            | https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=id_token&scope=openid%20email&nonce=${NONCE} |
-
-The implicit flow (no authorization code exchange) is the preferred method of authentication. The integration steps assume use of implicit flow.
-
-### Google
-
-To support OpenID authentication you will need the **`client_id`** from your provider and setup authorized origins and redirect URIs.
-
-1. Setup your project in the [Google API Console](https://console.developers.google.com/)
-   1. Register for a Google Cloud account if you don’t have one
-   2. Create a new project if it doesn’t exist
-2. Go to [Credentials](https://console.developers.google.com/apis/credentials)
-3. Select or create your OAuth 2.0 Client ID
-4. Configure authorized origin (your dApp origin)
-5. Configure redirect URIs (the handler for the callback after authentication which will receive the authorization code and/or id_token)
-6. Obtain the `client_id` of your application
+[Follow the intructions here](oidc-support.md)
 
 ## Step 2. Install the Aptos TypeScript SDK
 
 ```bash
-# Experimental SDK version with Keyless support.
-pnpm install @aptos-labs/ts-sdk@zeta
+# Keyless is supported in version 1.18.1 and above
+pnpm install @aptos-labs/ts-sdk
 ```
-
-:::info SDK is experimental
-The API and SDK is still experimental and being actively developed under the '@zeta' tag.
-If your integration stops working please try upgrading the package to the latest '@zeta' version of the SDK. This version may lack features of the non-experimental SDK.
-:::
 
 ## Step 3. Client Integration Steps
 
@@ -347,7 +286,7 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
         ```tsx
         import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
-        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET}));  // Only devnet and testnet supported as of now.
+        const aptos = new Aptos(new AptosConfig({network: Network.DEVNET})); // Configure your network here
         const keylessAccount = await aptos.deriveKeylessAccount({
             jwt,
             ephemeralKeyPair,
@@ -380,5 +319,3 @@ export const removeEphemeralKeyPair = (nonce: string): void => {
         ```tsx
         const committedTransactionResponse = await aptos.waitForTransaction({ transactionHash: committedTxn.hash });
         ```
-
-For more details on the design of keyless accounts see [`AIP-61`](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md)

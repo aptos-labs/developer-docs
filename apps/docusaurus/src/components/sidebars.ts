@@ -474,6 +474,20 @@ const sidebars: SidebarsConfig = {
         "guides/nfts/aptos-token-overview",
         {
           type: "category",
+          label: "Aptos Keyless",
+          link: { type: "doc", id: "aptos-keyless/index" },
+          items: [
+            "aptos-keyless/introduction",
+            "aptos-keyless/oidc-support",
+            "aptos-keyless/integration-guide",
+            "aptos-keyless/how-keyless-works",
+            "aptos-keyless/other",
+          ],
+          collapsible: true,
+          collapsed: true,
+        },
+        {
+          type: "category",
           label: "Integrate with Wallets",
           link: { type: "doc", id: "integration/wallet-adapter-concept" },
           items: [
