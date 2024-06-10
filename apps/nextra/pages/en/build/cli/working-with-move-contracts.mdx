@@ -34,9 +34,12 @@ hello_blockchain = "_"
 ```
 
 So, to compile this, you will need to pass in the value for `hello_blockchain` with the `--named-addresses` parameter.
+You can use either a full address e.g. `0x123456...7890` or a name of a profile in the CLI e.g. `default` or `superuser`.
+
+Below we will use `default` in our example:
 
 ```bash filename="Terminal"
-aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=superuser
+aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=default
 ```
 
 You can learn more about optional parameters when compiling Move contracts by running `aptos move compile --help`.
