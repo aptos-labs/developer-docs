@@ -16,8 +16,6 @@ At a very high level, a successful sign-in into the dApp via the OIDC provider w
 
 Now, assume that the user’s blockchain account address is (more or less) a hash of the user’s identity in `sub` and the dApp’s identity in `aud` from above.
 
-![Keyless relation diagram](../../static/aptos-keyless/keyless_relation.png "Keyless relation diagram")
-
 Then, the **key observation** is that the signed JWT effectively acts as a **digital certificate**, **temporarily** binding this blockchain address to the EPK, and allowing the EPK to sign TXNs for it. In other words, it securely delegates TXN signing rights for this blockchain account to the EPK. (Note: The EPK contains an expiration date and is thus short-lived.)
 
 Importantly, if the user loses their ESK, the user can obtain a new signed JWT over a new EPK via the application by simply signing in again via the OIDC provider. (Or, in some cases, by requesting a new signed JWT using an OAuth refresh token.)
@@ -67,6 +65,8 @@ Next, we show how this dApp can obtain a zero-knowledge proof (ZKP), which will 
 The ZKP will be used to convince the validators that the user is in possession of (1) a JWT signed by Google, (2) which commits to the epk in its "nonce" field, and (3) contains the same information as in the address, without leaking anything about the JWT, its signature, ⍴, or r.
 
 More formally, the ZKP π convinces a verifier, who has public inputs (addr, epk, GPK), that the prover knows secret inputs (jwt, σG, ⍴, r) such that the relation 𝓡keyless depicted below holds:
+
+![Keyless relation diagram](../../static/aptos-keyless/keyless_relation.png "Keyless relation diagram")
 
 Recall from before that the signed JWT acts as a digital certificate, temporarily binding the blockchain address addr to the EPK, and allowing the epk to sign TXNs for it. However, the JWT would leak the user’s identity, so The ZKP serves to hide the JWT (and other private information) while arguing that the proper checks hold.
 
