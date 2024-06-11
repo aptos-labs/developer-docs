@@ -60,9 +60,9 @@ Next, we show how this dApp can obtain a zero-knowledge proof (ZKP), which will 
 
 **Step 1**: The dApp sends all the necessary public information (i.e., $\mathsf{epk}$, $\mathsf{GPK}$) and private information (i.e., JWT, signature $\sigma_G$ from Google, EPK blinding factor $\rho$, and pepper $r$) to the **prover service**.
 
-**Step 2**: The prover derives the user’s address $\mathsf{addr}$ and computes a zero-knowledge proof (ZKP) $\pi$ for the keyless relation $\mathcal{R}_\mathsf{keyless}$ (described below). This proof acts as a **privacy-preserving** digital certificate, and binds the user's address $\mathsf{addr}$ to the ephemeral public key $epk$. The prover then sends $\pi$ to the dApp.
+**Step 2**: The prover derives the user’s address $\mathsf{addr}$ and computes a zero-knowledge proof (ZKP) $\pi$ for the keyless relation $\mathcal{R}_\mathsf{keyless}$ (described below). This proof acts as a **privacy-preserving** digital certificate, and binds the user's address $\mathsf{addr}$ to the ephemeral public key $\mathsf{epk}$. The prover then sends $\pi$ to the dApp.
 
-In order to bind the $epk$ with the user's address $\mathsf{addr}$, the ZKP will be used to convince the validators that the user is in possession of (1) a JWT signed by Google, (2) which commits to the $\mathsf{epk}$ in its `nonce` field, and (3) contains the same information as in the address, without leaking anything about the JWT, its signature $\sigma_G$, $\rho$, or $r$.
+In order to bind the $\mathsf{epk}$ with the user's address $\mathsf{addr}$, the ZKP will be used to convince the validators that the user is in possession of (1) a JWT signed by Google, (2) which commits to the $\mathsf{epk}$ in its `nonce` field, and (3) contains the same information as in the address, without leaking anything about the JWT, its signature $\sigma_G$, $\rho$, or $r$.
 
 More formally, the ZKP $\pi$ convinces a verifier (i.e., the blockchain), who has public inputs $(addr, \mathsf{epk}, \mathsf{GPK})$, that the prover knows secret inputs $(\mathsf{jwt}, \sigma_G, \rho, r)$ such that the relation $\mathcal{R}_\mathsf{keyless}$ depicted below holds:
 
