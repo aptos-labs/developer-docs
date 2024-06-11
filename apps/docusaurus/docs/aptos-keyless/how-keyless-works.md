@@ -54,23 +54,23 @@ But how can the dApp authorize TXN from this account at $\mathsf{addr}$? We disc
 
 In the previous flow, we showed how a dApp can sign in a Google user and derive their privacy-preserving keyless address, with the help of a guardian.
 
-Next, we show how this dApp can obtain a zero-knowledge proof (ZKP), which will allow it to authorize transactions from this address for the user. Importantly, the transaction will hide the user’s identifying information (e.g., the "sub" field).
+Next, we show how this dApp can obtain a zero-knowledge proof (ZKP), which will allow it to authorize transactions from this address for the user. Importantly, the transaction will hide the user’s identifying information (e.g., the `sub` field).
 
 ![Keyless proof diagram](../../static/aptos-keyless/keyless-proof.png "Keyless proof diagram")
 
-**Step 1**: The dApp sends all the necessary public information (i.e., epk, GPK) and private information (i.e., JWT, signature σG from Google, EPK blinding factor ⍴, and pepper r) to the prover service.
+**Step 1**: The dApp sends all the necessary public information (i.e., $\mathsf{epk}$, $\mathsf{GPK}$) and private information (i.e., JWT, signature $\sigma_G$ from Google, EPK blinding factor $\rho$, and pepper $r$) to the **prover service**.
 
-**Step 2**: The prover derives the user’s address addr and computes a zero-knowledge proof (ZKP) π for the keyless relation 𝓡keyless (described below). It then sends π to the dApp.
+**Step 2**: The prover derives the user’s address addr and computes a zero-knowledge proof (ZKP) $\pi$ for the keyless relation $\mathcal{R}_\mathsf{keyless}$ (described below). It then sends $\pi$ to the dApp.
 
-The ZKP will be used to convince the validators that the user is in possession of (1) a JWT signed by Google, (2) which commits to the epk in its "nonce" field, and (3) contains the same information as in the address, without leaking anything about the JWT, its signature, ⍴, or r.
+The ZKP will be used to convince the validators that the user is in possession of (1) a JWT signed by Google, (2) which commits to the $\mathsf{epk}$ in its `nonce` field, and (3) contains the same information as in the address, without leaking anything about the JWT, its signature $\sigma_G$, $\rho$, or $r$.
 
-More formally, the ZKP π convinces a verifier, who has public inputs (addr, epk, GPK), that the prover knows secret inputs (jwt, σG, ⍴, r) such that the relation 𝓡keyless depicted below holds:
+More formally, the ZKP $\pi$ convinces a verifier (i.e., the blockchain), who has public inputs $(addr, \mathsf{epk}, \mathsf{GPK})$, that the prover knows secret inputs $(jwt, \sigma_G, \rho, r)$ such that the relation $\mathcal{R}_\mathsf{keyless}$ depicted below holds:
 
 ![Keyless relation diagram](../../static/aptos-keyless/keyless_relation.png "Keyless relation diagram")
 
-Recall from before that the signed JWT acts as a digital certificate, temporarily binding the blockchain address addr to the EPK, and allowing the epk to sign TXNs for it. However, the JWT would leak the user’s identity, so The ZKP serves to hide the JWT (and other private information) while arguing that the proper checks hold.
+Recall from before that the signed JWT acts as a digital certificate, temporarily binding the blockchain address $\mathsf{addr}$ to $\mathsf{epk}$, which can now sign TXNs for it. However, the JWT would leak the user’s identity, so the ZKP serves to hide the JWT (and other private information) while arguing that the proper checks hold (i.e., the checks in $\mathcal{R}_\mathsf{keyless}$).
 
-Next, we show how the dApp can now authorize TXNs from addr.
+Next, we show how the dApp can now authorize TXNs from $\mathsf{addr}$.
 
 ## Flow: Sending a TXN from a keyless account
 
