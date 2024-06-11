@@ -6,12 +6,14 @@ import { Callout } from 'nextra/components'
 
 # Creating and Configuring Objects
 
-When you create an Object, it needs to be configured for your use case by using the special `ConstructorRef`. These configurations can only happen when you construct the object. Later on it is impossible to change these settings.
-
 Creating an Object involves two steps:
 
-1. Creating the `ObjectCore` resource group.
-2. Defining how the Object will behave using Refs.
+1. Creating the `ObjectCore` resource group (which has an address you can use to refer to the Object later).
+2. Customizing how the Object will behave using permissions called `Ref`s.
+
+<Callout type="info">
+Configuring an Object by generating `Ref`s has to happen in the same transaction you create it. Later on it is impossible to change those settings.
+</Callout>
 
 ### Creating an Object
 
@@ -70,7 +72,7 @@ module my_addr::object_playground {
 
 # Customizing Object Features
 
-Once you create your object, you will receive a `ConstructorRef` you can use to generate `Ref`s. `Ref`s can be used in future to enable / disable / execute certain Object functions such as transferring resources, transferring the object itself, or deleting the Object.
+Once you create your object, you will receive a `ConstructorRef` you can use to generate additional `Ref`s. `Ref`s can be used in future to enable / disable / execute certain Object functions such as transferring resources, transferring the object itself, or deleting the Object.
 
 The following sections will walk through commonly used `Ref`s and the features they enable.
 
@@ -431,6 +433,7 @@ module my_addr::object_playground {
 ## Making an Object Immutable
 
 An object can be made immutable by making the contract associated immutable, and removing any ability to extend or mutate the object. By default, contracts are not immutable, and objects can be extended with an `ExtendRef`, and resources can be mutated if the contract allows for it.
+<br/>
 
 # Further Reading
 
