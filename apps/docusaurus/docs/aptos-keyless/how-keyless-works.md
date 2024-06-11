@@ -80,6 +80,6 @@ The previous flow explained how a dApp can obtain a ZKP from the prover service.
 
 **Step 1**: The dApp obtains an ephemeral signature $\sigma_\mathsf{eph}$ over the TXN from the user. This could be done behind the user’s back, by the dApp itself who might manage the ESK. Or, it could be an actual signing request sent to the user, such as when the ESK is a WebAuthn passkey, which is stored on the user’s trusted hardware.
 
-**Step 2**: The dApp sends the TXN, the ZKP $\pi$, the ephemeral public key $\mathsf{epk}, the ephemeral signature $\sigma_\mathsf{eph}$  to the blockchain validators.
+**Step 2**: The dApp sends the TXN, the ZKP $\pi$, the ephemeral public key $\mathsf{epk}$, the ephemeral signature $\sigma_\mathsf{eph}$  to the blockchain validators.
 
 **Step 3**: To check the TXN is validly-signed, the validators perform several steps: (1) check that $\mathsf{epk}$ has not expired, (2) fetch the user’s address $\mathsf{addr}$ from the TXN, (3) verify the ZKP against $(\mathsf{addr}, \mathsf{epk}, \mathsf{GPK})$, and (4) verify the ephemeral signature $\sigma_\mathsf{eph}$ on the TXN against the $\mathsf{epk}$. If all these checks pass, they can safely execute the TXN.
