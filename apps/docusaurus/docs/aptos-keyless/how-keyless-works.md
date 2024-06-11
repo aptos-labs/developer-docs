@@ -2,7 +2,7 @@
 title: "How Keyless Works"
 ---
 
-Aptos Keyless enables a dApp to **derive** and **access** a blockchain account for a user if that user successfully signs in to dApp via an OIDC provider (e.g., Google). Importantly, this blockchain account is **scoped to the dApp**. This means other dApps, who can similarly sign-in the same user, via the same OIDC provider, are not able to access this account and instead get their own account.
+Aptos Keyless enables a dApp to **derive** and **access** a blockchain account for a user who successfully signed in to the dApp via an OIDC provider (e.g., Google). Importantly, this blockchain account is **scoped to the dApp**. This means other dApps, who can similarly sign-in the same user, via the same OIDC provider, are not able to access this account and instead get their own account.
 
 _But how does this work?_
 
