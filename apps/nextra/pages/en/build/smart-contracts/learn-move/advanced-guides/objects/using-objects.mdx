@@ -2,32 +2,19 @@
 title: "Using objects"
 ---
 
-# Using objects
+import { Callout } from 'nextra/components'
 
-## Using an object as an entry function argument
+# Using Objects
 
-`0x1::object::Object<T>` can be used as an input argument to an entry function.
-It's encoded as the `address` of the object, and type checked to the value
-in `T`.
+Once you've created your Object, you can use it in Move entry functions, structs, transfer it, and modify it using any refs you generated during [Object construction](creating-objects.mdx). Below are various ways to utilize, manage, and interact with Objects in Move.
 
-For more generic functions, this can be handled as providing a generic `T` for
-typing the input:
+## Using an Object as an entry function argument
 
-```move
-module my_addr::object_playground {
-  use aptos_framework::object::Object;
+Objects in move functions have the type `Object<T>`, where `T` is the type of a resource owned by the Object. All Objects have an `ObjectCore` type which contains the metadata for the Object.
 
-  /// This will fail of the object doesn't have the generic `T` stored
-  entry fun do_something<T>(object: Object<T>) {
-    // ...
-  }
-}
-```
+To use an Object parameter, users can pass in the Object address or a reference to the Object. At runtime the contract will verify that the Object exists at that address, and has a resource of type T before executing the function.
 
-Additionally, the individual resources that are at the object can be used. The
-resource will be checked for existence before the function executes.
-
-```move
+```move filename="Example.move"
 module my_addr::object_playground {
   use aptos_framework::object::Object;
 
@@ -37,30 +24,33 @@ module my_addr::object_playground {
   entry fun do_something(object: Object<MyAwesomeStruct>) {
     // ...
   }
-}
-```
-
-The resource `0x1::object::ObjectCore` is available for all objects
-
-```move
-module my_addr::object_playground {
-  use aptos_framework::object::{Object, ObjectCore};
-
-  /// This will only fail of the address is not an object
-  entry fun do_something(object: Object<ObjectCore>) {
+  
+  /// All Objects have ObjectCore, so this will only fail if the 
+  /// address is not an object
+  entry fun do_something_to_object_core(object: Object<ObjectCore>) {
     // ...
   }
 }
 ```
 
-# Object Types
+To let the user of the entry function specify the type of resource, you can keep the generic type `T` like so:
 
-Objects can store multiple resources at their address, and you can refer to an
-Object by any of those types. You can convert an address to an object, or
-convert
-an object between types as long as the resource is available.
+```move filename="Example.move"
+module my_addr::object_playground {
+  use aptos_framework::object::Object;
 
-```move
+  /// This will fail if the object doesn't have the generic `T` stored
+  entry fun do_something<T>(object: Object<T>) {
+    // ...
+  }
+}
+```
+
+### Object types
+
+You can refer to an Object by any type of resource that is owned by the Object. For convenience, you can convert an address to an Object, or convert an Object between types as long as the resources are available using `address_to_object` and `convert<T>` like so:
+
+```move filename="Example.move"
 module my_addr::object_playground {
   use aptos_framework::object::{self, Object, ObjectCore};
 
@@ -71,24 +61,54 @@ module my_addr::object_playground {
   }
 
   fun address_to_type(object_address: address): Object<MyAwesomeStruct> {
-    object::address_to_object<MyAwesomeStruct>(object)
+    object::address_to_object<MyAwesomeStruct>(object_address)
   }
 }
 ```
 
-# Object ownership
+<Callout type="info">
+Objects can be owned by any address, including Objects, Accounts, and Resource accounts. This allows composability between objects and complex relationships between them.
+</Callout>
 
-Objects can be owned by any address, this includes Objects, Accounts, and
-Resource
-accounts. This allows composability between objects, as well as complex
-relationships
-between objects.
+## Using an Object as type of a field in struct
 
-## Looking up ownership
+Objects can help represent complicated types by using them in structs. For example,
 
-Ownership can be found by a few methods:
+```move filename="Example.move"
+module my_addr::object_playground {
+  use aptos_framework::object::{Self, Object};
+  use aptos_framework::fungible_asset::Metadata;
+  use aptos_framework::primary_fungible_store;
 
-```move
+  struct MyStruct has key {
+    fungible_asset_object: Object<Metadata>
+  }
+
+  entry fun create_fungible_asset(creator: &signer) {
+    let fa_obj_constructor_ref = &object::create_sticky_object(@my_addr);
+    let fa_obj_signer = object::generate_signer(fa_obj_constructor_ref);
+    let fa_obj_addr = signer::address_of(&fa_obj_signer);
+    primary_fungible_store::create_primary_store_enabled_fungible_asset(
+        fa_obj_constructor_ref,
+        max_supply,
+        name,
+        symbol,
+        decimals,
+        icon_uri,
+        project_uri
+    );
+    move_to(creator, MyStruct {
+      fungible_asset_object: object::address_to_object(fa_obj_addr)
+    });
+  }
+}
+```
+
+## Looking up who owns an Object
+
+When writing contracts for Objects, it is often important to verify ownership before modifying the Object. Because an Object can be owned by any address, verifying ownership needs to account for whether the owner is an Account, a Resource Account or another Object like so:
+
+```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
   use aptos_framework::object::{self, Object};
@@ -132,15 +152,11 @@ module my_addr::object_playground {
 
 ## Transfer of ownership
 
-An object can be transferred as long as ungated transfer has not been
-disabled.
-See [disabling transfer of an object](configuring-objects.mdx#disabling-or-re-enabling-transfers).
+By default, all Objects are transferrable. Some Objects are configured to disable `ungated_transfer`s when they are constructed (see Constructing Objects for more details).
 
-If the ungated transfer is disabled, only transfers can be done with
-a `TransferRef` or a `LinearTransferRef`. When ungated transfers are enabled,
-objects can be transferred as follows:
+You can transfer an Object like so:
 
-```move
+```move filename="Example.move"
 module my_addr::object_playground {
   use aptos_framework::object::{self, Object};
 
@@ -160,24 +176,17 @@ module my_addr::object_playground {
 }
 ```
 
-# Deleting or Burning objects
+<Callout type="warning">
+If `ungated_transfer` is **disabled**, then all transfers need to use a special permission given by a `TransferRef` or `LinearTransferRef`.
+</Callout>
 
-There are two ways to remove an object:
+## Modifying Objects after creation
 
-- Delete
-- Burn
+In general, Objects can only be modified with `Refs` generated during construction. See [Creating and Configuring Objects](creating-objects.mdx) for more details on what `Refs` are available, how to generate them, and how to use them. This is how you add additional resources to an Object, delete it, and extend it.
 
-## Deleting
+One exception to this is “burning” an Object, which sets a flag so Wallet providers know to not display that Object. This can be used to declutter when an Object is not actually deletable.
 
-To delete an object, the user must have a `DeleteRef`
-see [allowing deletion of an object](configuring-objects.mdx#allowing-deletion-of-an-object).
-
-## Burning
-
-However, if the object is not deletable, you can tombstone and burn the unwanted
-object.
-
-```move
+```move filename="Example.move"
 module my_addr::object_playground {
   use aptos_framework::object::{self, Object};
 
@@ -188,9 +197,9 @@ module my_addr::object_playground {
 }
 ```
 
-If a user decided that they did not want to burn it, they can un-burn it
+If you later decide that you want the Object to be displayed again, you can un-”burn” it.
 
-```move
+```move filename="Example.move"
 module my_addr::object_playground {
   use aptos_framework::object::{self, Object};
 
@@ -202,6 +211,8 @@ module my_addr::object_playground {
 ```
 
 ## Example contracts
+
+Here are three real-world code snippets which use Objects:
 
 - [Digital Asset Marketplace Example](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/marketplace)
 - [Digital Assets Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/token_objects)
