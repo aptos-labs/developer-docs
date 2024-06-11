@@ -15,5 +15,5 @@ export default {
   "faucet-api": {
     title: "Faucet API",
   },
-  "aptos-labs-developer-portal": "Developer Portal",
+  "aptos-labs-developer-portal": "API Gateway",
 };
