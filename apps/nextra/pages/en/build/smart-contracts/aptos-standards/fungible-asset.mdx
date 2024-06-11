@@ -19,6 +19,8 @@ It does so by using two Move Objects:
 1. `Object<Metadata>` - This represents details about the fungible asset itself, including information such as the `name`, `symbol`, and `decimals`.
 2. `Object<FungibleStore>` - This stores a count of fungible asset units owned by this account. Fungible assets are interchangeable with any other fungible asset that has the same metadata. An account *may* own more than one `FungibleStore` for a single Fungible Asset, but that is only for advanced use cases.
 
+The diagram below shows the relationship between these Objects. The `Metadata` Object is owned by the Fungible Asset creator, then referenced in FA holders' `FungibleStore`s to indicate which FA is being tracked:
+
 <ThemedImage
 alt="FA Object Relationship"
 sources={{
