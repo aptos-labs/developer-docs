@@ -64,7 +64,7 @@ Next, we show how this dApp can obtain a zero-knowledge proof (ZKP), which will 
 
 In order to bind the $\mathsf{epk}$ with the user's address $\mathsf{addr}$, the ZKP will be used to convince the validators that the user is in possession of (1) a JWT signed by Google, (2) which commits to the $\mathsf{epk}$ in its `nonce` field, and (3) contains the same information as in the address, without leaking anything about the JWT, its signature $\sigma_G$, $\rho$, or $r$.
 
-More formally, the ZKP $\pi$ convinces a verifier (i.e., the blockchain), who has public inputs $(addr, \mathsf{epk}, \mathsf{GPK})$, that the prover knows secret inputs $(\mathsf{jwt}, \sigma_G, \rho, r)$ such that the relation $\mathcal{R}_\mathsf{keyless}$ depicted below holds:
+More formally, the ZKP $\pi$ convinces a verifier (i.e., the blockchain), who has public inputs $(\mathsf{addr}, \mathsf{epk}, \mathsf{GPK})$, that the prover knows secret inputs $(\mathsf{jwt}, \sigma_G, \rho, r)$ such that the relation $\mathcal{R}_\mathsf{keyless}$ depicted below holds:
 
 ![Keyless relation diagram](../../static/aptos-keyless/keyless_relation.png "Keyless relation diagram")
 
