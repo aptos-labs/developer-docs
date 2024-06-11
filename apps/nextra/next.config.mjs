@@ -997,6 +997,11 @@ export default withBundleAnalyzer(
         destination: "/en/build/tutorials/build-e2e-dapp/6-handle-tasks",
         permanent: true,
       },
+      {
+        source: "/en/build/smart-contracts/learn-move/advanced-guides/objects/configuring-objects",
+        destination: "/en/build/smart-contracts/learn-move/advanced-guides/objects/creating-objects",
+        permanent: true,
+      }
     ],
   }),
 );
