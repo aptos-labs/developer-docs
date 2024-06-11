@@ -998,10 +998,12 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/en/build/smart-contracts/learn-move/advanced-guides/objects/configuring-objects",
-        destination: "/en/build/smart-contracts/learn-move/advanced-guides/objects/creating-objects",
+        source:
+          "/en/build/smart-contracts/learn-move/advanced-guides/objects/configuring-objects",
+        destination:
+          "/en/build/smart-contracts/learn-move/advanced-guides/objects/creating-objects",
         permanent: true,
-      }
+      },
     ],
   }),
 );
