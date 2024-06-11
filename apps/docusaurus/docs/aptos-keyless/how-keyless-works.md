@@ -36,7 +36,7 @@ First, let us look at how a dApp can sign-in a user via (say) Google, derive tha
 
 **Step 3**: Typically, the user has an HTTP cookie from having previously-signed-in to their Google account, so Google merely checks this cookie. If the user has multiple Google accounts, Google asks the user to select which one they want to sign-in into the dApp. (The less common path is for the user to have to type in their Google username and password.)
 
-**Step 4**: Once the user signed in, Google sends the dApp a signed JWT, which includes the user's `sub` identifier (e.g., `uid-123`), the application’s `aud` identifier (e.g., `"dapp-xyz"`) and the `nonce` with the EPK commitment. (This assumes that the dApp has previously registered with Google and received this `"dapp-xyz"` identifier.)
+**Step 4**: Once the user has signed in, Google sends the dApp a signed JWT, which includes the user's `sub` identifier (e.g., `uid-123`), the application’s `aud` identifier (e.g., `"dapp-xyz"`) and the `nonce` with the EPK commitment. (This assumes that the dApp has previously registered with Google and received this `"dapp-xyz"` identifier.)
 
 **Step 5**: The dApp now has almost everything it needs to derive a keyless account for the user: the user’s identifier (`sub`) and the dApp’s identifier (`aud`). But, to preserve the privacy of the user, the dApp will use a third piece of information: a blinding factor $r$ called a **pepper**. The dApp will contact a so-called **guardian** who will deterministically derive a random $r$ from the given (`sub`, `aud`). Importantly, the guardian will only reveal $r$ to the dApp upon seeing a validly-signed JWT for the queried (`sub`, `aud`).
 
