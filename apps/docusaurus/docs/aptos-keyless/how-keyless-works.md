@@ -68,7 +68,7 @@ More formally, the ZKP $\pi$ convinces a verifier (i.e., the blockchain), who ha
 
 ![Keyless relation diagram](../../static/aptos-keyless/keyless_relation.png "Keyless relation diagram")
 
-Recall from before that the signed JWT itself binds the blockchain address $\mathsf{addr}$ to $\mathsf{epk}$, which can now sign transactions for $\mathsf{addr}$. However, the JWT would leak the user’s identity, so the ZKP serves to hide the JWT (and other private information) while arguing that the proper checks hold (i.e., the checks in $\mathcal{R}_\mathsf{keyless}$).
+Recall from before that the signed JWT itself binds the blockchain address $\mathsf{addr}$ to $\mathsf{epk}$, so that $\mathsf{epk}$ can sign transactions for $\mathsf{addr}$. However, the JWT would leak the user’s identity, so the ZKP serves to hide the JWT (and other private information) while arguing that the proper checks hold (i.e., the checks in $\mathcal{R}_\mathsf{keyless}$).
 
 Next, we show how the dApp can now authorize TXNs from $\mathsf{addr}$.
 
