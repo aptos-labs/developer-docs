@@ -60,15 +60,15 @@ Next, we show how this dApp can obtain a zero-knowledge proof (ZKP), which will 
 
 **Step 1**: The dApp sends all the necessary public information (i.e., $\mathsf{epk}$, $\mathsf{GPK}$) and private information (i.e., JWT, signature $\sigma_G$ from Google, EPK blinding factor $\rho$, and pepper $r$) to the **prover service**.
 
-**Step 2**: The prover derives the user’s address addr and computes a zero-knowledge proof (ZKP) $\pi$ for the keyless relation $\mathcal{R}_\mathsf{keyless}$ (described below). It then sends $\pi$ to the dApp.
+**Step 2**: The prover derives the user’s address $addr$ and computes a zero-knowledge proof (ZKP) $\pi$ for the keyless relation $\mathcal{R}_\mathsf{keyless}$ (described below). This proof acts as a secure and private digital certificate, and binds the user's address $addr$ to the ephemeral public key $epk$. It then sends $\pi$ to the dApp.
 
-The ZKP will be used to convince the validators that the user is in possession of (1) a JWT signed by Google, (2) which commits to the $\mathsf{epk}$ in its `nonce` field, and (3) contains the same information as in the address, without leaking anything about the JWT, its signature $\sigma_G$, $\rho$, or $r$.
+In order to bind the $epk$ with the user's address $addr$, the ZKP will be used to convince the validators that the user is in possession of (1) a JWT signed by Google, (2) which commits to the $\mathsf{epk}$ in its `nonce` field, and (3) contains the same information as in the address, without leaking anything about the JWT, its signature $\sigma_G$, $\rho$, or $r$.
 
 More formally, the ZKP $\pi$ convinces a verifier (i.e., the blockchain), who has public inputs $(addr, \mathsf{epk}, \mathsf{GPK})$, that the prover knows secret inputs $(\mathsf{jwt}, \sigma_G, \rho, r)$ such that the relation $\mathcal{R}_\mathsf{keyless}$ depicted below holds:
 
 ![Keyless relation diagram](../../static/aptos-keyless/keyless_relation.png "Keyless relation diagram")
 
-Recall from before that the signed JWT acts as a digital certificate, temporarily binding the blockchain address $\mathsf{addr}$ to $\mathsf{epk}$, which can now sign TXNs for it. However, the JWT would leak the user’s identity, so the ZKP serves to hide the JWT (and other private information) while arguing that the proper checks hold (i.e., the checks in $\mathcal{R}_\mathsf{keyless}$).
+Recall from before that the signed JWT itself binds the blockchain address $\mathsf{addr}$ to $\mathsf{epk}$. However, the JWT would leak the user’s identity, so the ZKP serves to hide the JWT (and other private information) while arguing that the proper checks hold (i.e., the checks in $\mathcal{R}_\mathsf{keyless}$).
 
 Next, we show how the dApp can now authorize TXNs from $\mathsf{addr}$.
 
@@ -80,6 +80,6 @@ The previous flow explained how a dApp can obtain a ZKP from the prover service.
 
 **Step 1**: The dApp obtains an ephemeral signature $\sigma_\mathsf{eph}$ over the TXN from the user. This could be done behind the user’s back, by the dApp itself who might manage the ESK. Or, it could be an actual signing request sent to the user, such as when the ESK is a WebAuthn passkey, which is stored on the user’s trusted hardware.
 
-**Step 2**: The dApp sends the TXN, the ZKP $\pi$, the ephemeral public key $\mathsf{epk}$, the ephemeral signature $\sigma_\mathsf{eph}$  to the blockchain validators.
+**Step 2**: The dApp sends the TXN, the ZKP $\pi$, the ephemeral public key $\mathsf{epk}$, and the ephemeral signature $\sigma_\mathsf{eph}$  to the blockchain validators.
 
 **Step 3**: To check the TXN is validly-signed, the validators perform several steps: (1) check that $\mathsf{epk}$ has not expired, (2) fetch the user’s address $\mathsf{addr}$ from the TXN, (3) verify the ZKP against $(\mathsf{addr}, \mathsf{epk}, \mathsf{GPK})$, and (4) verify the ephemeral signature $\sigma_\mathsf{eph}$ on the TXN against the $\mathsf{epk}$. If all these checks pass, they can safely execute the TXN.
