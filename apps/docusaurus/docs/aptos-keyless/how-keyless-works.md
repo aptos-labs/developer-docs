@@ -14,15 +14,15 @@ At a very high level, a successful sign-in into the dApp via the OIDC provider w
 2. The dApp’s identity (contained in the JWT’s `“aud”` field)
 3. Application-specific data; specifically, an **ephemeral public key (EPK)** (contained in the JWT’s `“nonce”` field), whose associated **ephemeral secret key (ESK)** only the user knows.
 
-Now, assume that the user’s blockchain account address is (more or less) a hash of the user’s identity in “sub” and the dApp’s identity in “aud” from above.
+Now, assume that the user’s blockchain account address is (more or less) a hash of the user’s identity in `“sub”` and the dApp’s identity in `“aud”` from above.
 
 ![Keyless relation diagram](../../static/aptos-keyless/keyless_relation.png "Keyless relation diagram")
 
-Then, the **key observation** is that the signed JWT effectively acts as a **digital certificate**, **temporarily** binding the blockchain address to the EPK, and allowing the EPK to sign TXNs for it. In other words, it securely delegates TXN signing rights for this blockchain account to the EPK. (Note: The EPK contains an expiration date and is thus short-lived.)
+Then, the **key observation** is that the signed JWT effectively acts as a **digital certificate**, **temporarily** binding this blockchain address to the EPK, and allowing the EPK to sign TXNs for it. In other words, it securely delegates TXN signing rights for this blockchain account to the EPK. (Note: The EPK contains an expiration date and is thus short-lived.)
 
 Importantly, if the user loses their ESK, the user can obtain a new signed JWT over a new EPK via the application by simply signing in again via the OIDC provider. (Or, in some cases, by requesting a new signed JWT using an OAuth refresh token.)
 
-With this system, the **challenge** is maintaining privacy, since revealing the JWT on-chain would leak the user’s identity. Furthermore, revealing the EPK to the OIDC provider would allow it to track the user’s TXN on-chain.
+With this system, the **challenge** is maintaining privacy, since revealing the JWT on-chain would leak the user’s identity. Furthermore, revealing the EPK to the OIDC provider would allow it to track the user’s TXNs on-chain.
 
 We explain below how Keyless accounts work and how they address these challenges.
 
@@ -34,7 +34,7 @@ First, let us look at how a dApp can sign-in a user via (say) Google, derive tha
 
 **Step 1**: The user generates an ephemeral key pair: an EPK with an expiration date, and its associated ESK. The dApp keeps the EPK and safely stores the ESK on the user-side (e.g., in the browser’s local storage, or in a trusted enclave if the ESK is a WebAuthn passkey).
 
-**Step 2**: The dApp commits to the EPK using a blinding factor ⍴. When the user clicks on the “Sign in with Google” button, the dApp redirects the user to Google’s sign in page and, importantly, sets the nonce parameter in the URL to the EPK commitment. This hides the EPK from Google, maintaining privacy of the user’s TXN activity.
+**Step 2**: The dApp commits to the EPK using a blinding factor $\rho$. When the user clicks on the “Sign in with Google” button, the dApp redirects the user to Google’s sign in page and, importantly, sets the nonce parameter in the URL to the EPK commitment. This hides the EPK from Google, maintaining privacy of the user’s TXN activity.
 
 **Step 3**: Typically, the user has an HTTP cookie from having previously-signed-in to their Google account, so Google merely checks this cookie. If the user has multiple Google accounts, Google asks the user to select which one they want to sign-in into dApp.xyz. (The less common path is for the user to have to type in their Google username and password.)
 
