@@ -2,36 +2,41 @@
 title: "Building with Objects"
 ---
 
-# What are objects?
+# Move Objects
+In Move, Objects group resources together so they can be treated as a single entity on chain.
 
-The Move language controls access to resources using the store ability and
-accounts. The Object model provides a way to associate a collection of resources
-with a single address, using centralized resource control and ownership
-management. An Object is a container for resources at a single address which can
-be managed and accessed as a group for efficiency. The contract creating an
-Object can define custom behaviors around changes and transfers of those
-resources.
+Objects have their own address and can own resources similar to an account. They are useful for representing more complicated data types on-chain as Objects can be used in entry functions directly, and can be transferred as complete packages instead of one resource at a time.
 
-It's simply represented as an `ObjectCore` struct, which keeps track of the
-owner of the `Object` and transfer permissions. Along with the ability to store
-resources with an `ObjectGroup`. You can find more technical details at the
-[Object standard](../../aptos-standards/aptos-object.mdx) page, and view the code at the
-[framework generated object documentation](../../../../network/blockchain/move.mdx).
+Here's an example of creating an Object and transferring it:
 
-An example of creating and transferring an object:
-
-```move
+```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
-  use aptos_framework::object::{self, ObjectCore};
-
+  use std::string::{Self, String};
+  use aptos_framework::object::{Self, ObjectCore};
+  
+  struct MyStruct1 {
+    message: String,
+  }
+  
+  struct MyStruct2 {
+    message: String,
+  }
+ 
   entry fun create_and_transfer(caller: &signer, destination: address) {
     // Create object
     let caller_address = signer::address_of(caller);
     let constructor_ref = object::create_object(caller_address);
-
-    // Set up the object...
-
+    let object_signer = object::generate_signer(constructor_ref);
+    
+    // Set up the object by creating 2 resources in it
+    move_to(&object_signer, MyStruct1 {
+      message: string::utf8(b"hello")
+    });
+    move_to(&object_signer, MyStruct2 {
+      message: string::utf8(b"world")
+    });
+ 
     // Transfer to destination
     let object = object::object_from_constructor_ref<ObjectCore>(
       &constructor_ref
@@ -41,15 +46,17 @@ module my_addr::object_playground {
 }
 ```
 
-# Learn more about using Objects
+During construction, Objects can be configured to be transferrable, burnable, and extensible.
 
-- [Creating objects](objects/creating-objects.mdx)
-- [Configuring objects](objects/configuring-objects.mdx)
-- [Using objects](objects/using-objects.mdx)
+For example, you could use an Object to represent a soulbound NFT by making it only transferrable once, and have it own resources for an image link and metadata. Objects can also own other Objects, so you could implement your own NFT collection Object by transferring several of the soulbound NFTs to it.
 
-# More details
+## Learn how to
 
-For more details on objects, checkout:
+- [Create and configure a new Object.](objects/creating-objects.mdx)
+- [Use Objects you created.](objects/using-objects.mdx)
 
-- [Object standards](../../aptos-standards/aptos-object.mdx) page.
-- [Framework generated object documentation](/reference/move/##?branch=mainnet&page=aptos-framework/doc/object.md) {/* TODO: Fix link */}
+## Examples with Object contracts
+
+- [Digital Asset Marketplace Example](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/marketplace)
+- [Digital Assets Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/token_objects)
+- [Fungible Asset Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset)
