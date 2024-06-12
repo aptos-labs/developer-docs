@@ -283,7 +283,9 @@ module 0x1::dispatchable_fungible_asset {
     )
 }
 
-Note that this `register_dispatch_functions` takes `Option<FunctionInfo>` as input. This is because we can specify for withdraw/deposit/balance operation if we want to use the override logic or the vanilla logic. When `option::none()` is passed in, this fungible asset would just default to the vanilla withdraw/deposit/balance logic. The `constructoor_ref` is the reference for the metadata object of your fungible asset.
+<Callout type="info">
+    This function takes `Option<FunctionInfo>` as inputs.  Any functions that are provided `option::none()` will use the default behavior.  The `constructor_ref` must be for your fungible asset metadata object at creation time.
+</Callout>
 
 Function info can be constructed using the following api:
 
