@@ -232,7 +232,116 @@ struct Frozen has drop, store {
     frozen: bool,
 }
 ```
-    
+
+## Dispatchable Fungible Asset (Advanced)
+Asides from the default fungible asset functionality, a Fungible Asset creator can implement their own deposit and withdraw logic using dispatchable fungible assets. Creating a custom hook would allow for fungible asset creator to implement more complex logic such as customized access control or taxes.
+
+For more details please see [AIP-73](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
+
+### Implement the hook function 
+
+To implement a custom hook, build a module that contains the following functions:
+
+```move filename="example"
+module 0x42::example {
+    public fun withdraw<T: key>(
+        store: Object<T>,
+        amount: u64,
+        transfer_ref: &TransferRef,
+    ): FungibleAsset {
+        // Your own logic here
+    }
+
+    public fun deposit<T: key>(
+        store: Object<T>,
+        fa: FungibleAsset,
+        transfer_ref: &TransferRef,
+    ) {
+        // Your own logic here
+    }
+}
+
+In order to prevent re-entrancy prevention, there are some limitations:
+- Always use `with_ref` in your custom hooks instead of `deposit` or `withdraw`:
+    - `fungible_asset::deposit_with_ref`
+    - `fungible_asset::withdraw_with_ref`
+- Avoid calling into functions defined in `dispatchable_fungible_asset` and `primary_fungible_store`.  Inline functions are okay, other functions may cause errors on transfer.
+
+More details on these limitations can be found in [AIP-73](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
+
+### Register the hook function
+
+Once the module containing the hook functions is published, call `dispatchable_fungible_asset::register_dispatch_functions` to bind the functions with your fungible asset.
+
+```move filename="register_dispatch"
+module 0x1::dispatchable_fungible_asset {
+    public fun register_dispatch_functions(
+        constructor_ref: &ConstructorRef,
+        withdraw_function: Option<FunctionInfo>,
+        deposit_function: Option<FunctionInfo>,
+        derived_balance_function: Option<FunctionInfo>,
+    )
+}
+
+<Callout type="info">
+    This function takes `Option<FunctionInfo>` as inputs.  Any functions that are provided `option::none()` will use the default behavior.  The `constructor_ref` must be for your fungible asset metadata object at creation time.
+</Callout>
+
+Function info can be constructed using the following function:
+
+```move filename="new_function_info"
+module 0x1::dispatchable_fungible_asset {
+    public fun new_function_info(module_signer: &signer, module_name: String, function_name: String): FunctionInfo
+}
+```
+
+For security, you will need to pass in the signer of the module to create the `FunctionInfo` functions in the module.  If using the previous example you would call:
+
+```move 
+module 0x42::my_fungible_asset {
+    use aptos_framework::string;
+    use aptos_framework::object;
+    use aptos_framework::primary_fungible_store;
+    use aptos_framework::dispatchable_fungible_asset;
+
+    fun create_fungible_asset(module_signer: &signer, /* ... */) {
+        // Make the deposit override function info
+        let deposit_override = dispatchable_fungible_asset::new_function_info(
+            module_signer, 
+            string::utf8(b"example"), 
+            string::utf8("deposit")
+        );
+        
+        // Create the fungible asset
+        let constructor_ref = object::create_sticky_object( /* ... */);
+  
+  
+  
+  primary_fungible_store::create_primary_store_enabled_fungible_asset(&constructor_ref, ...);
+        // or below if not having primary stores
+        // fungible_asset::add_fungibility(&constructor_ref, /* ... */);
+
+        // Override default functionality for deposit
+        dispatchable_fungible_asset::register_dispatch_functions(
+            &constructor_ref,
+            option::none(),
+            option::some(deposit_override),
+            option::none()
+        );
+
+        // ...
+    }
+
+    // ...
+}
+```
+
+### Interacting with dispatchable fungible asset
+For users using `primary_fungible_store` to manage assets, no change is required to interact with dispatchable fungible assets. This functionality will be automatically invoked.
+
+For users using secondary `FungibleStore`s to interact with assets, `fungible_asset::withdraw` and `fungible_asset::deposit` will fail on assets that have the hook function registered. Instead use  `dispatchable_fungible_asset::withdraw` or `dispatchable_fungible_asset::deposit`. 
+
+The `dispatchable_fungible_asset` versions are a drop-in replacement and work with functions that do not have hooks registered.
 
 ## Managing Stores (Advanced)
 
