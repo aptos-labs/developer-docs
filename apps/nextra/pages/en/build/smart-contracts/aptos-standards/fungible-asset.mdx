@@ -232,7 +232,69 @@ struct Frozen has drop, store {
     frozen: bool,
 }
 ```
-    
+
+## Dispatchable Fungible Asset (Advanced)
+Asides from the default managed fungible asset functionality provided by Aptos Framework natively, Fungible Asset issuer can also implement their own deposit/withdraw logic using our new dispatchable fungible asset standard by registering custom hook function to be invoked at withdraw/deposit time. Such hook function will be stored by the Metadata of a fungible asset class and Aptos Framework will automatically invoke into the specified hook function instead of the vanilla withdraw/deposit logic upon withdraw/deposit. This would allow for fungible asset issuer to implement more complex logics such as customized access control. For more details please refer to the corresponding [AIP](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
+
+### Implement the hook function 
+
+To implement a custom hook function, build a module that contains functions with following signature:
+
+```move filename="example"
+public fun withdraw<T: key>(
+    store: Object<T>,
+    amount: u64,
+    transfer_ref: &TransferRef,
+): FungibleAsset {
+    // Your own logic here
+}
+
+public fun deposit<T: key>(
+    store: Object<T>,
+    fa: FungibleAsset,
+    transfer_ref: &TransferRef,
+) {
+    // Your own logic here
+}
+```
+
+There's some limitation in what you will be able to invoke inside of those withdraw/deposit function body due to re-entrancy prevention:
+- When performing the actual withdraw/deposit operations, ONLY call `with_ref` APIs in your custom hooks for deposit/withdraw operations.
+    -  use `fungible_asset::deposit_with_ref` instead of `fungible_asset::deposit` to consume the passed in `FungibleAsset`.
+    -  use `fungible_asset::withdraw_with_ref` instead of `fungible_asset::withdraw` to generate the `FungibleAsset` for customize withdraw operation.
+- Avoid calling into any functions defined in `dispatchable_fungible_asset` and `primary_fungible_store`.
+    - It is ok to call inline functions defined in those two modules.
+    - Calling other functions in those two modules could result in errors upon transfer.
+
+More details of why these limitation is necessary could be found in the [AIP](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
+
+### Register the hook function
+
+Once you have the functions implemented, use the api defined in `dispatchable_fungible_asset::register_dispatch_functions` to bind the function with your fungible asset.
+
+```move filename="register_dispatch"
+public fun register_dispatch_functions(
+    constructor_ref: &ConstructorRef,
+    withdraw_function: Option<FunctionInfo>,
+    deposit_function: Option<FunctionInfo>,
+    derived_balance_function: Option<FunctionInfo>,
+)
+```
+
+Note that this `register_dispatch_functions` takes `Option<FunctionInfo>` as input. This is because we can specify for withdraw/deposit/balance operation if we want to use the override logic or the vanilla logic. When `option::none()` is passed in, this fungible asset would just default to the vanilla withdraw/deposit/balance logic. The `constructoor_ref` is the reference for the metadata object of your fungible asset.
+
+Function info can be constructed using the following api:
+
+```move filename="new_function_info"
+public fun new_function_info(module_signer: &signer, module_name: String, function_name: String): FunctionInfo
+```
+
+For security reason you will need to pass in the signer of the module in order to create a `FunctionInfo` refering to functions in this module. Pass in the `module_name` and `function_name` of the withdraw/deposit implementation function 
+
+### Interacting with dispatchable fungible asset
+For users using `primary_fungible_store` to manage assets, no change is required to interact with assets that has dispatchable hook set up. Aptos Framework can automatically invoke the dispatch logic if a hook is set up. 
+
+For users using secondary `FungibleStore` to interact with assets, `fungible_asset::withdraw/deposit` would fail on asset that has the hook function registered. In order to interact with those asset class, you should use  `dispatchable_fungible_asset::withdraw/deposit` instead. These apis will be an in-place replacement for `fungible_asset::withdraw/deposit` and can handle assets regardless whether as hook has been registered or not.
 
 ## Managing Stores (Advanced)
 
