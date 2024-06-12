@@ -287,13 +287,54 @@ module 0x1::dispatchable_fungible_asset {
     This function takes `Option<FunctionInfo>` as inputs.  Any functions that are provided `option::none()` will use the default behavior.  The `constructor_ref` must be for your fungible asset metadata object at creation time.
 </Callout>
 
-Function info can be constructed using the following api:
+Function info can be constructed using the following function:
 
 ```move filename="new_function_info"
-public fun new_function_info(module_signer: &signer, module_name: String, function_name: String): FunctionInfo
+module 0x1::dispatchable_fungible_asset {
+    public fun new_function_info(module_signer: &signer, module_name: String, function_name: String): FunctionInfo
+}
 ```
 
-For security reason you will need to pass in the signer of the module in order to create a `FunctionInfo` refering to functions in this module. Pass in the `module_name` and `function_name` of the withdraw/deposit implementation function 
+For security, you will need to pass in the signer of the module to create the `FunctionInfo` functions in the module.  If using the previous example you would call:
+
+```move 
+module 0x42::my_fungible_asset {
+    use aptos_framework::string;
+    use aptos_framework::object;
+    use aptos_framework::primary_fungible_store;
+    use aptos_framework::dispatchable_fungible_asset;
+
+    fun create_fungible_asset(module_signer: &signer, /* ... */) {
+        // Make the deposit override function info
+        let deposit_override = dispatchable_fungible_asset::new_function_info(
+            module_signer, 
+            string::utf8(b"example"), 
+            string::utf8("deposit")
+        );
+        
+        // Create the fungible asset
+        let constructor_ref = object::create_sticky_object( /* ... */);
+  
+  
+  
+  primary_fungible_store::create_primary_store_enabled_fungible_asset(&constructor_ref, ...);
+        // or below if not having primary stores
+        // fungible_asset::add_fungibility(&constructor_ref, /* ... */);
+
+        // Override default functionality for deposit
+        dispatchable_fungible_asset::register_dispatch_functions(
+            &constructor_ref,
+            option::none(),
+            option::some(deposit_override),
+            option::none()
+        );
+
+        // ...
+    }
+
+    // ...
+}
+```
 
 ### Interacting with dispatchable fungible asset
 For users using `primary_fungible_store` to manage assets, no change is required to interact with assets that has dispatchable hook set up. Aptos Framework can automatically invoke the dispatch logic if a hook is set up. 
