@@ -267,7 +267,7 @@ In order to prevent re-entrancy prevention, there are some limitations:
     - `fungible_asset::withdraw_with_ref`
 - Avoid calling into functions defined in `dispatchable_fungible_asset` and `primary_fungible_store`.  Inline functions are okay, other functions may cause errors on transfer.
 
-More details of why these limitation is necessary could be found in the [AIP](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
+More details on these limitations can be found in [AIP-73](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
 
 ### Register the hook function
 
