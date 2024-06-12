@@ -362,7 +362,7 @@ Bad operations could unexpectedly alter the correct execution of the smart contr
 
 ### ConstructorRef leak
 
-When creating objects ensure to never expose the object’s `ConstructorRef` as it allows adding resources to an object. A `ConstructorRef` can also be used to generate other capabilities (or "Refs") that are used to alter or transfer the ownership the object. [Read more](../../aptos-standards/aptos-object.mdx#object-capabilities-refs) about Objects capabilities.
+When creating objects ensure to never expose the object’s `ConstructorRef` as it allows adding resources to an object. A `ConstructorRef` can also be used to generate other capabilities (or "Refs") that are used to alter or transfer the ownership the object. [Read more](../../aptos-standards/objects.mdx#object-capabilities-refs) about Objects capabilities.
 
 #### Example Vulnerable code
 
@@ -415,7 +415,7 @@ However, objects should be isolated to different account, otherwise modification
 
 For example, transferring one resource implies the transfer of all group members, since the transfer function operates on `ObjectCore`, which is essentially a general tag for all resources at the account.
 
-[Read more](../../aptos-standards/aptos-object.mdx) about Aptos Objects.
+[Read more](../../aptos-standards/objects.mdx) about Aptos Objects.
 
 #### Example Insecure Code
 

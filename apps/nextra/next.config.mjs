@@ -998,10 +998,28 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source:
-          "/en/build/smart-contracts/learn-move/advanced-guides/objects/configuring-objects",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/objects/creating-objects",
+        source: "/en/build/smart-contracts/aptos-standards/aptos-object",
+        destination: "/en/build/smart-contracts/aptos-standards/objects",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/learn-move/advanced-guides/objects",
+        destination: "/en/build/smart-contracts/aptos-standards/objects",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/learn-move/advanced-guides/objects/creating-objects",
+        destination: "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/learn-move/advanced-guides/objects/configuring-objects",
+        destination: "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/learn-move/advanced-guides/objects/creating-objects",
+        destination: "/en/build/smart-contracts/learn-move/advanced-guides/objects/using-objects",
         permanent: true,
       },
     ],
