@@ -337,9 +337,11 @@ module 0x42::my_fungible_asset {
 ```
 
 ### Interacting with dispatchable fungible asset
-For users using `primary_fungible_store` to manage assets, no change is required to interact with assets that has dispatchable hook set up. Aptos Framework can automatically invoke the dispatch logic if a hook is set up. 
+For users using `primary_fungible_store` to manage assets, no change is required to interact with dispatchable fungible assets. This functionality will be automatically invoked.
 
-For users using secondary `FungibleStore` to interact with assets, `fungible_asset::withdraw/deposit` would fail on asset that has the hook function registered. In order to interact with those asset class, you should use  `dispatchable_fungible_asset::withdraw/deposit` instead. These apis will be an in-place replacement for `fungible_asset::withdraw/deposit` and can handle assets regardless whether as hook has been registered or not.
+For users using secondary `FungibleStore`s to interact with assets, `fungible_asset::withdraw` and `fungible_asset::deposit` will fail on assets that have the hook function registered. Instead use  `dispatchable_fungible_asset::withdraw` or `dispatchable_fungible_asset::deposit`. 
+
+The `dispatchable_fungible_asset` versions are a drop-in replacement and work with functions that do not have hooks registered.
 
 ## Managing Stores (Advanced)
 
