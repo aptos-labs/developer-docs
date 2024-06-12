@@ -274,13 +274,14 @@ More details on these limitations can be found in [AIP-73](https://github.com/ap
 Once the module containing the hook functions is published, call `dispatchable_fungible_asset::register_dispatch_functions` to bind the functions with your fungible asset.
 
 ```move filename="register_dispatch"
-public fun register_dispatch_functions(
-    constructor_ref: &ConstructorRef,
-    withdraw_function: Option<FunctionInfo>,
-    deposit_function: Option<FunctionInfo>,
-    derived_balance_function: Option<FunctionInfo>,
-)
-```
+module 0x1::dispatchable_fungible_asset {
+    public fun register_dispatch_functions(
+        constructor_ref: &ConstructorRef,
+        withdraw_function: Option<FunctionInfo>,
+        deposit_function: Option<FunctionInfo>,
+        derived_balance_function: Option<FunctionInfo>,
+    )
+}
 
 Note that this `register_dispatch_functions` takes `Option<FunctionInfo>` as input. This is because we can specify for withdraw/deposit/balance operation if we want to use the override logic or the vanilla logic. When `option::none()` is passed in, this fungible asset would just default to the vanilla withdraw/deposit/balance logic. The `constructoor_ref` is the reference for the metadata object of your fungible asset.
 
