@@ -1,25 +1,90 @@
 ---
-title: "Configuring objects"
+title: "Creating objects"
 ---
+import { Callout } from 'nextra/components'
 
-# Configuring objects
 
-At this point, you have an object, but how do you specialize it? Objects must
-be configured for their capabilities at creation time. If they are not
-configured with the correct capabilities at creation time, it will be impossible
-to change later.
+# Creating and Configuring Objects
 
-## Adding Resources
+Creating an Object involves two steps:
 
-An object must store data in resources. The signer of the object is required to
-move resources to the object's storage. Below we'll go through a deletable
-object example.
+1. Creating the `ObjectCore` resource group (which has an address you can use to refer to the Object later).
+2. Customizing how the Object will behave using permissions called `Ref`s.
 
-When I create my object, I can use the special `ConstructorRef` to create
-resources only available at creation time. For example, you can create a signer
-at creation time to move a resource into the object.
+<Callout type="info">
+Configuring an Object by generating `Ref`s has to happen in the same transaction you create it. Later on it is impossible to change those settings.
+</Callout>
 
-```move
+### Creating an Object
+
+There are three types of Object you can create:
+
+1. A **normal Object.** This type is deletable and has a random address. You can create it using: `0x1::object::create_object(owner_address: address)`. For example:
+```move filename="object_playground.move"
+module my_addr::object_playground {
+  use std::signer;
+  use aptos_framework::object;
+ 
+  entry fun create_my_object(caller: &signer) {
+    let caller_address = signer::address_of(caller);
+    let constructor_ref = object::create_object(caller_address);
+    // ...
+  }
+}
+```
+
+2. A **named Object.** This type is **not** deletable and has a deterministic address. You can create it by using: `0x1::object::create_named_object(creator: &signer, seed: vector<u8>)`. For example:
+```move filename="object_playground.move"
+module my_addr::object_playground {
+  use std::signer;
+  use aptos_framework::object;
+ 
+  /// Seed for my named object, must be globally unique to the creating account
+  const NAME: vector<u8> = b"MyAwesomeObject";
+ 
+  entry fun create_my_object(caller: &signer) {
+    let caller_address = signer::address_of(caller);
+    let constructor_ref = object::create_named_object(caller_address, NAME);
+    // ...
+  }
+ 
+  #[view]
+  fun has_object(creator: address): bool {
+    let object_address = object::create_object_address(&creator, NAME);
+    object_exists<0x1::object::ObjectCore>(object_address)
+  }
+}
+```
+
+3. A **sticky Object.** This type is also **not** deletable and has a random address. You can create it by using `0x1::object::create_sticky_object(owner_address: address)`. For example:
+```move filename="object_playground.move"
+module my_addr::object_playground {
+  use std::signer;
+  use aptos_framework::object;
+ 
+  entry fun create_my_object(caller: &signer) {
+    let caller_address = signer::address_of(caller);
+    let constructor_ref = object::create_sticky_object(caller_address);
+    // ...
+  }
+}
+```
+
+# Customizing Object Features
+
+Once you create your object, you will receive a `ConstructorRef` you can use to generate additional `Ref`s. `Ref`s can be used in future to enable / disable / execute certain Object functions such as transferring resources, transferring the object itself, or deleting the Object.
+
+The following sections will walk through commonly used `Ref`s and the features they enable.
+
+<Callout type="info">
+Note: The `ConstructorRef` cannot be stored. It is destroyed at the end of the transaction used to create the Object, so any other `Ref`s **must** be generated during Object creation.
+</Callout>
+
+### Adding Resources
+
+You can use the `ConstructorRef` with `object::generate_signer` to create a signer that allows you to transfer resources onto the Object. This uses `move_to`, the same function as for adding resources to an account.
+
+```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
   use aptos_framework::object;
@@ -46,15 +111,13 @@ module my_addr::object_playground {
 }
 ```
 
-## Extending the object
+### Adding Extensibility (`ExtendRef`)
 
-The object was created, but the user decided to add extra data. The `ExtendRef`
-provides this functionality to retrieve the object's `signer` at a later time.
+Sometimes you want an Object to be editable later on. In that case, you can generate an `ExtendRef` with `object::generate_extend_ref`. This ref can be used to generate a signer for the object.
 
-The `ExtendRef` can be used to generate a signer for the object. Permissions on
-who can retrieve it must be defined by the contract.
+You can control who has permission to use the `ExtendRef` via smart contract logic like in the below example.
 
-```move
+```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
   use std::string::{self, String};
@@ -123,14 +186,13 @@ module my_addr::object_playground {
 }
 ```
 
-## Disabling or re-enabling Transfers
+### Disabling / Toggling Transfers (`TransferRef`)
 
-Objects can be able to be transferred or not. By default, all objects are
-transferable. However, this functionality can be toggled on and off, or chosen
-at creation time. It is enabled by the `TransferRef`, which we'll illustrate
-below.
+By default all Objects are transferrable. This can be changed via a `TransferRef` which you can generate with `object::generate_transfer_ref`.
 
-```move
+The example below shows how you could generate and manage permissions for determining whether an Object is transferrable.
+
+```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
   use std::string::{self, String};
@@ -185,7 +247,9 @@ module my_addr::object_playground {
     assert!(caller_address == @my_addr, E_NOT_PUBLISHER);
 
     // Retrieve the transfer ref
-    let object_address = object::object_address(object);
+    let object_address =
+
+ object::object_address(object);
     let transfer_ref = borrow_global<ObjectController>(
       object_address
     ).transfer_ref;
@@ -200,14 +264,11 @@ module my_addr::object_playground {
 }
 ```
 
-## Controlled transfers
+### One-Time Transfers (`LinearTransferRef`)
 
-Additionally, if the creator wants to control all transfers,
-a `LinearTransferRef` can be created from the `TransferRef` to provide a one
-time use transfer functionality. The `LinearTransferRef` has to be used by the
-owner of the object.
+Additionally, if the creator wants to control all transfers, a `LinearTransferRef` can be created from the `TransferRef` to provide a one time use transfer functionality. This can be used to create “soulbound” objects by having a one-time transfer from the Object creator to the recipient. The `LinearTransferRef` must be used by the owner of the Object.
 
-```move
+```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
   use std::option;
@@ -302,15 +363,13 @@ module my_addr::object_playground {
 }
 ```
 
-## Allowing deletion of an Object
+## **Allowing Deletion of an Object (`DeleteRef`)**
 
-Deleting an object can be useful to get rid of clutter, as well as retrieve back
-storage refunds. Deletion can be done with a `DeleteRef`, which must be created
-at object creation time.
+For Objects created with the default method (allowing deletion) you can generate a `DeleteRef` which can be used later. This can help remove clutter as well as receive a storage refund.
 
-Note that you cannot create a `DeleteRef` for a non-deletable object.
+You cannot create a `DeleteRef` for a non-deletable Object.
 
-```move
+```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
   use std::option;
@@ -371,9 +430,13 @@ module my_addr::object_playground {
 }
 ```
 
-## Immutability
+## Making an Object Immutable
 
-An object can be made immutable by making the contract associated immutable, and
-removing any ability to extend or mutate the object. By default, contracts are
-not immutable, and objects can be extended with an ExtendRef, and resources can
-be mutated if the contract allows for it.
+An object can be made immutable by making the contract associated immutable, and removing any ability to extend or mutate the object. By default, contracts are not immutable, and objects can be extended with an `ExtendRef`, and resources can be mutated if the contract allows for it.
+<br/>
+
+# Further Reading
+
+You can find documentation for all possible `Refs` by looking at the Move reference docs for `0x1::object` [here](https://aptos.dev/reference/move?branch=mainnet&page=aptos-framework/doc/object.md). 
+
+You can also explore how to use Objects once they are constructed [here](using-objects.mdx).

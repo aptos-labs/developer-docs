@@ -1,7 +1,4 @@
 export default {
-  objects: {
-    title: "Objects",
-  },
   scripts: {
     title: "Move Scripts",
   },
