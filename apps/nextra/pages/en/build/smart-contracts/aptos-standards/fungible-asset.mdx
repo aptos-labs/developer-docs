@@ -261,13 +261,11 @@ module 0x42::example {
     }
 }
 
-There's some limitation in what you will be able to invoke inside of those withdraw/deposit function body due to re-entrancy prevention:
-- When performing the actual withdraw/deposit operations, ONLY call `with_ref` APIs in your custom hooks for deposit/withdraw operations.
-    -  use `fungible_asset::deposit_with_ref` instead of `fungible_asset::deposit` to consume the passed in `FungibleAsset`.
-    -  use `fungible_asset::withdraw_with_ref` instead of `fungible_asset::withdraw` to generate the `FungibleAsset` for customize withdraw operation.
-- Avoid calling into any functions defined in `dispatchable_fungible_asset` and `primary_fungible_store`.
-    - It is ok to call inline functions defined in those two modules.
-    - Calling other functions in those two modules could result in errors upon transfer.
+In order to prevent re-entrancy prevention, there are some limitations:
+- Always use `with_ref` in your custom hooks instead of `deposit` or `withdraw`:
+    - `fungible_asset::deposit_with_ref`
+    - `fungible_asset::withdraw_with_ref`
+- Avoid calling into functions defined in `dispatchable_fungible_asset` and `primary_fungible_store`.  Inline functions are okay, other functions may cause errors on transfer.
 
 More details of why these limitation is necessary could be found in the [AIP](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
 
