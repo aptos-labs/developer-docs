@@ -271,7 +271,7 @@ More details on these limitations can be found in [AIP-73](https://github.com/ap
 
 ### Register the hook function
 
-Once you have the functions implemented, use the api defined in `dispatchable_fungible_asset::register_dispatch_functions` to bind the function with your fungible asset.
+Once the module containing the hook functions is published, call `dispatchable_fungible_asset::register_dispatch_functions` to bind the functions with your fungible asset.
 
 ```move filename="register_dispatch"
 public fun register_dispatch_functions(
