@@ -234,7 +234,9 @@ struct Frozen has drop, store {
 ```
 
 ## Dispatchable Fungible Asset (Advanced)
-Asides from the default managed fungible asset functionality provided by Aptos Framework natively, Fungible Asset issuer can also implement their own deposit/withdraw logic using our new dispatchable fungible asset standard by registering custom hook function to be invoked at withdraw/deposit time. Such hook function will be stored by the Metadata of a fungible asset class and Aptos Framework will automatically invoke into the specified hook function instead of the vanilla withdraw/deposit logic upon withdraw/deposit. This would allow for fungible asset issuer to implement more complex logics such as customized access control. For more details please refer to the corresponding [AIP](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
+Asides from the default fungible asset functionality, a Fungible Asset creator can implement their own deposit and withdraw logic using dispatchable fungible assets. Creating a custom hook would allow for fungible asset creator to implement more complex logic such as customized access control or taxes.
+
+For more details please see [AIP-73](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
 
 ### Implement the hook function 
 
