@@ -243,22 +243,23 @@ For more details please see [AIP-73](https://github.com/aptos-foundation/AIPs/bl
 To implement a custom hook, build a module that contains the following functions:
 
 ```move filename="example"
-public fun withdraw<T: key>(
-    store: Object<T>,
-    amount: u64,
-    transfer_ref: &TransferRef,
-): FungibleAsset {
-    // Your own logic here
-}
+module 0x42::example {
+    public fun withdraw<T: key>(
+        store: Object<T>,
+        amount: u64,
+        transfer_ref: &TransferRef,
+    ): FungibleAsset {
+        // Your own logic here
+    }
 
-public fun deposit<T: key>(
-    store: Object<T>,
-    fa: FungibleAsset,
-    transfer_ref: &TransferRef,
-) {
-    // Your own logic here
+    public fun deposit<T: key>(
+        store: Object<T>,
+        fa: FungibleAsset,
+        transfer_ref: &TransferRef,
+    ) {
+        // Your own logic here
+    }
 }
-```
 
 There's some limitation in what you will be able to invoke inside of those withdraw/deposit function body due to re-entrancy prevention:
 - When performing the actual withdraw/deposit operations, ONLY call `with_ref` APIs in your custom hooks for deposit/withdraw operations.
