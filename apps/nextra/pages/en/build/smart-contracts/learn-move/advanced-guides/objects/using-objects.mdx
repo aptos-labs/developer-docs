@@ -180,6 +180,80 @@ module my_addr::object_playground {
 If `ungated_transfer` is **disabled**, then all transfers need to use a special permission given by a `TransferRef` or `LinearTransferRef`.
 </Callout>
 
+## Events
+By default, Objects only have a `TransferEvent` which triggers whenever the Object is transferred.
+
+Objects can be extended to have additional events. 
+
+You can use the following functions to create event handles for Objects:
+
+```move filename="example.move"
+module 0x1::object {
+  /// Create a guid for the object, typically used for events
+  public fun create_guid(object: &signer): guid::GUID {}
+ 
+  /// Generate a new event handle.
+  public fun new_event_handle<T: drop + store>(object: &signer): event::EventHandle<T> {}
+}
+```
+
+Generated event handles can be transferred to the Object as long as you have the Object's `SignerRef`. For example:
+
+```move filename="example.move"
+module 0x42::example {
+  use aptos_framework::event;
+  use aptos_framework::fungible_asset::FungibleAsset;
+  use aptos_framework::object::{Self, Object};
+ 
+  struct LiquidityPoolEventStore has key {
+    create_events: event::EventHandle<CreateLiquidtyPoolEvent>,
+  }
+ 
+  struct CreateLiquidtyPoolEvent {
+    token_a: address,
+    token_b: address,
+    reserves_a: u128,
+    reserves_b: u128,
+  }
+ 
+  public entry fun create_liquidity_pool_with_events(
+        token_a: Object<FungibleAsset>,
+        token_b: Object<FungibleAsset>,
+        reserves_a: u128,
+        reserves_b: u128
+  ) {
+    let exchange_signer = &get_exchange_signer();
+    let liquidity_pool_constructor_ref = &object::create_object_from_account(
+      exchange_signer
+    );
+    let liquidity_pool_signer = &object::generate_signer(
+      liquidity_pool_constructor_ref
+    );
+    let event_handle = object::new_event_handle<CreateLiquidtyPoolEvent>(
+      liquidity_pool_signer
+    );
+
+    event::emit_event<CreateLiquidtyPoolEvent>(&mut event_handle, CreateLiquidtyPoolEvent {
+      token_a: object::object_address(&token_a),
+      token_b: object::object_address(&token_b),
+      reserves_a,
+      reserves_b,
+    });
+
+    move_to(liquidity_pool_signer, LiquidityPool {
+      token_a,
+      token_b,
+      reserves_a,
+      reserves_b
+    });
+
+    move_to(liquidity_pool_signer, LiquidityPoolEventStore {
+      create_events: event_handle
+    });
+  }
+}
+```
+
 ## Modifying Objects after creation
 
 In general, Objects can only be modified with `Refs` generated during construction. See [Creating and Configuring Objects](creating-objects.mdx) for more details on what `Refs` are available, how to generate them, and how to use them. This is how you add additional resources to an Object, delete it, and extend it.
