@@ -19,7 +19,7 @@ It's important to verify that the `signer` is the rightful owner of the object.
 
 In this module, a user must purchase a subscription before performing certain actions. The user invokes the registration function to acquire an `Object<Subscription>`, which they can later use to execute operations.
 
-```move
+```move filename="object_example.move"
 module 0x42::example {
 
     struct Subscription has key {
