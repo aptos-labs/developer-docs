@@ -262,6 +262,85 @@ Aptos provides several APIs to support FA flows with same names in different mod
 There are two separate withdraw and deposit events instead of a single transfer event.
 </Callout>
 
+### Step 4.4: Understanding how to use Dispatchable Hooks
+
+Aptos provides APIs to register withdraw and deposit hooks, allowing for custom logic being injected at each step during a transfer. 
+In the hooks, we will add a global pause to all withdraws and deposits upon a transfer. 
+
+```move filename="fa_coin.move"
+      #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
+    /// Global state to pause the FA coin.
+    struct State has key {
+        paused: bool,
+    }
+```
+
+This is how you would register the hooks upon asset creation (`init_module`).
+
+```move filename="fa_coin.move"
+module deploy_addr::fa_coin {
+    init_module(admin: &signer) {
+      // ...previous code
+
+      // Override the deposit and withdraw functions which mean overriding transfer.
+        // This ensures all transfer will call withdraw and deposit functions in this module 
+        // and perform the necessary checks.
+        let deposit = function_info::new_function_info(
+            admin,
+            string::utf8(b"fa_coin"),
+            string::utf8(b"deposit"),
+        );
+        let withdraw = function_info::new_function_info(
+            admin,
+            string::utf8(b"fa_coin"),
+            string::utf8(b"withdraw"),
+        );
+        dispatchable_fungible_asset::register_dispatch_functions(
+            constructor_ref,
+            option::some(withdraw),
+            option::some(deposit),
+            option::none(),
+        );
+    }
+}
+```
+
+After registration of the hooks, we can call the newly defined `assert_not_paused` function in our hooks to verify that a transfer is allowed. 
+    
+```move filename="fa_coin.move"
+    /// Deposit function override to ensure that the account is not denylisted and the FA coin is not paused.
+    public fun deposit<T: key>(
+        store: Object<T>,
+        fa: FungibleAsset,
+        transfer_ref: &TransferRef,
+    ) acquires State {
+        assert_not_paused();
+        fungible_asset::deposit_with_ref(transfer_ref, store, fa);
+    }
+
+    /// Withdraw function override to ensure that the account is not denylisted and the FA coin is not paused.
+    public fun withdraw<T: key>(
+        store: Object<T>,
+        amount: u64,
+        transfer_ref: &TransferRef,
+    ): FungibleAsset acquires State {
+        assert_not_paused();
+        fungible_asset::withdraw_with_ref(transfer_ref, store, amount)
+    }
+
+    /// Assert that the FA coin is not paused.
+    fun assert_not_paused() acquires State {
+        let state = borrow_global<State>(object::create_object_address(&@FACoin, ASSET_SYMBOL));
+        assert!(!state.paused, EPAUSED);
+    }
+```
+
+Note that this will not prevent transfers of stores or impose the pause during minting and burning. 
+When using this feature, developers should be careful to follow the guidelines to prevent circular dependencies between modules. 
+Please read the developer guidelines in the Fungible Asset Standard [section](../smart-contracts/aptos-standards/fungible-asset.mdx).
+
+
+
 ## Supporting documentation
 
 - [Aptos CLI](../cli.mdx)
