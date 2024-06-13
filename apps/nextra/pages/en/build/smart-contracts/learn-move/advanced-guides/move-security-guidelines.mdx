@@ -747,7 +747,7 @@ module user::lottery {
 
 In this example, the `play` function is `public`, allowing it to be composed with other modules. A malicious user can invoke this function and then check if they have won. If they have not won, they can abort the transaction and try again.
 
-```move
+```move filename="randomness_example.move"
 module attacker::exploit {
     entry fun exploit(attacker: &signer) {
         @user::lottery::play(attacker);
