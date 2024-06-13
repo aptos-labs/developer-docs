@@ -10,7 +10,82 @@ This guide addresses this gap by detailing common anti-patterns and their secure
 
 ## Access Control
 
-### Object Access Control
+### Object Ownership Check
+
+Every `Object<T>` can be accessed by anyone, which means any `Object<T>` can be passed to any function, even if the caller doesn't own it.
+It's important to verify that the `signer` is the rightful owner of the object.
+
+#### Example Insecure Code
+
+In this module, a user must purchase a subscription before performing certain actions. The user invokes the registration function to acquire an `Object<Subscription>`, which they can later use to execute operations.
+
+```move filename="object_example.move"
+module 0x42::example {
+
+    struct Subscription has key {
+        end_subscription: u64
+    }
+
+    entry fun registration(user: &signer, end_subscription: u64) {
+        let price = calculate_subscription_price(end_subscription);
+        payment(user,price);
+
+        let user_address = address_of(user);
+        let constructor_ref = object::create_object(user_address);
+        let subscription_signer = object::generate_signer(&constructor_ref);
+        move_to(&subscription_signer, Subscription { end_subscription });
+    }
+
+    entry fun execute_action_with_valid_subscription(
+        user: &signer, obj: Object<Subscription>
+    ) acquires Subscription {
+        let object_address = object::object_address(&obj);
+        let subscription = borrow_global<Subscription>(object_address);
+        assert!(subscription.end_subscription >= aptos_framework::timestamp::now_seconds(),1);
+        // Use the subscription
+        [...]
+    }
+}
+```
+
+In this insecure example, `execute_action_with_valid_subscription` does not verify if the user owns the `obj` passed to it. Consequently, anyone can use another person's subscription, bypassing the payment requirement.
+
+#### Example Secure Code
+
+Ensure that the signer owns the object.
+
+```move filename="object_example.move"
+module 0x42::example {
+
+    struct Subscription has key {
+        end_subscription: u64
+    }
+
+    entry fun registration(user: &signer, end_subscription: u64) {
+        let price = calculate_subscription_price(end_subscription);
+        payment(user,price);
+
+        let user_address = address_of(user);
+        let constructor_ref = object::create_object(user_address);
+        let subscription_signer = object::generate_signer(&constructor_ref);
+        move_to(&subscription_signer, Subscription { end_subscription });
+    }
+
+    entry fun execute_action_with_valid_subscription(
+        user: &signer, obj: Object<Subscription>
+    ) acquires Subscription {
+        //ensure that the signer owns the object.
+        assert!(object::owner(&obj)==address_of(user),ENOT_OWNWER);
+        let object_address = object::object_address(&obj);
+        let subscription = borrow_global<Subscription>(object_address);
+        assert!(subscription.end_subscription >= aptos_framework::timestamp::now_seconds(),1);
+        // Use the subscription
+        [...]
+    }
+}
+```
+
+### Global Storage Access Control
 
 Accepting a `&signer` is not always sufficient for access control purposes. Be sure to assert that the signer is the expected account, especially when performing sensitive operations.
 
@@ -55,7 +130,7 @@ Adhere to the principle of least privilege:
 - Always start with private functions, change their visibility as it is needed by the business logic.
 - Utilize `entry` for functions intended for use solely from the Aptos CLI or SDK.
 - Utilize `friend` for functions that can only be accessible by specific modules.
-- Utilize the `#[view]` decorator with functions that read data from storage without altering state.
+- Utilize the `#[view]` decorator with functions that read data from storage without altering state. #[view] functions can be invoked indirectly and in this case they might change the storage.
 
 Function visibility determines who can call a function. It's a way to enforce access control and is critical for smart contract security:
 
@@ -639,3 +714,117 @@ module 0x42::example {
 ### Smart contract publishing key management
 
 Using the same account for testnet and mainnet poses a security risk, as testnet private keys, often stored in less secure environments (ex. laptops), can be more easily exposed or leaked. An attacker that can obtain the private key for the testnet smart contract would be able to upgrade the mainnet one.
+
+## Randomness
+
+For more information on randomness and why it is crucial for preventing the predictability of random numbers, please refer to this page: [Randomness Guide](https://aptos.dev/guides/randomness/).
+
+---
+
+### Randomness - test-and-abort
+
+> At Aptos, We are always security-first. During compilation, we ensure that no randomness API is invoked from a public function. However, we still allow users to make this choice by adding the attribute `#[lint::allow_unsafe_randomness]` to the public function.
+
+If a `public` function directly or indirectly invokes the randomness API, a malicious user can abuse the composability of this function and abort the transaction if the result is not as desired. This allows the user to keep trying until they achieve a beneficial outcome, undermining the randomness.
+
+#### Example Vulnerable code
+
+```move filename="randomness_example.move"
+module user::lottery {
+    fun mint_to_user(user: &signer) {
+        move_to(user, WIN {});
+    }
+
+    #[lint::allow_unsafe_randomness]
+    public entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            mint_to_user(user);
+        }
+    }
+}
+```
+
+In this example, the `play` function is `public`, allowing it to be composed with other modules. A malicious user can invoke this function and then check if they have won. If they have not won, they can abort the transaction and try again.
+
+```move filename="randomness_example.move"
+module attacker::exploit {
+    entry fun exploit(attacker: &signer) {
+        @user::lottery::play(attacker);
+        assert!(exists<@user::lottery::WIN>(address_of(attacker)));
+    }
+}
+```
+
+To resolve the possible issue, is sufficient to set the visibility of all functions that invoke the randomness API, either directly or indirectly, to `entry` rather than `public` or `public entry`.
+
+#### Example Secure Code
+
+```move filename="randomness_example.move"
+module user::lottery {
+    fun mint_to_user(user: &signer) {
+        move_to(user, WIN {});
+    }
+
+    #[lint::allow_unsafe_randomness]
+    entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            mint_to_user(user);
+        }
+    }
+}
+```
+
+### Randomness - undergasing
+
+When different code paths in a function consume different amounts of gas, an attacker can manipulate the gas limit to bias the outcome. Let's look at an example of how different paths can consume different amounts of gas.
+
+#### Example Vulnerable code
+
+```move filename="randomness_example.move"
+module user::lottery {
+
+    //transfer 10 aptos from admin to user
+    fun win(user: &signer) {
+        let admin_signer = &get_admin_signer();
+        let aptos_metadata = get_aptos_metadata();
+        primary_fungible_store::transfer(admin_signer, aptos_metadata, address_of(user),10);
+    }
+
+    //transfer 10 aptos from user to admin, then 1 aptos from admin to fee_admin
+    fun lose(user: &signer) {
+
+        //user to admin
+        let aptos_metadata = get_aptos_metadata();
+        primary_fungible_store::transfer(user, aptos_metadata, @admin, 10);
+
+        //admin to fee_admin
+        let admin_signer = &get_admin_signer();
+        primary_fungible_store::transfer(admin_signer, aptos_metadata, @fee_admin, 1);
+    }
+
+    #[randomness]
+    entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            win(user);
+        } else {
+            lose(user);
+        }
+    }
+}
+```
+
+In this lottery-example, `win` and `lose` consume different amounts of gas.
+The `lose` function consumes more gas than the `win` function. An attacker can set the max gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the `lose` path is taken, ensuring that the user will never execute the `lose` path. Then, the user can call the function repeatedly until they win.
+
+#### Example Secure Code
+
+There are different ways to secure the code:
+
+1. Ensure better outcomes use more or the same gas as worse outcomes.
+2. Allow only admin addresses to invoke the randomness API.
+3. Ensure entry functions work regardless of random outcomes. This can be handled by committing the random result, then using the random result to provide the action in a different transaction. Avoid immediate actions based on randomness for consistent gas use.
+
+> We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergasing attacks.
