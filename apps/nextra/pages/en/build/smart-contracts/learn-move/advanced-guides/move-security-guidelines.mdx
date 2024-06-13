@@ -729,7 +729,7 @@ If a `public` function directly or indirectly invokes the randomness API, a mali
 
 #### Example Vulnerable code
 
-```move
+```move filename="randomness_example.move"
 module user::lottery {
     fun mint_to_user(user: &signer) {
         move_to(user, WIN {});
