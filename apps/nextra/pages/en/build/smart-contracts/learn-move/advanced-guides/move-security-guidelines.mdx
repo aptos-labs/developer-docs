@@ -760,7 +760,7 @@ To resolve the possible issue, is sufficient to set the visibility of all functi
 
 #### Example Secure Code
 
-```move
+```move filename="randomness_example.move"
 module user::lottery {
     fun mint_to_user(user: &signer) {
         move_to(user, WIN {});
