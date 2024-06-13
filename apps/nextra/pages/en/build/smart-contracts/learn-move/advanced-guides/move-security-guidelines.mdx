@@ -130,7 +130,7 @@ Adhere to the principle of least privilege:
 - Always start with private functions, change their visibility as it is needed by the business logic.
 - Utilize `entry` for functions intended for use solely from the Aptos CLI or SDK.
 - Utilize `friend` for functions that can only be accessible by specific modules.
-- Utilize the `#[view]` decorator with functions that read data from storage without altering state.
+- Utilize the `#[view]` decorator with functions that read data from storage without altering state. #[view] functions can be invoked indirectly and in this case they might change the storage.
 
 Function visibility determines who can call a function. It's a way to enforce access control and is critical for smart contract security:
 
