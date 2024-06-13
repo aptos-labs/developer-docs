@@ -732,7 +732,7 @@ When different code paths in a function consume different amounts of gas, an att
 
 #### Example Vulnerable code
 
-```
+```move filename="randomness_example.move"
 module user::lottery {
 
     //transfer 10 aptos from admin to user
