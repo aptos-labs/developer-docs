@@ -241,7 +241,7 @@ Aside from the default managed fungible asset functionality provided by the Apto
 
 To implement a custom hook function, build a module with functions that have the following signature:
 
-```move
+```move filename="example.move"
 public fun withdraw<T: key>(
     store: Object<T>,
     amount: u64,
