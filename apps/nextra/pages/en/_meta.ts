@@ -16,7 +16,7 @@ export default {
         title: "Get Started",
       },
       "smart-contracts": {
-        title: "Smart Contracts",
+        title: "Smart Contracts (⚠️)",
       },
       apis: {
         title: "APIs",
