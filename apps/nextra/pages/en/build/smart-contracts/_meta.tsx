@@ -28,8 +28,9 @@ export default {
   "table": {
     title: "Table",
   },
-  "object": {
-    title: "Objects",
+  "aptos-objects": {
+    href: "/en/build/smart-contracts/objects",
+    title: "Objects"
   },
   "resource-accounts": {
     title: "Resource Accounts",
@@ -54,7 +55,7 @@ export default {
     type: "separator",
     title: "Aptos Standards",
   },
-  "aptos-object": {
+  "objects": {
     title: "Object",
   },
   "digital-asset": {
@@ -77,7 +78,7 @@ export default {
     type: "separator",
     title: "Reference",
   },
-  "move-book": {
+  "book": {
     title: 'Move Book',
   },
   "move-reference": {
@@ -96,7 +97,7 @@ export default {
   "patterns": {
     title: "Patterns",
   },
-  "move-prover": {
+  "prover": {
     title: "Move Prover",
   },
   "cryptography": {
