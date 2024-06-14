@@ -2,7 +2,7 @@
 title: "TypeScript SDK Quickstart"
 ---
 
-import { Callout, Steps } from 'nextra/components'
+import { Callout, Steps, Tabs } from 'nextra/components'
 
 # TypeScript SDK Quickstart
 
@@ -16,17 +16,45 @@ The complete example code can be found at [Full Quickstart Code](#Full_Quickstar
 
 This will initialize a typescript package with `quickstart.ts`
 
-```bash npm2yarn
-npm init && npm add -D typescript @types/node ts-node && npx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
-```
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+    ```bash
+    npm init && npm add -D typescript @types/node ts-node && npx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pnpm init && pnpm add -D typescript @types/node ts-node && pnpx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    yarn init -y && yarn add -D typescript @types/node ts-node && npx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
 
 ### Test Initialization
 
 To test if you have initialized the package correctly run:
 
-```bash npm2yarn
-npx ts-node src/quickstart.ts
-```
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+    ```bash 
+    npx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash 
+    pnpx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash 
+    yarn ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
 
 ### Install the TypeScript SDK using the package manager of your choice:
 
