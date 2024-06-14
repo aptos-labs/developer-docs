@@ -12,7 +12,8 @@ You can look up resources and data an account has on-chain by running the follow
 aptos account list --account <your-profile-name-or-account-address>
 ```
 
-This will show all resources that an account has. For example:
+This will show all resources that an account has. For example, below shows the balance as `coin:value`, and the associated coin for the native gas token APT would be `0x1::aptos_coin::AptosCoin`.
+This is represented in subdivisions, so in this case it's `10^-8` or 8 zeros of decimal points.
 
 ```json filename="Output"
 {

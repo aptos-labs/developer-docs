@@ -9,40 +9,40 @@ export default {
   "create-package": {
     title: "Create Package",
   },
-  "compiling": {
+  compiling: {
     title: "Compiling",
   },
-  "testing": {
+  testing: {
     title: "Testing",
   },
-  "deployment": {
+  deployment: {
     title: "Deployment",
   },
   "---addressable-storage---": {
     title: "Addressable Storage",
-    type: "separator"
+    type: "separator",
   },
-  "accounts": {
+  accounts: {
     title: "Accounts",
   },
-  "table": {
+  table: {
     title: "Table",
   },
   "aptos-objects": {
     href: "/en/build/smart-contracts/objects",
-    title: "Objects"
+    title: "Objects",
   },
   "resource-accounts": {
     title: "Resource Accounts",
   },
   "---data-structures---": {
     title: "Data Structures",
-    type: "separator"
+    type: "separator",
   },
-  "struct": {
+  struct: {
     title: "Struct",
   },
-  "vector": {
+  vector: {
     title: "Vector",
   },
   "smart-vector": {
@@ -55,7 +55,7 @@ export default {
     type: "separator",
     title: "Aptos Standards",
   },
-  "objects": {
+  objects: {
     title: "Object",
   },
   "digital-asset": {
@@ -72,35 +72,35 @@ export default {
   },
   "---examples---": {
     type: "separator",
-    title: "Examples"
+    title: "Examples",
   },
   "---reference---": {
     type: "separator",
     title: "Reference",
   },
-  "book": {
-    title: 'Move Book',
+  book: {
+    title: "Move Book",
   },
   "move-reference": {
     title: "Move Reference",
   },
   "error-codes": {
-    title: "Error Codes"
+    title: "Error Codes",
   },
   "---advanced-move---": {
     type: "separator",
     title: "Advanced Move",
   },
-  "scripts": {
-    title: "Scripts"
+  scripts: {
+    title: "Scripts",
   },
-  "patterns": {
+  patterns: {
     title: "Patterns",
   },
-  "prover": {
+  prover: {
     title: "Move Prover",
   },
-  "cryptography": {
+  cryptography: {
     title: "Cryptography",
   },
   "move-security-guidelines": {
@@ -109,16 +109,16 @@ export default {
   "gas-profiling": {
     title: "Gas Profiling",
   },
-  "compiler_v2": {
-    title: "Compiler V2"
+  compiler_v2: {
+    title: "Compiler V2",
   },
   "learn-move": {
-    display: "hidden"
+    display: "hidden",
   },
   "aptos-standards": {
-    display: "hidden"
+    display: "hidden",
   },
-  "tokens": {
-    display: "hidden"
-  }
+  tokens: {
+    display: "hidden",
+  },
 };
