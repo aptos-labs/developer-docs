@@ -6,7 +6,28 @@ import { Callout, Steps } from 'nextra/components'
 
 # TypeScript SDK Quickstart
 
+<Callout type="info">
+The complete code example can be found at the bottom of this page!
+</Callout>
+
 <Steps>
+
+### Initialize A Project
+
+This will initialize a typescript package with `index.ts`
+
+```bash npm2yarn
+npm init && npm add -D typescript @types/node ts-node && npx tsc --init && mkdir src && echo 'console.log("Hello, TypeScript!");' > src/index.ts
+```
+
+### Test Initialization
+
+To test if you have initialized the package correctly run:
+
+```bash npm2yarn
+npm ts-node src/index.ts
+```
+
 ### Install the TypeScript SDK using the package manager of your choice:
 
 ```bash npm2yarn
@@ -18,7 +39,7 @@ npm i @aptos-labs/ts-sdk
 You can use the `Aptos` object to handle everything that requires a connection to the Aptos network. A connection is established as soon as you create the object.
 
 ```ts filename="quickstart.ts"
-import { Aptos, AptosConfig} from "@aptos-labs/ts-sdk"
+import { Aptos, AptosConfig, Account } from "@aptos-labs/ts-sdk"
 
 // Specify which network to connect to via AptosConfig
 const aptosConfig = new AptosConfig({ network: Network.TESTNET });
