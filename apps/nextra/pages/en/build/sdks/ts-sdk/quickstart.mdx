@@ -172,6 +172,27 @@ const executedTransaction = await aptos.waitForTransaction({ transactionHash: pe
 </Steps>
 
 ## Full Quickstart Code
+
+### Run Quickstart
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+    ```bash 
+    npx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash 
+    pnpx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash 
+    yarn ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
+
 ```ts filename="quickstart.ts"
 /**
  * This example shows how to use the Aptos client to create accounts, fund them, and transfer between them.
