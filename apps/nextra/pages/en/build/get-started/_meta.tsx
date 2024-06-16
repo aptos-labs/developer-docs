@@ -6,9 +6,6 @@ export default {
       layout: "full",
     },
   },
-  "---": {
-    type: "separator",
-  },
   "ethereum-cheatsheet": {
     title: "Ethereum to Aptos Cheatsheet",
   },
