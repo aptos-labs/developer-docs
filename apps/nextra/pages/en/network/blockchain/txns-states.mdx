@@ -47,14 +47,14 @@ See [Aptos Blockchain Deep Dive](../blockchain.mdx) for a comprehensive descript
 A signed transaction on the blockchain contains the following information:
 
 - **Signature**: The sender uses a digital signature to verify that they signed the transaction (i.e., authentication).
-- **Sender address**: The sender's [account address](./accounts.mdx#account-address).
+- **Sender address**: The sender's [account address](accounts.mdx#account-address).
 - **Sender public key**: The public authentication key that corresponds to the private authentication key used to sign the transaction.
 - **Payload**: Indicates an action or set of actions Alice's behalf. In the case this is a Move function, it directly calls into Move bytecode on the chain. Alternatively, it may be Move bytecode peer-to-peer [transaction script](../glossary.mdx#transaction-script). It also contains a list of inputs to the function or script. For this example, it is a function call to transfer an amount of Aptos Coins from Alice account to Bob's account, where Alice's account is implied by sending the transaction and Bob's account and the amount are specified as transaction inputs.
 - [**Gas unit price**](../glossary.mdx#gas-unit-price): The amount the sender is willing to pay per unit of gas, to execute the transaction. This is represented as Octa or units of 10<sup>-8</sup> utility tokens.
 - [**Maximum gas amount**](../glossary.mdx#maximum-gas-amount): The maximum gas amount in Aptos utility tokens the sender is willing to pay for this transaction. Gas charges are equal to the base gas cost covered by computation and IO multiplied by the gas price. Gas costs also include storage with an Apt-fixed priced storage model. This is represented as Octas or units of 10<sup>-8</sup> Aptos utility tokens.
 - **Gas price** (in specified gas units): This is the amount the sender is willing to pay per unit of [gas](gas-txn-fee.mdx) to execute the transaction. [Gas](gas-txn-fee.mdx) is a way to pay for computation and storage. A gas unit is an abstract measurement of computation with no inherent real-world value.
-- **Maximum gas amount**: The [maximum gas amount](./gas-txn-fee.mdx#specifying-gas-fees-within-a-transaction) is the maximum gas units the transaction is allowed to consume.
-- **Sequence number**: This is an unsigned integer that must be equal to the sender's account [sequence number](./accounts.mdx#account-sequence-number) at the time of execution.
+- **Maximum gas amount**: The [maximum gas amount](gas-txn-fee.mdx#specifying-gas-fees-within-a-transaction) is the maximum gas units the transaction is allowed to consume.
+- **Sequence number**: This is an unsigned integer that must be equal to the sender's account [sequence number](accounts.mdx#account-sequence-number) at the time of execution.
 - **Expiration time**: A timestamp after which the transaction ceases to be valid (i.e., expires).
 
 ### Types of transaction payloads
