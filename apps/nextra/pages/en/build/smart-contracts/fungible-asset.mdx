@@ -73,7 +73,7 @@ public fun create_primary_store_enabled_fungible_asset(
 Alternatively, you can use `add_fungibility` which uses the same parameters, but requires recipients to keep track of their `FungibleStore` addresses to keep track of how many units of your FA they have.
 </Callout>
 
-Once you have created the Metadata, you can also use the `ConstructorRef` to generate additional `Ref`s. In addition to the usual [Object Refs](../learn-move/advanced-guides/objects/configuring-objects.mdx), FAs define three additional permissions you can generate:
+Once you have created the Metadata, you can also use the `ConstructorRef` to generate additional `Ref`s. In addition to the usual [Object Refs](objects/creating-objects.mdx), FAs define three additional permissions you can generate:
 
 1. `MintRef` offers the capability to mint new FA units.
 2. `TransferRef` offers the capability to freeze accounts from transferring this FA, or to bypass an existing freeze. (This can be important when trying to be compliant with some regulations).
