@@ -43,6 +43,8 @@ def is_valid_link(link):
         return False
 
     ext = os.path.splitext(link)[1]
+    if '#' in ext:
+        ext = ext.split('#')[0]
     return ext in ('', '.md', '.mdx')
 
 def update_links_in_file(file_path, directory, is_tsx_file=False):
