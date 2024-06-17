@@ -52,10 +52,16 @@ export function MoveReferenceContent({
   //   )
   // }
 
-  const { default: MDXContent } = evaluate(compiledSource, scope)
-  console.log(MDXContent);
+  // const { default: MDXContent } = evaluate(compiledSource, scope)
+  // console.log(MDXContent);
 
-  return <MDXContent components={components} />
+  console.log(compiledSource);
+
+  const evaluation = evaluate(compiledSource, scope);
+  console.log(evaluation)
+
+  // return <MDXContent components={components} />
+  return null;
 }
 
 MoveReferenceContent.useTOC = (props: Record<string, unknown>) => {
