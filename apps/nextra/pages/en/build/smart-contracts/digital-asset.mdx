@@ -3,6 +3,7 @@ title: "Aptos Digital Asset Standard"
 ---
 
 import { Callout } from 'nextra/components'
+import { ThemedImage } from "@components/index";
 
 # Aptos Digital Asset (DA) Standard
 
@@ -27,9 +28,15 @@ This standard is implemented with two Objects:
 1. `Collection`s - A set of NFTs with a name and a bit of context for the group.
 2. `Token`s - Digital assets which represent unique assets. These are often used to represent NFTs and usually use a `uri` link to point to more info about the asset (ex. a link to an image, video, etc.).
 
-{/* TODO add image back in with light mode and dark mode! */}
+<ThemedImage
+alt="Digital Asset token and collection relationship"
+sources={{
+    light: '/docs/digital-asset-light.svg',
+    dark: '/docs/digital-asset-dark.svg',
+  }}
+/>
 
-All `Token`s are **required** to have a reference to a parent `Collection`, but the parent `Collection` does **not** own the `Token`. Newly minted `Token`s are usually owned by the creator. From there, they can be transferred to other accounts.
+All `Token`s are required to have a reference to a parent `Collection`, but the parent `Collection` does **not** own the `Token`. Newly minted `Token`s are usually owned by the creator. From there, they can be transferred to other accounts.
 
 ### Creating a `Collection`
 
