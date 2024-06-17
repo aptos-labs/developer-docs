@@ -62,7 +62,7 @@ A signed transaction on the blockchain contains the following information:
 Within a given transaction, the two most common types of payloads include:
 
 - An entry point
-- [A script (payload)](../../build/smart-contracts/learn-move/advanced-guides/scripts.mdx)
+- [A script (payload)](../../build/smart-contracts/scripts.mdx)
 
 Currently, the SDKs [Python](../../build/sdks/python-sdk.mdx) and [Typescript](../../build/sdks/ts-sdk.mdx) support both. This guide points out many of those entry points, such as `coin::transfer` and `aptos_account::create_account`.
 
@@ -119,5 +119,5 @@ In the figure:
 - Accounts **A** and **B**: Represent Alice's and Bob's accounts on the Aptos blockchain.
 - **S<sub>_i-1_</sub>** : Represents the (_i-1_)-the state of the blockchain. In this state, Alice's account **A** has a balance of 110 APT (Aptos coins), and Bob's account **B** has a balance of 52 APT.
 - **T<sub>_i_</sub>** : This is the _i_-th transaction executed on the blockchain. In this example, it represents Alice sending 10 APT to Bob.
-- **Apply()**: This is a deterministic function that always returns the same final state for a specific initial state and a specific transaction. If the current state of the blockchain is **S<sub>_i-1_</sub>**, and transaction **T<sub>_i_</sub>** is executed on the state **S<sub>_i-1_</sub>**, then the new state of the blockchain is always **S<sub>_i_</sub>**. The Aptos blockchain uses the [Move language](../../build/smart-contracts/learn-move/book/SUMMARY.mdx) to implement the deterministic execution function **Apply()**.
+- **Apply()**: This is a deterministic function that always returns the same final state for a specific initial state and a specific transaction. If the current state of the blockchain is **S<sub>_i-1_</sub>**, and transaction **T<sub>_i_</sub>** is executed on the state **S<sub>_i-1_</sub>**, then the new state of the blockchain is always **S<sub>_i_</sub>**. The Aptos blockchain uses the [Move language](../../build/smart-contracts/book/SUMMARY.mdx) to implement the deterministic execution function **Apply()**.
 - **S<sub>_i_</sub>** : This is the _i_-the state of the blockchain. When the transaction **T<sub>_i_</sub>** is applied to the blockchain, it generates the new state **S<sub>_i_</sub>** (an outcome of applying **Apply(S<sub>_i-1_</sub>, T<sub>_i_</sub>)** to **S<sub>_i-1_</sub>** and **T<sub>_i_</sub>**). This causes Alice’s account balance to be reduced by 10 to 100 APT and Bob’s account balance to be increased by 10 to 62 APT. The new state **S<sub>_i_</sub>** shows these updated balances.

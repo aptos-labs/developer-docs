@@ -40,7 +40,7 @@ At a high level, this is done by:
 2. Generating `Ref`s to enable any desired permissions.
 3. Minting Fungible Assets and transferring them to any account you want to.
 
-To start with, the Fungible Asset standard is implemented using Move Objects. Objects by default are transferable, can own multiple resources, and can be customized via smart contract. For full details on Objects and how they work, please read [this guide](../learn-move/advanced-guides/objects.mdx). 
+To start with, the Fungible Asset standard is implemented using Move Objects. Objects by default are transferable, can own multiple resources, and can be customized via smart contract. For full details on Objects and how they work, please read [this guide](objects.mdx). 
 
 To create an FA, first you need to create a **non-deletable Object** since destroying the metadata for a Fungible Asset while there are active balances would not make sense. You can do that by either calling `object::create_named_object(caller_address, NAME)` or `object::create_sticky_object(caller_address)` to create the Object on-chain.
 

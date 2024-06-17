@@ -60,7 +60,7 @@ export function BlockchainSection() {
         <FeatureCard
           label={t.randomnessLabel}
           description={t.randomnessDescription}
-          href={`/${locale}/build/smart-contracts/learn-move/advanced-guides/cryptography#verifying-randomness-from-the-drand-beacon`}
+          href={`/${locale}/build/smart-contracts/cryptography#verifying-randomness-from-the-drand-beacon`}
         />
         <FeatureCard
           label={t.feePayerLabel}
