@@ -437,7 +437,7 @@ Bad operations could unexpectedly alter the correct execution of the smart contr
 
 ### ConstructorRef leak
 
-When creating objects ensure to never expose the object’s `ConstructorRef` as it allows adding resources to an object. A `ConstructorRef` can also be used to generate other capabilities (or "Refs") that are used to alter or transfer the ownership the object. [Read more](../../aptos-standards/objects.mdx#object-capabilities-refs) about Objects capabilities.
+When creating objects ensure to never expose the object’s `ConstructorRef` as it allows adding resources to an object. A `ConstructorRef` can also be used to generate other capabilities (or "Refs") that are used to alter or transfer the ownership the object. [Read more](objects/creating-objects.mdx) about Objects capabilities.
 
 #### Example Vulnerable code
 
