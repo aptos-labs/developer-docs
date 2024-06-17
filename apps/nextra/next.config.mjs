@@ -129,8 +129,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/book/modules-and-scripts",
-        destination:
-          "/en/build/smart-contracts/book/modules-and-scripts",
+        destination: "/en/build/smart-contracts/book/modules-and-scripts",
         permanent: true,
       },
       {
@@ -180,8 +179,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/book/abort-and-assert",
-        destination:
-          "/en/build/smart-contracts/book/abort-and-assert",
+        destination: "/en/build/smart-contracts/book/abort-and-assert",
         permanent: true,
       },
       {
@@ -201,8 +199,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/book/structs-and-resources",
-        destination:
-          "/en/build/smart-contracts/book/structs-and-resources",
+        destination: "/en/build/smart-contracts/book/structs-and-resources",
         permanent: true,
       },
       {
@@ -237,8 +234,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/book/package-upgrades",
-        destination:
-          "/en/build/smart-contracts/book/package-upgrades",
+        destination: "/en/build/smart-contracts/book/package-upgrades",
         permanent: true,
       },
       {
@@ -248,92 +244,77 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/book/global-storage-structure",
-        destination:
-          "/en/build/smart-contracts/book/global-storage-structure",
+        destination: "/en/build/smart-contracts/book/global-storage-structure",
         permanent: true,
       },
       {
         source: "/move/book/global-storage-operators",
-        destination:
-          "/en/build/smart-contracts/book/global-storage-operators",
+        destination: "/en/build/smart-contracts/book/global-storage-operators",
         permanent: true,
       },
       {
         source: "/move/book/standard-library",
-        destination:
-          "/en/build/smart-contracts/book/standard-library",
+        destination: "/en/build/smart-contracts/book/standard-library",
         permanent: true,
       },
       {
         source: "/move/book/coding-conventions",
-        destination:
-          "/en/build/smart-contracts/book/coding-conventions",
+        destination: "/en/build/smart-contracts/book/coding-conventions",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/objects/creating-objects",
-        destination:
-          "/en/build/smart-contracts/objects/creating-objects",
+        destination: "/en/build/smart-contracts/objects/creating-objects",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/objects/configuring-objects",
-        destination:
-          "/en/build/smart-contracts/objects/configuring-objects",
+        destination: "/en/build/smart-contracts/objects/configuring-objects",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/objects/using-objects",
-        destination:
-          "/en/build/smart-contracts/objects/using-objects",
+        destination: "/en/build/smart-contracts/objects/using-objects",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/scripts/writing-scripts",
-        destination:
-          "/en/build/smart-contracts/scripts/writing-scripts",
+        destination: "/en/build/smart-contracts/scripts/writing-scripts",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/scripts/compiling-scripts",
-        destination:
-          "/en/build/smart-contracts/scripts/compiling-scripts",
+        destination: "/en/build/smart-contracts/scripts/compiling-scripts",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/scripts/running-scripts",
-        destination:
-          "/en/build/smart-contracts/scripts/running-scripts",
+        destination: "/en/build/smart-contracts/scripts/running-scripts",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/scripts/script-tutorial",
-        destination:
-          "/en/build/smart-contracts/scripts/script-tutorial",
+        destination: "/en/build/smart-contracts/scripts/script-tutorial",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/resource-accounts",
-        destination:
-          "/en/build/smart-contracts/resource-accounts",
+        destination: "/en/build/smart-contracts/resource-accounts",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/modules-on-aptos",
-        destination:
-          "/en/build/smart-contracts/modules-on-aptos",
+        destination: "/en/build/smart-contracts/modules-on-aptos",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/cryptography",
-        destination:
-          "/en/build/smart-contracts/cryptography",
+        destination: "/en/build/smart-contracts/cryptography",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/move-security-guidelines",
-        destination:
-          "/en/build/smart-contracts/move-security-guidelines",
+        destination: "/en/build/smart-contracts/move-security-guidelines",
         permanent: true,
       },
       {
@@ -348,8 +329,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/prover/supporting-resources",
-        destination:
-          "/en/build/smart-contracts/prover/supporting-resources",
+        destination: "/en/build/smart-contracts/prover/supporting-resources",
         permanent: true,
       },
       {
@@ -1008,24 +988,20 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source:
-          "/en/build/smart-contracts/objects/creating-objects",
+        source: "/en/build/smart-contracts/objects/creating-objects",
         destination:
           "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
         permanent: true,
       },
       {
-        source:
-          "/en/build/smart-contracts/objects/configuring-objects",
+        source: "/en/build/smart-contracts/objects/configuring-objects",
         destination:
           "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
         permanent: true,
       },
       {
-        source:
-          "/en/build/smart-contracts/objects/creating-objects",
-        destination:
-          "/en/build/smart-contracts/objects/using-objects",
+        source: "/en/build/smart-contracts/objects/creating-objects",
+        destination: "/en/build/smart-contracts/objects/using-objects",
         permanent: true,
       },
     ],
