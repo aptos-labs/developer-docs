@@ -28,10 +28,12 @@ import {
 import { useRouter } from "next/router";
 import { MoveReferenceContent } from "./MoveReferenceContent";
 
+const tengCommit = "0522837fab5552c027c9dfa73a89907e3980a131"
 const root = "https://raw.githubusercontent.com/aptos-labs/aptos-core";
-const branches = ["mainnet", "testnet", "devnet", "main"] as const;
+const branches = [tengCommit, "mainnet", "testnet", "devnet", "main"] as const;
 const defaultBranch = branches[0];
 const branchTitles: Record<Branch, string> = {
+  "0522837fab5552c027c9dfa73a89907e3980a131": "Teng's Commit",
   mainnet: "Mainnet",
   testnet: "Testnet",
   devnet: "Devnet",
@@ -218,7 +220,9 @@ const Content = ({ branch, page }: ContentProps) => {
 
     const fetchContent = async () => {
       if (page && isMounted) {
+        // const pagePath = `${root}/${branch}/aptos-move/framework/${page}`;
         const pagePath = `${root}/${branch}/aptos-move/framework/${page}`;
+        console.log(pagePath)
         const response = await fetch(pagePath);
         if (response.ok) {
           const rawContent = await response.text();
@@ -235,6 +239,7 @@ const Content = ({ branch, page }: ContentProps) => {
           console.log(result);
           const responseJson = await response.json();
           const compiledMdx = (responseJson as any).code;
+          console.log(compiledMdx)
         }
       } else {
         setContent(null);
@@ -319,7 +324,8 @@ async function loadFrameworkData(
   branch: Branch,
   framework: Framework,
 ): Promise<FrameworkData> {
-  const pageUrl = `${root}/${branch}/aptos-move/framework/${framework}/doc/overview.md`;
+  // const pageUrl = `${root}/${branch}/aptos-move/framework/${framework}/doc/overview.md`;
+  const pageUrl = `${root}/${branch}/aptos-move/framework/${framework}/mdx_doc/overview.md`;
   const response = await fetch(pageUrl);
 
   if (!response.ok) {
@@ -331,7 +337,8 @@ async function loadFrameworkData(
   const pages = Array.from(rawContent.matchAll(linksRegex), (entry) => {
     const name = entry[1].replace(/`/gi, "");
     const page = entry[2].split("#")[0];
-    const id = `${framework}/doc/${page}`;
+    // const id = `${framework}/doc/${page}`;
+    const id = `${framework}/mdx_doc/${page}`;
 
     return { id, name };
   });
