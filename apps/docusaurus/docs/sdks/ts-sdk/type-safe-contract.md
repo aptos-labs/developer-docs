@@ -33,6 +33,19 @@ const config = new AptosConfig();
 export const aptos = new Aptos(config);
 // Second, create a SurfClient with the Aptos client and the ABI
 export const surfClient = createSurfClient(aptos).useABI(ABI);
+
+// Use Surf to executes an entry function
+const result = await client.useABI(COIN_ABI).entry.transfer({
+  functionArguments: ['0x1', 1],
+  typeArguments: ['0x1::aptos_coin::AptosCoin'],
+  account: Account.fromPrivateKey(...),
+});
+
+// Use Surf to query a view function
+const [balance] = await client.useABI(COIN_ABI).view.balance({
+  functionArguments: ['0x1'],
+  typeArguments: ['0x1::aptos_coin::AptosCoin'],
+});
 ```
 
 ## Resources
