@@ -29,10 +29,10 @@ import { ABI } from "./abi";
 const config = new AptosConfig({
   network: Network.TESTNET,
 });
-// You used to use aptosClient to interact with the chain
-export const aptosClient = new Aptos(config);
-// Now you use surfClient that wraps aptosClient to interact with Move contracts
-export const surfClient = createSurfClient(aptosClient).useABI(ABI);
+// First, create an Aptos client
+export const aptos = new Aptos(config);
+// Second, create a SurfClient with the Aptos client and the ABI
+export const surfClient = createSurfClient(aptos).useABI(ABI);
 ```
 
 ## Resources
