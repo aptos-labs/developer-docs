@@ -22,7 +22,7 @@ echo "export const ABI = $(curl https://fullnode.$NETWORK.aptoslabs.com/v1/accou
 
 Then you can use surf client as a replacement of the Aptos client when interact with Move contracts, both in frontend and node script. For non-contract related operations like managing account, querying indexer API, you still need to use Aptos client. 
 
-```ts src/utils/aptos.ts
+```ts filename="src/utils/aptos.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 import { ABI } from "./abi";
 
