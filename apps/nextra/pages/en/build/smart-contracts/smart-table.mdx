@@ -1,0 +1,192 @@
+---
+title: "Smart Table"
+---
+
+# Smart Table
+
+The Smart Table is a scalable hash table implementation based on linear hashing. 
+This data structure aims to optimize storage and performance by utilizing linear hashing, which splits one bucket at a time instead of doubling the number of buckets, thus avoiding unexpected gas costs. 
+The Smart Table uses the SipHash function for faster hash computations while tolerating collisions.
+
+## Core Features of SmartTable
+
+### Structure
+
+The `SmartTable` struct is designed to handle dynamic data efficiently:
+
+- `buckets`: A table with a length that stores vectors of entries.
+- `num_buckets`: The current number of buckets.
+- `level`: The number of bits representing `num_buckets`.
+- `size`: The total number of items in the table.
+- `split_load_threshold`: The load threshold percentage that triggers bucket splits.
+- `target_bucket_size`: The target size of each bucket, which is not strictly enforced.
+
+### Constants
+
+The following constants define various error codes used within the module:
+
+- `ENOT_FOUND`: 1
+- `EZERO_CAPACITY`: 2
+- `ENOT_EMPTY`: 3
+- `EALREADY_EXIST`: 4
+- `EINVALID_LOAD_THRESHOLD_PERCENT`: 5
+- `EINVALID_TARGET_BUCKET_SIZE`: 6
+- `EEXCEED_MAX_BUCKET_SIZE`: 7
+- `EINVALID_BUCKET_INDEX`: 8
+- `EINVALID_VECTOR_INDEX`: 9
+
+### API Overview
+
+#### Creating Tables
+
+- `new<K: copy + drop + store, V: store>(): SmartTable<K, V>`: Creates an empty table with default configurations.
+- `new_with_config<K: copy + drop + store, V: store>(num_initial_buckets: u64, split_load_threshold: u8, target_bucket_size: u64): SmartTable<K, V>`: Creates an empty table with custom configurations.
+
+#### Destroying Tables
+
+- `destroy_empty<K, V>(table: SmartTable<K, V>)`: Destroys an empty table.
+- `destroy<K: drop, V: drop>(table: SmartTable<K, V>)`: Destroys a table and its elements.
+- `clear<K: drop, V: drop>(table: &mut SmartTable<K, V>)`: Clears all elements from the table.
+
+#### Managing Entries
+
+- `add<K, V>(table: &mut SmartTable<K, V>, key: K, value: V)`: Adds a key-value pair to the table.
+- `add_all<K, V>(table: &mut SmartTable<K, V>, keys: vector<K>, values: vector<V>)`: Adds multiple key-value pairs to the table.
+- `remove<K: copy + drop, V>(table: &mut SmartTable<K, V>, key: K): V`: Removes and returns the value associated with a key.
+- `upsert<K: copy + drop, V: drop>(table: &mut SmartTable<K, V>, key: K, value: V)`: Inserts or updates a key-value pair.
+
+#### Retrieving Entries
+
+- `borrow<K: drop, V>(table: &SmartTable<K, V>, key: K): &V`: Returns an immutable reference to the value associated with a key.
+- `borrow_with_default<K: copy + drop, V>(table: &SmartTable<K, V>, key: K, default: &V): &V`: Returns the value associated with a key or a default value if the key is not found.
+- `borrow_mut<K: drop, V>(table: &mut SmartTable<K, V>, key: K): &mut V`: Returns a mutable reference to the value associated with a key.
+- `borrow_mut_with_default<K: copy + drop, V: drop>(table: &mut SmartTable<K, V>, key: K, default: V): &mut V`: Inserts a key-value pair if the key is not found, then returns a mutable reference to the value.
+
+#### Utility Functions
+
+- `length<K, V>(table: &SmartTable<K, V>): u64`: Returns the number of entries in the table.
+- `load_factor<K, V>(table: &SmartTable<K, V>): u64`: Returns the load factor of the table.
+- `update_split_load_threshold<K, V>(table: &mut SmartTable<K, V>, split_load_threshold: u8)`: Updates the split load threshold.
+- `update_target_bucket_size<K, V>(table: &mut SmartTable<K, V>, target_bucket_size: u64)`: Updates the target bucket size.
+- `to_simple_map<K: store + copy + drop, V: store + copy>(table: &SmartTable<K, V>): SimpleMap<K, V>`: Converts the smart table to a simple map.
+
+## Example Usage
+
+### Creating and Using a SmartTable
+
+```move filename="smart_table.move"
+module example::smart_table_usage {
+    use aptos_std::smart_table::{Self, SmartTable};
+
+    public entry fun main() {
+        let mut table = SmartTable::new<u64, u64>();
+        SmartTable::add(&mut table, 1, 100);
+        SmartTable::add(&mut table, 2, 200);
+        
+        let length = SmartTable::length(&table);
+        assert!(length == 2, 0);
+        
+        let value1 = SmartTable::borrow(&table, 1);
+        assert!(*value1 == 100, 0);
+        
+        let value2 = SmartTable::borrow(&table, 2);
+        assert!(*value2 == 200, 0);
+        
+        let removed_value = SmartTable::remove(&mut table, 1);
+        assert!(removed_value == 100, 0);
+        
+        SmartTable::destroy_empty(table);
+    }
+}
+```
+
+### Adding Multiple Entries to a SmartTable
+
+```move filename="smart_table.move"
+module example::smart_table_usage {
+    use aptos_std::smart_table::{Self, SmartTable};
+
+    public fun add_multiple_entries() {
+        let mut table = SmartTable::new<u64, u64>();
+        let keys = vector[1, 2, 3];
+        let values = vector[100, 200, 300];
+        
+        SmartTable::add_all(&mut table, keys, values);
+        
+        let length = SmartTable::length(&table);
+        assert!(length == 3, 0);
+        
+        let value1 = SmartTable::borrow(&table, 1);
+        assert!(*value1 == 100, 0);
+        
+        let value2 = SmartTable::borrow(&table, 2);
+        assert!(*value2 == 200, 0);
+        
+        let value3 = SmartTable::borrow(&table, 3);
+        assert!(*value3 == 300, 0);
+        
+        SmartTable::destroy_empty(table);
+    }
+}
+```
+
+### Updating and Clearing Table
+
+```move filename="smart_table.move"
+module example::smart_table_usage {
+    use aptos_std::smart_table::{Self, SmartTable};
+
+    public fun update_and_clear_table() {
+		let mut table = SmartTable::new<u64, u64>();
+		SmartTable::add(&mut table, 1, 100);
+		SmartTable::add(&mut table, 2, 200);
+		
+		SmartTable::upsert(&mut table, 2, 300);
+		let value2 = SmartTable::borrow(&table, 2);
+		assert!(*value2 == 300, 0);
+		
+		SmartTable::clear(&mut table);
+		let length = SmartTable::length(&table);
+		assert!(length == 0, 0);
+		
+		SmartTable::destroy_empty(table);
+	}
+}
+```
+
+
+### Converting to Simple Map
+
+```move filename="smart_table.move"
+module example::smart_table_usage {
+    use aptos_std::smart_table::{Self, SmartTable, SimpleMap};
+
+	public fun convert_to_simple_map() {
+		let mut table = SmartTable::new<u64, u64>();
+		SmartTable::add(&mut table, 1, 100);
+		SmartTable::add(&mut table, 2, 200);
+		
+		let map = SmartTable::to_simple_map(&table);
+		let length = SimpleMap::length(&map);
+		assert!(length == 2, 0);
+		
+		let value1 = SimpleMap::borrow(&map, 1);
+		assert!(*value1 == 100, 0);
+		
+		let value2 = SimpleMap::borrow(&map, 2);
+		assert!(*value2 == 200, 0);
+		
+		SmartTable::destroy(table);
+	}
+}
+```
+
+## Source Code
+
+- [smart_table.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/data_structures/smart_table.move)
+
+## Other Examples
+
+- [Move Spiders Smart Table](https://movespiders.com/courses/modules/datastructures/lessonId/7)
+- [Move Spiders Querying Smart Table via FullNode APIs](https://movespiders.com/courses/modules/datastructures/lessonId/9)
+- [Move Spiders Querying Smart Table via View Function](https://movespiders.com/courses/modules/datastructures/lessonId/10)
