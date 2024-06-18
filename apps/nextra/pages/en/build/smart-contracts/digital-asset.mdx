@@ -3,7 +3,7 @@ title: "Aptos Digital Asset Standard"
 ---
 
 import { Callout } from 'nextra/components'
-import { ThemedImage } from "@components/index";
+import { ThemedImage, GraphQLEditor } from "@components/index";
 
 # Aptos Digital Asset (DA) Standard
 
@@ -198,29 +198,25 @@ You can find the addresses of your recently created “unnamed” `Token`s by us
 
 1. Looking up the collection id by using your account address and the name of the `Collection`. 
 
-```bash filename="gRPC"
-query GetCollectionIdByName($creatorAddress: String!, $collectionName: String!) {
+<GraphQLEditor
+  query={`query GetCollectionIdByName($creatorAddress: String!, $collectionName: String!) {
   current_collections_v2(
     where: {creator_address: {_eq: $creatorAddress}, collection_name: {_eq: $collectionName}}
   ) {
     collection_name
     collection_id
   }
-}
-```
-
-```bash filename="gRPC"
-Query variables:
-{
+}`}
+  variables={`{
   "creatorAddress": "0x8726af08ea897c35c8137601ce1789992dacdd0eb0b724531a4e7dea035d950f",
   "collectionName": "Horse Emojis"
-}
-```
+}`}
+/>
 
 2. Then look up the address (`token_data_id`) of the `Token` by using the `collection_id` (from above) and the name of the token:
-    
-```bash filename="gRPC"
-query GetTokenID($collection_id: String!, $token_name: String!) {
+
+<GraphQLEditor
+  query={`query GetTokenID($collection_id: String!, $token_name: String!) {
   current_token_datas_v2(
     where: {collection_id: {_eq: $collection_id}, token_name: {_eq: $token_name}}
   ) {
@@ -228,16 +224,12 @@ query GetTokenID($collection_id: String!, $token_name: String!) {
     description
     token_data_id
   }
-}
-```
-    
-```bash filename="gRPC"
-Query Variables:
-{
+}`}
+  variables={`{
   "collection_id": "0x158dc6481aec80004d0f21a8994757e3c8203fc37b0f508be2a5364ad99e649e",
   "token_name": "Horse Emojis #127"
-}
-```
+}`}
+/>
     
 <Callout type="info">
 In general, using unnamed tokens give you the most flexibility because the Object can be deleted later, but named tokens simplify looking up addresses.
