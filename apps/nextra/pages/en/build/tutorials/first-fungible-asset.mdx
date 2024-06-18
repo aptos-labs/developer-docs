@@ -268,11 +268,13 @@ Aptos provides APIs to register withdraw and deposit hooks, allowing for custom 
 In the hooks, we will add a global pause to all withdraws and deposits upon a transfer. 
 
 ```move filename="fa_coin.move"
-      #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
+module deploy_addr::fa_coin {
+    #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
     /// Global state to pause the FA coin.
     struct State has key {
         paused: bool,
     }
+}
 ```
 
 This is how you would register the hooks upon asset creation (`init_module`).
@@ -308,6 +310,9 @@ module deploy_addr::fa_coin {
 After registration of the hooks, we can call the newly defined `assert_not_paused` function in our hooks to verify that a transfer is allowed. 
     
 ```move filename="fa_coin.move"
+module deploy_addr::fa_coin {
+    // ...previous code
+
     /// Deposit function override to ensure that the account is not denylisted and the FA coin is not paused.
     public fun deposit<T: key>(
         store: Object<T>,
@@ -333,6 +338,7 @@ After registration of the hooks, we can call the newly defined `assert_not_pause
         let state = borrow_global<State>(object::create_object_address(&@FACoin, ASSET_SYMBOL));
         assert!(!state.paused, EPAUSED);
     }
+}
 ```
 
 Note that this will not prevent transfers of stores or impose the pause during minting and burning. 
