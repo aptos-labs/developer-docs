@@ -4,11 +4,11 @@ import { Steps } from 'nextra/components'
 
 ## What is Surf
 
-Surf is a TypeScript library built on top of the Aptos TypeScript SDK and the wallet adapter that provides static type safety for your Move contracts by inferring type from contract ABI. It allows you to catch type errors at compile time rather than at runtime. Most existing TypeScript IDEs will automatically provide warnings if you try to access fields that don't exist, or provide wrong input types.
+Surf is a TypeScript library built on top of the Aptos TypeScript SDK and the wallet adapter that provides static type safety for your Move contracts by inferring type from contract ABI (Application Binary Interface). It allows you to catch type errors at compile time rather than at runtime. Most existing TypeScript IDEs will automatically provide warnings if you try to access fields that don't exist, or provide wrong input types.
 
 ## Usage
 
-First, download the ABI (Application Binary Interface) of the Move contract and save it to a TypeScript file. In this case, we're naming the file `abi.ts` in the `src/utils` folder.
+First, download the ABI of the Move contract and save it to a TypeScript file. In this case, we're naming the file `abi.ts` in the `src/utils` folder.
 
 <Steps>
 
@@ -17,16 +17,18 @@ First, download the ABI (Application Binary Interface) of the Move contract and 
 ```bash filename="gen_abi.sh"
 #! /bin/bash
 
+# replace it with the network your contract lives on
 NETWORK=testnet
 # replace it with your contract address
 CONTRACT_ADDRESS=0x12345
-# replace it with your package name, you can find it in Move.toml
-PACKAGE_NAME=fungible_asset_launchpad
+# replace it with your module name, every .move file except move script has module_address::module_name {}
+MODULE_NAME=fungible_asset_launchpad
 
-echo "export const ABI = $(curl https://fullnode.$NETWORK.aptoslabs.com/v1/accounts/$CONTRACT_ADDRESS/module/$PACKAGE_NAME | sed -n 's/.*"abi":\({.*}\).*}$/\1/p') as const" > src/utils/abi.ts
+# save the ABI to a TypeScript file
+echo "export const ABI = $(curl https://fullnode.$NETWORK.aptoslabs.com/v1/accounts/$CONTRACT_ADDRESS/module/$MODULE_NAME | sed -n 's/.*"abi":\({.*}\).*}$/\1/p') as const" > src/utils/abi.ts
 ```
 
-### Step 1
+### Step 2
 
 With the ABI, you can use Surf as a layer on top of the Aptos TypeScript SDK client `Aptos`, when interacting with Move contracts. For non-contract related operations, the `Aptos` will still need to be used.
 
