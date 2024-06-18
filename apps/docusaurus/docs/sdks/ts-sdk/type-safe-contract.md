@@ -1,3 +1,11 @@
+---
+title: "Surf: TypeScript Type Safety for Move Contracts"
+slug: "type-safe-contract"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Surf: TypeScript Type Safety for Move Contracts
 
 ## What is Surf
@@ -8,19 +16,73 @@ Surf is a TypeScript library built on top of the Aptos TypeScript SDK and the wa
 
 First, download the ABI of the Move contract and save it to a TypeScript file. In this case, we're naming the file `abi.ts` in the `src/utils` folder.
 
-```bash filename="gen_abi.sh"
-#! /bin/bash
+<Tabs groupId="surf-usage">
+  <TabItem value="mac-linux" label="Mac & Linux">
+    ```bash filename="get_abi.sh"
+    #! /bin/bash
 
-# replace it with the network your contract lives on
-NETWORK=testnet
-# replace it with your contract address
-CONTRACT_ADDRESS=0x12345
-# replace it with your module name, every .move file except move script has module_address::module_name {}
-MODULE_NAME=fungible_asset_launchpad
+    # replace it with the network your contract lives on
+    NETWORK=testnet
+    # replace it with your contract address
+    CONTRACT_ADDRESS=0x12345
+    # replace it with your module name, every .move file except move script has module_address::module_name {}
+    MODULE_NAME=fungible_asset_launchpad
 
-# save the ABI to a TypeScript file
-echo "export const ABI = $(curl https://fullnode.$NETWORK.aptoslabs.com/v1/accounts/$CONTRACT_ADDRESS/module/$MODULE_NAME | sed -n 's/.*"abi":\({.*}\).*}$/\1/p') as const" > src/utils/abi.ts
-```
+    # save the ABI to a TypeScript file
+    echo "export const ABI = $(curl https://fullnode.$NETWORK.aptoslabs.com/v1/accounts/$CONTRACT_ADDRESS/module/$MODULE_NAME | sed -n 's/.*"abi":\({.*}\).*}$/\1/p') as const" > src/utils/abi.ts
+    ```
+
+  </TabItem>
+  <TabItem value="windows" label="Windows">
+  ```json filename="package.json"
+    {
+      "name": "my-aptos-dapp",
+      "version": "0.0.0",
+      "scripts": {
+        "get-abi": "node gen_abi.js"
+      },
+      "dependencies": {
+        "axios": "^1.7.2",
+        "js-yaml": "^4.1.0"
+      }
+    }
+    ```
+
+    ```js filename="gen_abi.js"
+    const axios = require("axios");
+    const fs = require("node:fs");
+
+    // replace it with the network your contract lives on
+    NETWORK=testnet
+    // replace it with your contract address
+    CONTRACT_ADDRESS=0x12345
+    // replace it with your module name, every .move file except move script has module_address::module_name {}
+    MODULE_NAME=fungible_asset_launchpad
+
+    async function getAbi() {
+      axios
+        .get(`https://fullnode.${process.env.VITE_APP_NETWORK}.aptoslabs.com/v1/accounts/0x${accountAddress}/module/${MODULE_NAME}`)
+        .then((response) => {
+          const abi = response.data.abi;
+          const abiString = `export const ABI = ${JSON.stringify(abi)} as const;`;
+          // Write ABI to abi.ts file
+          fs.writeFileSync("src/utils/abi.ts", abiString);
+          console.log("ABI saved to src/utils/abi.ts");
+        })
+        .catch((error) => {
+          console.error("Error fetching ABI:", error);
+        });
+    }
+
+    getAbi();
+    ```
+
+    ```PowerShell filename="get_abi.ps1"
+    npm i
+    npm run get-abi
+    ```
+  </TabItem>
+</Tabs>
 
 With the ABI, you can use Surf as a layer on top of the Aptos TypeScript SDK client `Aptos`, when interacting with Move contracts. For non-contract related operations, the `Aptos` will still need to be used.
 
