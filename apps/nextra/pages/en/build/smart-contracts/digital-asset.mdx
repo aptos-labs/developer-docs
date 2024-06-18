@@ -11,9 +11,11 @@ The Digital Asset (DA) standard is a modern Non-Fungible Token (NFT) standard fo
 
 This standard replaces the legacy [Aptos Token Standard](aptos-token.mdx). The most important improvements to note are:
 
-1. Tokens can be easily extended since they are implemented using Move [Objects](objects.mdx).
-2. You can now directly transfer NFTs without the recipient “opting-in” on-chain.
-3. NFTs can own other NFTs for easy composability. 
+| **Improvement** | **Description** |
+|-----------------|-----------------|
+| Token Extension | Tokens can be easily extended since they are implemented using Move [Objects](objects.mdx). |
+| Direct NFT Transfer | You can now directly transfer NFTs without the recipient “opting-in” on-chain. |
+| NFT Composability | NFTs can own other NFTs for easy composability. |
 
 If you want a simple way to mint NFTs without the ability to customize or extend their functionality, you can use the `aptos_token` module which implements the DA standard (see the section on how to use it below). 
 
@@ -38,7 +40,7 @@ sources={{
 
 All `Token`s are required to have a reference to a parent `Collection`, but the parent `Collection` does **not** own the `Token`. Newly minted `Token`s are usually owned by the creator. From there, they can be transferred to other accounts.
 
-### Creating a `Collection`
+## Creating a `Collection`
 
 There are two ways to create a `Collection` depending on whether you want there to be a maximum supply of NFTs it can hold:
 
@@ -48,7 +50,8 @@ There are two ways to create a `Collection` depending on whether you want there 
 use aptos_token_objects::collection;
 
 public entry fun create_collection(creator: &signer) {
-let max_supply = 1000;
+    let max_supply = 1000;
+    
     // Maximum supply cannot be changed after collection creation
     collection::create_fixed_collection(
         creator,
@@ -61,7 +64,7 @@ let max_supply = 1000;
 }
 ```
 
-1. For a `Collection` with unlimited supply you can use `collection::create_unlimited_collection`:
+2. For a `Collection` with unlimited supply you can use `collection::create_unlimited_collection`:
 
 ```move filename="example.move"
 public entry fun create_collection(creator: &signer) {
