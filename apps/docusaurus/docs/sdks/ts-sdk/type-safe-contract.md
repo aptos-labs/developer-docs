@@ -38,7 +38,7 @@ export const surfClient = createSurfClient(aptos).useABI(ABI);
 ## Resources
 - [Surf GitHub](https://github.com/ThalaLabs/surf)
 - [A simple Next.js example demonstrating Surf](https://github.com/ThalaLabs/surf/tree/main/example)
-- [An example of a fungible asset launchpad using Surf](https://github.com/aptos-labs/move-by-examples/tree/main/fungible-asset-launchpad): This example is part of the Solana to Aptos guide on Aptos Learn, you can try it [here](https://fungible-asset-launchpad.vercel.app/) and read the compelete tutorial [here](https://staging.learn.aptoslabs.com/example/solana-to-aptos-2/fa-launchpad/demo).
+- [An example of a fungible asset launchpad using Surf](https://github.com/aptos-labs/move-by-examples/tree/main/fungible-asset-launchpad): This example is part of the Solana to Aptos guide on Aptos Learn, you can try it [here](https://fungible-asset-launchpad.vercel.app/) and read the complete tutorial [here](https://staging.learn.aptoslabs.com/example/solana-to-aptos-2/fa-launchpad/demo).
 
 ## Credits
 
