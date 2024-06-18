@@ -1,4 +1,4 @@
-# Surf: Type Safety for your Move Contracts
+# Surf: TypeScript Type Safety for Move Contracts
 
 ## What is Surf
 
