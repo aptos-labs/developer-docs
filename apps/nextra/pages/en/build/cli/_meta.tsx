@@ -11,7 +11,7 @@ export default {
   },
   "---usage---": {
     type: "separator",
-    title: "Usage"
+    title: "Usage",
   },
   "working-with-move-contracts": {
     title: "Working With Move Contracts",
