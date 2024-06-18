@@ -44,7 +44,7 @@ There are two ways to create a `Collection` depending on whether you want there 
 
 1. For a fixed maximum supply you can use `collection::create_fixed_collection`:
 
-```move filename="Example.move"
+```move filename="example.move"
 use aptos_token_objects::collection;
 
 public entry fun create_collection(creator: &signer) {
@@ -63,7 +63,7 @@ let max_supply = 1000;
 
 1. For a `Collection` with unlimited supply you can use `collection::create_unlimited_collection`:
 
-```move filename="Example.move"
+```move filename="example.move"
 public entry fun create_collection(creator: &signer) {
     collection::create_unlimited_collection(
         creator,
@@ -88,7 +88,7 @@ A `Collection`'s maximum supply cannot be changed after creation.
 
 Since each `Collection` is a [Move Object](objects.mdx), you can customize it by generating permissions called `Ref`s. Each `Ref` allows you to modify an aspect of the Object later on. Beyond the normal [Object Refs](objects/creating-objects.mdx), `Collection`s can also get a `MutatorRef` by calling `get_mutator_ref` like so:
 
-```move filename="Example.move"
+```move filename="example.move"
 public entry fun create_collection(creator: &signer) {
     let collection_constructor_ref = &collection::create_unlimited_collection(
         creator,
@@ -108,7 +108,7 @@ Refs **must** be generated at creation time of an Object. The `ConstructorRef` u
 
 You can further customize your `Collection` by adding more resources or functionalities via smart contract. For example, a `Collection` can track when it was created in order to limit when `Token`s can be minted like so:
 
-```move filename="Example.move"
+```move filename="example.move"
 struct MyCollectionMetadata has key {
     creation_timestamp_secs: u64,
 }
@@ -142,7 +142,7 @@ There are a few ways to create a `Token`:
 
 1. Named tokens. These use the name of the `Token` to generate a named Object. This makes it easy to find the address for the token if you know the token and `Collection` name, but named Objects are not deletable. Trying to delete the a named token will only delete the data, not the Object itself.
     
-```move filename="Example.move"
+```move filename="example.move"
 use aptos_token_objects::token;
 
 public entry fun mint_token(creator: &signer) {
@@ -165,7 +165,7 @@ You can derive the address for named tokens by:
     
 2. “Unnamed” tokens. These create unnamed *Objects* (which **are** deletable) but still have a `Token` name. Because the Object address is not deterministic, you must use an Indexer to find the address for them.
     
-```move filename="Example.move"
+```move filename="example.move"
 use aptos_token_objects::token;
 
 public entry fun mint_token(creator: &signer) {
@@ -236,13 +236,13 @@ In general, using unnamed tokens give you the most flexibility because the Objec
 
 1. Transferring a `Token` can be done by calling [`object::transfer`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-framework/doc/object.md#0x1_object_transfer).
     
-```move filename="Example.move"
+```move filename="example.move"
 public entry fun transfer<T: key>(owner: &signer, object: object::Object<T>, to: address)
 ```
     
 2. Burning / deleting a `Token` requires storing a `BurnRef` with `token::generate_burn_ref`, then calling `token::burn`.
     
-```move filename="Example.move"
+```move filename="example.move"
 public entry fun mint_token(creator: &signer) {
     let token_constructor_ref = &token::create(
         creator,
@@ -273,7 +273,7 @@ If any custom resources were moved onto the Token, those must be removed / delet
     
 3. Mutating a `Token`’s `URI` or `description` requires a `MutatorRef`.
     
-```move filename="Example.move"
+```move filename="example.move"
 public entry fun mint_token(creator: &signer) {
     // Constructor ref is a non-storable struct returned when creating a new object.
     // It can be exchanged for signer to add resources to the token object.
@@ -315,7 +315,7 @@ Minting a `Token` using `aptos_token` requires the same parameters as any token 
 
 You can mint your `Token` by calling `aptos_token::mint` like so: 
 
-```move filename="Example.move"
+```move filename="example.move"
 public entry fun mint(
     creator: &signer,
     collection: String,
@@ -330,7 +330,7 @@ public entry fun mint(
 
 To mint a soul bound `Token`, you can call [`aptos_token::mint_soul_bound`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/aptos_token.md#0x4_aptos_token_mint_soul_bound) instead:
 
-```move filename="Example.move"
+```move filename="example.move"
 public entry fun mint_soul_bound(
     creator: &signer,
     collection: String,
