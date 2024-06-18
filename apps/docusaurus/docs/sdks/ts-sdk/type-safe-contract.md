@@ -2,7 +2,7 @@
 
 ## What is Surf
 
-Surf is TypeScript library built on top of Aptos TypeScript SDK and wallet adaptor that provides type safety for your Move contracts. Type safety is important because it allows you to catch errors at compile time rather than at runtime, and usually IDE like VS Code shows warning if you try to access a field that doesn't exist in the contract or if you pass the wrong type to a function.
+Surf is a TypeScript library built on top of the Aptos TypeScript SDK and the wallet adapter that provides static type safety for your Move contracts. It allows you to catch type errors at compile time rather than at runtime. Most existing TypeScript IDEs will automatically provide warnings if you try to access fields that don't exist, or provide wrong input types.
 
 ## Usage
 
