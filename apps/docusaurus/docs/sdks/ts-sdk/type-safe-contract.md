@@ -44,6 +44,6 @@ export const surfClient = createSurfClient(aptosClient).useABI(ABI);
 
 Surf is built by [Thala Labs](https://thala.fi/), an Aptos ecosystem project, and maintained together by the Aptos community. 
 
-## Feedbacks
+## Feedback
 
 If you have any feedback or questions, please open an issue on [Surf's GitHub](https://github.com/ThalaLabs/surf/issues).
