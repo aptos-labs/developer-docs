@@ -59,9 +59,11 @@ To make a `Collection` with a fixed supply you can use `collection::create_fixed
 
 ```move filename="example.move"
 use aptos_token_objects::collection;
+use std::option::{Self, Option};
 
 public entry fun create_collection(creator: &signer) {
     let max_supply = 1000;
+    let royalty = option::none();
     
     // Maximum supply cannot be changed after collection creation
     collection::create_fixed_collection(
@@ -79,7 +81,11 @@ public entry fun create_collection(creator: &signer) {
 To create a `Collection` with unlimited supply you can use `collection::create_unlimited_collection`:
 
 ```move filename="example.move"
+use std::option::{Self, Option};
+
 public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
+
     collection::create_unlimited_collection(
         creator,
         "My Collection Description",
@@ -99,7 +105,10 @@ A `Collection`'s maximum supply cannot be changed after creation.
 Since each `Collection` is a [Move Object](objects.mdx), you can customize it by generating permissions called `Ref`s. Each `Ref` allows you to modify an aspect of the Object later on. Beyond the normal [Object Refs](objects/creating-objects.mdx), `Collection`s can also get a `MutatorRef` by calling `get_mutator_ref` like so:
 
 ```move filename="example.move"
+use std::option::{Self, Option};
+
 public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
     let collection_constructor_ref = &collection::create_unlimited_collection(
         creator,
         "My Collection Description",
@@ -119,11 +128,14 @@ Refs **must** be generated at creation time of an Object. The `ConstructorRef` u
 You can further customize your `Collection` by adding more resources or functionalities via smart contract. For example, a `Collection` can track when it was created in order to limit when `Token`s can be minted like so:
 
 ```move filename="example.move"
+use std::option::{Self, Option};
+
 struct MyCollectionMetadata has key {
     creation_timestamp_secs: u64,
 }
 
 public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
     // Constructor ref is a non-storable struct returned when creating a new object.
     // It can generate an object signer to add resources to the collection object.
     let collection_constructor_ref = &collection::create_unlimited_collection(
@@ -156,8 +168,10 @@ There are a few ways to create a `Token`:
     
 ```move filename="example.move"
 use aptos_token_objects::token;
+use std::option::{Self, Option};
 
 public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
     token::create_named_token(
         creator,
         "Collection Name",
@@ -179,8 +193,10 @@ You can derive the address for named tokens by:
     
 ```move filename="example.move"
 use aptos_token_objects::token;
+use std::option::{Self, Option};
 
 public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
     token::create(
         creator,
         "Collection Name",
@@ -248,7 +264,10 @@ public entry fun transfer<T: key>(owner: &signer, object: object::Object<T>, to:
 2. Burning / deleting a `Token` requires storing a `BurnRef` with `token::generate_burn_ref`, then calling `token::burn`.
     
 ```move filename="example.move"
+use std::option::{Self, Option};
+
 public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
     let token_constructor_ref = &token::create(
         creator,
         "My Collection",
@@ -279,7 +298,10 @@ If any custom resources were moved onto the Token, those must be removed / delet
 3. Mutating a `Token`’s `URI` or `description` requires a `MutatorRef`.
     
 ```move filename="example.move"
+use std::option::{Self, Option};
+
 public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
     // Constructor ref is a non-storable struct returned when creating a new object.
     // It can be exchanged for signer to add resources to the token object.
     let token_constructor_ref = &token::create(
