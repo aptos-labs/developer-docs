@@ -149,6 +149,10 @@ const themeConfig: Preset.ThemeConfig = {
             to: "/sdks/index",
           },
           {
+            label: "create-aptos-dapp",
+            to: "/create-aptos-dapp/index",
+          },
+          {
             label: "Aptos CLI",
             to: "/tools/aptos-cli",
           },
