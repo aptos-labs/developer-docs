@@ -25,12 +25,11 @@ echo "export const ABI = $(curl https://fullnode.$NETWORK.aptoslabs.com/v1/accou
 With the ABI, you can use Surf as a layer on top of the Aptos TypeScript SDK client `Aptos`, when interacting with Move contracts. For non-contract related operations, the `Aptos` will still need to be used.
 
 ```ts filename="src/utils/aptos.ts"
-import { Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
+import { Aptos, AptosConfig, NETWORK } from "@aptos-labs/ts-sdk";
 import { ABI } from "./abi";
 
-const config = new AptosConfig();
-// First, create an Aptos client
-export const aptos = new Aptos(config);
+// First, create an Aptos client, make sure the network is the one that contract lives on
+export const aptos = new Aptos(new AptosConfig({ network: NETWORK.TESTNET }));
 // Second, create a SurfClient with the Aptos client and the ABI
 export const surfClient = createSurfClient(aptos).useABI(ABI);
 
