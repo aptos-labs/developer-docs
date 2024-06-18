@@ -46,4 +46,4 @@ Surf is built by [Thala Labs](https://thala.fi/), an Aptos ecosystem project, an
 
 ## Feedbacks
 
-If you have any feedback or question, please open an issue on [Surf GitHub](https://github.com/ThalaLabs/surf/issues) and we are happy to help.
+If you have any feedback or questions, please open an issue on [Surf's GitHub](https://github.com/ThalaLabs/surf/issues).
