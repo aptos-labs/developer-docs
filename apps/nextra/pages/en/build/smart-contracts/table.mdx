@@ -1,0 +1,130 @@
+---
+title: "Table"
+---
+
+# Table
+
+The `Table` provides a flexible and efficient way to manage large amounts of data in a table format. Each table item is represented as a separate global state item, allowing for scalable storage solutions.
+
+## Core Features of Table
+
+### Structure
+
+The `Table` struct is designed to handle large-scale storage with efficiency:
+
+- `handle`: An address that uniquely identifies the table.
+
+### Constants
+
+The following constants define various error codes used within the module (these are implied but not explicitly stated in the provided code):
+
+- `ENOT_FOUND`: Key not found in the table.
+- `EALREADY_EXIST`: Key already exists in the table.
+- `EINVALID_ARGUMENT`: Invalid argument passed to a function.
+
+### API Overview
+
+#### Creating Tables
+
+- `new<K: copy + drop, V: store>(): Table<K, V>`: Creates a new table.
+
+#### Managing Entries
+
+- `add<K: copy + drop, V>(table: &mut Table<K, V>, key: K, val: V)`: Adds a key-value pair to the table. Aborts if the key already exists.
+- `remove<K: copy + drop, V>(table: &mut Table<K, V>, key: K): V`: Removes and returns the value associated with a key. Aborts if the key is not found.
+- `upsert<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, value: V)`: Inserts or updates a key-value pair.
+
+#### Retrieving Entries
+
+- `borrow<K: copy + drop, V>(table: &Table<K, V>, key: K): &V`: Returns an immutable reference to the value associated with a key. Aborts if the key is not found.
+- `borrow_with_default<K: copy + drop, V>(table: &Table<K, V>, key: K, default: &V): &V`: Returns the value associated with a key or a default value if the key is not found.
+- `borrow_mut<K: copy + drop, V>(table: &mut Table<K, V>, key: K): &mut V`: Returns a mutable reference to the value associated with a key. Aborts if the key is not found.
+- `borrow_mut_with_default<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, default: V): &mut V`: Inserts a key-value pair if the key is not found, then returns a mutable reference to the value.
+
+#### Utility Functions
+
+- `contains<K: copy + drop, V>(table: &Table<K, V>, key: K): bool`: Checks if the table contains a key.
+
+## Example Usage
+
+### Creating and Using a Table
+
+```move filename="table.move"
+module example::table_usage {
+    use aptos_std::table::{Self, Table};
+
+    public entry fun main() {
+        let mut table = Table::new<u64, u64>();
+        Table::add(&mut table, 1, 100);
+        Table::add(&mut table, 2, 200);
+        
+        let value1 = Table::borrow(&table, 1);
+        assert!(*value1 == 100, 0);
+        
+        let value2 = Table::borrow(&table, 2);
+        assert!(*value2 == 200, 0);
+        
+        let removed_value = Table::remove(&mut table, 1);
+        assert!(removed_value == 100, 0);
+        
+        let contains_key = Table::contains(&table, 2);
+        assert!(contains_key, 0);
+        
+        Table::destroy(table);
+    }
+}
+```
+
+### Adding Multiple Entries and Upserting
+
+```move filename="table.move"
+module example::table_usage {
+    use aptos_std::table::{Self, Table};
+
+    public fun add_and_upsert_entries() {
+		let mut table = Table::new<u64, u64>();
+		Table::add(&mut table, 1, 100);
+		Table::upsert(&mut table, 1, 200);
+		Table::upsert(&mut table, 2, 300);
+		
+		let value1 = Table::borrow(&table, 1);
+		assert!(*value1 == 200, 0);
+		
+		let value2 = Table::borrow(&table, 2);
+		assert!(*value2 == 300, 0);
+		
+		Table::destroy(table);
+	}
+}
+```
+
+### Borrowing Mutable References
+
+```move filename="table.move"
+module example::table_usage {
+    use aptos_std::table::{Self, Table};
+
+    public fun borrow_mutable_references() {
+		let mut table = Table::new<u64, u64>();
+		Table::add(&mut table, 1, 100);
+		
+		let value_mut = Table::borrow_mut(&mut table, 1);
+		*value_mut = 200;
+		
+		let value = Table::borrow(&table, 1);
+		assert!(*value == 200, 0);
+		
+		Table::destroy(table);
+	}
+}
+```
+
+## Source Code
+
+- [table.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/table.move)
+
+## Other Examples
+
+- [Move Spiders Tables Tutorial](https://movespiders.com/courses/modules/datastructures/lessonId/4)
+- [Move Spiders Query Table via FullNode](https://movespiders.com/courses/modules/datastructures/lessonId/9)
+- [Move Spiders Query Table via View Function](https://movespiders.com/courses/modules/datastructures/lessonId/10)
