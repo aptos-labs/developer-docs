@@ -1,10 +1,9 @@
 ---
 title: "FAQ"
-slug: "faq"
 hidden: false
 ---
 
-# FAQ
+# Create Aptos Dapp FAQ
 
 ## Why do we use `import.meta.env`?
 

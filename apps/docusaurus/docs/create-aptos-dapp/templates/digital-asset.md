@@ -1,75 +1,75 @@
 ---
-title: "Digital Asset"
+title: "Create Aptos Dapp Digital Asset Template"
 slug: "digital-asset"
 hidden: false
 ---
 
-# Digital Asset Template
+# Create Aptos Dapp Digital Asset Template
 
-A Digital Asset is an NFT stored on a blockchain that uniquely defines ownership of an asset. The Digital Asset template provides an end-to-end NFT minting dapp. With this dapp you can learn how NFTs work on Aptos, how to write a smart contract and a front end that communicates with the contract. In addition, it offers a beautiful pre-made UI for a NFT minting dapp you can quickly adjust and deploy into a live server.
+Digital Assets are the NFT standard for Aptos. The Digital Asset template provides an end-to-end NFT minting dapp. With this dapp, you can learn how NFTs work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a NFT minting dapp users can quickly adjust and deploy into a live server.
 
-Read more about [Aptos Digital Asset Standard](https://aptos.dev/standards/digital-asset)
+Read more about the [Aptos Digital Asset Standard](https://aptos.dev/standards/digital-asset)
 
-The Digital Asset template provides 3 pages
+The Digital Asset template provides 3 pages:
 
-1. Public Mint NFT Page - that page would eventually get deployed into a live server where the public can come to it to mint an NFT
-2. Create Collection Page - where you can create a new NFT collection. This page is not accessible on production.
-3. My Collections Page - where you can view all the collections created under the current move module (i.e smart contract). This page is not accessible on production.
+1. Public Mint NFT Page - A page for the public to mint NFTs.
+2. Create Collection Page - A page for creating new NFT collections. This page is not accessible on production.
+3. My Collections Page - A page to view all the collections created under the current Move module (smart contract). This page is not accessible on production.
 
 ## Public Mint Page
 
-When you first run your app locally with `npm run dev` you would see the public mint page with some data placeholders for content and images. Some of the content can be configured in the `frontend/config.ts` file and some will get pulled from an Aptos server once you configure your collection.
+First run the dapp locally with `npm run dev`. You would see the public mint page with some data placeholders for content and images. Some of the content can be configured in the `frontend/config.ts` file and some will be pulled from an Aptos full node once you configure your collection.
 
-### Config a collection address
+### Configure a collection address
 
-To config the collection address and have the public mint page fetch the collection data, you would need to assign the `collection_id` variable in the `frontend/config.ts` file with the collection address you want to use. If you have [created the collection](#create-a-nft-collection-page) with the tool, you should be able to find it on the[ My Collections Page](#my-collections-page).
+For the public mint page to fetch the collection, you will need to configure the collection address. First, assign the `collection_id` variable in the `frontend/config.ts` file with the collection address. If you have [created a collection](#create-a-nft-collection-page) with the tool, you can find it on the [My Collections Page](#my-collections-page).
 
 ### Modify static content
 
-Once the collection address has been set up, you can head over to the `frontend/config.ts` file to change and modify any static content on the page. Obviously you can also modify the code itself as you wish.
+Once the collection address has been configured, view the `frontend/config.ts` file to change any static content on the page. You can also modify the code itself as you wish.
 
 **How to add static images?**
+The public mint page uses static images in the UI. Initially, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as seen below in the `frontend/config.ts` file and add it under the section you want to have it.
 
-The public mint page uses static images in the UI. Initialy, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as `import MyImage from "@/assets/<my-new-folder>/my-image.png";` in the `frontend/config.ts` file and add it under the section you want to have it.
+```jsx
+import MyImage from "@/assets/<my-new-folder>/my-image.png";
+```
 
-For example, to update an image in the “Our Team" section - add the image under the `frontend/assets/<my-new-folder>` folder, import the image as `import MyImage from "@/assets/<my-new-folder>/my-image.png";` and change the`img`property in the `ourTeam` section with `MyImage`
-
-**How to modify css/style?**
-
-<!-- TODO -->
+For example, to update an image in the “Our Team" section - add the image under the `frontend/assets/<my-new-folder>` folder, import the image as `import MyImage from "@/assets/<my-new-folder>/my-image.png";` and change the`img`property in the `ourTeam` section with `MyImage`.
 
 ## Create a NFT Collection Page
 
-When you first run your app locally with `npm run dev` you would see the Public Mint page, click the “Create Collection” button, that would take you to a page where you can create a new nft collection.
+When you first running `npm run dev`, you will see the Public Mint page. To create a collection, click the “Create Collection” button, which will navigate you to create a new NFT collection.
 
 ### Publish the Move module
 
-To create a new collection, we need to publish the Move module to chain so we can communicate with it.
+To create a new collection, we will need to publish the Move module on-chain.
 
 The smart contract is built in a way that only the admin or a specific defined account can create a new collections.
 
-Create or find the account you would want to use to create a collection with. If you haven't created an account - simply use a Wallet, for example [Petra](https://petra.app/), to quickly [create an account](https://petra.app/docs/use#create-a-new-account).
+Create or find the account you want to create a collection with. If you haven't created an account - simply use a Wallet, for example [Petra](https://petra.app/), to quickly [create an account](https://petra.app/docs/use#create-a-new-account).
 
-1. Run `npm run move:init` - a command to generate a new aptos config file with an account that would be used to publish the move contract. Once you run that command it would:
+1. Run `npm run move:init` - a command to initialize an account to publish the Move contract. When you run that command it will:
 
-- Generate a new `.aptos/config.yaml` file that holds the profile with a privateKey, publicKey and account address as well as the network endpoints it uses to make calls to.
-- Configure you development environment and add a `VITE_MODULE_ADDRESS` variable into the `.env` file with the account address of the generated account from the previous step.
+   - Generate a new CLI `.aptos/config.yaml` file that holds a profile with the account private key, account address, and network configuration.
+   - Configure your development environment and add a `VITE_MODULE_ADDRESS` variable into the `.env` file with the account address from the previous step.
 
-2. To set who is the account that has the privilage to create a new collection, head over to the `.env` file and update `VITE_CREATOR_ADDRESS` to be the address of the account you want to use to create the collection with.
+2. To set who can create a new collection, edit the `.env` file and update `VITE_CREATOR_ADDRESS` to be the address of the account allowed to create collections.
 
 3. Run `npm run move:publish`
 
 ### Connect a wallet
 
-Once you [published the move module](#publish-the-move-module), you would want to connect your wallet so you can submit transactions. Make sure your Wallet is set to the same account you used in the [previous section](#publish-the-move-module) to publish your move module and that your wallet is set to the same network you selected to work with.
+Once you have [published the move module](#publish-the-move-module), you will need to connect your wallet to submit transactions. Make sure your Wallet is set to the same account you used in the [previous section](#publish-the-move-module) to publish your Move module.
+Also ensure that your wallet is set to the same network you selected to work with (e.g. testnet).
 
-Now you can connect your wallet by clicking on the "Connect Wallet" button on the top right, and start with creating your nft collection.
+Now, you can connect your wallet by clicking on the "Connect Wallet" button at the top right, and start with creating your NFT collection.
 
 ### Upload Collection Files Data
 
-To create a NFT collection you would need image files and metadata files.
+To create a NFT collection you will need image files and metadata files.
 
-Image files can be of any of the type - `"png", "jpg", "jpeg", "gltf”.` But, make sure all image files have the same file extension. If some images will have `jpeg` extension and some `jpg` extension the upload would fail.
+Image files can be of any of the type - `"png", "jpg", "jpeg", "gif”.` But, make sure all image files have the same file extension. If some images have `jpeg` extension and some `jpg` extension, the upload will fail.
 
 Metadata files are `json` files that hold the Collection data and each of the NFT data.
 
@@ -90,7 +90,7 @@ assets/ // root folder
 ```
 
 :::note
-Make sure all image files have the same file extension. If some images will have `jpeg` extension and some `jpg` extension the upload would fail.
+Make sure all image files have the same file extension. If some images will have `jpeg` extension and some `jpg` extension, the upload will fail.
 :::
 
 <!-- TODO: change ERC-1155 once finish rewriting the NFT standards page  -->
@@ -103,19 +103,19 @@ Example of `collection.json` file
 // collection.json
 {
   "name": "Aptos NFTs", // Name of the collection.
-  "description": "My NFT Collection on Aptos.", // Descrpition of the collection
-  "image": "to_fill_after_upload", // This is the URL to the image of the collection, we will assign arewave link so feel free to leave it empty
+  "description": "My NFT Collection on Aptos.", // Description of the collection
+  "image": "to_fill_after_upload", // This is the URL to the image of the collection, we will assign Arweave link so feel free to leave it empty
   "external_url": "https://your_project_url.io" // URL to an external website where the user can also view the image.
 }
 ```
 
-Example of a NFT metadata file. The metadata file should have the same name as the relevant image but with a json extension. i.e if the nft image name is `1.jpeg` then a relevant metadata file should be `1.json`
+Example of an NFT metadata file. The metadata file should have the same name as the relevant image but with a `.json` extension. i.e if the nft image name is `1.jpeg` then a relevant metadata file should be `1.json`
 
 ```jsx
 // 1.json
 {
-  "description": "nft 1 in collection", // Descrpition of the NFT
-  "image": "to_fill_after_upload", // This is the URL to the image of the nft, we will assign arewave link so feel free to leave it empty
+  "description": "nft 1 in collection", // Description of the NFT
+  "image": "to_fill_after_upload", // This is the URL to the image of the NFT, we will assign Arweave link so feel free to leave it empty
   "name": "NFT 1", // Name of the NFT.
   "external_url": "https://your_project_url.io/1", // URL to an external website where the user can also view the image.
   "attributes": [ // Object array, where an object should contain trait_type and value fields. value can be a string or a number.
@@ -128,18 +128,20 @@ Example of a NFT metadata file. The metadata file should have the same name as t
 
 ```
 
-Once you built the folder and you are ready to upload the collection files data, you can use the file input on the UI and choose the folder you want to upload, that would submit the files to [Irys](https://irys.xyz/), a decentralized asset server, that will store your files.
+Once you've built the folder and you are ready to upload the collection files data, you can choose the folder you want to upload through the file input UI.
 
-During the upload process, you would need to sign 2 messages to approve file uploading to Irys and maybe be a transfer transaction submission if first need to fund an Irys node to store the files on. Can read more about the process [here](https://docs.irys.xyz/hands-on/tutorials/uploading-nfts).
+When adding the folder, it submits the files to [Irys](https://irys.xyz/), a decentralized asset server, that will store your files.
+
+During the upload process, you will need to sign two messages to approve file uploading to Irys. Additionally, you may need to fund an Irys node. Read more about the process [here](https://docs.irys.xyz/hands-on/tutorials/uploading-nfts).
 
 ### Fill out collection details
 
-Next, you would want to fill out some collection details:
+Next, you want to fill out some collection details:
 
 - Public mint start date - which defines when the public mint starts
 - Public mint end date - which defines when the public mint ends (can leave it empty if there is no end date)
 - Limit mint per address - which defines the limit of how many NFTs an account can mint
-- (Optional) Royalty Percentage for each NFT - which defines the royalties for nft marketplaces to read and respect when users trade nfts
+- (Optional) Royalty Percentage for each NFT - which defines the royalties for NFT marketplaces to read and respect when users trade nfts
 - (Optional) Mint fee per NFT - which defines the mint fee cost per nft
 - (Optional) Mint for myself - which defines how many NFTs you would want to mint for yourself once the collection is created
 
@@ -149,9 +151,9 @@ Once everything has filled out, you should be able to click the “Create Collec
 
 ## My Collections Page
 
-This page displays all the collections that have been created under the current move module. You can click on the contract address, that would redirect you to the Aptos Explorer site where you can see your collection.
+This page displays all the collections that have been created under the current Move module. You can click on the contract address, which redirects you to the Aptos Explorer site where you can see your collection.
 
-When you are ready to use a collection on the Public Mint Page, you would want to copy the collection address and assign it to the `collection_id` on the `frontend/config.ts` file.
+When you are ready to use a collection on the Public Mint Page, you need to copy the collection address and assign it to the `collection_id` on the `frontend/config.ts` file.
 
 Some stats are available on this page, like the amount of minted NFTs and Max Supply of the NFTs.
 
@@ -159,11 +161,11 @@ Some stats are available on this page, like the amount of minted NFTs and Max Su
 
 Remember, one of the goals of this template is to educate and provide a real life example on how a NFT minting dapp can be on Aptos. We provide some basic concepts and features but there is much more you can do for your dapp.
 
-Some ideas you can look at and support are
+Some ideas you can try are:
 
-1. Allowlist mint stage
-2. A custom flow after someone mints a NFT
-3. Check out our [TS SDK](https://github.com/aptos-labs/aptos-ts-sdk) to see what other [API queries](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/digitalAsset.ts) you can use to support more features or fetch more datas
+1. Allowlist mint stages
+2. Custom flows after someone mints a NFT (or even token gated experiences)
+3. Check out our [TS SDK](https://github.com/aptos-labs/aptos-ts-sdk) to see what other [API queries](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/digitalAsset.ts) you can use to support more features and fetch more data.
 
 ## Ready for MAINNET
 

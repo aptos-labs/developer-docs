@@ -83,7 +83,7 @@ This will build `apps/nextra` and all local packages it depends on.
 cd apps/nextra
 ```
 
-3. Run development server
+3. Run the development server
 
 ```sh
 pnpm dev
@@ -97,7 +97,7 @@ pnpm dev
 cd apps/docusaurus
 ```
 
-2. Run development server
+2. Run the development server
 
 ```sh
 pnpm start

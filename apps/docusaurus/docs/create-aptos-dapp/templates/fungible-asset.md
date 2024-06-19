@@ -1,83 +1,85 @@
 ---
-title: "Fungible Asset"
-slug: "fungible-asset"
+title: "Create Aptos Dapp Fungible Asset Template"
 hidden: false
 ---
 
-# Fungible Asset Template
+# Create Aptos Dapp Fungible Asset Template
 
-The Fungible Asset template provides an end-to-end Fungible Asset minting dapp. With this dapp you can learn how Fungible Assets work on Aptos, how to write a smart contract and a front end that communicates with the contract. In addition, it offers a beautiful pre-made UI for a Fungible Asset minting dapp you can quickly adjust and deploy into a live server.
+The Fungible Asset template provides an end-to-end Fungible Asset minting dapp. With this dapp, you can learn how Fungible Assets work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a Fungible Asset minting dapp users can quickly adjust and deploy into a live server.
 
-Read more about [Aptos Fungible Asset Standard](https://aptos.dev/standards/fungible-asset)
+Read more about the [Aptos Fungible Asset Standard](https://aptos.dev/standards/fungible-asset)
 
-The fungible asset template provides 3 pages
+The Fungible Asset template provides 3 pages:
 
-1. Public mint page - that page would eventually get deployed into a live server where the public can come to it to mint a fungible asset
-2. Create Asset page - where you can create a new Fungible Asset. This page is not accessible on production.
-3. My Assets page - where you can view all the assets created under the current move module (i.e smart contract). This page is not accessible on production.
+1. Public Mint Fungible Asset Page - A page for the public to mint Fungible Assets.
+2. Create Fungible Asset page - A page for creating new asset. This page is not accessible on production.
+3. My Fungible Assets page - A page to view all the assets created under the current Move module (smart contract). This page is not accessible on production.
 
 ## Public Mint Page
 
-When you first run your app locally with `npm run dev` you would see the public mint page with some data placeholders for content and images. Some of the content can be configured in the `frontend/config.ts` file and some will get pulled from an Aptos server once you configure your asset address.
+First run the dapp locally with `npm run dev`. You would see the public mint page with some data placeholders for content and images. Some of the content can be configured in the `frontend/config.ts` file and some will be pulled from an Aptos full node once you configure your collection.
 
-### Config an asset address
+### Configure an asset address
 
-To config the asset address and have the public mint page fetch the asset data, you would need to assign the `asset_id` variable in the `frontend/config.ts` file with the FA address you want to use. If you have [created the asset](#create-a-fungible-asset-page) with the tool, you should be able to find it on the [My Assets Page](#my-assets-page).
+For the public mint page to fetch the asset, you will need to configure the asset address. First, assign the `asset_id` variable in the `frontend/config.ts` file with the asset address. If you have [created the asset](#create-a-fungible-asset-page) with the tool, you should be able to find it on the [My Assets Page](#my-assets-page).
 
 ### Modify static content
 
-Once the asset address has been set up, you can head over to the `frontend/config.ts` file to change and modify any static content on the page. Obviously you can also modify the code itself as you wish.
+Once the asset address has been configured, view the `frontend/config.ts` file to change any static content on the page. You can also modify the code itself as you wish.
 
 #### How to add static images?
 
-The public mint page uses static images in the UI. Initialy, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as `import MyImage from "@/assets/<my-new-folder>/my-image.png";` in the `frontend/config.ts` file and add it under the section you want to have it.
+The public mint page uses static images in the UI. Initially, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as seen below in the `frontend/config.ts` file and add it under the section you want to have it.
 
-For example, to update an image in the “Our Team" section - add the image under the `frontend/assets/<my-new-folder>` folder, import the image as `import MyImage from "@/assets/<my-new-folder>/my-image.png";` and change the`img`property in the `ourTeam` section with `MyImage`
+```jsx
+import MyImage from "@/assets/<my-new-folder>/my-image.png";
+```
 
-#### How to modify css/style?
-
-<!-- TODO -->
+For example, to update an image in the “Our Team" section - add the image under the `frontend/assets/<my-new-folder>` folder, import the image as `import MyImage from "@/assets/<my-new-folder>/my-image.png";` and change the`img`property in the `ourTeam` section with `MyImage`.
 
 ## Create a Fungible Asset page
 
-When you first run your app locally with `npm run dev` you would see the Public Mint page, click the “Create Asset” button, that would take you to a page where you can create a new asset.
+When you first running `npm run dev`, you will see the Public Mint page. To create an asset, click the “Create Asset" button, which will navigate you to create a new fungible asset.
 
 ### Publish the Move module
 
-To create a new asset, we need to publish the Move module to chain so we can communicate with it.
+To create a new asset, we will need to publish the Move module on-chain.
 
 The smart contract is built in a way that only the admin or a specific defined account can create a new asset.
 
-Create or find the account you would want to use to create an asset with. If you haven't created an account - simply use a Wallet, for example [Petra](https://petra.app/), to quickly [create an account](https://petra.app/docs/use#create-a-new-account).
+Create or find the account you want to create an asset with. If you haven't created an account - simply use a Wallet, for example [Petra](https://petra.app/), to quickly [create an account](https://petra.app/docs/use#create-a-new-account).
 
-1. Run `npm run move:init` - a command to generate a new aptos config file with an account that would be used to publish the move contract. Once you run that command it would:
+1. Run `npm run move:init` - a command to initialize an account to publish the Move contract. When you run that command it will:
 
-- Generate a new `.aptos/config.yaml` file that holds the profile with a privateKey, publicKey and account address as well as the network endpoints it uses to make calls to.
-- Configure you development environment and add a `VITE_MODULE_ADDRESS` variable into the `.env` file with the account address of the generated account from the previous step.
+   - Generate a new CLI `.aptos/config.yaml` file that holds a profile with the account private key, account address, and network configuration.
+   - Configure your development environment and add a `VITE_MODULE_ADDRESS` variable into the `.env` file with the account address from the previous step.
 
-2. To set who is the account that has the privilage to create a new asset, head over to the `.env` file and update `VITE_CREATOR_ADDRESS` to be the address of the account you want to use to create the asset with.
+2. To set who can create a new asset, edit the `.env` file and update `VITE_CREATOR_ADDRESS` to be the address of the account allowed to create assets.
 
 3. Run `npm run move:publish`
 
 ### Connect a wallet
 
-Once you [published the move module](#publish-the-move-module), you would want to connect your wallet so you can submit transactions. Make sure your Wallet is set to the same account you used in the [previous section](#publish-the-move-module) to publish your move module and that your wallet is set to the same network you selected to work with.
+Once you have [published the move module](#publish-the-move-module), you will need to connect your wallet to submit transactions. Make sure your Wallet is set to the same account you used in the [previous section](#publish-the-move-module) to publish your Move module.
+Also ensure that your wallet is set to the same network you selected to work with (e.g. testnet).
 
-Now you can connect your wallet by clicking on the "Connect Wallet" button on the top right, and start with creating your asset.
+Now, you can connect your wallet by clicking on the "Connect Wallet" button at the top right, and start with creating your asset.
 
 ### Upload an Asset File
 
-To create an asset you would need an image for the asset.
+To create an asset you will need an image file.
 
-The image file can be of any of the type - `"png", "jpg", "jpeg", "gltf”.`
+Image file can be of any of the type - `"png", "jpg", "jpeg", "gif”.`
 
-To upload the asset image, you can use the file input on the UI and choose the file you want to upload, that would submit the file to [Irys](https://irys.xyz/), a decentralized asset server, that will store your file.
+Once you are ready to upload the asset image file, you can choose the file you want to upload through the file input UI.
 
-During the upload process, you would need to sign a message to approve file uploading to Irys and maybe a transfer transaction submission if first need to fund an Irys node to store the files on. Can read more about the process [here](https://docs.irys.xyz/hands-on/tutorials/uploading-nfts).
+When adding the file, it submits the it to [Irys](https://irys.xyz/), a decentralized asset server, that will store your files.
+
+During the upload process, you will need to sign a message to approve file uploading to Irys. Additionally, you may need to fund an Irys node. Read more about the process [here](https://docs.irys.xyz/hands-on/tutorials/uploading-nfts).
 
 ### Fill out asset details
 
-Next, you would want to fill out some asset details:
+Next, you want to fill out some asset details:
 
 - Asset Name - which defines asset name
 - Asset Symbol - which defines the asset symbol
@@ -94,9 +96,9 @@ Once everything has filled out, you should be able to click the “Create Asset�
 
 ## My Assets Page
 
-This page displays all the assets that have been created under the current move module. You can click on the FA address, that would redirect you to the Aptos Explorer site where you can see your asset.
+This page displays all the assets that have been created under the current Move module. You can click on the asset address, which redirects you to the Aptos Explorer site where you can see your asset.
 
-When you are ready to use an asset on the Public Mint Page, you would want to copy the FA address and assign it to the `asset_id` on the `frontend/config.ts` file.
+When you are ready to use an asset on the Public Mint Page, you need to copy the asset address and assign it to the `asset_id` on the `frontend/config.ts` file.
 
 Some stats are available on this page, like the max supply of the asset and the number of asset minted.
 
@@ -104,11 +106,11 @@ Some stats are available on this page, like the max supply of the asset and the 
 
 Remember, one of the goals of this template is to educate and provide a real life example on how a Fungible Asset minting dapp can be on Aptos. We provide some basic concepts and features but there is much more you can do for your dapp.
 
-Some ideas you can look at and support are
+Some ideas you can try are:
 
-1. Allowlist mint stage
-2. A custom flow after someone mints an Asset
-3. Check out our [TS SDK](https://github.com/aptos-labs/aptos-ts-sdk) to see what other [API queries](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/digitalAsset.ts) you can use to support more features or fetch more datas
+1. Allowlist mint stages
+2. Custom flows after someone mints an asset (or even token gated experiences)
+3. Check out our [TS SDK](https://github.com/aptos-labs/aptos-ts-sdk) to see what other [API queries](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/digitalAsset.ts) you can use to support more features and fetch more data.
 
 ## Ready for MAINNET
 
