@@ -28,57 +28,24 @@ First, download the ABI of the Move contract and save it to a TypeScript file. I
     MODULE_NAME=fungible_asset_launchpad
 
     # save the ABI to a TypeScript file
-    echo "export const ABI = $(curl https://fullnode.$NETWORK.aptoslabs.com/v1/accounts/$CONTRACT_ADDRESS/module/$MODULE_NAME | sed -n 's/.*"abi":\({.*}\).*}$/\1/p') as const" > src/utils/abi.ts
+    echo "export const ABI = $(curl https://fullnode.$NETWORK.aptoslabs.com/v1/accounts/$CONTRACT_ADDRESS/module/$MODULE_NAME | sed -n 's/.*"abi":\({.*}\).*}$/\1/p') as const" > abi.ts
     ```
 
   </TabItem>
   <TabItem value="windows" label="Windows">
-  ```json filename="package.json"
-    {
-      "name": "my-aptos-dapp",
-      "version": "0.0.0",
-      "scripts": {
-        "get-abi": "node gen_abi.js"
-      },
-      "dependencies": {
-        "axios": "^1.7.2",
-        "js-yaml": "^4.1.0"
-      }
-    }
-    ```
-
-    ```js filename="gen_abi.js"
-    const axios = require("axios");
-    const fs = require("node:fs");
-
-    // replace it with the network your contract lives on
-    NETWORK=testnet
-    // replace it with your contract address
-    CONTRACT_ADDRESS=0x12345
-    // replace it with your module name, every .move file except move script has module_address::module_name {}
-    MODULE_NAME=fungible_asset_launchpad
-
-    async function getAbi() {
-      axios
-        .get(`https://fullnode.${process.env.VITE_APP_NETWORK}.aptoslabs.com/v1/accounts/0x${accountAddress}/module/${MODULE_NAME}`)
-        .then((response) => {
-          const abi = response.data.abi;
-          const abiString = `export const ABI = ${JSON.stringify(abi)} as const;`;
-          // Write ABI to abi.ts file
-          fs.writeFileSync("src/utils/abi.ts", abiString);
-          console.log("ABI saved to src/utils/abi.ts");
-        })
-        .catch((error) => {
-          console.error("Error fetching ABI:", error);
-        });
-    }
-
-    getAbi();
-    ```
-
     ```PowerShell filename="get_abi.ps1"
-    npm i
-    npm run get-abi
+    # replace it with the network your contract lives on
+    $NETWORK = "testnet"
+    # replace it with your contract address
+    $CONTRACT_ADDRESS = "0x12345"
+    # replace it with your module name, every .move file except move script has module_address::module_name {}
+    $MODULE_NAME = "fungible_asset_launchpad"
+
+    # save the ABI to a TypeScript file
+    Invoke-RestMethod -Uri "https://fullnode.$NETWORK.aptoslabs.com/v1/accounts/$CONTRACT_ADDRESS/module/$MODULE_NAME" |
+        Select-Object -ExpandProperty abi | ConvertTo-Json -Compress |
+        Foreach-Object { "export const ABI = $_ as const" } |
+        Out-File -FilePath "abi.ts"
     ```
 
   </TabItem>
