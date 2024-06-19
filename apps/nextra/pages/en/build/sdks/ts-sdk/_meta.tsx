@@ -22,4 +22,7 @@ export default {
   "legacy-ts-sdk": {
     title: "Legacy TypeScript SDK",
   },
+  "type-safe-contract": {
+    title: "Surf: TypeScript Type Safety for Move Contracts",
+  }
 };

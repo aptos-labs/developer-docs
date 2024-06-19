@@ -242,21 +242,26 @@ Aside from the default managed fungible asset functionality provided by the Apto
 To implement a custom hook function, build a module with functions that have the following signature:
 
 ```move filename="example.move"
-public fun withdraw<T: key>(
-    store: Object<T>,
-    amount: u64,
-    transfer_ref: &TransferRef,
-): FungibleAsset {
-    // Your custom logic here
-}
+module my_addr::my_fungible_asset_example {
+    // ...
+    public fun withdraw<T: key>(
+        store: Object<T>,
+        amount: u64,
+        transfer_ref: &TransferRef,
+    ): FungibleAsset {
+        // Your custom logic here
+    }
 
-public fun deposit<T: key>(
-    store: Object<T>,
-    fa: FungibleAsset,
-    transfer_ref: &TransferRef,
-) {
-    // Your custom logic here
+    public fun deposit<T: key>(
+        store: Object<T>,
+        fa: FungibleAsset,
+        transfer_ref: &TransferRef,
+    ) {
+        // Your custom logic here
+    }
+    // ...
 }
+```
 
 ### Limitations
 
@@ -281,6 +286,7 @@ module 0x1::dispatchable_fungible_asset {
         derived_balance_function: Option<FunctionInfo>,
     )
 }
+```
 
 <Callout type="info">
 The `register_dispatch_functions` function takes `Option<FunctionInfo>` as input to specify whether to use custom or default logic for withdraw/deposit/balance operations. If `option::none()` is passed, the default logic is used.
@@ -297,8 +303,8 @@ module 0x1::dispatchable_fungible_asset {
 
 For security reasons, you need the signer of the module (the deployer or code owner) to create a FunctionInfo.
 
-```move 
-module 0x42::my_fungible_asset {
+```move filename="example.move"
+module my_addr::my_fungible_asset_example {
     use aptos_framework::string;
     use aptos_framework::object;
     use aptos_framework::primary_fungible_store;
@@ -315,7 +321,7 @@ module 0x42::my_fungible_asset {
         // Create the fungible asset
         let constructor_ref = object::create_sticky_object( /* ... */);
 
-  primary_fungible_store::create_primary_store_enabled_fungible_asset(&constructor_ref, ...);
+        primary_fungible_store::create_primary_store_enabled_fungible_asset(&constructor_ref, ...);
         // or below if not having primary stores
         // fungible_asset::add_fungibility(&constructor_ref, /* ... */);
 
