@@ -2,416 +2,355 @@
 title: "Aptos Digital Asset Standard"
 ---
 
-# Aptos Digital Asset Standard
+import { Callout } from 'nextra/components'
+import { ThemedImage, GraphQLEditor } from "@components/index";
 
-## Overview of NFTs
+# Aptos Digital Asset (DA) Standard
 
-An [NFT](https://en.wikipedia.org/wiki/Non-fungible_token) is a non-fungible
-[token](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/token.move)
-or data stored on a blockchain that uniquely defines ownership of an asset. NFTs
-were first defined in [EIP-721](https://eips.ethereum.org/EIPS/eip-721) and
-later expanded upon in [EIP-1155](https://eips.ethereum.org/EIPS/eip-1155). NFTs
-are typically defined using the following properties:
+The Digital Asset (DA) standard is a modern Non-Fungible Token (NFT) standard for Aptos. NFTs represent unique assets on-chain, and are stored in collections. These NFTs can be customized to later be transferred, soulbound, burned, mutated, or customized via your own smart contracts.
 
-- `name`: The name of the asset. It must be unique within a collection.
-- `description`: The description of the asset.
-- `uri`: A URL pointer to off-chain for more information about the asset. The
-asset could be media such as an image or video or more metadata.
-- `supply`: The total number of units of this NFT. Many NFTs have only a single
-supply, while those that have more than one are referred to as editions.
+This standard replaces the legacy [Aptos Token Standard](aptos-token.mdx). The most important improvements to note are:
 
-Additionally, most NFTs are part of a collection or a set of NFTs with a common
-attribute, for example, a theme, creator, or minimally contract. Each collection
-has a similar set of attributes:
+| **Improvement** | **Description** |
+|-----------------|-----------------|
+| **Token Extension** | Tokens can be easily extended since they are implemented using Move [Objects](objects.mdx). |
+| **Direct NFT Transfer** | You can now directly transfer NFTs without the recipient “opting-in” on-chain. |
+| **NFT Composability** | NFTs can own other NFTs for easy composability. |
 
-- `name`: The name of the collection. The name must be unique within the
-creator's account.
-- `description`: The description of the collection.
-- `uri`: A URL pointer to off-chain for more information about the asset. The
-asset could be media such as an image or video or more metadata.
-- `supply`: The total number of NFTs in this collection.
-- `maximum`: The maximum number of NFTs that this collection can have.
-If `maximum` is set to 0, then supply is not tracked.
+If you want a simple way to mint NFTs without the ability to customize or extend their functionality, you can use the `aptos_token` module which implements the DA standard (see the section on how to use it below). 
 
-## Design principles
+<Callout type="info">
+Note that all Digital Asset modules are deployed at the reserved address `0x4`.
+</Callout>
 
-The [Aptos Digital Asset Standard](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/token.move)
-was developed with the following as an improvement on the Aptos Token standard.
-It has these ideas in mind:
+## Using the Digital Asset Standard
 
-- **Flexibility** - NFTs are flexible and can be customized to accommodate any
-creative designs.
-- **Composability** - Multiple NFTs can be easily composed together, such that
-the final object is greater than the sum of its parts
-- **Scalability** - Greater parallelism between tokens
+This standard is implemented with two Objects:
 
-The base token only provides minimal functionalities and is meant to build upon
-to add more functionalities. All of its functions are non-entry and thus not
-callable directly from off chain. Creators need to write their own modules that
-use these functionalities or use "no code" solutions also provided in the
-framework. One such solution is [aptos_token](#aptos-token) which provides
-functionalities such as custom metadata (via PropertyMap) and soulbound.
+1. `Collection`s - A set of NFTs with a name and a bit of context for the group.
+2. `Token`s - Digital assets which represent unique assets. These are often used to represent NFTs and usually use a `uri` link to point to more info about the asset (ex. a link to an image, video, etc.).
 
-## Comparison to the legacy Aptos Token Standard
+<ThemedImage
+alt="Digital Asset token and collection relationship"
+sources={{
+    light: '/docs/digital-asset-light.svg',
+    dark: '/docs/digital-asset-dark.svg',
+  }}
+/>
 
-Digital Asset uses Aptos [objects](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/object.move)
-rather than account resources traditionally used in Move. This allows for
-storing data outside the account and adding flexibility in this way.
+All `Token`s are required to have a reference to a parent `Collection`, but the parent `Collection` does **not** own the `Token`. Newly minted `Token`s are usually owned by the creator. From there, they can be transferred to other accounts.
 
-- Tokens can be easily extended with custom data and functionalities without
-requiring any changes in the framework
-- Transfers are simply a reference update
-- Direct transfer is allowed without an opt-in
-- NFTs can own other NFTs adding easy composability
-- Soul bound tokens can be easily supported
+## Collections
 
-## Collections and tokens as objects
+| **Field** | **Description** |
+|-----------|-----------------|
+| **Description** | An optional string smaller than 2048 characters (modifiable with a `MutatorRef`). |
+| **Name** | A required string to identify the `Collection`. The name must be unique within each account. That means a single creator account cannot create more than one `Collection` with the same name. |
+| **Royalty** | An optional [`Royalty`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/royalty.md#0x4_royalty_Royalty) struct indicating what % of the sale price goes to the creator of the `Collection`. This can be changed with a `MutatorRef` generated by the [Royalty module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move). The Royalty module is an extension for the DA standard. See example usage in [`aptos_token.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move). |
+| **URI length** | An optional string that is smaller than 512 characters which links to relevant content for the `Collection` (modifiable with a `MutatorRef`). |
 
-In this Token standard, both collections and tokens will be separate
-[objects](objects.mdx). They have their own distinct addresses and can be
-referenced both on and off chain by address. Each object can contain multiple
-resources so collections and tokens are extensible by default, allowing the
-creator to add custom data and functionalities without having to modify the
-framework.
+### Creating a `Collection`
 
-On chain, another struct can include a reference to the collection or token
-objects like below:
+There are two ways to create a `Collection` depending on whether you want there to be a maximum supply of `Token`s it can hold.
 
-```move
-module 0x42::example {
-  struct ReferenceExample has key {
-    my_collection: Object<Collection>,
-    my_token: Object<Token>,
-  }
-}
-```
+#### Fixed Maximum Supply
 
-where both `my_collection` and `my_token` are addresses (with `Object<>` wrapper).
+To make a `Collection` with a fixed supply you can use `collection::create_fixed_collection` like so:
 
-Off-chain, the address of the object can be passed along to replace object
-arguments in entry functions called by transaction creation as arguments. For
-example:
+```move filename="example.move"
+use aptos_token_objects::collection;
+use std::option::{Self, Option};
 
-```move
-module 0x42::example {
-  public entry fun my_function(my_collection: Object<Collection>) {
-    // Do something with the collection
-  }
-}
-```
-
-Collection and token addresses will also be used to query data such as fetching
-all resources via fullnode API or with an indexing service.
-
-### Royalties
-
-Following the object extensibility pattern, royalties are added to collections
-or tokens as a resource with associated functionality provided by
-[the royalty module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move)
-Royalty can be updated as long as a `MutatorRef`, a storable struct that grants
-permissions, is generated at creation time and stored.
-
-See [Aptos Token](#aptos-token) for examples on how Royalty's `MutatorRef` can
-be stored and used. Royalty can also be set directly on a token if it has a
-different royalty config than the collection's.
-
-## Token lifecycle
-
-All Digital Asset modules are deployed at the reserved framework address `0x4`.
-
-### Collection creation
-
-Every token belongs to a collection. The developer first needs to create a
-collection with:
-
-1. A fixed maximum supply. Current supply is tracked and cannot exceed the
-maximum set.
-
-```move
-module 0x42::example {
-  use aptos_token_objects::collection;
-  use std::string::utf8;
-
-  public entry fun create_collection(creator: &signer) {
+public entry fun create_collection(creator: &signer) {
     let max_supply = 1000;
+    let royalty = option::none();
+    
+    // Maximum supply cannot be changed after collection creation
     collection::create_fixed_collection(
-      creator,
-      utf8(b"My Collection Description"),
-      max_supply,
-      utf8(b"My Collection"),
-      royalty,
-      utf8(b"https://mycollection.com"),
+        creator,
+        "My Collection Description",
+        max_supply,
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
     );
-  }
 }
 ```
+#### Unlimited Supply
 
-2. Unlimited supply. Current supply is still tracked but there's no maximum
-enforced.
+To create a `Collection` with unlimited supply you can use `collection::create_unlimited_collection`:
 
-```move
-module 0x42::example {
-  use aptos_token_objects::collection;
-  use std::string::utf8;
+```move filename="example.move"
+use std::option::{Self, Option};
 
-  public entry fun create_collection(creator: &signer) {
+public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
+
     collection::create_unlimited_collection(
-      creator,
-      utf8(b"My Collection Description"),
-      utf8(b"My Collection"),
-      royalty,
-      utf8(b"https://mycollection.com"),
+        creator,
+        "My Collection Description",
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
     );
-  }
 }
 ```
 
-Note that both track the current supply. Maximum supply cannot be changed after
-the collection is created, and a collection cannot be converted from unlimited
-to fixed supply or vice versa.
+<Callout type="warning">
+A `Collection`'s maximum supply cannot be changed after creation.
+</Callout>
 
-A collection has the following attributes:
+### Customizing a `Collection`
 
-- Collection name - unique within each account. This means a single creator
-account cannot create more than one collection with the same name.
-- Description - modifiable with a `MutatorRef` and smaller than 2048 characters
-- URI length - modifiable with a `MutatorRef` and smaller than 512 characters
-- Royalty - specifies how many % of the sale price goes to the creator of the
-collection. This can be changed with a `MutatorRef` generated by the Royalty
-module.
+Since each `Collection` is a [Move Object](objects.mdx), you can customize it by generating permissions called `Ref`s. Each `Ref` allows you to modify an aspect of the Object later on. Beyond the normal [Object Refs](objects/creating-objects.mdx), `Collection`s can also get a `MutatorRef` by calling `get_mutator_ref` like so:
 
-A `MutatorRef`, a storable struct that grants permissions to mutate, can be
-generated only during creation of the collection. If created, the holder of the
-`MutatorRef` can change the `description` and the `URI length` of the collection.
+```move filename="example.move"
+use std::option::{Self, Option};
 
-```move
-module 0x42::example {
-  use aptos_token_objects::collection;
-  use std::string::utf8;
-
-  public entry fun create_collection(creator: &signer) {
+public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
     let collection_constructor_ref = &collection::create_unlimited_collection(
-      creator,
-      utf8(b"My Collection Description"),
-      utf8(b"My Collection"),
-      royalty,
-      utf8(b"https://mycollection.com"),
+        creator,
+        "My Collection Description",
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
     );
     let mutator_ref = collection::get_mutator_ref(collection_constructor_ref);
-    // Store the mutator_ref somewhere safe
-  }
+    // Store the mutator ref somewhere safe
 }
 ```
 
-### Collection customization
+<Callout type="warning">
+Refs **must** be generated at creation time of an Object. The `ConstructorRef` used to generate other `Ref`s expires as soon as the transaction to create the Object is finished.
+</Callout>
 
-A collection can be customized by adding more data (as resources) or
-functionalities. For example, a collection can track when it was created in
-order to limit when tokens can be minted.
+You can further customize your `Collection` by adding more resources or functionalities via smart contract. For example, a `Collection` can track when it was created in order to limit when `Token`s can be minted like so:
 
-```move
-module 0x42::example {
-  use aptos_token_objects::collection;
-  use std::string::utf8;
+```move filename="example.move"
+use std::option::{Self, Option};
 
-  struct MyCollectionMetadata has key {
+struct MyCollectionMetadata has key {
     creation_timestamp_secs: u64,
-  }
+}
 
-  public entry fun create_collection(creator: &signer) {
+public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
     // Constructor ref is a non-storable struct returned when creating a new object.
     // It can generate an object signer to add resources to the collection object.
     let collection_constructor_ref = &collection::create_unlimited_collection(
-      creator,
-      utf8(b"My Collection Description"),
-      utf8(b"My Collection"),
-      royalty,
-      utf8(b"https://mycollection.com"),
+        creator,
+        "My Collection Description",
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
     );
     // Constructor ref can be exchanged for signer to add resources to the collection object.
     let collection_signer = &object::generate_signer(collection_constructor_ref);
-    move_to(collection_signer, MyCollectionMetadata {
-      creation_timestamp_secs: timestamp::now_seconds()
-    })
-  }
+    move_to(collection_signer, MyCollectionMetadata { creation_timestamp_secs: timestamp::now_seconds() } })
 }
 ```
 
-### Token creation
+## Tokens
 
-Creators can mint tokens, which are separate objects from the collection. This
-allows for greater customization. Tokens can be created in two ways:
+| **Field** | **Description** |
+|-----------|-----------------|
+| **Description** | An optional string smaller than 2048 characters (modifiable with a `MutatorRef`). |
+| **Name** | A required string to identify the `Collection` that is unique within each `Collection`. This means a single `Collection` account cannot have more than one `Token` with the same name. |
+| **Royalty** | An optional [`Royalty`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/royalty.md#0x4_royalty_Royalty) struct indicating what % of the sale price goes to the creator of the `Collection`. This can be changed with a `MutatorRef` generated by the [Royalty module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move) (an extension for the DA standard. See example usage in [`aptos_token.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)). Usually royalty is set on collections, but setting it on `Token`s allows the individual `Token` to have a custom royalty amount. |
+| **URI length** | An optional string that is smaller than 512 characters which links to relevant content for the `Collection` (modifiable with a `MutatorRef`). |
 
-1. Named tokens. These tokens have deterministic addresses that are sha256 hash
-of the creator address, collection name, and token name, concatenated. This
-allows for predictable addresses and easier querying of tokens. However, named
-tokens are fully deletable and thus burning them will only delete the token data
-and not fully delete the underlying object
+### Creating Tokens 
 
-```move
-module 0x42::example {
-  use aptos_token_objects::token;
-  use std::string::utf8;
+There are a few ways to create a `Token`:
 
-  public entry fun mint_token(creator: &signer) {
+1. Named tokens. These use the name of the `Token` to generate a named Object. This makes it easy to find the address for the token if you know the token and `Collection` name, but named Objects are not deletable. Trying to delete the a named token will only delete the data, not the Object itself.
+    
+```move filename="example.move"
+use aptos_token_objects::token;
+use std::option::{Self, Option};
+
+public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
     token::create_named_token(
         creator,
-        utf8(b"My Collection"),
-        utf8(b"My named Token description"),
-        utf8(b"My named token"),
+        "Collection Name",
+        "Description",
+        "Token Name",
         royalty,
-        utf8(b"https://mycollection.com/my-named-token.jpeg"),
+        "https://mycollection.com/my-named-token.jpeg",
     );
-  }
 }
 ```
+    
+<Callout type="info">
+You can derive the address for named tokens by:
+1. Concatenating the creator address, collection name and token name.
+2. Doing a sha256 hash of that new string.
+</Callout>
+    
+2. “Unnamed” tokens. These create unnamed *Objects* (which **are** deletable) but still have a `Token` name. Because the Object address is not deterministic, you must use an Indexer to find the address for them.
+    
+```move filename="example.move"
+use aptos_token_objects::token;
+use std::option::{Self, Option};
 
-2. (Unnamed) tokens based on the creator account's GUID. These tokens have
-addresses are generated based on the creator account's incrementing GUID. The
-addresses of unnamed tokens are not deterministic as the account's GUID can
-change outside minting. Thus, querying for unnamed tokens is more difficult and
-requires indexing.
-
-```move
-module 0x42::example {
-  use aptos_token_objects::token;
-  use std::string::utf8;
-
-  public entry fun mint_token(creator: &signer) {
+public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
     token::create(
-      creator,
-      utf8(b"My Collection"),
-      utf8(b"My named Token description"),
-      utf8(b"My named token"),
-      royalty,
-      utf8(b"https://mycollection.com/my-named-token.jpeg"),
+        creator,
+        "Collection Name",
+        "Description",
+        "Token Name",
+        royalty,
+        "https://mycollection.com/my-named-token.jpeg",
     );
-  }
 }
+```    
+
+### Finding Unnamed Token Addresses via Indexer
+
+You can find the addresses of your recently created “unnamed” `Token`s by using the [Aptos Indexer](../indexer/api/labs-hosted.mdx) with queries like the following:
+
+1. Looking up the collection id by using your account address and the name of the `Collection`. 
+
+<GraphQLEditor
+  query={`query GetCollectionIdByName($creatorAddress: String!, $collectionName: String!) {
+  current_collections_v2(
+    where: {creator_address: {_eq: $creatorAddress}, collection_name: {_eq: $collectionName}}
+  ) {
+    collection_name
+    collection_id
+  }
+}`}
+  variables={`{
+  "creatorAddress": "0x8726af08ea897c35c8137601ce1789992dacdd0eb0b724531a4e7dea035d950f",
+  "collectionName": "Horse Emojis"
+}`}
+/>
+
+2. Then look up the address (`token_data_id`) of the `Token` by using the `collection_id` (from above) and the name of the token:
+
+<GraphQLEditor
+  query={`query GetTokenID($collection_id: String!, $token_name: String!) {
+  current_token_datas_v2(
+    where: {collection_id: {_eq: $collection_id}, token_name: {_eq: $token_name}}
+  ) {
+    token_name
+    description
+    token_data_id
+  }
+}`}
+  variables={`{
+  "collection_id": "0x158dc6481aec80004d0f21a8994757e3c8203fc37b0f508be2a5364ad99e649e",
+  "token_name": "Horse Emojis #127"
+}`}
+/>
+    
+<Callout type="info">
+In general, using unnamed tokens give you the most flexibility because the Object can be deleted later, but named tokens simplify looking up addresses.
+</Callout>
+
+### Using Tokens
+
+#### Transfer Tokens
+
+Transferring a `Token` can be done by calling [`object::transfer`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-framework/doc/object.md#0x1_object_transfer).
+    
+```move filename="example.move"
+public entry fun transfer<T: key>(owner: &signer, object: object::Object<T>, to: address)
 ```
 
-Creators should cautiously consider whether they should use `create_named_token`
-or `create` when building their custom collection/token. In general `create` is
-recommended as it allows for clean deletion if the tokens are burnt and
-generally, deterministic addresses for tokens are not always necessary thanks to
-indexing services. One example that would prefer deterministic addresses and
-thus `create_named_token` is a collection of soul bound tokens where each
-token's address is created from the holder's name.
+#### Burning Tokens
 
-### Token properties
+Burning / deleting a `Token` requires storing a `BurnRef` with `token::generate_burn_ref`, then calling `token::burn`.
+    
+```move filename="example.move"
+use std::option::{Self, Option};
 
-Tokens by default have the following properties:
-
-- Token name - unique within each collection. A collection cannot have more than
-one token with the same name.
-- Token description - modifiable with a `MutatorRef` and smaller than 2048
-characters
-- Token URI length - modifiable with a `MutatorRef` and smaller than 512
-characters
-- Royalty - It's less common to have royalty setting on the token instead of
-collection. But this allows a token to have a different royalty setting than the
-collection's.
-
-A `MutatorRef` can be generated only during creation of the token.
-
-```move
-module 0x42::example {
-  use aptos_token_objects::token;
-  use std::string::utf8;
-
-  public entry fun mint_token(creator: &signer) {
-    // Constructor ref is a non-storable struct returned when creating a new object.
-    // It can be exchanged for signer to add resources to the token object.
+public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
     let token_constructor_ref = &token::create(
-      creator,
-      utf8(b"My Collection"),
-      utf8(b"My named Token description"),
-      utf8(b"My named token"),
-      royalty,
-      utf8(b"https://mycollection.com/my-named-token.jpeg"),
-    );
-    let mutator_ref = token::generate_mutator_ref(token_constructor_ref);
-    // Store the mutator ref somewhere safe
-  }
-}
-```
-
-### Token customization
-
-More data can be added to the token as resources, similar to
-[for collections](#collection-customization).
-
-### Token burn
-
-Tokens can be burned by the creator if they generated and stored a `BurnRef`
-during the creation of the token.
-
-```move
-module 0x42::example {
-  use aptos_token_objects::token;
-  use std::string::utf8;
-
-  public entry fun mint_token(creator: &signer) {
-    let token_constructor_ref = &token::create(
-      creator,
-      utf8(b"My Collection"),
-      utf8(b"My named Token description"),
-      utf8(b"My named token"),
-      royalty,
-      utf8(b"https://mycollection.com/my-named-token.jpeg"),
+        creator,
+        "My Collection",
+        "My named Token description",
+        "My named token",
+        royalty,
+        "https://mycollection.com/my-named-token.jpeg",
     );
     let burn_ref = token::generate_burn_ref(token_constructor_ref);
     // Store the burn ref somewhere safe
-  }
+}
 
-  public entry fun burn_token(token: Object<Token>) {
+public entry fun burn_token(token: Object<Token>) {
     // Remove all custom data from the token object.
     let token_address = object::object_address(&token);
-    let CustomData { /* ... */ } = move_from<CustomData>(token_address);
+    let CustomData { ... } = move_from<CustomData>(token_address);
 
     // Retrieve the burn ref from storage
-    let burn_ref = // ...;
+    let burn_ref = ...;
     token::burn(burn_ref);
-  }
 }
 ```
+    
+<Callout type="warning">
+If any custom resources were moved onto the Token, those must be removed / deleted first before`token::burn` can delete the Token. For named tokens which cannot be deleted, `token::burn` will For named Tokens `token::burn` will remove all Token content instead.
+</Callout>
 
-Note that if any custom data was added to the token objects, the `burn_token`
-function needs to first remove those data. `token::burn` only deletes the object
-if it was created as an unnamed token. Named token will have all token data
-removed, but the object will stay, thus creating a "burned" defunct object.
+#### Modifying Tokens After Creation
 
-### Token transfer
+Mutating a `Token`’s `URI` or `description` requires a `MutatorRef` (which must be generated when creating the `Token`, then stored for later).
+    
+```move filename="example.move"
+use std::option::{Self, Option};
 
-Tokens can be simply transferred as objects to any user via `object::transfer`
+public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
+    // Constructor ref is a non-storable struct returned when creating a new object.
+    // It can be exchanged for signer to add resources to the token object.
+    let token_constructor_ref = &token::create(
+        creator,
+        "My Collection",
+        "My named Token description",
+        "My named token",
+        royalty,
+        "https://mycollection.com/my-named-token.jpeg",
+    );
+    let mutator_ref = token::generate_mutator_ref(token_constructor_ref);
+    // Store the mutator ref somewhere safe
+}
+```
+    
+<Callout type="warning">
+Changing the royalty requires generating a *separate* `MutatorRef` from the [Royalty module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move).
+</Callout>
+
+#### Extending Tokens
+
+`Token`s can be extended either by adding additional resources (since they are an Object) or using `Ref`s to modify the Object.
 
 ## Aptos Token
 
-[Aptos Token](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)
-is a "no code" solution that builds on top of the base Aptos Digital Asset
-Standard and provides a more complete solution that allows creators to mint NFTs
-without writing any code. It provides the following main features:
+For NFT creators who want to avoid writing their own logic for how your NFT should work, you can use the [`aptos_token`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move) module to mint an NFT. This module is already deployed at `0x4` and allows you to:
 
-- Soulbound tokens which are non-transferable by holders
-- Custom defined properties stored in a [PropertyMap](#property-map), a simple
-map data structure of attribute name (string) -> values (bytes).
-- [Freezing and unfreezing transfers of non-soul bound tokens](#creator-management)
-- [Creator management functionalities - modify a collection or token's metadata](#creator-management)
+1. Mint a `Token` you can transfer with royalties.
+2. Mint a soulbound `Token`.
+3. Manage the resources your NFT has.
 
-### Property Map
+See the `aptos_token` [reference docs](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/aptos_token.md) for all the helper functions you can use.
 
-Similar to in Token Standard v1, Aptos Token provides an extensible
-[PropertyMap](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/property_map.move)
-that provides type safe, but generic properties for a given NFT. Creators can
-set pass initial properties when minting a token and can freely add or remove
-properties later.
+<Callout type="warning">
+The main drawback of using the `aptos_token` module is that the Tokens are not extensible (the `mint` function does not return a `ConstructorRef`).
+</Callout>
 
-Tokens can be minted using the provided `aptos_token::mint`. This is an entry
-function and can be called via a transaction directly.
+### Minting with `aptos_token`
 
-```move
-module 0x4::aptos_token {
-  public entry fun mint(
+Minting a `Token` using `aptos_token` requires the same parameters as any token that implements the DA standard. In addition though, the `aptos_token` module allows you to specificy a property map of key/value pairs for any other properties your specific NFT may require. 
+
+You can mint your `Token` by calling `aptos_token::mint` like so: 
+
+```move filename="example.move"
+public entry fun mint(
     creator: &signer,
     collection: String,
     description: String,
@@ -420,18 +359,15 @@ module 0x4::aptos_token {
     property_keys: vector<String>,
     property_types: vector<String>,
     property_values: vector<vector<u8>>,
-  ) acquires AptosCollection, AptosToken {
-    //...
-  }
-}
+) acquires AptosCollection, AptosToken
 ```
 
-To mint a soul bound token, the creator can call `aptos_token::mint_soul_bound`
-instead. This will create a token that the holder cannot transfer.
+#### Soulbound Tokens 
 
-```move
-module 0x4::aptos_token {
-  public entry fun mint_soul_bound(
+To mint a soul bound `Token`, you can call [`aptos_token::mint_soul_bound`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/aptos_token.md#0x4_aptos_token_mint_soul_bound) instead:
+
+```move filename="example.move"
+public entry fun mint_soul_bound(
     creator: &signer,
     collection: String,
     description: String,
@@ -441,91 +377,16 @@ module 0x4::aptos_token {
     property_types: vector<String>,
     property_values: vector<vector<u8>>,
     soul_bound_to: address,
-  ) acquires AptosCollection {
-    // ...
-  }
-}
+) acquires AptosCollection
 ```
 
-### Creator management
+<Callout type="warning">
+In the near future, a new module `TokenMinter` will be released to replace `aptos_token`. You can follow the status of that proposal [here](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-72.md).
+</Callout>
 
-By default, the creator can do the following:
+## Examples and Useful Links
 
-- Mint and burn tokens, including soul bound tokens
-- Disallow transferring a token (freeze) and allow transferring a token (unfreeze)
-- Update the collection's description and URI
-- Add/Remove metadata properties from a token's property map
-- Update a collection's royalty setting
-- Update a token's name, description and URI
-
-### Further customization
-
-Aptos Token is provided as a "no code" convenient solution, but it's not
-extensible. This is evident as most functions are entry functions and do not
-return any ref (constructor, mutator, etc.). The `aptos_token` module stores and
-manages the refs obtained from creating the collection and token objects and do
-not expose raw access to them.
-
-If a creator wants more custom functionalities such as being able to forcefully
-transfer a soul bound token, they would need to write their own custom module
-that builds on top of the base Aptos Digital Asset Standard. They can of course
-borrow inspiration and code from the Aptos Token module.
-
-## Fungible Token
-
-Similar to [EIP-1155](https://eips.ethereum.org/EIPS/eip-1155), the Aptos
-Digital Asset Standard also supports fungible tokens (also known as
-semi-fungible tokens). An example of this would be armor tokens in a game. Each
-armor token represents a type of armor and is a token in a collection with
-metadata (e.g. durability, defense, etc.) and can be minted and burned. However,
-there are multiple instances of the same armor type. For example, a player can
-have 3 wooden armors, where wooden armor is a token in the Armor collection.
-
-This can be easily built by creating an asset that is both a Digital Asset (DA)
-and a Fungible Asset (FA), resulting in a Digital and Fungible Asset (DFA).
-After the creator creates the Armor collection and the Wooden Armor token, they
-can make the Wooden Armor token "fungible":
-
-```move
-module 0x42::example {
-  use aptos_framework::primary_fungible_store;
-  use std::string::{String, utf8};
-
-  public entry fun create_armor_collection(creator: &signer) {
-    collection::create_unlimited_collection(
-      creator,
-      utf8(b"Collection containing types of armors. Each armor type is a separate token"),
-      utf8(b"Armor"),
-      royalty,
-      utf8(b"https://myarmor.com"),
-    );
-  }
-
-  public entry fun create_armor_type(creator: &signer, armor_type: String) {
-    let new_armor_type_constructor_ref = &token::create(
-      creator,
-      utf8(b"Armor"),
-      utf8(b"Armor description"),
-      armor_type,
-      royalty,
-      utf8(b"https://myarmor.com/my-named-token.jpeg"),
-    );
-    // Make this armor token fungible so there can multiple instances of it.
-    primary_fungible_store::create_primary_store_enabled_fungible_asset(
-      new_armor_type_constructor_ref,
-      maximum_number_of_armors,
-      armor_type,
-      utf8(b"ARMOR"),
-      0, // Armor cannot be divided so decimals is 0,
-      utf8(b"https://mycollection.com/armor-icon.jpeg"),
-      utf8(b"https://myarmor.com"),
-    );
-
-    // Add properties such as durability, defence, etc. to this armor token
-  }
-}
-```
-
-Now the creator can mint multiple instances of the same armor type and transfer
-them to players. The players can freely transfer the armor tokens to each other
-the same way they would transfer a fungible asset.
+- [Digital Asset Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/token_objects)
+- [Digital Asset Marketplace Example](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/marketplace)
+- [Source code](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/token.move)
+- [`aptos_token` source code](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)
