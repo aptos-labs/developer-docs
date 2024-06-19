@@ -112,18 +112,18 @@ Some ideas you can try are:
 2. Custom flows after someone mints an asset (or even token gated experiences)
 3. Check out our [TS SDK](https://github.com/aptos-labs/aptos-ts-sdk) to see what other [API queries](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/digitalAsset.ts) you can use to support more features and fetch more data.
 
-## Ready for MAINNET
+## Ready for Mainnet
 
-If you started your dapp on tesnet and you had all the tests and happy with your Fungible Asset you probably want to get the asset on mainnet.
+If you started your dapp on testnet, and you are happy with your asset testing, you will want to get the asset on mainnet.
 
-Creating an asset on mainnet is the same flow as creating it on tesnet but we need to first configure some things.
+Creating a asset on mainnet is the same flow as creating on testnet, but we need to change some configuration.
 
-1. Change the `VITE_APP_NETWORK` value to `mainnet` on the `.env` file
-2. Run `npm run move:init` to initialize an account to work against the Mainnet
-   1. If you already have an account you would like to use to publish the contract under, you can pass its private key when the tool asks for that.
-   2. If you are generating a new account, you would want to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
+1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
+2. Run `npm run move:init` to initialize an account to work against Mainnet
+   1. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
+   2. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
 3. Check: open `.aptos/config.yaml` file and see that you have a profile under the `mainnet` name. In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the mainnet profile account account address.
-4. Create or get the account you want to create a collection with, open the `.env` file and assign the account address as the `VITE_CREATOR_ADDRESS` value.
+4. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_CREATOR_ADDRESS` value.
 5. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
 6. The next step would be to create an asset using this account. Simply follow [https://www.notion.so/aptoslabs/WIP-create-aptos-dapp-doc-41982c9e40e049cd962e1e0e42d0bdbd?pvs=4#20ef513460fb4452aedbece1a7523425](https://www.notion.so/WIP-create-aptos-dapp-dev-doc-41982c9e40e049cd962e1e0e42d0bdbd?pvs=21)
 
