@@ -1,6 +1,5 @@
 ---
 title: "Surf: TypeScript Type Safety for Move Contracts"
-slug: "type-safe-contract"
 ---
 
 import Tabs from '@theme/Tabs';
@@ -81,6 +80,7 @@ First, download the ABI of the Move contract and save it to a TypeScript file. I
     npm i
     npm run get-abi
     ```
+
   </TabItem>
 </Tabs>
 
