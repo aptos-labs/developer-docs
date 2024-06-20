@@ -4,8 +4,7 @@ title: "从源代码构建 Aptos"
 
 ---
 
-import { Callout } from 'nextra/components'
-import { Tabs, TabItem } from '@components/tabs/Tabs';
+import { Callout, Tabs } from 'nextra/components'
 
 # 从源代码构建 Aptos
 
@@ -43,22 +42,22 @@ Aptos 可以在包括 Linux、macOS 和 Windows 在内的各种操作系统上�
 
 <details>
 <summary>发布分支</summary>
-<Tabs groupName="release-branches" height="175px">
-  <TabItem value="devnet" defaultChecked={true}>
+<Tabs items={["Devnet", "Testnet", "Mainnet"]}>
+  <Tabs.Tab>
     ```bash filename="Terminal"
     git checkout --track origin/devnet
     ```
-  </TabItem>
-  <TabItem value="testnet">
+  </Tabs.Tab>
+  <Tabs.Tab>
     ```bash filename="Terminal"
     git checkout --track origin/testnet
     ```
-  </TabItem>
-  <TabItem value="mainnet">
+  </Tabs.Tab>
+  <Tabs.Tab>
     ```bash filename="Terminal"
     git checkout --track origin/mainnet
     ```
-  </TabItem>
+  </Tabs.Tab>
 </Tabs>
 </details>
 

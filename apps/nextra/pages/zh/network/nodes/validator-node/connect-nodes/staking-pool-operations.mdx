@@ -142,7 +142,7 @@ aptos move run --function-id 0x1::staking_contract::update_commision \
 
 所有未发放的佣金奖励都将支付给新指定的受益人。为确保当前受益人能收到款项，应在更换受益人前先执行 `distribute` 操作。对于管理多个质押池的运营者，他们可为所有质押池统一指定一个受益人，而不是为每一个单独的质押池分别设置。
 
-一旦设置了受益人地址，受益人可以通过 `request_commission` 来获取运营者佣金。
+一旦受益人地址设置完成，受益人就可以通过 `request_commission` 来获取运营者佣金。
 
 ## 检查您的质押池信息
 
