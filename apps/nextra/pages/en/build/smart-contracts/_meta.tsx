@@ -18,6 +18,25 @@ export default {
   deployment: {
     title: "Deployment",
   },
+  "---aptos-standards---": {
+    type: "separator",
+    title: "Aptos Standards",
+  },
+  objects: {
+    title: "Object",
+  },
+  "digital-asset": {
+    title: "Digital Asset (DA)",
+  },
+  "fungible-asset": {
+    title: "Fungible Asset (FA)",
+  },
+  "aptos-coin": {
+    title: "Coin (legacy)",
+  },
+  "aptos-token": {
+    title: "Token (legacy)",
+  },
   "---addressable-storage---": {
     title: "Addressable Storage",
     type: "separator",
@@ -41,6 +60,7 @@ export default {
   },
   struct: {
     title: "Struct",
+    href: "/en/build/smart-contracts/book/structs-and-resources"
   },
   vector: {
     title: "Vector",
@@ -50,25 +70,6 @@ export default {
   },
   "smart-table": {
     title: "Smart Table",
-  },
-  "---aptos-standards---": {
-    type: "separator",
-    title: "Aptos Standards",
-  },
-  objects: {
-    title: "Object",
-  },
-  "digital-asset": {
-    title: "Digital Asset (DA)",
-  },
-  "fungible-asset": {
-    title: "Fungible Asset (FA)",
-  },
-  "aptos-coin": {
-    title: "Coin (legacy)",
-  },
-  "aptos-token": {
-    title: "Token (legacy)",
   },
   "---examples---": {
     type: "separator",
