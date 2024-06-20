@@ -33,7 +33,7 @@ These components are built on top of [Radix UI Primitives](https://www.radix-ui.
 
 ## How to modify the theme?
 
-The theme for this template is split across `/tailwind.config.js` and `frontend/index.css`. The Tailwind config declares all of the theme colors, text styles, animation keyframes, border radii, etc. The root CSS file (`index.css`) declares the actual color values for light and dark mode as CSS custom properties (CSS variables), the base radius value, and applies any global CSS required.
+The theme for this template is split across `tailwind.config.js` and `frontend/index.css`. The Tailwind config declares all of the theme colors, text styles, animation keyframes, border radii, etc. The root CSS file (`index.css`) declares the actual color values for light and dark mode as CSS custom properties (CSS variables), the base radius value, and applies any global CSS required.
 
 For example, if you want to make all of the buttons and cards more round in your app, you can increase the base radius value (`--radius`) in `index.css`.
 
@@ -45,17 +45,17 @@ And if you want to modify the primary color of the app, you can update the HSL c
 
 Additional components can be added through the `shadcn-ui` CLI. For example, if you wish to add a `Switch` component, you can run the following command:
 
-```bash
+```bash filename="Terminal"
 npx shadcn-ui@latest add switch
 ```
 
-This command will create a `switch.tsx` file in your `/frontend/components/ui` directory that contains a styled switch component. For a full list of available shadcn components, please refer to the [shadcn component documentation](https://ui.shadcn.com/docs/components).
+This command will create a `switch.tsx` file in your `frontend/components/ui` directory that contains a styled switch component. For a full list of available shadcn components, please refer to the [shadcn component documentation](https://ui.shadcn.com/docs/components).
 
-If you need to add a component that's not included in the `shadcn/ui` collection, you're welcome to add your own components under `/frontend/components` or within the `/frontend/pages` directory if they're specific to the page that you're working on.
+If you need to add a component that's not included in the `shadcn/ui` collection, you're welcome to add your own components under `frontend/components` or within the `frontend/pages` directory if they're specific to the page that you're working on.
 
 ## How to add colors?
 
-If you're creating your own custom components or adding to the UI in some way, you may need to add some new colors. To add a new color, you must first define the light and dark HSL color values in `/frontend/index.css` and then add the new theme color token to the theme defined in `tailwind.config.js`.
+If you're creating your own custom components or adding to the UI in some way, you may need to add some new colors. To add a new color, you must first define the light and dark HSL color values in `frontend/index.css` and then add the new theme color token to the theme defined in `tailwind.config.js`.
 
 For more detailed instructions, please refer to the [shadcn documentation on theming](https://ui.shadcn.com/docs/theming).
 
