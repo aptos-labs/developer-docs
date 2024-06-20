@@ -2,11 +2,19 @@ export default {
   SUMMARY: {
     title: "Summary",
   },
+  "---getting-started---": {
+    type: "separator",
+    title: "Getting Started",
+  },
   "modules-and-scripts": {
     title: "Modules and Scripts",
   },
   "move-tutorial": {
     title: "Move Tutorial",
+  },
+  "---primitive-types---": {
+    type: "separator",
+    title: "Primitive Types",
   },
   integers: {
     title: "Integers",
@@ -28,6 +36,10 @@ export default {
   },
   tuples: {
     title: "Tuples and Unit",
+  },
+  "---basic-concepts---": {
+    type: "separator",
+    title: "Basic Concepts",
   },
   variables: {
     title: "Local Variables and Scopes",
@@ -74,11 +86,19 @@ export default {
   "unit-testing": {
     title: "Unit Tests",
   },
+  "---global-storage---": {
+    type: "separator",
+    title: "Global Storage",
+  },
   "global-storage-structure": {
     title: "Global Storage Structure",
   },
   "global-storage-operators": {
     title: "Global Storage Operators",
+  },
+  "---reference---": {
+    type: "separator",
+    title: "Reference",
   },
   "standard-library": {
     title: "Standard Library",

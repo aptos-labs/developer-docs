@@ -60,7 +60,7 @@ export default {
   },
   struct: {
     title: "Struct",
-    href: "/en/build/smart-contracts/book/structs-and-resources"
+    href: "/en/build/smart-contracts/book/structs-and-resources",
   },
   vector: {
     title: "Vector",

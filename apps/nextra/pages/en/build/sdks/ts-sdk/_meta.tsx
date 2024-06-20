@@ -24,5 +24,5 @@ export default {
   },
   "type-safe-contract": {
     title: "Surf: TypeScript Type Safety for Move Contracts",
-  }
+  },
 };
