@@ -43,6 +43,7 @@ export default {
     type: "separator",
   },
   accounts: {
+    href: "/en/network/blockchain/accounts",
     title: "Accounts",
   },
   table: {
