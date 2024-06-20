@@ -40,7 +40,7 @@ export default {
       //   title: "Advanced Guides",
       // },
     },
-  }, 
+  },
   network: {
     type: "menu",
     title: "Network",
@@ -50,5 +50,4 @@ export default {
       },
     },
   },
-  
 };

@@ -307,7 +307,7 @@ export const i18nConfig = Object.freeze({
     careersLink: "Careers",
     privacyLink: "Privacy",
     termsLink: "Terms",
-  }
+  },
 });
 
 export const docsConfig = Object.freeze({
