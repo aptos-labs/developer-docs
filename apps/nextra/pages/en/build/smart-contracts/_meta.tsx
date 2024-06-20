@@ -14,6 +14,7 @@ export default {
   },
   testing: {
     title: "Testing",
+    href: "/en/build/smart-contracts/book/unit-testing",
   },
   deployment: {
     title: "Deployment",
