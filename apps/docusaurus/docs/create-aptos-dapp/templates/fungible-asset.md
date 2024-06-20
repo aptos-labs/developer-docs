@@ -134,3 +134,16 @@ Creating a asset on mainnet is the same flow as creating on testnet, but we need
 1. Run `npm run build` to build a static site
 2. Run `npm run preview` to see how your dapp would look like on a live server
 3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy#github-pages) on how to use each
+
+## Update the look and feel of the dapp
+
+This template is styled with [Tailwind CSS](https://tailwindcss.com/) and [shadcn/ui](https://ui.shadcn.com/). These libraries provide the app with a neutral and clean look and feel while leaving it open to a lot of customization so that you can make the app truly yours.
+
+Please refer to the following questions in the FAQ to learn about how to customize the UI of your dapp:
+
+- [What is Tailwind CSS?](../faq.md#what-is-tailwind-css)
+- [What is `shadcn/ui`?](../faq.md#what-is-shadcnui)
+- [How to modify the theme?](../faq.md#how-to-modify-the-theme)
+- [How to add components?](../faq.md#how-to-add-components)
+- [How to add colors?](../faq.md#how-to-add-colors)
+- [How to add dark mode?](../faq.md#how-to-add-dark-mode)
