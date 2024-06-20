@@ -61,8 +61,10 @@ pnpm start
 
 ### Fixing Relative Links
 
-1. Go to `update-relative-links.py`
+1. Go to `update-relative-links.py` (at the top-level of the repo)
 2. Update the absolute paths in the file
+3. Run `python3 update-relative-links.py`
+4. Run the link checker below to verify the links are fixed.
 
 ### Link Checking
 
