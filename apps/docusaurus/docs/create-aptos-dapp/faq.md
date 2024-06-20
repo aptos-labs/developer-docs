@@ -17,7 +17,7 @@ the move module is trying to use a module that is not live yet
 
 might need to update the root route, if you deployed your site to `user-name.github.io/my-repo` then root route should be updated to `my-repo`
 
-### What is Tailwind CSS?
+## What is Tailwind CSS?
 
 Tailwind is a utility-first CSS framework that scans your components for class names and generates a static CSS file containing the corresponding styles at build-time.
 
@@ -25,13 +25,13 @@ This framework makes it easy to quickly author styles that are co-located with y
 
 To learn more about Tailwind CSS, please refer to their official [documentation](https://tailwindcss.com/docs/utility-first).
 
-### What is `shadcn/ui`?
+## What is `shadcn/ui`?
 
 Shadcn is a collection of accessible components that you can copy and paste into your app through their CLI tool. Since the source files live in your app's codebase, you can customize them as much as you need to.
 
 These components are built on top of [Radix UI Primitives](https://www.radix-ui.com/primitives) and are styled with [Tailwind CSS](https://tailwindcss.com/). To learn more about `shadcn/ui`, please refer to their official [documentation](https://ui.shadcn.com/docs).
 
-### How to modify the theme?
+## How to modify the theme?
 
 The theme for this template is split across `/tailwind.config.js` and `frontend/index.css`. The Tailwind config declares all of the theme colors, text styles, animation keyframes, border radii, etc. The root CSS file (`index.css`) declares the actual color values for light and dark mode as CSS custom properties (CSS variables), the base radius value, and applies any global CSS required.
 
@@ -41,7 +41,7 @@ If you want to add a new text style, you can define it in the `addTextStyles` fu
 
 And if you want to modify the primary color of the app, you can update the HSL color values defined in `index.css`.
 
-### How to add components?
+## How to add components?
 
 Additional components can be added through the `shadcn-ui` CLI. For example, if you wish to add a `Switch` component, you can run the following command:
 
@@ -53,12 +53,12 @@ This command will create a `switch.tsx` file in your `/frontend/components/ui` d
 
 If you need to add a component that's not included in the `shadcn/ui` collection, you're welcome to add your own components under `/frontend/components` or within the `/frontend/pages` directory if they're specific to the page that you're working on.
 
-### How to add colors?
+## How to add colors?
 
 If you're creating your own custom components or adding to the UI in some way, you may need to add some new colors. To add a new color, you must first define the light and dark HSL color values in `/frontend/index.css` and then add the new theme color token to the theme defined in `tailwind.config.js`.
 
 For more detailed instructions, please refer to the [shadcn documentation on theming](https://ui.shadcn.com/docs/theming).
 
-### How to add dark mode?
+## How to add dark mode?
 
 In an effort to maintain simplicity in the dapp template, only light mode is set up. However, color values are defined for both light and dark mode in the theme. If you wish to add dark mode to your app, you simply have to add the shadcn `ThemeProvider` and `ModeToggle` to your app. Once added, the UI will be fully responsive to both light and dark mode. For detailed instruction on how to achieve this, please refer to the [shadcn dark mode documentation](https://ui.shadcn.com/docs/dark-mode/vite).
