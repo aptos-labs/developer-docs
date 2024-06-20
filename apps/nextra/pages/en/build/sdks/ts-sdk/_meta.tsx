@@ -19,10 +19,11 @@ export default {
   account: {
     title: "Creating and Managing Accounts",
   },
+  "type-safe-contract": {
+    title: "Surf: TypeScript Type Safety for Move Contracts",
+  },
+  // Legacy TS SDK should be at the bottom as it is not supposed to be read unless you already know you need it.
   "legacy-ts-sdk": {
     title: "Legacy TypeScript SDK",
   },
-  "type-safe-contract": {
-    title: "Surf: TypeScript Type Safety for Move Contracts",
-  }
 };
