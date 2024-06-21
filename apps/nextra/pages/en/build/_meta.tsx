@@ -5,7 +5,7 @@ export default {
   sdks: "SDKs",
   indexer: "Indexer",
   cli: "CLI",
-  "create-aptos-dapp": "Create Aptos Dapp",
+  "create-aptos-dapp": "create-aptos-dapp",
   tutorials: "Tutorials",
   "advanced-guides": "Advanced Guides",
 };

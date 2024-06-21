@@ -20,9 +20,8 @@ The Digital Asset template provides 3 pages:
 
 First, run the dapp locally with `npm run dev`. You would see the public mint page with some data placeholders for content and images. Some of the content can be configured in the `frontend/config.ts` file and some will be pulled from an Aptos full node once you configure your collection.
 
-```sh filename="Terminal"
+```bash npm2yarn
 npm run dev
-```
 
 ### Configure a collection address
 
@@ -45,9 +44,8 @@ For example, to update an image in the "Our Team" section - add the image under 
 
 When you first run `npm run dev`, you will see the Public Mint page. To create a collection, click the "Create Collection" button, which will navigate you to create a new NFT collection.
 
-```sh filename="Terminal"
+```bash npm2yarn
 npm run dev
-```
 
 ### Publish the Move module
 
@@ -58,18 +56,16 @@ The smart contract is built in a way that only the admin or a specific defined a
 Create or find the account you want to create a collection with. If you haven't created an account - simply use a Wallet, for example [Petra](https://petra.app/), to quickly [create an account](https://petra.app/docs/use#create-a-new-account).
 
 1. Run `npm run move:init` - a command to initialize an account to publish the Move contract. When you run that command it will:
-```sh filename="Terminal"
+```bash npm2yarn
 npm run move:init
-```
    - Generate a new CLI `.aptos/config.yaml` file that holds a profile with the account private key, account address, and network configuration.
    - Configure your development environment and add a `VITE_MODULE_ADDRESS` variable into the `.env` file with the account address from the previous step.
 
 2. To set who can create a new collection, edit the `.env` file and update `VITE_CREATOR_ADDRESS` to be the address of the account allowed to create collections.
 
 3. Run
-```sh filename="Terminal"
+```bash npm2yarn
 npm run move:publish
-```
 
 ### Connect a wallet
 
