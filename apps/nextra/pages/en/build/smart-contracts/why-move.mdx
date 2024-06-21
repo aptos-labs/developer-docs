@@ -4,90 +4,92 @@ title: "Why Move?"
 
 # Why Move?
 
-The Move programming language was originally created by a team of engineers at Facebook for the Diem Payment Network. 
-After Diem’s sunset, there are now two variants of the Move language: Move on Aptos, Sui Move. At Aptos, we believe 
-in building a strong developer community in Move and invite them to build upon the Move on Aptos stack and contribute 
-to the OSS. Unlike the other language variant, we strive to maintain backward compatibility.
+The Move programming language was originally created by a team of engineers at
+Facebook for the Diem Payment Network. Move is designed to be a platform-agnostic
+language to enable common libraries, tooling, and developer communities across
+diverse blockchains with vastly different data and execution models.
+At Aptos, we believe in building a strong developer community in Move and invite
+them to build upon the Move on Aptos stack and contribute to the open source software.
 
+Move was built upon the idea that other programming languages made it harder to
+provide guarantees at runtime, which is required for a trusted execution
+environment.
+
+Move is built upon the following principals:
+
+1. **Secure by default**: Financial systems are built to ensure users don't lose
+funds.  Move was designed to prevent entire classes of attacks and bugs such as
+reentrancy attacks, double spends, and arithmetic overflow.  Type safety and
+compile time checks are at the forefront of the security.
+
+2. **Runtime Verification**: The bytecode can be verified at runtime to verify
+that nothing has gone wrong, providing extra safety and preventing malicious actors.
+
+3. **Formal Verification**: The language provides an extension to the Move language
+specifically to provide formal verification of contracts.  This allows for proving
+invariants and as a tool to help code auditing.
+
+4. **Simplicity**: The commands and bytecode are purposely simple.  This allows
+for easy decompilation, runtime verification, and code inspection. Using regular
+programming languages for blockchains often requires to ignore large part of the
+language to make them suitable for smart contracts (e.g. Rust).
+
+# Why Move on Aptos?
+
+Move on Aptos supports the full language built by the team at Facebook, with
+additional extensions built to improve the security and the developer experience.
 
 ## Security
 
-1. **Formal Verification**: Aptos framework is fully specified and formally verified. This includes core contracts including governance, NFTs, and Tokens.
+1. **Formal Verification**: Aptos framework is fully specified and formally
+verified. This includes the core contracts involving governance, NFTs, and Tokens.
 
-2. **Gas Coverage**: Move VM has 100% gas coverage. Gas is charged based upon actual usage in the system (CPU, memory, storage, I/O). In other words, no simple free gas exploits.
+2. **Gas Coverage**: Move VM has 100% gas coverage. Gas is charged based upon
+actual usage in the system (CPU, memory, storage, I/O). In other words, no
+gas exploits.
 
-3. **Security Redundancy**: Security redundancy provided by paranoid mode.
+3. **Security Redundancy**: Security redundancy provided by runtime safety checks.
 
-4. **Permissioned Controls**: Permissioned controls built at token level to enable RWA tokenization.
-
-
-## Developer Experience (DevX)
-
-1. **Tools Suite**: Aptos has a suite of tools developers expect beyond the compiler: decompiler, formatter, analyzer, disassembler, specification tester, CLI.
-
-2. **IDE Plug-ins**: Aptos has language plug-ins for top two IDEs: [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer), [Intellij](https://plugins.jetbrains.com/plugin/14721-move-on-aptos).
-
-3. **Data Model**: Aptos has a more accessible data model with the data definition stored on-chain and objects and accounts can have multiple distinct structures in an easy-to-parse format.
-
-4. **Safe Upgradeability**: Unique safe upgradeability ensures that application interfaces cannot be broken and doesn't require explicit adoption from downstream applications.
-
-5. **Cross-Interaction**: Move allows for more intuitive cross (module, contract, program) interaction by using type-safe structs.
-
-6. **Code Storage**: Aptos stores code on-chain improving the ability to audit and ensure contract to byte code correctness.
-
-7. **Sponsored Transactions**: Only application with native sponsored transaction support — no special services or contract-specific code required.
-
-8. **Token Types**: Like [Token-2022](https://spl.solana.com/token-2022), Fungible Asset and Digital Asset cover the basis in what is possible within the token space without introducing additional token types.
+4. **Permission Controls**: Permission controls can flexibly be built at various
+levels.  For example, at the token level permission controls are by default to
+enable RWA tokenization.
 
 
-## Comparison to Other Blockchains
+## Developer Experience
 
-| **Feature**             | **Aptos**                                                                                           | **EVM/Solidity**                                                                            | **Solana**                                                                              |
-|-------------------------|-----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
-| **VM**                  | Move VM                                                                                            | EVM                                                                                         | SVM                                                                                     |
-| **Dominant Language**   | Move                                                                                               | Solidity                                                                                   | Rust with Anchor                                                                         |
-| **Parallelization**     | Optimistic using BlockSTM (Aptos invention), inferred at execution. Conflicts at the resource level / table field. Parallel integer data primitives (Aggregators) | Optimistic using BlockSTM, inferred at execution. An EVM contract is **not inherently parallelizable**. Maps in EVM might be parallelizable. | Pessimistic, requires specifying all data accessed. Conflicts at address level.          |
-| **Transaction Safety**  | Sequence number and expiration time.                                                               | Nonces, similar to sequence                                                                 | Transaction uniqueness, blockhash expires within 150 blocks / ~80 seconds               |
-| **Reentrancy**          | No reentrancy                                                                                       | Supports reentrancy which often leads to double spend attacks                               | No reentrancy                                                                           |
-| **Formal Verification** | Move Prover with Move specification language. Entire core library and framework is verified.         | Certora and Dafny verification language.                                                    | Some, Kani Rust Verifier, limited use — No formal verification tools tailored for the Platform available. Generic verification tools for Rust may work to some extent. |
-| **Inline Assembly**     | No, not necessary as the Move smart contract compiles into Move bytecode.                           | Yes                                                                                         | Yes                                                                                     |
-| **Source Code Storage** | On-chain                                                                                           | Independent of deployment.                                                                  | Not comprehensive, must find source code off-chain that uses anchor and get version information |
-| **Fee Market**          | Yes                                                                                                | Yes                                                                                         | Each validator has its own, independent fee market which can impact availability and performance of the network as clients should send high priority transactions to all validators. |
+1. **Move Development Tools**:
+  - **Unit testing**: Move has built in unit testing for all contracts.  Aptos
+additionally, provides test functionality in the framework to test different
+scenarios.
+  - **Coverage**: Coverage tooling allows for both source and bytecode level
+coverage reporting.
+  - **Decompiler**: For better security, on-chain bytecode can be disassembled or
+decompiled to provide visibility into the actual contracts.
+  - **IDE Plug-ins**: Aptos has support for two major IDEs:  [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer) and [IntelliJ](https://plugins.jetbrains.com/plugin/14721-move-on-aptos).
 
+2. **Data Model**: Aptos has an accessible data model with the data definition
+stored on-chain. Objects and accounts can have multiple distinct structures in
+an easy-to-parse format.
 
-## Comparison to Other Blockchains: In Depth
+3. **Upgradability**: Upgradability ensures that application interfaces cannot
+be broken and doesn't require explicit adoption from downstream applications.
+Contracts can simply be upgraded in-place to fix bugs.
 
-| **Context** | **Aptos** | **EVM/Solidity** | **Solana** |
-|-------------|-----------|------------------|------------|
-| **SDKs** | TypeScript, Python, Go, Rust, Unity (C#) | Well supported | Well supported |
-| **Developer environment** | Python and TypeScript SDKs support using CLI for package testing and publication | Foundry, Hardhat, Ganache | Anchor |
-| **Inter-contract communication types** | Type-safe structs and references | Primitives or copies of structs | Primitives |
-| **Data storage** | Global storage | Contract level | Program level |
-| **Data model** | Account owned resources and objects | Contract owned data | Contract owned data, via program derived accounts, sort of like objects |
-| **Application data layout** | Multiple resources / structs — defined by the module and enforced by the VM | N/A | Arbitrary, not visible and defined by the application. |
-| **Object accessibility** | Globally accessible | N/A | Within the program |
-| **Function calling** | Static dispatch, though we will support limited dynamic dispatch for tokens in v1.13 release. Traits / dynamic dispatch is on the 2024 roadmap. | Both static and dynamic dispatch | Static dispatch and dynamic dispatch via CPI |
-| **Upgradeability** | Upgrade in place | Contracts immutable, dynamic dispatch to route to new contract, also supports SELFDESTRUCT/CREATE to replace a contract | Upgrade in place |
-| **Transaction programmability** | Entry functions and compiled scripts | Single function calls and batched function calls but no data passing | Multiple instructions, a series of function calls |
-| **Calling functions** | ABI visible in Move, bcs encoded in transaction | Must know function signature from off-chain source and encode data | Must know function index from off-chain source and the encoding of data and addresses |
-| **Simulation support** | Yes | Requires API vendor support | Yes |
-| **Drainer resistant tech** | No, only has simulation to mitigate drainer | Probably via smart contract wallets, but no solution for approval-oriented attacks | Yes, Lighthouse |
-| **Tracing / debugging calls** | Only in test mode, events | Yes, requires vendor support | No, events only |
-| **Reading data with functions** | View functions | Call / view functions | Yes, functions can be called with view |
-| **Reading raw data** | ABI on-chain, bcs encoded | Only visible in code, rlp encoded. EVM indexers tend to use view functions as dictated by the contract interface | Requires code, borsh encoded |
-| **Events** | Yes | Yes | Yes |
-| **Canonical events** | Yes, specified by type-safe struct | No, arbitrary value (as dictated by the EVM) | This is platform specific, but Anchor events appear to be canonical |
-| **Enums** | No, on 2024 roadmap | Yes | Yes |
-| **Error handling** | No, assertions only. Try / catch on 2024 roadmap | Yes, try / catch | Seems feasible with the Result type |
-| **Transaction size** | 64KB | Limited by block gas limit, roughly 46KB | 1232 bytes |
-| **Gas costs** | Per operation | Per operation | Per signature |
-| **Storage fees** | Per slot, per byte, refunds on delete | Per byte, refunds on delete up to transaction cost | Rent stored in account, refundable on account cleanup |
-| **Standards** | Monolithic Coin and Token, extensible FungibleAsset and TokenObject (Digital Asset) | Interfaces and copied code | Mostly Monolithic, Token 2022 enables extensions |
-| **Sponsored transactions** | Built-in, specialized and multiagent, first account | Yes, needs support for new transaction format (UserOperation) | Multiagent, first account |
-| **Multiagent transactions** | Built-in | No | Built-in |
-| **Multisigner** | Built-in, both off-chain and on-chain | Off-chain via key sharding (ecdsa) | Yes, requires a program that uses PDA |
-| **NFT Standard** | Legacy token, digital asset uses fungible asset to make fungible tokens | NFT/ERC721, FT/ERC1155 | Metaplex, standard, compressed, monolithic / not easily extended NFTs |
-| **Token / Coin standard** | Legacy coin, fungible asset | ERC-20 | SPL and Token-2022 |
-| **Securities / RWA standard** | Fungible asset | ERC-3643 | Token-2022 |
-| **DeFi-capable NFTs** | Nothing formal, but can apply a Coin or FungibleAsset to a Digital Asset, example | ERC404 | Does not seem so |
-| **Royalty enforcement** | Possible with custom transfer methods that will be made easier to use in a future version | Possible with custom transfer methods | Possible with custom transfer methods, unclear how easy to implement |
+4. **Cross-Interaction**: Move allows for interaction between contracts by using
+type-safe structs.
+
+5. **Code Storage**: Aptos stores source code on-chain improving the ability to
+audit and ensure contract to bytecode correctness.
+
+6. **Sponsored Transactions**: Native sponsored transaction support allows for
+having transactions be paid by other users with no special services or
+contract-specific code required.
+
+7.  **Robust Token Standards**: The Digital Asset and Fungible Asset standards
+provide flexibility and a unified standard for diverse types of tokens and
+digital assets on-chain.  These were influenced by existing standards such as
+ERC-20, ERC-721, ERC-1155 and Token-2022.
+
+8. **On-chain Randomness**: Native on-chain unbiasable randomness provides a safe
+and consistent way of getting random numbers, with extra safety checks at compile
+time.
