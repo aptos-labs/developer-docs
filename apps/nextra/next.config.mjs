@@ -891,37 +891,37 @@ export default withBundleAnalyzer(
       },
       {
         source: "/tutorials",
-        destination: "/en/build/tutorials",
+        destination: "/en/build/guides",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-transaction",
-        destination: "/en/build/tutorials/first-transaction",
+        destination: "/en/build/guides/first-transaction",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-nft",
-        destination: "/en/build/tutorials/your-first-nft",
+        destination: "/en/build/guides/your-first-nft",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-coin",
-        destination: "/en/build/tutorials/first-coin",
+        destination: "/en/build/guides/first-coin",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-fungible-asset",
-        destination: "/en/build/tutorials/first-fungible-asset",
+        destination: "/en/build/guides/first-fungible-asset",
         permanent: true,
       },
       {
         source: "/tutorials/first-move-module",
-        destination: "/en/build/tutorials/first-move-module",
+        destination: "/en/build/guides/first-move-module",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-multisig",
-        destination: "/en/build/tutorials/first-multisig",
+        destination: "/en/build/guides/first-multisig",
         permanent: true,
       },
       {
@@ -941,40 +941,40 @@ export default withBundleAnalyzer(
       },
       {
         source: "/tutorials/build-e2e-dapp/e2e-dapp-index",
-        destination: "/en/build/tutorials/build-e2e-dapp",
+        destination: "/en/build/guides/build-e2e-dapp",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/create-a-smart-contract",
         destination:
-          "/en/build/tutorials/build-e2e-dapp/1-create-smart-contract",
+          "/en/build/guides/build-e2e-dapp/1-create-smart-contract",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/set-up-react-app",
-        destination: "/en/build/tutorials/build-e2e-dapp/2-set-up-react-app",
+        destination: "/en/build/guides/build-e2e-dapp/2-set-up-react-app",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/add-wallet-support",
-        destination: "/en/build/tutorials/build-e2e-dapp/3-add-wallet-support",
+        destination: "/en/build/guides/build-e2e-dapp/3-add-wallet-support",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/fetch-data-from-chain",
         destination:
-          "/en/build/tutorials/build-e2e-dapp/4-fetch-data-from-chain",
+          "/en/build/guides/build-e2e-dapp/4-fetch-data-from-chain",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/submit-data-to-chain",
         destination:
-          "/en/build/tutorials/build-e2e-dapp/5-submit-data-to-chain",
+          "/en/build/guides/build-e2e-dapp/5-submit-data-to-chain",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/handle-tasks",
-        destination: "/en/build/tutorials/build-e2e-dapp/6-handle-tasks",
+        destination: "/en/build/guides/build-e2e-dapp/6-handle-tasks",
         permanent: true,
       },
       {
