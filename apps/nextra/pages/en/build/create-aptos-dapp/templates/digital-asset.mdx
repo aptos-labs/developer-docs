@@ -29,7 +29,8 @@ npm run dev
 However, for the app to work as intended, there are several setup steps you will have to do to:
 
 1. Create assets for a collection of NFTs.
-2. Publish the Collection so that others can mint your NFTs.
+2. Publish the contract to create the collection on-chain.
+3. Actually publish your collection.
 
 ## Create Collection Assets
 
@@ -57,8 +58,8 @@ The following steps will break down how to do that.
 <Steps>
 ### Create an `asset` folder for your collection.
 
-### Make a `collection.json` file with the collection fields.
-All collections are required to have the following fields:
+### Make a `collection.json` file.
+All collections are **required** to have the following fields:
 ```json filename="collection.json"
 {
   "name": "Aptos NFTs",                         
@@ -74,14 +75,18 @@ The `image` field of `collection.json` above will be filled in automatically whe
 
 ### Add an image for the collection itself in the `asset` folder.
 
-### Create a folder called `images` in the `asset` folder. 
+### Create a folder called `images` in the `asset` folder.
 
 ### Add all potential NFT images to the `images` folder.
+
+These images must have the same file extension for this template app to work. 
 
 ### Create a folder called `metadata` in the `asset` folder.
 
 ### Add a metadata json file for each NFT image in the `images` folder.
 The metadata files should match the names of the images in the `images` folder. Ex. `1.jpeg` -> `1.json`. 
+
+All fields in the example below other than `attributes` are **required**. 
 
 The `attributes` section is optional, and can contain any key-value pairs.
 
@@ -131,7 +136,11 @@ The `image` field of the metadata.json files above will be filled in automatical
     </FileTree.Folder>
   </FileTree.Folder>
 </FileTree>
+</Steps>
 
+## Publish the Move Contract
+
+<Steps>
 ### Prepare an account, or create one with an Aptos wallet like [Petra](https://petra.app/docs/use#create-a-new-account).
 You will need this to run the contract to create a collection. Make sure to make the account on the same network as your template project.
 
@@ -165,7 +174,7 @@ You will have to confirm the gas fee in the console.
 </Callout>
 </Steps>
 
-## Publish the Collection On-Chain
+## Publishing the collection on-chain
 <Steps>
 
 ### Run the app and open the preview.
