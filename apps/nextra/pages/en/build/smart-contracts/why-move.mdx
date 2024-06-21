@@ -11,10 +11,6 @@ diverse blockchains with vastly different data and execution models.
 At Aptos, we believe in building a strong developer community in Move and invite
 them to build upon the Move on Aptos stack and contribute to the open source software.
 
-Move was built upon the idea that other programming languages made it harder to
-provide guarantees at runtime, which is required for a trusted execution
-environment.
-
 Move is built upon the following principals:
 
 1. **Secure by default**: Financial systems are built to ensure users don't lose
@@ -25,9 +21,9 @@ compile time checks are at the forefront of the security.
 2. **Runtime Verification**: The bytecode can be verified at runtime to verify
 that nothing has gone wrong, providing extra safety and preventing malicious actors.
 
-3. **Formal Verification**: The language provides an extension to the Move language
-specifically to provide formal verification of contracts.  This allows for proving
-invariants and as a tool to help code auditing.
+3. **Formal Verification**: Move on Aptos provides a specification language to
+provide formal verification of contracts.  This allows for proving invariants
+and assists with code auditing.
 
 4. **Simplicity**: The commands and bytecode are purposely simple.  This allows
 for easy decompilation, runtime verification, and code inspection. Using regular
@@ -42,7 +38,8 @@ additional extensions built to improve the security and the developer experience
 ## Security
 
 1. **Formal Verification**: Aptos framework is fully specified and formally
-verified. This includes the core contracts involving governance, NFTs, and Tokens.
+verified with the Move Prover. This includes the core contracts involving
+governance, NFTs, and Tokens.
 
 2. **Gas Coverage**: Move VM has 100% gas coverage. Gas is charged based upon
 actual usage in the system (CPU, memory, storage, I/O). In other words, no
@@ -51,15 +48,15 @@ gas exploits.
 3. **Security Redundancy**: Security redundancy provided by runtime safety checks.
 
 4. **Permission Controls**: Permission controls can flexibly be built at various
-levels.  For example, at the token level permission controls are by default to
+levels.  For example, token level permission controls exist by default to
 enable RWA tokenization.
 
 
 ## Developer Experience
 
 1. **Move Development Tools**:
-  - **Unit testing**: Move has built in unit testing for all contracts.  Aptos
-additionally, provides test functionality in the framework to test different
+  - **Unit testing**: Move has built-in unit testing for all contracts.  Aptos
+additionally provides test functionality in the framework to test different
 scenarios.
   - **Coverage**: Coverage tooling allows for both source and bytecode level
 coverage reporting.
