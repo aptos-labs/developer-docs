@@ -76,6 +76,7 @@ export default {
   "---examples---": {
     type: "separator",
     title: "Examples",
+    display: "hidden",
   },
   "---reference---": {
     type: "separator",
@@ -86,6 +87,7 @@ export default {
   },
   "move-reference": {
     title: "Move Reference",
+    "display": "hidden"
   },
   "error-codes": {
     title: "Error Codes",
@@ -98,6 +100,7 @@ export default {
     title: "Scripts",
   },
   patterns: {
+    display: "hidden",
     title: "Patterns",
   },
   prover: {
@@ -111,6 +114,7 @@ export default {
   },
   "gas-profiling": {
     title: "Gas Profiling",
+    href: "/en/build/cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling"
   },
   compiler_v2: {
     title: "Compiler V2",
