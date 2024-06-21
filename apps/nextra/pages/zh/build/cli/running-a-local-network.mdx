@@ -18,7 +18,7 @@ import {Callout, Steps} from 'nextra/components'
 # 启动一个本地网络
 
 <Steps>
-### 确保您已安装 [Aptos CLI](install-cli.mdx)
+### 确保您已安装 [Aptos CLI](../cli.mdx)
 ### 确保您已安装 [Docker](https://docs.docker.com/get-docker/)
    1.  仅当你需要创建一个与生产环境相似的环境时，运行 Indexer API 才是必需的。诸如 Aptos SDK 之类的许多下游工具都需要依赖 Indexer API 才能正常工作。
    2.  如果你使用 Docker 则建议你通过安装[Docker Desktop](https://www.docker.com/products/docker-desktop/) 来实现自动更新，以便更便捷地维护和更新。
@@ -129,7 +129,7 @@ Unexpected error: Failed to apply pre-run steps for Postgres: Docker is not avai
 - [Indexer API](../indexer/api.mdx)：这是一个 [GraphQL](https://graphql.org/) API，它提供了丰富的操作，以允许您读取索引了的区块链数据。点击上述的 Indexer API URL，默认是 [http://127.0.0.1:8090](http://127.0.0.1:8090/)，即可打开 Hasura 控制台。这是一个 Web 界面，便于您查询 Indexer GraphQL API。
 - [交易流服务](../indexer/txn-stream.mdx)：这是一个通过 Indexer API 实现的 gRPC 交易流。仅当您在开发[自定义处理器](../../indexer/custom-processors.mdx)时，此信息对您才有相关性。
 - [Postgres](https://www.postgresql.org/)：这是 Indexer 处理器用来存储数据的数据库，而 Indexer API 则从此数据库中读取信息。
-- [水龙头（Faucet）](../../../network/glossary.mdx#faucet)：您可以使用它为您的本地网络中的账户提供资金。
+- [水龙头（Faucet）](../advanced-guides/system-integrators-guide.mdx#integrating-with-the-faucet)：您可以使用它为您的本地网络中的账户提供资金。
 
 如果您不想运行网络的任何这些子组件，可以使用一些参数来禁用它们。
 

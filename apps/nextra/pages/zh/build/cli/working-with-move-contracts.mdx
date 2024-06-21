@@ -123,7 +123,7 @@ aptos move publish --package-dir <您的包目录>
 
 另外，请注意，在发布 Move 模块的过程中，若一个软件包中有多个模块，则这些模块都必需使用同一个账户进行发布。不然，如果使用不同账户，则该软件包的发布操作将在交易处理的阶段遭遇失败。
 
-您可以使用 [Gas Profiler](../../move/move-on-aptos/gas-profiling.mdx)估算与发布 Move 合约相关的 Gas 费用。{/* TODO: 修复这个链接 */}
+您可以使用 [Gas Profiler](working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx)估算与发布 Move 合约相关的 Gas 费用。{/* TODO: Fix this link */}
 
 <Callout type="warning">
 默认情况下，Move 合约会发布其源代码。要避免发布源代码，请使用 `--included-artifacts none` 参数发布。
@@ -229,7 +229,7 @@ aptos move run --function-id 0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f9
 
 ## 6. （可选）形式化验证 Move 脚本
 
-对于您希望在单元测试之外保证代码按预期工作的情况，您可以使用 [Move Prover](../smart-contracts/learn-move/prover.mdx)来形式化验证您的 Move 合约代码。
+对于您希望在单元测试之外保证代码按预期工作的情况，您可以使用 [Move Prover](../smart-contracts/prover.mdx)来形式化验证您的 Move 合约代码。
 
 您可以通过按照[这些步骤](setup-cli/install-move-prover.mdx)来安装 Move Prover。
 
