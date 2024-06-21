@@ -12,7 +12,8 @@ Creating an Object involves two steps:
 2. Customizing how the Object will behave using permissions called `Ref`s.
 
 <Callout type="info">
-Configuring an Object by generating `Ref`s has to happen in the same transaction you create it. Later on it is impossible to change those settings.
+  Configuring an Object by generating `Ref`s has to happen in the same
+  transaction you create it. Later on it is impossible to change those settings.
 </Callout>
 
 ### Creating an Object
@@ -24,7 +25,7 @@ There are three types of Object you can create:
 module my_addr::object_playground {
   use std::signer;
   use aptos_framework::object;
- 
+
   entry fun create_my_object(caller: &signer) {
     let caller_address = signer::address_of(caller);
     let constructor_ref = object::create_object(caller_address);
@@ -38,16 +39,16 @@ module my_addr::object_playground {
 module my_addr::object_playground {
   use std::signer;
   use aptos_framework::object;
- 
+
   /// Seed for my named object, must be globally unique to the creating account
   const NAME: vector<u8> = b"MyAwesomeObject";
- 
+
   entry fun create_my_object(caller: &signer) {
     let caller_address = signer::address_of(caller);
     let constructor_ref = object::create_named_object(caller_address, NAME);
     // ...
   }
- 
+
   #[view]
   fun has_object(creator: address): bool {
     let object_address = object::create_object_address(&creator, NAME);
@@ -61,7 +62,7 @@ module my_addr::object_playground {
 module my_addr::object_playground {
   use std::signer;
   use aptos_framework::object;
- 
+
   entry fun create_my_object(caller: &signer) {
     let caller_address = signer::address_of(caller);
     let constructor_ref = object::create_sticky_object(caller_address);
@@ -77,7 +78,9 @@ Once you create your object, you will receive a `ConstructorRef` you can use to 
 The following sections will walk through commonly used `Ref`s and the features they enable.
 
 <Callout type="info">
-Note: The `ConstructorRef` cannot be stored. It is destroyed at the end of the transaction used to create the Object, so any other `Ref`s **must** be generated during Object creation.
+  Note: The `ConstructorRef` cannot be stored. It is destroyed at the end of the
+  transaction used to create the Object, so any other `Ref`s **must** be
+  generated during Object creation.
 </Callout>
 
 ### Adding Resources
@@ -188,7 +191,7 @@ module my_addr::object_playground {
 
 ### Disabling / Toggling Transfers (`TransferRef`)
 
-By default all Objects are transferrable. This can be changed via a `TransferRef` which you can generate with `object::generate_transfer_ref`.
+By default, all Objects are transferable. This can be changed via a `TransferRef` which you can generate with `object::generate_transfer_ref`.
 
 The example below shows how you could generate and manage permissions for determining whether an Object is transferrable.
 
@@ -266,7 +269,7 @@ module my_addr::object_playground {
 
 ### One-Time Transfers (`LinearTransferRef`)
 
-Additionally, if the creator wants to control all transfers, a `LinearTransferRef` can be created from the `TransferRef` to provide a one time use transfer functionality. This can be used to create “soulbound” objects by having a one-time transfer from the Object creator to the recipient. The `LinearTransferRef` must be used by the owner of the Object.
+Additionally, if the creator wants to control all transfers, a `LinearTransferRef` can be created from the `TransferRef` to provide a one time use transfer functionality. This can be used to create “soulbound” objects by having a one-time transfer from the Object creator to the recipient. The `LinearTransferRef` must be used by the owner of the Object.
 
 ```move filename="Example.move"
 module my_addr::object_playground {
@@ -433,10 +436,9 @@ module my_addr::object_playground {
 ## Making an Object Immutable
 
 An object can be made immutable by making the contract associated immutable, and removing any ability to extend or mutate the object. By default, contracts are not immutable, and objects can be extended with an `ExtendRef`, and resources can be mutated if the contract allows for it.
-<br/>
 
 # Further Reading
 
-You can find documentation for all possible `Refs` by looking at the Move reference docs for `0x1::object` [here](https://aptos.dev/reference/move?branch=mainnet&page=aptos-framework/doc/object.md). 
+You can find documentation for all possible `Refs` by looking at the Move reference docs for `0x1::object` [here](https://aptos.dev/reference/move?branch=mainnet&page=aptos-framework/doc/object.md).
 
 You can also explore how to use Objects once they are constructed [here](using-objects.mdx).
