@@ -14,6 +14,7 @@ export default {
   },
   testing: {
     title: "Testing",
+    href: "/en/build/smart-contracts/book/unit-testing",
   },
   deployment: {
     title: "Deployment",
@@ -42,6 +43,7 @@ export default {
     type: "separator",
   },
   accounts: {
+    href: "/en/network/blockchain/accounts",
     title: "Accounts",
   },
   table: {
