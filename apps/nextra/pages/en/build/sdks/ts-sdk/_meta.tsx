@@ -16,9 +16,6 @@ export default {
   "building-transactions": {
     title: "Transactions",
   },
-  "simulating-transactions": {
-    title: "Simulating Transactions",
-  },
   "ts-examples": {
     title: "Example Code",
   },
