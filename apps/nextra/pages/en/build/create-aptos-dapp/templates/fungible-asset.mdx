@@ -18,7 +18,7 @@ The Fungible Asset template provides 3 pages:
 
 First run the dapp locally with `npm run dev`. You would see the public mint page with some data placeholders for content and images. Some of the content can be configured in the `frontend/config.ts` file and some will be pulled from an Aptos full node once you configure your collection.
 
-```sh filename="Terminal"
+```bash npm2yarn
 npm run dev
 ```
 
@@ -44,7 +44,7 @@ For example, to update an image in the "Our Team" section - add the image under 
 
 When first running `npm run dev`, you will see the Public Mint page. To create an asset, click the "Create Asset" button, which will navigate you to create a new fungible asset.
 
-```sh filename="Terminal"
+```bash npm2yarn
 npm run dev
 ```
 
@@ -57,7 +57,7 @@ The smart contract is built in a way that only the admin or a specific defined a
 Create or find the account you want to create an asset with. If you haven't created an account - simply use a Wallet, for example [Petra](https://petra.app/), to quickly [create an account](https://petra.app/docs/use#create-a-new-account).
 
 1. Run `npm run move:init` - a command to initialize an account to publish the Move contract. When you run that command it will:
-```sh filename="Terminal"
+```bash npm2yarn
 npm run move:init
 ```
    - Generate a new CLI `.aptos/config.yaml` file that holds a profile with the account private key, account address, and network configuration.
@@ -67,7 +67,7 @@ npm run move:init
 
 3. Run `npm run move:publish` to publish the contract.
 
-```sh filename="Terminal"
+```bash npm2yarn
 npm run move:publish
 ```
 
