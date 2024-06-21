@@ -1,0 +1,148 @@
+---
+title: "Kotlin SDK Quickstart"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Kotlin SDK Quickstart
+
+This guide will walk you through the process of setting up Kaptos,
+fetching data, and sending a transaction on the Aptos blockchain.
+
+<Steps>
+### Install the SDK
+
+Kaptos is available for both multiplatform and single-platform development.
+Artifacts are published at Sonatype Maven Central and can be added to your
+project using Gradle as shown below:
+
+#### Multiplatform Development
+In your `build.gradle.kts` file, and in your `commonMain` source set block, add as follows:
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("xyz.mcxross.kaptos:kaptos:<version>")
+        }
+    }
+}
+```
+
+#### Single-platform Development
+
+Depending on your target platform, Kaptos provides different artifacts in the
+form of `kaptos-jvm`, `kaptos-android`, `kaptos-iosArm64`, and `kaptos-js`.
+For example, to add the JVM artifact to your project, add the following dependency:
+```kotlin
+dependencies {
+    implementation("xyz.mcxross.kaptos:kaptos-jvm:<version>")
+}
+```
+
+To add the Android artifact, use:
+```kotlin
+dependencies {
+    implementation("xyz.mcxross.kaptos:kaptos-android:<version>")
+}
+```
+
+
+### Set up the `Aptos` client
+
+You can use the `Aptos` object to handle everything that requires a connection
+to the Aptos network.
+
+```kotlin
+val aptos = Aptos()
+```
+If you want to pass in a custom configuration, you can do so by passing in a
+AptosConfig object that takes in an AptosSettings object. The AptosSettings object
+allows you to specify the network you want to connect to, the fullnode URL, and
+other settings.
+
+```kotlin
+val settings = AptosSettings(network = Network.MAINNET, clientConfig = ClientConfig(maxRetries = 10))
+val aptosConfig = AptosConfig(settings = settings)
+val aptos = Aptos(aptosConfig)
+```
+
+<Callout type="info" emoji="ℹ️">
+    Kaptos offers common configurations for all platforms while also providing
+    platform-specific settings. For instance, you can configure both connection
+    and request timeouts on Linux, whereas on iOS, you can only set request timeouts.
+</Callout>
+
+### Fetch data from on-chain
+  Once you have an `Aptos` object, you can use it to fetch data from the Aptos blockchain.
+  For example, you can fetch the ledger information like so:
+
+  ```kotlin
+  val ledgerInfo = aptos.getLedgerInfo()
+  ```
+### Send Transactions
+  To interact with the ledger and change its state, you must send transactions.
+  To do this, you need an existing account. You can create an account by
+  generating a new account key pair and funding the account on-chain.
+  Once you have an account, you can sign transactions to demonstrate authority,
+  allowing you to perform actions such as transferring tokens, triggering Move
+  modules, or trading NFTs.
+
+  Here's how you can build a transaction to transfer APT:
+
+  <Steps>
+
+    ### Create an Account
+
+    To create a new account, you first generate new credentials then fund the account.
+    On test networks, you can fund an account programmatically by asking a "faucet"
+
+    ```kotlin
+    val aliceAccount = Account.generate()
+    val bobAccount = Account.generate()
+    ```
+
+    ### Build the Transaction
+
+  ```kotlin
+  val txn = aptos.buildTransaction.simple(
+      sender = aliceAccount.accountAddress,
+      data = inputEntryFunctionData {
+          function = "0x1::coin::transfer"
+          typeArguments = typeArguments {
+              +TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())
+          }
+          functionArguments = functionArguments {
+              +MoveString(bobAccount.accountAddress)
+              +U64(SEND_AMOUNT)
+          }
+  },)
+  ```
+
+  ### Sign the Transaction
+    Once you have built a transaction, you can sign it using the `sign` method.
+
+    ```kotlin
+      val aliceAuthenticator = aptos.sign(
+          sender = aliceAccount,
+          transaction = txn,
+      )
+    ```
+
+  ### Submit the Transaction
+    Finally, you can submit the transaction to the network using the `submitTransaction.simple` method.
+
+    ```kotlin
+    val commitedTransaction = aptos.submitTransaction.simple(
+          transaction = signedTransaction,
+          senderAuthenticator = aliceAuthenticator,
+    )
+    ```
+
+  ### Wait for the Transaction to Execute
+    Then you can wait for the transaction to be executed by using the `waitForTransaction` method.
+
+    ```kotlin
+    val executedTransaction = aptos.waitForTransaction(HexInput.fromString(commitedTransaction.expect("Transaction failed").hash))
+    ```
+  </Steps>
+</Steps>
