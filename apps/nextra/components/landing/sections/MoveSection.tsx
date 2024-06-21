@@ -33,7 +33,7 @@ export function MoveSection() {
       objects: {
         label: t.objectsExampleLabel,
         description: t.objectsExampleDescription,
-        href: `/${locale}/build/smart-contracts/aptos-standards/aptos-object`,
+        href: `/${locale}/build/smart-contracts/objects`,
         codeSnippet: objectsCodeSnippet,
       },
       fungibleAssets: {
