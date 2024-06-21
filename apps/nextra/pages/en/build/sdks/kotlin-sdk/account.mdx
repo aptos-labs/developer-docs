@@ -1,0 +1,37 @@
+---
+title: "Creating and Managing Accounts"
+---
+
+# Creating and Managing Accounts
+
+Kaptos provides a few ways to generate account credentials. You can either
+generate a new account or derive an account from a private key.
+
+### Generate a New Account
+
+To create a new account, you can generate a new account credential using the
+`Account.generate()` method. This method will create a new account with a new
+key pair.
+
+```kotlin
+val account = Account.generate()
+```
+
+### Derive an Account from a Private Key
+
+If you have a private key, you can use it to create an `Account` object to manage
+those credentials.
+
+```kotlin
+val privateKey = Ed25519PrivateKey("myEd25519privatekeystring")
+
+val account = Account.fromPrivateKey(privateKey)
+```
+
+Account generation does not create the account on-chain. You must fund the account
+on-chain to use it for transactions. On test networks, you can fund an account
+programmatically by asking a "faucet" for test tokens.
+
+```kotlin
+val fundedAccount = aptos.fundAccount(aliceAccount.accountAddress, FUNDING_AMOUNT)
+```

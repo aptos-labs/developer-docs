@@ -63,7 +63,7 @@ npm run move:init
    - Generate a new CLI `.aptos/config.yaml` file that holds a profile with the account private key, account address, and network configuration.
    - Configure your development environment and add a `VITE_MODULE_ADDRESS` variable into the `.env` file with the account address from the previous step.
 
-2. To set who can create a new asset, edit the `.env` file and update `VITE_CREATOR_ADDRESS` to be the address of the account allowed to create assets.
+2. To set who can create a new asset, edit the `.env` file and update `VITE_COLLECTION_CREATOR_ADDRESS` to be the address of the account allowed to create assets.
 
 3. Run `npm run move:publish` to publish the contract.
 
@@ -136,7 +136,7 @@ Creating a asset on mainnet is the same flow as creating on testnet, but we need
 3. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
 4. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
 5. Check: open `.aptos/config.yaml` file and see that you have a profile under the `mainnet` name. In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the mainnet profile's account address.
-6. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_CREATOR_ADDRESS` value.
+6. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_COLLECTION_CREATOR_ADDRESS` value.
 7. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
 8. The next step would be to create an asset using this account. Simply follow [Create a Fungible Asset Page](#create-a-fungible-asset-page)
 
