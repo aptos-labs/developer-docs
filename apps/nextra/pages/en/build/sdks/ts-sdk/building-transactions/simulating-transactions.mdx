@@ -1,0 +1,161 @@
+---
+title: "Simulating Transactions"
+---
+
+# Simulating Transactions
+
+Simulating transactions allows you to preview the cost and effect of submitting a transaction without paying fees. 
+You can use this to estimate fees, test a transaction, or to check what the output might be. 
+
+To simulate a transaction, you must pass in a transaction and which account would be the signer:
+
+```ts filename="simulate-a-transaction.ts"
+import {
+    Account,
+    Aptos,
+    AptosConfig,
+    Network,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+    let sender = Account.generate();
+    let receiver = Account.generate();
+
+    // 0. Setup the client and test accounts
+    const config = new AptosConfig({ network: Network.DEVNET });
+    const aptos = new Aptos(config);
+
+    await aptos.fundAccount({
+        accountAddress: sender.accountAddress,
+        amount: 100_000_000,
+    }); 
+
+    // 1. Build the transaction to preview the impact of it
+    const transaction = await aptos.transaction.build.simple({
+        sender: sender.accountAddress,
+        data: {
+        // All transactions on Aptos are implemented via smart contracts.
+        function: "0x1::aptos_account::transfer",
+        functionArguments: [receiver.accountAddress, 100],
+        },
+    });
+
+    // 2. Simulate to see what would happen if we execute this transaction
+    const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+        signerPublicKey: sender.publicKey,
+        transaction,
+    });
+    console.log(userTransactionResponse)
+
+    // If the fee looks ok, continue to signing!
+    // ...
+}
+
+example();
+```
+
+This will produce the same output as if the transaction was submitted.
+
+<details>
+<summary>Example Output</summary>
+```bash filename="Terminal"
+{
+  version: '9534925',
+  hash: '0xea50b6fbea39ad1ba015d11cda0e7478334669c34830bc3df067a260d680893c',
+  state_change_hash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+  event_root_hash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+  state_checkpoint_hash: null,
+  gas_used: '9',
+  success: true,
+  vm_status: 'Executed successfully',
+  accumulator_root_hash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+  changes: [
+    {
+      address: '0x811d5a94ccb597fa2a4f7872a3c678867cff94130d9378c39304c1354ef54abe',
+      state_key_hash: '0x09adecee8779b64d05847488e2dbec6679c0c9e2fe618caf0793472ba3a7e4ab',
+      data: [Object],
+      type: 'write_resource'
+    },
+    {
+      address: '0x811d5a94ccb597fa2a4f7872a3c678867cff94130d9378c39304c1354ef54abe',
+      state_key_hash: '0x0c70ede5412277b81d9f8d99369930ed5d56ad65862e3e878ad22dd5500833d0',
+      data: [Object],
+      type: 'write_resource'
+    },
+    {
+      address: '0xf40c314051890d16ba0a2ba427e003a83e730956fdeccf6c8eebc893a229ddc1',
+      state_key_hash: '0x503f9cffb248036da24e18875f3dce72bb33d1d3ef5cfdbdb2fb3411cd718f4f',
+      data: [Object],
+      type: 'write_resource'
+    },
+    {
+      state_key_hash: '0x6e4b28d40f98a106a65163530924c0dcb40c1349d3aa915d108b4d6cfc1ddb19',
+      handle: '0x1b854694ae746cdbd8d44186ca4929b2b337df21d1c74633be19b2710552fdca',
+      key: '0x0619dc29a0aac8fa146714058e8dd6d2d0f3bdf5f6331907bf91f3acd81e6935',
+      value: '0x708f579f62cb01000100000000000000',
+      data: null,
+      type: 'write_table_item'
+    }
+  ],
+  sender: '0x811d5a94ccb597fa2a4f7872a3c678867cff94130d9378c39304c1354ef54abe',
+  sequence_number: '0',
+  max_gas_amount: '200000',
+  gas_unit_price: '100',
+  expiration_timestamp_secs: '1718983701',
+  payload: {
+    function: '0x1::aptos_account::transfer',
+    type_arguments: [],
+    arguments: [
+      '0xf40c314051890d16ba0a2ba427e003a83e730956fdeccf6c8eebc893a229ddc1',
+      '100'
+    ],
+    type: 'entry_function_payload'
+  },
+  signature: {
+    public_key: '0x966b6b9aa8feb58ee1b911235dea1f185b9169de56303d18bb59937066881e44',
+    signature: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+    type: 'ed25519_signature'
+  },
+  events: [
+    {
+      guid: [Object],
+      sequence_number: '0',
+      type: '0x1::coin::CoinWithdraw',
+      data: [Object]
+    },
+    {
+      guid: [Object],
+      sequence_number: '0',
+      type: '0x1::coin::WithdrawEvent',
+      data: [Object]
+    },
+    {
+      guid: [Object],
+      sequence_number: '0',
+      type: '0x1::coin::CoinDeposit',
+      data: [Object]
+    },
+    {
+      guid: [Object],
+      sequence_number: '1',
+      type: '0x1::coin::DepositEvent',
+      data: [Object]
+    },
+    {
+      guid: [Object],
+      sequence_number: '0',
+      type: '0x1::transaction_fee::FeeStatement',
+      data: [Object]
+    }
+  ],
+  timestamp: '1718983681460047'
+}
+```
+</details>
+
+
+Look [here](../building-transactions.mdx) to see the full example of how to build, simulate, and submit a transaction.
+
+You can also learn how to simulate more advanced transactions by looking at the following guides:
+ - [Sponsored Transactions](sponsoring-transactions.mdx)
+ - [Multi-Agent Transactions](multi-agent-transactions.mdx)
