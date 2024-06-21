@@ -27,7 +27,7 @@ export function MoveSection() {
       coins: {
         label: t.coinsExampleLabel,
         description: t.coinsExampleDescription,
-        href: `/${locale}/build/smart-contracts/aptos-standards/aptos-coin`,
+        href: `/${locale}/build/smart-contracts/aptos-coin`,
         codeSnippet: coinsCodeSnippet,
       },
       objects: {
@@ -39,7 +39,7 @@ export function MoveSection() {
       fungibleAssets: {
         label: t.fungibleAssetsExampleLabel,
         description: t.fungibleAssetsExampleDescription,
-        href: `/${locale}/build/smart-contracts/aptos-standards/fungible-asset`,
+        href: `/${locale}/build/smart-contracts/fungible-asset`,
         codeSnippet: fungibleAssetsCodeSnippet,
       },
     }),

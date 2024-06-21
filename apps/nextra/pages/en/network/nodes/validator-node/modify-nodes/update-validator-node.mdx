@@ -59,7 +59,7 @@ If you are not comfortable with the failover process, you should consider perfor
 
 To perform a VFN failover upgrade, you should follow these steps:
 
-1. Update your DNS to swap the [network addresses](../../validator-node/connect-nodes/connect-to-aptos-network.mdx#3-update-on-chain-network-addresses) between the validator and VFN.
+1. Update your DNS to swap the [network addresses](../connect-nodes/connect-to-aptos-network.mdx#3-update-on-chain-network-addresses) between the validator and VFN.
 2. Stop the VFN and update the node software to the latest version. This may require downloading the latest binary or Docker image,
    or recompiling the source code. In addition, you will need to copy the `consensus_db` and `secure-data.json` file from the validator to the VFN,
    as well as the validator configuration file (including validator identities).
