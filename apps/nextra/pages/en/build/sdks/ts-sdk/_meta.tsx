@@ -17,7 +17,7 @@ export default {
     title: "Transactions",
   },
   "ts-examples": {
-    title: "Example Code"
+    title: "Example Code",
   },
   account: {
     title: "Accounts",
