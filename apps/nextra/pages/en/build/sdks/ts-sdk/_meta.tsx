@@ -10,6 +10,9 @@ export default {
     type: "separator",
     title: "Usage",
   },
+  account: {
+    title: "Accounts",
+  },
   "fetch-data-via-sdk": {
     title: "Fetch Data",
   },
@@ -18,9 +21,6 @@ export default {
   },
   "ts-examples": {
     title: "Example Code",
-  },
-  account: {
-    title: "Accounts",
   },
   "type-safe-contract": {
     title: "Surf: TypeScript Type Safety for Move Contracts",
