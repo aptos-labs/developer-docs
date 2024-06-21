@@ -1,0 +1,44 @@
+# Fetch Data via the Kotlin SDK
+
+You can use the Aptos client to fetch all sorts of data from on-chain such as
+information about the network itself or account-specific information.
+
+```kotlin
+val modules = aptos.getAccountModules("0x123").expect("Failed to fetch account modules")
+val option = aptos.getChainTopUserTransactions(10)
+```
+
+Kaptos returns an `Option` type for all network requests. This allows you to handle
+both successful and failed requests in a more idiomatic way.
+
+  ```kotlin
+  val ledgerInfo = aptos.getLedgerInfo()
+  when (ledgerInfo) {
+      is Some -> println("Ledger Info: ${ledgerInfo.value}")
+      is None -> println("Failed to fetch ledger info")
+  }
+  ```
+If you trust the result exists, you can use the `expect` function to unwrap the value.
+
+  ```kotlin
+  val ledgerInfo = aptos.getLedgerInfo().expect("Failed to fetch ledger info")
+  ```
+
+### Using Move View Functions
+
+You can call view functions which return custom data from on-chain by using the
+`view` method on the `Aptos` object.
+The user specifies the return type of the view function as a type parameter.
+
+For example, you can look up the supply of tokens as follows:
+
+```kotlin
+val inputViewFunctionData = InputViewFunctionData(
+      "0x1::coin::supply",
+      listOf(TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())),
+      emptyList(),)
+
+  val view = aptos
+      .view<List<MoveValue.MoveListType<MoveValue.String>>>(inputViewFunctionData)
+      .expect("Failed to fetch view")
+```

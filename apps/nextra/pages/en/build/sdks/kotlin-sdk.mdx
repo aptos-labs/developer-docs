@@ -1,0 +1,176 @@
+---
+title: "Kotlin SDK"
+---
+
+import { Tabs, Callout} from 'nextra/components'
+import { RemoteCodeblock, permalinkFetch, Cards, Card } from '@components/index'
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/mcxross/kaptos/blob/199fab35400a4658cb2f50371519b22575c1cfb4/sample/jvmApp/src/main/kotlin/Transaction.kt#L67-L87'
+  ])
+}
+
+# Kaptos
+
+Kaptos, a Kotlin Multiplatform lib, is a Multiplatform SDK for connecting, exploring, and interacting
+with the Aptos blockchain across multiple platforms. It offers a uniform API for
+requesting data, sending transactions, and more; making cross-platform application
+development with shared business logic easy. The SDK provides asynchronous
+Aptos clients for seamless blockchain interactions.
+
+<div className="flex gap-2 mt-6 flex-wrap">
+  <img src="http://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android" alt="Android Badge" />
+  <img src="http://img.shields.io/badge/Platform-iOS-orange.svg?logo=apple" alt="iOS Badge" />
+  <img src="http://img.shields.io/badge/Platform-tvOS-lightgrey.svg?logo=apple" alt="tvOS Badge" />
+  <img src="http://img.shields.io/badge/Platform-watchOS-lightgrey.svg?logo=apple" alt="watchOS Badge" />
+  <img src="http://img.shields.io/badge/Platform-NodeJS-yellow.svg?logo=javascript" alt="NodeJS Badge" />
+  <img src="http://img.shields.io/badge/Platform-JVM-red.svg?logo=openjdk" alt="JVM Badge" />
+  <img src="http://img.shields.io/badge/Platform-Linux-lightgrey.svg?logo=linux" alt="Linux Badge" />
+  <img src="http://img.shields.io/badge/Platform-macOS-orange.svg?logo=apple" alt="macOS Badge" />
+  <img src="http://img.shields.io/badge/Platform-Windows-blue.svg?logo=windows" alt="Windows Badge" />
+  <a target="_blank" href="https://mcxross.github.io/kaptos/">
+    ![Static Badge](https://img.shields.io/badge/SDK_Reference-Docs)
+  </a>
+</div>
+
+## Features
+- **Type-safe**: The SDK is fully type-safe and provides a rich set of types for all operations.
+- **Expressive**: Kaptos provides a simple and expressive DSL-style API for building transactions.
+- **Multiplatform**: Write cross-platform applications with shared business logic.
+- **Consistent API**: All operations bare a uniform and consistent API across all platforms.
+- **BCS Support**: The SDK defaults to BCS for serialization and deserialization of transactions.
+- **Asynchronous**: All blockchain operations are asynchronous.
+- **Configurable**: The SDK provides highly configurable clients for all platforms.
+
+<Callout>
+  Kaptos is currently under development, please give feedback [here](https://github.com/mcxross/kaptos/issues)
+</Callout>
+
+
+## Installation
+
+<Tabs items={['Multiplatform', 'JVM', 'Android', 'iOS', 'JS', 'Linux', 'macOS', 'Windows']}>
+  <Tabs.Tab>
+    ```kotlin
+    commonMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos:<version>")
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```kotlin
+    jvmMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos-jvm:<version>")
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```kotlin
+    androidMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos-android:<version>")
+    }
+    ```
+    <Callout type="info" emoji="ℹ️">
+      The Android SDK provides flavors for both release and debug builds.
+      To use the debug flavor, add the following to your `build.gradle`:
+
+      ```kotlin
+      androidMain.dependencies {
+        implementation("xyz.mcxross.kaptos:kaptos-android-debug:<version>")
+      }
+      ```
+    </Callout>
+  </Tabs.Tab>
+  <Tabs.Tab>
+   The SDK is compatible with iosArm64, iosX64, and iosSimulatorArm64. Depending
+    on how your project is configured, you can add the following dependencies:
+
+    For iosArm64:
+
+    ```kotlin
+    iosMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos-iosArm64:<version>")
+    }
+    ```
+
+    For iosX64:
+
+    ```kotlin
+    iosMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos-iosX64:<version>")
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```kotlin
+    jsMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos-js:<version>")
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    The SDK only supports Linux x64. To add the dependency, use the following:
+
+    ```kotlin
+    linuxMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos-linux:<version>")
+    }
+    ```
+  </Tabs.Tab>
+
+<Tabs.Tab>
+    The SDK only supports macOS x64, macOS arm64, and macOS arm64 simulator.
+    To add the dependency, use the following:
+
+    For macOS x64:
+
+    ```kotlin
+    macosMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos-macosX64:<version>")
+    }
+    ```
+    For macOS arm64:
+
+    ```kotlin
+    macosMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos-macosArm64:<version>")
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    The SDK only supports Windows x64. To add the dependency, use the following:
+
+    ```kotlin
+    mingwMain.dependencies {
+      implementation("xyz.mcxross.kaptos:kaptos-mingwX64:<version>")
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## Perform a Transaction
+
+Below is an example of how you can perform a transaction using the Kotlin SDK.
+The snippet demonstrates how to build a transaction to transfer APT. We then
+sign and submit the transaction to the blockchain in a single step.
+
+<RemoteCodeblock
+  permalink="https://github.com/mcxross/kaptos/blob/199fab35400a4658cb2f50371519b22575c1cfb4/sample/jvmApp/src/main/kotlin/Transaction.kt#L67-L87"
+/>
+
+## Examples
+
+For more examples on how and what you can do with the Kotlin SDK, check out the
+following:
+
+<Cards>
+  <Card href="./kotlin-sdk/quickstart">
+    <Card.Title>Quickstart</Card.Title>
+    <Card.Description>Integrate Aptos in < 5 minutes</Card.Description>
+  </Card>
+  <Card href="https://github.com/mcxross/kaptos/tree/master/sample">
+    <Card.Title>Single and Multiplatform Projects</Card.Title>
+    <Card.Description>Explore various demo apps, single and multiplatform projects, on how using the SDK</Card.Description>
+  </Card>
+</Cards>

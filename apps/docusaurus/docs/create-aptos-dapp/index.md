@@ -1,0 +1,67 @@
+---
+title: "Use create-aptos-dapp"
+slug: "index"
+hidden: false
+---
+
+# create-aptos-dapp
+
+`create-aptos-dapp` provides a starter kit for dapp developers to easily bootstrap on the Aptos network.
+
+## Quick Start
+
+To start with the create-aptos-dapp tool you can simply run this command on your terminal
+
+```bash
+npx create-aptos-dapp
+```
+
+## **What is create-aptos-dapp?**
+
+`create-aptos-dapp` simplifies the initial setup and configuration process, provides a modern development workflow, gives pre-made e2e dapp templates, and offers a range of benefits that save time and effort. Using `create-aptos-dapp` enables developers to build dapps quicker on Aptos.
+
+## **Why use create-aptos-dapp?**
+
+- **Template Setup**: `create-aptos-dapp` generates predefined end-to-end dapp templates and configuration files for you. It saves manual setup of the project structure, which can be time-consuming and error-prone.
+- **Dependencies Management**: `create-aptos-dapp` manages project dependencies for you. It generates a npm (or pnpm, etc.) package with the required packages. This ensures that the libraries used by your project are compatible.
+- **Move Directory:** `create-aptos-dapp` generates a `move` directory that includes the basic structure for Move modules (smart contracts). Additionally, it adds a basic Move module and associated files.
+- **Best Practices**: `create-aptos-dapp` incorporates best practices and structure recommendations to develop for the Aptos network. This ensures that your project starts with a solid foundation.
+- **Built-in Move Commands**: `create-aptos-dapp` includes built-in commands for common tasks, such as initializing the Move compiler, compiling, and publishing smart contracts on-chain. This abstracts Move development workflows for the average dapp developer.
+
+## What tools create-aptos-dapp utilizes?
+
+- React framework
+- Vite development tool
+- shadcn/ui + tailwind for styling
+- Aptos TS SDK
+- Aptos Wallet Adapter
+- Node based Move commands
+
+## How to use create-aptos-dapp?
+
+To create a Aptos dapp, open your terminal, `cd` into the directory you’d like to create the dapp in, and run the following command:
+
+```sh
+npx create-aptos-dapp
+```
+
+That command will download the tool and start the wizard flow where you can make project selections
+
+<!-- TODO GIF / Video of onboarding flow -->
+
+The tool will respond with next steps
+
+## Templates
+
+`create-aptos-dapp` provides you with pre-made end-to-end dapp templates, i.e a ready dapp with configurations and a beautiful UI to get you started with creating a dapp on Aptos.
+
+The goals of the templates are to
+
+1. Familiarize users with different Aptos Standards by having an end-to-end dapp template examples.
+2. Educate users on how to build a dapp on Aptos from the front-end layer to the smart contract layer and how everything in-between.
+3. Provide users with pre-made templates to quickly deploy simple dapps
+
+### Current Templates
+
+- [Digital Asset Template](./templates/digital-asset.md)
+- [Fungible Asset Template](./templates/fungible-asset.md)

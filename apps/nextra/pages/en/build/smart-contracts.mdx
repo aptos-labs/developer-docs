@@ -3,6 +3,7 @@ title: "Smart Contracts"
 ---
 
 import { RemoteCodeblock, permalinkFetch, Card, Cards } from '@components/index'
+import { Callout } from 'nextra/components'
 
 export async function getStaticProps() {
   return await permalinkFetch([
@@ -18,21 +19,21 @@ Move allows developers to write programs that flexibly manage and transfer asset
 ## 📖 Learn Move
 
 <Cards>
-  <Card href="smart-contracts/learn-move/book">
-    <Card.Title>Aptos Move Book</Card.Title>
-    <Card.Description>Learn the Move Language and general Move concepts on Aptos</Card.Description>
+  <Card href="smart-contracts/why-move">
+    <Card.Title>Why Move?</Card.Title>
+    <Card.Description>Learn why Aptos uses the Move Language</Card.Description>
   </Card>
-  <Card href="smart-contracts/learn-move/prover">
+  {/* <Card href="smart-contracts/prover">
     <Card.Title>Move Prover</Card.Title>
     <Card.Description>Formal specification and verification of Move contracts on Aptos</Card.Description>
+  </Card> */}
+  <Card href="smart-contracts/create-package">
+    <Card.Title>Create Package</Card.Title>
+    <Card.Description>Get started by learning how to create a Move package</Card.Description>
   </Card>
-  <Card href="smart-contracts/learn-move/first-move-module">
-    <Card.Title>Move on Aptos</Card.Title>
-    <Card.Description>Learn how to use Move on Aptos, how to use objects, fungible assets, publish modules, and more</Card.Description>
-  </Card>
-  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-framework/sources">
-    <Card.Title linkType="external">Aptos Framework Move Reference Source</Card.Title>
-    <Card.Description>See the source code for the framework modules and associated spec</Card.Description>
+  <Card href="smart-contracts/objects">
+    <Card.Title>Objects</Card.Title>
+    <Card.Description>Learn how to use the Object standard on Aptos to create composable and flexible primitives on chain</Card.Description>
   </Card>
 </Cards>
 
@@ -47,7 +48,7 @@ Move allows developers to write programs that flexibly manage and transfer asset
     <Card.Title linkType="external">Move Tutorial</Card.Title>
     <Card.Description>Covers the basics of programming with Move</Card.Description>
   </Card>
-  <Card href="smart-contracts/learn-move/first-move-module">
+  <Card href="guides/first-move-module">
     <Card.Title>Your first Move Module</Card.Title>
     <Card.Description>A `hello_blockchain` example of how to publish your first move module</Card.Description>
   </Card>
@@ -68,7 +69,6 @@ Here is a `hello_blockchain` example of move
 ### Move IDE plugins
 
 - [Aptos Move Analyzer](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer) for Visual Studio.
-- [Remix IDE Plugin](../community/contributions/remix-ide-plugin.md): {/* TODO: fix reference link */} Offers a web-based development environment. It is a no-setup tool with a graphical interface for developing Move modules.
 - [Move language plugin for JetBrains IDEs](https://plugins.jetbrains.com/plugin/14721-move-language): Supports syntax highlighting, code navigation, renames, formatting, type checks and code generation.
 
 ### External Resources

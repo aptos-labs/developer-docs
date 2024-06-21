@@ -46,6 +46,7 @@ git clone https://github.com/aptos-labs/developer-docs.git
 ## Install deps
 
 You may have to run the following command first if you are on macOS M1 Sonoma or newer
+
 ```sh
 pnpm add node-gyp -g
 ```
@@ -57,7 +58,6 @@ pnpm install
 ## Develop on Nextra (New)
 
 > Note: PLEASE SEE `apps/nextra/README.md` for more details!
-
 
 0. Setup environment
 
@@ -83,7 +83,7 @@ This will build `apps/nextra` and all local packages it depends on.
 cd apps/nextra
 ```
 
-3. Run development server
+3. Run the development server
 
 ```sh
 pnpm dev
@@ -97,13 +97,19 @@ pnpm dev
 cd apps/docusaurus
 ```
 
-2. Build the repository
+2. Run the development server
+
+```sh
+pnpm start
+```
+
+3. Build the repository
 
 ```sh
 pnpm build
 ```
 
-3. Navigate to the correct subdirectory
+4. Navigate to the correct subdirectory
 
 ```sh
 pnpm serve

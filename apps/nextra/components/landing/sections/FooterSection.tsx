@@ -70,7 +70,7 @@ export function FooterSection() {
               links={[
                 {
                   label: t.documentationLink,
-                  href: `/${locale}/build/quick-start`,
+                  href: `/${locale}/build/get-started`,
                 },
                 {
                   label: t.governanceLink,

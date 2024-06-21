@@ -1,0 +1,73 @@
+---
+title: "Create Package (Move)"
+---
+
+import { Steps, Callout, FileTree } from "nextra/components";
+import { RemoteCodeblock, permalinkFetch } from '@components/index';
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
+  ])
+}
+
+# Create Package
+
+<Callout>
+We recommend installing the Aptos CLI before beginning. 
+If you haven't already installed the Aptos CLI, see the [CLI section](../cli)
+</Callout>
+
+<Steps>
+
+### `aptos move init`
+
+In a new project directory, initialize a Move package by running:
+
+```bash filename="Terminal"
+aptos move init --name <PROJECT_NAME>
+```
+
+You should now have a Move project that looks like so:
+
+<FileTree>
+  <FileTree.Folder name="scripts" defaultOpen></FileTree.Folder>
+  <FileTree.Folder name="sources" defaultOpen></FileTree.Folder>
+  <FileTree.Folder name="tests" defaultOpen></FileTree.Folder>
+  <FileTree.File name="Move.toml" />
+</FileTree>
+
+### Update `Move.toml`
+
+In `Move.toml`, fill in the following key information:
+
+1. `name`: name of your package
+2. `version`: package version (default is `"0.0.0"`)
+3. `addresses`: Describes which address the module will be deployed to
+4. `dependencies`: You will likely want to use `AptosFramework` and other [Third Party Dependencies](./third-party-dependencies)
+
+Below is an example
+
+```toml filename="Move.toml"
+[package]
+name = "Examples"
+version = "0.0.0"
+
+[addresses]
+hello_blockchain = "_"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+```
+
+### Add to `sources` directory
+
+Add your code in the `sources` directory. Here we have a `hello_blockchain.move` example.
+
+<RemoteCodeblock 
+  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
+/>
+
+</Steps>

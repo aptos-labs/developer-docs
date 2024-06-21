@@ -34,16 +34,19 @@ hello_blockchain = "_"
 ```
 
 So, to compile this, you will need to pass in the value for `hello_blockchain` with the `--named-addresses` parameter.
+You can use either a full address e.g. `0x123456...7890` or a name of a profile in the CLI e.g. `default` or `superuser`.
+
+Below we will use `default` in our example:
 
 ```bash filename="Terminal"
-aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=superuser
+aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=default
 ```
 
 You can learn more about optional parameters when compiling Move contracts by running `aptos move compile --help`.
 
 ## 2. Unit Testing Move Contracts
 
-The Aptos CLI can also be used to compile and run unit tests locally by running:
+The Aptos CLI can also be used to compile and run unit tests locally by running:
 
 ```bash filename="Terminal"
 aptos move test --package-dir <your-package-directory>
@@ -55,7 +58,7 @@ You can learn more about the optional parameters for testing move contracts by r
 
 ### Printing Debugging Information
 
-When writing tests, it can be helpful to print out debug information or stack traces. You can do that by using `debug::print` and `debug::print_stack_trace` to print information when you use `aptos move test`. See an example of how they are used in [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move).
+When writing tests, it can be helpful to print out debug information or stack traces. You can do that by using `debug::print` and `debug::print_stack_trace` to print information when you use `aptos move test`. See an example of how they are used in [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move).
 
 To see the output of testing [DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move)’s package:
 
@@ -89,7 +92,7 @@ For more on how to write unit tests with Move, follow this [Move tutorial](https
 
 ## 3. Generating Test Coverage Reports
 
-The Aptos CLI can be used to analyze and improve the testing of your Move modules. To use this feature:
+The Aptos CLI can be used to analyze and improve the testing of your Move modules. To use this feature:
 
 To see the code coverage of your tests run the following command from your Move package’s directory:
 
@@ -117,7 +120,7 @@ The package will be published to your default profile in the CLI. You can overri
 
 Please also note that when publishing Move modules, if multiple modules are in one package, then all modules in that package must use the same account. If they use different accounts, then the publishing will fail at the transaction level.
 
-You can estimate the gas fees associated with publishing your Move contract by using the [Gas Profiler](../../move/move-on-aptos/gas-profiling.mdx). {/* TODO: Fix this link */}
+You can estimate the gas fees associated with publishing your Move contract by using the [Gas Profiler](working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx). {/* TODO: Fix this link */}
 
 <Callout type="warning">
 By default Move contracts publish their source code. To avoid publishing with source code, publish with the `--included-artifacts none` argument.
@@ -223,7 +226,7 @@ Which should result in:
 
 ## 6. (Optional) Formally Verifying Move Scripts
 
-For cases where you want to guarantee that your code works as expected beyond unit testing, you can use the [Move Prover](../smart-contracts/learn-move/prover.mdx) to formally verify your Move contract code.
+For cases where you want to guarantee that your code works as expected beyond unit testing, you can use the [Move Prover](../smart-contracts/prover.mdx) to formally verify your Move contract code.
 
 You can install the Move Prover by following [these steps](setup-cli/install-move-prover.mdx).
 

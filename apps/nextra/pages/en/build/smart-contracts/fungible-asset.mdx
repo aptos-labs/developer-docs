@@ -1,0 +1,435 @@
+---
+title: "Aptos Fungible Asset (FA) Standard"
+id: "fungible-asset"
+---
+
+import { Callout } from "nextra/components";
+import { ThemedImage } from "@components/index";
+
+# Aptos Fungible Asset (FA) Standard
+
+The Aptos Fungible Asset Standard (also known as “Fungible Asset” or “FA”) provides a standard, type-safe way to define fungible assets in the Move ecosystem. It is a modern replacement for the `coin` module that allows for seamless minting, transfer, and customization of fungible assets for any use case. 
+
+This standard is important because it allows fungible assets on Aptos (such as Currencies and Real World Assets (RWAs)) to represent and transfer ownership in a consistent way dApps can recognize. This standard also allows for more extensive customization than the `coin` module did by leveraging [Move Objects](objects.mdx) to represent fungible asset data. 
+
+The FA standard provides all the functionality you need to create, mint, transfer, and burn fungible assets (as well as automatically allowing recipients of the fungible asset to store and manage any fungible assets they receive). 
+
+It does so by using two Move Objects:
+
+1. `Object<Metadata>` - This represents details about the fungible asset itself, including information such as the `name`, `symbol`, and `decimals`.
+2. `Object<FungibleStore>` - This stores a count of fungible asset units owned by this account. Fungible assets are interchangeable with any other fungible asset that has the same metadata. An account *may* own more than one `FungibleStore` for a single Fungible Asset, but that is only for advanced use cases.
+
+The diagram below shows the relationship between these Objects. The `Metadata` Object is owned by the Fungible Asset creator, then referenced in FA holders' `FungibleStore`s to indicate which FA is being tracked:
+
+<ThemedImage
+alt="FA Object Relationship"
+sources={{
+    light: '/docs/fa-diagram-light.png',
+    dark: '/docs/fa-diagram-dark.png',
+  }}
+/>
+
+[This implementation](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) is an improvement on the `coin` Standard because Move Objects are more customizable and extensible via smart contract. See the advanced guides on writing [Move Objects](objects.mdx) for more details. 
+The FA standard also automatically handles tracking how much of a fungible asset an account owns, as opposed to requiring the recipient to register a `CoinStore` resource separate from the transfer.
+
+## Creating a new Fungible Asset (FA)
+
+At a high level, this is done by:
+
+1. Creating a non-deletable Object to own the newly created Fungible Asset `Metadata`.
+2. Generating `Ref`s to enable any desired permissions.
+3. Minting Fungible Assets and transferring them to any account you want to.
+
+To start with, the Fungible Asset standard is implemented using Move Objects. Objects by default are transferable, can own multiple resources, and can be customized via smart contract. For full details on Objects and how they work, please read [this guide](objects.mdx). 
+
+To create an FA, first you need to create a **non-deletable Object** since destroying the metadata for a Fungible Asset while there are active balances would not make sense. You can do that by either calling `object::create_named_object(caller_address, NAME)` or `object::create_sticky_object(caller_address)` to create the Object on-chain.
+
+When you call these functions, they will return a `ConstructorRef`. `Ref`s allow Objects to be customized immediately after they are created. You can use the `ConstructorRef` to generate other permissions that may be needed based on your use case. 
+
+<Callout type="info">
+Note that the `ConstructorRef` cannot be stored and is destroyed by the end of the transaction used to create this Object, so any `Ref`s must be generated during Object creation.
+</Callout>
+
+One use for the `ConstructorRef` is to generate the FA `Metadata` Object. The standard provides a generator function called `primary_fungible_store::create_primary_store_enabled_fungible_asset` which will allow your fungible asset to be transferred to any account. This method makes it so the primary `FungibleStore` for recipients is automatically created or re-used so you don’t need to create or index the store directly.
+
+This is what `create_primary_store_enabled_fungible_asset` looks like: 
+
+```move filename="example.move"
+public fun create_primary_store_enabled_fungible_asset(
+    constructor_ref: &ConstructorRef,
+    // This ensures total supply does not surpass this limit - however, 
+    // Setting this will prevent any parallel execution of mint and burn.
+    maximum_supply: Option<u128>,
+    // The fields below here are purely metadata and have no impact on-chain.
+    name: String,
+    symbol: String,
+    decimals: u8,
+    icon_uri: String,
+    project_uri: String,
+)
+```
+
+<Callout type="info">
+Alternatively, you can use `add_fungibility` which uses the same parameters, but requires recipients to keep track of their `FungibleStore` addresses to keep track of how many units of your FA they have.
+</Callout>
+
+Once you have created the Metadata, you can also use the `ConstructorRef` to generate additional `Ref`s. In addition to the usual [Object Refs](objects/creating-objects.mdx), FAs define three additional permissions you can generate:
+
+1. `MintRef` offers the capability to mint new FA units.
+2. `TransferRef` offers the capability to freeze accounts from transferring this FA, or to bypass an existing freeze. (This can be important when trying to be compliant with some regulations).
+3. `BurnRef` offers the capability to burn or delete FA units.
+
+<Callout type="warning">
+Note: All `Ref`s must be generated when the Object is created as that is the only time you can generate an Object’s `ConstructorRef`.
+</Callout>
+
+To generate an Object with all FA permissions, you could deploy a contract like this:
+
+```move filename="example.move"
+module my_addr::fungible_asset_example {
+    use aptos_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata, FungibleAsset};
+    use aptos_framework::object::{Self, Object};
+    use aptos_framework::primary_fungible_store;
+    use std::error;
+    use std::signer;
+    use std::string::utf8;
+    use std::option;
+  
+  const ASSET_SYMBOL: vector<u8> = b"FA";
+
+	// Make sure the `signer` you pass in is an address you own.
+	// Otherwise you will lose access to the Fungible Asset after creation.
+  entry fun init_module(admin: &signer) {
+    // Creates a non-deletable object with a named address based on our ASSET_SYMBOL
+    let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
+    
+    // Create the FA's Metadata with your name, symbol, icon, etc.
+    primary_fungible_store::create_primary_store_enabled_fungible_asset(
+        constructor_ref,
+        option::none(),
+        utf8(b"FA Coin"), /* name */
+        utf8(ASSET_SYMBOL), /* symbol */
+        8, /* decimals */
+        utf8(b"http://example.com/favicon.ico"), /* icon */
+        utf8(b"http://example.com"), /* project */
+    );
+    
+    // Generate the MintRef for this object
+    // Used by fungible_asset::mint() and fungible_asset::mint_to()
+		let mint_ref = fungible_asset::generate_mint_ref(&constructor_ref)
+		
+    // Generate the TransferRef for this object
+    // Used by fungible_asset::set_frozen_flag(), fungible_asset::withdraw_with_ref(),  
+    // fungible_asset::deposit_with_ref(), and fungible_asset::transfer_with_ref().
+		let transfer_ref = fungible_asset::generate_transfer_ref(&constructor_ref)
+		
+    // Generate the BurnRef for this object
+    // Used by fungible_asset::burn() and fungible_asset::burn_from()
+		let burn_ref = fungible_asset::generate_burn_ref(&constructor_ref)
+    
+    // Add any other logic required for your use case.
+    // ...
+  }
+}
+```
+
+<Callout type="info">
+For a full example of how to create your own Fungible Asset module, please see [fa_coin.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/fungible_asset/fa_coin/sources/FACoin.move). 
+Alternatively, you can explore the collection of [FA example code here](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset).
+</Callout>
+
+Now you can use the `MintRef` to mint via:
+
+```move filename="example.move"
+public fun mint(ref: &MintRef, amount:u64): FungibleAsset
+```
+
+Or burn FA units using the `BurnRef` like so:
+
+```move filename="example.move"
+public fun burn(ref: &BurnRef, fa: FungibleAsset)
+```
+
+At this point, you can mint, transfer, and burn Fungible Assets using the `Ref`s you generated. See the above example Move scripts for how to implement those entry functions.
+
+## Reference Docs
+
+You can find the complete set of functions that the Fungible Asset Standard provides [here](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-framework/doc/fungible_asset.md). {/* TODO: Update the Move Reference link once we migrate that page */}
+
+The basic features owners of Fungible Assets can use include the following.
+
+### Withdraw
+
+An owner can withdraw FA from their primary store by calling:
+
+```move filename="withdraw"
+public fun primary_fungible_store::withdraw<T: key>(owner: &signer, metadata: Object<T>, amount:u64): FungibleAsset
+```
+This function will emit a `WithdrawEvent`.
+
+### Deposit
+
+An owner can deposit FA to their primary store by calling:
+
+```move filename="deposit"
+public fun primary_fungible_store::deposit(owner: address, fa: FungibleAsset)
+```
+
+This function will emit a `DepositEvent`.
+
+### Transfer
+An owner can deposit FA from their primary store to that of another account by calling:
+
+```move filename="transfer"
+public entry fun primary_fungible_store::transfer<T: key>(sender: &signer, metadata: Object<T>, recipient: address, amount:u64)
+```
+
+This will emit both `WithdrawEvent` and `DepositEvent` on the respective `FungibleStore`s.
+
+### Check Balance
+
+To check the balance of a primary store, call:
+
+```move filename="check_balances"
+public fun primary_fungible_store::balance<T: key>(account: address, metadata: Object<T>): u64
+```
+
+### Check Frozen Status
+
+To check whether the given account's primary store is frozen, call:
+
+```move filename="is_frozen"
+public primary_fungible_store::fun is_frozen<T: key>(account: address, metadata: Object<T>): bool
+```
+
+### Events
+
+FAs have three events emitted from the above basic functions:
+
+1. `Deposit`: Emitted when FAs are deposited into a store.
+    
+```move filename="deposit_event"
+struct Deposit has drop, store {
+    store: address,
+    amount: u64,
+}
+```
+    
+2. `Withdraw`: Emitted when FAs are withdrawn from a store.
+    
+```move filename="withdraw_event"
+struct Withdraw has drop, store {
+    store: address,
+    amount: u64,
+}
+```
+    
+3. `Frozen`: Emitted when the frozen status of a fungible store is updated.
+    
+```move filename="frozen_event"
+struct Frozen has drop, store {    
+    store: address,
+    frozen: bool,
+}
+```
+
+## Dispatchable Fungible Asset (Advanced)
+
+Aside from the default managed fungible asset functionality provided by the Aptos Framework, fungible asset issuers can implement their own deposit/withdraw logic using the dispatchable fungible asset standard. This is done by registering custom hook functions to be invoked at withdrawal/deposit time. These hook functions are stored in the metadata of a fungible asset class, and the Aptos Framework will automatically invoke them instead of the default logic. This allows issuers to implement complex logic, such as customized access control. For more details, refer to the corresponding [AIP](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
+
+### Implementing the Hook Function
+
+To implement a custom hook function, build a module with functions that have the following signature:
+
+```move filename="example.move"
+module my_addr::my_fungible_asset_example {
+    // ...
+    public fun withdraw<T: key>(
+        store: Object<T>,
+        amount: u64,
+        transfer_ref: &TransferRef,
+    ): FungibleAsset {
+        // Your custom logic here
+    }
+
+    public fun deposit<T: key>(
+        store: Object<T>,
+        fa: FungibleAsset,
+        transfer_ref: &TransferRef,
+    ) {
+        // Your custom logic here
+    }
+    // ...
+}
+```
+
+### Limitations
+
+- **Reentrancy Prevention**: Only call `with_ref` APIs in your custom hooks for deposit/withdraw operations.
+    - Use `fungible_asset::deposit_with_ref` instead of `fungible_asset::deposit`.
+    - Use `fungible_asset::withdraw_with_ref` instead of `fungible_asset::withdraw`.
+- Avoid calling functions defined in `dispatchable_fungible_asset` and `primary_fungible_store`, _except_ for inline functions, to prevent errors during transfers.
+- Note that calling `fungible_asset::withdraw` and `fungible_asset::deposit` will NOT work for assets with registered hooks. See more information in Interacting with dispatchable fungible asset.
+
+For more details on these limitations, refer to the [AIP](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md).
+
+### Registering the Hook Function
+
+Once the functions are implemented, use the API defined in `dispatchable_fungible_asset::register_dispatch_functions` to bind the functions with your fungible asset.
+
+```move filename="register_dispatch"
+module 0x1::dispatchable_fungible_asset {
+    public fun register_dispatch_functions(
+        constructor_ref: &ConstructorRef,
+        withdraw_function: Option<FunctionInfo>,
+        deposit_function: Option<FunctionInfo>,
+        derived_balance_function: Option<FunctionInfo>,
+    )
+}
+```
+
+<Callout type="info">
+The `register_dispatch_functions` function takes `Option<FunctionInfo>` as input to specify whether to use custom or default logic for withdraw/deposit/balance operations. If `option::none()` is passed, the default logic is used.
+The `constructor_ref` is a reference for the metadata object of your fungible asset.
+</Callout>
+
+To construct `FunctionInfo`, use:
+
+```move filename="new_function_info"
+module 0x1::dispatchable_fungible_asset {
+    public fun new_function_info(module_signer: &signer, module_name: String, function_name: String): FunctionInfo
+}
+```
+
+For security reasons, you need the signer of the module (the deployer or code owner) to create a FunctionInfo.
+
+```move filename="example.move"
+module my_addr::my_fungible_asset_example {
+    use aptos_framework::string;
+    use aptos_framework::object;
+    use aptos_framework::primary_fungible_store;
+    use aptos_framework::dispatchable_fungible_asset;
+
+    fun create_fungible_asset(module_signer: &signer, /* ... */) {
+        // Make the deposit override function info
+        let deposit_override = dispatchable_fungible_asset::new_function_info(
+            module_signer, 
+            string::utf8(b"example"), 
+            string::utf8("deposit")
+        );
+        
+        // Create the fungible asset
+        let constructor_ref = object::create_sticky_object( /* ... */);
+
+        primary_fungible_store::create_primary_store_enabled_fungible_asset(&constructor_ref, ...);
+        // or below if not having primary stores
+        // fungible_asset::add_fungibility(&constructor_ref, /* ... */);
+
+        // Override default functionality for deposit
+        dispatchable_fungible_asset::register_dispatch_functions(
+            &constructor_ref,
+            option::none(),
+            option::some(deposit_override),
+            option::none()
+        );
+
+        // ...
+    }
+
+    // ...
+}
+```
+
+### Interacting with dispatchable fungible asset
+For users using `primary_fungible_store` to manage assets, no changes are required to interact with assets with dispatchable hooks. The Aptos Framework automatically invokes the dispatch logic if a hook is set up.
+
+For users using secondary `FungibleStore` to interact with assets, use `dispatchable_fungible_asset::withdraw/deposit` instead of `fungible_asset::withdraw/deposit` to handle assets with registered hooks.
+
+The `dispatchable_fungible_asset::withdraw/deposit` functions are replacements, and also work with functions that do not have hooks registered.
+
+## Managing Stores (Advanced)
+
+Behind the scenes, the Fungible Asset Standard needs to manage how the asset balances are stored on each account. In the vast majority of circumstances, users will store all FA balances in their Primary `FungibleStore`. Sometimes though, additional “Secondary Stores” can be created for advanced DeFi applications.
+
+- Each account owns only one non-deletable primary store for each type of FA, the address of which is derived in a deterministic manner from the account address and metadata object address. If primary store does not exist, it will be created if FA is going to be deposited by calling functions defined in `primary_fungible_store.move`
+- Secondary stores do not have deterministic addresses and are deletable when empty. Users are able to create as many secondary stores as they want using the provided functions but there is a caveat that addressing secondary stores on-chain may be more complex.
+
+You can look up a primary store via the following function:
+
+```move filename="primary_store"
+public fun primary_store<T: key>(owner: address, metadata: Object<T>): Object<FungibleStore>
+```
+
+And if you want to create a primary store manually you can use this function: 
+
+```move filename="create_primary_store"
+public fun create_primary_store<T: key>(owner_addr: address, metadata: Object<T>): Object<FungibleStore>
+```
+
+The primary reason to use a secondary store is for assets managed by a smart contract. For example, an asset pool may have to manage multiple fungible stores for one or more types of FA.
+
+To create a secondary store, you must:
+
+1. Create an Object to get its `ConstructorRef`.
+2. Call:
+    
+```move filename="create_store"
+public fun create_store<T: key>(constructor_ref: &ConstructorRef, metadata: Object<T>): Object<FungibleStore>
+```
+    
+
+This will create a secondary store owned by the newly created Object. Sometimes an object can be reused as a store. For example, a metadata object can also be a store to hold some FA of its own type or a liquidity pool object can be a store of the issued liquidity pool's coin.
+
+It is crucial to set the correct owner of a `FungibleStore` object for managing the FA stored inside. By default, the owner of a newly created object is the creator whose `signer` is passed into the creation function. For `FungibleStore` objects managed by smart contract itself, the owner should usually be an Object address controlled by the contract. For those cases, those objects should keep their `ExtendRef` at the proper place to create `signer` as needed to modify the `FungibleStore` via contract logic.
+
+## Migration from `Coin` to the Fungible Asset Standard
+
+### Smart Contract Migration
+
+**Projects utilizing the `coin` module do not need to modify their contracts.** The `coin` module has been enhanced to handle migration automatically. Whenever a paired FA is required for a `coin`, it will be automatically created if it doesn't already exist. The mapping between coins and FAs is immutable and stored in an on-chain table:
+
+```move filename="coin_conversion"
+struct CoinConversionMap has key {
+    coin_to_fungible_asset_map: Table<TypeInfo, address>,
+}
+```
+
+A `#[view]` function is available to retrieve metadata for the paired FA if it exists:
+
+```move filename="paired_metadata"
+#[view]
+public fun paired_metadata<CoinType>(): Option<Object<Metadata>>
+```
+
+Similarly, a function exists for reverse lookup:
+
+```move filename="paired_coin"
+#[view]
+public fun paired_coin(metadata: Object<Metadata>): Option<TypeInfo>
+```
+
+### Off-chain Migration
+
+There are two changes needed for off-chain services: 
+
+1. Balances should reflect that a user may have **both** a `coin` balance and a paired FA balance.
+2. Event listeners should listen for both `coin` and FA events.
+
+Since a user may possess **both** a `coin` balance and a paired FA balance, off-chain applications should be updated to reflect the **sum** of both the `coin` balance and its paired FA balance.
+
+- For Aptos Indexer users, you may utilize a new table called `current_unified_fungible_asset_balances` to obtain the latest sum of coin balance and FA balance representing the same asset type.
+- For users employing Node API or other customized indexing, they should add the balance of the paired FA in users' `FungibleStore` and `ConcurrentFungibleBalance` if any of them exist to the coin balance.
+
+To retrieve the balance of the `PrimaryFungibleStore` for a paired FA to an existing `coin` of type `CoinType`:
+
+1. Call `paired_metadata<CoinType>()` to obtain the paired FA metadata object address (the address is immutable).
+2. Retrieve the balance of the paired FA:
+    - Call [getCurrentFungibleAssetBalances](https://github.com/aptos-labs/aptos-ts-sdk/blob/c01a26ff899235fac1c31c6cc3fe504b764e5b91/src/api/fungibleAsset.ts#L115).
+    - Alternatively, determine the address of the primary `FungibleStore`, which can be deterministically calculated with the following formula:
+        - `sha3_256(32-byte account address | 32-byte metadata object address | 0xFC)`
+    - Then use that address to obtain the `FungibleStore` resource to fetch the balance.
+        - If the balance is non-zero, this is the final balance of this FA.
+        - Otherwise, try to get `ConcurrentFungibleBalance` resource at the same address and get the balance there instead.
+        - If neither exist, the FA balance for this account is 0.
+
+**Post-migration, both coin events and FA events could be emitted for an activity, depending on whether the user has migrated or not.** Dapps relying on events should update their business logic accordingly.

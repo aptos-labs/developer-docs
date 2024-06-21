@@ -1,12 +1,17 @@
 export default {
+  "---get-started---": {
+    type: "separator",
+    title: "Get Started",
+  },
   "install-cli": {
     title: "Installation",
   },
   "setup-cli": {
     title: "Setup",
   },
-  "---": {
+  "---usage---": {
     type: "separator",
+    title: "Usage",
   },
   "working-with-move-contracts": {
     title: "Working With Move Contracts",

@@ -30,8 +30,8 @@ export default {
       cli: {
         title: "CLI",
       },
-      tutorials: {
-        title: "Tutorials",
+      guides: {
+        title: "Guides",
       },
     },
   },

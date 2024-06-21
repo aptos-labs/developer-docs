@@ -17,6 +17,9 @@ export default {
   "cpp-sdk": {
     title: "C++ / Unreal SDK",
   },
+  "kotlin-sdk": {
+    title: "Kotlin SDK",
+  },
   "wallet-adapter": {
     title: "Wallet Adapter",
   },

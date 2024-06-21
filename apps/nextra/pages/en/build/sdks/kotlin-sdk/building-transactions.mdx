@@ -1,0 +1,169 @@
+import { Steps, Callout } from "nextra/components";
+
+# Building and Sending Transactions
+
+Kaptos boasts an expressive and type-safe DSL-style API for building and sending
+transactions on-chain. This guide will walk you through the process of building
+and sending transactions using Kaptos.
+
+The typical flow for sending a transaction is as follows:
+
+1. Create an account (if you don't already have one).
+2. Build the transaction.
+3. Sign the transaction.
+4. Submit the transaction.
+
+<Steps>
+### Create an Account
+  To create a new account, you first generate new credentials then fund the
+  account. On test networks, you can fund an account programmatically by asking
+  a "faucet".
+```kotlin
+val aliceAccount = Account.generate()
+val bobAccount = Account.generate()
+```
+  OR
+
+  If you have a private key, you can use it to create an `Account` object to manage
+  those credentials.
+```kotlin
+val privateKey = Ed25519PrivateKey("myEd25519privatekeystring")
+val account = Account.fromPrivateKey(privateKey)
+```
+
+### Build the Transaction
+  Kaptos provides a `buildTransaction.simple` method to build a transaction. You can specify
+  the sender, entry function data like the function name, type arguments, and function arguments.
+  You can also configure the transaction with the gas price and maximum gas amount. However, reasonable
+  defaults are provided for these values in case you don't specify them.
+
+```kotlin
+val txn = aptos.buildTransaction.simple(
+    sender = aliceAccount.accountAddress,
+    data = inputEntryFunctionData {
+        function = "0x1::coin::transfer"
+        typeArguments = typeArguments {
+            +TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())
+        }
+        functionArguments = functionArguments {
+            +MoveString(bobAccount.accountAddress)
+            +U64(SEND_AMOUNT)
+        }
+    },
+)
+```
+
+### Sign the Transaction
+  Once you have built a transaction, you can sign it using the `sign` method.
+```kotlin
+  val aliceAuthenticator = aptos.sign(
+      sender = aliceAccount,
+      transaction = txn,
+  )
+```
+
+### Submit the Transaction
+  Finally, you can submit the transaction to the network using the `submit` method.
+```kotlin
+val commitedTransaction = aptos.submitTransaction.simple(
+      transaction = signedTransaction,
+      senderAuthenticator = aliceAuthenticator,
+)
+```
+
+  <Callout type="info" emoji="ℹ️">
+    You can collapse the signing and submitting steps into one by using the `signAndSubmitTransaction` method.
+
+```kotlin
+val executedTransaction = aptos.signAndSubmitTransaction(
+      signer = aliceAccount,
+      transaction = commitedTransaction,
+)
+```
+  </Callout>
+
+### Wait for the Transaction to Execute
+  Then you can wait for the transaction to be executed by using the `waitForTransaction` method.
+```kotlin
+val executedTransaction = aptos.waitForTransaction(HexInput.fromString(commitedTransaction.expect("Transaction failed").hash))
+```
+
+</Steps>
+
+### Full Kotlin Example
+
+The following is a complete example of how to build and send a transaction to transfer APT:
+
+```kotlin filename="transaction.kt"
+
+/**
+ * This example shows how to use the Aptos SDK to send a transaction.
+ * Don't forget to add the Kaptos dependency to your project before running this example!
+ */
+
+import xyz.mcxross.kaptos.Aptos
+import xyz.mcxross.kaptos.core.account.Account
+import xyz.mcxross.kaptos.extension.asAccountAddress
+import xyz.mcxross.kaptos.extension.asPrivateKey
+import xyz.mcxross.kaptos.extension.toStructTag
+import xyz.mcxross.kaptos.model.*
+
+const val FUNDING_AMOUNT = 1_000_000_000L
+const val SEND_AMOUNT = 100_000_000UL
+
+val aptos = Aptos()
+
+  // Let's create a private key from a hex string
+val alicePrivateKey = "0x1893cc5626444a03978480882de32faf9a820afb31b8075159dda107db1b470d".asPrivateKey()
+
+  // And now that we have a private key, let's create an account from it
+val aliceAccount = Account from alicePrivateKey
+
+  // Assuming we have an account, let's check the balance
+val aliceInitialBalance = when (val aliceInitialBalance = aptos.getAccountAPTAmount(aliceAccount.accountAddress)) {
+      is Option.None -> throw IllegalStateException("Alice's account does not exist")
+      is Option.Some -> aliceInitialBalance.expect("Alice's account does not exist")
+    }
+
+println("Alice's initial balance: $aliceInitialBalance")
+println(
+    "Bob's initial balance: ${aptos.getAccountAPTAmount("0x088698359f12ef2b19ba3bda04e129173d0672b5de8d77ce9e8eb0a149c23f04".asAccountAddress()).expect("Bob's account does not exist")}"
+)
+  println("=============================================")
+
+  // Yes, we have an account, but let's see if we need to fund it
+  if (aliceInitialBalance < SEND_AMOUNT.toLong() + 1_000) {
+    aptos.fundAccount(aliceAccount.accountAddress, FUNDING_AMOUNT)
+    println(
+      "Alice's new balance after funding: ${aptos.getAccountAPTAmount(aliceAccount.accountAddress)}"
+    )
+  }
+
+val bobAccountAddress = "0x088698359f12ef2b19ba3bda04e129173d0672b5de8d77ce9e8eb0a149c23f04".asAccountAddress()
+
+println("Building transaction to send ${SEND_AMOUNT / 100_000_000u} APT to Bob: $bobAccountAddress")
+
+val txn = aptos.buildTransaction.simple(
+      sender = aliceAccount.accountAddress,
+      data =
+        inputEntryFunctionData {
+          function = "0x1::coin::transfer"
+          typeArguments = typeArguments {
+            +TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())
+          }
+          functionArguments = functionArguments {
+            +MoveString(bobAccountAddress.value)
+            +U64(SEND_AMOUNT)
+          }
+        },
+    )
+
+  // Sign and submit the transaction
+val commitedTransaction = aptos.signAndSubmitTransaction(aliceAccount, txn)
+
+val executedTransaction =
+    aptos.waitForTransaction(HexInput.fromString(commitedTransaction.expect("Transaction failed").hash))
+
+```
+
+

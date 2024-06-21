@@ -34,13 +34,13 @@ If you would like to update the Aptos CLI to the latest version, you can run `ap
 
 # Install via Pre-Compiled Binaries (Backup Method)
 
-1. Go to the [Aptos CLI release page](https://github.com/aptos-labs/aptos-core/releases?q=cli&expanded=true).
-2. Click the "Assets" expandable menu for the latest release to see the pre-compiled binaries.
+1. Go to the [Aptos CLI release page](https://github.com/aptos-labs/aptos-core/releases?q=cli&expanded=true).
+2. Click the "Assets" expandable menu for the latest release to see the pre-compiled binaries.
 3. Download the zip file for Windows.
    1. It will have a name like: `aptos-cli-<version>-Windows-x86_64.zip`
    2. You will likely have to dismiss warnings that this is a suspicious file when downloading.
 4. Unzip the downloaded file.
-5. Move the extracted Aptos binary file into the folder you would like to call it from in the future.
+5. Move the extracted Aptos binary file into the folder you would like to call it from in the future.
 6. Right click, then copy the path to the executable.
    1. Ex. `C:\Users\<username>\Downloads\aptos-cli-3.1.0-Windows-x86_64\aptos.exe`.
 7. Open PowerShell via the Start Menu.

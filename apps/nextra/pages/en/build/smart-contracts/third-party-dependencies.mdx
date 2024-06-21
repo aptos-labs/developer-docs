@@ -1,0 +1,277 @@
+---
+title: "Third Party Dependencies"
+---
+
+import { FileTree } from "nextra/components";
+import { Callout } from 'nextra/components'
+
+
+# Third Party Dependencies
+
+Third party dependencies are external [modules](book/modules-and-scripts.mdx) that a controlled module interacts with. Typically, these external modules exist under different accounts.
+
+
+## Multi-DEX router example
+
+A multi-DEX router actively utilizes third party dependencies. Instead of submitting multiple transactions to interact with different DEXs and their individual [entry](book/functions.mdx#entry-modifier) functions within a swap route, a module (or [script](book/modules-and-scripts.mdx#scripts)) can consolidate all independent DEX invocations into a single, atomic transaction. The multi-DEX router references and calls to functions present in each of the third party DEX modules to achieve this.
+
+## Sources
+
+Third party dependencies will have varying amounts of reliability and available information based on where they’re sourced from. Specifically, documentation for a few instances will be non-existant, as well as logic potentially being refactored.
+
+Source code that is verified against the on-chain deployed module, like the [Git Repository](#git-repository) and [Local Source Code](#local-source-code), should always be preferred. If neither of those are available, there are other options to depend on usable code, like [decompiled code](#decompiled-code), [bytecode](#bytecode), and [ABI](#abi)-crafted code.
+
+### Git Repository
+
+The default `Move.toml` includes `AptosFramework` as a git repository dependency:
+
+```toml filename="Move.toml"
+  [dependencies.AptosFramework]
+  git = "<https://github.com/aptos-labs/aptos-core.git>"
+  rev = "mainnet"
+  subdir = "aptos-move/framework/aptos-framework"
+```
+
+When Aptos CLI commands are ran, updates to the dependency are automatically retrieved and compiled against.
+
+### Local Source Code
+
+Third party source code can be included in the `sources` directory. Essentially treating it the same as custom code.
+
+<FileTree>
+  <FileTree.Folder name="third_party_dependency_project" defaultOpen>
+    <FileTree.Folder name="source" defaultOpen>
+      <FileTree.File name="{ControlledCode}.move"/>
+      <FileTree.File name="{ThirdPartyCode}.move"/>
+    </FileTree.Folder>
+    <FileTree.File name="Move.toml"/>
+  </FileTree.Folder>
+</FileTree>
+
+<Callout type="warning" emoji="⚠️">
+    Any upgrades to the Third Party dependency will need to be retrieved, manually.
+</Callout>
+
+### Decompiled code
+
+Move code can be reconstructed by using the [Revela Compiler](https://aptoslabs.medium.com/move-revealed-the-revela-decompiler-b206eaf48b45#27ad) against a package’s bytecode:
+
+```bash filename="Terminal"
+aptos move decompile --package-path ./bytecode_modules
+```
+
+Corresponding `{ModuleName}.mv.move` files will be generated in `bytecode_modules`.
+<FileTree>
+  <FileTree.Folder name="third_party_dependency_project" defaultOpen>
+    <FileTree.Folder name="byte_modules" defaultOpen>
+      <FileTree.File name="{ModuleName}.mv"/>
+      <FileTree.File name="{ModuleName}.mv.move"/>
+    </FileTree.Folder>
+    <FileTree.File name="Move.toml"/>
+  </FileTree.Folder>
+</FileTree>
+
+Reference it as a local source file after changing the file type to `{ModuleName}.move` and placing it in the workspace’s `sources` directory.
+<FileTree>
+  <FileTree.Folder name="third_party_dependency_project" defaultOpen>
+    <FileTree.Folder name="sources" defaultOpen>
+      <FileTree.File name="{ModuleName}.move"/>
+    </FileTree.Folder>
+    <FileTree.File name="Move.toml"/>
+  </FileTree.Folder>
+</FileTree>
+
+<Callout type="info" emoji="ℹ️">
+    Decompiled code will keep behaviors of on-chain execution, but will be refactored.
+</Callout>
+
+
+### Bytecode
+
+The Aptos CLI allows for downloading a [package's](book/packages.mdx) bytecode. 
+
+```bash filename="Terminal"
+aptos move download --account {account_addr} --bytecode --package {package_name} 
+```
+
+Each bytecode dependency requires their own package, with a structure of:
+- `Move.toml` file, with the package address pre-defined.
+- `build/{ModuleName}/bytecode_modules` directory with the bytecode inside.
+- Empty sources directory.
+
+The controlled module can then reference the dependency, upon it's inclusion in the controlled package's `Move.toml`.
+
+<details>
+
+<summary>Aptos Token example</summary>
+
+A controlled `invoking_code.move` module interacts with the external `aptos_token` module:
+```move filename="invoking_code.move"
+module invoker::invoking_code {
+    use aptos_token_objects_addr::aptos_token;
+
+    public entry fun wrapper_add_property(): u64 {
+        aptos_token::add_property(...);
+    }
+}
+```
+
+The below command retrieves the necessary [AptosTokenObjects package](https://explorer.aptoslabs.com/account/0x4/modules/code/aptos_token/mint?network=mainnet) bytecode from the Mainnet.
+
+```bash filename="Terminal"
+aptos move download --account 0x4 \
+--bytecode --package AptosTokenObjects \
+--output-dir ./aptos_token_bytecode_output/
+```
+
+<FileTree>
+  <FileTree.Folder name="invoking_code" defaultOpen>
+      <FileTree.Folder name="aptos_token_bytecode_output" defaultOpen>
+        <FileTree.Folder name="byte_modules" defaultOpen>
+        <FileTree.File name="aptos_token.mv"/>
+        </FileTree.Folder>
+      </FileTree.Folder>
+      <FileTree.Folder name="sources">
+        <FileTree.File name="invoking_code.move"/>
+      </FileTree.Folder>
+      <FileTree.File name="Move.toml"/>
+  </FileTree.Folder>
+</FileTree>
+
+
+
+
+The created dependency package structure and contents for `aptos_token` is:
+<FileTree>
+  <FileTree.Folder name="aptos_token_objects_addr" defaultOpen>
+    <FileTree.Folder name="build" defaultOpen>
+      <FileTree.Folder name="aptos_token" defaultOpen>
+        <FileTree.Folder name="bytecode_modules" defaultOpen>
+          <FileTree.File name="aptos_token.mv"/>
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree.Folder>
+    <FileTree.Folder name="sources">
+      <FileTree.File name="..."/>
+    </FileTree.Folder>
+    <FileTree.File name="Move.toml"/>
+    </FileTree.Folder>
+    <FileTree.Folder name="invoking_code">
+      <FileTree.Folder name="aptos_token_bytecode_output" >
+        <FileTree.Folder name="byte_modules" defaultOpen>
+        <FileTree.File name="aptos_token.mv"/>
+        <FileTree.File name="aptos_token.mv.move"/>
+        <FileTree.File name="..."/>
+        </FileTree.Folder>
+      </FileTree.Folder>
+      <FileTree.Folder name="sources">
+        <FileTree.File name="invoking_code.move"/>
+      </FileTree.Folder>
+      <FileTree.File name="Move.toml"/>
+  </FileTree.Folder>
+</FileTree>
+
+```toml filename="aptos_token_objects_addr/Move.toml"
+[package]
+name = "aptos_token"
+version = "0.0.0"
+[addresses]
+aptos_token_module_addr = "0x4"
+```
+
+
+The dependency list from the controlled `invoking_code.move` module will include a local reference to the bytecode package, allowing for compilation.
+```toml filename="invoking_code/Move.toml"
+[package]
+name = "invoking_code"
+[addresses]
+invoker = "_"
+[dependencies]
+aptos_token = { local = "../aptos_token_objects_addr" }
+```
+</details>
+
+### ABI
+
+Move interface code can be manually crafted by reading a package's ABI. Notably, while the function header is required to be exact, the logic within is not.
+
+<Callout type="info" emoji="ℹ️">
+    All available public and entry methods are defined with their name, arguments, return values, and more, within the ABI. Structs and resources will also be included.
+</Callout>
+
+Afterwards, the interface code is treated equivalent to local source code.
+
+
+
+
+<details>
+    <summary>Aptos Token example</summary>
+
+    Below is a portion of the `AptosTokenObjects` ABI, gathered from the [Aptos Explorer](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000004/modules/code/aptos_token?network=mainnet#:~:text=1114-,ABI,-%7B):
+
+
+
+    ```json
+    {
+    "address": "0x4",
+    "name": "aptos_token",
+    "friends": [],
+    "exposed_functions": [
+        {
+        "name": "add_property",
+        "visibility": "public",
+        "is_entry": true,
+        "is_view": false,
+        "generic_type_params": [
+            {
+            "constraints": [
+                "key"
+            ]
+            }
+        ],
+        "params": [
+            "&signer",
+            "0x1::object::Object<T0>",
+            "0x1::string::String",
+            "0x1::string::String",
+            "vector<u8>"
+        ],
+        "return": []
+        },
+        ...
+    ]
+    }
+    ```
+
+
+    An interface Move file can be handwritten and treated as a source file. Looking similar to:
+
+    ```move
+    module 0x4::aptos_token {
+        // ...
+        public entry fun add_property<T: key>(
+            creator: &signer,
+            token: Object<T>,
+            key: String,
+            type: String,
+            value: vector<u8>,
+        ) acquires AptosCollection, AptosToken {
+            abort 0
+        }
+    }
+    ```
+
+    <FileTree>
+    <FileTree.Folder name="third_party_dependency_project" defaultOpen>
+        <FileTree.Folder name="source" defaultOpen>
+        <FileTree.File name="{ControlledCode}.move"/>
+        <FileTree.File name="aptos_token.move"/>
+        </FileTree.Folder>
+        <FileTree.File name="Move.toml"/>
+    </FileTree.Folder>
+    </FileTree>
+
+
+</details>
+
+

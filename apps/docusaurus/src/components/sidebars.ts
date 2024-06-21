@@ -387,6 +387,26 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "create-aptos-dapp",
+      collapsible: true,
+      collapsed: true,
+      link: { type: "doc", id: "create-aptos-dapp/index" },
+      items: [
+        {
+          type: "category",
+          label: "Templates",
+          collapsible: true,
+          collapsed: true,
+          items: [
+            "create-aptos-dapp/templates/digital-asset",
+            "create-aptos-dapp/templates/fungible-asset",
+          ],
+        },
+        "create-aptos-dapp/faq",
+      ],
+    },
+    {
+      type: "category",
       label: "Aptos CLI",
       collapsible: true,
       collapsed: true,
@@ -472,6 +492,20 @@ const sidebars: SidebarsConfig = {
       collapsed: true,
       items: [
         "guides/nfts/aptos-token-overview",
+        {
+          type: "category",
+          label: "Aptos Keyless",
+          link: { type: "doc", id: "aptos-keyless/index" },
+          items: [
+            "aptos-keyless/introduction",
+            "aptos-keyless/oidc-support",
+            "aptos-keyless/integration-guide",
+            "aptos-keyless/how-keyless-works",
+            "aptos-keyless/other",
+          ],
+          collapsible: true,
+          collapsed: true,
+        },
         {
           type: "category",
           label: "Integrate with Wallets",
