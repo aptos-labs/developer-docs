@@ -129,227 +129,207 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/book/modules-and-scripts",
-        destination:
-          "/en/build/smart-contracts/learn-move/book/modules-and-scripts",
+        destination: "/en/build/smart-contracts/book/modules-and-scripts",
         permanent: true,
       },
       {
         source: "/move/book/integers",
-        destination: "/en/build/smart-contracts/learn-move/book/integers",
+        destination: "/en/build/smart-contracts/book/integers",
         permanent: true,
       },
       {
         source: "/move/book/bool",
-        destination: "/en/build/smart-contracts/learn-move/book/bool",
+        destination: "/en/build/smart-contracts/book/bool",
         permanent: true,
       },
       {
         source: "/move/book/address",
-        destination: "/en/build/smart-contracts/learn-move/book/address",
+        destination: "/en/build/smart-contracts/book/address",
         permanent: true,
       },
       {
         source: "/move/book/vector",
-        destination: "/en/build/smart-contracts/learn-move/book/vector",
+        destination: "/en/build/smart-contracts/book/vector",
         permanent: true,
       },
       {
         source: "/move/book/signer",
-        destination: "/en/build/smart-contracts/learn-move/book/signer",
+        destination: "/en/build/smart-contracts/book/signer",
         permanent: true,
       },
       {
         source: "/move/book/references",
-        destination: "/en/build/smart-contracts/learn-move/book/references",
+        destination: "/en/build/smart-contracts/book/references",
         permanent: true,
       },
       {
         source: "/move/book/tuples",
-        destination: "/en/build/smart-contracts/learn-move/book/tuples",
+        destination: "/en/build/smart-contracts/book/tuples",
         permanent: true,
       },
       {
         source: "/move/book/variables",
-        destination: "/en/build/smart-contracts/learn-move/book/variables",
+        destination: "/en/build/smart-contracts/book/variables",
         permanent: true,
       },
       {
         source: "/move/book/equality",
-        destination: "/en/build/smart-contracts/learn-move/book/equality",
+        destination: "/en/build/smart-contracts/book/equality",
         permanent: true,
       },
       {
         source: "/move/book/abort-and-assert",
-        destination:
-          "/en/build/smart-contracts/learn-move/book/abort-and-assert",
+        destination: "/en/build/smart-contracts/book/abort-and-assert",
         permanent: true,
       },
       {
         source: "/move/book/conditionals",
-        destination: "/en/build/smart-contracts/learn-move/book/conditionals",
+        destination: "/en/build/smart-contracts/book/conditionals",
         permanent: true,
       },
       {
         source: "/move/book/loops",
-        destination: "/en/build/smart-contracts/learn-move/book/loops",
+        destination: "/en/build/smart-contracts/book/loops",
         permanent: true,
       },
       {
         source: "/move/book/functions",
-        destination: "/en/build/smart-contracts/learn-move/book/functions",
+        destination: "/en/build/smart-contracts/book/functions",
         permanent: true,
       },
       {
         source: "/move/book/structs-and-resources",
-        destination:
-          "/en/build/smart-contracts/learn-move/book/structs-and-resources",
+        destination: "/en/build/smart-contracts/book/structs-and-resources",
         permanent: true,
       },
       {
         source: "/move/book/constants",
-        destination: "/en/build/smart-contracts/learn-move/book/constants",
+        destination: "/en/build/smart-contracts/book/constants",
         permanent: true,
       },
       {
         source: "/move/book/generics",
-        destination: "/en/build/smart-contracts/learn-move/book/generics",
+        destination: "/en/build/smart-contracts/book/generics",
         permanent: true,
       },
       {
         source: "/move/book/abilities",
-        destination: "/en/build/smart-contracts/learn-move/book/abilities",
+        destination: "/en/build/smart-contracts/book/abilities",
         permanent: true,
       },
       {
         source: "/move/book/uses",
-        destination: "/en/build/smart-contracts/learn-move/book/uses",
+        destination: "/en/build/smart-contracts/book/uses",
         permanent: true,
       },
       {
         source: "/move/book/friends",
-        destination: "/en/build/smart-contracts/learn-move/book/friends",
+        destination: "/en/build/smart-contracts/book/friends",
         permanent: true,
       },
       {
         source: "/move/book/packages",
-        destination: "/en/build/smart-contracts/learn-move/book/packages",
+        destination: "/en/build/smart-contracts/book/packages",
         permanent: true,
       },
       {
         source: "/move/book/package-upgrades",
-        destination:
-          "/en/build/smart-contracts/learn-move/book/package-upgrades",
+        destination: "/en/build/smart-contracts/book/package-upgrades",
         permanent: true,
       },
       {
         source: "/move/book/unit-testing",
-        destination: "/en/build/smart-contracts/learn-move/book/unit-testing",
+        destination: "/en/build/smart-contracts/book/unit-testing",
         permanent: true,
       },
       {
         source: "/move/book/global-storage-structure",
-        destination:
-          "/en/build/smart-contracts/learn-move/book/global-storage-structure",
+        destination: "/en/build/smart-contracts/book/global-storage-structure",
         permanent: true,
       },
       {
         source: "/move/book/global-storage-operators",
-        destination:
-          "/en/build/smart-contracts/learn-move/book/global-storage-operators",
+        destination: "/en/build/smart-contracts/book/global-storage-operators",
         permanent: true,
       },
       {
         source: "/move/book/standard-library",
-        destination:
-          "/en/build/smart-contracts/learn-move/book/standard-library",
+        destination: "/en/build/smart-contracts/book/standard-library",
         permanent: true,
       },
       {
         source: "/move/book/coding-conventions",
-        destination:
-          "/en/build/smart-contracts/learn-move/book/coding-conventions",
+        destination: "/en/build/smart-contracts/book/coding-conventions",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/objects/creating-objects",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/objects/creating-objects",
+        destination: "/en/build/smart-contracts/objects/creating-objects",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/objects/configuring-objects",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/objects/configuring-objects",
+        destination: "/en/build/smart-contracts/objects/configuring-objects",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/objects/using-objects",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/objects/using-objects",
+        destination: "/en/build/smart-contracts/objects/using-objects",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/scripts/writing-scripts",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/scripts/writing-scripts",
+        destination: "/en/build/smart-contracts/scripts/writing-scripts",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/scripts/compiling-scripts",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/scripts/compiling-scripts",
+        destination: "/en/build/smart-contracts/scripts/compiling-scripts",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/scripts/running-scripts",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/scripts/running-scripts",
+        destination: "/en/build/smart-contracts/scripts/running-scripts",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/scripts/script-tutorial",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/scripts/script-tutorial",
+        destination: "/en/build/smart-contracts/scripts/script-tutorial",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/resource-accounts",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/resource-accounts",
+        destination: "/en/build/smart-contracts/resource-accounts",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/modules-on-aptos",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/modules-on-aptos",
+        destination: "/en/build/smart-contracts/modules-on-aptos",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/cryptography",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/cryptography",
+        destination: "/en/build/smart-contracts/cryptography",
         permanent: true,
       },
       {
         source: "/move/move-on-aptos/move-security-guidelines",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/move-security-guidelines",
+        destination: "/en/build/smart-contracts/move-security-guidelines",
         permanent: true,
       },
       {
         source: "/move/prover/prover-guide",
-        destination: "/en/build/smart-contracts/learn-move/prover/prover-guide",
+        destination: "/en/build/smart-contracts/prover/prover-guide",
         permanent: true,
       },
       {
         source: "/move/prover/spec-lang",
-        destination: "/en/build/smart-contracts/learn-move/prover/spec-lang",
+        destination: "/en/build/smart-contracts/prover/spec-lang",
         permanent: true,
       },
       {
         source: "/move/prover/supporting-resources",
-        destination:
-          "/en/build/smart-contracts/learn-move/prover/supporting-resources",
+        destination: "/en/build/smart-contracts/prover/supporting-resources",
         permanent: true,
       },
       {
@@ -568,7 +548,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/guides/system-integrators-guide",
-        destination: "/en/build/advanced-guides/system-integrators-guide",
+        destination: "/en/build/system-integrators-guide",
         permanent: true,
       },
       {
@@ -583,17 +563,17 @@ export default withBundleAnalyzer(
       },
       {
         source: "/guides/sponsored-transactions",
-        destination: "/en/build/advanced-guides/sponsored-transactions",
+        destination: "/en/build/sponsored-transactions",
         permanent: true,
       },
       {
         source: "/guides/transaction-management",
-        destination: "/en/build/advanced-guides/transaction-management",
+        destination: "/en/build/transaction-management",
         permanent: true,
       },
       {
         source: "/guides/account-management/key-rotation",
-        destination: "/en/build/advanced-guides/key-rotation",
+        destination: "/en/build/key-rotation",
         permanent: true,
       },
       {
@@ -879,7 +859,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/integration/aptos-names-service-package",
-        destination: "/en/build/advanced-guides/aptos-name-service",
+        destination: "/en/build/aptos-name-service",
         permanent: true,
       },
       {
@@ -901,47 +881,47 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/book/introduction",
-        destination: "/en/build/smart-contracts/learn-move/book",
+        destination: "/en/build/smart-contracts/book",
         permanent: true,
       },
       {
         source: "/move/book/creating-coins",
-        destination: "/en/build/smart-contracts/learn-move/book/move-tutorial",
+        destination: "/en/build/smart-contracts/book/move-tutorial",
         permanent: true,
       },
       {
         source: "/tutorials",
-        destination: "/en/build/tutorials",
+        destination: "/en/build/guides",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-transaction",
-        destination: "/en/build/tutorials/first-transaction",
+        destination: "/en/build/guides/first-transaction",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-nft",
-        destination: "/en/build/tutorials/your-first-nft",
+        destination: "/en/build/guides/your-first-nft",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-coin",
-        destination: "/en/build/tutorials/first-coin",
+        destination: "/en/build/guides/first-coin",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-fungible-asset",
-        destination: "/en/build/tutorials/first-fungible-asset",
+        destination: "/en/build/guides/first-fungible-asset",
         permanent: true,
       },
       {
         source: "/tutorials/first-move-module",
-        destination: "/en/build/tutorials/first-move-module",
+        destination: "/en/build/guides/first-move-module",
         permanent: true,
       },
       {
         source: "/tutorials/your-first-multisig",
-        destination: "/en/build/tutorials/first-multisig",
+        destination: "/en/build/guides/first-multisig",
         permanent: true,
       },
       {
@@ -961,40 +941,40 @@ export default withBundleAnalyzer(
       },
       {
         source: "/tutorials/build-e2e-dapp/e2e-dapp-index",
-        destination: "/en/build/tutorials/build-e2e-dapp",
+        destination: "/en/build/guides/build-e2e-dapp",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/create-a-smart-contract",
         destination:
-          "/en/build/tutorials/build-e2e-dapp/1-create-smart-contract",
+          "/en/build/guides/build-e2e-dapp/1-create-smart-contract",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/set-up-react-app",
-        destination: "/en/build/tutorials/build-e2e-dapp/2-set-up-react-app",
+        destination: "/en/build/guides/build-e2e-dapp/2-set-up-react-app",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/add-wallet-support",
-        destination: "/en/build/tutorials/build-e2e-dapp/3-add-wallet-support",
+        destination: "/en/build/guides/build-e2e-dapp/3-add-wallet-support",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/fetch-data-from-chain",
         destination:
-          "/en/build/tutorials/build-e2e-dapp/4-fetch-data-from-chain",
+          "/en/build/guides/build-e2e-dapp/4-fetch-data-from-chain",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/submit-data-to-chain",
         destination:
-          "/en/build/tutorials/build-e2e-dapp/5-submit-data-to-chain",
+          "/en/build/guides/build-e2e-dapp/5-submit-data-to-chain",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/handle-tasks",
-        destination: "/en/build/tutorials/build-e2e-dapp/6-handle-tasks",
+        destination: "/en/build/guides/build-e2e-dapp/6-handle-tasks",
         permanent: true,
       },
       {
@@ -1003,29 +983,25 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/en/build/smart-contracts/learn-move/advanced-guides/objects",
+        source: "/en/build/smart-contracts/objects",
         destination: "/en/build/smart-contracts/aptos-standards/objects",
         permanent: true,
       },
       {
-        source:
-          "/en/build/smart-contracts/learn-move/advanced-guides/objects/creating-objects",
+        source: "/en/build/smart-contracts/objects/creating-objects",
         destination:
           "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
         permanent: true,
       },
       {
-        source:
-          "/en/build/smart-contracts/learn-move/advanced-guides/objects/configuring-objects",
+        source: "/en/build/smart-contracts/objects/configuring-objects",
         destination:
           "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
         permanent: true,
       },
       {
-        source:
-          "/en/build/smart-contracts/learn-move/advanced-guides/objects/creating-objects",
-        destination:
-          "/en/build/smart-contracts/learn-move/advanced-guides/objects/using-objects",
+        source: "/en/build/smart-contracts/objects/creating-objects",
+        destination: "/en/build/smart-contracts/objects/using-objects",
         permanent: true,
       },
     ],

@@ -8,12 +8,12 @@ import { Callout } from 'nextra/components'
 
 # Third Party Dependencies
 
-Third party dependencies are external [modules](../book/modules-and-scripts.mdx) that a controlled module interacts with. Typically, these external modules exist under different accounts.
+Third party dependencies are external [modules](book/modules-and-scripts.mdx) that a controlled module interacts with. Typically, these external modules exist under different accounts.
 
 
 ## Multi-DEX router example
 
-A multi-DEX router actively utilizes third party dependencies. Instead of submitting multiple transactions to interact with different DEXs and their individual [entry](../book/functions.mdx#entry-modifier) functions within a swap route, a module (or [script](../book/modules-and-scripts.mdx#scripts)) can consolidate all independent DEX invocations into a single, atomic transaction. The multi-DEX router references and calls to functions present in each of the third party DEX modules to achieve this.
+A multi-DEX router actively utilizes third party dependencies. Instead of submitting multiple transactions to interact with different DEXs and their individual [entry](book/functions.mdx#entry-modifier) functions within a swap route, a module (or [script](book/modules-and-scripts.mdx#scripts)) can consolidate all independent DEX invocations into a single, atomic transaction. The multi-DEX router references and calls to functions present in each of the third party DEX modules to achieve this.
 
 ## Sources
 
@@ -88,7 +88,7 @@ Reference it as a local source file after changing the file type to `{ModuleName
 
 ### Bytecode
 
-The Aptos CLI allows for downloading a [package's](../book/packages.mdx) bytecode. 
+The Aptos CLI allows for downloading a [package's](book/packages.mdx) bytecode. 
 
 ```bash filename="Terminal"
 aptos move download --account {account_addr} --bytecode --package {package_name} 

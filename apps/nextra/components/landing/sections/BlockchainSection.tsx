@@ -60,28 +60,28 @@ export function BlockchainSection() {
         <FeatureCard
           label={t.randomnessLabel}
           description={t.randomnessDescription}
-          href={`/${locale}/build/smart-contracts/learn-move/advanced-guides/cryptography#verifying-randomness-from-the-drand-beacon`}
+          href={`/${locale}/build/smart-contracts/cryptography#verifying-randomness-from-the-drand-beacon`}
         />
         <FeatureCard
           label={t.feePayerLabel}
           description={t.feePayerDescription}
           href={`/${locale}/build/sdks/ts-sdk/building-transactions/sponsoring-transactions`}
         />
-        <FeatureCard
+        {/* <FeatureCard
           label={t.multiSigLabel}
           description={t.multiSigDescription}
           href={`/${locale}/build/sdks/ts-sdk/building-transactions/multi-agent-transactions`}
-        />
+        /> */}
         <FeatureCard
           label={t.gasLabel}
           description={t.gasDescription}
           href={`/${locale}/network/blockchain/gas-txn-fee`}
         />
-        <FeatureCard
+        {/* <FeatureCard
           label={t.consensusLabel}
           description={t.consensusDescription}
           href={`/${locale}/network/blockchain/blockchain-deep-dive#consensus`}
-        />
+        /> */}
         <FeatureCard
           label={t.storageLabel}
           description={t.storageDescription}

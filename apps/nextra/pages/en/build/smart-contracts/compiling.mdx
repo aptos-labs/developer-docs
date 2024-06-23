@@ -1,0 +1,72 @@
+---
+title: "Compiling (Move)"
+---
+
+import { Steps, Callout, FileTree } from "nextra/components";
+import { RemoteCodeblock, permalinkFetch } from '@components/index';
+
+# Compiling
+
+<Callout>
+Ensure that your [CLI](../cli) is up to date before compiling.
+</Callout>
+
+## `aptos move compile`
+
+Once you have a package set up, you can compile your Move code by doing:
+
+```bash filename="Terminal"
+aptos move compile
+```
+
+If run successfully, you should receive a Terminal output like so
+
+```bash filename="Terminal"
+{
+  "Result": [
+    "<ADDRESS_FROM_MOVE.TOML>::<MODULE_NAME>"
+  ]
+}
+```
+
+## Unpacking Build
+
+Compiled Move packages contain a folder structure that resembles the one below. 
+
+<FileTree>
+  <FileTree.Folder name="build" defaultOpen>
+    <FileTree.Folder name="package_name" defaultOpen active>
+      <FileTree.Folder name="bytecode_modules" defaultOpen>
+        <FileTree.Folder name="dependencies" defaultOpen></FileTree.Folder>
+        <FileTree.File name="module_name.mv" active></FileTree.File>
+      </FileTree.Folder>
+      <FileTree.Folder name="source_maps" defaultOpen>
+        <FileTree.Folder name="dependencies" defaultOpen></FileTree.Folder>
+        <FileTree.File name="module_name.mvsm" active></FileTree.File>
+      </FileTree.Folder>
+      <FileTree.Folder name="sources" defaultOpen>
+        <FileTree.Folder name="dependencies" defaultOpen></FileTree.Folder>
+        <FileTree.File name="module_name.move" active></FileTree.File>
+      </FileTree.Folder>
+      <FileTree.File name="BuildInfo.yaml"></FileTree.File>
+    </FileTree.Folder>
+  </FileTree.Folder>
+  <FileTree.Folder name="scripts" defaultOpen></FileTree.Folder>
+  <FileTree.Folder name="sources" defaultOpen>
+    <FileTree.File name="module_name.move" active></FileTree.File>
+  </FileTree.Folder>
+  <FileTree.Folder name="tests" defaultOpen></FileTree.Folder>
+  <FileTree.File name="Move.toml" />
+</FileTree>
+
+### `bytecode_modules`
+
+The bytecode modules folder contains the compiled Move bytecode for your module(s) (such as `module_name.mv`).
+To learn more about the bytecode and its security features, see [why move?](./why-move)
+
+### `source_maps`
+
+The source maps folder contains source maps (such as `module_name.mvsm`) which allow
+users to map the compiled bytecode back to the source code and relevant dependencies.
+
+

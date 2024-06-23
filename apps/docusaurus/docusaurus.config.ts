@@ -52,7 +52,7 @@ const themeConfig: Preset.ThemeConfig = {
   announcementBar: {
     id: "preview",
     content:
-      '🎉 We are revamping our docs! <a target="_blank" rel="noopener noreferrer" href="https://preview.aptos.dev">See the preview of the new docs at preview.aptos.dev</a>',
+      '🎉 No more 12-word mnemonics with Aptos Keyless accounts! Check out <a href="https://aptos.dev/aptos-keyless/how-keyless-works/">how they work</a> and <a href="https://aptos.dev/aptos-keyless/integration-guide/">how to integrate them into your dapp</a>!',
     backgroundColor: "#fafbfc",
     textColor: "#091E42",
     isCloseable: false,
@@ -147,6 +147,10 @@ const themeConfig: Preset.ThemeConfig = {
           {
             label: "Aptos SDKs",
             to: "/sdks/index",
+          },
+          {
+            label: "create-aptos-dapp",
+            to: "/create-aptos-dapp/index",
           },
           {
             label: "Aptos CLI",

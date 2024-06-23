@@ -14,42 +14,10 @@ export default {
   },
   testing: {
     title: "Testing",
+    href: "/en/build/smart-contracts/book/unit-testing",
   },
   deployment: {
     title: "Deployment",
-  },
-  "---addressable-storage---": {
-    title: "Addressable Storage",
-    type: "separator",
-  },
-  accounts: {
-    title: "Accounts",
-  },
-  table: {
-    title: "Table",
-  },
-  "aptos-objects": {
-    href: "/en/build/smart-contracts/objects",
-    title: "Objects",
-  },
-  "resource-accounts": {
-    title: "Resource Accounts",
-  },
-  "---data-structures---": {
-    title: "Data Structures",
-    type: "separator",
-  },
-  struct: {
-    title: "Struct",
-  },
-  vector: {
-    title: "Vector",
-  },
-  "smart-vector": {
-    title: "Smart Vector",
-  },
-  "smart-table": {
-    title: "Smart Table",
   },
   "---aptos-standards---": {
     type: "separator",
@@ -70,9 +38,45 @@ export default {
   "aptos-token": {
     title: "Token (legacy)",
   },
+  "---addressable-storage---": {
+    title: "Addressable Storage",
+    type: "separator",
+  },
+  accounts: {
+    href: "/en/network/blockchain/accounts",
+    title: "Accounts",
+  },
+  table: {
+    title: "Table",
+  },
+  "aptos-objects": {
+    href: "/en/build/smart-contracts/objects",
+    title: "Objects",
+  },
+  "resource-accounts": {
+    title: "Resource Accounts",
+  },
+  "---data-structures---": {
+    title: "Data Structures",
+    type: "separator",
+  },
+  struct: {
+    title: "Struct",
+    href: "/en/build/smart-contracts/book/structs-and-resources",
+  },
+  vector: {
+    title: "Vector",
+  },
+  "smart-vector": {
+    title: "Smart Vector",
+  },
+  "smart-table": {
+    title: "Smart Table",
+  },
   "---examples---": {
     type: "separator",
     title: "Examples",
+    display: "hidden",
   },
   "---reference---": {
     type: "separator",
@@ -83,6 +87,7 @@ export default {
   },
   "move-reference": {
     title: "Move Reference",
+    "display": "hidden"
   },
   "error-codes": {
     title: "Error Codes",
@@ -95,6 +100,7 @@ export default {
     title: "Scripts",
   },
   patterns: {
+    display: "hidden",
     title: "Patterns",
   },
   prover: {
@@ -108,6 +114,7 @@ export default {
   },
   "gas-profiling": {
     title: "Gas Profiling",
+    href: "/en/build/cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling"
   },
   compiler_v2: {
     title: "Compiler V2",

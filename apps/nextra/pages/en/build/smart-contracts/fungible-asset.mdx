@@ -10,7 +10,7 @@ import { ThemedImage } from "@components/index";
 
 The Aptos Fungible Asset Standard (also known as “Fungible Asset” or “FA”) provides a standard, type-safe way to define fungible assets in the Move ecosystem. It is a modern replacement for the `coin` module that allows for seamless minting, transfer, and customization of fungible assets for any use case. 
 
-This standard is important because it allows fungible assets on Aptos (such as Currencies and Real World Assets (RWAs)) to represent and transfer ownership in a consistent way dApps can recognize. This standard also allows for more extensive customization than the `coin` module did by leveraging [Move Objects](aptos-object.mdx) to represent fungible asset data. 
+This standard is important because it allows fungible assets on Aptos (such as Currencies and Real World Assets (RWAs)) to represent and transfer ownership in a consistent way dApps can recognize. This standard also allows for more extensive customization than the `coin` module did by leveraging [Move Objects](objects.mdx) to represent fungible asset data. 
 
 The FA standard provides all the functionality you need to create, mint, transfer, and burn fungible assets (as well as automatically allowing recipients of the fungible asset to store and manage any fungible assets they receive). 
 
@@ -29,7 +29,7 @@ sources={{
   }}
 />
 
-[This implementation](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) is an improvement on the `coin` Standard because Move Objects are more customizable and extensible via smart contract. See the advanced guides on writing [Move Objects](aptos-object.mdx) for more details. 
+[This implementation](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) is an improvement on the `coin` Standard because Move Objects are more customizable and extensible via smart contract. See the advanced guides on writing [Move Objects](objects.mdx) for more details. 
 The FA standard also automatically handles tracking how much of a fungible asset an account owns, as opposed to requiring the recipient to register a `CoinStore` resource separate from the transfer.
 
 ## Creating a new Fungible Asset (FA)
@@ -40,7 +40,7 @@ At a high level, this is done by:
 2. Generating `Ref`s to enable any desired permissions.
 3. Minting Fungible Assets and transferring them to any account you want to.
 
-To start with, the Fungible Asset standard is implemented using Move Objects. Objects by default are transferable, can own multiple resources, and can be customized via smart contract. For full details on Objects and how they work, please read [this guide](../learn-move/advanced-guides/objects.mdx). 
+To start with, the Fungible Asset standard is implemented using Move Objects. Objects by default are transferable, can own multiple resources, and can be customized via smart contract. For full details on Objects and how they work, please read [this guide](objects.mdx). 
 
 To create an FA, first you need to create a **non-deletable Object** since destroying the metadata for a Fungible Asset while there are active balances would not make sense. You can do that by either calling `object::create_named_object(caller_address, NAME)` or `object::create_sticky_object(caller_address)` to create the Object on-chain.
 
@@ -73,7 +73,7 @@ public fun create_primary_store_enabled_fungible_asset(
 Alternatively, you can use `add_fungibility` which uses the same parameters, but requires recipients to keep track of their `FungibleStore` addresses to keep track of how many units of your FA they have.
 </Callout>
 
-Once you have created the Metadata, you can also use the `ConstructorRef` to generate additional `Ref`s. In addition to the usual [Object Refs](../learn-move/advanced-guides/objects/configuring-objects.mdx), FAs define three additional permissions you can generate:
+Once you have created the Metadata, you can also use the `ConstructorRef` to generate additional `Ref`s. In addition to the usual [Object Refs](objects/creating-objects.mdx), FAs define three additional permissions you can generate:
 
 1. `MintRef` offers the capability to mint new FA units.
 2. `TransferRef` offers the capability to freeze accounts from transferring this FA, or to bypass an existing freeze. (This can be important when trying to be compliant with some regulations).
