@@ -1,6 +1,5 @@
 ---
 title: "Integration Guide"
-# id: "Aptos Keyless Integration Guide"
 ---
 import { Callout, Steps } from "nextra/components";
 
@@ -49,7 +48,7 @@ Below are the default steps for a client to integrate Keyless Accounts
 
     1. In the background, we create an ephemeral key pair. Store this in local storage.
 
-        ```tsx
+        ```ts
         import {EphemeralKeyPair} from '@aptos-labs/ts-sdk';
 
         const ephemeralKeyPair = EphemeralKeyPair.generate();
@@ -57,7 +56,7 @@ Below are the default steps for a client to integrate Keyless Accounts
 
     2. Save the `EphemeralKeyPair` in local storage, keyed by its `nonce`.
 
-        ```tsx
+        ```ts
         // This saves the EphemeralKeyPair in local storage keyed, by its nonce.
         storeEphemeralKeyPair(ephemeralKeyPair);
         ```
@@ -69,7 +68,7 @@ Below are the default steps for a client to integrate Keyless Accounts
 This implementation is an example of how to store the `EphemeralKeyPair` in local storage using the nonce as the key. Different implementations may be used according to your application's needs.
 :::
 
-```typescript
+```ts
 /**
  * Stored ephemeral key pairs in localStorage (nonce -> ephemeralKeyPair)
  */
@@ -157,7 +156,7 @@ export const decodeEphemeralKeyPairs = (
 
     3. Prepare the URL params of the login URL. Set the `redirect_uri` and `client_id` to your configured values with the IdP. Set the `nonce` to the nonce of the `EphemeralKeyPair` from step 1.1.
 
-        ```tsx
+        ```ts
         const redirectUri = 'https://.../login/callback'
         const clientId = env.IDP_CLIENT_ID
         // Get the nonce associated with ephemeralKeyPair
@@ -166,7 +165,7 @@ export const decodeEphemeralKeyPairs = (
 
     4. Construct the login URL for the user to authenticate with the IdP. Make sure the `openid` scope is set. Other scopes such as `email` and `profile` can be set based on your app’s needs.
 
-        ```tsx
+        ```ts
         const loginUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=id_token&scope=openid+email+profile&nonce=${nonce}&redirect_uri=${redirectUri}&client_id=${clientId}`
         ```
 
@@ -176,7 +175,7 @@ export const decodeEphemeralKeyPairs = (
 
     1. Once the user completes the login flow, they will be redirected to the `redirect_uri` set in step 1. The JWT will be set in the URL as a search parameter in a URL fragment, keyed by `id_token`. Extract the JWT from the `window` by doing the following:
 
-        ```tsx
+        ```ts
         const parseJWTFromURL = (url: string): string | null => {
           const urlObject = new URL(url);
           const fragment = urlObject.hash.substring(1);
@@ -190,7 +189,7 @@ export const decodeEphemeralKeyPairs = (
 
     2. Decode the JWT and get the extract the nonce value from the payload.
 
-        ```tsx
+        ```ts
         import { jwtDecode } from 'jwt-decode';
 
         const payload = jwtDecode<{ nonce: string }>(jwt);
@@ -200,7 +199,7 @@ export const decodeEphemeralKeyPairs = (
     3. Fetch the `EphemeralKeyPair` stored in step 1.2 with the decoded nonce.
 
 
-        ```tsx
+        ```ts
         const ephemeralKeyPair = getLocalEphemeralKeyPair(jwtNonce);
         ```
 
@@ -211,7 +210,7 @@ export const decodeEphemeralKeyPairs = (
 This implementation is an example of how to retrieve the `EphemeralKeyPair` from local storage using the nonce as the key. Different implementations may be used according to your application's needs. It is important that you validate the expiry timestamp of the ephemeral key pair to ensure that it is still valid.
 :::
 
-```typescript
+```ts
 /**
  * Stored ephemeral key pairs in localStorage (nonce -> ephemeral key pair)
  */
