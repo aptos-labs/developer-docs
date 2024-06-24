@@ -64,9 +64,9 @@ Below are the default steps for a client to integrate Keyless Accounts
 <details>
 <summary>Example implementation for `storeEphemeralKeyPair`</summary>
 
-:::tip
+<Callout type="info">
 This implementation is an example of how to store the `EphemeralKeyPair` in local storage using the nonce as the key. Different implementations may be used according to your application's needs.
-:::
+</Callout>
 
 ```ts
 /**
@@ -206,9 +206,9 @@ export const decodeEphemeralKeyPairs = (
 <details>
 <summary>Example implementation for `getLocalEphemeralKeyPair`</summary>
 
-:::tip
+<Callout type="info">
 This implementation is an example of how to retrieve the `EphemeralKeyPair` from local storage using the nonce as the key. Different implementations may be used according to your application's needs. It is important that you validate the expiry timestamp of the ephemeral key pair to ensure that it is still valid.
-:::
+</Callout>
 
 ```ts
 /**
