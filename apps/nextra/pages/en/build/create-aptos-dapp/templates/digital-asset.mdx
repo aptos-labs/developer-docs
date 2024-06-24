@@ -185,19 +185,19 @@ npm run dev
 
 ### In the top-right corner, click "Connect a Wallet". 
 Use the same account that you set in `.env` for the `VITE_CREATOR_ADDRESS`. 
-Or, if you use a different account, set the `VITE_CREATOR_ADDRESS` to the account you end up signing in with.
+Or, if you use a different account, set the `VITE_CREATOR_ADDRESS` to the account you sign in with.
 
 ### In the app, go to the "Create Collection" page (if not on that page already)
 
 ### Upload the `assets` folder you created previously.
-If you do not have an `assets` folder or other properly formatted Colelction data, see [the beginning of these steps](#create-an-asset-folder-for-your-collection) for how to make one.
+If you do not have an `assets` folder or other properly formatted collection data, see [the beginning of these steps](#create-an-asset-folder-for-your-collection) for how to make one.
 
 ### Choose the required fields.
 1. Choose the mint start date to determine when users can start minting NFTs.
 2. Choose the mint end date to determine when users can no longer mint NFTs.
-3. Choose a limit per account.
+3. Choose a mint limit per account.
 
-The rest are optional fields to help customize your minting.
+The rest are optional fields to help customize your mint.
 - (Optional) Royalty Percentage for each NFT - this defines the royalties marketplaces should send you when users trade these NFTs.
 - (Optional) Mint fee per NFT - this defines the cost public users pay to mint this NFT.
 - (Optional) Mint for myself - this defines how many NFTs you would want to mint for yourself once the collection is created.
@@ -217,7 +217,7 @@ Most data on the front end is customizable in `frontend/config.ts`.
 
 In order to add a collection to the public mint page, set `collection_id` in `frontend/config.ts` with the collection address. 
 
-You can use Collections that you have minted using the tool by going to the "My Collections" page and copying their address.
+You can use collections that you have minted using the tool by going to the "My Collections" page and copying their address.
 
 ### Modify static content
 
@@ -236,7 +236,7 @@ For example, to update an image in the "Our Team" section - add the image under 
 
 This page displays all the collections that have been created under the current Move module. You can click on the contract address, which redirects you to the Aptos Explorer site where you can see your collection.
 
-When you are ready to allow others to mint NFTs from your collection, you will need to copy the Collection address into `frontend/config.ts`'s `collection_id` variable. This will then allow that collection to be used on the "Public Mint" page that anyone can access.
+When you are ready to allow others to mint NFTs from your collection, you will need to copy the collection address into `frontend/config.ts`'s `collection_id` variable. This will then allow that collection to be used on the "Public Mint" page that anyone can access.
 
 Some stats are available on this page, like the amount of minted NFTs and Max Supply of the NFTs.
 
@@ -246,8 +246,8 @@ Remember, one of the goals of this template is to educate and provide a real lif
 
 Some ideas you can try are:
 
-1. Allowlist mint stages.
-2. Custom flows for after someone mints a NFT (or even token gated experiences).
+1. Adding Allowlist mint stages.
+2. Building custom flows for after someone mints a NFT (or even token gated experiences).
 
 Check out our [TS SDK](../../sdks/ts-sdk.mdx) to see what other [API queries](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/digitalAsset.ts) you can use to add more features and fetch other types of data.
 
@@ -255,7 +255,7 @@ Check out our [TS SDK](../../sdks/ts-sdk.mdx) to see what other [API queries](ht
 
 If you started your dapp on testnet, and you are happy with your NFT collection testing, you will want to get your collection on mainnet.
 
-Creating a collection on follows the same flow as creating a Collection on testnet, but we need to change some configuration changes.
+Creating a collection on mainnet follows the same flow as creating a collection on testnet. But, we need to change some configuration changes.
 
 1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
 2. Run `npm run move:init` to initialize an account to work against Mainnet
