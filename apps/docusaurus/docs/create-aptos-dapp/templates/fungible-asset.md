@@ -52,11 +52,20 @@ Create or find the account you want to create an asset with. If you haven't crea
 1. Run `npm run move:init` - a command to initialize an account to publish the Move contract. When you run that command it will:
 
    - Generate a new CLI `.aptos/config.yaml` file that holds a profile with the account private key, account address, and network configuration.
-   - Configure your development environment and add a `VITE_MODULE_ADDRESS` variable into the `.env` file with the account address from the previous step.
 
 2. To set who can create a new asset, edit the `.env` file and update `VITE_FA_CREATOR_ADDRESS` to be the address of the account allowed to create assets.
 
-3. Run `npm run move:publish`
+3. Run `npm run move:publish` to publish the contract. When you run that command it will:
+
+```bash npm2yarn
+npm run move:publish
+```
+
+- Save the module address to VITE_MODULE_ADDRESS in the `.env` file.
+
+### Upgrade the Move module
+
+When you make changes to your Move module, there are 2 kinds of changes, compatible and incompatible. You can learn [upgrade policy in details on docs](https://aptos.dev/move/book/package-upgrades/#compatibility-rules). When you make compatible changes, you can run `npm run move:upgrade` to upgrade previous published module. When you make incompatible changes, you can run `npm run move:publish` to publish to a new address.
 
 ### Connect a wallet
 
