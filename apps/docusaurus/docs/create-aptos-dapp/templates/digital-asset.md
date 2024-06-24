@@ -177,7 +177,7 @@ Creating a collection on mainnet is the same flow as creating on testnet, but we
 2. Run `npm run move:init` to initialize an account to work against Mainnet
    1. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
    2. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
-3. Check: open `.aptos/config.yaml` file and see that you have a profile under the `mainnet` name. In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the mainnet profile account account address.
+3. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
 4. Edit the `scripts/move/publish.js` file, and change the `minter` address to [`0x5ca749c835f44a9a9ff3fb0bec1f8e4f25ee09b424f62058c561ca41ec6bb146`](https://explorer.aptoslabs.com/object/0x5ca749c835f44a9a9ff3fb0bec1f8e4f25ee09b424f62058c561ca41ec6bb146/modules/code/mint_stage?network=mainnet) so it would use the Mainnet token-minter address.
 5. Create or get the account you want to create a collection with, open the `.env` file and assign the account address as the `VITE_COLLECTION_CREATOR_ADDRESS` value.
 6. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
