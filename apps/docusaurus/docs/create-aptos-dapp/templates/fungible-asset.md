@@ -58,6 +58,10 @@ Create or find the account you want to create an asset with. If you haven't crea
 
 3. Run `npm run move:publish`
 
+### Upgrade the Move module
+
+When you make change to your Move module, there are 2 kinds of changes, compatible and incompatible. You can learn [upgrade policy in details on docs](https://aptos.dev/move/book/package-upgrades/#compatibility-rules). When you make compatible changes, you run `npm run move:upgrade`. When you make incompatible changes, you run `npm run move:publish` to publish to a new address.
+
 ### Connect a wallet
 
 Once you have [published the move module](#publish-the-move-module), you will need to connect your wallet to submit transactions. Make sure your Wallet is set to the same account you used in the [previous section](#publish-the-move-module) to publish your Move module.
