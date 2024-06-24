@@ -37,4 +37,7 @@ export default {
   "key-rotation": {
     title: "Account Key Rotation",
   },
+  "system-integrators-guide": {
+    title: "Integrate with the Aptos Blockchain",
+  },
 };
