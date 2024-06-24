@@ -9,9 +9,6 @@ export default {
   "build-e2e-dapp": {
     title: "Build an E2E Dapp with Aptos",
   },
-  "aptos-keyless": {
-    title: "Aptos Keyless Accounts",
-  },
   "your-first-nft": {
     title: "Your First NFT",
   },
@@ -30,6 +27,9 @@ export default {
   "---advanced---": {
     type: "separator",
     title: "Advanced",
+  },
+  "aptos-keyless": {
+    title: "Aptos Keyless Accounts",
   },
   "multisig-managed-fungible-asset": {
     title: "Manage Fungible Assets with Multisig",
