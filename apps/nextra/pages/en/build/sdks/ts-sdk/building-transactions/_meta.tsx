@@ -1,4 +1,7 @@
 export default {
+  "simulating-transactions": {
+    title: "Simulating Transactions",
+  },
   "multi-agent-transactions": {
     title: "Multi-Agent Transactions",
   },

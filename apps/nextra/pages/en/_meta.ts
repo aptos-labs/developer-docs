@@ -16,7 +16,7 @@ export default {
         title: "Get Started",
       },
       "smart-contracts": {
-        title: "Smart Contracts (⚠️)",
+        title: "Smart Contracts",
       },
       apis: {
         title: "APIs",
@@ -30,8 +30,8 @@ export default {
       cli: {
         title: "CLI",
       },
-      tutorials: {
-        title: "Tutorials",
+      guides: {
+        title: "Guides",
       },
     },
   },
