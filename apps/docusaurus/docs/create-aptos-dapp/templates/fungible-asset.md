@@ -59,7 +59,7 @@ Create or find the account you want to create an asset with. If you haven't crea
 
 ### Upgrade the Move module
 
-When you make change to your Move module, there are 2 kinds of changes, compatible and incompatible. You can learn [upgrade policy in details on docs](https://aptos.dev/move/book/package-upgrades/#compatibility-rules). When you make compatible changes, you run `npm run move:upgrade`. When you make incompatible changes, you run `npm run move:publish` to publish to a new address.
+When you make changes to your Move module, there are 2 kinds of changes, compatible and incompatible. You can learn [upgrade policy in details on docs](https://aptos.dev/move/book/package-upgrades/#compatibility-rules). When you make compatible changes, you can run `npm run move:upgrade` to upgrade previous published module. When you make incompatible changes, you can run `npm run move:publish` to publish to a new address.
 
 ### Connect a wallet
 
