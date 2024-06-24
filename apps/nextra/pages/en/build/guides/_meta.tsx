@@ -23,4 +23,7 @@ export default {
   "first-multisig": {
     title: "Your First Multisig",
   },
+  "key-rotation": {
+    title: "Account Key Rotation",
+  },
 };

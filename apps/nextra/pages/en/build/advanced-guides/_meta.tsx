@@ -1,7 +1,4 @@
 export default {
-  "key-rotation": {
-    title: "Account Key Rotation",
-  },
   wallets: {
     title: "Aptos Wallet Standard",
   },
