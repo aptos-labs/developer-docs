@@ -5,6 +5,9 @@ export default {
   "build-e2e-dapp": {
     title: "Build an E2E Dapp with Aptos",
   },
+  "aptos-keyless": {
+    title: "Aptos Keyless Accounts",
+  },
   "your-first-nft": {
     title: "Your First NFT",
   },

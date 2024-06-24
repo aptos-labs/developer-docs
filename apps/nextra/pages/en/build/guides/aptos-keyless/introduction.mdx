@@ -1,0 +1,25 @@
+---
+title: "Keyless Introduction"
+---
+
+# Introduction
+
+Keyless accounts represent a pivotal advancement within the Aptos ecosystem, revolutionizing the way users onboard and interact with decentralized applications (dApps). Aptos Keyless allows users to gain ownership of an Aptos blockchain account from their existing OpenID Connect (OIDC) account(s) (e.g., Sign in with Google; Sign in with Apple), rather than from a traditional secret key or mnemonic. In a nutshell, with Aptos Keyless, a user’s blockchain account is their OIDC account. Over time, Keyless will evolve to support many IdPs who support the OIDC standard, but we will begin with support for the providers listed [here](oidc-support.md).
+
+At the core of the keyless accounts paradigm lies a deep understanding of user experience and security challenges prevalent in traditional blockchain systems. Managing private keys, the cornerstone of user identity and asset ownership, often proves cumbersome and error-prone for users, particularly those lacking technical expertise. Keyless accounts offer an elegant solution by obviating the need for users to grapple with the intricacies of private key management. Instead, users authenticate themselves through access to common social sign in options like Google, Apple, and many more. With this new system comes some important tradeoffs to understand on behalf of your users before implementing Keyless in your application. The following pages will expand on the benefits of Keyless accounts, how to integrate, the system architecture, and FAQs. For a more verbose and technical dive into Keyless accounts, please see [AIP-61-Keyless Accounts](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md).
+
+There are two ways to interact with Keyless accounts in the Aptos ecosystem. Developers are able to either 1) integrate the Aptos Keyless SDK directly into their dApp or 2) integrate a wallet, like Aptos Connect, that supports Keyless account creation. This documentation will focus on case #1 and more details on #2 can be found here. Please note that a direct integration of the Keyless SDK will result in user accounts being domain specific to your dApp whereas the use of a wallet integration will allow your users to carry their accounts to any application that supports that wallet.
+
+Note: the Aptos Keyless SDK and Aptos Connect are representative examples of the aforementioned product experience, but developers in our ecosystem are building alternatives, like a Keyless Unity SDK and alternative wallet products with Keyless integration.
+
+## Aptos Keyless Benefits
+
+Keyless accounts are revolutionary to users for the following reasons:
+
+1. **Simplified login user experience**: "1-click" account creation via familiar Web2 logins like Sign In with Google.
+2. **Enhanced dApp user experience**: Ability to transact on the Aptos blockchain without needing to navigate away from the application experience to download a wallet.
+3. **Secure key management**: Requires no manual secret key management by the user. Users sign transactions with the JSON Web Token (JWT) token issued by OIDC providers. As such, blockchain account access is synonymous with access to one’s OIDC account
+4. **Improved account recovery**: Web2-like recovery flows are available to regain access to one’s blockchain account in case the user ever loses access to their OIDC account.
+5. **Seamless cross-device experiences**: Users log in with their OIDC account no matter what device they are on - no need to download wallet software on each device, import their keys and encrypt them with a password, which must be maintained.
+
+With these benefits, come some important structural components of Keyless accounts for developers to be aware of. You can see more on this in our FAQs.
