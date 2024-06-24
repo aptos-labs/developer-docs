@@ -2,9 +2,6 @@ export default {
   wallets: {
     title: "Aptos Wallet Standard",
   },
-  randomness: {
-    title: "Randomness API",
-  },
   "multisig-managed-fungible-asset": {
     title: "Manage Fungible Assets with Multisig",
   },
