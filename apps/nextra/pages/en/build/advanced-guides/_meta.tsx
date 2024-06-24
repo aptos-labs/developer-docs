@@ -1,7 +1,4 @@
 export default {
-  "aptos-name-service": {
-    title: "Aptos Names Service",
-  },
   "key-rotation": {
     title: "Account Key Rotation",
   },
