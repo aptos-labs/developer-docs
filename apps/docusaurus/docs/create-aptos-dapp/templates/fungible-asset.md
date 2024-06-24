@@ -52,7 +52,6 @@ Create or find the account you want to create an asset with. If you haven't crea
 1. Run `npm run move:init` - a command to initialize an account to publish the Move contract. When you run that command it will:
 
    - Generate a new CLI `.aptos/config.yaml` file that holds a profile with the account private key, account address, and network configuration.
-   - Configure your development environment and add a `VITE_MODULE_ADDRESS` variable into the `.env` file with the account address from the previous step.
 
 2. To set who can create a new asset, edit the `.env` file and update `VITE_FA_CREATOR_ADDRESS` to be the address of the account allowed to create assets.
 
