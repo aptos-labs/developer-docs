@@ -1004,6 +1004,41 @@ export default withBundleAnalyzer(
         destination: "/en/build/smart-contracts/objects/using-objects",
         permanent: true,
       },
+      {
+        source: "/guides/keyless-accounts",
+        destination: "/en/build/guides/aptos-keyless",
+        permanent: true,
+      },
+      {
+        source: "/aptos-keyless",
+        destination: "/en/build/guides/aptos-keyless",
+        permanent: true,
+      },
+      {
+        source: "/aptos-keyless/introduction",
+        destination: "/en/build/guides/aptos-keyless/introduction",
+        permanent: true,
+      },
+      {
+        source: "/aptos-keyless/oidc-support",
+        destination: "/en/build/guides/aptos-keyless/oidc-support",
+        permanent: true,
+      },
+      {
+        source: "/aptos-keyless/integration-guide",
+        destination: "/en/build/guides/aptos-keyless/integration-guide",
+        permanent: true,
+      },
+      {
+        source: "/aptos-keyless/how-keyless-works",
+        destination: "/en/build/guides/aptos-keyless/how-keyless-works",
+        permanent: true,
+      },
+      {
+        source: "/aptos-keyless/other",
+        destination: "/en/build/guides/aptos-keyless/other",
+        permanent: true,
+      },
     ],
   }),
 );
