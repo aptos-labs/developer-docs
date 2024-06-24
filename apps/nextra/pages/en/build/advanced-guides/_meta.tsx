@@ -1,7 +1,4 @@
 export default {
-  "multisig-managed-fungible-asset": {
-    title: "Manage Fungible Assets with Multisig",
-  },
   "sponsored-transactions": {
     title: "Sponsored Transactions",
   },
