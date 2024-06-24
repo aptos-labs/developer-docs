@@ -1,7 +1,4 @@
 export default {
-  wallets: {
-    title: "Aptos Wallet Standard",
-  },
   "multisig-managed-fungible-asset": {
     title: "Manage Fungible Assets with Multisig",
   },

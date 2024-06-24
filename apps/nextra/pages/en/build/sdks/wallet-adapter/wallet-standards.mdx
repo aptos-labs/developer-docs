@@ -2,6 +2,8 @@
 title: "Aptos Wallet Standard"
 ---
 
+{/* TODO: Consolidate with wallet adapter */}
+
 # Aptos Wallet Standard
 
 The wallet standard provides guidelines for interoperability between wallet
@@ -147,10 +149,10 @@ acknowledges that they want to see the requests. This keeps the user state clean
 and prevents the user from unknowingly having prompts.
 
 - `connect()` will prompt the user for a connection
-  - return `Promise<AccountInfo>`
+- return `Promise<AccountInfo>`
 - `disconnect()` allows the user to stop giving access to a dapp and also helps
 the dapp with state management
-  - return `Promise<void>`
+- return `Promise<void>`
 
 ### State APIs
 
