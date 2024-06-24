@@ -946,8 +946,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/tutorials/build-e2e-dapp/create-a-smart-contract",
-        destination:
-          "/en/build/guides/build-e2e-dapp/1-create-smart-contract",
+        destination: "/en/build/guides/build-e2e-dapp/1-create-smart-contract",
         permanent: true,
       },
       {
@@ -962,14 +961,12 @@ export default withBundleAnalyzer(
       },
       {
         source: "/tutorials/build-e2e-dapp/fetch-data-from-chain",
-        destination:
-          "/en/build/guides/build-e2e-dapp/4-fetch-data-from-chain",
+        destination: "/en/build/guides/build-e2e-dapp/4-fetch-data-from-chain",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/submit-data-to-chain",
-        destination:
-          "/en/build/guides/build-e2e-dapp/5-submit-data-to-chain",
+        destination: "/en/build/guides/build-e2e-dapp/5-submit-data-to-chain",
         permanent: true,
       },
       {
