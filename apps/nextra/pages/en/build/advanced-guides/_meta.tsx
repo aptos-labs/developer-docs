@@ -2,9 +2,6 @@ export default {
   wallets: {
     title: "Aptos Wallet Standard",
   },
-  "keyless-accounts": {
-    title: "Aptos Keyless Integration Guide",
-  },
   randomness: {
     title: "Randomness API",
   },
