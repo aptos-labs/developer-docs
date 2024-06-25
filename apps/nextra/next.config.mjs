@@ -548,7 +548,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/guides/system-integrators-guide",
-        destination: "/en/build/system-integrators-guide",
+        destination: "/en/build/guides/system-integrators-guide",
         permanent: true,
       },
       {
@@ -563,17 +563,17 @@ export default withBundleAnalyzer(
       },
       {
         source: "/guides/sponsored-transactions",
-        destination: "/en/build/sponsored-transactions",
+        destination: "/en/build/guides/sponsored-transactions",
         permanent: true,
       },
       {
         source: "/guides/transaction-management",
-        destination: "/en/build/transaction-management",
+        destination: "/en/build/guides/transaction-management",
         permanent: true,
       },
       {
         source: "/guides/account-management/key-rotation",
-        destination: "/en/build/key-rotation",
+        destination: "/en/build/guides/key-rotation",
         permanent: true,
       },
       {
@@ -758,7 +758,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/nodes/aptos-api-spec",
-        destination: "/en/network/nodes/aptos-api-spec",
+        destination: "/en/build/apis/fullnode-rest-api-reference",
         permanent: true,
       },
       {
@@ -859,7 +859,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/integration/aptos-names-service-package",
-        destination: "/en/build/aptos-name-service",
+        destination: "https://aptosnames.com",
         permanent: true,
       },
       {
@@ -1034,6 +1034,11 @@ export default withBundleAnalyzer(
       {
         source: "/aptos-keyless/other",
         destination: "/en/build/guides/aptos-keyless/other",
+        permanent: true,
+      },
+      {
+        source: "/create-aptos-dapp/index",
+        destination: "/en/build/create-aptos-dapp",
         permanent: true,
       },
     ],
