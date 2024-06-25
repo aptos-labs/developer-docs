@@ -7,5 +7,4 @@ export default {
   cli: "CLI",
   "create-aptos-dapp": "create-aptos-dapp",
   guides: "Guides",
-  "advanced-guides": "Advanced Guides",
 };
