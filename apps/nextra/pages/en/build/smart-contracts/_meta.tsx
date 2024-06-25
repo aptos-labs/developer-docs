@@ -87,7 +87,6 @@ export default {
   },
   "move-reference": {
     title: "Move Reference",
-    display: "hidden",
   },
   "error-codes": {
     title: "Error Codes",

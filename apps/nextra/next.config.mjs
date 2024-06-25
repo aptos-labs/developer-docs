@@ -1151,6 +1151,11 @@ export default withBundleAnalyzer(
         destination: "/en/network/nodes/configure",
         permanent: true,
       },
+      {
+        source: "/move/reference",
+        destination: "/en/build/smart-contracts/move-reference",
+        permanent: true,
+      },
     ],
   }),
 );
