@@ -87,7 +87,7 @@ export default {
   },
   "move-reference": {
     title: "Move Reference",
-    display: "hidden",
+    href: "https://legacy.aptos.dev/reference/move",
   },
   "error-codes": {
     title: "Error Codes",
