@@ -23,7 +23,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 /**
- * @type {import('next').NextConfig}
+ * @type {import("next").NextConfig}
  */
 export default withBundleAnalyzer(
   withNextra({
@@ -260,6 +260,11 @@ export default withBundleAnalyzer(
       {
         source: "/move/book/coding-conventions",
         destination: "/en/build/smart-contracts/book/coding-conventions",
+        permanent: true,
+      },
+      {
+        source: "/move/move-on-aptos/objects",
+        destination: "/en/build/smart-contracts/objects",
         permanent: true,
       },
       {
@@ -544,6 +549,11 @@ export default withBundleAnalyzer(
       {
         source: "/reference/error-codes",
         destination: "/en/build/smart-contracts/error-codes",
+        permanent: true,
+      },
+      {
+        source: "/integration",
+        destination: "/en/build/guides/system-integrators-guide",
         permanent: true,
       },
       {
@@ -976,24 +986,24 @@ export default withBundleAnalyzer(
       },
       {
         source: "/en/build/smart-contracts/aptos-standards/aptos-object",
-        destination: "/en/build/smart-contracts/aptos-standards/objects",
+        destination: "/en/build/smart-contracts/objects",
         permanent: true,
       },
       {
-        source: "/en/build/smart-contracts/objects",
-        destination: "/en/build/smart-contracts/aptos-standards/objects",
+        source: "/en/build/smart-contracts/aptos-standards/objects",
+        destination: "/en/build/smart-contracts/objects",
         permanent: true,
       },
       {
-        source: "/en/build/smart-contracts/objects/creating-objects",
-        destination:
+        source:
           "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
+        destination: "/en/build/smart-contracts/objects/creating-objects",
         permanent: true,
       },
       {
-        source: "/en/build/smart-contracts/objects/configuring-objects",
-        destination:
-          "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
+        source:
+          "/en/build/smart-contracts/aptos-standards/objects/configuring-objects",
+        destination: "/en/build/smart-contracts/objects/creating-objects",
         permanent: true,
       },
       {
@@ -1039,6 +1049,106 @@ export default withBundleAnalyzer(
       {
         source: "/create-aptos-dapp/index",
         destination: "/en/build/create-aptos-dapp",
+        permanent: true,
+      },
+      {
+        source: "/indexer/api",
+        destination: "/en/build/indexer/api",
+        permanent: true,
+      },
+      {
+        source: "/tools/aptos-cli",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/tools/aptos-cli/install-cli",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/sdks/index",
+        destination: "/en/build/sdks",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true,
+      },
+      {
+        source: "/sdks/cpp-sdk",
+        destination: "/en/build/sdks/cpp-sdk",
+        permanent: true,
+      },
+      {
+        source: "/sdks/go-sdk",
+        destination: "/en/build/sdks/go-sdk",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-landing",
+        destination: "/en/build/indexer",
+        permanent: true,
+      },
+      {
+        source: "/move/aptos-move",
+        destination: "/en/build/smart-contracts",
+        permanent: true,
+      },
+      {
+        source: "/move/move-on-aptos",
+        destination: "/en/build/smart-contracts",
+        permanent: true,
+      },
+      {
+        source: "/apis",
+        destination: "/en/build/apis",
+        permanent: true,
+      },
+      {
+        source: "/concepts",
+        destination: "/en/network/blockchain",
+        permanent: true,
+      },
+      {
+        source: "/concepts/blockchain",
+        destination: "/en/network/blockchain/blockchain-deep-dive",
+        permanent: true,
+      },
+      {
+        source: "/concepts/staking",
+        destination: "/en/network/blockchain/staking",
+        permanent: true,
+      },
+      {
+        source: "/move/book/summary",
+        destination: "/en/build/smart-contracts/book/summary",
+        permanent: true,
+      },
+      {
+        source: "/nodes/validator-node/validators",
+        destination: "/en/network/nodes/validator-node",
+        permanent: true,
+      },
+      {
+        source: "/standards",
+        destination: "/en/build/smart-contracts/aptos-standards",
+        permanent: true,
+      },
+      {
+        source: "/category/advanced-builders",
+        destination: "/en/build/guides",
+        permanent: true,
+      },
+      {
+        source: "/move/compiler_v2",
+        destination: "/en/build/smart-contracts/compiler_v2",
+        permanent: true,
+      },
+      {
+        source: "/nodes/configure/configure-index",
+        destination: "/en/network/nodes/configure",
         permanent: true,
       },
     ],
