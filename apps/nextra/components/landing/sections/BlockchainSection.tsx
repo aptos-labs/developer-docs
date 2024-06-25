@@ -50,7 +50,7 @@ export function BlockchainSection() {
         <FeatureCard
           label={t.keylessLabel}
           description={t.keylessDescription}
-          href={`/${locale}/build/advanced-guides/keyless-accounts`}
+          href={`/${locale}/build/guides/aptos-keyless`}
         />
         <FeatureCard
           label={t.passkeysLabel}
