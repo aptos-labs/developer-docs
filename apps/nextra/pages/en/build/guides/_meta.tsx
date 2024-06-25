@@ -28,18 +28,22 @@ export default {
     type: "separator",
     title: "Advanced",
   },
-  "aptos-keyless": {
-    title: "Aptos Keyless Accounts",
-  },
   "multisig-managed-fungible-asset": {
     title: "Manage Fungible Assets with Multisig",
   },
-  "key-rotation": {
-    title: "Account Key Rotation",
+  "aptos-keyless": {
+    title: "Aptos Keyless Accounts",
+  },
+  "sponsored-transactions": {
+    title: "Sponsored Transactions",
   },
   "transaction-management": {
     title: "Transaction Management",
   },
+  "key-rotation": {
+    title: "Account Key Rotation",
+  },
+
   "system-integrators-guide": {
     title: "Integrate with the Aptos Blockchain",
   },
