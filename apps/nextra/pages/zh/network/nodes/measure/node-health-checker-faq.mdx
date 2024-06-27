@@ -1,0 +1,32 @@
+---
+title: "节点健康检查器常见问题解答"
+---
+
+import {Callout, Steps} from 'nextra/components';
+
+# 节点健康检查器常见问题解答
+
+Aptos 节点健康检查器（NHC）服务可以用来检查您的节点的健康状态。查看[节点健康检查器](node-health-checker.mdx)获取 NHC 的完整文档。
+
+本常见问题解答的目的是帮助您理解当您为节点运行 NHC 时，为什么节点没有通过某个特定的健康检查。如果您在这个 FAQ 中没有找到您想要的信息，请[提交到 Issue](https://github.com/aptos-labs/aptos-core/issues/new/choose)，或者[提交 PR](https://github.com/aptos-labs/aptos-core/pulls)，然后添加您的问题内容。
+
+## 延迟评估器是如何工作的？
+
+您可能在这里是因为您收到了像这样的 NHC 评估结果：
+
+```bash filename="Terminal"
+Average latency too high: The average latency was 1216ms, which is higher than the maximum allowed latency of 1000ms.
+```
+
+虽然 NHC 在上面报告了 1216 毫秒，但当您 `ping` 时，您可能会看到像 600 毫秒这样的延迟。这种差异是因为当您 `ping` 一个 IP 时，您看到的结果是单次往返（其中延迟是往返时间（RTT））。另一方面，NHC 延迟测试将向运行在您的节点上的 API 发送一个请求。实际上，这意味着 NHC 将计时 2 次往返，因为它执行以下操作：
+
+1. SYN  （Synchronize Sequence Numbers）
+2. SYNACK （Synchronize Acknowledgement）
+3. ACK + 发送 HTTP 请求
+4. 接收 HTTP 响应
+
+也就是说，NHC 必须进行 TCP 握手（一次往返），然后进行 HTTP 请求（第二次往返）。
+
+NHC 使用延迟评估器的原因是确保我们能够保持良好的网络性能。特别是，如果您的节点延迟太高，将导致 TPS 低和最终确定时间高，这两者对于运行高性能的 L1 区块链都非常重要。**如果您收到这个错误，您将需要尝试改善到您的节点的延迟。我们为这个值设定了很高的阈值，理解到节点将遍布全世界运行。**
+
+节点健康检查器（NHC）之所以选用延迟评估器，就是为了保障网络性能的优异水准。特别的是，如果您的节点延迟过高，会引起交易处理速度（TPS）降低和最终确定的时间延长，这对于保持一层（L1）区块链的高效运作至关重要。**若您遇到此错误，那么您需要努力降低节点的延迟时间。鉴于我们的节点遍布全球，我们为此值设定了较高的阈值。**
