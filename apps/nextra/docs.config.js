@@ -163,6 +163,7 @@ export const en = {
 };
 
 export const zh = {
+  ...en,
   locale: "zh",
   name: "简体中文",
   direction: "ltr",
