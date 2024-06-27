@@ -8,12 +8,6 @@ export default {
       footer: null,
     },
   },
-  learn: {
-    type: "page",
-    title: "Learn ↗",
-    href: "https://learn.aptoslabs.com/",
-    newWindow: true,
-  },
   build: {
     type: "menu",
     title: "Build",
