@@ -272,37 +272,6 @@ export const zh = {
   testimonial3Body:
     "Cellana Finance 选择基于 Aptos 进行构建是因为其交易速度快、成本效益高且安全性强。此外，Aptos 的即时终结性（小于1秒）将成为未来吸引 Web 2 各种金融应用的重要优势。",
   testimonial3Author: "–Andy Hoang, CEO, Cellana",
-
-  // Footer Section
-
-  aptosAlt: "Aptos Foundation",
-  discordAlt: "Discord",
-  githubAlt: "Github",
-  linkedinAlt: "LinkedIn",
-  telegramAlt: "Telegram",
-  twitterAlt: "Twitter",
-  buildHeading: "Build",
-  discoverHeading: "Discover",
-  connectHeading: "Connect",
-  meetAptosHeading: "Meet Aptos",
-  documentationLink: "Documentation",
-  governanceLink: "Governance",
-  networkNumbersLink: "Network Numbers",
-  validatorsLink: "Validators",
-  nodeOperationsLink: "Node Operations",
-  ecosystemHubLink: "Ecosystem Hub",
-  grantsLink: "Grants",
-  pressLink: "Press",
-  eventsLink: "Events",
-  collectiveLink: "Collective",
-  forumLink: "Forum",
-  aboutAptosLink: "About",
-  netZeroPolicyLink: "Net Zero Policy",
-  whitePaperLink: "White Paper",
-  brandLink: "Brand",
-  careersLink: "Careers",
-  privacyLink: "Privacy",
-  termsLink: "Terms",
 };
 
 export const i18nConfig = Object.freeze({
