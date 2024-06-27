@@ -11,31 +11,32 @@ export default {
   build: {
     type: "menu",
     title: "Build",
-    // items: {
-    //   "get-started": {
-    //     title: "Get Started",
-    //   },
-    //   "smart-contracts": {
-    //     title: "Smart Contracts (Move)",
-    //   },
-    //   apis: {
-    //     title: "APIs",
-    //   },
-    //   sdks: {
-    //     title: "SDKs",
-    //   },
-    //   indexer: {
-    //     title: "Indexer",
-    //   },
-    cli: {
-      title: "CLI",
+    items: {
+      //   "get-started": {
+      //     title: "Get Started",
+      //   },
+      //   "smart-contracts": {
+      //     title: "Smart Contracts (Move)",
+      //   },
+      //   apis: {
+      //     title: "APIs",
+      //   },
+      //   sdks: {
+      //     title: "SDKs",
+      //   },
+      //   indexer: {
+      //     title: "Indexer",
+      //   },
+      cli: {
+        title: "CLI",
+      },
+      // "create-aptos-dapp": {
+      //   title: "create-aptos-dapp",
+      // },
+      // guides: {
+      //   title: "Guides",
+      // },
     },
-    // "create-aptos-dapp": {
-    //   title: "create-aptos-dapp",
-    // },
-    // guides: {
-    //   title: "Guides",
-    // },
   },
   network: {
     type: "menu",
