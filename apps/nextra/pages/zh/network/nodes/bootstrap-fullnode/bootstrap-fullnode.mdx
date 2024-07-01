@@ -1,0 +1,36 @@
+---
+title: "从快照中引导启动"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# 从快照中引导启动
+
+本文档描述了如何快速使用快照引导启动一个 Aptos 节点。这可以在所有节点类型上完成，包括验证器、VFN 和 PFN。
+
+尽管您可以使用 [状态同步](../configure/state-sync.mdx) 引导启动一个新节点，但在网络运行一段时间后，这可能不是最快的方法；它可能需要太长时间，或者无法获取所有所需数据，因为其他节点可能已经裁剪了他们的账本历史。为了避免这种情况，您可以使用现有的快照引导启动您的节点，这仅仅是一个现有节点存储数据的副本。
+
+<Callout type="warning">
+**主网快照**<br />
+不建议在**主网**中使用快照来引导启动节点。这是因为快照没有经过Aptos软件的验证。因此，快照可能是无效的或包含不正确的数据。为了防止安全问题，我们建议仅在测试环境中使用快照，例如 **devnet** 和 **testnet**。
+
+如果您必须使用**主网**快照引导启动节点，您应该自己生成快照或从可信的来源获取它。您还应该在使用之前验证快照的完整性和真实性（例如，通过加密签名以及校验和）。
+</Callout>
+
+## 寻找现有的快照
+
+有多个快照可以从不同的 Aptos 社区成员那里下载。这些包括：
+
+- BWareLabs（测试网和主网）：[BWareLabs Aptos 节点快照](https://bwarelabs.com/snapshots/aptos)
+- Polkachu（主网）：[Polkachu Aptos 节点快照](https://polkachu.com/aptos_snapshots/aptos)
+
+<Callout type="info">
+**关于快照数据的问题** <br />
+根据快照的构建和压缩方式，快照文件的大小可能会有所不同。如果您对快照数据有任何问题，或者遇到任何问题，请通过 [Aptos Discord](https://discord.gg/aptosnetwork) 中的 [#node-support](https://discord.com/channels/945856774056083548/953421979136962560) 频道直接联系 Aptos 社区成员。
+</Callout>
+
+## 使用快照
+
+要使用快照，只需下载并复制文件到您节点的存储数据库的位置。
+这个可以在 fullnode `yaml` 配置文件下的 `data_dir` 中找到并更新。
+查看示例教程（[运行 PFN](../full-node/deployments.mdx)），了解如何配置数据目录。

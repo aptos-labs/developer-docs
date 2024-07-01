@@ -1,0 +1,89 @@
+---
+title: "使用 Docker"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# 使用 Docker 部署 PFN
+
+本节描述了如何使用 Docker 配置和运行您的 PFN。
+
+<Callout type="warning">
+**仅支持x86-64 CPU**<br />
+目前，仅支持 x86-64 CPU 通过 Docker 运行 aptos-core。如果您有 Apple M1/M2（ARM64）Mac，请使用上面介绍的 aptos-core 源代码编译的方法。如果对 M1 / M2 的支持对您很重要，请在此问题下发表您的讨论：https://github.com/aptos-labs/aptos-core/issues/1412 
+</Callout>
+
+1. 首先，安装 [Docker](https://docs.docker.com/get-docker/)。
+2. 接下来，运行以下脚本准备您的本地配置和主网数据目录。这将为您的 PFN 下载 `fullnode.yaml` 配置文件、`genesis.blob` 和 `waypoint.txt` 文件，并创建一个 `data` 目录来存储区块链数据库：
+
+```bash filename="Terminal"
+mkdir mainnet && cd mainnet
+mkdir data && \
+curl -O https://raw.githubusercontent.com/aptos-labs/aptos-core/mainnet/docker/compose/aptos-node/fullnode.yaml  && \
+curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/waypoint.txt  && \
+curl -O https://raw.githubusercontent.com/aptos-labs/aptos-networks/main/mainnet/genesis.blob
+```
+
+<Callout type="warning">
+**不想连接到主网？**<br />
+要连接到其他网络（例如 `devnet` 和 `testnet`），您可以在此处找到创世区块和路标文件 ➜ https://github.com/aptos-labs/aptos-networks
+请确保下载这些网络的 `genesis.blob` 和 `waypoint.txt` ，而不是使用上面 `curl` 命令下载创世区块和路标文件。
+</Callout>
+
+3. 接下来，确保您上面下载的`fullnode.yaml`配置文件只包含以下内容。
+   这将确保此配置是用于 PFN 而不是其他节点类型（例如，验证器或 VFN）：
+
+```yaml filename="fullnode.yaml"
+base:
+  role: "full_node"
+  data_dir: "/opt/aptos/data"
+  waypoint:
+    from_file: "/opt/aptos/etc/waypoint.txt"
+
+execution:
+  genesis_file_location: "/opt/aptos/etc/genesis.blob"
+
+full_node_networks:
+  - network_id: "public"
+    discovery_method: "onchain"
+    listen_address: "/ip4/0.0.0.0/tcp/6182"
+
+api:
+  enabled: true
+  address: "0.0.0.0:8080"
+```
+
+<Callout type="warning">
+**不希望被连接？**<br />
+如果您不希望其他 PFN 连接到您的节点，请重写以下设置：`listen_address: "/ip4/127.0.0.1/tcp/6182"`。
+</Callout>
+
+4. 接下来，运行以下 `docker` 命令：
+
+```bash filename="Terminal"
+docker run --pull=always \
+  --rm -p 8080:8080 \
+  -p 9101:9101 -p 6180:6180 \
+  -v $(pwd):/opt/aptos/etc -v $(pwd)/data:/opt/aptos/data \
+  --workdir /opt/aptos/etc \
+  --name=aptos-fullnode aptoslabs/validator:mainnet aptos-node \
+  -f /opt/aptos/etc/fullnode.yaml
+```
+
+<Callout type="warning">
+**需要 sudo 访问**<br />
+注意：根据您的配置，您可能需要在 docker 命令前加上 `sudo`。
+</Callout>
+
+<Callout type="info">
+**Docker 标签**<br />
+`mainnet` 标签始终指向最新的官方 Docker 镜像标签。您可以在以下位置找到最新的哈希值进行比较：
+https://github.com/aptos-labs/aptos-networks/tree/main/mainnet 
+</Callout>
+
+您现在已经成功配置并在 Aptos 主网上开始运行 PFN。
+
+<Callout type="info">
+**验证您的 PFN**
+如果您想要验证您的 PFN 是否正确运行，您可以按照[验证 PFN](../verify-pfn.mdx)指南中的说明进行。
+</Callout>

@@ -1,0 +1,197 @@
+---
+title: "通过 Aptos CLI 运行本地网络"
+---
+
+import {Callout, Steps} from 'nextra/components'
+
+# 通过 Aptos CLI 运行本地网络
+
+本地网络在测试代码时非常有用。它们不能连接到任何像主网这样生产环境的 Aptos 网络，但是它们有三个重要用途：
+
+1. **无速率限制：** 您可以与 Node API、Indexer API 和水龙头（faucet）等服务进行交互，没有速率限制，能够加快测试速度。
+2. **可重复性：** 您可以设置特定的链上场景，并在任何时候重新启动网络，回到最初的状态。
+3. **高可用性**：Aptos devnet 和 testnet 网络会定期升级，在升级期间它们可能会停用。而本地开发网络也始终可用，即使您没有互联网访问能力。
+   <br/>
+
+# 启动一个本地网络
+
+<Steps>
+### 确保您已安装 [Aptos CLI](../cli.mdx)
+### 确保您已安装 [Docker](https://docs.docker.com/get-docker/)
+   1.  仅当你需要创建一个与生产环境相似的环境时，运行 Indexer API 才是必需的。诸如 Aptos SDK 之类的许多下游工具都需要依赖 Indexer API 才能正常工作。
+   2.  如果你使用 Docker 则建议你通过安装[Docker Desktop](https://www.docker.com/products/docker-desktop/) 来实现自动更新，以便更便捷地维护和更新。
+
+### 启动 Docker
+
+### 在新终端中运行以下命令以启动私有网络：
+
+```bash filename="Terminal"
+aptos node run-local-testnet --with-indexer-api
+```
+
+<Callout type="warning">
+注意：尽管名为 `local-testnet`，但这与 Aptos testnet 无关，它将在您的机器上以完全本地的方式运行网络。
+</Callout>
+
+您应该能够看到类似于这样的输出：
+
+```bash filename="Terminal"
+Readiness endpoint: http://0.0.0.0:8070/
+
+Indexer API is starting, please wait...
+Node API is starting, please wait...
+Transaction stream is starting, please wait...
+Postgres is starting, please wait...
+Faucet is starting, please wait...
+
+Completed generating configuration:
+        Log file: "/Users/dport/.aptos/testnet/validator.log"
+        Test dir: "/Users/dport/.aptos/testnet"
+        Aptos root key path: "/Users/dport/.aptos/testnet/mint.key"
+        Waypoint: 0:397412c0f96b10fa3daa24bfda962671c3c3ae484e2d67ed60534750e2311f3d
+        ChainId: 4
+        REST API endpoint: http://0.0.0.0:8080
+        Metrics endpoint: http://0.0.0.0:9101/metrics
+        Aptosnet fullnode network endpoint: /ip4/0.0.0.0/tcp/6181
+        Indexer gRPC node stream endpoint: 0.0.0.0:50051
+
+Aptos is running, press ctrl-c to exit
+
+Node API is ready. Endpoint: http://0.0.0.0:8080/
+Postgres is ready. Endpoint: postgres://postgres@127.0.0.1:5433/local_testnet
+Transaction stream is ready. Endpoint: http://0.0.0.0:50051/
+Indexer API is ready. Endpoint: http://127.0.0.1:8090/
+Faucet is ready. Endpoint: http://127.0.0.1:8081/
+
+Applying post startup steps...
+
+Setup is complete, you can now use the local testnet!
+```
+
+### 等待网络启动
+
+一旦终端显示 `Setup is complete, you can now use the local testnet!` 本地网络就会运行。
+
+   <Callout type="warning">
+   如果您遇到错误，请查看下面的常见错误进行调试。
+   </Callout>
+
+<details>
+<summary>网络启动时的常见错误</summary>
+
+### 端口已被使用
+
+```bash filename="Terminal"
+panicked at 'error binding to 0.0.0.0:8080: error creating server listener: Address already in use (os error 48)'
+```
+
+这意味着本地网络所需的其中一个端口已被另一个进程使用。
+
+要在类 Unix 系统上解决此问题，您可以：
+
+1. 通过运行 `lsof -i :8080` 确定进程的名称和 PID。
+2. 一旦知道了 PID，你就能运行 `kill <pid>` 来释放该端口。
+
+### 打开的文件太多
+
+```bash filename="Terminal"
+panicked at crates/aptos/src/node/local_testnet/logging.rs:64:10:
+called \`Result::unwrap()\` on an \`Err\` value: Os { code: 24, kind: Uncategorized, message: "Too many open files" }
+```
+
+这意味着您的系统上打开的文件太多。在许多类 Unix 系统上，您可以通过向您的 `.zshrc` 添加类似以下内容来增加打开文件的最大数量：
+
+```bash filename="Terminal"
+ulimit -n 32768
+```
+
+### Docker 不可用
+
+```bash filename="Terminal"
+Unexpected error: Failed to apply pre-run steps for Postgres: Docker is not available, confirm it is installed and running. On Linux you may need to use sudo
+```
+
+要调试此问题，请尝试以下修复：
+
+1. 通过运行 `docker --version` 确保您已安装 docker。
+2. 通过运行 `docker info` 确保 Docker 守护进程正在运行（如果错误提示 `Cannot connect to the Docker daemon`，则表示 Docker 未运行）
+3. 确保连接到 Docker 的套接字（socket）在您的机器上的默认位置存在。例如，在类 Unix 系统上应该有 `/var/run/docker.sock`。
+   1. 如果该文件不存在，请打开 Docker Desktop 并启用 `Settings -> Advanced -> Allow the default Docker socket to be used.`
+   2. 或者，您可以通过运行 `docker context inspect | grep Host` 找到 Docker socket 的位置，然后通过运行 `sudo ln -s /Users/dport/.docker/run/docker.sock /var/run/docker.sock` 将该位置链接到默认位置
+
+</details>
+
+正如第 4 步中的示例输出所示，一旦本地网络成功运行，您就可以访问以下服务：
+
+- [Node API](../../network/nodes/aptos-api-spec.mdx)：这是一个直接部署在节点上的 REST API，它允许进行核心的数据写入操作，比如提交交易，同时也支持有限的数据读取操作，例如查询账户资源或 Move 模块的信息。
+- [Indexer API](../indexer/api.mdx)：这是一个 [GraphQL](https://graphql.org/) API，它提供了丰富的操作，以允许您读取索引了的区块链数据。点击上述的 Indexer API URL，默认是 [http://127.0.0.1:8090](http://127.0.0.1:8090/)，即可打开 Hasura 控制台。这是一个 Web 界面，便于您查询 Indexer GraphQL API。
+- [交易流服务](../indexer/txn-stream.mdx)：这是一个通过 Indexer API 实现的 gRPC 交易流。仅当您在开发[自定义处理器](../../indexer/custom-processors.mdx)时，此信息对您才有相关性。
+- [Postgres](https://www.postgresql.org/)：这是 Indexer 处理器用来存储数据的数据库，而 Indexer API 则从此数据库中读取信息。
+- [水龙头（Faucet）](../advanced-guides/system-integrators-guide.mdx#integrating-with-the-faucet)：您可以使用它为您的本地网络中的账户提供资金。
+
+如果您不想运行网络的任何这些子组件，可以使用一些参数来禁用它们。
+
+如果您正在编写脚本，并且希望等待本地网络启动并使用所有服务，您可以向 `http://127.0.0.1:8070` 发送 GET 请求。 起初，由于服务还没有准备好，它会返回 http 代码 [503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503)。 当它返回 [200](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200) 时，这意味着所有服务都已准备好。
+
+如需了解更多关于启动本地网络时可以使用的不同参数选项，或如何配置设置（包括更改特定服务的运行端口），请执行帮助命令：
+
+```bash filename="Terminal"
+aptos node run-local-testnet --help
+```
+
+</Steps>
+
+# 使用本地网络
+
+现在网络正在运行，您可以像使用任何其他网络一样使用它。
+
+所以，您可以这样创建一个本地配置文件：
+
+```bash filename="Terminal"
+aptos init --profile <your-profile-name> --network local
+```
+
+然后，您可以使用该配置文件进行您想要执行的任何命令。例如，如果您想要将 Move 模块（如 [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) 包）发布到您的本地网络，您可以运行：
+
+```bash filename="Terminal"
+aptos move publish --profile <your-profile-name> --package-dir /opt/git/aptos-core/aptos-move/move-examples/hello_blockchain --named-addresses HelloBlockchain=local
+```
+
+### 配置 TypeScript SDK
+
+如果您打算与 TypeScript SDK 一同使用本地网络，您可以在初始化客户端对象（`Aptos`）时，指定本地网络的 URL：
+
+```tsx
+import {Aptos, AptosConfig, Network} from "@aptos-labs/ts-sdk";
+
+const network = Network.LOCAL;
+const config = new AptosConfig({ network });
+const client = new Aptos(config);
+```
+
+### 重置本地网络
+
+在开发过程中，有时将本地网络重置回初始状态很有帮助，例如：
+
+- 您对 Move 模块进行了不能向后兼容的更改，您希望重新部署它，同时不用重命名它或使用新的账户。
+- 您正在构建一个[自定义索引处理器](../indexer/custom-processors.mdx)，您希望使用一个全新的网络进行索引。
+- 您想清除所有链上状态，例如账户、对象等。
+
+要开始一个全新的本地网络，请使用 `--force-restart` 标志：
+
+```bash filename="Terminal"
+aptos node run-local-testnet --force-restart
+```
+
+然后，它会提示您是否确实想重启链，以确保您不会意外删除您的工作内容。
+
+```bash filename="Terminal"
+Are you sure you want to delete the existing chain? [yes/no]
+> yes
+```
+
+如果您不想被提示，也可以添加参数 `--assume-yes`：
+
+```bash filename="Terminal"
+aptos node run-local-testnet --force-restart --assume-yes
+```

@@ -1,0 +1,207 @@
+---
+title: "使用 Azure"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# 使用 Azure
+
+这是一份分步指南，用于使用 Microsoft Azure 部署 Aptos 验证器和验证器全节点（VFN）。按照本指南，验证器和 VFN 将部署在不同的机器上。
+
+<Callout type="warning">
+**先决条件** <br/>
+在开始之前，请确保阅读并理解[节点要求](../node-requirements.mdx)。同样，请确保您已经安装了 [Aptos CLI](../../../../build/cli.mdx)，
+[Terraform](https://www.terraform.io/downloads.html)， 
+[Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/)， 
+和 [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)。 本指南假设您已经设置了 Azure 账户。
+</Callout>
+
+## 部署步骤
+
+<Callout type="info">
+**默认连接到主网**<br />
+如果您按照本文档中的默认设置操作，那么您的验证器和 VFN 将连接到 Aptos 主网。
+要连接到不同的 Aptos 网络，例如测试网，请确保您下载了您想要连接的网络的正确创世区块和路标文件。同样，您需要修改 Terraform 文件以使用正确的配置（例如，`source`，`image_tag` 和 `chain_id`）。
+</Callout>
+
+1. 为您的 Aptos 节点创建一个工作目录，并为您的节点选择一个用户名，例如：
+
+   ```bash filename="Terminal"
+   export WORKSPACE=mainnet
+   export USERNAME=alice
+   mkdir ~/$WORKSPACE
+   cd ~/$WORKSPACE
+   ```
+
+2. 在 Azure 上创建一个 blob 存储容器，用于存储 Terraform 状态，您可以在 Azure UI 上执行此操作，或使用以下命令：
+
+   ```bash filename="Terminal"
+   az group create -l <azure region> -n aptos-$WORKSPACE
+   az storage account create -n <storage account name> -g aptos-$WORKSPACE -l <azure region> --sku Standard_LRS
+   az storage container create -n <container name> --account-name <storage account name> --resource-group aptos-$WORKSPACE
+   ```
+
+3. 在您的工作目录中创建一个名为 `main.tf` 的 Terraform 文件：
+
+   ```bash filename="Terminal"
+   cd ~/$WORKSPACE
+   vi main.tf
+   ```
+
+4. 修改 `main.tf` 文件以配置 Terraform 并创建 Terraform 模块。请参阅以下示例：
+
+   ```terraform filename="main.tf"
+   terraform {
+     required_version = "~> 1.3.6"
+     backend "azurerm" {
+       resource_group_name  = <resource group name>
+       storage_account_name = <storage account name>
+       container_name       = <container name>
+       key                  = "state/validator"
+     }
+   }
+
+   module "aptos-node" {
+     # 从 aptos-core 仓库下载 Terraform 模块。
+     source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/azure?ref=mainnet"
+     region        = <azure region>  # 指定 Azure 区域
+     era           = 1  # 提高时代编号以清除链数据
+     chain_id      = 1  # 对于主网使用 1，或对于其他网络使用不同的值。
+     image_tag     = "mainnet" # 根据网络指定要使用的镜像标签
+     validator_name = "<Name of your validator>"" # 指定您的验证器名称
+   }
+   ```
+
+   有关所有自定义选项，请参见：
+
+   - Terraform 变量 [https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/azure/variables.tf](https://github.com/aptos-labs/aptos-core/blob/main/terraform/aptos-node/azure/variables.tf)
+   - Helm 值：[https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml](https://github.com/aptos-labs/aptos-core/blob/main/terraform/helm/aptos-node/values.yaml).
+
+5. 在您创建了 `main.tf` 文件的 `$WORKSPACE` 目录中初始化 Terraform。
+
+   ```bash filename="Terminal"
+   terraform init
+   ```
+
+   这将把 Terraform 的所有依赖项下载到当前工作目录中的 `.terraform` 文件夹中。
+
+6. 创建一个新的 Terraform 工作区以隔离您的环境，并查看工作区列表。
+
+   ```bash filename="Terminal"
+   terraform workspace new $WORKSPACE
+
+   # 此命令将列出所有工作区
+   terraform workspace list
+   ```
+
+7. 应用 Terraform 配置。
+
+   ```bash filename="Terminal"
+   terraform apply
+   ```
+
+   这可能需要一段时间才能完成（例如，>20 分钟）。Terraform 将在您的云账户上创建所有资源。
+
+8. `terraform apply` 完成后，您可以通过运行以下命令来检查资源是否已正确创建：
+
+   - `az aks get-credentials --resource-group aptos-$WORKSPACE --name aptos-$WORKSPACE`：此命令将为您的 k8s 集群配置访问权限。
+   - `kubectl get pods`：此命令将输出集群中的所有 pod。您应该看到 haproxy，验证器和 VFN（由于后续步骤中的进一步操作，验证器和 VFN pod `pending`）。
+   - `kubectl get svc`：此命令将输出集群中的所有服务。您应该看到 `validator-lb` 和 `fullnode-lb`，以及用于网络连接的外部 IP。
+
+9. 接下来，我们需要将节点的 IP 信息注入到您的环境。您可以通过运行以下命令来执行此操作：
+
+   ```bash filename="Terminal"
+   export VALIDATOR_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-validator-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
+
+   export FULLNODE_ADDRESS="$(kubectl get svc ${WORKSPACE}-aptos-node-0-fullnode-lb --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
+   ```
+
+10. 现在，在您的工作目录中为您的节点生成密钥对。您可以通过运行以下命令并使用 Aptos CLI 来执行此操作：
+
+    ```bash filename="Terminal"
+    aptos genesis generate-keys --output-dir ~/$WORKSPACE/keys
+    ```
+
+    这将在 `~/$WORKSPACE/keys` 目录下创建 4 个密钥文件：
+
+    - `public-keys.yaml`：此文件包含您的验证器和 VFN 的所有公钥，以及您的账户地址。
+    - `private-keys.yaml`：此文件包含您的验证器和 VFN 的所有私钥。
+    - `validator-identity.yaml`：此文件包含验证器的公钥和私钥，以及您的账户地址。
+    - `validator-full-node-identity.yaml`：此文件包含 VFN 的公钥和私钥，以及您的账户地址。
+
+    <Callout type="warning">
+    **备份您的私钥** <br />
+    私钥是确认你对节点所有权的关键。切记，绝对不要向他人透露你的**私钥**，并且务必将 `private-keys.yaml` 文件**备份**在安全的地方。
+    </Callout>
+
+11. 接下来，您需要设置验证器的配置。这包括设置验证器和 VFN 的主机名，这些可能是 IP 地址或 DNS 地址。您可以通过运行以下命令来完成此操作：
+
+    ```bash filename="Terminal"
+    aptos genesis set-validator-configuration \
+      --local-repository-dir ~/$WORKSPACE \
+      --username $USERNAME \
+      --owner-public-identity-file ~/$WORKSPACE/keys/public-keys.yaml \
+      --validator-host $VALIDATOR_ADDRESS:6180 \
+      --full-node-host $FULLNODE_ADDRESS:6182 \
+      --stake-amount 100000000000000
+    ```
+
+    配置验证器将在 `~/$WORKSPACE/$USERNAME` 目录中创建两个 YAML 文件：`owner.yaml` 和 `operator.yaml`。这些将有助于（稍后）将您的节点连接到 Aptos 网络。
+
+12. 按照 [查找节点文件](../../configure/node-files-all-networks.mdx) 页面上的说明下载以下文件。
+    您需要选择适当的网络（例如，`mainnet`，`testnet`，`devnet`）并下载以下文件：
+
+    - `genesis.blob`
+    - `waypoint.txt`
+
+13. 总之，在您的工作目录（`~/$WORKSPACE`）中，您应该有以下文件列表：
+
+    - `main.tf`：安装 `aptos-node` 模块的 Terraform 文件。
+    - `keys` 文件夹包含：
+      - `public-keys.yaml`：两个节点的公钥。
+      - `private-keys.yaml`：两个节点的私钥。
+      - `validator-identity.yaml`：验证器的密钥和账户信息。
+      - `validator-full-node-identity.yaml`：VFN 的密钥和账户信息。
+    - `$username` 文件夹包含：
+      - `owner.yaml`：所有者、运营者和投票者映射。
+      - `operator.yaml`：验证器和 VFN 运营者信息。
+    - `waypoint.txt`：您正在连接的网络上创世交易的路标文件。
+    - `genesis.blob`：您正在连接的网络的创世区块（genesis blob）。
+
+14. 最后，通过运行以下命令，将 `genesis.blob`，`waypoint.txt` 和身份文件作为密钥插入到 k8s 集群中：
+
+    ```bash filename="Terminal"
+    kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e1 \
+      --from-file=genesis.blob=genesis.blob \
+      --from-file=waypoint.txt=waypoint.txt \
+      --from-file=validator-identity.yaml=keys/validator-identity.yaml \
+      --from-file=validator-full-node-identity.yaml=keys/validator-full-node-identity.yaml
+    ```
+
+    <Callout type="warning">
+    **era 编号和 dangling 卷**<br />
+    上面命令中的 `-e1` 后缀代表 era 编号。如果你修改了 `ear` 编号，在创建密钥时务必保证它们相匹配。
+
+    在 Aptos 节点的 Kubernetes 部署过程中，`era` 是一个特定的概念。更换 era 可以轻松地重置你的部署状态，比如清空区块链数据。但是，这个操作可能会留下 dabgling 的持久化数据卷。通过运行 `kubectl get pvc` 来检查是否有 dangling 数据卷，并手动删除它们来降低成本。
+    </Callout>
+
+15. 现在，我们应该能够看到所有 pod 都在运行，包括验证器和 VFN。您可以通过执行以下命令来检查这一点：
+
+    ```bash filename="Terminal"
+    kubectl get pods
+
+    # 示例输出
+    NAME                                        READY   STATUS    RESTARTS   AGE
+    node1-aptos-node-0-fullnode-e9-0              1/1     Running   0          4h31m
+    node1-aptos-node-0-haproxy-7cc4c5f74c-l4l6n   1/1     Running   0          4h40m
+    node1-aptos-node-0-validator-0                1/1     Running   0          4h30m
+    ```
+
+<Callout type="warning">
+**下一步** <br />
+您现在已经使用 Azure 完成了验证器和 VFN 的设置。然而，您的节点还不能连接到 Aptos 网络。
+</Callout>
+
+## 连接到 Aptos 网络
+
+您现在已经使用 Azure 完成了验证器和 VFN 的设置。请继续进行 [连接节点](../connect-nodes.mdx) 的操作。

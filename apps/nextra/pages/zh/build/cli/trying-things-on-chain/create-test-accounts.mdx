@@ -1,0 +1,100 @@
+---
+
+title: "从 Aptos CLI 创建测试账户和发送交易"
+
+---
+
+import {Callout} from 'nextra/components'
+
+# 从 Aptos CLI 创建测试账户并发送交易
+
+<Callout type="info" emoji="ℹ️">
+如果您尚未安装 Aptos CLI，可以按照[这些步骤](../../cli.mdx)进行安装。
+</Callout>
+
+通常，要在链上创建一个新账户，您需要先生成密钥，然后为该账户充值。在测试网络上，您可以通过向持有测试 Aptos token 的“水龙头（faucet）”账户请求，让它将 Token 发送到您的账户来为新账户充值。
+
+使用 CLI，您可以使用以下命令生成并为测试账户注资：
+
+```bash filename="Terminal"
+aptos init --profile <your-profile-name>
+```
+
+一旦您拥有了一个有资金的账户，您可以使用 `transfer` 命令在账户之间发送 Coin，如下所示：
+
+```bash filename="Terminal"
+aptos account transfer --account superuser --amount 100
+```
+
+您应该会看到类似这样的结果：
+
+```json filename="Output"
+{
+  "Result": {
+    "gas_used": 73,
+    "balance_changes": {
+      "742854f7dca56ea6309b51e8cebb830b12623f9c9d76c72c3242e4cad353dedc": {
+        "coin": {
+          "value": "10100"
+        },
+        "deposit_events": {
+          "counter": "2",
+          "guid": {
+            "id": {
+              "addr": "0x742854f7dca56ea6309b51e8cebb830b12623f9c9d76c72c3242e4cad353dedc",
+              "creation_num": "1"
+            }
+          }
+        },
+        "withdraw_events": {
+          "counter": "0",
+          "guid": {
+            "id": {
+              "addr": "0x742854f7dca56ea6309b51e8cebb830b12623f9c9d76c72c3242e4cad353dedc",
+              "creation_num": "2"
+            }
+          }
+        }
+      },
+      "b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb": {
+        "coin": {
+          "value": "9827"
+        },
+        "deposit_events": {
+          "counter": "1",
+          "guid": {
+            "id": {
+              "addr": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
+              "creation_num": "1"
+            }
+          }
+        },
+        "withdraw_events": {
+          "counter": "1",
+          "guid": {
+            "id": {
+              "addr": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
+              "creation_num": "2"
+            }
+          }
+        }
+      }
+    },
+    "sender": "b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
+    "success": true,
+    "version": 1139,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
+这对于手动测试 Move 合约或仅仅尝试了解链在实践中的工作原理非常有用。
+
+<Callout type="info" emoji="ℹ️">
+如果你希望对生成的凭证（credentials）的具体格式有更精细的控制，可以用以下命令来代替 `aptos init`：
+
+1. `aptos key generate --vanity-prefix 0x<your-prefix>`
+2. `aptos account fund-with-faucet --account <your-newly-generated-account-address>`
+
+但请注意，地址和密钥是不同的。
+</Callout>

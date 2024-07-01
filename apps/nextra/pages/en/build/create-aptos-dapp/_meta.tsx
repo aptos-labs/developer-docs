@@ -1,8 +1,8 @@
 export default {
-  "templates": {
+  templates: {
     title: "Templates",
   },
-  "faq": {
+  faq: {
     title: "FAQ",
   },
 };

@@ -1,0 +1,338 @@
+---
+title: "质押池操作"
+---
+
+import {Callout, Steps} from 'nextra/components';
+
+# 质押池操作
+
+本文档描述了如何执行[质押](../../../blockchain/staking.mdx)池操作。注意，质押池只能接受质押池所有者的质押。只有在满足最低质押要求时，您才能进行质押。
+
+<Callout type="info">
+**最低质押要求**<br/>
+当前最低质押要求为 100 万 APT。
+</Callout>
+
+另见相关的[委托池操作](delegation-pool-operations.mdx)说明，以接受多个委托人的质押，从而达到最低质押要求。
+
+<Callout type="warning">
+**池类型是静态的**<br/>
+质押合约没有升级机制，因而无法从质押池转换到委托池，必须创建新的委托池。
+</Callout>
+
+## 初始化质押池
+
+<Callout type="info">
+**测试网与主网**<br/>
+下面的 Aptos CLI 命令针对的是主网。对于测试网和开发网，需要更改 `--network` 的值。
+查看 [Aptos 区块链网络](../../networks.mdx)中的值，了解如何根据不同的网络设置配置文件。
+</Callout>
+
+在初始化质押池之前，请确保存在一个拥有 100 万 APT 的账户。
+
+1. 使用现有账户（例如钱包）的私钥初始化 [Aptos CLI](../../../../build/cli.mdx)，或创建一个新账户。
+
+```bash filename="Terminal"
+aptos init --profile mainnet-owner \
+  --network mainnet
+```
+
+您可以输入现有钱包的私钥，或者创建一个新的钱包地址。
+
+2. 运行以下命令初始化质押池：
+
+```bash filename="Terminal"
+aptos stake create-staking-contract \
+  --operator <operator-address> \
+  --voter <voter-address> \
+  --amount 100000000000000 \
+  --commission-percentage 10 \
+  --profile mainnet-owner
+```
+
+3. 一旦质押池初始化完成，您就可以[连接到 Aptos 网络](connect-to-aptos-network.mdx)。
+
+## 执行池所有者操作
+
+### 账户间转账
+
+```bash filename="Terminal"
+aptos account transfer \
+  --account <operator-address> \
+  --amount <amount> \
+  --profile mainnet-owner
+```
+
+### 更换运营者
+
+```bash filename="Terminal"
+aptos stake set-operator \
+  --operator-address <new-operator-address> \
+  --profile mainnet-owner
+```
+
+### 更换投票者
+
+```bash filename="Terminal"
+aptos stake set-delegated-voter \
+  --voter-address <new-voter-address> \
+  --profile mainnet-owner
+```
+
+### 添加质押（stake）
+
+```bash filename="Terminal"
+aptos stake add-stake \
+  --amount <amount> \
+  --profile mainnet-owner
+```
+
+### 增加质押锁定期
+
+```bash filename="Terminal"
+aptos stake increase-lockup --profile mainnet-owner
+```
+
+### 解锁质押
+
+```bash filename="Terminal"
+aptos stake unlock-stake \
+  --amount <amount> \
+  --profile mainnet-owner
+```
+
+### 提取质押
+
+```bash filename="Terminal"
+aptos stake withdraw-stake \
+  --amount <amount> \
+  --profile mainnet-owner
+```
+
+### 更新佣金
+
+```bash filename="Terminal"
+aptos move run --function-id 0x1::staking_contract::update_commision \
+  --args address:<operator_address> u64:<commission_percentage> \
+  --profile mainnet-owner
+```
+
+## 为运营者设置受益人地址
+
+质押池运营者可以设置受益人地址，以接收质押池赚取的运营者佣金。
+
+- 运营者可以使用以下命令设置受益人地址：
+
+  ```bash filename="Terminal"
+  aptos move run --profile mainnet_operator \
+    --function-id 0x1::staking_contract::set_beneficiary_for_operator \
+    --args address:<new_beneficiary_address>
+  ```
+
+- 使用以下命令查看为运营者设置的受益人地址：
+  ```bash filename="Terminal"
+  aptos move view --url <网络的REST API> \
+    --function-id 0x1::staking_contract::beneficiary_for_operator \
+    --args address:<operator_address>
+  ```
+
+任何现有的未付佣金奖励将支付给新的受益人。为确保向当前受益人付款，应在切换受益人之前先调用`distribute`。如果一个运营者运营多个质押池，该运营者可以为所有质押池设置一个受益人，而不是为每个池单独设置。
+
+所有未发放的佣金奖励都将支付给新指定的受益人。为确保当前受益人能收到款项，应在更换受益人前先执行 `distribute` 操作。对于管理多个质押池的运营者，他们可为所有质押池统一指定一个受益人，而不是为每一个单独的质押池分别设置。
+
+一旦受益人地址设置完成，受益人就可以通过 `request_commission` 来获取运营者佣金。
+
+## 检查您的质押池信息
+
+<Callout type="info">
+在继续之前，请查看 [Aptos 区块链上的验证](../../../blockchain/staking.mdx#validation-on-the-aptos-blockchain)获取简要概述。
+</Callout>
+
+要检查您的质押池的详细信息，请运行以下 CLI 命令，并使用 `get-stake-pool` 选项提供 `--owner-address` 和 `--url` 字段。
+
+以下命令是针对示例所有者地址 `e7be097a90c18f6bdd53efe0e74bf34393cac2f0ae941523ea196a47b6859edb` 展开的。
+
+<Callout type="info">
+对于测试网或开发网的 `--url` 字段值，请参见 [Aptos 区块链网络](../../networks.mdx)。
+</Callout>
+
+```bash filename="Terminal"
+aptos node get-stake-pool \
+  --owner-address e7be097a90c18f6bdd53efe0e74bf34393cac2f0ae941523ea196a47b6859edb \
+  --profile mainnet-operator
+```
+
+示例输出：
+
+```json
+{
+  "Result": [
+    {
+      "state": "Active",
+      "pool_address": "25c3482850a188d8aa6edc5751846e1226a27863643f5ebc52be4f7d822264e3",
+      "operator_address": "3bec5a529b023449dfc86e9a6b5b51bf75cec4a62bf21c15bbbef08a75f7038f",
+      "voter_address": "3bec5a529b023449dfc86e9a6b5b51bf75cec4a62bf21c15bbbef08a75f7038f",
+      "pool_type": "StakingContract",
+      "total_stake": 100525929489123,
+      "commission_percentage": 10,
+      "commission_not_yet_unlocked": 15949746439,
+      "lockup_expiration_utc_time": "2022-10-07T07:12:55Z",
+      "consensus_public_key": "0xb3a7ac1491b0165f08f136c2b02739846b6610084984d5298c2983c4f8e5553284bffca2e3fe2b99167da82717501732",
+      "validator_network_addresses": [
+        "/ip4/35.91.145.164/tcp/6180/noise-ik/0xeddf05470520af91b847f353dd804a04399e1213d130a4260e813527f2c49262/handshake/0"
+      ],
+      "fullnode_network_addresses": [],
+      "epoch_info": {
+        "epoch": 594,
+        "epoch_interval_secs": 3600,
+        "current_epoch_start_time": {
+          "unix_time": 1665087178789891,
+          "utc_time": "2022-10-06T20:12:58.789891Z"
+        },
+        "next_epoch_start_time": {
+          "unix_time": 1665090778789891,
+          "utc_time": "2022-10-06T21:12:58.789891Z"
+        }
+      }
+    }
+  ]
+}
+```
+
+### 输出字段说明
+
+**state**
+
+- "Active": 验证者已经在验证者集合中并提出建议。
+- "Pending_active": 验证者将在下一个纪元（epoch）被添加到验证者集合中。**在下一个纪元到来之前，不要尝试再次加入验证者集合，否则您将收到错误。**
+
+**pool_address**
+
+- 在您的 `validator.yaml` 文件中使用此"pool_address"（而不是运营者地址）。如果您错误地使用了运营者地址，您将收到消息："Validator not in validator set"。
+
+**commission_percentage**
+
+- 只能由质押池所有者设置。运营者获得生成的质押奖励的"commission_percentage"部分。如果您请求佣金（可以通过运行命令 `aptos stake request-commission` 来完成），那么在 `lockup_expiration_utc_time` 结束时，佣金部分的奖励将转入运营者地址，其余部分将保留在质押池中并属于所有者。这里"the commission part of the rewards"指的是**commission_not_yet_unlocked**的值。
+
+这项设置仅能由质押池所有者进行。运营者会获得生成的质押奖励中一定的“佣金百分比（`commission_percentage`）”。通过执行命令 `aptos stake request-commission`，你可以申请这份佣金。那么，在锁定期结束时间（`lockup_expiration_utc_time`）到来时，奖励中的佣金部分将转入运营者的地址，其余部分则留在质押池中，归属于池所有者。“奖励中的佣金部分（the commission part of the rewards）”指的是**尚未解锁的佣金（commission_not_yet_unlocked）**数额。
+
+例如，在一个月的锁定期情况下，您每个月调用 `aptos stake request-commission`。这将在前一个月累积的佣金解锁后支付给您，但只有在前一个月结束时解锁。无论您在一个月中运行 `aptos stake request-commission` 多少次，佣金都只会在 `lockup_expiration_utc_time` 来临之后支付。
+
+  <Callout type="info">
+  **复利**<br/>
+  请注意，如果您连续多个月不请求佣金，由于这些月份的**commission_percentage**复利，您的佣金将会累积得更多。
+  </Callout>
+
+**commission_not_yet_unlocked**
+
+- 尚未解锁的佣金金额（APT 的数量）。它将在 `lockup_expiration_utc_time` 解锁。这是运营者可用的总佣金金额，即，仅属于运营者的质押奖励。这不包括属于所有者的质押奖励。
+
+**lockup_expiration_utc_time**
+
+- 佣金解锁的日期。然而，这个解锁的佣金不会自动发放。只有在再次调用命令 `aptos stake request-commission` 时才会发放。
+
+**epoch_info**
+
+- 使用 [Epoch Converter](https://www.epochconverter.com/) 或类似的工具将 `unix_time` 转换为人类可读的时间。
+
+## 请求佣金
+
+无论是所有者、运营者还是运营者的受益人，都可以请求佣金。您必须请求佣金**两次**，一次在锁定期结束之前，另一次在锁定期结束后，即在**lockup_expiration_utc_time**结束时，通过运行 `aptos stake request-commission` 命令。确保提供运营者和所有者的地址正确。下面是一个示例命令：
+
+```bash filename="Terminal"
+aptos stake request-commission \
+  --operator-address 0x3bec5a529b023449dfc86e9a6b5b51bf75cec4a62bf21c15bbbef08a75f7038f \
+  --owner-address 0xe7be097a90c18f6bdd53efe0e74bf34393cac2f0ae941523ea196a47b6859edb \
+  --profile mainnet-operator
+```
+
+在锁定期截止之前执行 `aptos stake request-commission` 命令将会开始解锁到那一刻为止赚取的所有已锁定佣金。这些佣金将一直处于 `pending_inactive` 状态，直到锁定期结束，并且在整个锁定期内都会继续赚取奖励。只有在锁定期结束并再次执行 `aptos stake request-commission` 命令之后，这些佣金才能被提取。
+
+见下面的例子：
+
+第一个月的第 29 天，您调用命令，它将为 29 天累积的佣金启动解锁。
+
+第二个月的第 29 天，如果您再次调用命令，它将发放上个月（29 天累积的）全部解锁的佣金，并为第一个月的第 30 天 + 第二个月的第 1-29 天（30 天）启动佣金解锁。
+
+第三个月的第 29 天，如果您再次调用命令，将发放 30 天的佣金，并启动新一批佣金的解锁。
+
+您可以多次调用该命令，您收到的金额取决于您之前请求佣金解锁的日期。
+
+当调用 `request-commission` 时，质押者解锁质押或质押者更换运营者时，佣金将被解锁。
+
+## 检查您的验证器性能（validator）
+
+要查看您在当前和过去纪元（epoch）中的验证器性能和赚取的奖励，请运行以下命令。将输出验证者在区块提案中的表现，以及在治理投票和治理提案中的表现。下面命令中使用了默认值。输入 `aptos node get-performance --help` 查看使用的默认值。
+
+```bash filename="Terminal"
+aptos node get-performance \
+  --pool-address <pool address> \
+  --profile mainnet-operator
+```
+
+示例输出：
+
+```json
+{
+  "Result": {
+    "current_epoch_successful_proposals": 56,
+    "current_epoch_failed_proposals": 0,
+    "previous_epoch_rewards": [
+      "12312716242",
+      "12272043711",
+      "12312912674",
+      "12313011054",
+      "12313109435",
+      "12180092056",
+      "12313305136",
+      "12313403519",
+      "12313501903",
+      "12313600288"
+    ],
+    "epoch_info": {
+      "epoch": 68,
+      "epoch_interval": 3600000000,
+      "last_epoch_start_time": {
+        "unix_time": 1665074662417326,
+        "utc_time": "2022-10-06T16:44:22.417326Z",
+        "local_time": "Thu Oct  6 16:44:22 2022"
+      },
+      "next_epoch_start_time": {
+        "unix_time": 1665078262417326,
+        "utc_time": "2022-10-06T17:44:22.417326Z",
+        "local_time": "Thu Oct  6 17:44:22 2022"
+      }
+    }
+  }
+}
+```
+
+#### 字段说明
+
+**current_epoch_successful_proposals**
+
+- 当前纪元（epoch）中成功的领导者验证者提案。另见[Aptos 区块链上的验证](../../../blockchain/staking.mdx#validation-on-the-aptos-blockchain)，了解领导者验证者和投票者验证者之间的区别。
+
+在当前纪元（Epoch）内，成功的领导-验证节点的提案。为了理解领导-验证节点与投票-验证节点之间的差异，请参考 [Aptos 区块链上的验证](../../../blockchain/staking.mdx#validation-on-the-aptos-blockchain)部分。
+
+**previous_epoch_rewards**
+
+以下列出了从倒数第十个纪元开始，过去 10 个纪元中获得的 APT 奖励金额。例如，在上面的示例中，第 10 个纪元以前赚得了 12312716242 APT，而在最近的一个纪元中赚得了 12313600288 APT。如果某个纪元的奖励为 0，接下来会是：
+
+- 验证者在那一个时代没有成为验证者集合的一部分（可能处于不活跃或待激活验证者状态），或者
+- 验证者错过了所有的领导者提案。
+
+### 检查所有时代的性能
+
+要检查从创世（genesis）以来所有纪元（epoch）的性能，请运行以下命令。您可以使用 `grep` 按池地址过滤结果，如下所示：
+
+```bash filename="Terminal"
+aptos node analyze-validator-performance \
+  --analyze-mode detailed-epoch-table \
+  --profile mainnet-operator \
+  --start-epoch 0 | grep <pool address>
+```
+
+## 跟踪奖励
+
+当有资金从质押合约 (staking_contract) 转给运营者或质押者（即所有者）时，会触发“分发事件” (`DistributeEvent`)。要追踪奖励情况，可以选择监听这个“分发事件”，或使用 [view 函数](../../../../build/apis.mdx#reading-state-with-the-view-function)查询质押合约中的金额 (`staking_contract_amounts`)。这样可以查看到累积奖励 (`accumulated_rewards`) 和佣金数额 (`commission_amount`)。

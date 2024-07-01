@@ -1,0 +1,133 @@
+---
+title: "重新执行过去的交易"
+---
+
+import { Callout, FileTree } from "nextra/components";
+
+# 重新执行（Replaying）过去的交易
+
+## 基础知识
+
+您可以使用 `aptos move replay` 命令在本地重放过去的交易。该命令相当直接，但需要您指定两部分必需的信息：
+
+- `--network`
+  - 这是您想要重放的网络
+  - 可能的值：`mainnet`、`testnet`、`devnet` 或 `<自定义 REST 端口的 URL>`
+- `--txn-id`
+  - 这是您想要重放的交易 ID
+  - 在 Explorer 上有时也被称为 `version`
+  - 需要注意的是，它不是十六进制的交易哈希
+
+让我们以主网交易 [581400718](https://explorer.aptoslabs.com/txn/581400718?network=mainnet)（一个简单的 Coin 转账交易）为例。
+
+```bash filename="Terminal"
+aptos move replay --network mainnet --txn-id 581400718
+```
+
+<details>
+<summary>输出</summary>
+```bash
+Got 1/1 txns from RestApi.
+Replaying transaction...
+{
+  "Result": {
+    "transaction_hash": "0x1ba73d03a0442a845735a17c7be46f3b51e2acb0e5cf68749305c5a17539ac63",
+    "gas_used": 7,
+    "gas_unit_price": 100,
+    "sender": "c94e16736910cc160347d01de345407fe2d350fce5635ac1150319b0fbf5630e",
+    "sequence_number": 14637,
+    "success": true,
+    "version": 581400718,
+    "vm_status": "status EXECUTED of type Execution"
+  }
+}
+```
+</details>
+
+另外，如果您想要模拟一个新的交易，请查看[本地模拟、基准测试和 Gas 分析](working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx)。
+
+## 替代模式
+
+类似于本地模拟，重放命令可以通过以下任一选项进行增强：
+
+- `--benchmark`：执行交易的性能测试，并报告其运行时间。
+- `--profile-gas`：详细分析该交易的 Gas 使用情况。
+
+### 基准测试
+
+```bash filename="Terminal"
+aptos move replay --network mainnet --txn-id 581400718 --benchmark
+```
+
+<details>
+<summary>输出</summary>
+```bash
+Got 1/1 txns from RestApi.
+Benchmarking transaction...
+Running time (cold code cache): 914.821µs
+Running time (warm code cache): 820.189µs
+{
+  "Result": {
+    "transaction_hash": "0x1ba73d03a0442a845735a17c7be46f3b51e2acb0e5cf68749305c5a17539ac63",
+    "gas_used": 7,
+    "gas_unit_price": 100,
+    "sender": "c94e16736910cc160347d01de345407fe2d350fce5635ac1150319b0fbf5630e",
+    "sequence_number": 14637,
+    "success": true,
+    "version": 581400718,
+    "vm_status": "status EXECUTED of type Execution"
+  }
+}
+```
+</details>
+
+值得注意的是，这些运行时间仅作为参考，因为它们取决于您本地设备的配置，并可能受到干扰（noise）或其他随机因素的影响。
+
+**如果您旨在优化您的合约，您应该基于气体分析结果做出决策。**
+
+<Callout type="info" emoji="ℹ️">
+为了最小化测量误差，基准测试工具会多次执行相同的交易。因此，基准测试任务可能需要一些时间来完成。
+</Callout>
+
+### Gas 分析
+
+Aptos Gas 分析器是一个强大的工具，可以帮助您理解 Aptos 交易的 Gas 使用情况。一旦激活，它将使用一个经过工具型的虚拟机模拟交易，并生成一个基于网页的报告。
+
+Gas 分析器也可以作为调试器使用，因为报告还包括了完整的执行过程。
+
+```bash filename="Terminal"
+aptos move replay --network mainnet --txn-id 581400718 --profile-gas
+```
+
+<details>
+<summary>输出</summary>
+```bash
+Got 1/1 txns from RestApi.
+Profiling transaction...
+Gas report saved to gas-profiling/txn-1ba73d03-0x1-aptos_account-transfer.
+{
+  "Result": {
+    "transaction_hash": "0x1ba73d03a0442a845735a17c7be46f3b51e2acb0e5cf68749305c5a17539ac63",
+    "gas_used": 7,
+    "gas_unit_price": 100,
+    "sender": "c94e16736910cc160347d01de345407fe2d350fce5635ac1150319b0fbf5630e",
+    "sequence_number": 14637,
+    "success": true,
+    "version": 581400718,
+    "vm_status": "status EXECUTED of type Execution"
+  }
+}
+```
+</details>
+
+您可以在目录 gas-profiling 中找到[生成的 Gas 报告](/gas-profiling/sample-report-2/index.html)：
+<FileTree>
+<FileTree.Folder name="gas-profiling" defaultOpen>
+<FileTree.Folder name="txn-1ba73d03-0x1-aptos_account-transfer" defaultOpen>
+<FileTree.Folder name="assets" defaultOpen />
+<FileTree.File name="index.html" />
+</FileTree.Folder>
+</FileTree.Folder>
+</FileTree>
+
+要理解 Gas 报告，请参考[本地模拟教程](working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx#understanding-the-gas-report)的这一部分。

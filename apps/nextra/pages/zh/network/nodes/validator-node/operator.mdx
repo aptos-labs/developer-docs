@@ -1,0 +1,44 @@
+---
+title: "运营者"
+---
+
+import {Callout, Steps} from 'nextra/components';
+
+# 运营者
+
+如果你是参与 Aptos 网络的运营者，那么使用这份文档来执行运营者任务，比如部署验证节点和验证者全节点，将节点注册到 Aptos 社区平台，并执行验证。
+
+<Callout type="info">
+**主网需要验证节点和验证者全节点** <br />
+为了参与到 Aptos 主网，你必须部署一个验证节点和一个验证者全节点。
+</Callout>
+
+## 部署节点并注册
+
+<Steps>
+
+### 阅读[节点要求](node-requirements.mdx)
+
+确保你的硬件、存储和网络资源满足节点要求。
+
+### 部署节点
+
+按照提供的详细节点安装步骤 [**运行验证节点**](deploy-nodes.mdx) 来部署一个验证节点和一个验证者全节点。
+
+</Steps>
+
+请注意，除非你通过下面的[质押池操作](connect-nodes/staking-pool-operations.mdx)将它们添加到验证者集合中，否则你的节点将不会正确运行（不会同步，不会参与共识）。
+
+## 连接到 Aptos 网络
+
+部署节点后，[连接到 Aptos 网络](connect-nodes/connect-to-aptos-network.mdx)。
+
+## 设置质押池和委托池操作
+
+将你的节点连接到 Aptos 网络后，建立[质押池操作](connect-nodes/staking-pool-operations.mdx)以将你的节点添加到验证者集合中。
+
+同样，为你的验证者委托的 APT 进行[委托池操作](connect-nodes/delegation-pool-operations.mdx)。你的节点将开始同步并参与共识。
+
+## 确保你的节点在线
+
+当您的节点部署并配置完成后，请确保它们达到[节点活跃性的要求](verify-nodes/node-liveness-criteria.mdx)。
