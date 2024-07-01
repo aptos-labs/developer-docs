@@ -6,3 +6,4 @@ export * from "./beta-notice";
 export * from "./codeblock";
 export * from "./remote-codeblock";
 export * from "./api-reference";
+export * from "./framework-reference";
