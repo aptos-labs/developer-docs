@@ -1156,6 +1156,327 @@ export default withBundleAnalyzer(
         destination: "/en/network/nodes/configure",
         permanent: true,
       },
+      {
+        source: "/en/build/smart-contracts/book/summary",
+        destination: "/en/build/smart-contracts/book/SUMMARY",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/aptos-standards/fungible-asset",
+        destination: "/en/build/smart-contracts/fungible-asset",
+        permanent: true,
+      },
+      {
+        source: "/integration/wallet-adapter-concept",
+        destination: "/en/build/sdks/wallet-adapter",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/aptos-standards/tokens",
+        destination: "/en/build/smart-contracts/aptos-token",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/aptos-standards/digital-asset",
+        destination: "/en/build/smart-contracts/digital-asset",
+        permanent: true,
+      },
+      {
+        source: "/move/prover/move-prover",
+        destination: "/en/build/smart-contracts/prover",
+        permanent: true,
+      },
+      {
+        source: "/nodes/full-node/public-fullnode",
+        destination: "/en/network/nodes",
+        permanent: true,
+      },
+      {
+        source: "/sdks/new-ts-sdk",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/aptos-standards/aptos-coin",
+        destination: "/en/build/smart-contracts/aptos-coin",
+        permanent: true,
+      },
+      {
+        source: "/guides/randomness",
+        destination: "/en/build/smart-contracts/randomness",
+        permanent: true,
+      },
+      {
+        source: "/en/network/nodes/aptos-api-spec",
+        destination: "/en/build/apis/fullnode-rest-api-reference",
+        permanent: true,
+      },
+      {
+        source: "/nodes/identity-and-configuration",
+        destination: "/en/network/nodes/identity-and-configuration",
+        permanent: true,
+      },
+      {
+        source: "/sdks/new-ts-sdk/migration-guide",
+        destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/aptos-standards/aptos-token",
+        destination: "/en/build/smart-contracts/aptos-token",
+        permanent: true,
+      },
+      {
+        source: "/tools/aptos-cli/use-cli/working-with-move-contracts",
+        destination: "/en/build/cli/working-with-move-contracts",
+        permanent: true,
+      },
+      {
+        source: "/aptos-white-paper/aptos-white-paper-index",
+        destination: "/en/network/blockchain/aptos-white-paper",
+        permanent: true,
+      },
+      {
+        source: "/create-aptos-dapp/templates/digital-asset",
+        destination: "/en/build/create-aptos-dapp/templates/digital-asset",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/object-code-deployment",
+        destination: "/en/build/smart-contracts/deployment",
+        permanent: true,
+      },
+      {
+        source: "/guides/running-a-local-multi-node-network",
+        destination: "/en/build/cli/running-a-local-network",
+        permanent: true,
+      },
+      {
+        source: "/move/move-on-aptos/cli",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/nodes/full-node/fullnode-source-code-or-docker",
+        destination:
+          "/en/network/nodes/full-node/fullnode-source-code-or-docker",
+        permanent: true,
+      },
+      {
+        source: "/reference",
+        destination: "/en",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk/index",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true,
+      },
+      {
+        source: "/tools/aptos-cli/use-cli",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/tools/install-cli",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/aptos-white-paper",
+        destination: "/en/network/blockchain/aptos-white-paper",
+        permanent: true,
+      },
+      {
+        source: "/en/build/advanced-guides/keyless-accounts",
+        destination: "/en/build/guides/aptos-keyless",
+        permanent: true,
+      },
+      {
+        source: "/en/build/guides/nfts/aptos-token-overview",
+        destination: "/en/build/smart-contracts/aptos-token",
+        permanent: true,
+      },
+      {
+        source: "/en/build/smart-contracts/objects/configuring-objects",
+        destination: "/en/build/smart-contracts/objects",
+        permanent: true,
+      },
+      {
+        source: "/guides/getting-started",
+        destination: "/en/build/get-started",
+        permanent: true,
+      },
+      {
+        source: "/tools/aptos-cli/use-cli/cli-genesis",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/programmatic-upgradeable-module",
+        destination: "/en/build/smart-contracts/book/package-upgrades",
+        permanent: true,
+      },
+      {
+        source: "/cli-tools/aptos-cli-tool/install-aptos-cli",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/community",
+        destination: "/en",
+        permanent: true,
+      },
+      {
+        source: "/concepts/keyless",
+        destination: "/en/build/guides/aptos-keyless",
+        permanent: true,
+      },
+      {
+        source: "/guides/nfts/mint-nft-cli",
+        destination: "/en/build/guides/your-first-nft",
+        permanent: true,
+      },
+      {
+        source: "/integration/creating-a-signed-transaction",
+        destination: "/en",
+        permanent: true,
+      },
+      {
+        source: "/move/book",
+        destination: "/en/build/smart-contracts/book",
+        permanent: true,
+      },
+      {
+        source: "/nodes",
+        destination: "/en/network/nodes",
+        permanent: true,
+      },
+      {
+        source: "/nodes/deployments",
+        destination: "/en/network/nodes/full-node/deployments",
+        permanent: true,
+      },
+      {
+        source: "/tools/aptos-cli/use-cli/use-aptos-cli",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/aptos-quickstarts",
+        destination: "/en/build/get-started",
+        permanent: true,
+      },
+      {
+        source: "/build/smart-contracts/aptos-standards/aptos-coin",
+        destination: "/en/build/smart-contracts/aptos-coin",
+        permanent: true,
+      },
+      {
+        source: "/community/external-resources",
+        destination: "/en",
+        permanent: true,
+      },
+      {
+        source: "/concepts/coin-and-token/aptos-coin",
+        destination: "/en/build/smart-contracts/aptos-coin",
+        permanent: true,
+      },
+      {
+        source: "/create-aptos-dapp/templates",
+        destination: "/en/build/create-aptos-dapp",
+        permanent: true,
+      },
+      {
+        source: "/create-aptos-dapp/templates/fungible-asset",
+        destination: "/en/build/create-aptos-dapp/templates/fungible-asset",
+        permanent: true,
+      },
+      {
+        source: "/docs/tutorials/functions",
+        destination: "/en/build/smart-contracts/book/functions",
+        permanent: true,
+      },
+      {
+        source: "/en/build/sdks/sdks/wallet-adapter",
+        destination: "/en/build/sdks/wallet-adapter",
+        permanent: true,
+      },
+      {
+        source: "/en/build/system-integrators-guide",
+        destination: "/en/build/guides/system-integrators-guide",
+        permanent: true,
+      },
+      {
+        source: "/en/move/book/modules-and-scripts",
+        destination: "/en/build/smart-contracts/book/modules-and-scripts",
+        permanent: true,
+      },
+      {
+        source: "/guides",
+        destination: "/en/build/guides",
+        permanent: true,
+      },
+      {
+        source: "/guides/building-wallet-extension",
+        destination: "/en",
+        permanent: true,
+      },
+      {
+        source: "/guides/indexing",
+        destination: "/en/build/indexer",
+        permanent: true,
+      },
+      {
+        source: "/guides/install-petra-wallet-extension",
+        destination: "/en",
+        permanent: true,
+      },
+      {
+        source: "/guides/nfts",
+        destination: "/en/build/guides/your-first-nft",
+        permanent: true,
+      },
+      {
+        source: "/guides/resource-accounts",
+        destination: "/en/build/smart-contracts/resource-accounts",
+        permanent: true,
+      },
+      {
+        source: "/guides/wallet-standard",
+        destination: "/en/build/sdks/wallet-adapter/wallet-standards",
+        permanent: true,
+      },
+      {
+        source: "/indexer",
+        destination: "/en/build/indexer",
+        permanent: true,
+      },
+      {
+        source: "/indexer/legacy",
+        destination: "/en/build/indexer/legacy",
+        permanent: true,
+      },
+      {
+        source: "/indexer/txn-stream",
+        destination: "/en/build/indexer/txn-stream",
+        permanent: true,
+      },
+      {
+        source: "/integration/wallet-adapter-concept",
+        destination: "/en/build/sdks/wallet-adapter",
+        permanent: true,
+      },
+      {
+        source: "/integration/wallet-adapter-concept",
+        destination: "/en/build/sdks/wallet-adapter",
+        permanent: true,
+      },
+      {
+        source: "/move",
+        destination: "/en/build/smart-contracts",
+        permanent: true,
+      },
     ],
   }),
 );
