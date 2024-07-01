@@ -190,7 +190,7 @@ from an account first and then burns the withdrawn FA as a helper.
 `TransferRef` has two functions:
 
 - Flip `frozen` in `FungibleStore` holding FA of the same metadata in the `TransferRef`. if
-  it is false, the store is "frozen" that nobody can deposit to or withdraw from this store without using the ref.
+  it is true, the store is "frozen" that nobody can deposit to or withdraw from this store without using the ref.
 - Withdraw from or deposit to a store ignoring `frozen` field.
 
 To change `frozen`, call:
