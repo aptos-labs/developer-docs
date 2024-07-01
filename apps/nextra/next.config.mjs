@@ -159,8 +159,13 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/book/references",
-        destination: "https://legacy.aptos.dev/reference/move",
-        permanent: false,
+        destination: "/en/build/smart-contracts/move-reference",
+        permanent: true,
+      },
+      {
+        source: "/reference/move",
+        destination: "/en/build/smart-contracts/move-reference",
+        permanent: true,
       },
       {
         source: "/move/book/tuples",
