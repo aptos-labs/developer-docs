@@ -8,6 +8,9 @@ export default {
   "integration-guide": {
     title: "Integration Guide",
   },
+  "simple-example": {
+    title: "Simple Example",
+  },
   "how-keyless-works": {
     title: "How Keyless Works",
   },
