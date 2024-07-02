@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  ws: ^8.17.1
+
 importers:
 
   .:
@@ -4193,6 +4196,7 @@ packages:
   /@humanwhocodes/config-array@0.11.14:
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
     engines: {node: '>=10.10.0'}
+    deprecated: Use @eslint/config-array instead
     dependencies:
       '@humanwhocodes/object-schema': 2.0.3
       debug: 4.3.5
@@ -4213,6 +4217,7 @@ packages:
 
   /@humanwhocodes/object-schema@2.0.3:
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
+    deprecated: Use @eslint/object-schema instead
     dev: true
 
   /@internationalized/date@3.5.4:
@@ -21394,7 +21399,7 @@ packages:
       opener: 1.5.2
       picocolors: 1.0.1
       sirv: 2.0.4
-      ws: 7.5.9
+      ws: 8.17.1
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -21413,7 +21418,7 @@ packages:
       lodash: 4.17.21
       opener: 1.5.2
       sirv: 1.0.19
-      ws: 7.5.9
+      ws: 8.17.1
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -21476,7 +21481,7 @@ packages:
       spdy: 4.0.2
       webpack: 5.91.0
       webpack-dev-middleware: 5.3.4(webpack@5.91.0)
-      ws: 8.17.0
+      ws: 8.17.1
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -21706,20 +21711,8 @@ packages:
       typedarray-to-buffer: 3.1.5
     dev: false
 
-  /ws@7.5.9:
-    resolution: {integrity: sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==}
-    engines: {node: '>=8.3.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
-  /ws@8.17.0:
-    resolution: {integrity: sha512-uJq6108EgZMAl20KagGkzCKfMEjxmKvZHG7Tlq0Z6nOky7YF7aq4mOx6xK8TJ/i1LeK4Qus7INktacctDgY8Ow==}
+  /ws@8.17.1:
+    resolution: {integrity: sha512-6XQFvXTkbfUOZOKKILFG1PDK2NDQs4azKQl26T0YS5CxqWLgXajbPZ+h4gZekJyRqFU8pvnbAbbs/3TgRPy+GQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -21729,7 +21722,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-    dev: false
 
   /xdg-basedir@5.1.0:
     resolution: {integrity: sha512-GCPAHLvrIH13+c0SuacwvRYj2SxJXQ4kaVTT5xgL3kPrz56XxkF21IGhjSE1+W0aw7gpBWRGXLCPnPby6lSpmQ==}
