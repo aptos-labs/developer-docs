@@ -18,5 +18,10 @@
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=18"
+  },
+  "pnpm": {
+    "overrides": {
+      "ws": "^8.17.1"
+    }
   }
 }
