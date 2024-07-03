@@ -1,0 +1,188 @@
+---
+title: "Account Key Rotation"
+---
+
+import { Callout } from "nextra/components";
+
+# Account Key Rotation
+
+<Callout type="warning">
+  Account key rotation is an advanced feature that should be used with caution.
+  Most users will never need to use this feature.
+</Callout>
+
+Aptos Move accounts have a public address, an authentication key, a public key,
+and a private key. The public address is permanent, always matching the
+account's initial authentication key.
+
+The Aptos account model facilitates the unique ability to rotate an account's
+private key. Since an account's address is the _initial_ authentication key, the
+ability to sign for an account can be transferred to another private key without
+changing its public address.
+
+In this guide, we show examples of how to rotate an account's authentication key
+using a few of the various Aptos SDKs.
+
+Here are the installation links for the SDKs we will cover in this example:
+
+- [Aptos CLI](../cli.mdx)
+- [Typescript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+
+<Callout type="warning">
+  Some of the following examples use private keys. Do not share your private
+  keys
+  with anyone.
+</Callout>
+
+## How to rotate an account's authentication key
+
+### Aptos CLI
+    Run the following to initialize two test profiles. Leave the inputs blank
+    both times you're prompted for a private key.
+
+    {/*TODO: something is wrong with code caching<Steps>*/}
+      ### Initialize two test profiles on devnet
+      ```bash filename="Terminal"
+      aptos init --profile test_profile_1 --network devnet --assume-yes
+      aptos init --profile test_profile_2 --network devnet --assume-yes
+      ```
+
+      ### Rotate the authentication key for test_profile_1 to test_profile_2's
+      authentication key
+      ```bash filename="Terminal"
+      aptos account rotate-key --profile test_profile_1
+      --new-private-key [TEST_PROFILE_2_PRIVATE_KEY]
+      ```
+
+
+      <Callout type="info">
+        ### Where do I view the private key for a profile?
+        Public, private, and authentication keys for Aptos CLI profiles are
+        stored
+        in `~/.aptos/config.yaml` if your config is set to `Global`
+        and `
+        [local_directory]/.aptos/config.yaml` if it's set to `Workspace`. To
+        see your config settings, run `aptos config show-global-config`.
+      </Callout>
+
+      ### Confirm yes and create a new profile so that you can continue to sign
+      for the resource account
+      ```bash filename="Terminal"
+      Do you want to submit a transaction for a range of [52000 - 78000] Octas
+      at a gas unit price of 100 Octas? [yes/no] >
+      yes
+      ...
+
+      Do you want to create a profile for the new key? [yes/no] >
+      yes
+      ...
+
+      Enter the name for the profile
+      test_profile_1_rotated
+
+      Profile test_profile_1_rotated is saved.
+      ```
+
+      You can now use the profile like any other account.
+
+      In your `config.yaml` file, `test_profile_1_rotated` will retain its
+      original public address but have a new public and private key that
+      matches `test_profile_2`.
+
+      The authentication keys aren't shown in the `config.yaml` file, but we can
+      verify the change with the following commands:
+
+      ### Verify the authentication keys are now equal with view functions
+      ```bash filename="Terminal"
+      # View the authentication key of `test_profile_1_rotated`
+      aptos move view --function-id 0x1::account::get_authentication_key --args
+      address:test_profile_1_rotated
+
+      # View the authentication key of `test_profile_2`, it should equal the
+      above.
+      aptos move view --function-id 0x1::account::get_authentication_key --args
+      address:test_profile_2
+      ```
+
+      ### Example output from the previous two commands
+      ```bash filename="Terminal"
+      {
+        "Result": [
+        "0x458fba533b84717c91897cab05047c1dd7ac2ea73e75c77281781f5b7fec180c"
+        ]
+      }
+      {
+        "Result": [
+        "0x458fba533b84717c91897cab05047c1dd7ac2ea73e75c77281781f5b7fec180c"
+        ]
+      }
+      ```
+    {/*</Steps>*/}
+
+### TypeScript
+    This program creates two accounts on devnet, Alice and Bob, funds them, then
+    rotates the Alice's authentication key to that of Bob's.
+
+    View the full example for this code
+    [here](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/examples/typescript-esm/rotate_key.ts).
+
+    The function to rotate is very simple:
+
+    {/* TODO CODE EXAMPLE */}
+
+    Commands to run the example script:
+
+    ### Navigate to the typescript SDK directory, install dependencies and run
+    rotate_key.ts
+    ```bash filename="Terminal"
+    cd ~/aptos-core/ecosystem/typescript/sdk/examples/typescript-esm
+    pnpm install && pnpm rotate_key
+    ```
+
+    ### rotate_key.ts output
+    ```shell filename="Terminal"
+    Account Address Auth Key Private Key Public Key
+    ------------------------------------------------------------------------------------------------
+    Alice 0x213d...031013 '0x213d...031013' '0x00a4...b2887b' '0x859e...08d2a9'
+    Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
+
+    ...rotating...
+
+    Alice 0x213d...031013 '0x1c06...ac3bb3' '0xf2be...9486aa' '0xbbc1...abb808'
+    Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
+    ```
+
+### Python
+    This program creates two accounts on devnet, Alice and Bob, funds them, then
+    rotates the Alice's authentication key to that of Bob's.
+
+    View the full example for this code
+    [here](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/rotate_key.py).
+
+    Here's the relevant code that rotates Alice's keys to Bob's:
+
+    {/* TODO CODE EXAMPLE */}
+
+    Commands to run the example script:
+
+    ### Navigate to the python SDK directory, install dependencies and run
+    rotate_key.ts
+    ```bash filename="Terminal"
+    cd aptos-core/ecosystem/python/sdk
+    poetry install && poetry run python -m examples.rotate-key
+    ```
+
+    ### rotate_key.py output
+    ```bash filename="Terminal"
+    Account Address Auth Key Private Key Public Key
+    ------------------------------------------------------------------------------------------------
+    Alice 0x213d...031013 '0x213d...031013' '0x00a4...b2887b' '0x859e...08d2a9'
+    Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
+
+    ...rotating...
+
+    Alice 0x213d...031013 '0x1c06...ac3bb3' '0xf2be...9486aa' '0xbbc1...abb808'
+    Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
+    ```
+

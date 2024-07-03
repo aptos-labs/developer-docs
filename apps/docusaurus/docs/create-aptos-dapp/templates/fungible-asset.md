@@ -52,11 +52,20 @@ Create or find the account you want to create an asset with. If you haven't crea
 1. Run `npm run move:init` - a command to initialize an account to publish the Move contract. When you run that command it will:
 
    - Generate a new CLI `.aptos/config.yaml` file that holds a profile with the account private key, account address, and network configuration.
-   - Configure your development environment and add a `VITE_MODULE_ADDRESS` variable into the `.env` file with the account address from the previous step.
 
 2. To set who can create a new asset, edit the `.env` file and update `VITE_FA_CREATOR_ADDRESS` to be the address of the account allowed to create assets.
 
-3. Run `npm run move:publish`
+3. Run `npm run move:publish` to publish the contract. When you run that command it will:
+
+```bash npm2yarn
+npm run move:publish
+```
+
+- Save the module address to VITE_MODULE_ADDRESS in the `.env` file.
+
+### Upgrade the Move module
+
+When you make changes to your Move module, there are 2 kinds of changes, compatible and incompatible. You can learn [upgrade policy in details on docs](https://aptos.dev/move/book/package-upgrades/#compatibility-rules). When you make compatible changes, you can run `npm run move:upgrade` to upgrade previous published module. When you make incompatible changes, you can run `npm run move:publish` to publish to a new address.
 
 ### Connect a wallet
 
@@ -122,7 +131,7 @@ Creating a asset on mainnet is the same flow as creating on testnet, but we need
 2. Run `npm run move:init` to initialize an account to work against Mainnet
    1. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
    2. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
-3. Check: open `.aptos/config.yaml` file and see that you have a profile under the `mainnet` name. In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the mainnet profile account account address.
+3. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
 4. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_FA_CREATOR_ADDRESS` value.
 5. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
 6. The next step would be to create an asset using this account. Simply follow [https://www.notion.so/aptoslabs/WIP-create-aptos-dapp-doc-41982c9e40e049cd962e1e0e42d0bdbd?pvs=4#20ef513460fb4452aedbece1a7523425](https://www.notion.so/WIP-create-aptos-dapp-dev-doc-41982c9e40e049cd962e1e0e42d0bdbd?pvs=21)

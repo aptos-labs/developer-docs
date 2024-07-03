@@ -50,7 +50,7 @@ export function BlockchainSection() {
         <FeatureCard
           label={t.keylessLabel}
           description={t.keylessDescription}
-          href={`/${locale}/build/advanced-guides/keyless-accounts`}
+          href={`/${locale}/build/guides/aptos-keyless`}
         />
         <FeatureCard
           label={t.passkeysLabel}
@@ -60,7 +60,7 @@ export function BlockchainSection() {
         <FeatureCard
           label={t.randomnessLabel}
           description={t.randomnessDescription}
-          href={`/${locale}/build/smart-contracts/cryptography#verifying-randomness-from-the-drand-beacon`}
+          href={`/${locale}/build/smart-contracts/randomness`}
         />
         <FeatureCard
           label={t.feePayerLabel}

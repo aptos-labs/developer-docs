@@ -1,0 +1,87 @@
+---
+title: "验证 PFN"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# 验证 PFN
+
+部署您的公共全节点（PFN）后，您可以通过检查 PFN 的几个指标来验证其是否正常运行。本文档描述了您可能想要执行的常见检查类型。
+
+<Callout type="info">
+您可以在[节点检查服务](../measure/node-inspection-service.mdx)文档中了解更多关于 Aptos 指标的信息。
+</Callout>
+
+### 验证同步状态
+
+在您的 PFN 初始同步期间，可能需要传输大量数据（有关状态同步工作原理的更多信息，请参见[状态同步](../configure/state-sync.mdx)指南）。您可以通过查询指标端口来监控状态同步进度，查看节点当前同步到的版本。运行以下示例命令以查看节点当前同步的版本：
+
+```bash filename="Terminal"
+curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_state_sync_version{.*\"synced\"}" | awk '{print $2}'
+```
+
+该命令将输出节点当前同步的版本。例如：
+
+```bash filename="Terminal"
+71000
+```
+
+请将命令返回的同步版本号（如 `71000`）与 [Aptos explorer 页面](https://explorer.aptoslabs.com/?network=mainnet)上显示的最新版本号进行比较。如果您的节点版本正在迅速接近最新版本，说明它的同步是正常的。浏览器页面上的版本号与您的节点相差几个版本是正常现象，因为浏览器节点本身可能存在一定的同步延迟。
+
+<Callout type="warning">
+**使用快速同步？**
+如果您的节点正在进行快速同步，该命令可能在最终更新到最新版本之前一直显示`0`。要验证节点是否正在进行快速同步，请运行以下命令：
+
+```bash filename="Terminal"
+curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_state_sync_version{.*\"synced_states\"}" | awk '{print $2}'
+```
+
+这应该显示同步状态数量的增加。您的节点可能需要几个小时才能快速同步到最新版本。最终，一旦快速同步完成，`aptos_state_sync_version{.*"synced"}`命令将返回节点当前同步的版本。
+
+您可以在此处阅读有关快速同步的更多信息：[状态同步引导](../configure/state-sync.mdx#bootstrapping-phase)。
+</Callout>
+
+### （可选）验证出站网络连接
+
+如果您愿意，您还可以检查您的 PFN 的出站网络连接。健康 PFN 的出站网络连接数量应该大于`0`。运行以下命令：
+
+```bash filename="Terminal"
+curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_connections{direction=\"outbound\""
+```
+
+上述命令将输出节点的出站网络连接数量。例如：
+
+```bash filename="Terminal"
+curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_connections{direction=\"outbound\""
+aptos_connections{direction="outbound",network_id="Public",peer_id="aabd651f",role_type="full_node"} 3
+```
+
+如果返回的出站连接数量为 `0`，则意味着您的节点无法连接到 Aptos 区块链。如果遇到这种情况，请按照以下步骤解决问题：
+
+1. 按照[更新您的节点](modify/update-fullnode-with-new-releases.mdx)更新到最新版本。
+2. 从配置文件中删除可能已添加的任何 `seed` 对等节点（Peers）。这些 `seed` 可能阻碍您连接到网络。`seed` 对等节点在[连接到种子对等节点](../full-node/modify/fullnode-network-connections.mdx#连接到种子对等节点)部分中有讨论。
+3. 确保您的网络使用了正确的 `genesis.blob` 和 `waypoint.txt` 文件。这是容易犯的错误。
+
+### （可选）检查 Docker 账本大小
+
+如果您使用 Docker 来运行您的 PFN，可以通过进入 Docker 容器并查询文件大小，来监控区块链账本占用的存储空间。这样，您便可了解到当前区块链账本所占用的存储空间。
+
+- 首先，在终端上运行`docker container ls`，并复制 NAME 字段的输出。这将是一个类似于 `public_full_node_fullnode_1` 的字符串。
+- 接下来，运行这些命令以检查账本占用的存储空间大小，使用您在上一步中复制的 NAME 字段替换 `public_full_node_fullnode_1`：
+
+```bash filename="Terminal"
+# 获取容器ID：
+id=$(docker container ls | grep public_full_node_fullnode_1 | grep -oE "^[0-9a-zA-Z]+")
+
+# 进入容器：
+docker exec -it $id /bin/bash
+
+# 观察卷（账本）大小：
+du -cs -BM /opt/aptos/data
+```
+
+[rest_spec]: https://github.com/aptos-labs/aptos-core/tree/main/api
+[devnet_genesis]: https://devnet.aptoslabs.com/genesis.blob
+[devnet_waypoint]: https://devnet.aptoslabs.com/waypoint.txt
+[aptos-labs/aptos-core]: https://github.com/aptos-labs/aptos-core.git
+[status dashboard]: https://status.devnet.aptos.dev

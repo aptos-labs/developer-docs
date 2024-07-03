@@ -54,7 +54,7 @@ const config: DocsThemeConfig = {
     content: function useBanner() {
       return (
         <div>
-          🎉 Welcome to the new Aptos Docs preview!{" "}
+          🎉 Welcome to the new Aptos Docs!{" "}
           <a
             className="text-blue-400 dark:text-blue-400 hover:underline"
             target="_blank"

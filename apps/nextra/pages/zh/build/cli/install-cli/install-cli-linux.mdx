@@ -1,0 +1,78 @@
+---
+title: "在 Linux 上安装 Aptos CLI"
+---
+
+import {Callout, Steps} from 'nextra/components'
+
+# 在 Linux 上安装 Aptos CLI
+
+对于 Linux，安装 Aptos CLI 工具的最简单方法是通过 Python 脚本，如果无法使用，您也可以通过下载预编译的二进制文件手动安装。通常不推荐使用预编译的二进制文件方法，因为更新也需要手动完成。
+
+<Callout type="warning">
+注意：如果您的设备是 ARM 架构，您将不得不按照这里的步骤安装：[安装特定版本的 Aptos CLI（高级）](install-cli-specific-version.mdx)
+</Callout>
+
+# 通过 Python 脚本安装
+
+<Steps>
+### 通过运行 `python3 --version` 确保您安装了 Python 3.6 +
+
+如果未安装 python3，您可以在 [python.org](http://python.org) 上找到安装说明。
+
+### 在终端中，使用以下命令之一：
+
+{/* TODO We need to ensure these files are still hosted */}
+
+```bash filename="Terminal"
+curl -fsSL "https://aptos.dev/scripts/install_cli.py"  | python3
+```
+
+或者使用等效的 `wget` 命令：
+
+```bash filename="Terminal"
+wget -qO- "https://aptos.dev/scripts/install_cli.py"  | python3
+```
+
+<Callout type="warning">
+如果您收到错误 `Couldn't find distutils or packaging. We cannot check the current version of the CLI. We will install the latest version.` 您可以通过运行 `pip3 install packaging` 然后重复此步骤来修复。
+</Callout>
+
+### （可选）将 Aptos CLI 添加到您的 PATH 文件夹中或直接添加到您的 PATH 中可能会很有用
+
+- 将文件夹添加到 PATH 的步骤取决于 shell 的类型。
+- 您可以运行 `echo $SHELL` 打印您的机器的默认 shell，然后搜索针对该 shell 添加文件夹到 PATH 的具体步骤。
+
+### 通过打开一个新的终端并运行 `aptos help` 来验证脚本是否正确安装
+
+- 您应该看到您可以使用 CLI 运行的命令列表。
+- 将来，这是了解每个命令如何工作的有用的资源。
+</Steps>
+
+<Callout type="info" emoji="ℹ️">
+如果您想将 Aptos CLI 更新到最新版本，您可以运行 `aptos update`。
+</Callout>
+
+# 通过预编译的二进制文件安装（备用方法）
+
+<Steps>
+### 转到 [Aptos CLI发布页面](https://github.com/aptos-labs/aptos-core/releases?q=cli&expanded=true)。
+### 点击最新发布的 "Assets" 可展开菜单，查看预编译的二进制文件。
+### 下载 Linux 的 zip 文件。
+   1. 它的名称将类似于：`aptos-cli-<version>-Ubuntu-x86_64.zip`。
+   2. 确保您选择了适合您计算机架构的正确 zip 文件。
+   3. 当下载时，您可能不得不忽略这是可疑文件的警告。
+### 解压下载的文件。
+### 将提取的 Aptos 二进制文件移动到您喜欢的文件夹。
+### 打开终端并进入到您选择的那个文件夹。
+### 通过运行 `chmod +x ~/aptos` 使 `~/aptos` 能够被执行。
+### 通过运行 `~/aptos help` 验证此安装版本是否起作用。
+   您应该看到如何使用所有 CLI 命令的说明。当您将来尝试了解如何使用特定命令时，这些可能会很有帮助。
+### （可选）将 Aptos CLI 添加到您的 PATH 文件夹中或直接添加到您的 PATH 中可能会很有帮助。
+   - 将文件夹添加到 PATH 的步骤取决于 shell。
+   - 您可以运行 `echo $SHELL` 打印您的机器的默认 shell，然后搜索针对该 shell 添加文件夹到 PATH 的具体步骤。
+
+</Steps>
+
+<Callout type="info" emoji="ℹ️">
+当使用预编译二进制文件的方法时，您可以通过删除当前已经被安装的程序，然后再次遵循安装步骤来更新 Aptos CLI。
+</Callout>

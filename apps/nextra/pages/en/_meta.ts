@@ -16,7 +16,7 @@ export default {
         title: "Get Started",
       },
       "smart-contracts": {
-        title: "Smart Contracts",
+        title: "Smart Contracts (Move)",
       },
       apis: {
         title: "APIs",
@@ -29,6 +29,9 @@ export default {
       },
       cli: {
         title: "CLI",
+      },
+      "create-aptos-dapp": {
+        title: "create-aptos-dapp",
       },
       guides: {
         title: "Guides",
