@@ -45,7 +45,7 @@ module my_addr::object_playground {
 
   entry fun create_my_object(caller: &signer) {
     let caller_address = signer::address_of(caller);
-    let constructor_ref = object::create_named_object(caller_address, NAME);
+    let constructor_ref = object::create_named_object(caller, NAME);
     // ...
   }
 
