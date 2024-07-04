@@ -1,0 +1,85 @@
+---
+title: "CLI"
+---
+
+import {Card, Cards} from '@components/index'
+
+# 命令行界面（CLI）
+
+Aptos 命令行界面（CLI）是一个工具，用于帮助您编译和测试 Move 合约。它还可以帮助您快速体验 Aptos 在链上的特性。
+
+对于更高级的用户，CLI 也可以用来运行私有的 Aptos 网络（以帮助在本地测试代码），并且可以有助于管理网络节点。
+
+## 📥 安装 Aptos CLI
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./cli/install-cli/install-cli-mac" className="flex flex-row gap-4">
+    <Card.Image className="object-contain dark:invert" src="/docs/apple.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Mac</Card.Title>
+      <Card.Description>
+         通过 homebrew 安装 Aptos CLI
+         ```sh
+         brew install aptos
+         ```
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./cli/install-cli/install-cli-windows" className="flex flex-row gap-4">
+    <Card.Image src="/docs/windows.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Windows</Card.Title>
+      <Card.Description>
+         通过 Python 脚本或预编译的二进制文件在 Windows 上安装 Aptos CLI
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./cli/install-cli/install-cli-linux" className="flex flex-row gap-4">
+    <Card.Image className="object-contain" src="/docs/linux.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Linux</Card.Title>
+      <Card.Description>
+         通过 Python 脚本或预编译的二进制文件在 Linux 上安装 Aptos CLI
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./cli/install-cli/install-cli-specific-version" className="flex flex-row gap-4">
+    <Card.Image className="dark:invert" src="/docs/advanced.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>高级（安装特定版本）</Card.Title>
+      <Card.Description>
+         从源代码构建特定版本的 Aptos CLI
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>
+
+## ⚙️ 设置 Aptos CLI
+
+<Cards>
+  <Card href="./cli/setup-cli">
+    <Card.Title>设置CLI</Card.Title>
+    <Card.Description>设置和配置 Aptos CLI </Card.Description>
+  </Card>
+  <Card href="./cli/setup-cli/install-move-prover">
+    <Card.Title> Move prover</Card.Title>
+    <Card.Description>安装和配置 Move prover</Card.Description>
+  </Card>
+</Cards>
+
+## 🛠️ 使用 Aptos CLI
+
+<Cards>
+  <Card href="./cli/working-with-move-contracts">
+    <Card.Title>Move 合约</Card.Title>
+    <Card.Description>编译、发布、模拟和测试 Move 合约 </Card.Description>
+  </Card>
+  <Card href="./cli/trying-things-on-chain">
+    <Card.Title>在链上尝试</Card.Title>
+    <Card.Description>使用 像Ledger 这样的硬件设备与 Aptos 交互，创建账户，查询账户</Card.Description>
+  </Card>
+  <Card href="./cli/running-a-local-network">
+    <Card.Title>运行本地网络</Card.Title>
+    <Card.Description>运行本地节点/网络 </Card.Description>
+  </Card>
+</Cards>
