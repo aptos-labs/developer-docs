@@ -13,7 +13,7 @@ The `Ledger Nano S` has limited memory and may not be able to sign many transact
 You will need to do a few steps of configuration for the Aptos CLI and your Ledger device to sign transactions.
 <Steps>
 
-### Ensure you have the Aptos CLI installed. 
+### Ensure you have the Aptos CLI installed.
    You can install the Aptos CLI by following [these steps](../../cli.mdx) if you have not done so already.
 
 ### Ensure you have done the basic setup for your Ledger device.
@@ -132,7 +132,7 @@ the account's authentication key to a hot key to avoid memory issues.
 
 This tutorial will walk you through both scenarios.
 
-<Callout type="warning" emoji="💀">
+<Callout type="warning" emoji="❗">
 Before you start this tutorial make sure you have completed the
 [key rotation guide](../../advanced-guides/key-rotation.mdx).
 </Callout>
@@ -168,8 +168,8 @@ Setup is complete, you can now use the localnet!
 ```
 
 <Callout type="info" emoji="🧠">
-If you are on a UNIX-like system, the following command can be used to start a
-fresh localnet as a background process:
+If you are a power user on MacOS or Linux, the following command can be used
+to start a fresh localnet as a background process:
 
 ```sh filename="Terminal"
 mkdir -p localnet-data
@@ -253,9 +253,10 @@ aptos account rotate-key \
 ```
 
 <Callout type="info" emoji="🧠">
-As a best practice, this command uses a [BIP44 account index] offset of 1000 to
-indicate that the account is secured by a rotated authentication key on a
-Ledger.
+As a best practice, this command uses a [BIP44 account index] that starts at a
+large number (1000) to indicate that the account is secured by a rotated
+authentication key on a Ledger, to ensure it does not conflict with any other
+existing accounts.
 
 This practice aids in profile recovery, as shown below.
 </Callout>
@@ -331,7 +332,10 @@ private and public key files.
 If you are using a UNIX-like machine:
 
 ```shell filename="Terminal"
-rm private-key-*
+rm private-key-a
+rm private-key-b
+rm private-key-a.pub
+rm private-key-b.pub
 ```
 </Callout>
 
