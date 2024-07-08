@@ -22,16 +22,15 @@ Many queries have a parameter named `options` to customize the results, use it t
 The `Aptos` client can out of the box query both network data from [fullnodes](https://api.mainnet.aptoslabs.com/v1/spec#/) and the [Indexer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) API which contains aggregated and enriched data. If you want to use a custom query for Indexer API data, you can use `aptos.queryIndexer` like so:
 
 ```ts filename="fetch-data.ts"
-  const ntf_collection_info = aptos.queryIndexer({
-    query: {
-      query: `query GetLedgerInfo {
-        ledger_infos {
-          chain_id
-        }
-      }`,
-      variables: {}, // If the query does not require variables, it can be an empty object here.
-    },
-  })
+const ledgerInfo = aptos.queryIndexer({
+  query: {
+    query: `query MyQuery {
+      ledger_infos {
+        chain_id
+      }
+    }`,
+  },
+})
 ```
 
 ## Using Generic Queries
