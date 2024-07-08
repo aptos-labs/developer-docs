@@ -5,6 +5,7 @@ export default {
   sdks: "SDKs",
   indexer: "Indexer",
   cli: "CLI",
+  "wallet-adapter": "Wallet Adapter",
   "create-aptos-dapp": "create-aptos-dapp",
   guides: "Guides",
 };

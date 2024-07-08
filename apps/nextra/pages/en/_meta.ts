@@ -30,6 +30,9 @@ export default {
       cli: {
         title: "CLI",
       },
+      "wallet-adapter": {
+        title: "Wallet Adapter",
+      },
       "create-aptos-dapp": {
         title: "create-aptos-dapp",
       },

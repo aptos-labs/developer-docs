@@ -19,8 +19,5 @@ export default {
   },
   "kotlin-sdk": {
     title: "Kotlin SDK",
-  },
-  "wallet-adapter": {
-    title: "Wallet Adapter",
-  },
+  }
 };
