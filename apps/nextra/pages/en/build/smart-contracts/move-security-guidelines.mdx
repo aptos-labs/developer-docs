@@ -510,8 +510,8 @@ module 0x42::example {
   struct Toad has store, key { }
 
   fun mint_two(sender: &signer, recipient: &signer) {
-    let constructor_ref = &Object::create_object_from_account(sender);
-    let sender_object_signer = Object::generate_signer(constructor_ref);
+    let constructor_ref = &object::create_object_from_account(sender);
+    let sender_object_signer = object::generate_signer(constructor_ref);
     let sender_object_addr = object::address_from_constructor_ref(constructor_ref);
 
     move_to(sender_object_signer, Monkey{});
@@ -540,10 +540,10 @@ module 0x42::example {
   fun mint_two(sender: &signer, recipient: &signer) {
     let sender_address = signer::address_of(sender);
 
-    let constructor_ref_monkey = &Object::create_object(sender_address);
-    let constructor_ref_toad = &Object::create_object(sender_address);
-    let object_signer_monkey = Object::generate_signer(&constructor_ref_monkey);
-    let object_signer_toad = Object::generate_signer(&constructor_ref_toad);
+    let constructor_ref_monkey = &object::create_object(sender_address);
+    let constructor_ref_toad = &object::create_object(sender_address);
+    let object_signer_monkey = object::generate_signer(&constructor_ref_monkey);
+    let object_signer_toad = object::generate_signer(&constructor_ref_toad);
 
     move_to(object_signer_monkey, Monkey{});
     move_to(object_signer_toad, Toad{});
