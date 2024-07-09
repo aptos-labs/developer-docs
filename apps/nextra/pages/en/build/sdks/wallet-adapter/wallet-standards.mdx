@@ -80,6 +80,7 @@ these steps to generate accounts
 2. Get the master seed from that mnemonic phrase.
 3. Use the BIP44-derived path to retrieve private keys (e.g. `m/44'/637'/i'/0'/0'`)
 where `i` is the account index.
+  - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69)
 4. Increase `i` until all the accounts the user wants to import are found.
   - Note: The iteration should be limited, if an account doesn't exist during
 iteration, keep iterating for a constant `address_gap_limit` (10 for now) to see
@@ -195,7 +196,7 @@ if (error) {
 
 ### Dapp API
 <Callout type="info">
-For a dapp to easily integrate with a wallet, it encouraged to use the [Aptos Wallet Adapter Standard](./dapp.mdx).
+For a dapp to easily integrate with a wallet, it encouraged to use the [Aptos Wallet Adapter Standard](../sdks/wallet-adapter.mdx).
 </Callout>
 
 If for some reason, a dapp decides to implement a custom wallet integration:
