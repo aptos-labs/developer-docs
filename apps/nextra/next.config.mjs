@@ -1128,7 +1128,7 @@ export default withBundleAnalyzer(
       },
       {
         source: "/move/book/summary",
-        destination: "/en/build/smart-contracts/book/SUMMARY",
+        destination: "/en/build/smart-contracts/book",
         permanent: true,
       },
       {
