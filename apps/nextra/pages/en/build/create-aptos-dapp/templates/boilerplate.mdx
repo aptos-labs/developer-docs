@@ -1,0 +1,58 @@
+---
+title: "Create Aptos Dapp Boilerplate Template"
+---
+
+# Create Aptos Dapp Boilerplate Template
+
+The Boilerplate template provides a starter dapp with all necessary dapp infrastructure and a simple wallet info implementation.
+
+The Boilerplate template provides:
+
+- Folder structure - A pre-made dapp folder structure with `frontend` and `move` folders.
+- Dapp infrastructure - All required dependencies a dapp needs to start building on the Aptos network.
+- Wallet Info implementation - Pre-made `WalletInfo` components to demonstrate how one can use to read a connected Wallet info.
+
+## Getting started
+
+First run the dapp locally with `npm run dev`.
+
+```bash 
+npm run dev
+```
+
+### Building the frontend
+
+The boilerplate template utilizes React as the frontend framework and Vite as the development tool, and is styled with [Tailwind CSS](https://tailwindcss.com/) and [shadcn/ui](https://ui.shadcn.com/).
+All dapp components should be added into the `components` folder and it is recommended to create a `page` folder to hold all future pages in your project.
+
+### Writing a Move contract
+
+The boilerplate template comes with a `move` folder that holds all Move related files. Under the `sources` folder you will find a `.move` file with a super basic implementation of a Move module. This is to help you with to get started with writing your own Smart Contract.
+
+### Smart contract and frontend communication
+
+For a frontend to submit a transaction to a smart contract, it needs to call an entry function. The boilerplate provides you with an `entry-functions` folder to hold all your dapp entry function requests.
+Additionaly, for a frontend to fetch data from a smart contract, it needs to submit a request to a view function. The boilerplate provides you with a `view-functions` folder to hold all your dapp view function requests.
+
+## Ready for Mainnet
+
+If you started your dapp on testnet, and you are happy with your testing, you will want to get the dapp on mainnet.
+
+To publish the smart contract on mainnet, we need to change some configuration.
+
+1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
+2. Run `npm run move:init` to initialize an account to work against Mainnet
+3. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
+4. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
+5. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
+7. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
+
+## Deploy to a live server
+
+`create-aptos-dapp` utilizes Vite as the development tool. To deploy a Vite static site to a live server, you can simply follow [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+
+1. Run `npm run build` to build a static site
+2. Run `npm run preview` to see how your dapp would look like on a live server
+3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy#github-pages) on how to use each
+
+
