@@ -23,7 +23,7 @@ First, download the ABI of the Move contract and save it to a TypeScript file. I
     # replace it with the network your contract lives on
     NETWORK=testnet
     # replace it with your contract address
-    CONTRACT_ADDRESS=0x12345
+    CONTRACT_ADDRESS=0x1
     # replace it with your module name, every .move file except move script has module_address::module_name {}
     MODULE_NAME=fungible_asset_launchpad
 
@@ -63,14 +63,14 @@ export const aptos = new Aptos(new AptosConfig({ network: NETWORK.TESTNET }));
 export const surfClient = createSurfClient(aptos).useABI(ABI);
 
 // Use Surf to executes an entry function
-const result = await client.useABI(COIN_ABI).entry.transfer({
+const result = await surfClient.entry.transfer({
   functionArguments: ['0x1', 1],
   typeArguments: ['0x1::aptos_coin::AptosCoin'],
   account: Account.fromPrivateKey(...),
 });
 
 // Use Surf to query a view function
-const [balance] = await client.useABI(COIN_ABI).view.balance({
+const [balance] = await surfClient.view.balance({
   functionArguments: ['0x1'],
   typeArguments: ['0x1::aptos_coin::AptosCoin'],
 });
