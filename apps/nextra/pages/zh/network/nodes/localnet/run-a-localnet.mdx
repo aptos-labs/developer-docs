@@ -1,0 +1,107 @@
+---
+title: "带有验证器的本地网络运行"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# 带有验证器的本地网络运行
+
+<Callout type="info">
+**使用 CLI 运行本地开发网络** <br />
+使用 Aptos CLI 运行本地网络（localnet）更为简便且功能更加完备。你可以通过以下指南学习如何做到：[使用 CLI 运行本地开发网络](local-development-network.mdx)。
+</Callout>
+
+你可以运行 Aptos 区块链的本地网络（localnet）。这个本地网络不会连接到 Aptos 开发网络（devnet）。它将在你的本地机器上运行，独立于其他 Aptos 网络。你可以使用这个本地网络进行测试和开发。
+
+你可以借助 Aptos-core 的源代码启动一个本地网络（localnet）。这种做法特别适用于测试对 Aptos-core 代码库或者 Aptos Framework 所做的改动。
+
+本文档的其余部分描述了：
+
+- 如何使用单个验证器节点启动你的本地网络，
+- 如何启动水龙头服务并将其连接到你的本地网络。
+
+## 使用 Aptos-core 源代码
+
+1. 按照[从源代码构建 Aptos](../building-from-source.mdx) 中的步骤操作。
+
+2. 开发环境准备好后，现在你可以启动你的本地网络。在继续之前，请注意以下内容：
+
+   <Callout type="info">
+   **注意**
+   - 当你运行以下命令启动本地网络时，终端将进入交互模式，并显示消息 `Aptos is running, press ctrl-c to exit`。因此，你需要打开另一个 shell 终端用于本节中描述的后续步骤。
+   - 在下面的命令运行后，从终端输出中复制 `Test dir` 信息用于下一步。
+   </Callout>
+
+   请运行以下命令启动你的本地网络：
+
+   ```bash filename="Terminal"
+   CARGO_NET_GIT_FETCH_WITH_CLI=true cargo run -p aptos-node -- --test
+   ```
+
+   查看下面的部分输出示例。记下输出中的`Test dir`。
+
+   ```bash filename="Terminal"
+   ...
+   ...
+   ...
+
+   Completed generating configuration:
+       Log file: "/private/var/folders/gn/m74t8ylx55z935q8wx035qn80000gn/T/b3adc18c144bfcc78a1541953893bc1c/validator.log"
+       Test dir: "/private/var/folders/gn/m74t8ylx55z935q8wx035qn80000gn/T/b3adc18c144bfcc78a1541953893bc1c/0/node.yaml"
+       Aptos root key path: "/private/var/folders/gn/m74t8ylx55z935q8wx035qn80000gn/T/b3adc18c144bfcc78a1541953893bc1c/mint.key"
+       Waypoint: 0:47e676b5fe38ebe2aec6053db7b3daa0b805693d6422e3475e46e89499464ecf
+       ChainId: TESTING
+       REST API endpoint: 0.0.0.0:8080
+       Fullnode network: /ip4/0.0.0.0/tcp/7180
+   Aptos is running, press ctrl-c to exit
+   ```
+
+**注意**：上述命令将开启一个只含单个验证节点的本地网络（localnet）。该命令是在仅有初始区块状态（genesis-only ledger state）的情况下运行的。如果你希望使用之前运行 `aptos-node` 所生成的区块链状态，请执行以下操作：
+
+```bash filename="Terminal"
+cargo run -p aptos-node -- --test --config <config-path>
+```
+
+### 将水龙头（Faucet）连接到你的本地网络
+
+水龙头（Faucet）是一种无状态服务，它可以作为独立服务与本地网络（localnet）同时运行。它允许创建没有实际价值的 Aptos 测试币。你可以向水龙头服务发送请求，以便它代表你生成测试币并将它们转入指定的账户。
+
+1. 确保你已经按照上述步骤 5 启动了你的本地网络。
+2. 打开一个新的 shell 终端。
+3. 从启动本地网络的终端中复制 **Aptos 根密钥路径**，并用它替换下方的命令中的 `mint-key-file-path`。
+4. 运行以下命令启动水龙头：
+
+```bash filename="Terminal"
+cargo run --package aptos-faucet-service -- run-simple --key-file-path "/tmp/694173aa3bbe019499bbd5cf3fe0e2fc/mint.key" --node-url http://127.0.0.1:8080  --chain-id TESTING
+```
+
+这将在本地启动一个没有任何申领和铸造 Token 限制的水龙头（Faucet）服务。这个水龙头服务将与你之前启动的本地网络（localnet）一样容易访问。
+
+## 与本地网络交互
+
+启动你的本地网络后，你将看到以下内容：
+
+```bash filename="Terminal"
+Entering test mode, this should never be used in production!
+Completed generating configuration:
+        Log file: "/tmp/694173aa3bbe019499bbd5cf3fe0e2fc/validator.log"
+        Test dir: "/tmp/694173aa3bbe019499bbd5cf3fe0e2fc/0/node.yaml"
+        Aptos root key path: "/tmp/694173aa3bbe019499bbd5cf3fe0e2fc/mint.key"
+        Waypoint: 0:197bc8b76761622c2d2054d8bf93c1802fa0eb4bc55f0f3d4442878fdecc297f
+        ChainId: TESTING
+        REST API endpoint: 0.0.0.0:8080
+        Fullnode network: /ip4/0.0.0.0/tcp/7180
+
+Aptos is running, press ctrl-c to exit
+```
+
+使用 [Aptos CLI 工具](../../../build/cli.mdx)与你的本地网络交互。上面的输出包含你将用于启动 [Aptos CLI 工具](../../../build/cli.mdx)的信息：
+
+- `Aptos 根密钥路径`：根密钥（也被称作铸币密钥或水龙头密钥）是用来管理那些有权限铸造 Token 的账户。你可以在 docker compose 目录中名为 `aptos_root_key` 的位置找到它。
+- `Waypoint`：这是一个区块链的可验证检查点（checkpoint），你可以在 docker compose 目录下的 waypoint.txt 文件中找到它。
+- `REST 端口`：REST 服务的端口，例如 `http://127.0.0.1:8080`。
+- `ChainId`：链 ID 将此网络与其它区块链网络区分开。
+
+## 下一步
+
+此时，你将拥有一个位于 `0x1` 的特殊地址的账户，该账户具备执行代币铸造的能力。为了更深入了解，你可以跟随例如 https://learn.aptoslabs.com/tutorials 上的一些教程继续学习。

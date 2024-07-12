@@ -87,7 +87,10 @@ export default {
   },
   "move-reference": {
     title: "Move Reference",
-    "display": "hidden"
+    theme: {
+      toc: false,
+      layout: "full",
+    },
   },
   "error-codes": {
     title: "Error Codes",
@@ -106,6 +109,9 @@ export default {
   prover: {
     title: "Move Prover",
   },
+  randomness: {
+    title: "Randomness",
+  },
   cryptography: {
     title: "Cryptography",
   },
@@ -114,7 +120,7 @@ export default {
   },
   "gas-profiling": {
     title: "Gas Profiling",
-    href: "/en/build/cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling"
+    href: "/en/build/cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling",
   },
   compiler_v2: {
     title: "Compiler V2",

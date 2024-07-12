@@ -1,0 +1,50 @@
+---
+title: "数据裁剪"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# 数据裁剪
+
+所有 Aptos 节点（例如，验证器、VFNs 和 PFNs）都会处理交易并将新数据提交到区块链上。随着区块链数据的不断增加，节点可以通过裁剪掉旧的区块链数据来管理所需的存储磁盘空间。为了实现这一点，Aptos 节点会在其数据库中裁剪区块链 **账本历史**，其中包含所有交易的历史记录。账本历史可以是 **完整的**（例如，如果您正在运行归档节点），也可以是裁剪到一定交易周期的（以减少对存储空间需求）。
+
+默认情况下，所有节点启用了账本的裁剪功能，而且这个裁剪周期是可以自定义的。本文将指导您如何配置账本裁剪器的工作方式。
+
+<Callout type="warning">
+**默认裁剪周期**
+
+账本裁剪器的默认配置是仅保留最近的 1.5 亿笔交易。这大约对应着大约 200G 的磁盘空间，具体大小取决于交易类型和输出。几乎所有测试网和主网上的 Aptos 节点都使用默认配置。如果您希望运行归档节点，而不是默认配置，请按照[这里的说明](../configure/state-sync.mdx#archival-pfns)进行操作。
+</Callout>
+
+## 禁用账本裁剪器
+
+如果您希望完全禁用账本裁剪器，可以通过向节点配置文件中添加以下内容来实现，例如 `fullnode.yaml` 或 `validator.yaml`。
+
+```yaml filename="fullnode.yaml"
+storage:
+  storage_pruner_config:
+    ledger_pruner_config:
+      enable: false
+```
+
+<Callout type="warning">
+**无限制的存储空间占用**<br />
+请注意，禁用账本修剪器将导致存储空间占用无限制的大小。这可能会导致存储磁盘很快被占满。
+</Callout>
+
+## 配置账本裁剪器
+
+如果您愿意，您可以配置账本裁剪周期的大小（即在存储中保留的最近交易数）。要执行此操作，请向节点配置文件中添加以下内容，例如 `fullnode.yaml` 或 `validator.yaml`。
+
+```yaml filename="fullnode.yaml"
+storage:
+  storage_pruner_config:
+    ledger_pruner_config:
+      prune_window: 100000000 # 1 亿笔交易
+```
+
+<Callout type="warning">
+**最小裁剪窗口**<br />
+
+将裁剪窗口设置为少于 1 亿笔交易可能会导致运行时错误并破坏节点的健康状态。
+</Callout>
