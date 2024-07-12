@@ -19,4 +19,7 @@ export default {
   account: {
     title: "Creating and Managing Accounts",
   },
+  "client-configuration": {
+    title: "Client Configuration",
+  }
 };
