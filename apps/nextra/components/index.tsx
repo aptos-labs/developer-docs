@@ -8,3 +8,4 @@ export * from "./remote-codeblock";
 export * from "./api-reference";
 export * from "./framework-reference";
 export * from "./media";
+export * from "./error";
