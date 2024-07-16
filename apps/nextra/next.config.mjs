@@ -1111,11 +1111,6 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/en/build/cli/install-cli/install-cli-windows3.4.1",
-        destination: "/en/build/cli/install-cli/install-cli-windows",
-        permanent: true,
-      },
-      {
         source: "/build/smart-contracts/book/references",
         destination: "/en/build/smart-contracts/book/references",
         permanent: true,
@@ -1152,23 +1147,8 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/identity-connect.txt",
-        destination: "/en/network/glossary#aptos-name-service-ans",
-        permanent: true,
-      },
-      {
-        source: "/aptosconnect.txt",
-        destination: "/en/network/glossary#aptos-name-service-ans",
-        permanent: true,
-      },
-      {
         source: "/cli-tools/aptos-cli-tool/aptos-cli-index",
         destination: "/en/build/cli",
-        permanent: true,
-      },
-      {
-        source: "/nodes/ait/connect-to-testnet",
-        destination: "/en/network/nodes/localnet",
         permanent: true,
       },
       {
@@ -1194,11 +1174,6 @@ export default withBundleAnalyzer(
       {
         source: "/tools/aptos-cli/index",
         destination: "/en/build/cli",
-        permanent: true,
-      },
-      {
-        source: "/en.",
-        destination: "/en",
         permanent: true,
       },
       {
