@@ -1,0 +1,107 @@
+---
+title: "Keyless OIDC Support"
+---
+
+import { Steps } from "nextra/components";
+
+# Configure Your OIDC Provider
+
+Aptos Keyless supports the following IdPs on our network(s). Support for additional IdPs to come. Please reach out if you have need for coverage for a specific use case.
+
+| Identity Provider | Devnet    | Testnet | Mainnet |
+| ----------------- | --------- | ------- | ------- |
+| Google            | Live      | Live    | Live    |
+| Apple             | Live      | Live    | Live    |
+| Microsoft         | In review | -       | -       |
+| Github            | In review | -       | -       |
+| Facebook          | In review | -       | -       |
+
+To integrate Aptos Keyless into your dApp, you must register your dApp with at least one of the available identity providers via their OIDC registration process. Each respective registration process will assign a Client ID to your application, which will serve as an identifier for your application in the Keyless architecture.
+
+## Registering your dApp with Google
+
+<Steps>
+
+### Step 1: Sign in to Google Developer Console
+
+1. Navigate to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Sign in with your Google account credentials.
+
+### Step 2: Create a New Project
+
+1. If you don't have an existing project, click on the "Select a project" dropdown menu at the top of the page and choose "New Project."
+2. Enter a name for your project and click "Create." Detailed instructions can be found [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project).
+
+### Step 3: Configure Consent Screen
+
+1. In the left sidebar, navigate to "APIs & Services" > "OAuth consent screen."
+2. Choose "External" user type and click "Create."
+3. Enter the required details such as the application name, user support email, and developer contact information.
+4. Optionally, add additional details like the application logo and privacy policy URL.
+5. Click "Save and continue." Detailed steps are available [here](https://developers.google.com/workspace/guides/create-credentials#configure_the_oauth_consent_screen).
+
+### Step 4: Register Your Application
+
+1. In the left sidebar, navigate to "APIs & Services" > "Credentials."
+   ![Google Credentials navigation screenshot](/docs/aptos-keyless/google-credentials-nav.png "Google Credentials navigation screenshot")
+
+2. Click on "Create Credentials" and select "OAuth client ID."
+   ![Google create credentials screenshot](/docs/aptos-keyless/google-create-credentials.png "Google create credentials screenshot")
+
+3. Choose the application type (e.g., Web application, Desktop app, or Mobile app).
+4. Enter the necessary details such as the name of your application and the authorized redirect URIs. For OIDC, the redirect URIs should follow the format https://your-app-domain.com/auth/google/callback.
+5. Click "Create."
+
+### Step 5: Obtain Client ID and Client Secret
+
+1. After creating the OAuth client ID, Google will provide you with a client ID and client secret. These credentials are essential for authenticating your application.
+2. Note down the client ID and client secret securely. Do not expose them publicly.
+
+### Step 6: Configure OIDC Integration in Your Application
+
+1. Integrate OIDC authentication into your application using a suitable OIDC library or framework (e.g., Passport.js for Node.js, Spring Security for Java, or Auth0 for various platforms).
+2. Use the client ID and client secret obtained from Google to configure OIDC authentication in your application settings.
+3. Set up the appropriate callback URL (https://your-app-domain.com/auth/google/callback) for handling authentication responses from Google.
+
+</Steps>
+
+## Registering your dApp with Apple
+
+<Steps>
+
+### Step 1: Sign in to Apple Developer Account
+
+1. Go to the [Apple Developer website](https://developer.apple.com/).
+2. Sign in with your Apple ID.
+3. Enroll in the Apple Developer Program if not already.
+   ![Apple developer program enrollment screenshot](/docs/aptos-keyless/apple-dev-program.png "Apple developer program enrollment screenshot")
+
+### Step 2: Create a New App ID
+
+1. Navigate to the "Certificates, Identifiers & Profiles" section.
+2. Click on "Identifiers" in the sidebar.
+3. Click the "+" button to create a new App ID.
+4. Fill in the details for your app, including the name and bundle ID.
+5. Enable "Sign in with Apple" under the "Capabilities" section.
+6. Click "Continue" and then "Register" to create the App ID.
+
+### Step 3: Generate a Private Key
+
+1. In the "Keys" section of the "Certificates, Identifiers & Profiles" page, click the "+" button to create a new key.
+2. Enter a name for the key, enable the "Sign in with Apple" capability, and click "Continue."
+3. Download the generated private key and securely store it. This key will be used to authenticate your app with Apple's OIDC service.
+
+### Step 4: Configure Redirect URIs
+
+1. Under the "App ID" section, locate your newly created App ID and click on it.
+2. Scroll down to the "Sign in with Apple" section and click on "Edit."
+3. Add the redirect URIs that your application will use for callback after authentication. The format should be https://your-app-domain.com/auth/apple/callback.
+4. Click "Save" to update the settings.
+
+### Step 5: Set Up Your OIDC Integration
+
+1. Use an OIDC library or framework compatible with Apple's OIDC service (e.g., Passport.js for Node.js, Spring Security for Java).
+2. Configure your application to use the client ID and private key obtained from Apple during the registration process.
+3. Set up the appropriate callback URL (https://your-app-domain.com/auth/apple/callback) for handling authentication responses from Apple.
+
+</Steps>

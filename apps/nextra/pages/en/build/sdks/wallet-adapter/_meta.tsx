@@ -5,4 +5,7 @@ export default {
   wallets: {
     title: "Wallet Adapter For Wallet Builders",
   },
+  "wallet-standards": {
+    title: "Aptos Wallet Standard",
+  },
 };

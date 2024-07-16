@@ -1,0 +1,79 @@
+---
+title: "节点健康"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# 节点健康
+
+本文档描述了如何验证和监控您在 Aptos 网络中的验证者和验证者全节点（VFN）的健康状况。这里描述的许多方法依赖于您的节点收集和报告的运行时指标。这些指标由 Aptos 节点二进制文件收集，并通过 Prometheus 指标端点公开。有关重要指标的详细描述，请参阅 [节点检查服务](../../measure/node-inspection-service.mdx) 和 [重要节点指标](../../measure/important-metrics.mdx) 文档。
+
+这份文档向您解释了在 Aptos 网络中如何检测和跟踪您的验证者及验证者全节点（VFN）的运行状态。介绍的许多监测方法都是基于您的节点能够自我收集和反馈的运行数据。这些数据是由 Aptos 的节点程序自动收集的，并且能通过 Prometheus 的数据接口公开。如需了解哪些监控数据是关键的，请查阅[节点检查服务](../../measure/node-inspection-service.mdx)和[重要节点指标](../../measure/important-metrics.mdx)文档。
+
+## 初始节点验证
+
+在将您的节点部署到 Aptos 网络并连接后，您应该验证您的节点是否运行正确。
+
+<Callout type="info">
+**第一次？**<br />
+
+例如，在主网（`mainnet`）和测试网（`testnet`）这样的环境下，您的验证者全节点（VFN）可能会先于验证器完成同步工作，这是一个预期之内的现象。在验证器全节点（VFN）同步完毕后，您的验证器节点也会开始同步数据，并逐渐参与到网络的共识过程中去。
+</Callout>
+
+您可以通过检查几个简单的指标来验证节点的正确性。请按照以下步骤操作：
+
+1. 检查您的节点是否正在进行状态同步，运行此命令：
+
+   ```bash filename="Terminal"
+   curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_state_sync_version"
+   ```
+
+   您应该期望看到 `synced` 或 `synced_states` 的版本增加。首先是验证者全节点（VFN）的版本号开始增加，随后您的验证器节点也将开始进行同步。
+
+   <Callout type="info">
+   **云部署？**<br />
+   如果部署在云端，您可能需要将 `127.0.0.1` 替换为您的验证者或 VFN IP / DNS。
+   </Callout>
+
+2. 验证您的验证者节点是否正在连接到网络上的其他节点。
+
+   ```bash filename="Terminal"
+   curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_connections{.*\"Validator\".*}"
+   ```
+
+   该命令将输出您的验证者节点的入站和出站连接数量。例如：
+
+   ```bash filename="Terminal"
+   aptos_connections{direction="inbound",network_id="Validator",peer_id="f326fd30",role_type="validator"} 5
+   aptos_connections{direction="outbound",network_id="Validator",peer_id="f326fd30",role_type="validator"} 2
+   ```
+
+   只要其中一个指标大于零，就表示您的验证者节点就至少连接到了网络上的一个节点。如果您的验证者没有连接到任何节点，请确保您的 VFN 已经完成了同步。一旦您的 VFN 完成同步，您的验证者节点将开始同步，并最终能够连接到其他节点。
+
+3. 节点更新到最新版本之后，你还可以检查网络是否正常运作，且你的节点是否在正常提出共识提议。
+
+   ```bash filename="Terminal"
+   curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_consensus_current_round"
+
+   curl 127.0.0.1:9101/metrics 2> /dev/null | grep "aptos_consensus_proposals_count"
+   ```
+
+   您应该期望看到这些数字持续增加。
+
+## 本地监控
+
+如果您是节点运营者，您有几种工具可用于验证您的节点健康：
+
+- **指标：** 您可以通过运行 `curl` 命令来监控您的本地指标端点，[节点检查服务](../../measure/node-inspection-service.mdx)并验证关键指标。例如，您可以通过运行在[验证同步](../../full-node/verify-pfn.mdx#验证同步状态)部分中描述的命令来验证您节点的同步状态。
+
+- **REST API：** 您也可以通过查询 REST API 来监控您节点的健康状况。例如，您可以通过 ping 您节点的 REST API 的索引（index）页面来验证您节点的当前区块高度。有关更多信息，请参阅 [Aptos API 规范](../../aptos-api-spec.mdx)。
+
+- **监控工具：** 为了提高可观测性，您还可以安装监控工具来抓取本地指标端点：
+  - 对于基于 Kubernetes 的部署，请安装监控 Helm 图表 ([https://github.com/aptos-labs/aptos-core/tree/main/terraform/helm/monitoring](https://github.com/aptos-labs/aptos-core/tree/main/terraform/helm/monitoring))。
+  - 在本地，您可以直接运行 Prometheus 和 Grafana。可以在这里找到使用指标的仪表板：([https://github.com/aptos-labs/aptos-core/tree/main/dashboards](https://github.com/aptos-labs/aptos-core/tree/main/dashboards))。
+
+## 遥测
+
+Aptos Labs 团队还可以利用[节点遥测](../../configure/telemetry.mdx)功能，远程监控您的节点状况。当您启用了遥测功能，Aptos 节点程序就会在后台自动发送包括节点性能指标在内的遥测数据。对于我们来说，分析你的节点性能、在线状态及健康度，这些遥测数据是不可或缺的。
+
+如果您的节点还保持默认配置，没有特意关闭遥测功能，同时可以通过 `HTTPS` 连接互联网，就会自动向 Aptos Labs 报送多个关键运行指标。Aptos Labs 还会监控节点的链上活动情况，比如根据我们定义的在线标准来观察节点的每小时提议量。

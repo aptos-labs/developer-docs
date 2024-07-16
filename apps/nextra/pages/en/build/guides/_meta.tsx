@@ -1,4 +1,8 @@
 export default {
+  "---beginner---": {
+    type: "separator",
+    title: "Beginner",
+  },
   "first-transaction": {
     title: "Your First Transaction",
   },
@@ -19,5 +23,28 @@ export default {
   },
   "first-multisig": {
     title: "Your First Multisig",
+  },
+  "---advanced---": {
+    type: "separator",
+    title: "Advanced",
+  },
+  "multisig-managed-fungible-asset": {
+    title: "Manage Fungible Assets with Multisig",
+  },
+  "aptos-keyless": {
+    title: "Aptos Keyless Accounts",
+  },
+  "sponsored-transactions": {
+    title: "Sponsored Transactions",
+  },
+  "transaction-management": {
+    title: "Transaction Management",
+  },
+  "key-rotation": {
+    title: "Account Key Rotation",
+  },
+
+  "system-integrators-guide": {
+    title: "Integrate with the Aptos Blockchain",
   },
 };

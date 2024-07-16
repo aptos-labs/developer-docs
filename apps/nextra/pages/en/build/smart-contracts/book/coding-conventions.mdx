@@ -68,6 +68,46 @@ module 0x1::importer {
 - Each module, struct, and public function declaration should be commented.
 - Move has doc comments `///`, regular single-line comments `//`, block comments `/* */`, and block doc comments `/** */`.
 
+### Comments Example
+
+Doc comments must be directly above the item they are commenting on. For example, the following is valid:
+```move
+/// My awesome module, doc comment can be used here
+module 0x42::example { // double slash can be anywhere
+
+  // Double slash can be anywhere
+
+  /// My awesome constant
+  const MY_VALUE: u64 = 5;
+
+  /// My awesome error message
+  const E_MY_ERROR: u64 = 10;
+
+  #[view]
+  /// My awesome view function
+  fun show_me_the_money() {
+    // ...
+  }
+
+  /* Similarly block comments can be anywhere */
+}
+```
+
+Below here are examples of doc comments `///` that will fail
+```move
+module 0x42::example {
+
+  /// My awesome view function <- must be below the annotation, right above the thing commented
+  #[view]
+  fun show_me_the_money() {
+    // ...
+    /// Within a function
+  }
+
+  /// Not attached to anything
+}
+```
+
 ## Formatting
 
 The Move team plans to write an auto-formatter to enforce formatting conventions. However, in the meantime:

@@ -6,6 +6,8 @@ title: "create-aptos-dapp"
 
 `create-aptos-dapp` provides a starter kit for dapp developers to easily bootstrap a frontend and a smart contract on the Aptos network.
 
+![cad](/docs/cad-video.gif)
+
 ## Quick Start
 
 To start with the create-aptos-dapp tool you can simply run this command on your terminal:
@@ -25,11 +27,11 @@ import { Tabs } from 'nextra/components'
   </Tabs.Tab>
 </Tabs>
 
-## **What is create-aptos-dapp?**
+## What is create-aptos-dapp?
 
 `create-aptos-dapp` simplifies the initial setup and configuration process, provides a modern development workflow, gives pre-made e2e dapp templates, and offers a range of benefits that save time and effort. Using `create-aptos-dapp` enables developers to build dapps quicker on Aptos.
 
-## **Why use create-aptos-dapp?**
+## Why use create-aptos-dapp?
 
 - **Template Setup**: `create-aptos-dapp` generates predefined end-to-end dapp templates and configuration files for you. It saves manual setup of the project structure, which can be time-consuming and error-prone.
 - **Dependencies Management**: `create-aptos-dapp` manages project dependencies for you. It generates a npm (or pnpm, etc.) package with the required packages. This ensures that the libraries used by your project are compatible.
@@ -50,7 +52,7 @@ import { Tabs } from 'nextra/components'
 
 To create an Aptos dapp, open your terminal, `cd` into the directory you’d like to create the dapp in, and run the following command:
 
-<Tabs items={['npm', 'pnpm', 'yarn']}>
+<Tabs items={['npx', 'pnpx']}>
   <Tabs.Tab>
     ```bash
     npx create-aptos-dapp
@@ -61,19 +63,10 @@ To create an Aptos dapp, open your terminal, `cd` into the directory you’d lik
     pnpx create-aptos-dapp
     ```
   </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash
-    yarn create-aptos-dapp
-    ```
-  </Tabs.Tab>
 </Tabs>
 
 
-That command will download the tool and start the wizard flow where you can make project selections
-
-{ /* TODO GIF / Video of onboarding flow */ }
-
-The tool will respond with next steps
+That command will download the tool and start the wizard flow where you can make project selections and finally will respond with next steps
 
 ## Templates
 
@@ -87,5 +80,6 @@ The goals of the templates are to
 
 ### Current Templates
 
+- [Boilerplate Template](create-aptos-dapp/templates/boilerplate.mdx)
 - [Digital Asset Template](create-aptos-dapp/templates/digital-asset.mdx)
 - [Fungible Asset Template](create-aptos-dapp/templates/fungible-asset.mdx)

@@ -1,0 +1,118 @@
+---
+title: "了解节点"
+---
+
+import {Card, Cards} from '@components/index'
+
+# 了解节点
+
+Aptos 网络由三种类型的节点组成：验证者节点、验证者全节点（VFN）和公共全节点（PFN）。要参与共识，您需要运行一个验证者节点并质押最小数量的有效 Coin。VFN 和 PFN 不需要参与共识，但它们对于分发区块链数据和启用生态系统服务是必要的，例如索引、查询和 RESTful API 服务（见 [Aptos API](../build/apis.mdx)）。VFN 只能由验证者节点的运营者运行，而 PFN 可以由任何人运行。您可以在[深入理解区块链](blockchain.mdx)部分了解更多关于不同类型的节点。
+
+本节提供了详细的分步指南，介绍如何在不同环境中部署和操作 Aptos 节点。它还描述了您需要进行质押、参与共识和治理的所有内容。
+
+{ /* TODO: 我们还会加回来吗？您还可以在[外部资源](../community/external-resources.md)部分找到节点操作的其他资源。*/}
+
+## 快速链接
+
+### 在 Aptos 上进行验证
+
+您需要了解的关于Aptos上验证、质押和治理如何工作的所有信息。
+
+<Cards>
+  <Card href="./blockchain/staking#validation-on-the-aptos-blockchain">
+    <Card.Title>验证者如何工作</Card.Title>
+    <Card.Description>验证者-领导者提出提议并成功时获得奖励。 </Card.Description>
+  </Card>
+  <Card href="./blockchain/staking#validator-state-and-stake-state">
+    <Card.Title>验证者状态</Card.Title>
+    <Card.Description>了解验证者如何进入验证者集合。 </Card.Description>
+  </Card>
+</Cards>
+
+### 质押
+
+<Cards>
+  <Card href="./blockchain/staking">
+    <Card.Title>Aptos 上的质押</Card.Title>
+    <Card.Description>Aptos 上质押工作的全面指南。 </Card.Description>
+  </Card>
+  <Card href="./blockchain/governance">
+    <Card.Title>治理</Card.Title>
+    <Card.Description>谁可以提议，谁可以投票，以及如何解决问题。 </Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-operations">
+    <Card.Title>所有者</Card.Title>
+    <Card.Description>描述了质押所执行的所有者操作。 </Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-voter">
+    <Card.Title>投票者</Card.Title>
+    <Card.Description>描述了质押所执行的投票者操作。 </Card.Description>
+  </Card>
+</Cards>
+
+### 验证者和VFN
+
+全面介绍部署节点、质押操作和参与共识的指南。
+
+<Cards>
+  <Card href="./nodes/validator-node/node-requirements">
+    <Card.Title>节点要求</Card.Title>
+    <Card.Description>详细说明了您需要的计算和存储资源。请先阅读此文。 </Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/deploy-nodes">
+    <Card.Title>运行验证者节点</Card.Title>
+    <Card.Description>在云端或本地部署，使用 Docker 或源代码，请阅读分步指南。 </Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/verify-nodes/node-liveness-criteria">
+    <Card.Title>节点健康</Card.Title>
+    <Card.Description>您可以使用几种选项验证您的节点健康状况。 </Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/connect-to-aptos-network">
+    <Card.Title>连接到 Aptos 网络</Card.Title>
+    <Card.Description>将您的节点连接到 Aptos 网络的步骤。 </Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-operations">
+    <Card.Title>质押池操作</Card.Title>
+    <Card.Description>如何执行质押池操作的分步指南。 </Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/modify-nodes/shutting-down-nodes">
+    <Card.Title>关闭节点</Card.Title>
+    <Card.Description>首先离开验证者集合，然后关闭您的节点。 </Card.Description>
+  </Card>
+</Cards>
+
+### 公共全节点（PFN）
+
+本节详细介绍了有关 Aptos PFN 的所有内容，包括详细的分步指南。
+
+<Cards>
+  <Card href="./nodes/full-node/deployments">
+    <Card.Title>部署 PFN</Card.Title>
+    <Card.Description>按照本节部署 PFN。 </Card.Description>
+  </Card>
+  <Card href="../build/indexer/legacy/indexer-fullnode">
+    <Card.Title>索引器 PFN</Card.Title>
+    <Card.Description>描述了如何在 Aptos 网络上运行索引器 PFN。 </Card.Description>
+  </Card>
+</Cards>
+
+### 常见操作
+
+<Cards>
+  <Card href="./nodes/localnet/local-development-network">
+    <Card.Title>使用 localnet 开发</Card.Title>
+    <Card.Description>运行 localnet 进行开发（包括验证者节点）。 </Card.Description>
+  </Card>
+  <Card href="./nodes/full-node/modify/update-fullnode-with-new-releases">
+    <Card.Title>升级您的 PFN</Card.Title>
+    <Card.Description>用新版本升级您的节点。 </Card.Description>
+  </Card>
+  <Card href="./nodes/bootstrap-fullnode">
+    <Card.Title>从快照启动</Card.Title>
+    <Card.Description>使用快照启动新节点。 </Card.Description>
+  </Card>
+  <Card href="./nodes/bootstrap-fullnode/aptos-db-restore">
+    <Card.Title>从备份启动</Card.Title>
+    <Card.Description>使用数据恢复启动新节点。 </Card.Description>
+  </Card>
+</Cards>

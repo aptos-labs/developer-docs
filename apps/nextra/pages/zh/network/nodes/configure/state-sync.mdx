@@ -1,0 +1,174 @@
+---
+title: "状态同步"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# 状态同步（Synchronization）
+
+在 Aptos 网络中的节点（例如，验证器、VFNs 和 PFNs）必须始终与最新的区块链状态同步。在每个节点上运行的[状态同步](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10)（state sync）组件负责此任务。状态同步识别并从同类节点（peers）获取新的区块链数据，验证数据并将其持久化（persists）到本地存储中。本文档解释了状态同步的工作原理以及如何配置它。
+
+<Callout type="warning">
+**手动配置**<br />
+
+大多数用户不需要配置状态同步。状态同步将自动为您的节点选择最佳配置。只有在您有特定的使用情况需要时才应手动配置状态同步。选择错误的配置会导致同步时间变慢以及性能下降。
+
+</Callout>
+
+## 状态同步（Sync）
+
+从高层次来说，状态同步分为两个阶段。首先，所有节点将在启动时引导（在**引导阶段**）。这允许节点追赶到 Aptos 区块链的最新状态。接下来，节点将通过持续同步（在**持续同步阶段**）保持与区块链的最新状态同步。这两个阶段都有不同的操作模式。
+
+<Callout type="info">
+需要快速启动节点吗？
+如果您需要快速启动节点，以下是我们根据网络和用例推荐的操作：
+
+- **开发网**：要同步整个区块链历史，请使用[智能同步](./state-sync.mdx#智能同步)。否则，使用[快速同步](./state-sync.mdx#快速同步)。
+- **测试网**：要同步整个区块链历史，请从[备份](../bootstrap-fullnode/aptos-db-restore.mdx)中恢复。否则，下载[快照](../bootstrap-fullnode.mdx)或使用[快速同步](./state-sync.mdx#快速同步)。
+- **主网**：要同步整个区块链历史，请从[备份](../bootstrap-fullnode/aptos-db-restore.mdx)中恢复。否则，使用[快速同步](./state-sync.mdx#快速同步)。
+
+</Callout>
+
+### 引导阶段
+
+当节点启动时，状态同步将通过使用配置的引导模式执行引导。有几种引导模式：
+
+- **执行自创世（genesis）以来的所有交易**。在此模式中，节点将从 Aptos 网络检索自创世以来的所有交易，即，自区块链历史开始以来的所有交易，并重新执行这些交易。自然地，这种模式需要最长的时间，因为它必须处理自网络开始以来的所有交易。
+- **自创世以来应用交易输出**。在此模式中，节点将检索自创世以来的所有交易，但它不会对交易的重新执行，而是应用以前由验证器执行的交易产生的输出。这种模式减少了所需的 CPU 时间，但仍要处理自网络开始以来的所有交易。
+- **自创世以来智能同步**。在此模式中，节点将检索自创世以来的所有交易，并根据每个数据块的情况执行交易或应用交易输出，具体取决于哪个更快。这允许节点更有效地适应 CPU 和网络资源约束。这是开发网和其他测试环境的默认模式。
+- **快速同步**。在此模式中，节点将跳过区块链中的交易历史，直接下载最新的区块链状态。因此，节点将不会有历史交易数据，但它将能够更快地更新至最新的 Aptos 网络。这是测试网和主网的默认模式。
+
+<Callout type="info">
+**引导默认值？** <br />
+默认的引导模式取决于网络类型：
+
+- **测试网和主网**：默认的引导模式是快速同步，因为这些网络存活时间较长，有大量历史数据。
+- **开发网和其他网络**：默认的引导模式是智能同步，因为这些网络通常存活时间较短，只有较少的历史数据。
+
+</Callout>
+
+### 持续同步阶段
+
+在节点最初启动并同步到 Aptos 网络最新状态后，状态同步将转入连续同步阶段，以便与区块链保持同步更新。有多种连续同步的模式：
+
+- **执行交易**。此模式将通过执行提交到区块链的新交易使节点保持最新状态。
+- **应用交易输出**。此模式将通过跳过交易执行，并仅应用之前由验证器执行的交易输出，以使节点保持最新状态。
+- **智能同步**。此模式将通过根据每个数据块的情况执行或应用交易输出使节点保持最新状态，具体取决于哪个更快。这使得节点能够更有效地适应 CPU 和网络资源约束。这是所有环境的默认模式。
+
+<Callout type="info">
+**持续同步默认值？**<br />
+默认的持续同步模式始终为智能同步，因为该模式性能最佳。
+</Callout>
+
+## 配置状态同步
+
+下面的片段提供了针对不同用例在节点上配置状态同步的说明。这些配置可以添加到节点的配置文件中，例如 `fullnode.yaml` 或 `validator.yaml`。
+
+<Callout type="warning">
+**手动配置**<br />
+只有在您有特定需求的使用情况时才应手动配置状态同步。选择错误的配置会导致同步时间变慢和性能下降。
+</Callout>
+
+### 执行所有交易
+
+要执行自创世以来的所有交易并继续执行提交的新交易，请将以下内容添加到您的节点配置文件中（例如，`fullnode.yaml` 或 `validator.yaml`）：
+
+```yaml filename="fullnode.yaml"
+state_sync:
+  state_sync_driver:
+    bootstrapping_mode: ExecuteTransactionsFromGenesis
+    continuous_syncing_mode: ExecuteTransactions
+```
+
+<Callout type="warning">
+**验证节点同步**<br />
+在节点同步时，您将能够看到 [`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) 指标逐渐增加。
+</Callout>
+
+### 应用所有交易输出
+
+要自创世以来应用所有交易输出并在提交交易时继续应用新的交易输出，请将以下内容添加到您的节点配置文件中：
+
+```yaml filename="fullnode.yaml"
+state_sync:
+  state_sync_driver:
+    bootstrapping_mode: ApplyTransactionOutputsFromGenesis
+    continuous_syncing_mode: ApplyTransactionOutputs
+```
+
+<Callout type="info">
+**验证节点同步**<br />
+在节点同步时，您将能够看到 [`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) 指标逐渐增加。
+</Callout>
+
+### 智能同步
+
+要自创世以来执行或应用所有交易和输出（并在提交新交易时继续执行相同操作），请将以下内容添加到您的节点配置文件中：
+
+```yaml filename="fullnode.yaml"
+state_sync:
+  state_sync_driver:
+    bootstrapping_mode: ExecuteOrApplyFromGenesis
+    continuous_syncing_mode: ExecuteTransactionsOrApplyOutputs
+```
+
+<Callout type="info">
+**验证节点同步**<br />
+在节点同步时，您将能够看到 [`aptos_state_sync_version{type="synced"}`](../full-node/verify-pfn.mdx) 指标逐渐增加。
+</Callout>
+
+### 快速同步
+
+<Callout type="warning">
+**谨慎操作**<br />
+快速同步应仅作为验证器和 VFNs 的最后手段使用。这是因为快速同步跳过了区块链历史记录，并且：（1）减少了网络中的数据可用性（因为快速同步的节点上的区块链历史记录被截断）；以及（2）阻碍了验证器的共识性能（如果跳过了太多数据）。快速同步的验证器可能需要额外的运行时间才能有资格参与共识。
+</Callout>
+
+要下载最新的区块链状态并在提交交易时继续处理新的交易，请将以下内容添加到您的节点配置文件中：
+
+```yaml filename="fullnode.yaml"
+state_sync:
+  state_sync_driver:
+    bootstrapping_mode: DownloadLatestStates
+    continuous_syncing_mode: ExecuteTransactionsOrApplyOutputs
+```
+
+<Callout type="warning">
+**验证节点同步**<br />
+在节点同步时，您将能够看到 `aptos_state_sync_version{type="synced_states"}` 指标逐渐增加。
+但是，只有在节点引导完成后，`aptos_state_sync_version{type="synced"}` 才会增加。这可能需要几个小时，具体取决于数据量、网络带宽和节点资源的情况。
+
+**注意**：如果 `aptos_state_sync_version{type="synced_states"}` 没有增加，则执行以下操作：
+
+1. 双重检查（Double-check）节点配置文件是否已正确更新。
+2. 确保节点是在空的存储数据库上启动的（即，它之前没有同步任何状态）。
+
+</Callout>
+
+## 归档 PFNs
+
+要运行一个归档 PFN（这是一个包含自网络开始以来的所有区块链数据，即创世）：
+
+1. 确保您的 PFN **没有**使用快速同步作为引导模式。快速同步将跳过交易历史记录。相反，请使用从创世开始同步的模式，例如，创世智能同步。
+2. 禁用账本裁剪器，如 [数据裁剪文档](./data-pruning.mdx#disable-the-ledger-pruner)中所述。这将确保不删除任何数据，并且 PFN 包含所有区块链数据。
+
+同时执行这两个步骤将确保您的 PFN 从创世以来获取所有数据，并在不裁剪任何数据的情况下继续同步。
+
+<Callout type="warning">
+**归档节点已弃用**<br />
+运行和维护归档节点是昂贵且缓慢的，因为节点上存储的数据量将不断增长。因此，归档节点已正式弃用。如果您希望存储并维护整个区块链历史记录，我们建议使用[索引器](../../../build/indexer.mdx)。
+</Callout>
+
+## 安全影响和数据完整性
+
+每个不同状态同步的同步模式都执行了数据完整性验证，以确保同步到节点的数据已由验证器正确生成和签名。每种同步模式的数据完整性验证稍有不同：
+
+1. **执行交易**：从创世开始执行交易是最安全的同步模式。它将验证从时间开始以来所有交易是否由共识正确同意，以及所有交易是否由验证器正确执行。因此，同步节点将重新验证所有产生的区块链状态。
+
+2. **应用交易输出**：从创世开始应用交易输出比执行所有交易更快，但它要求同步节点相信验证器已正确执行了交易。然而，所有其他区块链状态仍然需要手动重新验证，例如共识消息、交易历史和状态哈希都会进行验证。
+
+3. **智能同步**：智能同步根据每个数据块的情况，会执行或应用交易输出中的一个，具体取决于哪个更快。因此，使用此模式的安全影响与应用交易输出的模式相同。
+
+4. **快速同步**：快速同步模式会跳过历史交易数据，先下载区块链的最新状态，再继续进行实时同步。为了实现这一模式，要求同步中的节点信任验证者已经对交易历史中的所有交易达成正确的共识，并相信这些交易都已被正确执行。尽管如此，区块链的其他所有状态还需要通过手工验证，例如，纪元（epoch）更迭及其导致的区块链状态变更。
+
+所有同步模式都从验证器集合和这些验证器对区块链数据的加密签名中获得其信任源。有关此工作原理的更多信息，请参阅[状态同步文章](https://medium.com/aptoslabs/the-evolution-of-state-sync-the-path-to-100k-transactions-per-second-with-sub-second-latency-at-52e25a2c6f10)。

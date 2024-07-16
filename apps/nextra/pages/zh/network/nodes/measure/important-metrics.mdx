@@ -1,0 +1,70 @@
+---
+title: "重要节点指标"
+---
+
+import {Callout, Steps} from 'nextra/components';
+
+# 重要节点指标
+
+当你访问节点检查服务端口（详见[节点检查服务](node-inspection-service.mdx)）时，你将会发现你的节点报告了大量的指标数据和计数信息。大部分的这些数据和信息对于开发区块链及排查一些隐晦的问题特别有用。因此，我们建议节点运维人员不必过多关注所有指标，仅需专注于以下几个关键指标：
+
+<Callout type="info">
+**指标不稳定(Metric instability)**<br />
+随着 Aptos 持续推进区块链软件的开发，将有众多指标陆续被引入和废弃。因此，我们建议只依赖以下特别提及的指标。其余的指标可能不够稳定，并可能在没有提前警告的情况下进行修改或删除。
+</Callout>
+
+### 共识
+
+如果您正在运行验证节点，以下[共识](../../blockchain/blockchain-deep-dive.mdx#consensus)指标很重要：
+
+1. `aptos_consensus_proposals_count`：此指标记录了节点向网络提交区块提案的次数。只有当节点作为验证者被选为提案者时，这个数值才会增加，这一过程取决于节点的权益份额以及在领导者选举中的声誉。你可以预期，这个指标通常会在每小时至少增加一次。
+
+2. `aptos_consensus_last_committed_round`：此指标显示了节点最近一次提交的轮次编号。根据区块链共识机制，这一值理应在每轮共识过程中增加一次，即每秒钟多次。如果观察到此指标不如预期频繁增长，可能表明该节点未能有效参与共识过程。
+
+3. `aptos_consensus_timeout_count`：此指标记录了节点在努力参与共识过程时出现本地超时的频次。这一计数器的增加通常意味着节点未能成功参与共识，可能是由于网络等方面的问题。
+
+4. `aptos_state_sync_executing_component_counters{label="consensus"`：当节点正在参与共识时，此计数器的数字通常每秒钟会增加几次。如果观察到计数器的增长停滞不前，这通常表示节点已停止参与共识，并可能因为无法跟上其他验证者而退回到了状态同步。
+
+### 状态同步
+
+如果您正在运行全节点（或者仍然需要同步到最新区块链状态的验证节点），以下 [状态同步](../configure/state-sync.mdx)指标很重要：
+
+1. `aptos_state_sync_version{type="synced"}`：该指标用于展示节点当前同步到的状态，也就是它处理过的交易总数。如果该指标不再上升，说明节点处于非同步状态。此外，若该指标的增长速度跟不上区块链中新交易的提交速度，节点就很可能无法与网络其他部分实时同步。值得一提的是，如果您启用了[快速同步](../../nodes/configure/state-sync.mdx#fast-syncing)功能，在所有状态全部下载完毕前，此指标将不会有任何变化，这一过程有时可能较长。详见下文第三点。
+
+2. `aptos_data_client_highest_advertised_data{data_type="transactions"}`：这个指标显示与您的节点连接的对等节点同步并宣传的最高版本。因此，当这个指标高于 `aptos_state_sync_version{type="synced"}`（上述）时，意味着您的节点可以看到新的区块链数据，并将从其对等节点同步数据。
+   此指标展示了您的节点连接的对等节点中所报告的最高同步版本。如果此指标的数值高于 `aptos_state_sync_version{type="synced"}`（前文提及的），这表明您的节点能够接收到最新的区块链信息，并将开始从对等节点（peer）中同步这些数据。
+
+3. `aptos_state_sync_version{type="synced_states"}`：此指标记录了节点在快速同步过程中下载的状态数。如果此数值停止增长，同时 `aptos_state_sync_version{type="synced"}`（前文提及的）的数值也没有增加，这通常表明节点没有进行任何同步操作，很可能出现了某些问题。
+
+4. `aptos_state_sync_bootstrapper_errors` 和 `aptos_state_sync_continuous_syncer_errors`：若您的节点同步时出现故障（或临时失败），则每当出现错误时，相关指标的数值会相应增加。其中，指标中的 `error_label` 会明示具体的错误类型。
+
+<Callout type="info">
+通过比较 `aptos_state_sync_version{type="synced"}` 显示的同步版本和 [Aptos Explorer](https://explorer.aptoslabs.com/?network=mainnet) 上的最高版本，您可以确定您的节点与最新区块链版本的差距。务必确保选择与节点同步相匹配的网络，比如主网（`miannet`）。
+</Callout>
+
+### 网络
+
+以下网络指标对于验证节点和全节点都很重要：
+
+1. `aptos_connections{direction="inbound"` 和 `aptos_connections{direction="outbound"`：这些指标显示您的节点与多少个对等点相连，以及这些连接是入站还是出站。`inbound` 连接指其他对等点（如全节点）主动连入您的节点；`outbound` 连接则表示您的节点主动连接到其他节点（如验证器全节点）。
+
+   1. 假设您负责的节点属于验证器，那么它的 `inbound` 和 `outbound` 连接数量之和应与网络中其他验证器的总数相等。重点在于连接数量的总和，连接是全部`inbound` 还是全部 `outbound`，并不影响总数。
+
+   2. 对于全节点来说，保持 `outbound` 连接数量大于 0 是必要的，以保障节点能够进行同步操作。至于 `inbound` 连接的数量，则在您希望让自己的节点成为网络中的种子节点、让其他节点连接至此的情况下才显得重要，正如在[全节点网络连接](../../nodes/full-node/modify/fullnode-network-connections.mdx#allowing-pfn-connections)一文中讨论的那样。
+   
+
+### 交易池
+
+以下 [交易池](../../blockchain/blockchain-deep-dive.mdx#mempool)指标很重要：
+
+1. `core_mempool_index_size{index="system_ttl"`：此指标显示了目前节点的内存池 (mempool) 中正等候被记录到区块链的交易 (Transaction) 数量：
+   1.    对于全节点而言，除非通过 REST API 或已连接的其他全节点主动向您的节点发送交易，否则这个指标值大于 0 的情况极为罕见。大部分全节点的运维人员可以不用理会这一指标。
+   2. 如果您的节点是验证器，您可以利用这个指标观察节点内存池（mempool）中的交易是否被包含在区块链中（比如，通过查看计数是否有所减少）。同样地，如果这个指标持续增加，这可能表明：(1) 您的节点无法成功将交易转发给其他验证者以包含在区块链中；或 (2) 整个区块链正面临巨大的负荷，且可能很快会变得拥堵。
+
+### REST API
+
+以下 [REST API](../../../build/apis.mdx)指标很重要：{/* TODO 也许可以用 API 规范替换 */}
+
+1. `aptos_api_requests_count{method="GET"` 和 `aptos_api_requests_count{method="POST"`：这些指标记录了节点的 REST API 收到的 GET 和 POST 请求次数，便于您监控节点上的 REST API 流量。您还可以利用指标中的 `operation_id` 进行深入分析，以监控这些请求所进行的具体操作类型。
+
+2. `aptos_api_response_status_count`：该指标统计了 REST API 发出的不同类型的响应数量。举个例子，`aptos_api_response_status_count{status="200"}` 代表统计了返回 `200` 状态码、即成功处理的请求次数。该指标可帮助您追踪 REST API 流量的成功与失败的比例。

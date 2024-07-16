@@ -9,6 +9,12 @@ import { Callout, Steps } from 'nextra/components';
 This document describes how to bootstrap an Aptos node quickly using a snapshot. This can be done on all node types,
 including validators, VFNs and PFNs.
 
+<Callout type="warning">
+**Indexer snapshots**<br />
+The snapshots provided by the community do not provide indexer support. If you are bootstrapping an indexer node,
+you will need to do so by using a [backup](./aptos-db-restore.mdx).
+</Callout>
+
 Although you can bootstrap a new node using [state sync](../configure/state-sync.mdx), this might not be the fastest approach after the network
 has been running for a while; it can either take too much time, or it won't be able to fetch all the required data since
 other nodes may have already pruned their ledger history. To avoid this, you can bootstrap your node using an
