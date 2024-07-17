@@ -1417,6 +1417,11 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/en/build/create-aptos-dapp/templates/digital-asset",
+        destination: "/en/build/create-aptos-dapp/templates/nft-minting-dapp",
+        permanent: true,
+      },
+      {
         source: "/en/build/smart-contracts/object-code-deployment",
         destination: "/en/build/smart-contracts/deployment",
         permanent: true,
@@ -1575,6 +1580,11 @@ export default withBundleAnalyzer(
       {
         source: "/create-aptos-dapp/templates/fungible-asset",
         destination: "/en/build/create-aptos-dapp/templates/fungible-asset",
+        permanent: true,
+      },
+      {
+        source: "/en/build/create-aptos-dapp/templates/fungible-asset",
+        destination: "/en/build/create-aptos-dapp/templates/token-minting-dapp",
         permanent: true,
       },
       {
