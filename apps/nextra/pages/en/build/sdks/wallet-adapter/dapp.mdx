@@ -165,7 +165,7 @@ See the next.js example dapp for a demonstration of how these components are use
 
 `connect()` establishes a connection between the dapp and a Wallet. You can then use `disconnect()` to 
 
-```tsx filename="Example.tsx"
+```tsx filename="WalletConnectDemo.tsx"
 import React from 'react';
 import { WalletName, useWallet } from '@aptos-labs/wallet-adapter-react';
 
@@ -215,7 +215,7 @@ export default WalletConnectDemo;
 
 If you would like to separate out these steps, you can use `signTransaction` and `submitTransaction` separately instead.
 
-```tsx filename="Example.tsx"
+```tsx filename="SignAndSubmitDemo.tsx"
 import React from 'react';
 import { useWallet } from '@aptos-labs/wallet-adapter-react'; 
 import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk';
@@ -259,7 +259,7 @@ export default SignAndSubmit;
 
 You can also use the shorthand `signAndVerifyMessage` to create a message which can be verifiably from the connected wallet.
 
-```tsx filename="Example.tsx"
+```tsx filename="SignMessageDemo.tsx"
 import React, { useState } from 'react';
 import { useWallet } from '@aptos-labs/wallet-adapter-react';
 
@@ -352,7 +352,7 @@ export default SignMessageDemo;
 
 Some wallets only support mainnet, so they will not support `changeNetwork`. If you are relying on this feature, ensure that you implement error handling for if a wallet that does not support `changeNetwork`. [Nightly](https://chromewebstore.google.com/detail/nightly/fiikommddbeccaoicoejoniammnalkfa?hl=en) is an example of a wallet which **does** support `changeNetwork`. 
 
-```tsx filename="Example.tsx"
+```tsx filename="ChangeNetworkDemo.tsx"
 import React from 'react';
 import { useWallet } from '@aptos-labs/wallet-adapter-react';
 import { Network } from '@aptos-labs/ts-sdk';
@@ -451,7 +451,7 @@ This feature is not part of the AIP-62 standard, so it will not be supported by 
 
 This is similar to the `signAndSubmit` logic, but uses a BCS format for the transaction `data`. 
 
-```tsx filename="Example.tsx"
+```tsx filename="SignAndSubmitBCSTransactionDemo.tsx"
 const onSignAndSubmitBCSTransaction = async () => {
   const response = await signAndSubmitTransaction({
     sender: account.address,
