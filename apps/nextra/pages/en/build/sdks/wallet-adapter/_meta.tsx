@@ -1,9 +1,12 @@
 export default {
   dapp: {
-    title: "Wallet Adapter For Dapp Builders",
+    title: "Dapp Builders",
+  },
+  "browser-extension-wallets": {
+    title: "Browser Extension Wallet Builders"
   },
   wallets: {
-    title: "Wallet Adapter For Wallet Builders",
+    title: "SDK Wallet Builders",
   },
   "wallet-standards": {
     title: "Aptos Wallet Standard",
