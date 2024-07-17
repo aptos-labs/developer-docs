@@ -3,7 +3,7 @@ export default {
     title: "Dapp Builders",
   },
   "browser-extension-wallets": {
-    title: "Browser Extension Wallet Builders"
+    title: "Browser Extension Wallet Builders",
   },
   wallets: {
     title: "SDK Wallet Builders",
