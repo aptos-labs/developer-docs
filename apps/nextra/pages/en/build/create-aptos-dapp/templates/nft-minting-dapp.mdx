@@ -20,8 +20,7 @@ The NFT minting dapp template provides 3 pages:
 
 ## Quick Start
 - [Create assets for a collection of NFTs](#create-collection-assets)
-- [Publish the move contract](#publish-the-move-contract)
-- [Publish the collection on chain](#publishing-the-collection-on-chain)
+- [Create a collection on chain](#publish-the-move-contract)
 - [Customizing the frontend](#customizing-the-front-end)
 - [Deploy to a live server](#deploy-to-a-live-server)
 
@@ -149,28 +148,28 @@ The `image` field of the metadata.json files above will be filled in automatical
 
 <Steps>
 ### Prepare an account, or create one with an Aptos wallet like [Petra](https://petra.app/docs/use#create-a-new-account).
-You will need this to run the contract to create a collection. Make sure to set up the account on the same network as your template project.
+You will need this to set which account will have the privilege to create a collection. Make sure to set up the account on the same network as your template project.
 
-### Use the below command to create the contract to mint your collection.
+### On the project root folder, use the below command to initiliaze an account to publish the contract with.
 
 ```bash 
 npm run move:init
 ```
 
-The CLI will prompt you to provide the private key for your wallet in order for the tool to make the collection on your behalf.  If you provide no input, it will generate one for you.
+The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
 
-This will create the contract for minting your collection, as well as setting the `VITE_MODULE_ADDRESS` in the `.env` file to set which account will own the minted collections.
+This will create an account you will later publish the contract with, as well as setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
 
-### In the `.env` file, set `VITE_CREATOR_ADDRESS` to be the same as your account address.
+### In the `.env` file, set `VITE_COLLECTION_CREATOR_ADDRESS` to be the same as your account address.
 This determines which account is allowed to create collections using the dapp.
 
 For example:
 ```bash filename=".env"
 VITE_APP_NETWORK=testnet
-VITE_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
+VITE_COLLECTION_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
 ```
 
-### Run the below command to publish the contract.
+### On the project root folder, run the below command to publish the contract.
 
 ```bash
 npm run move:publish
@@ -178,6 +177,9 @@ npm run move:publish
 <Callout type="info">
 You will have to confirm the gas fee in the console.
 </Callout>
+
+This command will publish the contract to chain.
+
 </Steps>
 
 ## Publishing the collection on-chain
@@ -190,11 +192,11 @@ npm run dev
 ```
 
 ### In the top-right corner, click "Connect a Wallet". 
-Use the same account that you set in `.env` for the `VITE_CREATOR_ADDRESS`. 
-Or, if you use a different account, set the `VITE_CREATOR_ADDRESS` to the account you sign in with.
+Use the same account that you set in `.env` for the `VITE_COLLECTION_CREATOR_ADDRESS`. 
+Or, if you use a different account, set the `VITE_COLLECTION_CREATOR_ADDRESS` to the account you sign in with.
 
 <Callout type="warning">
-Do not use the "Google Account" option if it is available. The account generated from that will not work as the `VITE_CREATOR_ADDRESS`. Use a wallet created with an Aptos wallet provider such as [Petra](https://petra.app/docs/use#create-a-new-account).
+Do not use the "Google Account" option if it is available. The account generated from that will not work as the `VITE_COLLECTION_CREATOR_ADDRESS`. Use a wallet created with an Aptos wallet provider such as [Petra](https://petra.app/docs/use#create-a-new-account).
 </Callout>
 
 ### In the app, go to the "Create Collection" page (if not on that page already)
@@ -204,10 +206,10 @@ If you do not have an `assets` folder or other properly formatted collection dat
 
 ### Choose the required fields.
 1. Choose the mint start date to determine when users can start minting NFTs.
-2. Choose the mint end date to determine when users can no longer mint NFTs.
 3. Choose a mint limit per account.
 
 The rest are optional fields to help customize your mint.
+- (Optional) Choose the mint end date to determine when users can no longer mint NFTs. If no date selected, the mint is open forever.
 - (Optional) Royalty Percentage for each NFT - this defines the royalties marketplaces should send you when users trade these NFTs.
 - (Optional) Mint fee per NFT - this defines the cost public users pay to mint this NFT.
 - (Optional) Mint for myself - this defines how many NFTs you would want to mint for yourself once the collection is created.
