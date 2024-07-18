@@ -24,14 +24,15 @@ npm install @aptos-labs/wallet-adapter-react
 
 <Callout type="info">
 The more modern [AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md) wallets do NOT require installing a package - they work by default!
+The legacy standard required installing plugins manually.
 </Callout>
 
-The legacy standard required installing plugins manually. For wallets that have not updated to using the AIP-62 standard, their plugins must be installed and passed in to the `Provider` manually.
+For wallets that have not updated to using the AIP-62 standard, their plugins must be installed and passed in to the `Provider` manually.
 
 For example:
 
 ```bash filename="Terminal"
-npm install @bitget-wallet/aptos-wallet-adapter
+npm install @pontem/wallet-adapter-plugin
 ```
 
 ### In `App.tsx` or it’s equivalent, import the Aptos Wallet Adapter and any legacy Wallet plugins.
@@ -50,7 +51,7 @@ You can use any of the following optional fields.
 It is recommended to:
 
 1. Set `autoConnect` to `true`. 
-2. Include `plugins` for any wallets that are using the legacy adapter.
+2. Include `plugins` for any wallets that are using the legacy standard.
 
 | Field | Description | Example |
 | --- | --- | --- |
@@ -359,8 +360,6 @@ import { Network } from '@aptos-labs/ts-sdk';
 
 const ChangeNetworkDemo = () => {
   const { network, changeNetwork, wallet } = useWallet();
-  // Update this with a non-manual check to verify whether the network change is a supported feature.
-  // Or have error handling if a network change is attempted for a wallet that does not support the feature.
   const isNetworkChangeSupported = wallet?.name === "Nightly";
 
   const isValidNetworkName = () => {
@@ -368,9 +367,9 @@ const ChangeNetworkDemo = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <h4 style={{ fontSize: '1.25rem', fontWeight: '500' }}>Network Info</h4>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '8px' }}>
+    <div>
+      <h4>Network Info</h4>
+      <div>
         <div><strong>Network name</strong></div>
         <div>
           <span style={{ color: isValidNetworkName() ? 'green' : 'red' }}>
@@ -381,7 +380,7 @@ const ChangeNetworkDemo = () => {
         <div><strong>URL</strong></div>
         <div>
           {network?.url ? (
-            <a href={network.url} target="_blank" rel="noreferrer" style={{ color: 'blue' }}>
+            <a href={network.url} target="_blank" rel="noreferrer">
               {network.url}
             </a>
           ) : (
@@ -391,9 +390,9 @@ const ChangeNetworkDemo = () => {
         <div><strong>Chain ID</strong></div>
         <div>{network?.chainId ?? 'Not Present'}</div>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <h4 style={{ fontSize: '1.25rem', fontWeight: '500' }}>Change Network</h4>
-        <div style={{ display: 'flex', gap: '16px' }}>
+      <div>
+        <h4>Change Network</h4>
+        <div>
           <label>
             <input
               type="radio"
@@ -403,8 +402,6 @@ const ChangeNetworkDemo = () => {
               onChange={() => changeNetwork(Network.DEVNET)}
               disabled={!isNetworkChangeSupported}
             />
-
-
             Devnet
           </label>
           <label>
@@ -431,7 +428,7 @@ const ChangeNetworkDemo = () => {
           </label>
         </div>
         {!isNetworkChangeSupported && (
-          <div style={{ fontSize: '0.875rem', color: 'red' }}>
+          <div>
             * {wallet?.name ?? 'This wallet'} does not support network change requests
           </div>
         )}
