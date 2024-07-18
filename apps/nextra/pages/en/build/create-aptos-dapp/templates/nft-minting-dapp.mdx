@@ -1,22 +1,29 @@
 ---
-title: "Create Aptos Dapp Digital Asset Template"
+title: "Create Aptos Dapp NFT Minting Dapp Template"
 ---
 
 import { Callout, FileTree, Steps } from 'nextra/components';
 
-# Create Aptos Dapp Digital Asset Template
+# Create Aptos Dapp NFT Minting Dapp Template
 
-Digital Assets are the NFT standard for Aptos. The Digital Asset template provides an end-to-end NFT minting dapp. With this dapp, you can learn how NFTs work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a NFT minting dapp users can quickly adjust and deploy into a live server.
+Digital Assets are the NFT standard for Aptos. The NFT minting dapp template provides an end-to-end NFT minting dapp. With this dapp, you can learn how NFTs work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a NFT minting dapp users can quickly adjust and deploy into a live server.
 
 You can read more about the Aptos Digital Asset Standard [here](../../smart-contracts/digital-asset.mdx).
 
 ## Template Pages
 
-The Digital Asset template provides 3 pages:
+The NFT minting dapp template provides 3 pages:
 
 1. "Public Mint" Page - A page for the public to mint NFTs.
 2. "Create Collection" Page - A page for creating new NFT collections. This page is not accessible in production.
 3. "My Collections" Page - A page to view all the collections created with the template Move module. This page is also not accessible in production.
+
+## Quick Start
+- [Create assets for a collection of NFTs](#create-collection-assets)
+- [Publish the move contract](#publish-the-move-contract)
+- [Publish the collection on chain](#publishing-the-collection-on-chain)
+- [Customizing the frontend](#customizing-the-front-end)
+- [Deploy to a live server](#deploy-to-a-live-server)
 
 ## Setup
 
@@ -146,7 +153,7 @@ You will need this to run the contract to create a collection. Make sure to set 
 
 ### Use the below command to create the contract to mint your collection.
 
-```bash npm2yarn
+```bash 
 npm run move:init
 ```
 
@@ -161,12 +168,11 @@ For example:
 ```bash filename=".env"
 VITE_APP_NETWORK=testnet
 VITE_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
-VITE_MODULE_ADDRESS=0x59f86a8bae077b39d32a71b8d4641c558c0198765b6e7997a2d0a8545c1e3237
 ```
 
 ### Run the below command to publish the contract.
 
-```bash npm2yarn
+```bash
 npm run move:publish
 ```
 <Callout type="info">
@@ -179,7 +185,7 @@ You will have to confirm the gas fee in the console.
 
 ### Run the app and open the preview.
 
-```bash npm2yarn
+```bash
 npm run dev
 ```
 
