@@ -1291,11 +1291,6 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/en/build/smart-contracts/book/summary",
-        destination: "/en/build/smart-contracts/book/SUMMARY",
-        permanent: true,
-      },
-      {
         source: "/en/build/smart-contracts/aptos-standards/fungible-asset",
         destination: "/en/build/smart-contracts/fungible-asset",
         permanent: true,
