@@ -1,5 +1,5 @@
 export default {
-  "boilerplate": {
+  boilerplate: {
     title: "Boilerplate Template",
   },
   "nft-minting-dapp": {
