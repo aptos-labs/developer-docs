@@ -43,6 +43,11 @@ export default withBundleAnalyzer(
     ],
     redirects: async () => [
       {
+        source: "/build",
+        destination: "/en/build/get-started",
+        permanent: true,
+      },
+      {
         source: "/docs",
         destination: "/en/docs",
         statusCode: 302,
@@ -418,6 +423,36 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/guides/local-development-network",
+        destination: "/en/network/nodes/localnet/local-development-network",
+        permanent: true,
+      },
+      {
+        source: "/concepts/coin-and-token/aptos-token",
+        destination: "/en/build/smart-contracts/aptos-token",
+        permanent: true,
+      },
+      {
+        source: "/guides/move-guides/move-on-aptos",
+        destination: "/en/build/smart-contracts",
+        permanent: true,
+      },
+      {
+        source: "/en/build/cli/use-cli",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/cli-tools/aptos-cli-tool",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/nodes/aptos-deployments",
+        destination: "/en/network/nodes/full-node/deployments",
+        permanent: true,
+      },
+      {
         source: "/indexer/legacy/indexer-fullnode",
         destination: "/en/build/indexer/legacy/indexer-fullnode",
         permanent: true,
@@ -440,6 +475,11 @@ export default withBundleAnalyzer(
       {
         source: "/sdks/ts-sdk/account",
         destination: "/en/build/sdks/ts-sdk/account",
+        permanent: true,
+      },
+      {
+        source: "/sdks/legacy-ts-sdk/index",
+        destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk",
         permanent: true,
       },
       {
@@ -730,6 +770,21 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/guides/aptos-guides",
+        destination: "/en/network/nodes",
+        permanent: true,
+      },
+      {
+        source: "/guides/handle-aptos-errors",
+        destination: "/en/build/smart-contracts/error-codes",
+        permanent: true,
+      },
+      {
+        source: "/guides/move-guides",
+        destination: "/en/build/smart-contracts",
+        permanent: true,
+      },
+      {
         source: "/guides/state-sync",
         destination: "/en/network/nodes/configure/state-sync",
         permanent: true,
@@ -915,6 +970,11 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/tutorials/your-first-transaction-sdk",
+        destination: "/en/build/sdks/ts-sdk/quickstart",
+        permanent: true,
+      },
+      {
         source: "/tutorials/your-first-nft",
         destination: "/en/build/guides/your-first-nft",
         permanent: true,
@@ -1017,6 +1077,38 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/guides/nfts/mint-onchain-data",
+        destination: "/en/build/guides/your-first-nft",
+        permanent: true,
+      },
+      {
+        source:
+          "/assets/files/whitepaper-korean-67e84101467803b96c4f481a1161ec45.pdf",
+        destination:
+          "/en/network/blockchain/aptos-white-paper#full-pdf-versions",
+        permanent: true,
+      },
+      {
+        source: "/integration/aptos-api",
+        destination: "/en/build/advanced-guides/system-integrators-guide",
+        permanent: true,
+      },
+      {
+        source: "/move/move-on-aptos/scripts",
+        destination: "/en/build/smart-contracts/scripts",
+        permanent: true,
+      },
+      {
+        source: "/en/build/sdks/wallet-adapter/wallet-standard",
+        destination: "/en/build/sdks/wallet-adapter/wallet-standards",
+        permanent: true,
+      },
+      {
+        source: "/sdks/aptos-sdk-overview",
+        destination: "/en/build/sdks",
+        permanent: true,
+      },
+      {
         source: "/guides/keyless-accounts",
         destination: "/en/build/guides/aptos-keyless",
         permanent: true,
@@ -1077,8 +1169,50 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source:
+          "/assets/files/Aptos-Whitepaper-47099b4b907b432f81fc0effd34f3b6a.pdf",
+        destination:
+          "/en/network/blockchain/aptos-white-paper#full-pdf-versions",
+        permanent: true,
+      },
+      {
+        source: "/cli-tools/aptos-cli-tool/use-aptos-cli",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/your-first-dapp",
+        destination: "/en/build/guides/build-e2e-dapp",
+        permanent: true,
+      },
+      {
+        source: "/build/smart-contracts/book/references",
+        destination: "/en/build/smart-contracts/book/references",
+        permanent: true,
+      },
+      {
+        source: "/cli-tools",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/sdks/ts-sdk/typescript-sdk",
+        destination: "/en/build/sdks/ts-sdk",
+        permanent: true,
+      },
+      {
         source: "/sdks/ts-sdk",
         destination: "/en/build/sdks/ts-sdk",
+        permanent: true,
+      },
+      {
+        source: "/scripts",
+        destination: "/en/build/smart-contracts/scripts",
+        permanent: true,
+      },
+      {
+        source: "/standards/aptos-token-v2",
+        destination: "/en/build/smart-contracts/digital-asset",
         permanent: true,
       },
       {
@@ -1182,6 +1316,42 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/concepts/aptos-concepts",
+        destination: "/en/build/get-started",
+        permanent: true,
+      },
+      // This guide seems to have been deleted, so redirecting to a similar guide.
+      {
+        source: "/guides/basics-life-of-txn",
+        destination: "/en/network/blockchain/txns-states",
+        permanent: true,
+      },
+      {
+        source: "/cli-tools/aptos-cli-tool/aptos-cli-index",
+        destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/nodes/validator-node/operator/index",
+        destination: "/en/network/nodes/validator-node/operator",
+        permanent: true,
+      },
+      {
+        source: "/guides/creating-a-signed-transaction",
+        destination: "/en/build/sdks/ts-sdk/building-transactions",
+        permanent: true,
+      },
+      {
+        source: "/en/build/pdf/aptos.dev-en-build-get-started",
+        destination: "/en/build/get-started",
+        permanent: true,
+      },
+      {
+        source: "/nodes/nodes-index",
+        destination: "/en/network/nodes",
+        permanent: true,
+      },
+      {
         source: "/move/prover/move-prover",
         destination: "/en/build/smart-contracts/prover",
         permanent: true,
@@ -1189,6 +1359,11 @@ export default withBundleAnalyzer(
       {
         source: "/nodes/full-node/public-fullnode",
         destination: "/en/network/nodes",
+        permanent: true,
+      },
+      {
+        source: "/tools/aptos-cli/index",
+        destination: "/en/build/cli",
         permanent: true,
       },
       {
@@ -1242,6 +1417,11 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/en/build/create-aptos-dapp/templates/digital-asset",
+        destination: "/en/build/create-aptos-dapp/templates/nft-minting-dapp",
+        permanent: true,
+      },
+      {
         source: "/en/build/smart-contracts/object-code-deployment",
         destination: "/en/build/smart-contracts/deployment",
         permanent: true,
@@ -1254,6 +1434,16 @@ export default withBundleAnalyzer(
       {
         source: "/move/move-on-aptos/cli",
         destination: "/en/build/cli",
+        permanent: true,
+      },
+      {
+        source: "/sdks/new-ts-sdk/transaction-builder",
+        destination: "/en/build/sdks/ts-sdk/building-transactions",
+        permanent: true,
+      },
+      {
+        source: "/en/build",
+        destination: "/en/build/get-started",
         permanent: true,
       },
       {
@@ -1390,6 +1580,11 @@ export default withBundleAnalyzer(
       {
         source: "/create-aptos-dapp/templates/fungible-asset",
         destination: "/en/build/create-aptos-dapp/templates/fungible-asset",
+        permanent: true,
+      },
+      {
+        source: "/en/build/create-aptos-dapp/templates/fungible-asset",
+        destination: "/en/build/create-aptos-dapp/templates/token-minting-dapp",
         permanent: true,
       },
       {

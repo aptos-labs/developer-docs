@@ -2,10 +2,10 @@ export default {
   "boilerplate": {
     title: "Boilerplate Template",
   },
-  "digital-asset": {
-    title: "Digital Asset Template",
+  "nft-minting-dapp": {
+    title: "NFT minting dapp Template",
   },
-  "fungible-asset": {
-    title: "Fungible Asset Template",
+  "token-minting-dapp": {
+    title: "Token minting dapp Template",
   },
 };
