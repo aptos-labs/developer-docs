@@ -9,7 +9,7 @@ On Aptos, on-chain state is organized into resources and modules. These are then
 
 ## Resources vs Instances
 
-Move modules define struct definitions. Struct definitions may include the abilities such as `key` or `store`. Resources are struct instance with The `key` ability that are stored in global storage or directly in an account. The `store` ability allows struct instances to be stored within resources. An example here is how the APT coin is stored: CoinStore is the resource that contains the APT coin, while the Coin itself is an instance:
+Move modules define struct definitions. Struct definitions may include the abilities such as `key` or `store`. Resources are struct instances with The `key` ability that are stored in global storage or directly in an account. The `store` ability allows struct instances to be stored within resources. An example here is how the APT coin is stored: CoinStore is the resource that contains the APT coin, while the Coin itself is an instance:
 
 ```rust
 /// A holder of a specific coin type and associated event handles.
