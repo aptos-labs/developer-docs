@@ -2,7 +2,7 @@
 title: "Events"
 ---
 
-Events are emitted during the execution of a transaction. Each Move module can define its own events and choose when to emit the events upon execution of the module. Aptos Move supports two form of events: module events and EventHandle events. Module events are the modern event mechanism and shipped in the framework release 1.7. EventHandle events are deprecated and shipped with the original framework. Because of how blockchains work, EventHandle events will likely never be fully removed from Aptos.
+Events are emitted during the execution of a transaction. Each Move module can define its own events and choose when to emit the events upon execution of the module. Aptos Move supports two forms of events: module events and EventHandle events. Module events are the modern event mechanism and shipped in the framework release 1.7. EventHandle events are deprecated and shipped with the original framework. Because of how blockchains work, EventHandle events will likely never be fully removed from Aptos.
 
 ## Module Events
 
