@@ -139,7 +139,7 @@ sources={{
 
 ### Validator rules
 
-The below rules is applicable during the changes of state:
+The below rules are applicable during the changes of state:
 
 - Voting power can change (increase or decrease) only on epoch boundary.
 - A validator’s consensus key and the validator and validator fullnode network addresses can change only on epoch boundary.

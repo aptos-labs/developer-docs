@@ -11,7 +11,7 @@ The Aptos blockchain consists of validator nodes that run a consensus protocol. 
 
 Move is a safe and secure programming language for Web3 that emphasizes **scarcity** and **access control**. Any assets in Move can be represented by or stored within _resource_. **Scarcity** is enforced by default as structs cannot be accidentally duplicated or dropped. Only structs that have explicitly been defined at the bytecode layer as _copy_ can be duplicated and _drop_ can be dropped, respectively.
 
-**Access control** comes from both the notion of accounts and module access privileges. A module in Move may either be a library or a program that can create, store, or transfer assets. Move ensures that only public module functions may be accessed by other modules. Unless a struct has a public constructor, it can only be constructed within the module that defines it. Similarly, fields within a struct can only be accessed and mutated within its module that or via public accessors and setters. Furthermore, structs defined with _key_ can be stored and read from global storage only within the module defines it. Structs with _store_ can be stored within another _store_ or _key_ struct inside or outside the module that defines that struct.
+**Access control** comes from both the notion of accounts and module access privileges. A module in Move may either be a library or a program that can create, store, or transfer assets. Move ensures that only public module functions may be accessed by other modules. Unless a struct has a public constructor, it can only be constructed within the module that defines it. Similarly, fields within a struct can only be accessed and mutated within its module that or via public accessors and setters. Furthermore, structs defined with _key_ can be stored and read from global storage only within the module that defines it. Structs with _store_ can be stored within another _store_ or _key_ struct inside or outside the module that defines that struct.
 
 In Move, a transaction's sender is represented by a _signer_, a verified owner of a specific account. The signer has the highest level of permission in Move and is the only entity capable of adding resources into an account. In addition, a module developer can require that a signer be present to access resources or modify assets stored within an account.
 
@@ -33,7 +33,7 @@ Each deployment of the MoveVM has the ability to extend the core MoveVM with add
 
 The Aptos Move adapter features include:
 
-- [Move Objects](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-10.md) that offer an extensible programming model for globally access to heterogeneous set of resources stored at a single address on-chain.
+- [Move Objects](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-10.md) that offer an extensible programming model for global access to heterogeneous set of resources stored at a single address on-chain.
 - [Cryptography primitives](../move/move-on-aptos/cryptography) for building scalable, privacy-preserving dapps.
 - [Resource accounts](../move/move-on-aptos/resource-accounts) that offer programmable accounts on-chain, which can be useful for DAOs (decentralized autonomous organizations), shared accounts, or building complex applications on-chain.
 - [Tables](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/table.move) for storing key, value data within an account at scale.
