@@ -139,7 +139,7 @@ sources={{
 
 ### Validator rules
 
-The below rules is applicable during the changes of state:
+The below rules are applicable during the changes of state:
 
 - Voting power can change (increase or decrease) only on epoch boundary.
 - A validator’s consensus key and the validator and validator fullnode network addresses can change only on epoch boundary.
@@ -155,7 +155,7 @@ See [Staking pool operations](../nodes/validator-node/operator/staking-pool-oper
 1. Owner initializes the stake pool with `aptos stake create-staking-contract`.
 2. When the owner is ready to deposit the stake (or have funds assigned by a staking service in exchange for ownership capability), owner calls `aptos stake add-stake`.
 3. When the validator node is ready, the operator can call `aptos node join-validator-set` to join the active validator set. Changes will be effective in the next epoch.
-4. Validator validates (proposes blocks as a leader-validator) and gains rewards. The stake will automatically be locked up for a fixed duration (set by governance) and automatically renewed at expiration.
+4. Validator validates (proposes blocks as a leader-validator) and gains rewards. The stake will automatically locked up for a fixed duration (set by governance) and automatically renewed at expiration.
 5. At any point, if the operator wants to update the consensus key or validator network addresses, they can call `aptos node update-consensus-key` or `aptos node update-validator-network-addresses`. Similar to changes to stake, the changes to consensus key or validator network addresses are only effective in the next epoch.
 6. Validator can request to unlock their stake at any time. However, their stake will only become withdrawable when their current lockup expires. This can be at most as long as the fixed lockup duration.
 7. After exiting, the validator can either explicitly leave the validator set by calling `aptos node leave-validator-set` or if their stake drops below the min required, they would get removed at the end of the epoch.
