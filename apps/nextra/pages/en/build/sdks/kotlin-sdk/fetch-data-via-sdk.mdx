@@ -18,7 +18,7 @@ both successful and failed requests in a more idiomatic way.
       is None -> println("Failed to fetch ledger info")
   }
   ```
-If you trust the result exists, you can use the `expect` function to unwrap the value.
+If you trust the result exists, you can use the `.expect` function to unwrap the value.
 
   ```kotlin
   val ledgerInfo = aptos.getLedgerInfo().expect("Failed to fetch ledger info")
@@ -27,7 +27,7 @@ If you trust the result exists, you can use the `expect` function to unwrap the 
 ### Using Move View Functions
 
 You can call view functions which return custom data from on-chain by using the
-`view` method on the `Aptos` object.
+`.view` method on the `Aptos` object.
 The user specifies the return type of the view function as a type parameter.
 
 For example, you can look up the supply of tokens as follows:
