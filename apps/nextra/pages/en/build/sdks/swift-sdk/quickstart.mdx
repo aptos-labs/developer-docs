@@ -25,7 +25,7 @@ dependencies: [
 
 Import the SDK in your Swift file:
 
-```swift
+```swift filename="Main.swift"
   import AptosKit
 ```
 
@@ -34,16 +34,16 @@ Import the SDK in your Swift file:
 This object is used to configure the client behavior. You can set `maxRetries`,
 `requestTimeout`, and `retryOnServerErrors` properties.
 
-```swift
+```swift filename="Main.swift"
   let config = ClientConfig(
-  followRedirects: true,
-  agent: "AptosClient",
-  likeAgent: nil,
-  requestTimeout: 5000,
-  retryOnServerErrors: 3,
-  maxRetries: 5,
-  cache: false,
-  proxy: nil
+      followRedirects: true,
+      agent: "AptosClient",
+      likeAgent: nil,
+      requestTimeout: 5000,
+      retryOnServerErrors: 3,
+      maxRetries: 5,
+      cache: false,
+      proxy: nil
   )
 ```
 
@@ -52,23 +52,23 @@ This object is used to configure the client behavior. You can set `maxRetries`,
 This object is used to configure the Aptos network connection. You can set `network`,
 `fullnode`, and `faucet` properties.
 
-```swift
+```swift filename="Main.swift"
   let aptosSettings = AptosSettings(
-  network: .devnet,
-  fullNode: nil,
-  faucet: nil,
-  indexer: nil,
-  client: nil,
-  clientConfig: config,
-  fullNodeConfig: nil,
-  indexerConfig: nil,
-  faucetConfig: nil
+      network: .devnet,
+      fullNode: nil,
+      faucet: nil,
+      indexer: nil,
+      client: nil,
+      clientConfig: config,
+      fullNodeConfig: nil,
+      indexerConfig: nil,
+      faucetConfig: nil
   )
 ```
 
 ### Create the `AptosConfig` object
 
-```swift
+```swift filename="Main.swift"
   let aptosConfig = AptosConfig(settings: aptosSettings)
 ```
 
@@ -77,13 +77,13 @@ This object is used to configure the Aptos network connection. You can set `netw
 This object is used to interact with the Aptos blockchain. It serves as the
 entry point for all interactions with the blockchain.
 
-```swift
+```swift filename="Main.swift"
   let aptos = Aptos(config: aptosConfig, graceFull: false)
 ```
 
 ### Fetch the chain ID
 
-```swift
+```swift filename="Main.swift"
   let chainId = try await aptos.getChainId()
 ```
 
