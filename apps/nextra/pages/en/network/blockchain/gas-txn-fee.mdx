@@ -90,13 +90,13 @@ However, within a block, the order of transaction execution is determined by the
 
 When a transaction is submitted to the Aptos blockchain, the transaction must contain the following mandatory gas fields:
 
-- `max_gas_amount`: The maximum number of gas units that the transaction sender is willing to spend to execute the transaction. This determines the maximum computational resources that can be consumed by the transaction.
-- `gas_price`: The gas price the transaction sender is willing to pay. It is expressed in Octa units, where 1 Octa equals 10<sup>-8</sup> Aptos utility token.
+- `max_gas_amount`: The maximum number of gas units that the transaction sender is willing to spend to execute the transaction. This determines the maximum computational and storage resources that can be consumed by the transaction.
+- `gas_price`: The price per gas unit the transaction sender is willing to pay. It is expressed in Octa units, where 1 Octa equals 10<sup>-8</sup> Aptos utility token.
 
   During the transaction execution, the total gas amount, expressed as:
 
   ```text
-  (total gas units consumed) * (gas_price)
+  (total execution gas units consumed) + (total storage gas units consumed)
   ```
 
   must not exceed `max_gas_amount`, or else the transaction will abort the execution.
