@@ -241,7 +241,7 @@ Payload gas is defined in [`transaction.rs`](https://github.com/aptos-labs/aptos
 
 Here, "internal gas units" are defined as constants in source files like [`instr.rs`] and [`storage_gas.move`], which are more granular than "external gas units" by a factor of `gas_unit_scaling_factor`:
 to convert from internal gas units to external gas units, divide by `gas_unit_scaling_factor`.
-Then, to convert from external gas units to octas, multiply by the "gas price", which denotes the number of octas per unit of external gas.
+Then, to convert from external gas units to [octas](../glossary.mdx#Octa), multiply by the "gas price", which denotes the number of octas per unit of external gas.
 
 ## Optimization principles
 
@@ -277,7 +277,7 @@ Some cost optimization strategies concerning the storage fee:
 As of the time of this writing, all instruction gas operations are multiplied by the `EXECUTION_GAS_MULTIPLIER` defined in [`meter.rs`], which is set to 20.
 Hence, the following representative operations assume gas costs as follows (divide internal gas by scaling factor, then multiply by minimum gas price):
 
-| Operation                    | Minimum Octas |
+| Operation                    | Minimum [Octas](../glossary.mdx#Octa) |
 | ---------------------------- | ------------- |
 | Table add/borrow/remove box  | 240           |
 | Function call                | 200           |
@@ -289,7 +289,7 @@ Hence, the following representative operations assume gas costs as follows (divi
 
 (Note that per-byte table box operation instruction gas does not account for storage gas, which is assessed separately).
 
-For comparison, reading a 100-byte item costs $r_i + 100 * r_b = 3000 + 100 * 3 = 3300$ octas at minimum, some 16.5 times as much as a function call, and in general, instruction gas costs are largely dominated by storage gas costs.
+For comparison, reading a 100-byte item costs $r_i + 100 * r_b = 3000 + 100 * 3 = 3300$ [octas](../glossary.mdx#Octa) at minimum, some 16.5 times as much as a function call, and in general, instruction gas costs are largely dominated by storage gas costs.
 
 Notably, however, there is still technically an incentive to reduce the number of function calls in a program, but engineering efforts are more effectively dedicated to writing modular, decomposed code that is geared toward reducing storage gas costs, rather than attempting to write repetitive code blocks with fewer nested functions (in nearly all cases).
 
@@ -297,7 +297,7 @@ In extreme cases it is possible for instruction gas to far outweigh storage gas,
 
 ### Payload gas
 
-As of the time of this writing, [`transaction/mod.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs) defines the minimum amount of internal gas per transaction as 1,500,000 internal units (15,000 octas at minimum), an amount that increases by 2,000 internal gas units (20 octas minimum) per byte for payloads larger than 600 bytes, with the maximum number of bytes permitted in a transaction set at 65536.
+As of the time of this writing, [`transaction/mod.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs) defines the minimum amount of internal gas per transaction as 1,500,000 internal units (15,000 [octas](../glossary.mdx#Octa) at minimum), an amount that increases by 2,000 internal gas units (20 octas minimum) per byte for payloads larger than 600 bytes, with the maximum number of bytes permitted in a transaction set at 65536.
 Hence, in practice, payload gas is unlikely to be a concern.
 
 [#4540]: https://github.com/aptos-labs/aptos-core/pull/4540/files
