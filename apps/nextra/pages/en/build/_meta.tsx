@@ -7,5 +7,4 @@ export default {
   cli: "CLI",
   "create-aptos-dapp": "create-aptos-dapp",
   guides: "Guides",
-  "offchain-data": "Offchain Data",
 };
