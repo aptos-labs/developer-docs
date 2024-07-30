@@ -50,6 +50,20 @@ If you are looking up a table with the `_by_pk` suffix, search for the table nam
 Remember to use Ctrl + F to find the table you are interested in! When in doubt, you may also want to query the Hasura tables above to see examples of the data inside.
 </Callout>
 
+## Raw Data
+
+### `user_transactions`
+
+Transactions filtered to user_transactions (not system).
+
+### `events`
+
+Events emitted by transaction.
+
+### `block_metadata_transactions`
+
+A type of system transaction emitted once per block, useful for mapping to timestamp or epoch.
+
 ## General
 
 ### `account_transactions`
@@ -233,7 +247,7 @@ This table maps collections to who owns them and helps count how much of a colle
 
 ### `fungible_asset_metadata`
 
-This tracks the metadata tied to each fungible asset (ex. decimals of precision). It includes v1 token data.
+This tracks the metadata tied to each fungible asset (ex. decimals of precision). It includes v1 token data. This is a current_ table.
 
 | Field                             | Type   | Primary Key | Description                                                                                                                       |
 | --------------------------------- | ------ | ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
