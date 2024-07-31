@@ -2,6 +2,8 @@
 title: "Create Aptos Dapp Token Minting Dapp Template"
 ---
 
+import { Callout, FileTree, Steps } from 'nextra/components';
+
 # Create Aptos Dapp Token Minting Dapp Template
 
 The Token minting dapp template provides an end-to-end Fungible Asset minting dapp. With this dapp, you can learn how Fungible Assets work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a Fungible Asset minting dapp users can quickly adjust and deploy into a live server.
@@ -15,117 +17,135 @@ The Token minting dapp template provides 3 pages:
 3. My Fungible Assets page - A page to view all the assets created under the current Move module (smart contract). This page is not accessible on production.
 
 ## Quick Start
-- [Publish the Move module](#publish-the-move-module)
-- [Create a collection](#connect-a-wallet)
-- [Config the UI](#public-mint-page)
-- [Ready for Mainnet (optional)](#ready-for-mainnet)
+- [Create a token on chain](#publish-the-move-contract)
+- [Customizing the frontend](#customizing-the-front-end)
 - [Deploy to a live server](#deploy-to-a-live-server)
 
-## Public Mint Page
+## Setup
 
-First run the dapp locally with `npm run dev`. You would see the public mint page with some data placeholders for content and images. Some of the content can be configured in the `frontend/config.ts` file and some will be pulled from an Aptos full node once you configure your collection.
-
-```bash 
-npm run dev
-```
-
-### Configure an asset address
-
-For the public mint page to fetch the asset, you will need to configure the asset address. First, assign the `fa_address` variable in the `frontend/config.ts` file with the asset address. If you have [created the asset](#create-a-fungible-asset-page) with the tool, you should be able to find it on the [My Assets Page](#my-assets-page).
-
-### Modify static content
-
-Once the asset address has been configured, view the `frontend/config.ts` file to change any static content on the page. You can also modify the code itself as you wish.
-
-#### How to add static images?
-
-The public mint page uses static images in the UI. Initially, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as seen below in the `frontend/config.ts` file and add it under the section you want to have it.
-
-```ts filename="frontend/config.ts"
-import MyImage from "@/assets/<my-new-folder>/my-image.png";
-```
-
-For example, to update an image in the "Our Team" section - add the image under the `frontend/assets/<my-new-folder>` folder, import the image as `import MyImage from "@/assets/<my-new-folder>/my-image.png";` and change the `img` property in the `ourTeam` section with `MyImage`.
-
-## Create a Fungible Asset page
-
-When first running `npm run dev`, you will see the Public Mint page. To create an asset, click the "Create Asset" button, which will navigate you to create a new fungible asset.
+You can start the app by running:
 
 ```bash 
 npm run dev
 ```
 
-### Publish the Move module
+However, for the app to work as intended, there are several setup steps you will have to do to:
 
-To create a new asset, we will need to publish the Move module on-chain.
+1. Publish the contract and create the token on-chain.
+2. Config your dapp to use the token
 
-The smart contract is built in a way that only the admin or a specific defined account can create a new asset.
+## Publish the Move Contract
 
-Create or find the account you want to create an asset with. If you haven't created an account - simply use a Wallet, for example [Petra](https://petra.app/), to quickly [create an account](https://petra.app/docs/use#create-a-new-account).
+<Steps>
 
-1. Run `npm run move:init` - a command to initialize an account to publish the Move contract. When you run that command it will generate a new `.aptos/config.yaml` file that holds a profile with the account private key, account address, and network configuration.
+### On the project root folder, use the below command to initiliaze an account to publish the contract with.
+
 ```bash 
 npm run move:init
 ```
 
-2. To set who can create a new asset, edit the `.env` file and update `VITE_FA_CREATOR_ADDRESS` to be the address of the account allowed to create assets.
-```bash 
-// .env file
-VITE_FA_CREATOR_ADDRESS=<create-asset-account-address>
+The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
+
+This will create an account you will later publish the contract with, as well as setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
+
+### In the `.env` file, set `VITE_FA_CREATOR_ADDRESS` to be the same as your account address.
+This determines which account is allowed to create assets using the dapp.
+
+If you haven't set up an account, you can create one with an Aptos wallet like [Petra](https://petra.app/docs/use#create-a-new-account). Make sure to set up the account on the same network as your template project.
+
+For example:
+```bash filename=".env"
+VITE_APP_NETWORK=testnet
+VITE_FA_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
 ```
 
-3. Run `npm run move:publish` to publish the contract. When you run that command it will save the module address to `VITE_MODULE_ADDRESS` in the `.env` file.
-```bash 
+### On the project root folder, run the below command to publish the contract.
+
+```bash
 npm run move:publish
 ```
+<Callout type="info">
+You will have to confirm the gas fee in the console.
+</Callout>
 
-### Upgrade the Move module
+This command will publish the contract to chain.
 
-When you make changes to your Move module, there are 2 kinds of changes, compatible and incompatible. You can learn [upgrade policy in details on docs](https://aptos.dev/move/book/package-upgrades/#compatibility-rules). When you make compatible changes, you can run `npm run move:upgrade` to upgrade previous published module. When you make incompatible changes, you can run `npm run move:publish` to publish to a new address.
+</Steps>
 
-### Connect a wallet
 
-Once you have [published the move module](#publish-the-move-module), you will need to connect your wallet to submit transactions. Make sure your Wallet is set to the same account you used in the [previous section](#publish-the-move-module) to publish your Move module.
-Also ensure that your wallet is set to the same network you selected to work with (e.g. testnet).
+## Publishing the asset on-chain
+<Steps>
 
-Now, you can connect your wallet by clicking on the "Connect Wallet" button at the top right, and start with creating your asset.
+### Run the app and open the preview.
 
-### Upload an Asset File
+```bash
+npm run dev
+```
 
-To create an asset you will need an image file.
+### In the top-right corner, click "Connect a Wallet". 
+Use the same account that you set in `.env` for the `VITE_FA_CREATOR_ADDRESS`. 
+Or, if you use a different account, set the `VITE_FA_CREATOR_ADDRESS` to the account you sign in with and republish the contract.
 
-Image file can be any of the type - `"png", "jpg", "jpeg", "gif"`.
+<Callout type="warning">
+Do not use the "Google Account" option if it is available. The account generated from that will not work as the `VITE_COLLECTION_CREATOR_ADDRESS`. Use a wallet created with an Aptos wallet provider such as [Petra](https://petra.app/docs/use#create-a-new-account).
+</Callout>
 
-Once you are ready to upload the asset image file, you can choose the file you want to upload through the file input UI.
+### In the app, go to the "Create Asset" page (if not on that page already)
 
-When adding the file, it submits it to [Irys](https://irys.xyz/), a decentralized asset server, that will store your files.
+### Upload a token image.
+
+### Choose the required fields.
+1. Choose the asset name.
+2. Choose the asset symbol.
+3. Choose the max supply of the asset.
+4. Choose the max amount an address can mint.
+5. Choose the asset decimals.
+6. Enter the project url
+
+The rest are optional fields to help customize your mint.
+- (Optional) Mint fee per asset - this defines the cost public users pay to mint this asset.
+- (Optional) Mint for myself - this defines how many assets you would want to mint for yourself once the asset is created.
+
+### Click "Create Asset"
+When adding the image, it submits the file to [Irys](https://irys.xyz/), a decentralized asset server, that will store your files.
 
 During the upload process, you will need to sign a message to approve file uploading to Irys. Additionally, you may need to fund an Irys node. Read more about the process [here](https://docs.irys.xyz/hands-on/tutorials/uploading-nfts).
 
-### Fill out asset details
+### Once you approve the transaction, you have successfully created a fungible asset on Aptos!
 
-Next, you want to fill out some asset details:
+</Steps>
 
-- Asset Name - which defines asset name
-- Asset Symbol - which defines the asset symbol
-- Max Supply - which defines the max supply of the asset
-- Mint fee per fungible asset - which defines the mint fee cost per asset
-- Max mint per account - which defines the maximum amount of assets an account can mint
-- Decimal - which defines the number of decimals of the asset
-- Project URL - the project URL
-- (Optional) Mint for myself - which defines how many assets you would want to mint for yourself once the asset is created
+## Customizing the Front-End
 
-### Submit an asset creation transaction
+Most data on the front end is customizable in `frontend/config.ts`. 
 
-Once everything has filled out, you should be able to click the “Create Asset” button and submit a asset creation transaction. The only next step would be to approve the transaction on the wallet.
+### Set the `asset_id` config
+
+In order to add a fungible asset to the public mint page, set `asset_id` in `frontend/config.ts` with the asset address. 
+
+You can use an assset that you have minted using the tool by going to the "My Assets" page and copying its address.
+
+### Modify static content
+
+Once the collection address has been configured, view the `frontend/config.ts` file to change any static content on the page. You can also modify the code itself as you wish.
+
+**How to add static images?**
+
+The public mint page uses static images in the UI. Initially, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as seen below in the `frontend/config.ts` file and add it under the section you want to have it.
+
+```tsx filename="frontend/config.ts"
+import MyImage from "@/assets/<my-new-folder>/my-image.png";
+```
 
 ## My Assets Page
+
 
 This page displays all the assets that have been created under the current Move module. You can click on the asset address, which redirects you to the Aptos Explorer site where you can see your asset.
 
 When you are ready to use an asset on the Public Mint Page, you need to copy the asset address and assign it to the `fa_address` on the `frontend/config.ts` file.
 
 Some stats are available on this page, like the max supply of the asset and the number of asset minted.
+
 
 ## How can I take it from here?
 
