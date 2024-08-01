@@ -352,28 +352,28 @@ This table maps tokens, standards, and addresses to human readable names.
 
 The following tables are planned for deprecation, or are already deprecated. See the notes section for any direct replacements or notes on how to migrate if you currently depend on one of these tables. Please do not use any of the below tables for production services.
 
-| Table                                                         | Deprecation Date | Notes |
-| ------------------------------------------------------------- | ---------------- | ----- |
-| address_version_from_move_resources                           | 6/7              | The move_resources table has been replaced with legacy_migration_v1.move_resources, which uses account_transactions in a view. To use the migrated view, you will need to backfill and run account_transactions processor. |
-| address_version_from_move_resources_aggregate                 | 6/7              | The move_resources table has been replaced with legacy_migration_v1.move_resources, which uses account_transactions in a view. To use the migrated view, you will need to backfill and run account_transactions processor. |
-| coin_activities                                               | TBD              | We will replace with fungible_asset_activities |
-| coin_activities_aggregate                                     | TBD              | We will replace with fungible_asset_activities |
-| coin_balances                                                 | TBD              | Replace with fungible_asset_balances |
-| collection_datas                                              | TBD              | Replace with collection_v2 |
-| current_coin_balances                                         | TBD              | Replace with current_fungible_asset_balances |
-| current_token_ownerships                                      | TBD              | Replace with current_token_ownerships_v2 |
-| current_token_ownerships_aggregate                            | TBD              | Replace with current_token_ownerships_v2 |
-| move_resources                                                | 6/7              | Replace with account_transactions |
-| move_resources_aggregate                                      | 6/7              | Replace with account_transactions |
-| nft_marketplace_v2_current_nft_marketplace_auctions           | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_current_nft_marketplace_collection_offers  | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_current_nft_marketplace_listings           | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_current_nft_marketplace_listings_aggregate | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_current_nft_marketplace_token_offers       | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_nft_marketplace_activities                 | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| signatures                                                    | 6/21             |  |
-| token_activities                                              | TBD              | Replace with token_activities_v2 |
-| token_activities_aggregate                                    | TBD              | Replace with token_activities_v2 |
-| token_datas                                                   | TBD              |  |
-| token_ownerships                                              | TBD              | Replace with token_ownerships_v2 |
-| tokens                                                        | TBD              | Replaced with v2 tables |
+| Table                                                         | Deprecation Date | Delete Date | Notes |
+| ------------------------------------------------------------- | ---------------- | ----------- | ----- |
+| address_version_from_move_resources                           | 6/7              | TBD         | The move_resources table has been replaced with legacy_migration_v1.move_resources, which uses account_transactions in a view. To use the migrated view, you will need to backfill and run account_transactions processor. |
+| address_version_from_move_resources_aggregate                 | 6/7              | TBD         | The move_resources table has been replaced with legacy_migration_v1.move_resources, which uses account_transactions in a view. To use the migrated view, you will need to backfill and run account_transactions processor. |
+| coin_activities                                               | 7/22             | TBD         | We will replace with fungible_asset_activities |
+| coin_activities_aggregate                                     | 7/22             | TBD         | We will replace with fungible_asset_activities |
+| coin_balances                                                 | 7/22             | TBD         | Replace with fungible_asset_balances |
+| collection_datas                                              | 7/22             | TBD         | Replace with collection_v2 |
+| current_coin_balances                                         | 7/22             | TBD         | Replace with current_fungible_asset_balances |
+| current_token_ownerships                                      | 7/22             | TBD         | Replace with current_token_ownerships_v2 |
+| current_token_ownerships_aggregate                            | 7/22             | TBD         | Replace with current_token_ownerships_v2 |
+| move_resources                                                | 6/7              | TBD         | Replace with account_transactions |
+| move_resources_aggregate                                      | 6/7              | TBD         | Replace with account_transactions |
+| nft_marketplace_v2_current_nft_marketplace_auctions           | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_current_nft_marketplace_collection_offers  | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_current_nft_marketplace_listings           | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_current_nft_marketplace_listings_aggregate | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_current_nft_marketplace_token_offers       | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_nft_marketplace_activities                 | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| signatures                                                    | 6/21             | TBD         |  |
+| token_activities                                              | 7/22             | TBD         | Replace with token_activities_v2 |
+| token_activities_aggregate                                    | 7/22             | TBD         | Replace with token_activities_v2 |
+| token_datas                                                   | 7/22             | TBD         |  |
+| token_ownerships                                              | 7/22             | TBD         | Replace with token_ownerships_v2 |
+| tokens                                                        | 7/22             | TBD         | Replaced with v2 tables |
