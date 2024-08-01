@@ -24,7 +24,8 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": ["node"]
   },
   "include": [
     "next-env.d.ts",
@@ -32,7 +33,8 @@
     "**/*.tsx",
     "./.next/types/**/*.ts",
     "docs.config.js",
-    "postbuild.js"
+    "postbuild.js",
+    "utils/generateLocaleMap.mts"
   ],
   "exclude": ["node_modules"]
 }

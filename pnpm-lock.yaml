@@ -206,10 +206,10 @@ importers:
         version: link:../../packages/github-fetch
       '@graphiql/react':
         specifier: ^0.21.0
-        version: 0.21.0(@codemirror/language@6.0.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0)
+        version: 0.21.0(@codemirror/language@6.0.0)(@types/node@20.13.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0)
       '@graphiql/toolkit':
         specifier: ^0.9.1
-        version: 0.9.1(graphql-ws@5.16.0)(graphql@16.8.1)
+        version: 0.9.1(@types/node@20.13.0)(graphql-ws@5.16.0)(graphql@16.8.1)
       '@next/third-parties':
         specifier: ^14.1.0
         version: 14.2.3(next@14.2.3)(react@18.2.0)
@@ -221,10 +221,10 @@ importers:
         version: 1.0.2(@types/react@18.3.3)(react@18.2.0)
       '@scalar/api-reference-react':
         specifier: ^0.2.5
-        version: 0.2.5(nanoid@5.0.7)(postcss@8.4.38)(react@18.2.0)(typescript@5.5.3)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
+        version: 0.2.5(nanoid@5.0.7)(postcss@8.4.38)(react@18.2.0)(typescript@5.5.4)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
       '@scalar/nextjs-api-reference':
         specifier: ^0.3.62
-        version: 0.3.62(nanoid@5.0.7)(next@14.2.3)(postcss@8.4.38)(react@18.2.0)(typescript@5.5.3)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
+        version: 0.3.62(nanoid@5.0.7)(next@14.2.3)(postcss@8.4.38)(react@18.2.0)(typescript@5.5.4)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
       '@vercel/og':
         specifier: ^0.5.0
         version: 0.5.20
@@ -242,7 +242,7 @@ importers:
         version: 5.2.0
       graphiql:
         specifier: ^3.2.0
-        version: 3.2.3(@codemirror/language@6.0.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0)
+        version: 3.2.3(@codemirror/language@6.0.0)(@types/node@20.13.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0)
       graphql:
         specifier: ^16.8.1
         version: 16.8.1
@@ -263,7 +263,7 @@ importers:
         version: 4.2.3(next@14.2.3)
       nextra:
         specifier: 3.0.0-alpha.24
-        version: 3.0.0-alpha.24(@types/react@18.3.3)(next@14.2.3)(react-dom@18.2.0)(react@18.2.0)(typescript@5.5.3)
+        version: 3.0.0-alpha.24(@types/react@18.3.3)(next@14.2.3)(react-dom@18.2.0)(react@18.2.0)(typescript@5.5.4)
       nextra-theme-docs:
         specifier: 3.0.0-alpha.24
         version: 3.0.0-alpha.24(next@14.2.3)(nextra@3.0.0-alpha.24)(react-dom@18.2.0)(react@18.2.0)
@@ -292,6 +292,9 @@ importers:
       '@next/bundle-analyzer':
         specifier: ^13.4.19
         version: 13.5.6
+      '@types/node':
+        specifier: ^20.11.17
+        version: 20.13.0
       '@types/react':
         specifier: ^18.2.79
         version: 18.3.3
@@ -309,7 +312,13 @@ importers:
         version: 1.6.1
       tailwindcss:
         specifier: ^3.4.1
-        version: 3.4.3
+        version: 3.4.3(ts-node@10.9.2)
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@20.13.0)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
     dependenciesMeta:
       nextra:
         injected: true
@@ -4343,14 +4352,14 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@graphiql/react@0.21.0(@codemirror/language@6.0.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0):
+  /@graphiql/react@0.21.0(@codemirror/language@6.0.0)(@types/node@20.13.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-UlXzG78HC5+CgQYXw0jVZPoZX0Uh2jPIrqLBIxAdAWMZsmcHMZHAujZtION1pbIrv22cWxP95W+8RpDIHijYow==}
     peerDependencies:
       graphql: ^15.5.0 || ^16.0.0
       react: ^16.8.0 || ^17 || ^18
       react-dom: ^16.8.0 || ^17 || ^18
     dependencies:
-      '@graphiql/toolkit': 0.9.1(graphql-ws@5.16.0)(graphql@16.8.1)
+      '@graphiql/toolkit': 0.9.1(@types/node@20.13.0)(graphql-ws@5.16.0)(graphql@16.8.1)
       '@headlessui/react': 1.7.19(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-dialog': 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-dropdown-menu': 2.0.6(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.2.0)(react@18.2.0)
@@ -4376,14 +4385,14 @@ packages:
       - graphql-ws
     dev: false
 
-  /@graphiql/react@0.22.2(@codemirror/language@6.0.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0):
+  /@graphiql/react@0.22.2(@codemirror/language@6.0.0)(@types/node@20.13.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-46UV7CBQdZ0iU537uOkOU6HOOs7P1o7vQpFSUezB4VRem0Y3I4TDaYQADCOo7gFlwBs5Vb9YOup8r7cmXGIr7A==}
     peerDependencies:
       graphql: ^15.5.0 || ^16.0.0
       react: ^16.8.0 || ^17 || ^18
       react-dom: ^16.8.0 || ^17 || ^18
     dependencies:
-      '@graphiql/toolkit': 0.9.1(graphql-ws@5.16.0)(graphql@16.8.1)
+      '@graphiql/toolkit': 0.9.1(@types/node@20.13.0)(graphql-ws@5.16.0)(graphql@16.8.1)
       '@headlessui/react': 1.7.19(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-dialog': 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-dropdown-menu': 2.0.6(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.2.0)(react@18.2.0)
@@ -4409,7 +4418,7 @@ packages:
       - graphql-ws
     dev: false
 
-  /@graphiql/toolkit@0.9.1(graphql-ws@5.16.0)(graphql@16.8.1):
+  /@graphiql/toolkit@0.9.1(@types/node@20.13.0)(graphql-ws@5.16.0)(graphql@16.8.1):
     resolution: {integrity: sha512-LVt9pdk0830so50ZnU2Znb2rclcoWznG8r8asqAENzV0U1FM1kuY0sdPpc/rBc9MmmNgnB6A+WZzDhq6dbhTHA==}
     peerDependencies:
       graphql: ^15.5.0 || ^16.0.0
@@ -4421,7 +4430,7 @@ packages:
       '@n1ru4l/push-pull-async-iterable-iterator': 3.2.0
       graphql: 16.8.1
       graphql-ws: 5.16.0(graphql@16.8.1)
-      meros: 1.3.0
+      meros: 1.3.0(@types/node@20.13.0)
     transitivePeerDependencies:
       - '@types/node'
     dev: false
@@ -4453,7 +4462,7 @@ packages:
       vue: ^3.2.0
     dependencies:
       '@tanstack/vue-virtual': 3.5.0(vue@3.4.27)
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
@@ -7325,7 +7334,7 @@ packages:
     resolution: {integrity: sha512-qC/xYId4NMebE6w/V33Fh9gWxLgURiNYgVNObbJl2LZv0GUUItCcCqC5axQSwRaAgaxl2mELq1rMzlswaQ0Zxg==}
     dev: true
 
-  /@scalar/api-client@1.3.4(@scalar/oas-utils@0.1.17)(typescript@5.5.3)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15):
+  /@scalar/api-client@1.3.4(@scalar/oas-utils@0.1.17)(typescript@5.5.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15):
     resolution: {integrity: sha512-DSiD6k3GrWQCmpdLfKjJLWjukYAbc9FrvI4RkRw13FUvRVqX+6IlXXsPaK2xaQl3aq40QmazHeeVNho4bKSMkg==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -7334,7 +7343,7 @@ packages:
     dependencies:
       '@floating-ui/vue': 1.0.6(vue@3.4.27)
       '@headlessui/vue': 1.7.22(vue@3.4.27)
-      '@scalar/components': 0.10.1(axios@1.7.2)(typescript@5.5.3)(vue@3.4.27)
+      '@scalar/components': 0.10.1(axios@1.7.2)(typescript@5.5.4)(vue@3.4.27)
       '@scalar/oas-utils': 0.1.17(axios@1.7.2)
       '@scalar/openapi-parser': 0.3.2
       '@scalar/themes': 0.8.2(vue@3.4.27)
@@ -7348,7 +7357,7 @@ packages:
       nanoid: 5.0.7
       pretty-bytes: 6.1.1
       pretty-ms: 8.0.0
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     transitivePeerDependencies:
       - '@jest/globals'
       - '@types/bun'
@@ -7368,13 +7377,13 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/api-reference-react@0.2.5(nanoid@5.0.7)(postcss@8.4.38)(react@18.2.0)(typescript@5.5.3)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15):
+  /@scalar/api-reference-react@0.2.5(nanoid@5.0.7)(postcss@8.4.38)(react@18.2.0)(typescript@5.5.4)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15):
     resolution: {integrity: sha512-+S8jJ+ZTNWtjze9tawRQVrsFfAw0BQQm2nAV4PsDQNJ2OsmLcWoWgg8D2FIEdxatz8zEcBoB8QRdjLN00P7uJg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18.0.0
     dependencies:
-      '@scalar/api-reference': 1.23.5(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.5.3)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
+      '@scalar/api-reference': 1.23.5(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.5.4)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
       react: 18.2.0
     transitivePeerDependencies:
       - '@jest/globals'
@@ -7400,7 +7409,7 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/api-reference@1.23.5(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.5.3)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15):
+  /@scalar/api-reference@1.23.5(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.5.4)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15):
     resolution: {integrity: sha512-dpFT2HbnAapjw78w2zoKiO3zk0B6QvWdyG1kYUgQ7RWuU2kCJEVgg2gW8p0IbyvmeJ9RDFxMs7cwJVOCS8g4tQ==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -7408,8 +7417,8 @@ packages:
       vue: ^3.3.0
     dependencies:
       '@headlessui/vue': 1.7.22(vue@3.4.27)
-      '@scalar/api-client': 1.3.4(@scalar/oas-utils@0.1.17)(typescript@5.5.3)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
-      '@scalar/components': 0.10.1(axios@1.7.2)(typescript@5.5.3)(vue@3.4.27)
+      '@scalar/api-client': 1.3.4(@scalar/oas-utils@0.1.17)(typescript@5.5.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
+      '@scalar/components': 0.10.1(axios@1.7.2)(typescript@5.5.4)(vue@3.4.27)
       '@scalar/oas-utils': 0.1.17(axios@1.7.2)
       '@scalar/openapi-parser': 0.3.2
       '@scalar/snippetz': 0.1.6
@@ -7438,7 +7447,7 @@ packages:
       remark-stringify: 11.0.0
       unhead: 1.9.12
       unified: 11.0.4
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     transitivePeerDependencies:
       - '@jest/globals'
       - '@types/bun'
@@ -7461,7 +7470,7 @@ packages:
       - yjs
     dev: false
 
-  /@scalar/components@0.10.1(axios@1.7.2)(typescript@5.5.3)(vue@3.4.27):
+  /@scalar/components@0.10.1(axios@1.7.2)(typescript@5.5.4)(vue@3.4.27):
     resolution: {integrity: sha512-YeHsxXRKeMwss6WSs/B4LhkPXtgIN9hSTqcFrHu/1gbOepP0IRg9zoVq+/FeTKUPI0+yQcmgW9aScb17tcuupg==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -7473,11 +7482,11 @@ packages:
       '@scalar/oas-utils': 0.1.17(axios@1.7.2)
       '@storybook/test': 8.1.5
       '@vueuse/core': 10.10.0(vue@3.4.27)
-      cva: 1.0.0-beta.1(typescript@5.5.3)
+      cva: 1.0.0-beta.1(typescript@5.5.4)
       nanoid: 5.0.7
       prismjs: 1.29.0
       tailwind-merge: 2.3.0
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     transitivePeerDependencies:
       - '@jest/globals'
       - '@types/bun'
@@ -7489,14 +7498,14 @@ packages:
       - vitest
     dev: false
 
-  /@scalar/nextjs-api-reference@0.3.62(nanoid@5.0.7)(next@14.2.3)(postcss@8.4.38)(react@18.2.0)(typescript@5.5.3)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15):
+  /@scalar/nextjs-api-reference@0.3.62(nanoid@5.0.7)(next@14.2.3)(postcss@8.4.38)(react@18.2.0)(typescript@5.5.4)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15):
     resolution: {integrity: sha512-DDzOjhZGMK8zzUJxhIIpkxGvaTfq5A6VAHsfSbuahXS9FX9X2yOgx4zzDnUg0+p8lkg7L5N3vr6erHQN0D4lBA==}
     engines: {node: '>=18'}
     peerDependencies:
       next: ^13 || ^14
       react: ^18
     dependencies:
-      '@scalar/api-reference': 1.23.5(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.5.3)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
+      '@scalar/api-reference': 1.23.5(nanoid@5.0.7)(postcss@8.4.38)(typescript@5.5.4)(unified@11.0.4)(vue-sonner@1.1.2)(vue@3.4.27)(yjs@13.6.15)
       next: 14.2.3(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
     transitivePeerDependencies:
@@ -7610,7 +7619,7 @@ packages:
     peerDependencies:
       vue: ^3.3.0
     dependencies:
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     dev: false
 
   /@scalar/use-codemirror@0.10.5(vue@3.4.27)(yjs@13.6.15):
@@ -7635,7 +7644,7 @@ packages:
       '@replit/codemirror-css-color-picker': 6.1.1(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.27.0)
       '@uiw/codemirror-themes': 4.22.1(@codemirror/language@6.10.2)(@codemirror/state@6.4.1)(@codemirror/view@6.27.0)
       codemirror: 6.0.1(@lezer/common@1.2.1)
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
       yjs: 13.6.15
     optionalDependencies:
       y-codemirror.next: 0.3.4(@codemirror/state@6.4.1)(@codemirror/view@6.27.0)(yjs@13.6.15)
@@ -7649,7 +7658,7 @@ packages:
       vue: ^3.3.0
     dependencies:
       '@headlessui/vue': 1.7.22(vue@3.4.27)
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     dev: false
 
   /@scalar/use-toasts@0.6.7(nanoid@5.0.7)(vue-sonner@1.1.2)(vue@3.4.27):
@@ -7661,7 +7670,7 @@ packages:
       vue-sonner: ^1.0.3
     dependencies:
       nanoid: 5.0.7
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
       vue-sonner: 1.1.2
     dev: false
 
@@ -7671,7 +7680,7 @@ packages:
     peerDependencies:
       vue: ^3.3.0
     dependencies:
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     dev: false
 
   /@sentry/browser@6.19.7:
@@ -7744,11 +7753,11 @@ packages:
   /@shikijs/core@1.6.1:
     resolution: {integrity: sha512-CqYyepN4SnBopaoXYwng4NO8riB5ask/LTCkhOFq+GNGtr2X+aKeD767eYdqYukeixEUvv4bXdyTYVaogj7KBw==}
 
-  /@shikijs/twoslash@1.6.1(typescript@5.5.3):
+  /@shikijs/twoslash@1.6.1(typescript@5.5.4):
     resolution: {integrity: sha512-VluGZXQ97sDFyxneOzsPkEHK06A6C1SRDh+kSM9AZAkzHorZaGxF4awgA3rh2K0oZnR94NZzfhq8GtERm38EEQ==}
     dependencies:
       '@shikijs/core': 1.6.1
-      twoslash: 0.2.6(typescript@5.5.3)
+      twoslash: 0.2.6(typescript@5.5.4)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -8568,7 +8577,7 @@ packages:
       vue: ^2.7.0 || ^3.0.0
     dependencies:
       '@tanstack/virtual-core': 3.5.0
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     dev: false
 
   /@testing-library/dom@9.3.4:
@@ -9597,7 +9606,7 @@ packages:
     dependencies:
       '@vue/compiler-ssr': 3.4.27
       '@vue/shared': 3.4.27
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     dev: false
 
   /@vue/shared@3.4.27:
@@ -11304,7 +11313,7 @@ packages:
   /csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
-  /cva@1.0.0-beta.1(typescript@5.5.3):
+  /cva@1.0.0-beta.1(typescript@5.5.4):
     resolution: {integrity: sha512-gznFqTgERU9q4wg7jfgqtt34+RUt9S5t0xDAAEuDwQEAXEgjdDkKXpLLNjwSxsB4Ln/sqWJEH7yhE8Ny0mxd0w==}
     peerDependencies:
       typescript: '>= 4.5.5 < 6'
@@ -11313,7 +11322,7 @@ packages:
         optional: true
     dependencies:
       clsx: 2.0.0
-      typescript: 5.5.3
+      typescript: 5.5.4
     dev: false
 
   /cytoscape-cose-bilkent@4.1.0(cytoscape@3.29.2):
@@ -13663,15 +13672,15 @@ packages:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
 
-  /graphiql@3.2.3(@codemirror/language@6.0.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0):
+  /graphiql@3.2.3(@codemirror/language@6.0.0)(@types/node@20.13.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-b5XuFyTWkORhQkUZULPOPmUXocg+x7HFB53cYEjV7LcH4taB4ViGwmXqHILhfPtv+JcTN80Aw8HELVWSa16iiA==}
     peerDependencies:
       graphql: ^15.5.0 || ^16.0.0
       react: ^16.8.0 || ^17 || ^18
       react-dom: ^16.8.0 || ^17 || ^18
     dependencies:
-      '@graphiql/react': 0.22.2(@codemirror/language@6.0.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0)
-      '@graphiql/toolkit': 0.9.1(graphql-ws@5.16.0)(graphql@16.8.1)
+      '@graphiql/react': 0.22.2(@codemirror/language@6.0.0)(@types/node@20.13.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(graphql-ws@5.16.0)(graphql@16.8.1)(react-dom@18.2.0)(react@18.2.0)
+      '@graphiql/toolkit': 0.9.1(@types/node@20.13.0)(graphql-ws@5.16.0)(graphql@16.8.1)
       graphql: 16.8.1
       graphql-language-service: 5.2.1(graphql@16.8.1)
       markdown-it: 14.1.0
@@ -15935,7 +15944,7 @@ packages:
       web-worker: 1.3.0
     dev: false
 
-  /meros@1.3.0:
+  /meros@1.3.0(@types/node@20.13.0):
     resolution: {integrity: sha512-2BNGOimxEz5hmjUG2FwoxCt5HN7BXdaWyFqEwxPTrJzVdABtrL4TiHTcsWSFAxPQ/tOnEaQEJh3qWq71QRMY+w==}
     engines: {node: '>=13'}
     peerDependencies:
@@ -15943,6 +15952,8 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
+    dependencies:
+      '@types/node': 20.13.0
     dev: false
 
   /methods@1.1.2:
@@ -16841,13 +16852,13 @@ packages:
       intersection-observer: 0.12.2
       next: 14.2.3(react-dom@18.2.0)(react@18.2.0)
       next-themes: 0.3.0(react-dom@18.2.0)(react@18.2.0)
-      nextra: 3.0.0-alpha.24(@types/react@18.3.3)(next@14.2.3)(react-dom@18.2.0)(react@18.2.0)(typescript@5.5.3)
+      nextra: 3.0.0-alpha.24(@types/react@18.3.3)(next@14.2.3)(react-dom@18.2.0)(react@18.2.0)(typescript@5.5.4)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       scroll-into-view-if-needed: 3.1.0
       zod: 3.23.8
 
-  /nextra@3.0.0-alpha.24(@types/react@18.3.3)(next@14.2.3)(react-dom@18.2.0)(react@18.2.0)(typescript@5.5.3):
+  /nextra@3.0.0-alpha.24(@types/react@18.3.3)(next@14.2.3)(react-dom@18.2.0)(react@18.2.0)(typescript@5.5.4):
     resolution: {integrity: sha512-KScl/DQG68JBGy6gfOFNdVcrlc24YvcegGnYwUXvpCoHx2YcBUSp6FE7LeaX/C/mI4PPIMmTJuEWIjGH9DXeCQ==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -16859,7 +16870,7 @@ packages:
       '@mdx-js/mdx': 3.0.1
       '@mdx-js/react': 3.0.1(@types/react@18.3.3)(react@18.2.0)
       '@napi-rs/simple-git': 0.1.16
-      '@shikijs/twoslash': 1.6.1(typescript@5.5.3)
+      '@shikijs/twoslash': 1.6.1(typescript@5.5.4)
       '@theguild/remark-mermaid': 0.0.5(react@18.2.0)
       '@theguild/remark-npm2yarn': 0.3.0
       better-react-mathjax: 2.0.3(react@18.2.0)
@@ -17804,7 +17815,7 @@ packages:
       postcss: 8.4.38
     dev: false
 
-  /postcss-load-config@4.0.2(postcss@8.4.38):
+  /postcss-load-config@4.0.2(postcss@8.4.38)(ts-node@10.9.2):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -17818,6 +17829,7 @@ packages:
     dependencies:
       lilconfig: 3.1.1
       postcss: 8.4.38
+      ts-node: 10.9.2(@types/node@20.13.0)(typescript@5.5.4)
       yaml: 2.4.2
     dev: true
 
@@ -20547,7 +20559,7 @@ packages:
       '@babel/runtime': 7.24.6
     dev: false
 
-  /tailwindcss@3.4.3:
+  /tailwindcss@3.4.3(ts-node@10.9.2):
     resolution: {integrity: sha512-U7sxQk/n397Bmx4JHbJx/iSOOv5G+II3f1kpLpY2QeUv5DcPdcTsYLlusZfq1NthHS1c1cZoyFmmkex1rzke0A==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -20569,7 +20581,7 @@ packages:
       postcss: 8.4.38
       postcss-import: 15.1.0(postcss@8.4.38)
       postcss-js: 4.0.1(postcss@8.4.38)
-      postcss-load-config: 4.0.2(postcss@8.4.38)
+      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2)
       postcss-nested: 6.0.1(postcss@8.4.38)
       postcss-selector-parser: 6.1.0
       resolve: 1.22.8
@@ -20810,6 +20822,37 @@ packages:
       yn: 3.1.1
     dev: true
 
+  /ts-node@10.9.2(@types/node@20.13.0)(typescript@5.5.4):
+    resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.11
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 20.13.0
+      acorn: 8.11.3
+      acorn-walk: 8.3.2
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.5.4
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    dev: true
+
   /tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
     dependencies:
@@ -20852,7 +20895,7 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 4.0.2(postcss@8.4.38)
+      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2)
       resolve-from: 5.0.0
       rollup: 4.18.0
       source-map: 0.8.0-beta.0
@@ -20990,14 +21033,14 @@ packages:
   /twoslash-protocol@0.2.6:
     resolution: {integrity: sha512-8NbJlYeRdBcCTQ7ui7pdRPC1NL16aOnoYNz06oBW+W0qWNuiQXHgE8UeNvbA038aDd6ZPuuD5WedsBIESocB4g==}
 
-  /twoslash@0.2.6(typescript@5.5.3):
+  /twoslash@0.2.6(typescript@5.5.4):
     resolution: {integrity: sha512-DcAKIyXMB6xNs+SOw/oF8GvUr/cfJSqznngVXYbAUIVfTW3M8vWSEoCaz/RgSD+M6vwtK8DJ4/FmYBF5MN8BGw==}
     peerDependencies:
       typescript: '*'
     dependencies:
       '@typescript/vfs': 1.5.0
       twoslash-protocol: 0.2.6
-      typescript: 5.5.3
+      typescript: 5.5.4
     transitivePeerDependencies:
       - supports-color
 
@@ -21112,6 +21155,12 @@ packages:
 
   /typescript@5.5.3:
     resolution: {integrity: sha512-/hreyEujaB0w76zKo6717l3L0o/qEUtRgdvUBvlkhoWeOVMjMuHNHk0BRBzikzuGDqNmPQbg5ifMEqsHLiIUcQ==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    dev: true
+
+  /typescript@5.5.4:
+    resolution: {integrity: sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -21777,14 +21826,14 @@ packages:
       '@vue/composition-api':
         optional: true
     dependencies:
-      vue: 3.4.27(typescript@5.5.3)
+      vue: 3.4.27(typescript@5.5.4)
     dev: false
 
   /vue-sonner@1.1.2:
     resolution: {integrity: sha512-yg4f5s0a3oiiI7cNvO0Dajux1Y7s04lxww3vnQtnwQawJ3KqaKA9RIRMdI9wGTosRGIOwgYFniFRGl4+IuKPZw==}
     dev: false
 
-  /vue@3.4.27(typescript@5.5.3):
+  /vue@3.4.27(typescript@5.5.4):
     resolution: {integrity: sha512-8s/56uK6r01r1icG/aEOHqyMVxd1bkYcSe9j8HcKtr/xTOFWvnzIVTehNW+5Yt89f+DLBe4A569pnZLS5HzAMA==}
     peerDependencies:
       typescript: '*'
@@ -21797,7 +21846,7 @@ packages:
       '@vue/runtime-dom': 3.4.27
       '@vue/server-renderer': 3.4.27(vue@3.4.27)
       '@vue/shared': 3.4.27
-      typescript: 5.5.3
+      typescript: 5.5.4
     dev: false
 
   /w3c-keyname@2.2.8:
