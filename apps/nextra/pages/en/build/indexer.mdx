@@ -9,10 +9,16 @@ import { Tabs } from 'nextra/components'
 
 <IndexerBetaNotice />
 
-Most applications **require** an indexer to efficiently query for on-chain state as the [Aptos Node API](apis/fullnode-rest-api.mdx) provides only a basic, stable API and does not support data shaping required for rich user experiences.
-The Aptos Indexer processes raw blockchain data for app-specific needs, enabling low-latency and enhanced experiences for end-user applications.
+The Aptos Indexer is an API you can use to get:
 
-Here's an interactive example of how you can query for the Current Coin Balances of an account. More usage examples can be found in example queries.
+1. Aggregate data (ex. How many NFTs exist?)
+2. Historical data (ex. What transactions has this account submitted?)
+3. Data that is hard to get from the simpler [Aptos Node API](apis/fullnode-rest-api.mdx) (ex. What account owns a token named "ExampleToken"?).
+
+The Indexer watches every transaction that is processed by the ledger, and uses it to update a collection of tables which can then be queried using GraphQL.
+Applications can use Aptos Lab's public Indexer API to get the data they need quickly, without needing to host their own infrastructure to track on-chain transactions.
+
+Here's an interactive example of how you can query for the Current Coin Balances of an account. More usage examples can be found by going to the example queries in the sidebar.
 
 <GraphQLEditor
   query={`query GetCoinBalances($address: String, $offset: Int) {
