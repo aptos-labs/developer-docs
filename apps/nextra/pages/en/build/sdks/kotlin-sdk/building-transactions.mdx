@@ -40,7 +40,7 @@ val account = Account.fromPrivateKey(privateKey)
 ```kotlin
 val txn = aptos.buildTransaction.simple(
     sender = aliceAccount.accountAddress,
-    data = inputEntryFunctionData {
+    data = entryFunctionData {
         function = "0x1::coin::transfer"
         typeArguments = typeArguments {
             +TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())
@@ -96,73 +96,84 @@ The following is a complete example of how to build and send a transaction to tr
 
 ```kotlin filename="transaction.kt"
 
-/**
- * This example shows how to use the Aptos SDK to send a transaction.
- * Don't forget to add the Kaptos dependency to your project before running this example!
- */
-
 import xyz.mcxross.kaptos.Aptos
-import xyz.mcxross.kaptos.core.account.Account
-import xyz.mcxross.kaptos.extension.asAccountAddress
-import xyz.mcxross.kaptos.extension.asPrivateKey
+import xyz.mcxross.kaptos.account.Account
 import xyz.mcxross.kaptos.extension.toStructTag
 import xyz.mcxross.kaptos.model.*
+import xyz.mcxross.kaptos.util.runBlocking
 
-const val FUNDING_AMOUNT = 1_000_000_000L
-const val SEND_AMOUNT = 100_000_000UL
+const val FUNDING_AMOUNT = 100_000_000L
+const val SEND_AMOUNT_APT = 0.5f
+const val UNIT_CONVERSION = 100_000_000
+const val SEND_AMOUNT_UNITS = (SEND_AMOUNT_APT * UNIT_CONVERSION)
+const val SEND_AMOUNT = 1_000_000UL
 
-val aptos = Aptos()
+/**
+ * This example demonstrates how to transfer APT from one account to another.
+ *
+ * Each run generates and creates new accounts on-chain using faucet funding. After funding, the APT
+ * balance of each account is printed; if funding fails, an error is thrown.
+ *
+ * Next, a transaction is constructed to send 0.5 APT from Alice to Bob. The transaction is then
+ * signed and submitted using the one-step `signAndSubmitTransaction` method. We wait for the
+ * transaction to complete and print the updated balances of Alice and Bob. If the transaction
+ * fails, an error is thrown.
+ */
+fun main() = runBlocking {
+  val aptos = Aptos(AptosConfig(AptosSettings(network = Network.TESTNET)))
 
-  // Let's create a private key from a hex string
-val alicePrivateKey = "0x1893cc5626444a03978480882de32faf9a820afb31b8075159dda107db1b470d".asPrivateKey()
+  println("Generating Alice and Bob's accounts")
 
-  // And now that we have a private key, let's create an account from it
-val aliceAccount = Account from alicePrivateKey
+  val alice = Account.generate()
+  val bob = Account.generate()
 
-  // Assuming we have an account, let's check the balance
-val aliceInitialBalance = when (val aliceInitialBalance = aptos.getAccountAPTAmount(aliceAccount.accountAddress)) {
-      is Option.None -> throw IllegalStateException("Alice's account does not exist")
-      is Option.Some -> aliceInitialBalance.expect("Alice's account does not exist")
-    }
+  aptos.fundAccount(alice.accountAddress, FUNDING_AMOUNT).expect("Failed to fund Alice's account")
+  aptos.fundAccount(bob.accountAddress, FUNDING_AMOUNT).expect("Failed to fund Bob's account")
 
-println("Alice's initial balance: $aliceInitialBalance")
-println(
-    "Bob's initial balance: ${aptos.getAccountAPTAmount("0x088698359f12ef2b19ba3bda04e129173d0672b5de8d77ce9e8eb0a149c23f04".asAccountAddress()).expect("Bob's account does not exist")}"
-)
+  println("Created accounts on chain")
+  println("Alice's balance: ${aptos.getAccountAPTAmount(alice.accountAddress)}")
+  println("Bob's balance: ${aptos.getAccountAPTAmount(bob.accountAddress)}")
   println("=============================================")
+  println(
+    "Building transaction to send ${SEND_AMOUNT / 100_000_000u} APT to Bob: ${bob.accountAddress}"
+  )
 
-  // Yes, we have an account, but let's see if we need to fund it
-  if (aliceInitialBalance < SEND_AMOUNT.toLong() + 1_000) {
-    aptos.fundAccount(aliceAccount.accountAddress, FUNDING_AMOUNT)
-    println(
-      "Alice's new balance after funding: ${aptos.getAccountAPTAmount(aliceAccount.accountAddress)}"
-    )
-  }
-
-val bobAccountAddress = "0x088698359f12ef2b19ba3bda04e129173d0672b5de8d77ce9e8eb0a149c23f04".asAccountAddress()
-
-println("Building transaction to send ${SEND_AMOUNT / 100_000_000u} APT to Bob: $bobAccountAddress")
-
-val txn = aptos.buildTransaction.simple(
-      sender = aliceAccount.accountAddress,
+  val txn =
+    aptos.buildTransaction.simple(
+      sender = alice.accountAddress,
       data =
-        inputEntryFunctionData {
+        entryFunctionData {
           function = "0x1::coin::transfer"
           typeArguments = typeArguments {
             +TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())
           }
           functionArguments = functionArguments {
-            +MoveString(bobAccountAddress.value)
-            +U64(SEND_AMOUNT)
+            +MoveString(bob.accountAddress.toString())
+            +U64(SEND_AMOUNT_UNITS.toULong())
           }
         },
     )
 
   // Sign and submit the transaction
-val commitedTransaction = aptos.signAndSubmitTransaction(aliceAccount, txn)
+  val commitedTransaction = aptos.signAndSubmitTransaction(alice, txn)
 
-val executedTransaction =
-    aptos.waitForTransaction(HexInput.fromString(commitedTransaction.expect("Transaction failed").hash))
+  val executedTransaction =
+    aptos.waitForTransaction(
+      HexInput.fromString(commitedTransaction.expect("Transaction failed").hash)
+    )
+
+  println(
+    "Transaction wait response: $executedTransaction\n============================================="
+  )
+
+  val aliceNewBalance =
+    aptos.getAccountAPTAmount(alice.accountAddress).expect("Alice's account does not exist")
+  val bobNewBalance =
+    aptos.getAccountAPTAmount(bob.accountAddress).expect("Bob's account does not exist")
+
+  println("Alice's new balance: $aliceNewBalance")
+  println("Bob's new balance: $bobNewBalance")
+}
 
 ```
 

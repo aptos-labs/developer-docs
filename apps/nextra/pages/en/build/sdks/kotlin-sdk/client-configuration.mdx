@@ -1,0 +1,111 @@
+---
+title: "Client Configuration"
+---
+
+# Client Configuration
+
+Whilst **Kaptos** offers a **consistent interface** for interacting with Aptos
+across all supported platforms, it also features both shared and
+platform-specific configuration options for its various clients.
+
+These configuration options allow you to customize the behavior of the client to
+suit your needs. They can be set by creating a `ClientConfig` object and passing
+it to the `AptosSettings` object when creating an `Aptos` client as shown below:
+
+```kotlin
+val clientConfig = ClientConfig(followRedirects = false, retryOnServerErrors = 3)
+val client = Aptos(AptosConfig(AptosSettings(clientConfig = clientConfig)))
+```
+
+This page will guide you through the available configuration options for
+each platform.
+
+### Shared Configuration
+
+`followRedirects` — A boolean value that determines whether the client should
+follow redirects. The default value is `true`.
+
+`retryOnServerErrors` — The number of times to retry the request if a server error
+occurs. The default value is `—1`, which means no retries.
+
+`requestTimeout` — The timeout in milliseconds for the request. The default value
+is `10_000`.
+
+`maxRetries` — The maximum number of times to retry the request. The default value
+is `-1`, which means no retries.
+
+`agent` — A `String` that specifies the user agent to use for the connection.
+Defaults to `Kaptos/{PLATFORM}`.
+
+`likeAgent` — A `UserAgent` enum value that specifies the user agent to use for the
+connection.
+
+`proxy` — A `String` that specifies the proxy server to use for the connection.
+
+`cache` — A boolean value that determines whether to cache the response. The default
+value is `false`.
+
+### JVM Configuration
+
+`pipelining` — A boolean value that determines whether the client should use
+pipelining. The default value is `false`.
+
+`pipelineMaxSize` — The maximum number of requests to pipeline. The default value
+is `20`.
+
+`maxConnectionsPerRoute` — The maximum number of connections per route. The default
+value is `100`.
+
+`maxConnectionsCount` — The maximum number of connections. The default value is
+`100`.
+
+`connectTimeoutMillis` — The timeout in milliseconds for establishing a connection
+to the server. The default value is `10_000`.
+
+`keepAliveTime` — The time in milliseconds to keep a connection alive. The default
+value is `5_000`.
+
+`connectAttempts` — The number of times to attempt to connect to the server. The
+default value is `5`.
+
+`connectTimeout` — The timeout in milliseconds for establishing a connection to the
+server. The default value is `10_000`.
+
+### Android Configuration
+
+`followSslRedirects` — A boolean value that determines whether the client should
+follow SSL redirects. The default value is `true`.
+
+`connectTimeoutMillis` — The timeout in milliseconds for establishing a connection
+to the server. The default value is `10_000`.
+
+`readTimeoutMillis` — The timeout in milliseconds for reading data from the server.
+The default value is `10_000`.
+
+`writeTimeoutMillis` — The timeout in milliseconds for writing data to the server.
+The default value is `10_000`.
+
+`maxRetries` — The maximum number of times to retry the request. The default value
+is `-1`, which means no retries.
+
+`connectTimeout` — The timeout in milliseconds for establishing a connection to the
+server. The default value is `10_000`.
+
+### Apple (iOS, macOS) Configuration
+
+Apple platforms currently do not have any platform-specific configuration options.
+
+### Web Configuration
+
+Web platforms currently do not have any platform-specific configuration options.
+
+### Linux Configuration
+
+`connectTimeout` — The timeout in milliseconds for establishing a connection to the
+server. The default value is `10_000`.
+
+### Windows Configuration
+
+`connectTimeout` — The timeout in milliseconds for establishing a connection to the
+server. The default value is `10_000`.
+
