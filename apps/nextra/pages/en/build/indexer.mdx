@@ -40,20 +40,18 @@ Here's an interactive example of how you can query for the Current Coin Balances
 />
 
 
-## Indexer API
+## Using the Indexer API
+
+Learn how to use the Indexer API, what each table represents, and how to add custom data to the Indexer.
 
 <Cards>
   <Card href="indexer/api/labs-hosted">
     <Card.Title>Aptos Labs Indexer API</Card.Title>
     <Card.Description>Query Aptos Labs GraphQL Indexer API hosted on Hasura</Card.Description>
   </Card>
-  <Card href="indexer/api/self-hosted">
-    <Card.Title>Self-hosted Indexer API</Card.Title>
-    <Card.Description>Host your own Indexer API</Card.Description>
-  </Card>
-  <Card href="indexer/architecture">
-    <Card.Title>Architecture</Card.Title>
-    <Card.Description>Detailed layout of Indexer Architecture</Card.Description>
+    <Card href="indexer/indexer-reference">
+    <Card.Title>Indexer Table Reference</Card.Title>
+    <Card.Description>Detailed reference for indexer tables and their schemas.</Card.Description>
   </Card>
   <Card href="indexer/custom-processors">
     <Card.Title>Indexer Processors</Card.Title>
@@ -61,29 +59,65 @@ Here's an interactive example of how you can query for the Current Coin Balances
   </Card>
 </Cards>
 
-## Example Queries
+### Example Queries
+
+To help get you started, here are the most common queries the Indexer is used for.
 
 <Cards>
-  <Card href="indexer/account-transactions">
-    <Card.Title>Account Transactions Query</Card.Title>
-    <Card.Description>Retrieves `transaction_version`s of transactions that affect a specified account address, ordered in descending order</Card.Description>
-  </Card>
   <Card href="indexer/coin-balances">
-    <Card.Title>Coin Balances Query</Card.Title>
-    <Card.Description>Retrieves the current balances for various coin types associated with a specified account address</Card.Description>
+    <Card.Title>Get Coin Balances</Card.Title>
+    <Card.Description>Get all coins an account currently owns.</Card.Description>
+  </Card>
+  <Card href="indexer/account-transactions">
+    <Card.Title>Get Account Transactions</Card.Title>
+    <Card.Description>Get all transactions impacting an account.</Card.Description>
+  </Card>
+  <Card href="indexer/ans-lookup">
+    <Card.Title>Get Account Domain Name</Card.Title>
+    <Card.Description>Retrieve the domain name associated with an account (via the ANS).</Card.Description>
+  </Card>
+  <Card href="indexer/coin-info">
+    <Card.Title>Get Coin Info</Card.Title>
+    <Card.Description>Get detailed information about a specific coin.</Card.Description>
+  </Card>
+  <Card href="indexer/get-nft-collections">
+    <Card.Title>Get NFT Collections</Card.Title>
+    <Card.Description>Retrieve NFT collections owned by a specific account.</Card.Description>
   </Card>
   <Card href="indexer/get-nfts">
-    <Card.Title>NFTs Query</Card.Title>
-    <Card.Description>Retrieves a list of NFTs owned by a specified account address</Card.Description>
+    <Card.Title>Get NFTs</Card.Title>
+    <Card.Description>Retrieve individual NFTs owned by a specific account.</Card.Description>
+  </Card>
+  <Card href="indexer/token-metadata">
+    <Card.Title>Get Token Metadata</Card.Title>
+    <Card.Description>Get metadata information for a specific token.</Card.Description>
+  </Card>
+  <Card href="indexer/get-delegators">
+    <Card.Title>Count Delegators in Staking Pool</Card.Title>
+    <Card.Description>Retrieve the number of active delegators in a staking pool.</Card.Description>
   </Card>
 </Cards>
 
-## Transaction Streaming Service (GRPC)
+## Customizing the Indexer
+
+If the hosted Indexer API is not enough, you can customize and host your own versions of the Indexer.
 
 <Cards>
+  <Card href="indexer/architecture">
+    <Card.Title>Architecture</Card.Title>
+    <Card.Description>Detailed layout of Indexer Architecture</Card.Description>
+  </Card>
+  <Card href="indexer/custom-processors">
+    <Card.Title>Custom Processors</Card.Title>
+    <Card.Description>Customize way data is processed and shared in the Indexer</Card.Description>
+  </Card>
   <Card href="indexer/txn-stream">
     <Card.Title>Transaction Streaming Service</Card.Title>
     <Card.Description>GRPC transaction streaming service, consumed by the Indexer</Card.Description>
+  </Card>
+  <Card href="indexer/api/self-hosted">
+    <Card.Title>Self-hosted Indexer API</Card.Title>
+    <Card.Description>Host your own Indexer API</Card.Description>
   </Card>
 </Cards>
 
