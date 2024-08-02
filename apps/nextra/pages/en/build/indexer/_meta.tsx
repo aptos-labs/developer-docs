@@ -76,14 +76,14 @@ export default {
   architecture: {
     title: "Architecture",
   },
-  api: {
-    title: "Indexer API",
-  },
   "custom-processors": {
     title: "Custom Processors",
   },
   "txn-stream": {
     title: "Transaction Stream Service",
+  },
+  "self-hosted": {
+    title: "Self-Hosted Indexer API",
   },
   "---legacy---": {
     type: "separator",
