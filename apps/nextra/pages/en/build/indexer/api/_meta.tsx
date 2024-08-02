@@ -1,6 +1,6 @@
 export default {
-  "labs-hosted": {
-    title: "Labs-Hosted Indexer API",
+  "aptos-hosted": {
+    title: "Aptos-Hosted Indexer API",
   },
   "self-hosted": {
     title: "Self-Hosted Indexer API",
