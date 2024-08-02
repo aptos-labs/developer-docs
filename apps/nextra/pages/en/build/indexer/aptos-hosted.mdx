@@ -5,6 +5,7 @@ title: "Indexer API Access"
 # Indexer API Access
 
 import { IndexerBetaNotice, Card, Cards } from '@components/index';
+import { Callout } from 'nextra/components';
 
 <IndexerBetaNotice />
 
@@ -14,7 +15,17 @@ You can explore it by hand by viewing the Hasura Explorer below for the network 
 
 You can also access the API via the GraphQL endpoints below. For more information on the format of data in each field / table, please see the [table reference page](indexer-reference.mdx).
 
+## SDK Access (Primary Method)
+
+The primary way to use the Indexer is to access it through the [TypeScript SDK](../sdks/ts-sdk/fetch-data-via-sdk.mdx).
+
+The TypeScript SDK will automatically handle rate limits, and can seamlessly allow for both [Fullnode REST API](../apis/fullnode-rest-api.mdx) access and Indexer access depending on what data is needed.
+
 ## Hasura Explorer (Manual Queries)
+
+<Callout type="info">
+For detailed reference material about the contents of these tables, see the [Indexer Table Reference page](./indexer-reference.mdx).
+</Callout>
 
 Choose a network to explore the free Aptos-Hosted Indexer API using the Hasura Explorer: 
 
@@ -33,11 +44,9 @@ Choose a network to explore the free Aptos-Hosted Indexer API using the Hasura E
   </Card>
 </Cards>
 
-## GraphQL API Endpoints
+## GraphQL API Endpoints (Direct Access)
 
-The primary way to use the Indexer is to access it through the [TypeScript SDK](../sdks/ts-sdk/fetch-data-via-sdk.mdx).
-
-If you need to directly make GraphQL queries to the Aptos-Labs hosted Indexer API, then use the following endpoints: When making GraphQL queries to the Aptos-Hosted Indexer API, use the following endpoints:
+If you need to directly make GraphQL queries to the Aptos-Labs hosted Indexer API, then use the following endpoints:
 
 - **Mainnet:** `https://api.mainnet.aptoslabs.com/v1/graphql`
 - **Testnet:** `https://api.testnet.aptoslabs.com/v1/graphql`
