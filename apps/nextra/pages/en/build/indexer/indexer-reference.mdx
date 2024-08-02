@@ -8,46 +8,23 @@ import { Card, Cards } from '@components/index';
 
 # Indexer API Reference
 
-The Indexer API allows you to access rich data about tokens, accounts, transactions, and events on-chain using GraphQL queries.
+The Indexer API allows you to access rich data about tokens, accounts, transactions, and events on-chain using GraphQL queries. **You can access it [here](./aptos-hosted.mdx).**
 
-You can interactively explore the data discussed here using Hasura explorers here:
+For common queries, check out the sidebar for examples to work from. When building your own, this reference guide should help you determine which tables are most relevant, and how to format your queries.
 
-<Cards>
-  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">
-    <Card.Title>**Mainnet**</Card.Title>
-    <Card.Description>Hasura GraphQL Explorer for Aptos Mainnet</Card.Description>
-  </Card>
-  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">
-    <Card.Title>**Testnet**</Card.Title>
-    <Card.Description>Hasura GraphQL Explorer for Aptos Testnet</Card.Description>
-  </Card>
-  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">
-    <Card.Title>**Devnet**</Card.Title>
-    <Card.Description>Hasura GraphQL Explorer for Aptos Devnet</Card.Description>
-  </Card>
-</Cards>
-
-Or via code at the following endpoints:
-
-- **Mainnet:** `https://api.mainnet.aptoslabs.com/v1/graphql`
-- **Testnet:** `https://api.testnet.aptoslabs.com/v1/graphql`
-- **Devnet:** `https://api.devnet.aptoslabs.com/v1/graphql`
-
-You can also find a list of the most common queries in the sidebar under example queries.
-
-As you explore, you can refer back to these reference docs to understand the tables you are interested in. You should use Ctrl + F to quickly find the right entry for that table.
-
-At the bottom of this page we list the tables which are deprecated, along with any alternatives which may replace them.
-Make sure to check the list before building any production infrastructure that relies heavily on specific Indexer tables.
+<Callout type="warning">
+Before relying on a table for production services, check the bottom of this page to see if that table is deprecated. If so, use the note section for guidance on what to do to migrate to a non-deprecated table.
+</Callout>
 
 <Callout type="info">
 If you are looking up a table with the `_by_pk` suffix, search for the table name without that suffix. `_by_pk` tables are automatically generated for convenience to allow querying by primary key.
 </Callout>
+<br/>
 
 # Indexer Table Reference
 
 <Callout type="info">
-Remember to use Ctrl + F to find the table you are interested in! When in doubt, you may also want to query the Hasura tables above to see examples of the data inside.
+Remember to use Ctrl + F to find the table you are interested in! When in doubt, you may also want to query the Hasura tables linked in the [Indexer API Access](./aptos-hosted.mdx) page to see examples of the data inside.
 </Callout>
 
 ## Raw Data
