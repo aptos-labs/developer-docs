@@ -1,22 +1,13 @@
 export default {
-  "---concepts---": {
+  "---usage---": {
     type: "separator",
-    title: "Concepts",
+    title: "Usage",
+  },
+  "aptos-hosted": {
+    title: "Indexer API Access",
   },
   "indexer-reference": {
     title: "Indexer API Table Reference",
-  },
-  architecture: {
-    title: "Architecture",
-  },
-  api: {
-    title: "Indexer API",
-  },
-  "custom-processors": {
-    title: "Custom Processors",
-  },
-  "txn-stream": {
-    title: "Transaction Stream Service",
   },
   "---example-queries---": {
     type: "separator",
@@ -77,6 +68,22 @@ export default {
       toc: false,
       layout: "full",
     },
+  },
+  "---indxer-customizations---": {
+    type: "separator",
+    title: "Indexer Customizations",
+  },
+  architecture: {
+    title: "Architecture",
+  },
+  api: {
+    title: "Indexer API",
+  },
+  "custom-processors": {
+    title: "Custom Processors",
+  },
+  "txn-stream": {
+    title: "Transaction Stream Service",
   },
   "---legacy---": {
     type: "separator",
