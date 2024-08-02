@@ -31,8 +31,9 @@ npm run dev
 
 However, for the app to work as intended, there are several setup steps you will have to do to:
 
-1. Publish the contract and create the token on-chain.
-2. Config your dapp to use the token
+1. Publish the contract
+2. Create the token on-chain.
+3. Configure your dapp to use the token
 
 ## Publish the Move Contract
 
@@ -40,13 +41,15 @@ However, for the app to work as intended, there are several setup steps you will
 
 ### On the project root folder, use the below command to initiliaze an account to publish the contract with.
 
-```bash 
+```bash filename="Terminal"
 npm run move:init
 ```
 
 The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
 
-This will create an account you will later publish the contract with, as well as setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
+This will:
+1. Create an account you will later publish the contract with
+2. Set the `VITE_MODULE_ADDRESS` in the `.env` file to the contract object address.
 
 ### In the `.env` file, set `VITE_FA_CREATOR_ADDRESS` to be the same as your account address.
 This determines which account is allowed to create assets using the dapp.
@@ -61,7 +64,7 @@ VITE_FA_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8
 
 ### On the project root folder, run the below command to publish the contract.
 
-```bash
+```bash filename="Terminal"
 npm run move:publish
 ```
 <Callout type="info">
@@ -78,7 +81,7 @@ This command will publish the contract to chain.
 
 ### Run the app and open the preview.
 
-```bash
+```bash filename="Terminal"
 npm run dev
 ```
 

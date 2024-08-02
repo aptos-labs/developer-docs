@@ -29,7 +29,7 @@ The Token staking dapp template provides a one page with different components:
 
 You can start the app by running:
 
-```bash 
+```bash filename="Terminal"
 npm run dev
 ```
 
@@ -44,15 +44,17 @@ However, for the app to work as intended, there are several setup steps you will
 
 ### On the project root folder, use the below command to initiliaze an account to publish the contract with.
 
-```bash 
+```bash filename="Terminal"
 npm run move:init
 ```
 
 The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
 
-This will create an account you will later publish the contract with, as well as setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
+This will:
+	1. Create an account you will later publish the contract with
+	2. Set the `VITE_MODULE_ADDRESS` in the `.env` file to the contract object address.
 
-### In the `.env` file, set `VITE_CREATOR_ADDRESS` to be the same as your account address.
+### In the `.env` file, set `VITE_REWARD_CREATOR_ADDRESS` to be the same as your account address.
 This determines which account is allowed to create a pool using the dapp.
 
 If you haven't set up an account, you can create one with an Aptos wallet like [Petra](https://petra.app/docs/use#create-a-new-account). Make sure to set up the account on the same network as your template project.
@@ -60,7 +62,7 @@ If you haven't set up an account, you can create one with an Aptos wallet like [
 For example:
 ```bash filename=".env"
 VITE_APP_NETWORK=testnet
-VITE_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
+VITE_REWARD_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
 ```
 
 ### In the `.env` file, set `VITE_FA_ADDRESS` to be the same as the fungible asset address.
@@ -78,7 +80,7 @@ VITE_FA_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da4015
 
 ### On the project root folder, run the below command to publish the contract.
 
-```bash
+```bash filename="Terminal"
 npm run move:publish
 ```
 <Callout type="info">
@@ -95,17 +97,17 @@ This command will publish the contract to chain.
 
 ### Run the app and open the preview.
 
-```bash
+```bash filename="Terminal"
 npm run dev
 ```
 
 ### In the top-right corner, click "Connect a Wallet". 
-Use the same account that you set in `.env` for the `VITE_CREATOR_ADDRESS`. 
-Or, if you use a different account, set the `VITE_CREATOR_ADDRESS` to the account you sign in with and republish the contract.
+Use the same account that you set in `.env` for the `VITE_REWARD_CREATOR_ADDRESS`. 
+Or, if you use a different account, set the `VITE_REWARD_CREATOR_ADDRESS` to the account you sign in with and republish the contract.
 
 ### Click the `Add Incentivize` button
 
-Once you are connected with the same account that you set in `.env` for the `VITE_CREATOR_ADDRESS`, you should be able to see the `Incentivize Pool` component with a `Add Incentivize` button.
+Once you are connected with the same account that you set in `.env` for the `VITE_REWARD_CREATOR_ADDRESS`, you should be able to see the `Incentivize Pool` component with a `Add Incentivize` button.
 
 Clicking the button pops up a modal for you to enter the incentivize pool duration (in weeks) and the amount of the fungible asset.
 
@@ -150,10 +152,10 @@ Creating a asset on mainnet is the same flow as creating on testnet, but we need
 3. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
 4. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
 5. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
-6. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_CREATOR_ADDRESS` value.
-6. Create or get the asset you want to use in your dapp, open the `.env` file and assign the asset address as the `VITE_FA_ADDRESS` value.
-7. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
-8. The next step would be to create an incentivize pool using this account. Simply follow [Create an incentivize pool](#create-an-incentivize-pool)
+6. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_REWARD_CREATOR_ADDRESS` value.
+7. Create or get the asset you want to use in your dapp, open the `.env` file and assign the asset address as the `VITE_FA_ADDRESS` value.
+8. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
+9. The next step would be to create an incentivize pool using this account. Simply follow [Create an incentivize pool](#create-an-incentivize-pool)
 
 ## Deploy to a live server
 
