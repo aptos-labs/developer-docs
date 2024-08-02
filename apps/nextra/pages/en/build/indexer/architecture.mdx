@@ -6,6 +6,15 @@ import { ThemedImage } from '@components/index'
 
 # Indexer Architecture
 
+The Aptos Indexer stores data from on-chain (via the Transaction Stream Service), the Aptos Name Service (ANS), and other data through custom processors.
+
+Aptos Labs hosts a free API to query data as a service to the community, but there may be situations where you need to:
+1. Get access to different types of data (so want to create a custom processor).
+2. Store additional information (so need to host your own Indexer database).
+3. Change how transactions are processed (so need to update the Transaction Stream Service).
+
+You can use the below diagrams to understand how this information flows.
+
 ## Architecture Overview
 
 <center>
