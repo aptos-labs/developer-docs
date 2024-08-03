@@ -5,14 +5,14 @@ export function IndexerBetaNotice() {
     <Callout type="info">
       The Indexer API, Transaction Stream Service, and Custom Processors are
       currently in beta. Please report any problems you encounter by creating an
-      issue in the{' '}
+      issue in the{" "}
       <a
         href="https://github.com/aptos-labs/aptos-indexer-processors/issues/new/choose"
         className="_text-primary-600 _underline _decoration-from-font"
-        style={{ textUnderlinePosition: 'from-font' }}
+        style={{ textUnderlinePosition: "from-font" }}
       >
         aptos-indexer-processors
-      </a>{' '}
+      </a>{" "}
       repo.
     </Callout>
   );
