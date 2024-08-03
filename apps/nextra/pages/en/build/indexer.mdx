@@ -3,7 +3,7 @@ title: "Indexer"
 ---
 
 import { IndexerBetaNotice, ThemedImage, Cards, Card, GraphQLEditor } from '@components/index';
-import { Tabs } from 'nextra/components'
+import { Tabs, Callout } from 'nextra/components'
 
 # Indexer
 
@@ -15,10 +15,7 @@ The Aptos Indexer is an API you can use to get:
 2. Historical data (ex. What transactions has this account submitted?)
 3. Data that is hard to get from the simpler [Aptos Node API](apis/fullnode-rest-api.mdx) (ex. What account owns a token named "ExampleToken"?).
 
-The Indexer watches every transaction that is processed by the ledger, and uses it to update a collection of tables which can then be queried using GraphQL.
-Applications can use Aptos Lab's public Indexer API to get the data they need quickly, without needing to host their own infrastructure to track on-chain transactions.
-
-Here's an interactive example of how you can query for the Current Coin Balances of an account. More usage examples can be found by going to the example queries in the sidebar.
+For example, you can use the Indexer API to look up the coin balances of any account like so:
 
 <GraphQLEditor
   query={`query GetCoinBalances($address: String, $offset: Int) {
@@ -39,6 +36,9 @@ Here's an interactive example of how you can query for the Current Coin Balances
 }`}
 />
 
+<Callout type="info">
+The Indexer tracks every transaction that happens on-chain, then exposes that data through a GraphQL API.
+</Callout>
 
 ## Using the Indexer API
 
@@ -46,16 +46,16 @@ Learn how to use the Indexer API, what each table represents, and how to add cus
 
 <Cards>
   <Card href="indexer/api/labs-hosted">
-    <Card.Title>Aptos Labs Indexer API</Card.Title>
-    <Card.Description>Query Aptos Labs GraphQL Indexer API hosted on Hasura</Card.Description>
+    <Card.Title>Accessing the API</Card.Title>
+    <Card.Description>Learn how to query the Indexer API.</Card.Description>
   </Card>
     <Card href="indexer/indexer-reference">
     <Card.Title>Indexer Table Reference</Card.Title>
-    <Card.Description>Detailed reference for indexer tables and their schemas.</Card.Description>
+    <Card.Description>Detailed reference for Indexer tables and their schemas.</Card.Description>
   </Card>
   <Card href="indexer/custom-processors">
-    <Card.Title>Indexer Processors</Card.Title>
-    <Card.Description>Use existing or custom indexer processors to shape on-chain data for your application</Card.Description>
+    <Card.Title>Custom Processors</Card.Title>
+    <Card.Description>Extend the Indexer to track even more relevant data.</Card.Description>
   </Card>
 </Cards>
 
@@ -98,7 +98,7 @@ To help get you started, here are the most common queries the Indexer is used fo
   </Card>
 </Cards>
 
-## Customizing the Indexer
+## Customizing the Indexer (Advanced)
 
 If the hosted Indexer API is not enough, you can customize and host your own versions of the Indexer.
 
