@@ -14,7 +14,7 @@ export default {
   },
   "---indxer-customizations---": {
     type: "separator",
-    title: "Indexer Customizations",
+    title: "Indexer Customizations (Advanced)",
   },
   "custom-processors": {
     title: "Custom Processors",
