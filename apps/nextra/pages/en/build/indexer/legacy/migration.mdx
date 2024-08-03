@@ -61,11 +61,11 @@ If you have custom processors written with the old indexer, we highly recommend 
 
 ### a. Migrate custom table schemas
 
-Migrate your custom schemas by copying over each of your custom migrations to the [`migrations`](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/processor/migrations) folder.
+Migrate your custom schemas by copying over each of your custom migrations to the [`migrations`](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/processor/src/db/postgres/migrations) folder.
 
 ### b. Migrate custom processors code
 
-Migrate the code by copying over your custom processors to the [`processors`](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/processor) folder and any relevant custom models to the [`models`](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/processor/src/models) folder. Integrate the custom processors with the rest of the code by adding them to the following Rust code files.
+Migrate the code by copying over your custom processors to the [`processors`](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/processor) folder and any relevant custom models to the [`models`](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/processor/src/db/common/models) folder. Integrate the custom processors with the rest of the code by adding them to the following Rust code files.
 
 [`mod.rs`](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/processors/mod.rs)
 
