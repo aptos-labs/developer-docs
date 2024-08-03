@@ -9,6 +9,22 @@ export default {
   "indexer-reference": {
     title: "Indexer API Table Reference",
   },
+  architecture: {
+    title: "Architecture",
+  },
+  "---indxer-customizations---": {
+    type: "separator",
+    title: "Indexer Customizations",
+  },
+  "custom-processors": {
+    title: "Custom Processors",
+  },
+  "txn-stream": {
+    title: "Transaction Stream Service",
+  },
+  "self-hosted": {
+    title: "Self-Hosted Indexer API",
+  },
   "---example-queries---": {
     type: "separator",
     title: "Example Queries",
@@ -68,22 +84,6 @@ export default {
       toc: false,
       layout: "full",
     },
-  },
-  "---indxer-customizations---": {
-    type: "separator",
-    title: "Indexer Customizations",
-  },
-  architecture: {
-    title: "Architecture",
-  },
-  "custom-processors": {
-    title: "Custom Processors",
-  },
-  "txn-stream": {
-    title: "Transaction Stream Service",
-  },
-  "self-hosted": {
-    title: "Self-Hosted Indexer API",
   },
   "---legacy---": {
     type: "separator",
