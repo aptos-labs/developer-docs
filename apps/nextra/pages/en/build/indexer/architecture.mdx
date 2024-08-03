@@ -3,19 +3,21 @@ title: "Indexer Architecture"
 ---
 
 import { ThemedImage } from '@components/index'
+import { Callout } from 'nextra/components'
 
 # Indexer Architecture
 
-The Aptos Indexer stores data from on-chain (via the Transaction Stream Service), the Aptos Name Service (ANS), and other data through custom processors.
+The Aptos Indexer stores data from on-chain (via the Transaction Stream Service), the Aptos Name Service (ANS), and other data through custom processors. Then, apps can query that data via the Indexer API. 
 
-Aptos Labs hosts a free API to query data as a service to the community, but there may be situations where you need to:
-1. Get access to different types of data (so want to create a custom processor).
-2. Store additional information (so need to host your own Indexer database).
-3. Change how transactions are processed (so need to update the Transaction Stream Service).
+Aptos Labs hosts a free version of the Indexer API to help the community get access to data such as: 
 
-You can use the below diagrams to understand how this information flows.
+1. Historical data - Ex. [What transactions have impacted this account?](./account-transactions.mdx)
+2. Aggregate data - Ex. [How many delegators are in this staking pool?](./get-delegators.mdx)
+3. Specific info best searched via query - Ex. [What NFTs does an account own?](./get-nfts.mdx)
 
-## Architecture Overview
+### High Level Breakdown
+
+Here is how the Indexer creates that API at a high-level: 
 
 <center>
   <ThemedImage
@@ -27,18 +29,21 @@ You can use the below diagrams to understand how this information flows.
   />
 </center>
 
-At a high level, indexing on the Aptos blockchain works like this:
+The Indexer uses the [Transaction Stream Service](./txn-stream.mdx) and [Custom Processors](./custom-processors.mdx) to update a database with rich tables. Then it exposes an API for Aptos apps to access the consolidated data.
 
-1. Users of a dapp, for example, on an NFT marketplace, interact with the Aptos blockchain via a rich UI presented by the dapp. Behind the scenes, these interactions generate, via smart contracts, the transaction and event data. This raw data is stored in the distributed ledger database, for example, on an Aptos fullnode.
-2. This raw ledger data is read and indexed using an application-specific data model, in this case an NFT marketplace-specific data model ("Business logic" in the above diagram). This NFT marketplace-specific index is then stored in a separate database ("Indexed database" in the above diagram) and exposed via an API.
-3. The dapp sends NFT-specific GraphQL queries to this indexed database and receives rich data back, which is then served to the users.
+For situations where you need to go beyond the Aptos hosted Indexer API data, you may need to customize parts of the Indexer stack. For example, you may need to:
 
-Step 2 is facilitated by the Aptos Indexer. The diagram above is a simplified view of how the system works at a high level. In reality, the system is composed of many components. If you are interested in these details, see the [Detailed Overview](#detailed-overview) below.
+1. Get access to different types of data (so want to create a [custom processor](./custom-processors.mdx)).
+2. Store additional information beyond what the Aptos Labs hosted Indexer API is saving (so need to [host your own Indexer](./self-hosted.mdx)).
+3. Change how transactions are processed (so need to update the [Transaction Stream Service](./txn-stream.mdx)).
 
+<Callout type="warning">
+These kinds of customizations can be expensive in terms of complexity and infrastructure.
+</Callout>
 
 ## Detailed Overview
 
-This diagram explains how the Aptos Indexer tech stack works in greater detail.
+You can use the below diagram for a much more in-depth diagram explaining how the Indexer code actually works behind the scenes.
 
 <div style={{textAlign:"center"}}>
   <div style={{marginBottom: 20}}>
