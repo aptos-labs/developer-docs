@@ -21,7 +21,7 @@ First run the dapp locally with `npm run dev`. You would see the public mint pag
 
 ### Configure an asset address
 
-For the public mint page to fetch the asset, you will need to configure the asset address. First, assign the `asset_id` variable in the `frontend/config.ts` file with the asset address. If you have [created the asset](#create-a-fungible-asset-page) with the tool, you should be able to find it on the [My Assets Page](#my-assets-page).
+For the public mint page to fetch the asset, you will need to configure the asset address. First, assign the `fa_address` variable in the `frontend/config.ts` file with the asset address. If you have [created the asset](#create-a-fungible-asset-page) with the tool, you should be able to find it on the [My Assets Page](#my-assets-page).
 
 ### Modify static content
 
@@ -107,7 +107,7 @@ Once everything has filled out, you should be able to click the â€œCreate Assetâ
 
 This page displays all the assets that have been created under the current Move module. You can click on the asset address, which redirects you to the Aptos Explorer site where you can see your asset.
 
-When you are ready to use an asset on the Public Mint Page, you need to copy the asset address and assign it to the `asset_id` on the `frontend/config.ts` file.
+When you are ready to use an asset on the Public Mint Page, you need to copy the asset address and assign it to the `fa_address` on the `frontend/config.ts` file.
 
 Some stats are available on this page, like the max supply of the asset and the number of asset minted.
 
