@@ -23,11 +23,13 @@ The `Aptos` client can out of the box query both network data from [fullnodes](h
 
 ```ts filename="fetch-data.ts"
 const ledgerInfo = aptos.queryIndexer({
- query: `query MyQuery {
-     ledger_infos {
-       chain_id
-     }
-   }`;
+  query: {
+    query: `query MyQuery {
+      ledger_infos {
+        chain_id
+      }
+    }`,
+  },
 })
 ```
 
