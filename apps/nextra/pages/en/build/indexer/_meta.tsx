@@ -12,7 +12,7 @@ export default {
   architecture: {
     title: "Architecture",
   },
-  "---indxer-customizations---": {
+  "---indexer-customizations---": {
     type: "separator",
     title: "Indexer Customizations (Advanced)",
   },
