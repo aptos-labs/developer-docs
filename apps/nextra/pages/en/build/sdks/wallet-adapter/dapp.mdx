@@ -32,7 +32,7 @@ For wallets that have not updated to using the AIP-62 standard, their plugins mu
 For example:
 
 ```bash filename="Terminal"
-npm install @pontem/wallet-adapter-plugin
+npm i @okwallet/aptos-wallet-adapter
 ```
 
 ### In `App.tsx` or it’s equivalent, import the Aptos Wallet Adapter and any legacy Wallet plugins.
@@ -40,7 +40,7 @@ npm install @pontem/wallet-adapter-plugin
 ```tsx filename="App.tsx"
 import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
 // Import any additional wallet plugins. Ex.
-import { Pontem } from "@pontem/wallet-adapter-plugin";
+import { OKXWallet } from "@okwallet/aptos-wallet-adapter";
 // ...
 ```
 
@@ -69,7 +69,6 @@ import { BitgetWallet } from "@bitget-wallet/aptos-wallet-adapter";
 import { MartianWallet } from "@martianwallet/aptos-wallet-adapter";
 import { MSafeWalletAdapter } from "@msafe/aptos-wallet-adapter";
 import { OKXWallet } from "@okwallet/aptos-wallet-adapter";
-import { PontemWallet } from "@pontem/wallet-adapter-plugin";
 import { TrustWallet } from "@trustwallet/aptos-wallet-adapter";
 import { FewchaWallet } from "fewcha-plugin-wallet-adapter";
 import { PropsWithChildren } from "react";
