@@ -154,7 +154,9 @@ Creating a asset on mainnet is the same flow as creating on testnet, but we need
 
 ## Deploy to a live server
 
-`create-aptos-dapp` utilizes Vite as the development tool. To deploy a Vite static site to a live server, you can simply follow [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). At the root of the folder, simply run npm run deploy and follow the prompts. Please refer to Vercel docs to learn more about the [Vercel CLI](https://vercel.com/docs/cli)
+
+If you are looking for different services to deploy the static site, `create-aptos-dapp` utilizes Vite as the development tool, so you can follow the [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
 
 1. Run `npm run build` to build a static site
 2. Run `npm run preview` to see how your dapp would look like on a live server
