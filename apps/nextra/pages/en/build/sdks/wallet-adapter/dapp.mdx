@@ -32,7 +32,7 @@ For wallets that have not updated to using the AIP-62 standard, their plugins mu
 For example:
 
 ```bash filename="Terminal"
-npm install @pontem/wallet-adapter-plugin
+npm i @okwallet/aptos-wallet-adapter
 ```
 
 ### In `App.tsx` or it’s equivalent, import the Aptos Wallet Adapter and any legacy Wallet plugins.
@@ -40,7 +40,7 @@ npm install @pontem/wallet-adapter-plugin
 ```tsx filename="App.tsx"
 import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
 // Import any additional wallet plugins. Ex.
-import { Pontem } from "@pontem/wallet-adapter-plugin";
+import { OKXWallet } from "@okwallet/aptos-wallet-adapter";
 // ...
 ```
 
@@ -69,7 +69,6 @@ import { BitgetWallet } from "@bitget-wallet/aptos-wallet-adapter";
 import { MartianWallet } from "@martianwallet/aptos-wallet-adapter";
 import { MSafeWalletAdapter } from "@msafe/aptos-wallet-adapter";
 import { OKXWallet } from "@okwallet/aptos-wallet-adapter";
-import { PontemWallet } from "@pontem/wallet-adapter-plugin";
 import { TrustWallet } from "@trustwallet/aptos-wallet-adapter";
 import { FewchaWallet } from "fewcha-plugin-wallet-adapter";
 import { PropsWithChildren } from "react";
@@ -121,7 +120,7 @@ For UI components that work out of the box, but are less customizable, choose on
 - [Ant Design](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-ant-design)
 - [MUI](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-mui-design) (Material UI)
 
-Otherwise, you should use the [shadcn/ui](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-react/src/components/WalletItem.tsx) package, as it has the most customization options. For more details on how to customize [shadcn/ui](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-react/src/components/WalletItem.tsx), see [this guide](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-react/docs/BYO-wallet-selector.md).
+Otherwise, you should use the [shadcn/ui wallet selector](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/README.md#use-shadcnui-wallet-selector-for-your-own-app), as it has the most customization options. For more details on how to customize this wallet selector or build your own wallet selector, see [this guide](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-react/docs/BYO-wallet-selector.md).
 
 <Callout type="info">
 For an example that shows how these UI options work in practice, see the [live demo app](https://aptos-labs.github.io/aptos-wallet-adapter/) (you can find its reference code [here](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example)).
