@@ -19,7 +19,10 @@ export default {
   "building-transactions": {
     title: "Building and Sending Transactions",
   },
+  "for-ios-devs": {
+    title: "For iOS Developers",
+  },
   "client-configuration": {
     title: "Client Configuration",
-  }
+  },
 };
