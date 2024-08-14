@@ -21,8 +21,8 @@ The Token staking dapp template provides a one page with different components:
 
 
 ## Quick Start
-- [Create a stake on chain](#publish-the-move-contract)
-- [Create an incentivize pool](#create-an-incentivize-pool)
+- [Create a stake pool for an existing FA](#publish-the-move-contract)
+- [Incentivize the pool with rewards](#incentivize-the-pool-with-rewards)
 - [Deploy to a live server](#deploy-to-a-live-server)
 
 ## Setup
@@ -35,8 +35,8 @@ npm run dev
 
 However, for the app to work as intended, there are several setup steps you will have to do to:
 
-1. Publish the contract.
-2. Create an incentivize pool.
+1. Publish the contract to create a stake pool.
+2. Incentivize the pool with rewards.
 
 ## Publish the Move Contract
 
@@ -92,7 +92,7 @@ This command will publish the contract to chain.
 </Steps>
 
 
-## Create an incentivize pool
+## Incentivize the pool with rewards
 <Steps>
 
 ### Run the app and open the preview.
@@ -155,15 +155,25 @@ Creating a asset on mainnet is the same flow as creating on testnet, but we need
 6. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_REWARD_CREATOR_ADDRESS` value.
 7. Create or get the asset you want to use in your dapp, open the `.env` file and assign the asset address as the `VITE_FA_ADDRESS` value.
 8. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
-9. The next step would be to create an incentivize pool using this account. Simply follow [Create an incentivize pool](#create-an-incentivize-pool)
+9. The next step would be to create an incentivize pool using this account. Simply follow [Incentivize the pool with rewards](#incentivize-the-pool-with-rewards)
 
 ## Deploy to a live server
 
-`create-aptos-dapp` utilizes Vite as the development tool. To deploy a Vite static site to a live server, you can simply follow [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). 
+
+At the root of the folder, simply run 
+
+```bash filename="Terminal"
+npm run deploy
+```
+
+Then, follow the prompts. Please refer to Vercel docs to learn more about the [Vercel CLI](https://vercel.com/docs/cli)
+
+If you are looking for different services to deploy the static site to, `create-aptos-dapp` utilizes Vite as the development tool, so you can follow the [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
 
 1. Run `npm run build` to build a static site
 2. Run `npm run preview` to see how your dapp would look like on a live server
-3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy#github-pages) on how to use each
+3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy) on how to use each
 
 ## Update the look and feel of the dapp
 
