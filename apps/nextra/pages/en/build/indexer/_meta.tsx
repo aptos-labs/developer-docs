@@ -44,7 +44,7 @@ export default {
     },
   },
   "ans-lookup": {
-    title: "Get Account Domain Name",
+    title: "Get Aptos Name",
     theme: {
       toc: false,
       layout: "full",
