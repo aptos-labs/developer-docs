@@ -8,7 +8,7 @@ import { IndexerBetaNotice } from '@components/index';
 
 <IndexerBetaNotice />
 
-Everything the Indexer API exposes is initially tracked through writing a processor to read in the transaction data (or other off-chain service) then use it to update the Indexer's database.
+Everything the Indexer API exposes is initially tracked through writing a processor to read in the transaction data then use it to update the Indexer's database.
 
 These processors are often used to track:
 1. Historical data (by continuously watching and updating as things change).
@@ -17,7 +17,7 @@ These processors are often used to track:
 4. Relationships with off-chain data (such as with the Aptos Name Service).
 5. Other important relations for on-chain transactions.
 
-If you are finding that the existing API is insufficient for your needs, one way you can fix that is by contributing a custom processor. For example, you can see all existing processors used by the Aptos-Hosted Indexer API [here](https://github.com/aptos-labs/aptos-indexer-processors).
+If you are finding that the existing API is insufficient for your needs, one way you can fix that is by contributing or writing your own custom processor. For example, you can see all existing processors used by the Aptos-Hosted Indexer API [here](https://github.com/aptos-labs/aptos-indexer-processors).
 
 You can follow [this tutorial](./custom-processors/e2e-tutorial.mdx) to learn how to write your own.
 
