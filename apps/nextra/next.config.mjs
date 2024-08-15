@@ -1667,6 +1667,36 @@ export default withBundleAnalyzer(
         destination: "/en/build/smart-contracts",
         permanent: true,
       },
+      {
+        source: "/en/build/indexer/api",
+        destination: "/en/build/indexer/aptos-hosted",
+        permanent: true,
+      },
+      {
+        source: "/en/build/indexer/api/labs-hosted",
+        destination: "/en/build/indexer/aptos-hosted",
+        permanent: true,
+      },
+      {
+        source: "/en/build/indexer/api/self-hosted",
+        destination: "/en/build/indexer/self-hosted",
+        permanent: true,
+      },
+      {
+        source: "/en/build/indexer/txn-stream/labs-hosted",
+        destination: "/en/build/indexer/txn-stream/aptos-hosted-txn-stream",
+        permanent: true,
+      },
+      {
+        source: "/en/build/indexer/coin-balances",
+        destination: "/en/build/indexer/fungible-asset-balances",
+        permanent: true,
+      },
+      {
+        source: "/en/build/indexer/coin-info",
+        destination: "/en/build/indexer/fungible-asset-info",
+        permanent: true,
+      },
     ],
   }),
 );
