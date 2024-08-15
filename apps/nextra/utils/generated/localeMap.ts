@@ -304,6 +304,9 @@ export const localeMap = {
   "/build/sdks/rust-sdk": {
     "en": true
   },
+  "/build/sdks/swift-sdk": {
+    "en": true
+  },
   "/build/sdks/ts-sdk/account": {
     "en": true
   },
@@ -659,6 +662,9 @@ export const localeMap = {
     "en": true
   },
   "/developer-platforms/contribute/setup/maintenance": {
+    "en": true
+  },
+  "/developer-platforms/contribute/setup/mdx": {
     "en": true
   },
   "/developer-platforms/contribute/setup/migrating-from-docusaurus": {

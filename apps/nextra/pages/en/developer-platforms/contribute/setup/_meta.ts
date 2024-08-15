@@ -1,7 +1,7 @@
 export default {
   "organize-files": "Organize Files",
   "organize-files-advanced": "Organize Files (Advanced)",
-  "mdx": "Writing MDX",
+  mdx: "Writing MDX",
   "docs-config": "Docs Config",
   SEO: "SEO",
   analytics: "Analytics",
