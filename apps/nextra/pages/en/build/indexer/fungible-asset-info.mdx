@@ -3,14 +3,14 @@ import { Callout } from 'nextra/components'
 
 # Get Fungible Asset Info
 
-By providing a list of fungible asset types, `GetFungibleAssetInfos` can fetch data such as the symbol, name, decimals, and the asset type itself. This is particularly useful for applications needing to display token details. This is backwards compatible with looking up `Coin` info.
+By providing a list of fungible asset types, `GetFungibleAssetInfo` can fetch data such as the symbol, name, decimals, and the asset type itself. This is particularly useful for applications needing to display token details. This is backwards compatible with looking up `Coin` info.
 
 <Callout type="info">
 Try it yourself! You can customize the variables at the bottom of the editor.
 </Callout>
 
 <GraphQLEditor
-  query={`query GetFungibleAssetInfos($in: [String!], $offset: Int) {
+  query={`query GetFungibleAssetInfo($in: [String!], $offset: Int) {
   fungible_asset_metadata(
     where: {asset_type: {_in: $in}},
     offset: $offset,
