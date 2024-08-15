@@ -15,17 +15,17 @@ The Aptos Indexer is an API you can use to get:
 2. Historical data (ex. What transactions has this account submitted?)
 3. Data that is hard to get from the simpler [Aptos Node API](apis/fullnode-rest-api.mdx) (ex. What account owns a token named "ExampleToken"?).
 
-For example, you can use the Indexer API to look up the coin balances of any account like so:
+For example, you can use the Indexer API to look up the fungible asset balances of any account like so:
 
 <GraphQLEditor
-  query={`query GetCoinBalances($address: String, $offset: Int) {
-  current_coin_balances(
+  query={`query GetFungibleAssetBalances($address: String, $offset: Int) {
+  current_fungible_asset_balances(
     where: {owner_address: {_eq: $address}},
     offset: $offset,
     limit: 100,
     order_by: {amount: desc}
   ) {
-    coin_type
+    asset_type
     amount
     __typename
   }
@@ -64,9 +64,9 @@ Learn how to use the Indexer API, what each table represents, and how to add cus
 To help get you started, here are the most common queries the Indexer is used for.
 
 <Cards>
-  <Card href="indexer/coin-balances">
-    <Card.Title>Get Coin Balances</Card.Title>
-    <Card.Description>Get all coins an account currently owns.</Card.Description>
+  <Card href="indexer/fungible-asset-balances">
+    <Card.Title>Get Fungible Asset Balances</Card.Title>
+    <Card.Description>Get all fungible assets an account currently owns.</Card.Description>
   </Card>
   <Card href="indexer/account-transactions">
     <Card.Title>Get Account Transactions</Card.Title>

@@ -109,6 +109,9 @@ export const localeMap = {
   "/build/create-aptos-dapp/templates/token-minting-dapp": {
     "en": true
   },
+  "/build/create-aptos-dapp/templates/token-staking-dapp": {
+    "en": true
+  },
   "/build/create-aptos-dapp": {
     "en": true
   },
@@ -208,19 +211,10 @@ export const localeMap = {
   "/build/indexer/ans-lookup": {
     "en": true
   },
-  "/build/indexer/api/labs-hosted": {
-    "en": true
-  },
-  "/build/indexer/api/self-hosted": {
-    "en": true
-  },
-  "/build/indexer/api": {
+  "/build/indexer/aptos-hosted": {
     "en": true
   },
   "/build/indexer/architecture": {
-    "en": true
-  },
-  "/build/indexer/coin-balances": {
     "en": true
   },
   "/build/indexer/coin-info": {
@@ -233,6 +227,9 @@ export const localeMap = {
     "en": true
   },
   "/build/indexer/custom-processors": {
+    "en": true
+  },
+  "/build/indexer/fungible-asset-balances": {
     "en": true
   },
   "/build/indexer/get-delegators": {
@@ -259,10 +256,13 @@ export const localeMap = {
   "/build/indexer/legacy": {
     "en": true
   },
+  "/build/indexer/self-hosted": {
+    "en": true
+  },
   "/build/indexer/token-metadata": {
     "en": true
   },
-  "/build/indexer/txn-stream/labs-hosted": {
+  "/build/indexer/txn-stream/aptos-hosted-txn-stream": {
     "en": true
   },
   "/build/indexer/txn-stream/local-development": {

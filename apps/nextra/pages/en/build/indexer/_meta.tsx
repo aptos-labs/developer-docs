@@ -29,8 +29,8 @@ export default {
     type: "separator",
     title: "Example Queries",
   },
-  "coin-balances": {
-    title: "Get Coin Balances",
+  "fungible-asset-balances": {
+    title: "Get Fungible Asset Balances",
     theme: {
       toc: false,
       layout: "full",

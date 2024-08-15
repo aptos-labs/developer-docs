@@ -1687,6 +1687,11 @@ export default withBundleAnalyzer(
         destination: "/en/build/indexer/txn-stream/aptos-hosted-txn-stream",
         permanent: true,
       },
+      {
+        source: "/en/build/indexer/coin-balances",
+        destination: "/en/build/indexer/fungible-asset-balances",
+        permanent: true,
+      }
     ],
   }),
 );
