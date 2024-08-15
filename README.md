@@ -6,11 +6,10 @@
   - [Clone the Developer docs repo](#clone-the-developer-docs-repo)
   - [Install deps](#install-deps)
   - [Develop on Nextra (New)](#develop-on-nextra-new)
-  - [Develop on Docusaurus (Legacy)](#develop-on-docusaurus-legacy)
   - [Debugging](#debugging)
   - [Regenerating contributors](#regenerating-contributors)
 
-> Visit the `README.md` under `apps/docusaurus` for more steps on building / developing in this repo
+> Visit the `README.md` under `apps/nextra` for more steps on building / developing in this repo
 
 We now use [lychee-broken-link-checker](https://github.com/marketplace/actions/lychee-broken-link-checker) to check for broken links in the GitHub Markdown. We use a corresponding link checker for pages on Aptos.dev.
 
@@ -19,7 +18,7 @@ https://github.com//aptos-labs/developer-docs/actions/workflows/links.yml
 
 ## Installation
 
-**IMPORTANT**: These installation steps apply to macOS environment.
+**IMPORTANT**: These installation steps apply to MacOS environment.
 
 ### Requirements
 
@@ -87,32 +86,6 @@ cd apps/nextra
 
 ```sh
 pnpm dev
-```
-
-## Develop on Docusaurus (Legacy)
-
-1. Navigate to the correct subdirectory
-
-```sh
-cd apps/docusaurus
-```
-
-2. Run the development server
-
-```sh
-pnpm start
-```
-
-3. Build the repository
-
-```sh
-pnpm build
-```
-
-4. Navigate to the correct subdirectory
-
-```sh
-pnpm serve
 ```
 
 ## Debugging
