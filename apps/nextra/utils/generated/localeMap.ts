@@ -217,7 +217,7 @@ export const localeMap = {
   "/build/indexer/architecture": {
     "en": true
   },
-  "/build/indexer/coin-info": {
+  "/build/indexer/fungible-asset-info": {
     "en": true
   },
   "/build/indexer/custom-processors/e2e-tutorial": {

@@ -50,8 +50,8 @@ export default {
       layout: "full",
     },
   },
-  "coin-info": {
-    title: "Get Coin Info",
+  "fungible-asset-info": {
+    title: "Get Fungible Asset Info",
     theme: {
       toc: false,
       layout: "full",

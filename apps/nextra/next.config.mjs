@@ -1691,6 +1691,11 @@ export default withBundleAnalyzer(
         source: "/en/build/indexer/coin-balances",
         destination: "/en/build/indexer/fungible-asset-balances",
         permanent: true,
+      },
+      {
+        source: "/en/build/indexer/coin-info",
+        destination: "/en/build/indexer/fungible-asset-info",
+        permanent: true,
       }
     ],
   }),
