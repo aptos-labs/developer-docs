@@ -1696,7 +1696,7 @@ export default withBundleAnalyzer(
         source: "/en/build/indexer/coin-info",
         destination: "/en/build/indexer/fungible-asset-info",
         permanent: true,
-      }
+      },
     ],
   }),
 );
