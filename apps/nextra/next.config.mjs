@@ -1692,6 +1692,12 @@ export default withBundleAnalyzer(
         destination: "/en/build/indexer/fungible-asset-info",
         permanent: true,
       },
+      /* Redirect Swift SDK until it's vetted */
+      {
+        source: "/en/build/sdks/swift-sdk",
+        destination: "/en/build/sdks/community-sdks/swift-sdk",
+        permanent: false,
+      },
     ],
   }),
 );
