@@ -2,6 +2,8 @@
 title: "Create Aptos Dapp Boilerplate Template"
 ---
 
+import { Callout, Steps } from 'nextra/components';
+
 # Create Aptos Dapp Boilerplate Template
 
 The Boilerplate template provides a starter dapp with all necessary dapp infrastructure and a simple wallet info implementation.
@@ -14,11 +16,37 @@ The Boilerplate template provides:
 
 ## Getting started
 
-First run the dapp locally with `npm run dev`.
+<Steps>
+
+### Initialize contract publishing account
 
 ```bash 
+npm run move:init
+```
+
+The CLI will prompt you to provide a private key for your contract publishing account. If you provide no input, it will generate one for you.
+
+This will create an account to publish the contract with, as well as set the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
+
+For example:
+```bash filename=".env"
+PROJECT_NAME=my-aptos-dapp
+VITE_APP_NETWORK=testnet
+```
+
+### Publish the contract
+
+Run the below command to publish the contract on-chain:
+```bash
+npm run move:publish
+
+### Run the app
+
+```bash
 npm run dev
 ```
+
+</Steps>
 
 ### Building the frontend
 
@@ -27,7 +55,7 @@ All dapp components should be added into the `components` folder and it is recom
 
 ### Writing a Move contract
 
-The boilerplate template comes with a `move` folder that holds all Move related files. Under the `sources` folder you will find a `.move` file with a super basic implementation of a Move module. This is to help you with to get started with writing your own Smart Contract.
+The boilerplate template comes with a `move` folder that holds all Move related files. Under the `sources` folder you will find a `.move` file with a super basic implementation of a Move module that stores a message and updates it. This is to help you get started with writing your own Smart Contract.
 
 ### Smart contract and frontend communication
 
