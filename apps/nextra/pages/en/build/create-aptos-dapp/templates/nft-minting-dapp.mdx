@@ -1,0 +1,315 @@
+---
+title: "Create Aptos Dapp NFT Minting Dapp Template"
+---
+
+import { Callout, FileTree, Steps } from 'nextra/components';
+
+# Create Aptos Dapp NFT Minting Dapp Template
+
+Digital Assets are the NFT standard for Aptos. The NFT minting dapp template provides an end-to-end NFT minting dapp. With this dapp, you can learn how NFTs work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a NFT minting dapp users can quickly adjust and deploy into a live server.
+
+You can read more about the Aptos Digital Asset Standard [here](../../smart-contracts/digital-asset.mdx).
+
+## Template Pages
+
+The NFT minting dapp template provides 3 pages:
+
+1. "Public Mint" Page - A page for the public to mint NFTs.
+2. "Create Collection" Page - A page for creating new NFT collections. This page is not accessible in production.
+3. "My Collections" Page - A page to view all the collections created with the template Move module. This page is also not accessible in production.
+
+## Quick Start
+- [Create assets for a collection of NFTs](#create-collection-assets)
+- [Create a collection on chain](#publish-the-move-contract)
+- [Customizing the frontend](#customizing-the-front-end)
+- [Deploy to a live server](#deploy-to-a-live-server)
+
+## Setup
+
+You can start the app by running:
+
+```bash 
+npm run dev
+```
+
+However, for the app to work as intended, there are several setup steps you will have to do to:
+
+1. Create assets for a collection of NFTs.
+2. Publish the contract 
+3. create the collection on-chain.
+4. Configure your dapp to use the collection.
+
+## Create Collection Assets
+
+In order to create a `Collection` using `create-dapp-app`, you will need to create a folder with the following information in it. 
+
+<FileTree>
+  <FileTree.Folder name="assets" defaultOpen>
+    <FileTree.File name="collection.jpeg" />
+    <FileTree.File name="collection.json" />
+    <FileTree.Folder name="images">
+      <FileTree.File name="1.jpeg" />
+      <FileTree.File name="2.jpeg" />
+      <FileTree.File name="3.jpeg" />
+    </FileTree.Folder>
+    <FileTree.Folder name="metadata">
+      <FileTree.File name="1.json" />
+      <FileTree.File name="2.json" />
+      <FileTree.File name="3.json" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+The following steps will break down how to do that.
+
+<Steps>
+### Create an `assets` folder for your collection.
+
+### Make a `collection.json` file.
+All collections are **required** to have the following fields:
+```json filename="collection.json"
+{
+  "name": "Aptos NFTs",                         
+  "description": "My NFT Collection on Aptos.", 
+  "image": "",            
+  "external_url": "https://your_project_url.io"
+}
+
+```
+<Callout type="info">
+The `image` field of `collection.json` above will be filled in automatically when we upload the images, so we can leave it empty.
+</Callout>
+
+### Add an image for the collection itself in the `assets` folder.
+
+### Create a folder called `images` in the `assets` folder.
+
+### Add all potential NFT images to the `images` folder.
+
+All images must have the same file extension for this template app to work. 
+
+### Create a folder called `metadata` in the `assets` folder.
+
+### Add a metadata json file for each NFT image in the `images` folder.
+The metadata files should match the names of the images in the `images` folder. Ex. `1.jpeg` -> `1.json`. 
+
+All fields in the example below other than `attributes` are **required**. 
+
+The `attributes` section is optional, and can contain any key-value pairs.
+
+<Callout type="warning">
+The `name` field of the metadata.json must be unique for this collection.
+</Callout>
+
+Here is an example of what each metadata file should look like:
+```json filename="1.json"
+{
+  "description": "nft 1 in collection",            
+  "image": "",                                     
+  "name": "NFT 1",                                 
+  "external_url": "https://your_project_url.io/1", 
+  "attributes": [                                  
+    {
+      "trait_type": "optional_trait",
+      "value": "1"
+    }
+  ]
+}
+```
+
+{ /* TODO: change ERC-1155 once finish rewriting the NFT standards page */ }
+
+We recommend the developers follow the [ERC-1155 off-chain data](https://eips.ethereum.org/EIPS/eip-1155) schema to format their JSON files.
+
+<Callout type="info">
+The `image` field of the metadata.json files above will be filled in automatically when we upload the images, so we can leave it empty.
+</Callout>
+
+### The file structure should now look something like this:
+
+<FileTree>
+  <FileTree.Folder name="assets" defaultOpen>
+    <FileTree.File name="collection.jpeg" />
+    <FileTree.File name="collection.json" />
+    <FileTree.Folder name="images">
+      <FileTree.File name="1.jpeg" />
+      <FileTree.File name="2.jpeg" />
+      <FileTree.File name="3.jpeg" />
+    </FileTree.Folder>
+    <FileTree.Folder name="metadata">
+      <FileTree.File name="1.json" />
+      <FileTree.File name="2.json" />
+      <FileTree.File name="3.json" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+</Steps>
+
+## Publish the Move Contract
+
+<Steps>
+
+### On the project root folder, use the below command to initiliaze an account to publish the contract with.
+
+```bash 
+npm run move:init
+```
+
+The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
+
+This will create an account you will later publish the contract with, as well as setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
+
+### In the `.env` file, set `VITE_COLLECTION_CREATOR_ADDRESS` to be the same as your account address.
+This determines which account is allowed to create collections using the dapp.
+
+If you haven't set up an account, you can create one with an Aptos wallet like [Petra](https://petra.app/docs/use#create-a-new-account). Make sure to set up the account on the same network as your template project.
+
+For example:
+```bash filename=".env"
+VITE_APP_NETWORK=testnet
+VITE_COLLECTION_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
+```
+
+### On the project root folder, run the below command to publish the contract.
+
+```bash
+npm run move:publish
+```
+<Callout type="info">
+You will have to confirm the gas fee in the console.
+</Callout>
+
+This command will publish the contract to chain.
+
+</Steps>
+
+## Publishing the collection on-chain
+<Steps>
+
+### Run the app and open the preview.
+
+```bash
+npm run dev
+```
+
+### In the top-right corner, click "Connect a Wallet". 
+Use the same account that you set in `.env` for the `VITE_COLLECTION_CREATOR_ADDRESS`. 
+Or, if you use a different account, set the `VITE_COLLECTION_CREATOR_ADDRESS` to the account you sign in with and republish the contract.
+
+<Callout type="warning">
+Do not use the "Google Account" option if it is available. The account generated from that will not work as the `VITE_COLLECTION_CREATOR_ADDRESS`. Use a wallet created with an Aptos wallet provider such as [Petra](https://petra.app/docs/use#create-a-new-account).
+</Callout>
+
+### In the app, go to the "Create Collection" page (if not on that page already)
+
+### Upload the `assets` folder you created previously.
+If you do not have an `assets` folder or other properly formatted collection data, see [the beginning of these steps](#create-an-asset-folder-for-your-collection) for how to make one.
+
+### Choose the required fields.
+1. Choose the mint start date to determine when users can start minting NFTs.
+2. Choose a mint limit per account.
+
+The rest are optional fields to help customize your mint.
+- (Optional) Choose the mint end date to determine when users can no longer mint NFTs. If no date selected, the mint is open forever.
+- (Optional) Royalty Percentage for each NFT - this defines the royalties marketplaces should send you when users trade these NFTs.
+- (Optional) Mint fee per NFT - this defines the cost public users pay to mint this NFT.
+- (Optional) Mint for myself - this defines how many NFTs you would want to mint for yourself once the collection is created.
+
+### Click "Create Collection"
+When adding the folder, it submits the files to [Irys](https://irys.xyz/), a decentralized asset server, that will store your files.
+
+During the upload process, you will need to sign two messages to approve file uploading to Irys. Additionally, you may need to fund an Irys node. Read more about the process [here](https://docs.irys.xyz/hands-on/tutorials/uploading-nfts).
+
+### Once you approve the transaction, you have successfully created a Collection on Aptos!
+
+</Steps>
+
+## Customizing the Front-End
+
+Most data on the front end is customizable in `frontend/config.ts`. 
+
+### Set the `collection_id` config
+
+In order to add a collection to the public mint page, set `collection_id` in `frontend/config.ts` with the collection address. 
+
+You can use a collection that you have minted using the tool by going to the "My Collections" page and copying its address.
+
+### Modify static content
+
+Once the collection address has been configured, view the `frontend/config.ts` file to change any static content on the page. You can also modify the code itself as you wish.
+
+**How to add static images?**
+
+The public mint page uses static images in the UI. Initially, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as seen below in the `frontend/config.ts` file and add it under the section you want to have it.
+
+```tsx filename="frontend/config.ts"
+import MyImage from "@/assets/<my-new-folder>/my-image.png";
+```
+
+For example, to update an image in the "Our Team" section - add the image under the `frontend/assets/<my-new-folder>` folder, import the image as `import MyImage from "@/assets/<my-new-folder>/my-image.png";` and change the`img`property in the `ourTeam` section with `MyImage`.
+
+## My Collections Page
+
+This page displays all the collections that have been created under the current Move module. You can click on the contract address, which redirects you to the Aptos Explorer site where you can see your collection.
+
+When you are ready to allow others to mint NFTs from your collection, you will need to copy the collection address into `frontend/config.ts`'s `collection_id` variable. This will then allow that collection to be used on the "Public Mint" page that anyone can access.
+
+Some stats are available on this page, like the amount of minted NFTs and Max Supply of the NFTs.
+
+## How can I take it from here?
+
+Remember, one of the goals of this template is to educate and provide a real life example on how a NFT minting dapp can be on Aptos. We provide some basic concepts and features but there is much more you can do for your dapp.
+
+Some ideas you can try are:
+
+1. Adding Allowlist mint stages.
+2. Building custom flows for after someone mints a NFT (or even token gated experiences).
+
+Check out our [TS SDK](../../sdks/ts-sdk.mdx) to see what other [API queries](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/digitalAsset.ts) you can use to add more features and fetch other types of data.
+
+## Ready for Mainnet
+
+If you started your dapp on testnet, and you are happy with your NFT collection testing, you will want to get your collection on mainnet.
+
+Creating a collection on mainnet follows the same flow as creating a collection on testnet. But, we need to change some configuration changes.
+
+1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
+2. Run `npm run move:init` to initialize an account to work against Mainnet
+3. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
+4. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
+5. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
+6. Edit the `scripts/move/publish.js` file, and change the `minter` address to [`0x5ca749c835f44a9a9ff3fb0bec1f8e4f25ee09b424f62058c561ca41ec6bb146`](https://explorer.aptoslabs.com/object/0x5ca749c835f44a9a9ff3fb0bec1f8e4f25ee09b424f62058c561ca41ec6bb146/modules/code/mint_stage?network=mainnet) so it would use the Mainnet token-minter address.
+7. Create or get the account you want to create a collection with, open the `.env` file and assign the account address as the `VITE_COLLECTION_CREATOR_ADDRESS` value.
+8. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
+9. The next step would be to create a collection using this account. Simply follow [the instructions here](#create-a-nft-collection-page)
+
+## Deploy to a live server
+
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). 
+
+At the root of the folder, simply run 
+
+```bash filename="Terminal"
+npm run deploy
+```
+
+Then, follow the prompts. Please refer to Vercel docs to learn more about the [Vercel CLI](https://vercel.com/docs/cli)
+
+If you are looking for different services to deploy the static site to, `create-aptos-dapp` utilizes Vite as the development tool, so you can follow the [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+
+1. Run `npm run build` to build a static site
+2. Run `npm run preview` to see how your dapp would look like on a live server
+3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy) on how to use each
+
+## Update the look and feel of the dapp
+
+This template is styled with [Tailwind CSS](https://tailwindcss.com/) and [shadcn/ui](https://ui.shadcn.com/). These libraries provide the app with a neutral and clean look and feel while leaving it open to a lot of customization so that you can make the app truly yours.
+
+Please refer to the following questions in the FAQ to learn about how to customize the UI of your dapp:
+
+- [What is Tailwind CSS?](../faq.mdx#what-is-tailwind-css)
+- [What is `shadcn/ui`?](../faq.mdx#what-is-shadcnui)
+- [How to modify the theme?](../faq.mdx#how-to-modify-the-theme)
+- [How to add components?](../faq.mdx#how-to-add-components)
+- [How to add colors?](../faq.mdx#how-to-add-colors)
+- [How to add dark mode?](../faq.mdx#how-to-add-dark-mode)

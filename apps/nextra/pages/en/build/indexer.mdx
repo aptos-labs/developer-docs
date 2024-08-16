@@ -3,26 +3,29 @@ title: "Indexer"
 ---
 
 import { IndexerBetaNotice, ThemedImage, Cards, Card, GraphQLEditor } from '@components/index';
-import { Tabs } from 'nextra/components'
+import { Tabs, Callout } from 'nextra/components'
 
 # Indexer
 
 <IndexerBetaNotice />
 
-Most applications **require** an indexer to efficiently query for on-chain state as the [Aptos Node API](apis/fullnode-rest-api.mdx) provides only a basic, stable API and does not support data shaping required for rich user experiences.
-The Aptos Indexer processes raw blockchain data for app-specific needs, enabling low-latency and enhanced experiences for end-user applications.
+The Aptos Indexer is an API you can use to get:
 
-Here's an interactive example of how you can query for the Current Coin Balances of an account. More usage examples can be found in example queries.
+1. Aggregate data (ex. How many NFTs exist?)
+2. Historical data (ex. What transactions has this account submitted?)
+3. Data that is hard to get from the simpler [Aptos Node API](apis/fullnode-rest-api.mdx) (ex. What account owns a token named "ExampleToken"?).
+
+For example, you can use the Indexer API to look up the fungible asset balances of any account like so:
 
 <GraphQLEditor
-  query={`query GetCoinBalances($address: String, $offset: Int) {
-  current_coin_balances(
+  query={`query GetFungibleAssetBalances($address: String, $offset: Int) {
+  current_fungible_asset_balances(
     where: {owner_address: {_eq: $address}},
     offset: $offset,
     limit: 100,
     order_by: {amount: desc}
   ) {
-    coin_type
+    asset_type
     amount
     __typename
   }
@@ -33,51 +36,88 @@ Here's an interactive example of how you can query for the Current Coin Balances
 }`}
 />
 
+<Callout type="info">
+The Indexer tracks every transaction that happens on-chain, then exposes that data through a GraphQL API.
+</Callout>
 
-## Indexer API
+## Using the Indexer API
+
+Learn how to use the Indexer API, what each table represents, and how to add custom data to the Indexer.
 
 <Cards>
-  <Card href="indexer/api/labs-hosted">
-    <Card.Title>Aptos Labs Indexer API</Card.Title>
-    <Card.Description>Query Aptos Labs GraphQL Indexer API hosted on Hasura</Card.Description>
+  <Card href="indexer/aptos-hosted">
+    <Card.Title>Accessing the API</Card.Title>
+    <Card.Description>Learn how to query the Indexer API.</Card.Description>
   </Card>
-  <Card href="indexer/api/self-hosted">
-    <Card.Title>Self-hosted Indexer API</Card.Title>
-    <Card.Description>Host your own Indexer API</Card.Description>
+    <Card href="indexer/indexer-reference">
+    <Card.Title>Indexer Table Reference</Card.Title>
+    <Card.Description>Detailed reference for Indexer tables and their schemas.</Card.Description>
   </Card>
   <Card href="indexer/architecture">
     <Card.Title>Architecture</Card.Title>
-    <Card.Description>Detailed layout of Indexer Architecture</Card.Description>
-  </Card>
-  <Card href="indexer/custom-processors">
-    <Card.Title>Indexer Processors</Card.Title>
-    <Card.Description>Use existing or custom indexer processors to shape on-chain data for your application</Card.Description>
+    <Card.Description>Detailed layout of the Indexer's architecture.</Card.Description>
   </Card>
 </Cards>
 
-## Example Queries
+### Example Queries
+
+To help get you started, here are the most common queries the Indexer is used for.
 
 <Cards>
-  <Card href="indexer/account-transactions">
-    <Card.Title>Account Transactions Query</Card.Title>
-    <Card.Description>Retrieves `transaction_version`s of transactions that affect a specified account address, ordered in descending order</Card.Description>
+  <Card href="indexer/fungible-asset-balances">
+    <Card.Title>Get Fungible Asset Balances</Card.Title>
+    <Card.Description>Get all fungible assets an account currently owns.</Card.Description>
   </Card>
-  <Card href="indexer/coin-balances">
-    <Card.Title>Coin Balances Query</Card.Title>
-    <Card.Description>Retrieves the current balances for various coin types associated with a specified account address</Card.Description>
+  <Card href="indexer/account-transactions">
+    <Card.Title>Get Account Transactions</Card.Title>
+    <Card.Description>Get all transactions impacting an account.</Card.Description>
+  </Card>
+  <Card href="indexer/ans-lookup">
+    <Card.Title>Get Aptos Name</Card.Title>
+    <Card.Description>Retrieve the Aptos name associated with an account (via the ANS).</Card.Description>
+  </Card>
+  <Card href="indexer/fungible-asset-info">
+    <Card.Title>Get Fungible Asset Info</Card.Title>
+    <Card.Description>Get detailed information about a specific fungible asset.</Card.Description>
+  </Card>
+  <Card href="indexer/get-nft-collections">
+    <Card.Title>Get NFT Collections</Card.Title>
+    <Card.Description>Retrieve NFT collections owned by a specific account.</Card.Description>
   </Card>
   <Card href="indexer/get-nfts">
-    <Card.Title>NFTs Query</Card.Title>
-    <Card.Description>Retrieves a list of NFTs owned by a specified account address</Card.Description>
+    <Card.Title>Get NFTs</Card.Title>
+    <Card.Description>Retrieve individual NFTs owned by a specific account.</Card.Description>
+  </Card>
+  <Card href="indexer/token-metadata">
+    <Card.Title>Get Token Metadata</Card.Title>
+    <Card.Description>Get metadata information for a specific token.</Card.Description>
+  </Card>
+  <Card href="indexer/get-delegators">
+    <Card.Title>Count Delegators in Staking Pool</Card.Title>
+    <Card.Description>Retrieve the number of active delegators in a staking pool.</Card.Description>
   </Card>
 </Cards>
 
-## Transaction Streaming Service (GRPC)
+## Customizing the Indexer (Advanced)
+
+If the hosted Indexer API is not enough, you can customize and host your own versions of the Indexer.
 
 <Cards>
+  <Card href="indexer/architecture">
+    <Card.Title>Architecture</Card.Title>
+    <Card.Description>Detailed layout of the Indexer's architecture.</Card.Description>
+  </Card>
+  <Card href="indexer/custom-processors">
+    <Card.Title>Custom Processors</Card.Title>
+    <Card.Description>Customize way data is processed and shared in the Indexer</Card.Description>
+  </Card>
   <Card href="indexer/txn-stream">
     <Card.Title>Transaction Streaming Service</Card.Title>
     <Card.Description>GRPC transaction streaming service, consumed by the Indexer</Card.Description>
+  </Card>
+  <Card href="indexer/self-hosted">
+    <Card.Title>Self-hosted Indexer API</Card.Title>
+    <Card.Description>Host your own Indexer API</Card.Description>
   </Card>
 </Cards>
 

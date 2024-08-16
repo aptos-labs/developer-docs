@@ -8,47 +8,38 @@ import { Card, Cards } from '@components/index';
 
 # Indexer API Reference
 
-The Indexer API allows you to access rich data about tokens, accounts, transactions, and events on-chain using GraphQL queries.
+The Indexer API allows you to access rich data about tokens, accounts, transactions, and events on-chain using GraphQL queries. **You can access it [here](./aptos-hosted.mdx).**
 
-You can interactively explore the data discussed here using Hasura explorers here:
+For common queries, check out the sidebar for examples to work from. When building your own, this reference guide should help you determine which tables are most relevant, and how to format your queries.
 
-<Cards>
-  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">
-    <Card.Title>**Mainnet**</Card.Title>
-    <Card.Description>Hasura GraphQL Explorer for Aptos Mainnet</Card.Description>
-  </Card>
-  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">
-    <Card.Title>**Testnet**</Card.Title>
-    <Card.Description>Hasura GraphQL Explorer for Aptos Testnet</Card.Description>
-  </Card>
-  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">
-    <Card.Title>**Devnet**</Card.Title>
-    <Card.Description>Hasura GraphQL Explorer for Aptos Devnet</Card.Description>
-  </Card>
-</Cards>
-
-Or via code at the following endpoints:
-
-- **Mainnet:** `https://api.mainnet.aptoslabs.com/v1/graphql`
-- **Testnet:** `https://api.testnet.aptoslabs.com/v1/graphql`
-- **Devnet:** `https://api.devnet.aptoslabs.com/v1/graphql`
-
-You can also find a list of the most common queries in the sidebar under example queries.
-
-As you explore, you can refer back to these reference docs to understand the tables you are interested in. You should use Ctrl + F to quickly find the right entry for that table.
-
-At the bottom of this page we list the tables which are deprecated, along with any alternatives which may replace them. 
-Make sure to check the list before building any production infrastructure that relies heavily on specific Indexer tables.
+<Callout type="warning">
+Before relying on a table for production services, check the bottom of this page to see if that table is deprecated. If so, use the note section for guidance on what to do to migrate to a non-deprecated table.
+</Callout>
 
 <Callout type="info">
 If you are looking up a table with the `_by_pk` suffix, search for the table name without that suffix. `_by_pk` tables are automatically generated for convenience to allow querying by primary key.
 </Callout>
+<br/>
 
 # Indexer Table Reference
 
 <Callout type="info">
-Remember to use Ctrl + F to find the table you are interested in! When in doubt, you may also want to query the Hasura tables above to see examples of the data inside.
+Remember to use Ctrl + F to find the table you are interested in! When in doubt, you may also want to query the Hasura tables linked in the [Indexer API Access](./aptos-hosted.mdx) page to see examples of the data inside.
 </Callout>
+
+## Raw Data
+
+### `user_transactions`
+
+Transactions filtered to user_transactions (not system).
+
+### `events`
+
+Events emitted by transaction.
+
+### `block_metadata_transactions`
+
+A type of system transaction emitted once per block, useful for mapping to timestamp or epoch.
 
 ## General
 
@@ -233,7 +224,7 @@ This table maps collections to who owns them and helps count how much of a colle
 
 ### `fungible_asset_metadata`
 
-This tracks the metadata tied to each fungible asset (ex. decimals of precision). It includes v1 token data.
+This tracks the metadata tied to each fungible asset (ex. decimals of precision). It includes v1 token data. This is a current_ table.
 
 | Field                             | Type   | Primary Key | Description                                                                                                                       |
 | --------------------------------- | ------ | ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -270,7 +261,7 @@ This tracks the activity of fungible assets. It includes v1 token data.
 | metadata                    | Object  |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see fields for `metadata` in this table.                                                        |
 | owner_address               | String  |             | This is an Aptos account address that owns the asset. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
 | storage_id                  | String  |             | Identifier for the storage used in the transaction. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
-| storage_refund_amount       | bigint  |             | Amount refunded for storage after the transaction. This is always in APT octas. Ex. 50                                                                |
+| storage_refund_amount       | bigint  |             | Amount refunded for storage after the transaction. This is always in APT [octas](../../network/glossary.mdx#Octa). Ex. 50                                                                |
 | token_standard              | String  |             | Aptos standard that the collection adheres to. Ex. "v1"                                                                                              |
 | transaction_timestamp       | String  |             | Timestamp when the transaction occurred. Ex. "2024-04-17T02:14:25.68771"                                                                             |
 | transaction_version         | bigint  |             | Blockchain version of the transaction. Ex. 2                                                                                                         |
@@ -338,28 +329,28 @@ This table maps tokens, standards, and addresses to human readable names.
 
 The following tables are planned for deprecation, or are already deprecated. See the notes section for any direct replacements or notes on how to migrate if you currently depend on one of these tables. Please do not use any of the below tables for production services.
 
-| Table                                                         | Deprecation Date | Notes |
-| ------------------------------------------------------------- | ---------------- | ----- |
-| address_version_from_move_resources                           | 6/7              | The move_resources table has been replaced with legacy_migration_v1.move_resources, which uses account_transactions in a view. To use the migrated view, you will need to backfill and run account_transactions processor. |
-| address_version_from_move_resources_aggregate                 | 6/7              | The move_resources table has been replaced with legacy_migration_v1.move_resources, which uses account_transactions in a view. To use the migrated view, you will need to backfill and run account_transactions processor. |
-| coin_activities                                               | TBD              | We will replace with fungible_asset_activities |
-| coin_activities_aggregate                                     | TBD              | We will replace with fungible_asset_activities |
-| coin_balances                                                 | TBD              | Replace with fungible_asset_balances |
-| collection_datas                                              | TBD              | Replace with collection_v2 |
-| current_coin_balances                                         | TBD              | Replace with current_fungible_asset_balances |
-| current_token_ownerships                                      | TBD              | Replace with current_token_ownerships_v2 |
-| current_token_ownerships_aggregate                            | TBD              | Replace with current_token_ownerships_v2 |
-| move_resources                                                | 6/7              | Replace with account_transactions |
-| move_resources_aggregate                                      | 6/7              | Replace with account_transactions |
-| nft_marketplace_v2_current_nft_marketplace_auctions           | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_current_nft_marketplace_collection_offers  | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_current_nft_marketplace_listings           | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_current_nft_marketplace_listings_aggregate | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_current_nft_marketplace_token_offers       | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| nft_marketplace_v2_nft_marketplace_activities                 | TBD              | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
-| signatures                                                    | 6/21             |  |
-| token_activities                                              | TBD              | Replace with token_activities_v2 |
-| token_activities_aggregate                                    | TBD              | Replace with token_activities_v2 |
-| token_datas                                                   | TBD              |  |
-| token_ownerships                                              | TBD              | Replace with token_ownerships_v2 |
-| tokens                                                        | TBD              | Replaced with v2 tables |
+| Table                                                         | Deprecation Date | Delete Date | Notes |
+| ------------------------------------------------------------- | ---------------- | ----------- | ----- |
+| address_version_from_move_resources                           | 6/7              | TBD         | The move_resources table has been replaced with legacy_migration_v1.move_resources, which uses account_transactions in a view. To use the migrated view, you will need to backfill and run account_transactions processor. |
+| address_version_from_move_resources_aggregate                 | 6/7              | TBD         | The move_resources table has been replaced with legacy_migration_v1.move_resources, which uses account_transactions in a view. To use the migrated view, you will need to backfill and run account_transactions processor. |
+| coin_activities                                               | 7/22             | TBD         | We will replace with fungible_asset_activities |
+| coin_activities_aggregate                                     | 7/22             | TBD         | We will replace with fungible_asset_activities |
+| coin_balances                                                 | 7/22             | TBD         | Replace with fungible_asset_balances |
+| collection_datas                                              | 7/22             | TBD         | Replace with collection_v2 |
+| current_coin_balances                                         | 7/22             | TBD         | Replace with current_fungible_asset_balances |
+| current_token_ownerships                                      | 7/22             | TBD         | Replace with current_token_ownerships_v2 |
+| current_token_ownerships_aggregate                            | 7/22             | TBD         | Replace with current_token_ownerships_v2 |
+| move_resources                                                | 6/7              | TBD         | Replace with account_transactions |
+| move_resources_aggregate                                      | 6/7              | TBD         | Replace with account_transactions |
+| nft_marketplace_v2_current_nft_marketplace_auctions           | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_current_nft_marketplace_collection_offers  | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_current_nft_marketplace_listings           | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_current_nft_marketplace_listings_aggregate | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_current_nft_marketplace_token_offers       | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| nft_marketplace_v2_nft_marketplace_activities                 | TBD              | TBD         | We're deprecating nft_marketplace processor so all the nft_marketplace tables should be deleted |
+| signatures                                                    | 6/21             | TBD         |  |
+| token_activities                                              | 7/22             | TBD         | Replace with token_activities_v2 |
+| token_activities_aggregate                                    | 7/22             | TBD         | Replace with token_activities_v2 |
+| token_datas                                                   | 7/22             | TBD         |  |
+| token_ownerships                                              | 7/22             | TBD         | Replace with token_ownerships_v2 |
+| tokens                                                        | 7/22             | TBD         | Replaced with v2 tables |

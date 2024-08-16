@@ -1,0 +1,207 @@
+---
+title: "Create Aptos Dapp Token Minting Dapp Template"
+---
+
+import { Callout, FileTree, Steps } from 'nextra/components';
+
+# Create Aptos Dapp Token Minting Dapp Template
+
+The Token minting dapp template provides an end-to-end Fungible Asset minting dapp. With this dapp, you can learn how Fungible Assets work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a Fungible Asset minting dapp users can quickly adjust and deploy into a live server.
+
+Read more about the [Aptos Fungible Asset Standard](../../smart-contracts/digital-asset.mdx)
+
+The Token minting dapp template provides 3 pages:
+
+1. Public Mint Fungible Asset Page - A page for the public to mint Fungible Assets.
+2. Create Fungible Asset page - A page for creating new asset. This page is not accessible on production.
+3. My Fungible Assets page - A page to view all the assets created under the current Move module (smart contract). This page is not accessible on production.
+
+## Quick Start
+- [Create a token on chain](#publish-the-move-contract)
+- [Customizing the frontend](#customizing-the-front-end)
+- [Deploy to a live server](#deploy-to-a-live-server)
+
+## Setup
+
+You can start the app by running:
+
+```bash 
+npm run dev
+```
+
+However, for the app to work as intended, there are several setup steps you will have to do to:
+
+1. Publish the contract
+2. Create the token on-chain.
+3. Configure your dapp to use the token
+
+## Publish the Move Contract
+
+<Steps>
+
+### On the project root folder, use the below command to initiliaze an account to publish the contract with.
+
+```bash filename="Terminal"
+npm run move:init
+```
+
+The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
+
+This will:
+1. Create an account you will later publish the contract with
+2. Set the `VITE_MODULE_ADDRESS` in the `.env` file to the contract object address.
+
+### In the `.env` file, set `VITE_FA_CREATOR_ADDRESS` to be the same as your account address.
+This determines which account is allowed to create assets using the dapp.
+
+If you haven't set up an account, you can create one with an Aptos wallet like [Petra](https://petra.app/docs/use#create-a-new-account). Make sure to set up the account on the same network as your template project.
+
+For example:
+```bash filename=".env"
+VITE_APP_NETWORK=testnet
+VITE_FA_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
+```
+
+### On the project root folder, run the below command to publish the contract.
+
+```bash filename="Terminal"
+npm run move:publish
+```
+<Callout type="info">
+You will have to confirm the gas fee in the console.
+</Callout>
+
+This command will publish the contract to chain.
+
+</Steps>
+
+
+## Publishing the asset on-chain
+<Steps>
+
+### Run the app and open the preview.
+
+```bash filename="Terminal"
+npm run dev
+```
+
+### In the top-right corner, click "Connect a Wallet". 
+Use the same account that you set in `.env` for the `VITE_FA_CREATOR_ADDRESS`. 
+Or, if you use a different account, set the `VITE_FA_CREATOR_ADDRESS` to the account you sign in with and republish the contract.
+
+<Callout type="warning">
+Do not use the "Google Account" option if it is available. The account generated from that will not work as the `VITE_COLLECTION_CREATOR_ADDRESS`. Use a wallet created with an Aptos wallet provider such as [Petra](https://petra.app/docs/use#create-a-new-account).
+</Callout>
+
+### In the app, go to the "Create Asset" page (if not on that page already)
+
+### Upload a token image.
+
+### Choose the required fields.
+1. Choose the asset name.
+2. Choose the asset symbol.
+3. Choose the max supply of the asset.
+4. Choose the max amount an address can mint.
+5. Choose the asset decimals.
+6. Enter the project url
+
+The rest are optional fields to help customize your mint.
+- (Optional) Mint fee per asset - this defines the cost public users pay to mint this asset.
+- (Optional) Mint for myself - this defines how many assets you would want to mint for yourself once the asset is created.
+
+### Click "Create Asset"
+When adding the image, it submits the file to [Irys](https://irys.xyz/), a decentralized asset server, that will store your files.
+
+During the upload process, you will need to sign a message to approve file uploading to Irys. Additionally, you may need to fund an Irys node. Read more about the process [here](https://docs.irys.xyz/hands-on/tutorials/uploading-nfts).
+
+### Once you approve the transaction, you have successfully created a fungible asset on Aptos!
+
+</Steps>
+
+## Customizing the Front-End
+
+Most data on the front end is customizable in `frontend/config.ts`. 
+
+### Set the `asset_id` config
+
+In order to add a fungible asset to the public mint page, set `asset_id` in `frontend/config.ts` with the asset address. 
+
+You can use an assset that you have minted using the tool by going to the "My Assets" page and copying its address.
+
+### Modify static content
+
+Once the collection address has been configured, view the `frontend/config.ts` file to change any static content on the page. You can also modify the code itself as you wish.
+
+**How to add static images?**
+
+The public mint page uses static images in the UI. Initially, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as seen below in the `frontend/config.ts` file and add it under the section you want to have it.
+
+```tsx filename="frontend/config.ts"
+import MyImage from "@/assets/<my-new-folder>/my-image.png";
+```
+
+## My Assets Page
+
+
+This page displays all the assets that have been created under the current Move module. You can click on the asset address, which redirects you to the Aptos Explorer site where you can see your asset.
+
+When you are ready to use an asset on the Public Mint Page, you need to copy the asset address and assign it to the `fa_address` on the `frontend/config.ts` file.
+
+Some stats are available on this page, like the max supply of the asset and the number of asset minted.
+
+
+## How can I take it from here?
+
+Remember, one of the goals of this template is to educate and provide a real life example on how a Fungible Asset minting dapp can be on Aptos. We provide some basic concepts and features but there is much more you can do for your dapp.
+
+Some ideas you can try are:
+
+1. Allowlist mint stages
+2. Custom flows after someone mints an asset (or even token gated experiences)
+3. Check out our [TS SDK](../../sdks/ts-sdk.mdx) to see what other API queries you can use to support more features and fetch more data.
+
+## Ready for Mainnet
+
+If you started your dapp on testnet, and you are happy with your asset testing, you will want to get the asset on mainnet.
+
+Creating a asset on mainnet is the same flow as creating on testnet, but we need to change some configuration.
+
+1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
+2. Run `npm run move:init` to initialize an account to work against Mainnet
+3. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
+4. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
+5. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
+6. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_FA_CREATOR_ADDRESS` value.
+7. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
+8. The next step would be to create an asset using this account. Simply follow [Create a Fungible Asset Page](#create-a-fungible-asset-page)
+
+## Deploy to a live server
+
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). 
+
+At the root of the folder, simply run 
+
+```bash filename="Terminal"
+npm run deploy
+```
+
+Then, follow the prompts. Please refer to Vercel docs to learn more about the [Vercel CLI](https://vercel.com/docs/cli)
+
+If you are looking for different services to deploy the static site to, `create-aptos-dapp` utilizes Vite as the development tool, so you can follow the [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+
+1. Run `npm run build` to build a static site
+2. Run `npm run preview` to see how your dapp would look like on a live server
+3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy) on how to use each
+
+## Update the look and feel of the dapp
+
+This template is styled with [Tailwind CSS](https://tailwindcss.com/) and [shadcn/ui](https://ui.shadcn.com/). These libraries provide the app with a neutral and clean look and feel while leaving it open to a lot of customization so that you can make the app truly yours.
+
+Please refer to the following questions in the FAQ to learn about how to customize the UI of your dapp:
+
+- [What is Tailwind CSS?](../faq.mdx#what-is-tailwind-css)
+- [What is `shadcn/ui`?](../faq.mdx#what-is-shadcnui)
+- [How to modify the theme?](../faq.mdx#how-to-modify-the-theme)
+- [How to add components?](../faq.mdx#how-to-add-components)
+- [How to add colors?](../faq.mdx#how-to-add-colors)
+- [How to add dark mode?](../faq.mdx#how-to-add-dark-mode)

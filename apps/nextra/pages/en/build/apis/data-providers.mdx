@@ -1,0 +1,79 @@
+---
+title: "Data Providers"
+---
+
+# Data Providers
+
+If you want to access aptos blockchain data but don't need it in real-time.
+We have a few options that will let you access this data using SQL or UIs for building dashboards.
+This type of data is often used for analytics since it allows for aggregations.
+
+## Review of data endpoints
+
+Hitting the full node directly will give the latest data (will be missing historical unless it's an archival full node) using [REST API](/apis#aptos-fullnode)
+
+Indexer layer on top of this will provide a [GRPC transaction stream](/indexer/txn-stream/aptos-hosted-txn-stream.mdx)
+
+On top of this transaction stream, we've built out some product logic tables that can be queried through [GraphQL](/indexer/)
+
+Since the logic to parse out transaction is [public](https://github.com/aptos-labs/aptos-indexer-processors), some vendors have implemented similar parsing logic to create a subset of tables and made them available to query.
+
+## SQL Tables
+
+Indexer defines several processors that create different database tables.
+
+### Core tables
+
+These are parsed directly from node API response, one option is to split it out into the following tables:
+
+- Blocks - version, block height, epoch, timestamp
+- Transactions - version, sender, entry function, gas
+- Signatures - signature types, signer, fee payer address
+- Events - type and data for events
+
+We store data as table items, resources or modules
+
+- (write set) changes - change index, change type, resource address
+- Table items - table key, table handle, key (content and type), value (content and type)
+- (move) resources - resource address, resource type, data
+- (move) modules - bytecode for deployed modules
+
+## Vendors of off-chain data
+
+Most of our data vendors only provide core datasets.
+A [subset of vendors](https://aptosfoundation.org/currents/aptos-on-chain-data-capabilities-with-dune-nansen-and-other-providers) is listed below
+
+### Google bigquery public dataset
+
+Provides data through [google public data](https://console.cloud.google.com/marketplace/product/bigquery-public-data/crypto-aptos-mainnet-us)
+
+![bq_sql](/screenshots/bq_sql.png)
+
+We also have sample analytics queries [using the above resources](https://github.com/aptos-labs/explorer/tree/main/analytics)
+
+### Dune
+
+We have a dashboard here: https://dune.com/aptos/aptos-chain-metrics-overview
+
+### Flipside
+
+Another dashboard vendor, signatures in core tables were merged into `fact_transactions`
+They also have a few more convenience tables (defi, nft, price), [table list](https://flipsidecrypto.github.io/aptos-models/#!/overview)
+
+### Sentio
+
+They have a guide here: https://docs.sentio.xyz/docs/aptos
+Data is found in data source -> external project  -> sentio/aptos-overview
+
+### Space and Time
+
+Data can be found here: https://app.spaceandtime.ai/data-sets?selectedChain=aptos
+They also have some non-core tables (Token, Staking, etc)
+
+## Other vendors
+
+We also have some partners who target more enterprise use cases
+
+- [Token Terminal](https://tokenterminal.com/resources/articles/aptos-data-partnership)
+- [The Tie](https://www.thetie.io/insights/news/introducing-aptos-ecosystem-dashboard-and-on-chain-data/)
+- [Elliptic](https://www.elliptic.co/media-center/elliptic-partners-with-aptos-foundation-as-a-data-integration-provider-to-offer-compliance-screening-and-risk-services-for-aptos-network)

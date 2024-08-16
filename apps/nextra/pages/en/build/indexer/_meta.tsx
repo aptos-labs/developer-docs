@@ -1,7 +1,10 @@
 export default {
-  "---concepts---": {
+  "---usage---": {
     type: "separator",
-    title: "Concepts",
+    title: "Usage",
+  },
+  "aptos-hosted": {
+    title: "Indexer API Access",
   },
   "indexer-reference": {
     title: "Indexer API Table Reference",
@@ -9,8 +12,9 @@ export default {
   architecture: {
     title: "Architecture",
   },
-  api: {
-    title: "Indexer API",
+  "---indexer-customizations---": {
+    type: "separator",
+    title: "Indexer Customizations (Advanced)",
   },
   "custom-processors": {
     title: "Custom Processors",
@@ -18,12 +22,15 @@ export default {
   "txn-stream": {
     title: "Transaction Stream Service",
   },
+  "self-hosted": {
+    title: "Self-Hosted Indexer API",
+  },
   "---example-queries---": {
     type: "separator",
     title: "Example Queries",
   },
-  "coin-balances": {
-    title: "Get Coin Balances",
+  "fungible-asset-balances": {
+    title: "Get Fungible Asset Balances",
     theme: {
       toc: false,
       layout: "full",
@@ -37,14 +44,14 @@ export default {
     },
   },
   "ans-lookup": {
-    title: "Get Account Domain Name",
+    title: "Get Aptos Name",
     theme: {
       toc: false,
       layout: "full",
     },
   },
-  "coin-info": {
-    title: "Get Coin Info",
+  "fungible-asset-info": {
+    title: "Get Fungible Asset Info",
     theme: {
       toc: false,
       layout: "full",

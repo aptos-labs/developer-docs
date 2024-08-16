@@ -11,7 +11,7 @@ const aptosConfig = new AptosConfig({ network: Network.TESTNET });
 const aptos = new Aptos(aptosConfig);
 
 const fund = await aptos.getAccountInfo({ accountAddress: "0x123" });
-const modules = await aptos.getAccountTransactions({ accountAddress: "0x123" });
+const modules = await aptos.getAccountModules({ accountAddress: "0x123" });
 const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
 ```
 

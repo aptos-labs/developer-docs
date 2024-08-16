@@ -1,0 +1,189 @@
+---
+title: "Create Aptos Dapp Token Staking Dapp Template"
+---
+
+import { Callout, FileTree, Steps } from 'nextra/components';
+
+# Create Aptos Dapp Token Staking Dapp Template
+
+The Token staking dapp template provides an end-to-end Fungible Asset staking dapp. With this dapp, you can learn how Fungible Assets work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a Fungible Asset staking dapp users can quickly adjust and deploy into a live server.
+
+<Callout>
+If you have not created a fungible asset yet, check out the [Token Minting Dapp Template](./token-minting-dapp) to easily create a token on Aptos.
+</Callout>
+
+The Token staking dapp template provides a one page with different components:
+
+1. Create an incetivize pool - A component for the stake creator to create an incentivize (rewards) pool
+2. Stake Fungible Asset Component - A component for anyone to stake the fungible asset
+3. Unstake Fungible Asset Component - A component for any staker to unstake the fungible asset
+4. Claim fungible assets rewards - A component for any staker to claim the fungible asset rewards
+
+
+## Quick Start
+- [Create a stake pool for an existing FA](#publish-the-move-contract)
+- [Incentivize the pool with rewards](#incentivize-the-pool-with-rewards)
+- [Deploy to a live server](#deploy-to-a-live-server)
+
+## Setup
+
+You can start the app by running:
+
+```bash filename="Terminal"
+npm run dev
+```
+
+However, for the app to work as intended, there are several setup steps you will have to do to:
+
+1. Publish the contract to create a stake pool.
+2. Incentivize the pool with rewards.
+
+## Publish the Move Contract
+
+<Steps>
+
+### On the project root folder, use the below command to initiliaze an account to publish the contract with.
+
+```bash filename="Terminal"
+npm run move:init
+```
+
+The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
+
+This will:
+	1. Create an account you will later publish the contract with
+	2. Set the `VITE_MODULE_ADDRESS` in the `.env` file to the contract object address.
+
+### In the `.env` file, set `VITE_REWARD_CREATOR_ADDRESS` to be the same as your account address.
+This determines which account is allowed to create a pool using the dapp.
+
+If you haven't set up an account, you can create one with an Aptos wallet like [Petra](https://petra.app/docs/use#create-a-new-account). Make sure to set up the account on the same network as your template project.
+
+For example:
+```bash filename=".env"
+VITE_APP_NETWORK=testnet
+VITE_REWARD_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
+```
+
+### In the `.env` file, set `VITE_FA_ADDRESS` to be the same as the fungible asset address.
+This determines which asset is used as the stake asset.
+
+<Callout>
+If you have not created a fungible asset yet, check out the [Token Minting Dapp Template](./token-minting-dapp) to easily create a token on Aptos.
+</Callout>
+
+For example:
+```bash filename=".env"
+VITE_APP_NETWORK=testnet
+VITE_FA_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
+```
+
+### On the project root folder, run the below command to publish the contract.
+
+```bash filename="Terminal"
+npm run move:publish
+```
+<Callout type="info">
+You will have to confirm the gas fee in the console.
+</Callout>
+
+This command will publish the contract to chain.
+
+</Steps>
+
+
+## Incentivize the pool with rewards
+<Steps>
+
+### Run the app and open the preview.
+
+```bash filename="Terminal"
+npm run dev
+```
+
+### In the top-right corner, click "Connect a Wallet". 
+Use the same account that you set in `.env` for the `VITE_REWARD_CREATOR_ADDRESS`. 
+Or, if you use a different account, set the `VITE_REWARD_CREATOR_ADDRESS` to the account you sign in with and republish the contract.
+
+### Click the `Add Incentivize` button
+
+Once you are connected with the same account that you set in `.env` for the `VITE_REWARD_CREATOR_ADDRESS`, you should be able to see the `Incentivize Pool` component with a `Add Incentivize` button.
+
+Clicking the button pops up a modal for you to enter the incentivize pool duration (in weeks) and the amount of the fungible asset.
+
+### Once you approve the transaction, you have successfully created an incentivize pool on Aptos!
+
+</Steps>
+
+## Customizing the Front-End
+
+Most data on the front end is customizable in `frontend/config.ts`. 
+
+### Modify static content
+
+Once the collection address has been configured, view the `frontend/config.ts` file to change any static content on the page. You can also modify the code itself as you wish.
+
+**How to add static images?**
+
+The public mint page uses static images in the UI. Initially, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as seen below in the `frontend/config.ts` file and add it under the section you want to have it.
+
+```tsx filename="frontend/config.ts"
+import MyImage from "@/assets/<my-new-folder>/my-image.png";
+```
+
+## How can I take it from here?
+
+Remember, one of the goals of this template is to educate and provide a real life example on how a Fungible Asset staking dapp can be on Aptos. We provide some basic concepts and features but there is much more you can do for your dapp.
+
+Some ideas you can try are:
+
+1. Choose different fungible assets for the staked token and the reward token.
+2. Custom flows after someone stakes an asset
+3. Check out our [TS SDK](../../sdks/ts-sdk.mdx) to see what other API queries you can use to support more features and fetch more data.
+
+## Ready for Mainnet
+
+If you started your dapp on testnet, and you are happy with your asset testing, you will want to get the asset on mainnet.
+
+Creating a asset on mainnet is the same flow as creating on testnet, but we need to change some configuration.
+
+1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
+2. Run `npm run move:init` to initialize an account to work against Mainnet
+3. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
+4. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
+5. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
+6. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_REWARD_CREATOR_ADDRESS` value.
+7. Create or get the asset you want to use in your dapp, open the `.env` file and assign the asset address as the `VITE_FA_ADDRESS` value.
+8. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
+9. The next step would be to create an incentivize pool using this account. Simply follow [Incentivize the pool with rewards](#incentivize-the-pool-with-rewards)
+
+## Deploy to a live server
+
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). 
+
+At the root of the folder, simply run 
+
+```bash filename="Terminal"
+npm run deploy
+```
+
+Then, follow the prompts. Please refer to Vercel docs to learn more about the [Vercel CLI](https://vercel.com/docs/cli)
+
+If you are looking for different services to deploy the static site to, `create-aptos-dapp` utilizes Vite as the development tool, so you can follow the [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+
+1. Run `npm run build` to build a static site
+2. Run `npm run preview` to see how your dapp would look like on a live server
+3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy) on how to use each
+
+## Update the look and feel of the dapp
+
+This template is styled with [Tailwind CSS](https://tailwindcss.com/) and [shadcn/ui](https://ui.shadcn.com/). These libraries provide the app with a neutral and clean look and feel while leaving it open to a lot of customization so that you can make the app truly yours.
+
+Please refer to the following questions in the FAQ to learn about how to customize the UI of your dapp:
+
+- [What is Tailwind CSS?](../faq.mdx#what-is-tailwind-css)
+- [What is `shadcn/ui`?](../faq.mdx#what-is-shadcnui)
+- [How to modify the theme?](../faq.mdx#how-to-modify-the-theme)
+- [How to add components?](../faq.mdx#how-to-add-components)
+- [How to add colors?](../faq.mdx#how-to-add-colors)
+- [How to add dark mode?](../faq.mdx#how-to-add-dark-mode)
