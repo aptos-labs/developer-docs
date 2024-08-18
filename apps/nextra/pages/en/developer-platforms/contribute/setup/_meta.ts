@@ -1,7 +1,7 @@
 export default {
-  "migrating-from-docusaurus": "Migrating from Docusaurus",
   "organize-files": "Organize Files",
   "organize-files-advanced": "Organize Files (Advanced)",
+  mdx: "Writing MDX",
   "docs-config": "Docs Config",
   SEO: "SEO",
   analytics: "Analytics",
@@ -9,4 +9,5 @@ export default {
   maintenance: "Maintenance",
   deployment: "Deployment",
   troubleshooting: "Troubleshooting",
+  "migrating-from-docusaurus": "Migrating from Docusaurus",
 };

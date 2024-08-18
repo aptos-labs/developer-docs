@@ -1,0 +1,49 @@
+{
+  "name": "@aptos-labs/nextra-components",
+  "version": "0.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "type": "module",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "scripts": {
+    "tsc": "tsc",
+    "build:dev": "rimraf lib && tsup --watch",
+    "build:prod": "rimraf dist && env NODE_ENV=production tsup",
+    "build:watch": "tsup --watch",
+    "lint:fix": "eslint --ext .ts,.tsx --quiet --fix --ignore-path ./.gitignore",
+    "lint:format": "prettier  --loglevel warn --write \"./**/*.{ts,tsx,css,md,json}\" ",
+    "lint": "pnpm lint:format && pnpm lint:fix "
+  },
+  "dependencies": {
+    "clsx": "2.1.0",
+    "tailwind-merge": "^2.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "eslint": "^8.16.0",
+    "nextra-theme-docs": "3.0.0-alpha.24",
+    "prettier": "^2.6.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rimraf": "6.0.1",
+    "tsup": "8.2.2",
+    "typescript": "5.5.3"
+  },
+  "peerDependencies": {
+    "nextra-theme-docs": "3.0.0-alpha.24",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

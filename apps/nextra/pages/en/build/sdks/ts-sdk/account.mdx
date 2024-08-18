@@ -9,7 +9,6 @@ import { Callout } from 'nextra/components'
 There are several ways to generate account credentials using the TypeScript SDK. You can use:
 - `Account.generate()`
 - `Account.fromPrivateKey()`
-- `Account.fromPrivateKeyAndAddress()`
 - `Account.fromDerivationPath()`
 
 `Account.generate()` is the most commonly used method to create keys for a new account. 
@@ -47,6 +46,7 @@ Here are several examples that show how to do so with specific encoding schemes.
 ### Derive an account from private key
 
 The SDK supports deriving an account from a private key with `fromPrivateKey()` static method.
+In addition, this method supports deriving an account from a private key and account address.
 This method uses a local calculation and therefore is used to derive an `Account` that has not had its authentication key rotated.
 
 ```ts
@@ -61,38 +61,11 @@ const account = Account.fromPrivateKey({ privateKey, legacy: false });
 // to derive an account with a Single Sender Secp256k1 key scheme
 const privateKey = new Secp256k1PrivateKey(privateKeyBytes);
 const account = Account.fromPrivateKey({ privateKey });
-```
 
-### Derive an account from private key and address
-
-The SDK supports deriving an account from a private key and address with `fromPrivateKeyAndAddress()` static method.
-
-```ts
-// to derive an account with a legacy Ed25519 key scheme
+// to derive an account with a private key and account address
 const privateKey = new Ed25519PrivateKey(privateKeyBytes);
-const accountAddress = AccountAddress.from(address);
-const account = Account.fromPrivateKeyAndAddress({
-  privateKey,
-  address: accountAddress,
-  legacy: true,
-});
-
-// to derive an account with a Single Sender Ed25519 key scheme
-const privateKey = new Ed25519PrivateKey(privateKeyBytes);
-const accountAddress = AccountAddress.from(address);
-const account = Account.fromPrivateKeyAndAddress({
-  privateKey,
-  address: accountAddress,
-  legacy: false,
-});
-
-// to derive an account with a Single Sender Secp256k1 key scheme
-const privateKey = new Secp256k1PrivateKey(privateKeyBytes);
-const accountAddress = AccountAddress.from(address);
-const account = Account.fromPrivateKeyAndAddress({
-  privateKey,
-  address: accountAddress,
-});
+const address = AccountAddress.from(address);
+const account = Account.fromPrivateKey({ privateKey, address });
 ```
 
 ### Derive an account from derivation path

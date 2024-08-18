@@ -4,6 +4,8 @@ title: "Aptos Wallet Standard"
 
 {/* TODO: Consolidate with wallet adapter */}
 
+import { Callout } from 'nextra/components';
+
 # Aptos Wallet Standard
 
 The wallet standard provides guidelines for interoperability between wallet
@@ -38,7 +40,7 @@ Aptos account creation can be supported across wallets in the following manner:
 1. Generate a mnemonic phrase, for example with BIP39.
 2. Get the master seed from that mnemonic phrase.
 3. Use the BIP44-derived path to retrieve an account address (e.g. `m/44'/637'/0'/0'/0'`)
-  - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_account.ts#L49-L69)
+  - See the [Aptos TypeScript SDK's implementation for the derive path](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/account/Account.ts#L181-L202)
   - For example, Petra Wallet always uses the path `m/44'/637'/0'/0'/0'` since
 there is one mnemonic per one account.
 
@@ -104,153 +106,130 @@ for (let i = 0; currentGap < gapLimit; i += 1) {
 }
 ```
 
-## dapp API
+## Wallet and dapp communication
 
-More important than account creation, is how wallets connect to dapps.
-Additionally, following these APIs will allow for the wallet developer to
-integrate with the [Aptos Wallet Adapter Standard](../sdks/wallet-adapter.mdx). The APIs are as follows:
+More important than account creation, is how wallets and dapps communicate.
 
-- `connect()`, `disconnect()`
-- `account()`
-- `network()`
-- `signAndSubmitTransaction(transaction: EntryFunctionPayload)`
-- `signMessage(payload: SignMessagePayload)`
-- Event listening (`onAccountChanged(listener)`, `onNetworkChanged(listener)`)
+[Following AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md), the Wallet standard defines an API for wallet and application interactions.
+
+### Wallet Interface Standard
+
+A wallet must implement a [AptosWallet interface](https://github.com/aptos-labs/wallet-standard/blob/main/src/wallet.ts) with the wallet provider info and features:
 
 ```typescript
-// Common Args and Responses
-
-// For single-signer account, there is one publicKey and minKeysRequired is null.
-// For multi-signer account, there are multiple publicKeys and minKeysRequired value.
-type AccountInfo = {
-    address: string;
-    publicKey: string | string[];
-    minKeysRequired?: number; // for multi-signer account
-}
-
-type NetworkInfo = {
-  name: string;
-  chainId: string;
+class MyWallet implements AptosWallet {
   url: string;
-};
-
-// The important thing to return here is the transaction hash, the dapp can wait for it
-type [PendingTransaction](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/generated/models/PendingTransaction.ts)
-
-type [EntryFunctionPayload](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/generated/models/EntryFunctionPayload.ts)
-
-
+  version: "1.0.0";
+  name: string;
+  icon:
+    | `data:image/svg+xml;base64,${string}`
+    | `data:image/webp;base64,${string}`
+    | `data:image/png;base64,${string}`
+    | `data:image/gif;base64,${string}`;
+  chains: AptosChain;
+  features: AptosFeatures;
+  accounts: readonly AptosWalletAccount[];
+}
 ```
 
-### Connection APIs
-
-The connection APIs ensure that wallets don't accept requests until the user
-acknowledges that they want to see the requests. This keeps the user state clean
-and prevents the user from unknowingly having prompts.
-
-- `connect()` will prompt the user for a connection
-- return `Promise<AccountInfo>`
-- `disconnect()` allows the user to stop giving access to a dapp and also helps
-the dapp with state management
-- return `Promise<void>`
-
-### State APIs
-
-#### Get Account
-
-**Connection required**
-
-Allows a dapp to query for the current connected account address and public key
-
-- `account()` no prompt to the user
-- returns `Promise<AccountInfo>`
-
-#### Get Network
-
-**Connection required**
-
-Allows a dapp to query for the current connected network name, chain ID, and URL
-
-- `network()` no prompt to the user
-- returns `Promise<NetworkInfo>`
-
-### Signing APIs
-
-#### Sign and submit transaction
-
-**Connection required**
-
-Allows a dapp to send a simple JSON payload using the [TypeScript SDK](https://github.com/aptos-labs/aptos-core/blob/1bc5fd1f5eeaebd2ef291ac741c0f5d6f75ddaef/ecosystem/typescript/sdk/src/aptos_client.ts#L217-L221)
-for signing and submission to the current network. The user should be prompted
-for approval.
-
-- `signAndSubmitTransaction(transaction: EntryFunctionPayload)` will prompt the
-user with the transaction they are signing
-- returns `Promise<PendingTransaction>`
-
-#### Sign message
-
-**Connection required**
-
-Allows a dapp to sign a message with their private key. The most common use case
-is to verify identity, but there are a few other possible use cases. The user
-should be prompted for approval. You may notice some wallets from other chains
-just provide an interface to sign arbitrary strings. This can be susceptible to
-man-in-the-middle attacks, signing string transactions, etc.
-
-Types:
+A wallet must implement a [AptosWalletAccount interface](https://github.com/aptos-labs/wallet-standard/blob/main/src/account.ts) that represents the accounts that have been authorized by the dapp.
 
 ```typescript
-export interface SignMessagePayload {
-  address?: boolean; // Should we include the address of the account in the message
-  application?: boolean; // Should we include the domain of the dapp
-  chainId?: boolean; // Should we include the current chain id the wallet is connected to
-  message: string; // The message to be signed and displayed to the user
-  nonce: string; // A nonce the dapp should generate
+enum AptosAccountVariant {
+  Ed25519,
+  MultiEd25519,
+  SingleKey,
+  MultiKey,
 }
 
-export interface SignMessageResponse {
-  address?: string;
-  application?: string;
-  chainId?: number;
-  fullMessage: string; // The message that was generated to sign
-  message: string; // The message passed in by the user
-  nonce: string;
-  prefix: string; // Should always be APTOS
-  signature: string | string[]; // The signed full message
-  bitmap?: Uint8Array; // a 4-byte (32 bits) bit-vector of length N
+class AptosWalletAccount implements WalletAccount {
+  address: string;
+
+  publicKey: Uint8Array;
+
+  chains: AptosChain;
+
+  features: AptosFeatures;
+
+  variant: AptosAccountVariant;
+
+  label?: string;
+
+  icon?:
+    | `data:image/svg+xml;base64,${string}`
+    | `data:image/webp;base64,${string}`
+    | `data:image/png;base64,${string}`
+    | `data:image/gif;base64,${string}`
+    | undefined;
 }
 ```
 
-- `signMessage(payload: SignMessagePayload)` prompts the user with the
-`payload.message` to be signed
-- returns `Promise<SignMessageResponse>`
+If the wallet is a web extension wallet (i.e installed through the chrome extension store), the wallet must register itself using the [registerWallet](https://github.com/wallet-standard/wallet-standard/blob/master/packages/core/wallet/src/register.ts#L25) method to notify the dapp it is ready to be used.
 
-An example:
-`signMessage({nonce: 1234034, message: "Welcome to dapp!", address: true, application: true, chainId: true })`
+```typescript
+const myWallet = new MyWallet();
 
-This would generate the `fullMessage` to be signed and returned as the `signature`:
-
-```bash
-APTOS
-address: 0x000001
-chain_id: 7
-application: badsite.firebase.google.com
-nonce: 1234034
-message: Welcome to dapp!
+registerWallet(myWallet);
 ```
 
-Aptos has support for both single-signer and multi-signer accounts. If the
-wallet is single-signer account, there is exactly one signature and `bitmap` is
-null. If the wallet is a multi-signer account, there are multiple `signature`
-and `bitmap` values. The `bitmap` masks that public key that has signed the
-message.
+A wallet is considered a valid Aptos wallet if it implements the standard [required features](https://github.com/aptos-labs/wallet-standard/blob/main/src/detect.ts#L16).
 
-### Event listening
+A wallet must throw a [AptosWalletError](https://github.com/aptos-labs/wallet-standard/blob/main/src/errors.ts). The standard requires to support `Unauthorized` and `InternalError` but a wallet can throw a custom `AptosWalletError` error
 
-To be added in the future:
+```typescript
+// Using the default message
+if (error) {
+  throw new AptosWalletError(AptosWalletErrorCode.Unauthorized);
+}
+// Using a custom message
+if (error) {
+  throw new AptosWalletError(
+    AptosWalletErrorCode.Unauthorized,
+    "My custom unauthorized message"
+  );
+}
+// Using a custom error
+if (error) {
+  throw new AptosWalletError(-32000, "Invalid Input");
+}
+```
 
-- Event listening (`onAccountChanged(listener)`, `onNetworkChanged(listener)`)
+### Dapp API
+<Callout type="info">
+For a dapp to easily integrate with a wallet, it encouraged to use the [Aptos Wallet Adapter Standard](../sdks/wallet-adapter.mdx).
+</Callout>
+
+If for some reason, a dapp decides to implement a custom wallet integration:
+
+A dapp uses the [getAptosWallets()](https://github.com/aptos-labs/wallet-standard/blob/main/src/detect.ts#L40) function which gets all the Aptos standard compatible wallets.
+
+```typescript
+import { getAptosWallets } from "@aptos-labs/wallet-standard";
+
+let { aptosWallets, on } = getAptosWallets();
+```
+
+On first load, and before the dapp has been loaded, it gets all the wallets that have been registered so far. To keep getting all the registered wallets after this point, the dapp must add an event listener for new wallets that get registered receiving an unsubscribe function, which it can later use to remove the listener.
+
+```typescript
+const removeRegisterListener = on("register", function () {
+  // The dapp can add new aptos wallets to its own state context as they are registered
+  let { aptosWallets } = getAptosWallets();
+});
+
+const removeUnregisterListener = on("unregister", function () {
+  let { aptosWallets } = getAptosWallets();
+});
+```
+The dapp has an event listener now, so it sees new wallets immediately and doesn't need to poll or list them again. This also works if the dapp loads before any wallets (it will initialize, see no wallets, then see wallets as they load)
+
+A dapp makes a wallet request by calling the feature name that coresponds to the desired action. For example, to use the `connect` feature:
+
+```typescript
+const onConnect = () => {
+  this.wallet.features["aptos:connect"].connect();
+};
+```
 
 ## Key rotation
 

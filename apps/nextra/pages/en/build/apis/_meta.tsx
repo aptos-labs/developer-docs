@@ -12,6 +12,7 @@ export default {
     title: "Indexer GraphQL API",
     href: "/en/build/indexer",
   },
+  "data-providers": "Data Providers",
   "faucet-api": {
     title: "Faucet API",
   },
