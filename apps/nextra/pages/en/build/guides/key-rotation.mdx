@@ -57,8 +57,8 @@ users to query an account address associated with a given authentication key,
 and only allows for one entry per authentication key. Hence the requirement of a
 signed [`account::RotationProofChallenge`] to ensure that a malicious actor does
 not rotate an account's authentication key to a key that is already in the
-table, as this attack that would prevent lookup of the valid originating address
-that the holder of an authentication key had previously approved.
+table, as this attack would prevent lookup of the valid originating address that
+the holder of an authentication key had previously approved.
 
 Notably, the [`account::OriginatingAddress`] table is _only_ updated upon key
 rotation, not upon standard account generation. This means that with proven key
@@ -77,14 +77,14 @@ checks if the rotating account's initial authentication key is in the table, and
 if so, verifies that the rotating account's address is the one mapped to in the
 table.
 
-This means that if an arbitary account's authentication key is rotated to
+This means that if an arbitrary account's authentication key is rotated to
 a given private key, the standard account whose address is originally derived
 from the private key will not be able to execute its first authentication key
 rotation while the associated authentication key is mapped to a second arbitrary
 account address in the [`account::OriginatingAddress`] table, because this
 operation would fail the check that the rotating account's address is the one
-mapped to in the table (since the table is only updated upon during rotation,
-not upon standard account generation).
+mapped to in the table (since the table is only updated during rotation, not
+upon standard account generation).
 
 To prevent this issue and ensure best practices are followed, you can always run
 [`account::set_originating_address`] after generating a new account (see below
@@ -103,7 +103,7 @@ accounts that can be authenticated with a given private key. Note that the
 
 <Callout type="info" emoji="🧠">
 The [`account::rotate_authentication_key_call`] was introduced to support
-non-standard key algorith, like passkeys, which cannot produce proofs of
+non-standard key algorithms, like passkeys, which cannot produce proofs of
 knowledge during rotation operations.
 </Callout>
 
