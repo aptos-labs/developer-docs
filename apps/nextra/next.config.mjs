@@ -1382,11 +1382,6 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/nodes/identity-and-configuration",
-        destination: "/en/network/nodes/identity-and-configuration",
-        permanent: true,
-      },
-      {
         source: "/sdks/new-ts-sdk/migration-guide",
         destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
         permanent: true,
