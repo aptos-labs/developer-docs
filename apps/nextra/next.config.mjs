@@ -1382,11 +1382,6 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/nodes/identity-and-configuration",
-        destination: "/en/network/nodes/identity-and-configuration",
-        permanent: true,
-      },
-      {
         source: "/sdks/new-ts-sdk/migration-guide",
         destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
         permanent: true,
@@ -1696,6 +1691,12 @@ export default withBundleAnalyzer(
         source: "/en/build/indexer/coin-info",
         destination: "/en/build/indexer/fungible-asset-info",
         permanent: true,
+      },
+      /* Redirect Swift SDK until it's vetted */
+      {
+        source: "/en/build/sdks/swift-sdk",
+        destination: "/en/build/sdks/community-sdks/swift-sdk",
+        permanent: false,
       },
     ],
   }),

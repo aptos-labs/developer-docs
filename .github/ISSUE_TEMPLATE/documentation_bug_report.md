@@ -1,9 +1,8 @@
 ---
-name: "\U0001F41B Documentation/aptos.dev Bug report"
+name: "Bug report"
 about: Create a bug report to help improve the Aptos Developers' Website
 title: "[Docs]"
 labels: ["documentation"]
-assignees: "gregnazario"
 ---
 
 # Aptos Documentation Issue

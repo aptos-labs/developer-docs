@@ -6,7 +6,12 @@ import { Callout, FileTree, Steps } from 'nextra/components';
 
 # Create Aptos Dapp Token Staking Dapp Template
 
-The Token staking dapp template provides an end-to-end Fungible Asset staking dapp. With this dapp, you can learn how Fungible Assets work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a Fungible Asset staking dapp users can quickly adjust and deploy into a live server.
+The Token staking dapp template provides an end-to-end [Fungible Asset]((../../smart-contracts/digital-asset.mdx)) staking dapp. 
+
+With this dapp, you can:
+1. Create an incetivize pool on Aptos.
+2. Modify a pre-made UI to build a Staking dapp users can quickly adjust.
+3. Learn how to write a Move contract and front end connected to that contract. 
 
 <Callout>
 If you have not created a fungible asset yet, check out the [Token Minting Dapp Template](./token-minting-dapp) to easily create a token on Aptos.
@@ -25,18 +30,6 @@ The Token staking dapp template provides a one page with different components:
 - [Incentivize the pool with rewards](#incentivize-the-pool-with-rewards)
 - [Deploy to a live server](#deploy-to-a-live-server)
 
-## Setup
-
-You can start the app by running:
-
-```bash filename="Terminal"
-npm run dev
-```
-
-However, for the app to work as intended, there are several setup steps you will have to do to:
-
-1. Publish the contract to create a stake pool.
-2. Incentivize the pool with rewards.
 
 ## Publish the Move Contract
 
@@ -51,8 +44,8 @@ npm run move:init
 The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
 
 This will:
-	1. Create an account you will later publish the contract with
-	2. Set the `VITE_MODULE_ADDRESS` in the `.env` file to the contract object address.
+1. Create an account you will later publish the contract with.
+2. Create a `./aptos/config.yaml` file with the newly created account information.
 
 ### In the `.env` file, set `VITE_REWARD_CREATOR_ADDRESS` to be the same as your account address.
 This determines which account is allowed to create a pool using the dapp.
@@ -62,7 +55,7 @@ If you haven't set up an account, you can create one with an Aptos wallet like [
 For example:
 ```bash filename=".env"
 VITE_APP_NETWORK=testnet
-VITE_REWARD_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
+VITE_REWARD_CREATOR_ADDRESS=0xC0FEE
 ```
 
 ### In the `.env` file, set `VITE_FA_ADDRESS` to be the same as the fungible asset address.
@@ -75,7 +68,7 @@ If you have not created a fungible asset yet, check out the [Token Minting Dapp 
 For example:
 ```bash filename=".env"
 VITE_APP_NETWORK=testnet
-VITE_FA_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
+VITE_FA_ADDRESS=0xT0FEE
 ```
 
 ### On the project root folder, run the below command to publish the contract.
@@ -87,12 +80,17 @@ npm run move:publish
 You will have to confirm the gas fee in the console.
 </Callout>
 
-This command will publish the contract to chain.
+This command will:
+1. Publish the contract to chain.
+2. Setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
 
 </Steps>
 
-
 ## Incentivize the pool with rewards
+
+After you have [published the Move contract to chain](#publish-the-move-contract)
+
+
 <Steps>
 
 ### Run the app and open the preview.
