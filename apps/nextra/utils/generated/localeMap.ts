@@ -217,9 +217,6 @@ export const localeMap = {
   "/build/indexer/architecture": {
     "en": true
   },
-  "/build/indexer/fungible-asset-info": {
-    "en": true
-  },
   "/build/indexer/custom-processors/e2e-tutorial": {
     "en": true
   },
@@ -230,6 +227,9 @@ export const localeMap = {
     "en": true
   },
   "/build/indexer/fungible-asset-balances": {
+    "en": true
+  },
+  "/build/indexer/fungible-asset-info": {
     "en": true
   },
   "/build/indexer/get-delegators": {
@@ -277,6 +277,12 @@ export const localeMap = {
   "/build/indexer": {
     "en": true
   },
+  "/build/sdks/community-sdks/swift-sdk": {
+    "en": true
+  },
+  "/build/sdks/community-sdks": {
+    "en": true
+  },
   "/build/sdks/cpp-sdk": {
     "en": true
   },
@@ -302,9 +308,6 @@ export const localeMap = {
     "en": true
   },
   "/build/sdks/rust-sdk": {
-    "en": true
-  },
-  "/build/sdks/swift-sdk": {
     "en": true
   },
   "/build/sdks/ts-sdk/account": {
@@ -836,10 +839,6 @@ export const localeMap = {
     "en": true,
     "zh": true
   },
-  "/network/nodes/identity-and-configuration": {
-    "en": true,
-    "zh": true
-  },
   "/network/nodes/localnet/local-development-network": {
     "en": true,
     "zh": true
@@ -967,6 +966,9 @@ export const localeMap = {
     "zh": true
   },
   "/network/nodes/aptos-api-spec": {
+    "zh": true
+  },
+  "/network/nodes/identity-and-configuration": {
     "zh": true
   }
 };
