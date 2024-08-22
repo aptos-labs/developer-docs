@@ -17,9 +17,6 @@ export default {
   "cpp-sdk": {
     title: "C++ / Unreal SDK",
   },
-  "swift-sdk": {
-    title: "Swift SDK",
-  },
   "kotlin-sdk": {
     title: "Kotlin SDK",
   },
