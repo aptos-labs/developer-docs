@@ -36,6 +36,8 @@ module 0x2::m {
   //              ^ error! Foo cannot contain Foo
 }
 ```
+For positional structs which used numbered instead of named fields, see 
+the [positional structs](#positional-structs) section.
 
 As mentioned above: by default, a struct declaration is linear and ephemeral. So to allow the value
 to be used with certain operations (that copy it, drop it, store it in global storage, or use it as
@@ -48,7 +50,8 @@ module 0x2::m {
 }
 ```
 
-For more details, see the [annotating structs](abilities.mdx#annotating-structs) section.
+For more details, see the [annotating structs](abilities.mdx#annotating-structs) section. 
+
 
 ### Naming
 
@@ -98,7 +101,7 @@ module 0x2::m {
 }
 ```
 
-This is called sometimes called "field name punning".
+This is sometimes called "field name punning".
 
 ### Destroying Structs via Pattern Matching
 
@@ -421,9 +424,95 @@ module 0x2::m {
 }
 ```
 
+## Positional Structs
+
+_Since language version 2.0_
+
+A struct can be declared to have _positional fields_, fields which are not named
+but numbered. Positional structs behave similar to regular structs,
+except providing a different syntax which may be more suitable for use cases with 
+only a few fields.
+
+Fields of positional structs are assigned in the order they appear. In the below
+example, field `0` is of type `u64` and field `1` of type `u8`:
+
+```move
+module 0x2::m {
+  struct Pair(u64, u8);
+}
+```
+
+Abilities for positional structs are declared _after_ and not before the field list,
+
+```move
+module 0x2::m {
+  struct Pair(u64, u8) has copy, drop;
+}
+```
+
+For pure type tags, often used for phantom types in Move code, the list of arguments
+can be also completely omitted:
+
+```move
+module 0x2::m {
+  struct TypeTag has copy, drop;
+}
+```
+
+Values of positional structs are created and deconstructed as shown below:
+using `PositionalStructs(arguments)`:
+
+```move
+module 0x2::m {
+  fun work() {
+    let value = Pair(1, true);
+    let Pair(number, boolean) = value;
+    assert!(number == 1 && boolean == true);
+  }
+}
+```
+
+Fields of positional structs can be accessed using the position as a field selector. For example, in the above code example, `value.0` and `value.1` can be used to access the two fields without deconstructing the `value`.
+`positional_struct.0`.
+
+## Partial Patterns
+
+_Since language version 2.0_
+
+Patterns can use the `..` notation to match any remaining, non-listed fields in structs or variants with named fields, and omitted fields at either the beginning or end of a struct or variant with positional fields. Here are 
+some examples:
+
+```move
+module 0x2::m {
+  struct Foo{ x: u8, y: u16, z: u32 }
+  struct Bar(u8, u16, u32);
+  
+  fun foo_get_x(self: &Foo): u8 { 
+    let Foo{x, ..} = self;
+    x
+  }
+  
+  fun bar_get_0(self: &Foo): u8 { 
+    let Bar(x, ..) = self;
+    x
+  }
+  
+  fun bar_get_2(self: &Foo): u52 { 
+    // For positional structs, one can also put the 
+    // .. at the beginning.
+    let Bar(.., z) = self;
+    z
+  }
+}
+```
+
+Notice that partial patterns can currently not be used as the left-hand side of assignment.
+While one can use `let Bar(x, ..) = v`, we do not yet support `let x; Bar(x, ..) = v`. 
+
+
 ## Storing Resources in Global Storage
 
-Only structs with the `key` ability can be saved directly in
+Structs with the `key` ability can be saved directly in
 [persistent global storage](global-storage-operators.mdx). All values stored within those `key`
 structs must have the `store` ability. See the [ability](abilities.mdx) and
 [global storage](global-storage-operators.mdx) chapters for more detail.
