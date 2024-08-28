@@ -1,0 +1,305 @@
+---
+title: "Go SDK - Sponsoring Transactions"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Sponsoring Transactions
+
+Normally, the account that is executing a transaction pays for the gas fees. You
+can allow another account to cover those charges by sponsoring a transaction.
+
+This can be used to help manage fees from a central account when working with
+complicated smart contracts.
+
+## How To Sponsor a Transaction
+
+<Steps>
+### Build the transaction with the parameter `FeePayer()`.
+
+```go filename="sponsor.go"
+  rawTxn, err := client.BuildTransactionMultiAgent(
+  alice.Address,
+  aptos.TransactionPayload{
+  Payload: transferPayload,
+  },
+  aptos.FeePayer(&sponsor.Address),
+  )
+```
+
+  <Callout type="info">
+    The `FeePayer()` function is used to specify the account that will pay the
+    gas fees for the transaction. You can use `AccountZero` to indicate that the
+    fee payer is not known ahead of time.
+  </Callout>
+
+### Sign the transaction with BOTH the sender and the feePayer.
+
+1. Sign with the sender account using `rawTxn.Sign()`.
+2. Sign with the sponsor account using `rawTxn.Sign()`.
+
+```go filename="sponsor.go"
+  aliceAuth, err := rawTxn.Sign(alice)
+  if err != nil {
+    panic("Failed to sign transaction as sender:" + err.Error())
+  }
+  sponsorAuth, err := rawTxn.Sign(sponsor)
+  if err != nil {
+    panic("Failed to sign transaction as sponsor:" + err.Error())
+  }
+```
+  {/* TODO: Support simulation for fee payer
+### (Optional) When simulating the transaction, include the parameter `feePayerPublicKey: account.publicKey`
+
+<Callout type="warning">
+Currently, simulating a sponsor transaction must happen AFTER signing with the sponsor or it will fail to recognize this transaction has a sponsor.
+</Callout>
+
+```ts filename="sponsor.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+    signerPublicKey: sender.publicKey,
+    feePayerPublicKey: feePayer.publicKey,
+    transaction,
+});
+```
+*/}
+### Submit the transaction by combining both signatures.
+
+```go filename="sponsor.go"
+  signedFeePayerTxn, ok = rawTxn.ToFeePayerSignedTransaction(
+      aliceAuth,
+      sponsorAuth,
+      []crypto.AccountAuthenticator{},
+  )
+  if !ok {
+      panic("Failed to build fee payer signed transaction")
+  }
+
+  // Submit and wait for it to complete
+  submitResult, err = client.SubmitTransaction(signedFeePayerTxn)
+  if err != nil {
+      panic("Failed to submit transaction:" + err.Error())
+  }
+```
+
+### Wait for the transaction to execute.
+
+```go filename="sponsor.go"
+  // Wait for the transaction
+  _, err = client.WaitForTransaction(txnHash)
+```
+</Steps>
+
+## Go Sponsored Transaction Code Sample
+
+```go filename="sponsor.go"
+// sponsored_transaction is an example of how to make a sponsored transaction in Aptos.
+package main
+
+import (
+	"fmt"
+
+	"github.com/aptos-labs/aptos-go-sdk"
+	"github.com/aptos-labs/aptos-go-sdk/crypto"
+)
+
+const FundAmount = 100_000_000
+const TransferAmount = 1_000
+
+// example This example shows you how to make an APT transfer transaction in the simplest possible way
+func example(networkConfig aptos.NetworkConfig) {
+	// Create a client for Aptos
+	client, err := aptos.NewClient(networkConfig)
+	if err != nil {
+		panic("Failed to create client:" + err.Error())
+	}
+
+	// Create accounts locally for alice and bob
+	alice, err := aptos.NewEd25519Account()
+	if err != nil {
+		panic("Failed to create alice:" + err.Error())
+	}
+	bob, err := aptos.NewEd25519Account()
+	if err != nil {
+		panic("Failed to create bob:" + err.Error())
+	}
+	sponsor, err := aptos.NewEd25519Account()
+	if err != nil {
+		panic("Failed to create sponsor:" + err.Error())
+	}
+
+	fmt.Printf("\n=== Addresses ===\n")
+	fmt.Printf("Alice: %s\n", alice.Address.String())
+	fmt.Printf("Bob:%s\n", bob.Address.String())
+	fmt.Printf("Sponsor:%s\n", sponsor.Address.String())
+
+	// Fund the alice with the faucet to create it on-chain
+	err = client.Fund(alice.Address, FundAmount)
+	if err != nil {
+		panic("Failed to fund alice:" + err.Error())
+	}
+
+	// And the sponsor
+	err = client.Fund(sponsor.Address, FundAmount)
+	if err != nil {
+		panic("Failed to fund sponsor:" + err.Error())
+	}
+
+	aliceBalance, err := client.AccountAPTBalance(alice.Address)
+	if err != nil {
+		panic("Failed to retrieve alice balance:" + err.Error())
+	}
+	bobBalance, err := client.AccountAPTBalance(bob.Address)
+	if err != nil {
+		panic("Failed to retrieve bob balance:" + err.Error())
+	}
+	sponsorBalance, err := client.AccountAPTBalance(sponsor.Address)
+	if err != nil {
+		panic("Failed to retrieve sponsor balance:" + err.Error())
+	}
+	fmt.Printf("\n=== Initial Balances ===\n")
+	fmt.Printf("Alice: %d\n", aliceBalance)
+	fmt.Printf("Bob: %d\n", bobBalance)
+	fmt.Printf("Sponsor: %d\n", sponsorBalance)
+
+	// Build transaction
+	transferPayload, err := aptos.CoinTransferPayload(&aptos.AptosCoinTypeTag, bob.Address, TransferAmount)
+	if err != nil {
+		panic("Failed to build transfer payload:" + err.Error())
+	}
+	rawTxn, err := client.BuildTransactionMultiAgent(
+		alice.Address,
+		aptos.TransactionPayload{
+			Payload: transferPayload,
+		},
+		aptos.FeePayer(&sponsor.Address),
+
+	)
+	if err != nil {
+		panic("Failed to build transaction:" + err.Error())
+	}
+
+	// Sign transaction
+	aliceAuth, err := rawTxn.Sign(alice)
+	if err != nil {
+		panic("Failed to sign transaction as sender:" + err.Error())
+	}
+	sponsorAuth, err := rawTxn.Sign(sponsor)
+	if err != nil {
+		panic("Failed to sign transaction as sponsor:" + err.Error())
+	}
+
+	signedFeePayerTxn, ok := rawTxn.ToFeePayerSignedTransaction(
+		aliceAuth,
+		sponsorAuth,
+		[]crypto.AccountAuthenticator{},
+	)
+	if !ok {
+		panic("Failed to build fee payer signed transaction")
+	}
+
+	// Submit and wait for it to complete
+	submitResult, err := client.SubmitTransaction(signedFeePayerTxn)
+	if err != nil {
+		panic("Failed to submit transaction:" + err.Error())
+	}
+	txnHash := submitResult.Hash
+	println("Submitted transaction hash:", txnHash)
+
+	// Wait for the transaction
+	_, err = client.WaitForTransaction(txnHash)
+	if err != nil {
+		panic("Failed to wait for transaction:" + err.Error())
+	}
+	aliceBalance, err = client.AccountAPTBalance(alice.Address)
+	if err != nil {
+		panic("Failed to retrieve alice balance:" + err.Error())
+	}
+	bobBalance, err = client.AccountAPTBalance(bob.Address)
+	if err != nil {
+		panic("Failed to retrieve bob balance:" + err.Error())
+	}
+	sponsorBalance, err = client.AccountAPTBalance(sponsor.Address)
+	if err != nil {
+		panic("Failed to retrieve sponsor balance:" + err.Error())
+	}
+	fmt.Printf("\n=== Intermediate Balances ===\n")
+	fmt.Printf("Alice: %d\n", aliceBalance)
+	fmt.Printf("Bob: %d\n", bobBalance)
+	fmt.Printf("Sponsor: %d\n", sponsorBalance)
+
+	fmt.Printf("\n=== Now do it without knowing the signer ahead of time ===\n")
+
+	rawTxn, err = client.BuildTransactionMultiAgent(
+		alice.Address,
+		aptos.TransactionPayload{
+			Payload: transferPayload,
+		},
+		aptos.FeePayer(&aptos.AccountZero), // Note that the Address is 0x0, because we don't know the signer
+	)
+	if err != nil {
+		panic("Failed to build transaction:" + err.Error())
+	}
+
+	// Alice signs the transaction, without knowing the sponsor
+	aliceAuth, err = rawTxn.Sign(alice)
+	if err != nil {
+		panic("Failed to sign transaction as sender:" + err.Error())
+	}
+
+	// The sponsor has to add themselves to the transaction to sign, note that this would likely be on a different
+	// server
+	ok = rawTxn.SetFeePayer(sponsor.Address)
+	if !ok {
+		panic("Failed to set fee payer")
+	}
+
+	sponsorAuth, err = rawTxn.Sign(sponsor)
+	if err != nil {
+		panic("Failed to sign transaction as sponsor:" + err.Error())
+	}
+
+	signedFeePayerTxn, ok = rawTxn.ToFeePayerSignedTransaction(
+		aliceAuth,
+		sponsorAuth,
+		[]crypto.AccountAuthenticator{},
+	)
+	if !ok {
+		panic("Failed to build fee payer signed transaction")
+	}
+
+	// Submit and wait for it to complete
+	submitResult, err = client.SubmitTransaction(signedFeePayerTxn)
+	if err != nil {
+		panic("Failed to submit transaction:" + err.Error())
+	}
+	txnHash = submitResult.Hash
+	println("Submitted transaction hash:", txnHash)
+
+	// Wait for the transaction
+	_, err = client.WaitForTransaction(txnHash)
+	if err != nil {
+		panic("Failed to wait for transaction:" + err.Error())
+	}
+	aliceBalance, err = client.AccountAPTBalance(alice.Address)
+	if err != nil {
+		panic("Failed to retrieve alice balance:" + err.Error())
+	}
+	bobBalance, err = client.AccountAPTBalance(bob.Address)
+	if err != nil {
+		panic("Failed to retrieve bob balance:" + err.Error())
+	}
+	sponsorBalance, err = client.AccountAPTBalance(sponsor.Address)
+	if err != nil {
+		panic("Failed to retrieve sponsor balance:" + err.Error())
+	}
+	fmt.Printf("\n=== Final Balances ===\n")
+	fmt.Printf("Alice: %d\n", aliceBalance)
+	fmt.Printf("Bob: %d\n", bobBalance)
+	fmt.Printf("Sponsor: %d\n", sponsorBalance)
+}
+
+func main() {
+	example(aptos.DevnetConfig)
+}
+```

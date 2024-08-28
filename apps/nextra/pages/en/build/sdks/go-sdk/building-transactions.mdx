@@ -1,0 +1,330 @@
+---
+title: "Go SDK - Building Transactions"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Using Transactions
+
+Transactions allow you to change on-chain data or trigger events. Generally,
+transactions follow 5 steps from building to executing on chain: building,
+simulating, signing, submitting, and waiting.
+
+<Callout type="info">
+  For these examples, `client` is an instance of the
+  [`Client`](https://pkg.go.dev/github.com/aptos-labs/aptos-go-sdk#Client)
+  object.
+</Callout>
+
+<Steps>
+  ### Build
+
+  Building a transaction is how you specify:
+
+  1. **The `Sender` account.** <br />This account normally pays the gas fees for
+  this transaction. See [Sponsoring Transactions](building-transactions/sponsoring-transactions.mdx)
+  to learn how to  have another account pay for transaction fees.
+  2. **The `Function` being called on-chain.** <br />This is the identifier for
+  the smart contract entry function on-chain that will trigger when you execute
+  this transaction.
+  3. **The `ArgTypes` and `Args`.** <br />This is any data the function needs to
+  run.
+
+  This can be made for a single account like so:
+
+  ```go filename="build_a_transaction.go"
+  // 1. Build transaction
+  accountBytes, err := bcs.Serialize(&bob.Address)
+  if err != nil {
+      panic("Failed to serialize bob's address:" + err.Error())
+  }
+
+  amountBytes, err := bcs.SerializeU64(TransferAmount)
+  if err != nil {
+      panic("Failed to serialize transfer amount:" + err.Error())
+  }
+  rawTxn, err := client.BuildTransaction(alice.AccountAddress(), aptos.TransactionPayload{
+      Payload: &aptos.EntryFunction{
+          Module: aptos.ModuleId{
+              Address: aptos.AccountOne,
+              Name:    "aptos_account",
+          },
+          Function: "transfer",
+          ArgTypes: []aptos.TypeTag{},
+          Args: [][]byte{
+              accountBytes,
+              amountBytes,
+          },
+      }},
+  )
+  ```
+
+  <Callout type="info">
+    All arguments `Args` must be serialized to bytes before being passed in. They
+    must be serialized with [Binary Canonical Serialization (BCS)](building-transactions/bcs-format.mdx)
+  </Callout>
+
+  #### Building Options
+
+  You can customize the way your transaction executes by passing in
+  `options` when building. Some of the most commonly used options are:
+
+  1. `MaxGasAmount` - This caps the amount of gas you are willing to pay for to
+  execute this transaction.
+  2. `GasUnitPrice` - You can specify a higher than minimum price per gas to be
+  executed with higher priority by the Aptos network.
+  3. `ExpirationSeconds` - This gives a concrete time the transaction must execute
+  by or it will be canceled.
+
+  The SDK provides sensible defaults for these values if they are not specified
+  explicitly.
+
+  ### Simulate (Optional)
+
+  Every transaction on the Aptos chain has a gas fee associated with how much
+  work the network machines have to do when executing the transaction. In order
+  to estimate the cost associated with that, you can simulate transactions
+  before committing them.
+
+  <Callout type="info">
+    This simulation only requires the `PublicKey` of an account since it will
+    not impact the actual state of the ledger.
+  </Callout>
+
+  You can execute the simulation by using
+  `aptos.SimulateTransaction` like so:
+
+  ```go filename="build_a_transaction.go"
+  // 2. Simulate transaction (optional)
+  // This is useful for understanding how much the transaction will cost
+  // and to ensure that the transaction is valid before sending it to the network
+  // This is optional, but recommended
+  simulationResult, err := client.SimulateTransaction(rawTxn, alice)
+
+  // If the fee looks ok, continue to signing!
+  ```
+
+  ### Sign
+
+  Once the transaction is built and the fees seem reasonable, you can sign the
+  transaction with `rawTransaction.SignedTransaction()`. The signature must come
+  from the `sender` account.
+
+  ```go filename="build_a_transaction.go"
+  // 3. Sign transaction
+  signedTxn, err := rawTxn.SignedTransaction(alice)
+  ```
+
+  ### Submit
+
+  Now that the transaction is signed, you can submit it to the network using
+  `client.SubmitTransaction()` like so:
+
+  ```go filename="build_a_transaction.go"
+  // 4. Submit transaction
+  submitResult, err := client.SubmitTransaction(signedTxn)
+  ```
+
+  ### Wait
+
+  Finally, you can wait for the result of the transaction by using
+  `client.WaitForTransaction()` and specifying the hash of the transaction you
+  just submitted like so:
+
+  ```go filename="build_a_transaction.go"
+  // 5. Wait for the transaction to complete
+  txnHash := submitResult.Hash
+  _, err = client.WaitForTransaction(txnHash)
+  ```
+</Steps>
+
+## Full Go Example
+
+```go filename="build_a_transaction.go"
+// transfer_coin is an example of how to make a coin transfer transaction in the simplest possible way
+package main
+
+import (
+	"fmt"
+
+	"github.com/aptos-labs/aptos-go-sdk"
+	"github.com/aptos-labs/aptos-go-sdk/bcs"
+)
+
+const FundAmount = 100_000_000
+const TransferAmount = 1_000
+
+// example This example shows you how to make an APT transfer transaction in the simplest possible way
+func example(networkConfig aptos.NetworkConfig) {
+	// Create a client for Aptos
+	client, err := aptos.NewClient(networkConfig)
+	if err != nil {
+		panic("Failed to create client:" + err.Error())
+	}
+
+	// Create accounts locally for alice and bob
+	alice, err := aptos.NewEd25519Account()
+	if err != nil {
+		panic("Failed to create alice:" + err.Error())
+	}
+	bob, err := aptos.NewEd25519Account()
+	if err != nil {
+		panic("Failed to create bob:" + err.Error())
+	}
+
+	fmt.Printf("\n=== Addresses ===\n")
+	fmt.Printf("Alice: %s\n", alice.Address.String())
+	fmt.Printf("Bob:%s\n", bob.Address.String())
+
+	// Fund the sender with the faucet to create it on-chain
+	err = client.Fund(alice.Address, FundAmount)
+	if err != nil {
+		panic("Failed to fund alice:" + err.Error())
+	}
+
+	aliceBalance, err := client.AccountAPTBalance(alice.Address)
+	if err != nil {
+		panic("Failed to retrieve alice balance:" + err.Error())
+	}
+	bobBalance, err := client.AccountAPTBalance(bob.Address)
+	if err != nil {
+		panic("Failed to retrieve bob balance:" + err.Error())
+	}
+	fmt.Printf("\n=== Initial Balances ===\n")
+	fmt.Printf("Alice: %d\n", aliceBalance)
+	fmt.Printf("Bob:%d\n", bobBalance)
+
+	// 1. Build transaction
+	accountBytes, err := bcs.Serialize(&bob.Address)
+	if err != nil {
+		panic("Failed to serialize bob's address:" + err.Error())
+	}
+
+	amountBytes, err := bcs.SerializeU64(TransferAmount)
+	if err != nil {
+		panic("Failed to serialize transfer amount:" + err.Error())
+	}
+	rawTxn, err := client.BuildTransaction(alice.AccountAddress(), aptos.TransactionPayload{
+		Payload: &aptos.EntryFunction{
+			Module: aptos.ModuleId{
+				Address: aptos.AccountOne,
+				Name:    "aptos_account",
+			},
+			Function: "transfer",
+			ArgTypes: []aptos.TypeTag{},
+			Args: [][]byte{
+				accountBytes,
+				amountBytes,
+			},
+		}},
+	)
+
+	if err != nil {
+		panic("Failed to build transaction:" + err.Error())
+	}
+
+	// 2. Simulate transaction (optional)
+	// This is useful for understanding how much the transaction will cost
+	// and to ensure that the transaction is valid before sending it to the network
+	// This is optional, but recommended
+	simulationResult, err := client.SimulateTransaction(rawTxn, alice)
+	if err != nil {
+		panic("Failed to simulate transaction:" + err.Error())
+	}
+	fmt.Printf("\n=== Simulation ===\n")
+	fmt.Printf("Gas unit price: %d\n", simulationResult[0].GasUnitPrice)
+	fmt.Printf("Gas used: %d\n", simulationResult[0].GasUsed)
+	fmt.Printf("Total gas fee: %d\n", simulationResult[0].GasUsed*simulationResult[0].GasUnitPrice)
+	fmt.Printf("Status: %s\n", simulationResult[0].VmStatus)
+
+	// 3. Sign transaction
+	signedTxn, err := rawTxn.SignedTransaction(alice)
+	if err != nil {
+		panic("Failed to sign transaction:" + err.Error())
+	}
+
+	// 4. Submit transaction
+	submitResult, err := client.SubmitTransaction(signedTxn)
+	if err != nil {
+		panic("Failed to submit transaction:" + err.Error())
+	}
+	txnHash := submitResult.Hash
+
+	// 5. Wait for the transaction to complete
+	_, err = client.WaitForTransaction(txnHash)
+	if err != nil {
+		panic("Failed to wait for transaction:" + err.Error())
+	}
+
+	// Check balances
+	aliceBalance, err = client.AccountAPTBalance(alice.Address)
+	if err != nil {
+		panic("Failed to retrieve alice balance:" + err.Error())
+	}
+	bobBalance, err = client.AccountAPTBalance(bob.Address)
+	if err != nil {
+		panic("Failed to retrieve bob balance:" + err.Error())
+	}
+	fmt.Printf("\n=== Intermediate Balances ===\n")
+	fmt.Printf("Alice: %d\n", aliceBalance)
+	fmt.Printf("Bob:%d\n", bobBalance)
+
+	// Now do it again, but with a different method
+	resp, err := client.BuildSignAndSubmitTransaction(alice, aptos.TransactionPayload{
+		Payload: &aptos.EntryFunction{
+			Module: aptos.ModuleId{
+				Address: aptos.AccountOne,
+				Name:    "aptos_account",
+			},
+			Function: "transfer",
+			ArgTypes: []aptos.TypeTag{},
+			Args: [][]byte{
+				accountBytes,
+				amountBytes,
+			},
+		}},
+	)
+	if err != nil {
+		panic("Failed to sign transaction:" + err.Error())
+	}
+
+	_, err = client.WaitForTransaction(resp.Hash)
+	if err != nil {
+		panic("Failed to wait for transaction:" + err.Error())
+	}
+
+	aliceBalance, err = client.AccountAPTBalance(alice.Address)
+	if err != nil {
+		panic("Failed to retrieve alice balance:" + err.Error())
+	}
+	bobBalance, err = client.AccountAPTBalance(bob.Address)
+	if err != nil {
+		panic("Failed to retrieve bob balance:" + err.Error())
+	}
+	fmt.Printf("\n=== Final Balances ===\n")
+	fmt.Printf("Alice: %d\n", aliceBalance)
+	fmt.Printf("Bob:%d\n", bobBalance)
+}
+
+func main() {
+	example(aptos.DevnetConfig)
+}
+```
+
+## Summary
+
+Building and sending transactions on-chain involves the following 5 steps:
+1. **Build** the transaction.
+2. **Simulate** the cost. (Optional)
+3. **Sign** the transaction (if the simulated cost seems ok).
+4. **Submit** the transaction to the network.
+5. **Wait** for the chain to validate and update.
+
+## Explore Advanced Transaction Features
+
+Transactions have a couple of additional features which let them adapt to your needs which you can learn about here:
+
+1. [Multi-Agent Signatures](building-transactions/multi-agent-transactions.mdx) - Allowing multiple accounts to be used for a single contract.
+2. [Sponsoring Transactions](building-transactions/sponsoring-transactions.mdx) - Have another account pay gas fees for this transaction.
+3. [Batch Submit Transactions](building-transactions/batching-transactions.mdx) - How to send multiple transactions quickly from a single account.
+4. [Binary Canonical Serialization (BCS)](building-transactions/bcs-format.mdx) - The format used to serialize data for Aptos transactions.
