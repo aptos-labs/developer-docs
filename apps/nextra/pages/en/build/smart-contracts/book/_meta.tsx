@@ -62,7 +62,7 @@ export default {
     "structs-and-resources": {
         title: "Structs and Resources",
     },
-    "enums": {
+    enums: {
         title: "Enum Types",
     },
     constants: {

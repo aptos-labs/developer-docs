@@ -88,7 +88,7 @@ A `package` function can be only called within the same package. The notion of a
 defined by the hosting environment of Move, and not explicit in the language. Typically, the package
 is defined by a manifest file `Move.toml` which is processed by the build environment. 
 
-The following works, provided the two modules belong to the same package:
+The following works, provided the two modules belong to the same package and are at the same address:
 
 ```move
 module 0x42::m {
@@ -104,7 +104,10 @@ module 0x42::other {
 
 An attempt to access `0x42::m::foo` from another package will fail at compile time.
 
-Notice that package visibility is a compile time concept which is reduced by the compiler to friend visibility (described [below](#friend-visibility)), which can be verified by the Move VM.
+In addition to the notation `package fun`, also the longer notation `public(package) fun` is supported.
+
+Notice that package visibility is a compile time concept which is reduced by the compiler to friend visibility (described [below](#friend-visibility)), which can be verified by the Move VM. The Move VM guarantees that friend functions
+cannot be called across address boundaries, independent of what package system a compilation environment supports.
 
 
 #### `public(friend)` visibility
@@ -114,9 +117,9 @@ _Since Language Version 2.0_, `friend fun` replaces `public(friend) fun`. The ol
 The `public(friend)` visibility modifier is a more restricted form of the `public` modifier to give more control about where a function can be used. A `public(friend)` function can be called by:
 
 - other functions defined in the same module, or
-- functions defined in modules which are explicitly specified in the **friend list** (see [Friends](friends.mdx) on how to specify the friend list).
+- functions defined in modules which are explicitly specified in the **friend list** (see [Friends](friends.mdx) on how to specify the friend list), and which reside at the same address.
 
-Note that since we cannot declare a script to be a friend of a module, the functions defined in scripts can never call a `public(friend)` function.
+Note that since we cannot declare a script to be a friend of a module, the functions defined in scripts can never call a `public(friend)` function. 
 
 ```move
 address 0x42 {

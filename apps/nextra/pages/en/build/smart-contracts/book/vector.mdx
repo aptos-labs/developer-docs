@@ -157,11 +157,11 @@ The table below gives an overview of index notations for vectors:
 | `&v[i]`           | `vector::borrow(&v, i)`                    |
 | `&mut v[i]`       | `vector::borrow_mut(&mut v, i)`            |
 | `v[i]`            | `*vector::borrow(&v, i)`                   |
-| `v[i] = x`        | `*vector::borrow(&v, i) = x`               |
+| `v[i] = x`        | `*vector::borrow_mut(&mut v, i) = x`       |
 | `&v[i].field`     | `&vector::borrow(&v, i).field`             |
 | `&mut v[i].field` | `&mut vector::borrow_mut(&mut v, i).field` |
-| `v[i].field`      | `vector::borrow(&v, i).field`               |
-| `v[i].field = x`  | `vector::borrow_mut(&mut v, i).field = x`       |
+| `v[i].field`      | `vector::borrow(&v, i).field`              |
+| `v[i].field = x`  | `vector::borrow_mut(&mut v, i).field = x`  |
 
 As an example, here is a bubble sort algorithm for vectors using index notation:
 

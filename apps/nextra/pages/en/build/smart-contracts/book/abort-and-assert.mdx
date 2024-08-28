@@ -76,7 +76,8 @@ if (condition) () else abort code
 ```
 
 Since Move 2.0, `assert` without an error code is supported. If this assert is used, the
-abort code `0xD8CA26CBD9BE00000000` is generated. 
+abort code `0xCA26CBD9BE0B0000` is generated.  In terms of the `std::error` convention, this code has
+category `std::error::INTERNAL` and reason `0`.
 
 `assert` is more commonly used than just `abort` by itself. The `abort` examples above can be
 rewritten using `assert`

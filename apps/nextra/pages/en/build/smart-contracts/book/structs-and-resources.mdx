@@ -487,8 +487,8 @@ module 0x2::m {
   struct Foo{ x: u8, y: u16, z: u32 }
   struct Bar(u8, u16, u32);
   
-  fun foo_get_x(self: &Foo): u8 { 
-    let Foo{x, ..} = self;
+  fun foo_get_x(self: &Foo): u16 { 
+    let Foo{y, ..} = self;
     x
   }
   

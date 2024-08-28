@@ -267,7 +267,7 @@ The table below gives an overview of index notations for storage:
 | `&T[address].field`     | `&borrow_global<T>(address).field`         |
 | `&mut T[address].field` | `&mut borrow_global_mut<T>(address).field` |
 | `T[address].field`      | `borrow_global<T>(address).field`          |
-| `T[address].field = x`  | `*borrow_global_mut<T>(address).field = x`  |
+| `T[address].field = x`  | `borrow_global_mut<T>(address).field = x`  |
 
 Here `T` represents a generic resource type that can take type parameters.
 
