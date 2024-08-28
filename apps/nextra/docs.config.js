@@ -285,7 +285,8 @@ export const docsConfig = Object.freeze({
   defaultDescription: "Docs for Aptos",
   githubUrl: "https://github.com/aptos-labs/developer-docs",
   relativeDocsPath: "/apps/nextra",
-  githubNewIssueUrl: "https://github.com/aptos-labs/developer-docs/issues/new",
+  githubNewIssueUrl:
+    "https://github.com/aptos-labs/developer-docs/issues/new?assignees=&labels=documentation&projects=&template=content_issue.yml",
   googleAnalyticsId: "G-WCYR52WMW9",
   origin: getOrigin(),
 });
