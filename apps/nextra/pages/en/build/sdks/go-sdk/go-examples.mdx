@@ -1,0 +1,52 @@
+---
+title: "Go SDK - Examples"
+---
+
+import { Steps } from 'nextra/components';
+
+# Go SDK Example Code
+
+For sample code which explains the core concepts of how to use the SDK, see:
+ - [Fetching Data](fetch-data-via-sdk.mdx)
+ - [Building, Simulating, and Submitting Transactions](building-transactions.mdx)
+
+Below are additional resources which may be more suited for your individual use case.
+
+## Code Snippets
+
+The [`examples` folder](https://github.com/aptos-labs/aptos-go-sdk/tree/main/examples)
+in the SDK repo has many code snippets you can customize to your needs.
+
+### How to run examples
+
+To run one of the example scripts:
+<Steps>
+  ### Clone the [aptos-go-sdk repository](https://github.com/aptos-labs/aptos-go-sdk)
+
+  ```bash filename="Terminal"
+  git clone https://github.com/aptos-labs/aptos-go-sdk.git
+  ```
+
+  ### From the top-level of the package, install all dependencies.
+
+  ```bash filename="Terminal"
+  go install
+  ```
+
+  ### Build the package.
+
+  ```bash filename="Terminal"
+  go build ./...
+  ```
+
+  ### Run an example
+
+  ```bash filename="Terminal"
+  go run examples/transfer_coin/main.go
+  ```
+</Steps>
+
+## Helpful Reference Code
+
+ - [SDK source code](https://github.com/aptos-labs/aptos-go-sdk/tree/main) - This has in-line comments explaining what each function does.
+ - [SDK reference docs](https://pkg.go.dev/github.com/aptos-labs/aptos-go-sdk) - These are another way to view the in-line documentation with built-in search.

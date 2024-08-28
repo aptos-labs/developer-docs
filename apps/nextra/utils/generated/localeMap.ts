@@ -286,6 +286,33 @@ export const localeMap = {
   "/build/sdks/cpp-sdk": {
     "en": true
   },
+  "/build/sdks/go-sdk/account": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/batching-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/bcs-format": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/multi-agent-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/simulating-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/sponsoring-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/fetch-data-via-sdk": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/go-examples": {
+    "en": true
+  },
   "/build/sdks/go-sdk": {
     "en": true
   },
