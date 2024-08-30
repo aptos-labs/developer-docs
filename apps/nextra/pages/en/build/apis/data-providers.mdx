@@ -12,9 +12,9 @@ This type of data is often used for analytics since it allows for aggregations.
 
 Hitting the full node directly will give the latest data (will be missing historical unless it's an archival full node) using [REST API](/apis#aptos-fullnode)
 
-Indexer layer on top of this will provide a [GRPC transaction stream](/indexer/txn-stream/aptos-hosted-txn-stream.mdx)
+Indexer layer on top of this will provide a [GRPC transaction stream](../indexer/txn-stream/aptos-hosted-txn-stream)
 
-On top of this transaction stream, we've built out some product logic tables that can be queried through [GraphQL](/indexer/)
+On top of this transaction stream, we've built out some product logic tables that can be queried through [GraphQL](../indexer/)
 
 Since the logic to parse out transaction is [public](https://github.com/aptos-labs/aptos-indexer-processors), some vendors have implemented similar parsing logic to create a subset of tables and made them available to query.
 
