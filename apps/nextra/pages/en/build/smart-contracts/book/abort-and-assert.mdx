@@ -64,6 +64,7 @@ condition of type `bool` and a code of type `u64`
 
 ```move
 assert!(condition: bool, code: u64)
+assert!(condition: bool) // Since Move 2.0
 ```
 
 Since the operation is a macro, it must be invoked with the `!`. This is to convey that the
@@ -73,6 +74,10 @@ does not exist at the bytecode level. It is replaced inside the compiler with
 ```move
 if (condition) () else abort code
 ```
+
+Since Move 2.0, `assert` without an error code is supported. If this assert is used, the
+abort code `0xCA26CBD9BE0B0000` is generated.  In terms of the `std::error` convention, this code has
+category `std::error::INTERNAL` and reason `0`.
 
 `assert` is more commonly used than just `abort` by itself. The `abort` examples above can be
 rewritten using `assert`
