@@ -4,7 +4,7 @@ title: "Vector"
 
 # Vector
 
-The Vector in Move provides a flexible and dynamic array-like data structure that supports various operations such 
+The Vector in Move provides a flexible and dynamic array-like data structure that supports various operations such
 as indexing, adding, and removing elements. Vectors in Move are growable and support 0-based indexing.
 
 ## Core Features of Vector
@@ -68,26 +68,26 @@ The following constants define various error codes used within the module:
 ### Creating and Using a Vector
 
 ```move filename="vector.move"
-module example::vector_usage {
-    use std::vector::{Self, vector};
+module 0x42::vector_usage {
+    use std::vector;
 
     public entry fun main() {
-        let mut v = vector::empty<u64>();
+        let v = vector::empty<u64>();
         vector::push_back(&mut v, 10);
         vector::push_back(&mut v, 20);
-        
+
         let length = vector::length(&v);
         assert!(length == 2, 0);
-        
+
         let first_elem = vector::borrow(&v, 0);
         assert!(*first_elem == 10, 0);
-        
+
         let second_elem = vector::borrow(&v, 1);
         assert!(*second_elem == 20, 0);
-        
+
         let last_elem = vector::pop_back(&mut v);
         assert!(last_elem == 20, 0);
-        
+
         vector::destroy_empty(v);
     }
 }
@@ -96,33 +96,33 @@ module example::vector_usage {
 ### Appending Vectors
 
 ```move filename="vector.move"
-module example::vector_usage {
-    use std::vector::{Self, vector};
+module 0x42::vector_usage {
+    use std::vector;
 
     public fun append_vectors() {
-        let mut v1 = vector::empty<u64>();
-        let mut v2 = vector::empty<u64>();
-        
+        let v1 = vector::empty<u64>();
+        let v2 = vector::empty<u64>();
+
         vector::push_back(&mut v1, 1);
         vector::push_back(&mut v1, 2);
-        
+
         vector::push_back(&mut v2, 3);
         vector::push_back(&mut v2, 4);
-        
+
         vector::append(&mut v1, v2);
-        
+
         let length = vector::length(&v1);
         assert!(length == 4, 0);
-        
+
         let first_elem = vector::borrow(&v1, 0);
         assert!(*first_elem == 1, 0);
-        
+
         let second_elem = vector::borrow(&v1, 1);
         assert!(*second_elem == 2, 0);
-        
+
         let third_elem = vector::borrow(&v1, 2);
         assert!(*third_elem == 3, 0);
-        
+
         let fourth_elem = vector::borrow(&v1, 3);
         assert!(*fourth_elem == 4, 0);
     }
@@ -132,47 +132,27 @@ module example::vector_usage {
 ### Removing Elements
 
 ```move filename="vector.move"
-module example::vector_usage {
-    use std::vector::{Self, vector};
+module 0x42::vector_usage {
+    use std::vector;
 
     public fun remove_elements() {
-        let mut v = vector::empty<u64>();
-        
+        let v = vector::empty<u64>();
+
         vector::push_back(&mut v, 1);
         vector::push_back(&mut v, 2);
         vector::push_back(&mut v, 3);
-        
+
         let removed_elem = vector::remove(&mut v, 1);
         assert!(removed_elem == 2, 0);
-        
+
         let length = vector::length(&v);
         assert!(length == 2, 0);
-        
+
         let first_elem = vector::borrow(&v, 0);
         assert!(*first_elem == 1, 0);
-        
+
         let second_elem = vector::borrow(&v, 1);
         assert!(*second_elem == 3, 0);
-    }
-}
-```
-
-### Clearing the Vector
-
-```move filename="vector.move"
-module example::vector_usage {
-    use std::vector::{Self, vector};
-
-    public fun clear_vector() {
-        let mut v = vector::empty<u64>();
-        
-        vector::push_back(&mut v, 1);
-        vector::push_back(&mut v, 2);
-        vector::push_back(&mut v, 3);
-        
-        vector::clear(&mut v);
-        let length = vector::length(&v);
-        assert!(length == 0, 0);
     }
 }
 ```
@@ -180,21 +160,21 @@ module example::vector_usage {
 ### Swapping Elements
 
 ```move filename="vector.move"
-module example::vector_usage {
-    use std::vector::{Self, vector};
+module 0x42::vector_usage {
+    use std::vector;
 
     public fun swap_elements() {
-        let mut v = vector::empty<u64>();
-        
+        let v = vector::empty<u64>();
+
         vector::push_back(&mut v, 1);
         vector::push_back(&mut v, 2);
         vector::push_back(&mut v, 3);
-        
+
         vector::swap(&mut v, 0, 2);
-        
+
         let first_elem = vector::borrow(&v, 0);
         assert!(*first_elem == 3, 0);
-        
+
         let third_elem = vector::borrow(&v, 2);
         assert!(*third_elem == 1, 0);
     }
