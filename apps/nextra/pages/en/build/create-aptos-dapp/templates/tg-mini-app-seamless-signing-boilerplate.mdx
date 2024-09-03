@@ -1,0 +1,39 @@
+---
+title: "Create Aptos Dapp Telegram Mini App Supports Seamless Signing Boilerplate Template"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Create Aptos Dapp Telegram Mini App Boilerplate Template
+
+This template is built from the [boilerplate template](https://aptos.dev/en/build/create-aptos-dapp/templates/boilerplate) and make it runnable as a telegram mini app.
+
+See the doc for boilerplate template for details about the template itself. 
+
+You can access a live demo of the mini app by starting a chat with the example bot https://t.me/seamless345_bot/.
+
+After you have followed the boilerplate template doc instructions to publish the contract, you can follow the steps below to make the dapp runnable as a telegram mini app.
+
+<Steps>
+
+### Create a telegram bot
+
+Start a chat with [BotFather](https://t.me/BotFather), use the `/newbot` command to create a new bot.
+
+### Obtain the app ID from mizu wallet
+
+In order to achieve a seamless signing experience, we use mizu sdk core directly instead of wallet adapter in this template, this allows us to bypass the confirmation dialog when signing a transaction. In order to use mizu sdk core, we need to get an app ID from the mizu team. You can contact the mizu team by dm their [X account](https://x.com/MizuWallet) and provide them your telegram bot's token.
+
+### Deploy the frontend
+
+Fill in `VITE_MIZU_WALLET_APP_ID` in `.env` with the app ID you obtained from the mizu team. Then deploy the frontend.
+
+### Create a telegram mini app
+
+Use the `/newapp` commend to create a new mini app and link the mini app with the bot you just created. When BotFather asks for the mini app's URL, provide the URL of the frontend you deployed.
+
+### Set the menu button of the bot to open the mini app
+
+Use the `/mybots` command to find your bot, choose `bot settings` -> `menu button` -> `configure menu button`, provide the mini app's name and URL. Now you can access the mini app from your bot's menu.
+
+</Steps>
