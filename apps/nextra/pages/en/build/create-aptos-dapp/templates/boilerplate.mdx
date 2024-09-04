@@ -10,9 +10,11 @@ The Boilerplate template provides a starter dapp with all necessary dapp infrast
 
 The Boilerplate template provides:
 
-- Folder structure - A pre-made dapp folder structure with `frontend` and `move` folders.
+- Folder structure - A pre-made dapp folder structure with `frontend` and `contract` folders.
 - Dapp infrastructure - All required dependencies a dapp needs to start building on the Aptos network.
 - Wallet Info implementation - Pre-made `WalletInfo` components to demonstrate how one can use to read a connected Wallet info.
+- Trasnfer APT implementation - Pre-made `transfer` component to send APT to an address.
+- Message board functionality implementation - Pre-made `message` component to send and read a message on chain
 
 ## Getting started
 
@@ -26,19 +28,19 @@ npm run move:init
 
 The CLI will prompt you to provide a private key for your contract publishing account. If you provide no input, it will generate one for you.
 
-This will create an account to publish the contract with, as well as set the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
-
-For example:
-```bash filename=".env"
-PROJECT_NAME=my-aptos-dapp
-VITE_APP_NETWORK=testnet
-```
+This will:
+1. Create an account you will later publish the contract with.
+2. Create a `./aptos/config.yaml` file with the newly created account information.
 
 ### Publish the contract
 
 Run the below command to publish the contract on-chain:
 ```bash
 npm run move:publish
+```
+This command will:
+1. Publish the contract to chain.
+2. Setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
 
 ### Run the app
 
@@ -55,7 +57,7 @@ All dapp components should be added into the `components` folder and it is recom
 
 ### Writing a Move contract
 
-The boilerplate template comes with a `move` folder that holds all Move related files. Under the `sources` folder you will find a `.move` file with a super basic implementation of a Move module that stores a message and updates it. This is to help you get started with writing your own Smart Contract.
+The boilerplate template comes with a `contract` folder that holds all Move smart contract related files. Under the `sources` folder you will find a `*.move` file with a super basic implementation of a Move module that stores a message and updates it. This is to help you get started with writing your own Smart Contract.
 
 ### Smart contract and frontend communication
 
