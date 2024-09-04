@@ -6,14 +6,15 @@ import { Callout, Steps } from 'nextra/components';
 
 # Create Aptos Dapp Telegram Mini App Boilerplate Template
 
-This template is built from the [boilerplate template](https://aptos.dev/en/build/create-aptos-dapp/templates/boilerplate) and make it runnable as a telegram mini app.
+This template is made from the [boilerplate template](https://github.com/aptos-labs/create-aptos-dapp/tree/main/templates/boilerplate-template), the difference is that we make this possible to run as a Telegram mini app, and we change the app to be a simple clicker game.
 
-See the doc for boilerplate template for details about the template itself. 
+The difference between this template and the [tg-mini-app-boilerplate-template](https://aptos.dev/en/build/create-aptos-dapp/templates/tg-mini-app-boilerplate) is we are using [@mizuwallet-sdk/core](https://docs.mizu.io/docs/api-connect/core) instead of Aptos Wallet Adapter that gives you more control on the wallet flow, this way we achieve a seamless signing experience, i.e. users no longer need to approve the transaction explicitly.
 
 You can access a live demo of the mini app by starting a chat with the example bot https://t.me/seamless345_bot/.
 
-After you have followed the boilerplate template doc instructions to publish the contract, you can follow the steps below to make the dapp runnable as a telegram mini app.
+See the [boilerplate template doc](https://aptos.dev/en/build/create-aptos-dapp/templates/boilerplate) for details about the boilerplate template itself. 
 
+After you have followed the boilerplate template doc instructions to [publish the contract](https://aptos.dev/en/build/create-aptos-dapp/templates/boilerplate#getting-started), you can follow the steps below to make the dapp runnable as a telegram mini app.
 <Steps>
 
 ### Create a telegram bot
@@ -22,11 +23,13 @@ Start a chat with [BotFather](https://t.me/BotFather), use the `/newbot` command
 
 ### Obtain the app ID from mizu wallet
 
-In order to achieve a seamless signing experience, we use [Mizu sdk core](<path-to-mizu-sdk-core>) directly instead of the Wallet Adapter in this template, this allows us to bypass the confirmation dialog when signing a transaction. In order to use mizu sdk core, we need to get an app ID from the mizu team. You can contact the Mizu team by dm their [X account](https://x.com/MizuWallet) and provide them your telegram bot's token.
+In order to achieve a seamless signing experience, we use [@mizuwallet-sdk/core](https://www.npmjs.com/package/@mizuwallet-sdk/core) directly instead of the Wallet Adapter in this template, follow the [Mizu doc](https://docs.mizu.io/docs/api-connect/core) to add it to your project.
+
+Then contact the [Mizu team](https://mizu.io/) to get the app ID by providing the bot's token.
 
 ### Deploy the frontend
 
-Fill in `VITE_MIZU_WALLET_APP_ID` in `.env` with the app ID you obtained from the mizu team. Then deploy the frontend.
+Fill in `VITE_MIZU_WALLET_APP_ID` in `.env` with the app ID you obtained from the Mizu team. Then deploy the frontend.
 
 ### Create a telegram mini app
 

@@ -6,11 +6,13 @@ import { Callout, Steps } from 'nextra/components';
 
 # Create Aptos Dapp Telegram Mini App Boilerplate Template
 
-This template is built from the [boilerplate template](https://aptos.dev/en/build/create-aptos-dapp/templates/boilerplate) and make it runnable as a telegram mini app.
+This template is made from the [boilerplate template](https://github.com/aptos-labs/create-aptos-dapp/tree/main/templates/boilerplate-template), the difference is that we make this possible to run as a Telegram mini app, and we change the app to be a simple clicker game.
 
-See the doc for boilerplate template for details about the template itself. 
+The difference between this template and the [tg-mini-app-seamless-signing-boilerplate-template](https://aptos.dev/en/build/create-aptos-dapp/templates/tg-mini-app-seamless-signing-boilerplate) is we are using Aptos wallet adapter instead of Mizu wallet sdk core, this way the UX is similar to all other dapps using the Wallet Adapter, i.e. users need to approve the transaction explicitly. Also since Mizu is the only Aptos wallet supports Telegram now, we removed other wallet options.
 
 You can access a live demo of the mini app by starting a chat with the example bot https://t.me/aptos_explict_siging_bot/.
+
+See the [boilerplate template doc](https://aptos.dev/en/build/create-aptos-dapp/templates/boilerplate) for details about the boilerplate template itself. 
 
 After you have followed the boilerplate template doc instructions to publish the contract and deploy the frontend, you can follow the steps below to make the dapp runnable as a telegram mini app.
 
