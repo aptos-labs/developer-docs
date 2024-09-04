@@ -122,7 +122,7 @@ Up-to-date document on `vector` can be found [here](https://github.com/aptos-lab
 | `vector::rotate<T>(v: &mut vector<T>, rot: u64): u64`                              | `rotate(&mut [1, 2, 3, 4, 5], 2) -> [3, 4, 5, 1, 2]` in place, returns the split point ie. 3 in this example                                                    | Never                                      |
 | `vector::rotate_slice<T>(v: &mut vector<T>, left: u64, rot: u64, right: u64): u64` | rotate a slice `[left, right)` with `left <= rot <= right` in place, returns the split point                                                                    | Never                                      |
 
-## Example
+Example:
 
 ```move
 script {
@@ -138,6 +138,51 @@ script {
     assert!(vector::pop_back(&mut v) == 6, 42);
     assert!(vector::pop_back(&mut v) == 5, 42);
   }
+}
+```
+
+## Index Notation for Vectors
+
+_Since language version 2.0_
+
+Index notation using square brackets (`[]`) is available for vector operations, simplifying syntax
+and making programs easier to understand. The index notation is simply syntactic sugar which
+is reduced to existing operations by the compiler;  the named operations are also still supported.
+
+The table below gives an overview of index notations for vectors:
+
+
+| Indexing Syntax   | Vector Operation                           |
+|-------------------|--------------------------------------------|
+| `&v[i]`           | `vector::borrow(&v, i)`                    |
+| `&mut v[i]`       | `vector::borrow_mut(&mut v, i)`            |
+| `v[i]`            | `*vector::borrow(&v, i)`                   |
+| `v[i] = x`        | `*vector::borrow_mut(&mut v, i) = x`       |
+| `&v[i].field`     | `&vector::borrow(&v, i).field`             |
+| `&mut v[i].field` | `&mut vector::borrow_mut(&mut v, i).field` |
+| `v[i].field`      | `vector::borrow(&v, i).field`              |
+| `v[i].field = x`  | `vector::borrow_mut(&mut v, i).field = x`  |
+
+As an example, here is a bubble sort algorithm for vectors using index notation:
+
+```move
+fun bubble_sort(v: vector<u64>) {
+  use std::vector;
+  let n = vector::length(&v);
+  let i = 0;
+
+  while (i < n) {
+    let j = 0;
+    while (j < n - i - 1) {
+      if (v[j] > v[j + 1]) {
+        let t = v[j];
+        v[j] = v[j + 1];
+        v[j + 1] = t;
+      };
+      j = j + 1;
+    };
+    i = i + 1;
+  };
 }
 ```
 
