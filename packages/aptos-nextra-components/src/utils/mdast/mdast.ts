@@ -15,6 +15,11 @@ export function readFileAsTree(relativePath: string): Root {
   return tree;
 }
 
+export function writeFile(relativePath: string, data: string) {
+  const localPath = path.resolve(__dirname, relativePath);
+  fs.writeFileSync(localPath, data);
+}
+
 /**
  * Convert HTML to markdown code blocks
  * 
