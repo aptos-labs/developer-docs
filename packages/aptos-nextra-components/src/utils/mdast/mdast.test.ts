@@ -1,11 +1,10 @@
 import { expect, test } from 'vitest'
 import { astToMarkdown, convertHtmlToMarkdownCodeBlocks, readFileAsTree } from './mdast'
 
-test('mdast readFileAsTree from local markdown', () => {
-  const tree = readFileAsTree();
-  console.log("Tree pre-treatment: ", tree);
+test('keyRotation parse and fix AST', () => {
+  const tree = readFileAsTree("./examples/keyRotation.md");
   convertHtmlToMarkdownCodeBlocks(tree);
-  console.log("Tree post-codeblock treatment: ", tree);
   const markdown = astToMarkdown(tree);
-  console.log(markdown)
+  console.log(markdown);
+  expect(markdown).toEqual(astToMarkdown(readFileAsTree('./examples/keyRotation.expect.md')).toString())
 })
