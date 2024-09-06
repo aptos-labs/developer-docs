@@ -454,6 +454,9 @@ export const localeMap = {
   "/build/smart-contracts/book/constants": {
     "en": true
   },
+  "/build/smart-contracts/bookums": {
+    "en": true
+  },
   "/build/smart-contracts/book/equality": {
     "en": true
   },
@@ -479,6 +482,9 @@ export const localeMap = {
     "en": true
   },
   "/build/smart-contracts/book/modules-and-scripts": {
+    "en": true
+  },
+  "/build/smart-contracts/book/move-2.0": {
     "en": true
   },
   "/build/smart-contracts/book/move-tutorial": {
