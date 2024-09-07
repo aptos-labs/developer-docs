@@ -109,6 +109,9 @@ export const localeMap = {
   "/build/create-aptos-dapp/templates/token-minting-dapp": {
     "en": true
   },
+  "/build/create-aptos-dapp/templates/token-staking-dapp": {
+    "en": true
+  },
   "/build/create-aptos-dapp": {
     "en": true
   },
@@ -208,22 +211,10 @@ export const localeMap = {
   "/build/indexer/ans-lookup": {
     "en": true
   },
-  "/build/indexer/api/labs-hosted": {
-    "en": true
-  },
-  "/build/indexer/api/self-hosted": {
-    "en": true
-  },
-  "/build/indexer/api": {
+  "/build/indexer/aptos-hosted": {
     "en": true
   },
   "/build/indexer/architecture": {
-    "en": true
-  },
-  "/build/indexer/coin-balances": {
-    "en": true
-  },
-  "/build/indexer/coin-info": {
     "en": true
   },
   "/build/indexer/custom-processors/e2e-tutorial": {
@@ -233,6 +224,12 @@ export const localeMap = {
     "en": true
   },
   "/build/indexer/custom-processors": {
+    "en": true
+  },
+  "/build/indexer/fungible-asset-balances": {
+    "en": true
+  },
+  "/build/indexer/fungible-asset-info": {
     "en": true
   },
   "/build/indexer/get-delegators": {
@@ -259,10 +256,13 @@ export const localeMap = {
   "/build/indexer/legacy": {
     "en": true
   },
+  "/build/indexer/self-hosted": {
+    "en": true
+  },
   "/build/indexer/token-metadata": {
     "en": true
   },
-  "/build/indexer/txn-stream/labs-hosted": {
+  "/build/indexer/txn-stream/aptos-hosted-txn-stream": {
     "en": true
   },
   "/build/indexer/txn-stream/local-development": {
@@ -277,7 +277,40 @@ export const localeMap = {
   "/build/indexer": {
     "en": true
   },
+  "/build/sdks/community-sdks/swift-sdk": {
+    "en": true
+  },
+  "/build/sdks/community-sdks": {
+    "en": true
+  },
   "/build/sdks/cpp-sdk": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/account": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/batching-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/bcs-format": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/multi-agent-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/simulating-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/sponsoring-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/fetch-data-via-sdk": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/go-examples": {
     "en": true
   },
   "/build/sdks/go-sdk": {
@@ -421,6 +454,9 @@ export const localeMap = {
   "/build/smart-contracts/book/constants": {
     "en": true
   },
+  "/build/smart-contracts/bookums": {
+    "en": true
+  },
   "/build/smart-contracts/book/equality": {
     "en": true
   },
@@ -446,6 +482,9 @@ export const localeMap = {
     "en": true
   },
   "/build/smart-contracts/book/modules-and-scripts": {
+    "en": true
+  },
+  "/build/smart-contracts/book/move-2.0": {
     "en": true
   },
   "/build/smart-contracts/book/move-tutorial": {
@@ -661,6 +700,9 @@ export const localeMap = {
   "/developer-platforms/contribute/setup/maintenance": {
     "en": true
   },
+  "/developer-platforms/contribute/setup/mdx": {
+    "en": true
+  },
   "/developer-platforms/contribute/setup/migrating-from-docusaurus": {
     "en": true
   },
@@ -830,10 +872,6 @@ export const localeMap = {
     "en": true,
     "zh": true
   },
-  "/network/nodes/identity-and-configuration": {
-    "en": true,
-    "zh": true
-  },
   "/network/nodes/localnet/local-development-network": {
     "en": true,
     "zh": true
@@ -961,6 +999,9 @@ export const localeMap = {
     "zh": true
   },
   "/network/nodes/aptos-api-spec": {
+    "zh": true
+  },
+  "/network/nodes/identity-and-configuration": {
     "zh": true
   }
 };

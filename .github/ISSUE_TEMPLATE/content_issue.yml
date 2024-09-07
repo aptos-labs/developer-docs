@@ -1,0 +1,35 @@
+name: Documentation Content Issue
+description: Raise an issue with the content on https://aptos.dev
+labels: ["documentation"]
+body:
+  - type: input
+    id: url
+    attributes:
+      label: Url
+      description: "Please provide the primary URL where the content is missing or incorrect. You may add other URLs if needed below."
+      placeholder: "(e.g., https://aptos.dev/en/network/blockchain"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the content issue
+      placeholder: (e.g., Smart Contracts do not describe what a Smart Vector is)
+    validations:
+      required: true
+  - type: dropdown
+    id: section
+    attributes:
+      multiple: true
+      label: "Section"
+      options:
+        - "move-and-smart-contracts"
+        - "apis"
+        - "sdks"
+        - "indexer"
+        - "cli"
+        - "create-aptos-dapp"
+        - "blockchain"
+        - "nodes"
+    validations:
+      required: true

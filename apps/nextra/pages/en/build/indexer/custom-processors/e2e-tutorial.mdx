@@ -2,10 +2,15 @@
 title: "End-to-End Tutorial"
 ---
 import { IndexerBetaNotice } from '@components/index';
+import { Callout } from 'nextra/components';
 
 # Creating a Custom Indexer Processor
 
 <IndexerBetaNotice />
+
+<Callout type="warning">
+Although this tutorial is written using Python, the modern recommendation is to use Rust if possible to write your custom processors as that language has more support in the ecosystem. The high level steps are still the same across these two languages.
+</Callout>
 
 In this tutorial, we're going to walk you through all the steps involved with creating a very basic custom indexer processor to track events and data on the Aptos blockchain.
 
@@ -32,7 +37,7 @@ cd aptos-indexer-processors
 cd python/processors/coin_flip
 ```
 
-Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an authorization token. Follow [this guide](../api/labs-hosted.mdx#authorization-via-api-key) to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`. Once you're done, you should have a token that looks like this:
+Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream Service you need an authorization token. Follow [this guide](../aptos-hosted.mdx#authorization-via-api-key) to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`. Once you're done, you should have a token that looks like this:
 
 ```bash filename="Terminal"
 aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx

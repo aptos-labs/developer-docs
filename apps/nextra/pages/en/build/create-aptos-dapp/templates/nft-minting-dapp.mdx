@@ -6,7 +6,12 @@ import { Callout, FileTree, Steps } from 'nextra/components';
 
 # Create Aptos Dapp NFT Minting Dapp Template
 
-Digital Assets are the NFT standard for Aptos. The NFT minting dapp template provides an end-to-end NFT minting dapp. With this dapp, you can learn how NFTs work on Aptos, how to write a smart contract and how to write a front end connected to the contract. In addition, it offers a beautiful pre-made UI for a NFT minting dapp users can quickly adjust and deploy into a live server.
+[Digital Assets](../../smart-contracts/digital-asset.mdx) are the NFT standard for Aptos. The NFT minting dapp template provides an end-to-end NFT minting dapp. 
+
+With this dapp, you can:
+1. Create a NFT collection on Aptos.
+2. Modify a pre-made UI to build a NFT minting dapp users can quickly adjust.
+3. Learn how to write a Move contract and front end connected to that contract. 
 
 You can read more about the Aptos Digital Asset Standard [here](../../smart-contracts/digital-asset.mdx).
 
@@ -24,19 +29,6 @@ The NFT minting dapp template provides 3 pages:
 - [Customizing the frontend](#customizing-the-front-end)
 - [Deploy to a live server](#deploy-to-a-live-server)
 
-## Setup
-
-You can start the app by running:
-
-```bash 
-npm run dev
-```
-
-However, for the app to work as intended, there are several setup steps you will have to do to:
-
-1. Create assets for a collection of NFTs.
-2. Publish the contract to create the collection on-chain.
-3. Actually publish your collection.
 
 ## Create Collection Assets
 
@@ -62,7 +54,7 @@ In order to create a `Collection` using `create-dapp-app`, you will need to crea
 The following steps will break down how to do that.
 
 <Steps>
-### Create an `asset` folder for your collection.
+### Create an `assets` folder for your collection.
 
 ### Make a `collection.json` file.
 All collections are **required** to have the following fields:
@@ -79,15 +71,15 @@ All collections are **required** to have the following fields:
 The `image` field of `collection.json` above will be filled in automatically when we upload the images, so we can leave it empty.
 </Callout>
 
-### Add an image for the collection itself in the `asset` folder.
+### Add an image for the collection itself in the `assets` folder.
 
-### Create a folder called `images` in the `asset` folder.
+### Create a folder called `images` in the `assets` folder.
 
 ### Add all potential NFT images to the `images` folder.
 
 All images must have the same file extension for this template app to work. 
 
-### Create a folder called `metadata` in the `asset` folder.
+### Create a folder called `metadata` in the `assets` folder.
 
 ### Add a metadata json file for each NFT image in the `images` folder.
 The metadata files should match the names of the images in the `images` folder. Ex. `1.jpeg` -> `1.json`. 
@@ -147,8 +139,6 @@ The `image` field of the metadata.json files above will be filled in automatical
 ## Publish the Move Contract
 
 <Steps>
-### Prepare an account, or create one with an Aptos wallet like [Petra](https://petra.app/docs/use#create-a-new-account).
-You will need this to set which account will have the privilege to create a collection. Make sure to set up the account on the same network as your template project.
 
 ### On the project root folder, use the below command to initiliaze an account to publish the contract with.
 
@@ -158,15 +148,19 @@ npm run move:init
 
 The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
 
-This will create an account you will later publish the contract with, as well as setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
+This will:
+1. Create an account you will later publish the contract with.
+2. Create a `./aptos/config.yaml` file with the newly created account information.
 
 ### In the `.env` file, set `VITE_COLLECTION_CREATOR_ADDRESS` to be the same as your account address.
 This determines which account is allowed to create collections using the dapp.
 
+If you haven't set up an account, you can create one with an Aptos wallet like [Petra](https://petra.app/docs/use#create-a-new-account). Make sure to set up the account on the same network as your template project.
+
 For example:
 ```bash filename=".env"
 VITE_APP_NETWORK=testnet
-VITE_COLLECTION_CREATOR_ADDRESS=0x71e3cdf1ef86d575ae38c7c2d19f22b8c88eb2b15082691782e5b8c8da401568
+VITE_COLLECTION_CREATOR_ADDRESS=0xC0FEE
 ```
 
 ### On the project root folder, run the below command to publish the contract.
@@ -178,11 +172,16 @@ npm run move:publish
 You will have to confirm the gas fee in the console.
 </Callout>
 
-This command will publish the contract to chain.
+This command will:
+1. Publish the contract to chain.
+2. Setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
 
 </Steps>
 
 ## Publishing the collection on-chain
+
+After you have [published the Move contract to chain](#publish-the-move-contract)
+
 <Steps>
 
 ### Run the app and open the preview.
@@ -193,7 +192,7 @@ npm run dev
 
 ### In the top-right corner, click "Connect a Wallet". 
 Use the same account that you set in `.env` for the `VITE_COLLECTION_CREATOR_ADDRESS`. 
-Or, if you use a different account, set the `VITE_COLLECTION_CREATOR_ADDRESS` to the account you sign in with.
+Or, if you use a different account, set the `VITE_COLLECTION_CREATOR_ADDRESS` to the account you sign in with and republish the contract.
 
 <Callout type="warning">
 Do not use the "Google Account" option if it is available. The account generated from that will not work as the `VITE_COLLECTION_CREATOR_ADDRESS`. Use a wallet created with an Aptos wallet provider such as [Petra](https://petra.app/docs/use#create-a-new-account).
@@ -206,7 +205,7 @@ If you do not have an `assets` folder or other properly formatted collection dat
 
 ### Choose the required fields.
 1. Choose the mint start date to determine when users can start minting NFTs.
-3. Choose a mint limit per account.
+2. Choose a mint limit per account.
 
 The rest are optional fields to help customize your mint.
 - (Optional) Choose the mint end date to determine when users can no longer mint NFTs. If no date selected, the mint is open forever.
@@ -227,15 +226,18 @@ During the upload process, you will need to sign two messages to approve file up
 
 Most data on the front end is customizable in `frontend/config.ts`. 
 
-In order to add a collection to the public mint page, set `collection_id` in `frontend/config.ts` with the collection address. 
+### Set the `collection_address` config
 
-You can use collections that you have minted using the tool by going to the "My Collections" page and copying their address.
+In order to add a collection to the public mint page, set `collection_address` in `.env` with the collection address. 
+
+You can use a collection that you have minted using the tool by going to the "My Collections" page and copying its address.
 
 ### Modify static content
 
 Once the collection address has been configured, view the `frontend/config.ts` file to change any static content on the page. You can also modify the code itself as you wish.
 
 **How to add static images?**
+
 The public mint page uses static images in the UI. Initially, the images are imported from the `frontend/assets/placeholder` folder. To use custom images, you should add the image you want to use to the `frontend/assets` folder (under any new folder you want to create) and then import the image as seen below in the `frontend/config.ts` file and add it under the section you want to have it.
 
 ```tsx filename="frontend/config.ts"
@@ -281,11 +283,21 @@ Creating a collection on mainnet follows the same flow as creating a collection 
 
 ## Deploy to a live server
 
-`create-aptos-dapp` utilizes Vite as the development tool. To deploy a Vite static site to a live server, you can simply follow [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). 
+
+At the root of the folder, simply run 
+
+```bash filename="Terminal"
+npm run deploy
+```
+
+Then, follow the prompts. Please refer to Vercel docs to learn more about the [Vercel CLI](https://vercel.com/docs/cli)
+
+If you are looking for different services to deploy the static site to, `create-aptos-dapp` utilizes Vite as the development tool, so you can follow the [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
 
 1. Run `npm run build` to build a static site
 2. Run `npm run preview` to see how your dapp would look like on a live server
-3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy#github-pages) on how to use each.
+3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy) on how to use each
 
 ## Update the look and feel of the dapp
 

@@ -29,6 +29,14 @@ If run successfully, you should receive a Terminal output like so
 }
 ```
 
+<Callout>
+  You may need to add named addresses, especially for examples.  For example, with the Hello Blockchain Move example, you will need to add the `hello_blockchain` named address:
+
+  ```bash filename="Terminal"
+  aptos move compile --named-addresses hello_blockchain=default
+  ```
+</Callout>
+
 ## Unpacking Build
 
 Compiled Move packages contain a folder structure that resembles the one below. 

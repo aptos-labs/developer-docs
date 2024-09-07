@@ -1,0 +1,20 @@
+# Move 2.0 Language Release
+
+The Move 2.0 language release adds a number of new features to Move. The documentation of those features is integrated into the book, and marked in text with "_Since language version 2.0_". This section gives an overview of the new features and links to the documentation:
+
+
+- **Enum Types** add the option to define different variants of data layout in one storable type. They are documented in the [Enum Type section](enums.mdx).
+
+- **Receiver Style Functions** add the ability to call functions in the familiar notation `value.func(arg)`. They are documented in [this section](functions.mdx#dot-receiver-function-call-style).
+
+- **Index Notation** allows to access [elements of vectors](vector.mdx#index-notation-for-vectors) and of [resource storage](global-storage-operators.mdx#index-notation-for-storage-operators) with notations like `&mut vector[index]`, or `&mut Resource[addr]`, respectively. 
+
+- **Positional Structs** allow to define wrapper types such as `struct Wrapped(u64)`. Positional structs are described [here](structs-and-resources.mdx#positional-structs). Enum variants are also allowed to be positional.
+
+- **Dot-dot pattern wildcards** enable statements like `let Struct{x, ..} = value` to match selective parts of data. They are described [here](structs-and-resources.mdx#partial-patterns). Those patterns are also allowed for enum variants.
+
+- **Package visibility** allows to declare a function to be visible anywhere inside, but not outside a package. Friend functions continue to be supported, although package visibility is in many cases more suitable. As a more concise notation, package and friend functions can be simply declared as `package fun` or `friend fun`, respectively, instead of the longer `public(package) fun` and `public(friend) fun`. This feature is documented [here](functions.mdx#package-visibility).
+
+- **Assert abort code optional** The `assert!` macro can now be used with just one argument, omitting the abort code, in which case a default code will be chosen. See also [here](abort-and-assert.mdx#assert).
+ 
+- **New Cast Syntax** Until now, casts had to always be in parentheses, requiring code like `function((x as u256))`. This requirement is now dropped and casts can be top-level expressions without parenthesis, as in `function(x as u256)`. One still needs to write `(x as u64) + (y as u64)` in expressions. This similarly applies to the new enum variant test, `data is VersionedData::V1`.

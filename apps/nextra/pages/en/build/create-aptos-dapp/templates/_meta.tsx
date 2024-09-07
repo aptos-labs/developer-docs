@@ -8,4 +8,7 @@ export default {
   "token-minting-dapp": {
     title: "Token minting dapp Template",
   },
+  "token-staking-dapp": {
+    title: "Token staking dapp Template",
+  },
 };
