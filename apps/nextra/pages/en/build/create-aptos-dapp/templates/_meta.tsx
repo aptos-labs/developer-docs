@@ -2,11 +2,8 @@ export default {
   boilerplate: {
     title: "Boilerplate Template",
   },
-  "tg-mini-app-boilerplate": {
-    title: "Telegram Mini App Boilerplate",
-  },
-  "tg-mini-app-seamless-signing-boilerplate": {
-    title: "Telegram Mini App Supports Seamless Signing Boilerplate",
+  "clicker-game-tg-mini-app": {
+    title: "Telegram Clicker Game Mini App Template",
   },
   "nft-minting-dapp": {
     title: "NFT minting dapp Template",
