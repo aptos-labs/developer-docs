@@ -6,9 +6,9 @@ import { Callout, Steps } from 'nextra/components';
 
 # Create Aptos Dapp Telegram Clicker Game Mini App Template
 
-This template provides a ready to use clicker game dapp that can be run as a Telegram mini app. You can use this template to build your own Telegram mini app dapp on the Aptos network.
+This template provides a ready to use clicker game dapp that can be run as a Telegram Mini App.
 
-We provide 2 signing experience for the Telegram Mini App, you can choose when you create the dapp using the create-aptos-dapp cli:
+We provide 2 signing experience for the Telegram Mini App, you can choose one of them during the setup:
 - explicit signing - the user needs to sign each transaction, this is powered by Aptos Wallet Adapter similar to other dapps
   - [demo](https://t.me/aptos_explict_siging_bot/)
 - seamless signing - the user doesn't need to sign each transaction because the approval is done in the background, this is powered by [Mizu Wallet SDK Core](https://docs.mizu.io/docs/api-connect/core)
@@ -34,7 +34,7 @@ Start a chat with [BotFather](https://t.me/BotFather), use the `/newbot` command
 
 ### (Optional)  Obtain the app ID from Mizu wallet
 
-If you choose the seamless signing experience, you are using `@mizuwallet-sdk/core` instead of Aptos Wallet Adapte. You need to obtain a mizu app ID from the Mizu team by filling up their [form](https://ankaalabs.typeform.com/to/bAPqSxDu). Once you have the app ID, set it in the `.env` file as `VITE_MIZU_WALLET_APP_ID`.
+If you choose the seamless signing experience, you are using `@mizuwallet-sdk/core` instead of Aptos Wallet Adapter. You need to obtain a Mizu App ID from the Mizu team by filling up their [form](https://ankaalabs.typeform.com/to/bAPqSxDu). Once you have the App ID, set it in the `.env` file as `VITE_MIZU_WALLET_APP_ID`.
 
 You can learn more about using it in the [Mizu doc](https://docs.mizu.io/docs/api-connect/core).
 
