@@ -30,7 +30,7 @@ This command will:
 
 ### Create a Telegram bot
 
-Start a chat with [BotFather](https://t.me/BotFather), use the `/newbot` command to create a new bot.
+Start a chat with [BotFather](https://t.me/BotFather), use the `/newbot` command to create a new bot. You can learn more about the process at [Telegram Docs](https://docs.telegram-mini-apps.com/platform/creating-new-app#creating-application-in-botfather).
 
 ### (Optional)  Obtain the app ID from Mizu wallet
 
@@ -40,15 +40,30 @@ You can learn more about using it in the [Mizu doc](https://docs.mizu.io/docs/ap
 
 ### Host the frontend
 
-Host the frontend on Vercel or any other hosting service.
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). 
+
+At the root of the folder, simply run 
+
+```bash filename="Terminal"
+npm run deploy
+```
+
+Then, follow the prompts. Please refer to Vercel docs to learn more about the [Vercel CLI](https://vercel.com/docs/cli)
+
+If you are looking for different services to deploy the static site to, `create-aptos-dapp` utilizes Vite as the development tool, so you can follow the [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+
+1. Run `npm run build` to build a static site
+2. Run `npm run preview` to see how your dapp would look like on a live server
+3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy) on how to use each
 
 ### Create a Telegram mini app
 
-Use the `/newapp` commend to create a new mini app and link the mini app with the bot you just created. When BotFather asks for the mini app's URL, provide the URL of the frontend you deployed.
+Use the `/newapp` command to create a new mini app and link the mini app with the bot you just created. When BotFather asks for the mini app's URL, provide the URL of the frontend you deployed in the previous step. You can learn more about the process at [Telegram Docs](https://docs.telegram-mini-apps.com/platform/creating-new-app#creating-application-in-botfather).
+
 
 ### Set the menu button of the bot to open the mini app
 
-Use the `/mybots` command to find your bot, choose `bot settings` -> `menu button` -> `configure menu button`, provide the mini app's name and URL. Now you can access the mini app from your bot's menu.
+Use the `/mybots` command to find your bot, choose `bot settings` -> `menu button` -> `configure menu button`, provide the mini app's name and URL. Now you can access the mini app from your bot's menu. You can learn more about the process at [Telegram Docs](https://docs.telegram-mini-apps.com/platform/creating-new-app#web-application-link).
 
 </Steps>
 
@@ -59,8 +74,7 @@ If you started your dapp on testnet, and you are happy with your testing, you wi
 To publish the smart contract on mainnet, we need to change some configuration.
 
 1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
-2. Run `npm run move:init` to initialize an account to work against Mainnet
-3. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
-4. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
-5. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
-7. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
+2. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
+3. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
+4. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
+5. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
