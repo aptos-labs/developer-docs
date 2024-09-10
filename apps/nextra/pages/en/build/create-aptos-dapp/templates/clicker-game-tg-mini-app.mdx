@@ -73,8 +73,10 @@ If you started your dapp on testnet, and you are happy with your testing, you wi
 
 To publish the smart contract on mainnet, we need to change some configuration.
 
-1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
-2. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
-3. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
-4. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
-5. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
+Open the `.env` file and:
+
+> Note: Make sure you have created an existing account on the Aptos `mainnet`
+1. Change the `APP_NETWORK` value to `mainnet`
+2. Update the `MODULE_PUBLISHER_ACCOUNT_ADDRESS` to be the existing account address
+3. Update the `MODULE_PUBLISHER_PRIVATE_KEY` to be the existing account private key
+4. Run `npm run move:publish` to publish your move module on Aptos mainnet.
