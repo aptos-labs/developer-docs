@@ -1,0 +1,44 @@
+import { Card, Cards, RemoteCodeblock, permalinkFetch } from '@components/index';
+import { Steps } from "nextra/components"
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    "https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59"
+  ])
+}
+
+# Setup from a template
+You can set up a basic Move package from a template.
+
+<Steps>
+  ### Initialize
+  Run the following to get started with a pre-populated package:
+  ```bash filename="Terminal"
+  aptos move init --name hello_blockchain --template hello-blockchain
+  ```
+
+  ### Start building
+  The template creates a `hello_blockchain.move` file under `sources` to help get you started.
+  <RemoteCodeblock
+    permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59"
+  />
+
+  ### See all templates
+  Run the following command to see all templates (and for general help initializing a package):
+  ```bash
+  aptos move init --help
+  ```
+
+  ### Learn More
+  <Cards>
+    <Card href="../smart-contracts">
+      <Card.Title>Smart Contracts</Card.Title>
+      <Card.Description>Learn how to build in Move</Card.Description>
+    </Card>
+    <Card href="../smart-contracts/create-package">
+      <Card.Title>Create Package</Card.Title>
+      <Card.Description>Get started by learning how to create a Move package</Card.Description>
+    </Card>
+  </Cards>
+
+</Steps>
