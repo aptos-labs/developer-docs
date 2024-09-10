@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
-import Select from "react-select";
-// import remarkMermaid from "remark-mermaid-plugin";
+import { Playground } from "nextra/components";
 import {
   // Select,
   Label,
@@ -26,14 +22,14 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useRouter } from "next/router";
-import { MoveReferenceContent } from "./MoveReferenceContent";
+import { readMarkdownString, convertHtmlToMarkdownCodeBlocks, astToMarkdown } from '@aptos-labs/nextra-components/src/utils/mdast/mdast'
+import { ModuleSelect } from "./ModuleSelect";
 
 const tengCommit = "0522837fab5552c027c9dfa73a89907e3980a131"
 const root = "https://raw.githubusercontent.com/aptos-labs/aptos-core";
-const branches = [tengCommit, "mainnet", "testnet", "devnet", "main"] as const;
+const branches = ["mainnet", "testnet", "devnet", "main"] as const;
 const defaultBranch = branches[0];
 const branchTitles: Record<Branch, string> = {
-  "0522837fab5552c027c9dfa73a89907e3980a131": "Teng's Commit",
   mainnet: "Mainnet",
   testnet: "Testnet",
   devnet: "Devnet",
@@ -152,6 +148,7 @@ const ModulePageSelector = ({
           })}
         </select>
       </form> */}
+      <ModuleSelect />
       <ComboBox
         defaultItems={items}
         defaultSelectedKey={selectedPage || ""}
@@ -220,14 +217,18 @@ const Content = ({ branch, page }: ContentProps) => {
 
     const fetchContent = async () => {
       if (page && isMounted) {
-        // const pagePath = `${root}/${branch}/aptos-move/framework/${page}`;
+        console.log("PAGE: ", page);
         const pagePath = `${root}/${branch}/aptos-move/framework/${page}`;
-        console.log(pagePath)
+        // const pagePath = "https://raw.githubusercontent.com/aptos-labs/aptos-core/main/aptos-move/framework/aptos-stdlib/doc/table.md"
+        console.log("\n" + pagePath + "\n")
         const response = await fetch(pagePath);
         if (response.ok) {
           const rawContent = await response.text();
-          console.log(rawContent)
-          setContent(rawContent);
+          const tree = readMarkdownString(rawContent);
+          convertHtmlToMarkdownCodeBlocks(tree);
+          const mdxString = astToMarkdown(tree);
+          console.log(mdxString)
+          setContent(mdxString);
           const compileMdxRoute = "/api/compile-mdx";
           const result = await fetch(compileMdxRoute, {
             method: 'POST', // Specify the request method
@@ -267,22 +268,7 @@ const Content = ({ branch, page }: ContentProps) => {
   // Conditional rendering based on whether a page is selected
   return (
     <div className="move-content">
-      {/* {page && content ? (
-        <ReactMarkdown
-          children={content}
-          rehypePlugins={[rehypeRaw]}
-          remarkPlugins={[
-            remarkGfm,
-            // [remarkMermaid as any, { theme: "dark" }]
-          ]}
-          remarkRehypeOptions={{ allowDangerousHtml: true }}
-        />
-      ) : page ? (
-        <div>Loading content...</div>
-      ) : (
-        <div className="mt-6">Please select a module to view its content.</div>
-      )} */}
-      <MoveReferenceContent compiledSource={compiledMdx} />
+      {content ? <Playground source={content} /> : null}
     </div>
   );
 };
@@ -324,8 +310,7 @@ async function loadFrameworkData(
   branch: Branch,
   framework: Framework,
 ): Promise<FrameworkData> {
-  // const pageUrl = `${root}/${branch}/aptos-move/framework/${framework}/doc/overview.md`;
-  const pageUrl = `${root}/${branch}/aptos-move/framework/${framework}/mdx_doc/overview.md`;
+  const pageUrl = `${root}/${branch}/aptos-move/framework/${framework}/doc/overview.md`;
   const response = await fetch(pageUrl);
 
   if (!response.ok) {
@@ -337,8 +322,7 @@ async function loadFrameworkData(
   const pages = Array.from(rawContent.matchAll(linksRegex), (entry) => {
     const name = entry[1].replace(/`/gi, "");
     const page = entry[2].split("#")[0];
-    // const id = `${framework}/doc/${page}`;
-    const id = `${framework}/mdx_doc/${page}`;
+    const id = `${framework}/doc/${page}`;
 
     return { id, name };
   });
