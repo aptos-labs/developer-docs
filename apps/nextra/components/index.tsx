@@ -9,3 +9,4 @@ export * from "./api-reference";
 export * from "./framework-reference";
 export * from "./media";
 export * from "./error";
+export * from "./move-reference";

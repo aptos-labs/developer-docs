@@ -277,6 +277,9 @@ export const localeMap = {
   "/build/indexer": {
     "en": true
   },
+  "/build/move/reference": {
+    "en": true
+  },
   "/build/sdks/community-sdks/swift-sdk": {
     "en": true
   },
@@ -568,6 +571,9 @@ export const localeMap = {
   "/build/smart-contracts/objects": {
     "en": true
   },
+  "/build/smart-contracts/pokemon/[name]": {
+    "en": true
+  },
   "/build/smart-contracts/prover/prover-guide": {
     "en": true
   },
@@ -581,6 +587,9 @@ export const localeMap = {
     "en": true
   },
   "/build/smart-contracts/randomness": {
+    "en": true
+  },
+  "/build/smart-contracts/reference": {
     "en": true
   },
   "/build/smart-contracts/resource-accounts": {
