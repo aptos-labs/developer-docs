@@ -1,2 +1,2 @@
 export * from "./MoveReference";
-export * from "./ModuleSelect";
+export * from "./ModuleContainer";

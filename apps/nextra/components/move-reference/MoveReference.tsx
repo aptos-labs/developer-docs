@@ -23,7 +23,7 @@ import {
 } from "next/navigation";
 import { useRouter } from "next/router";
 import { readMarkdownString, convertHtmlToMarkdownCodeBlocks, astToMarkdown } from '@aptos-labs/nextra-components/src/utils/mdast/mdast'
-import { ModuleSelect } from "./ModuleSelect";
+import { ModuleSelect } from "./ModuleContainer";
 
 const tengCommit = "0522837fab5552c027c9dfa73a89907e3980a131"
 const root = "https://raw.githubusercontent.com/aptos-labs/aptos-core";

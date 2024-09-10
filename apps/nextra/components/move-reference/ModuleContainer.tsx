@@ -44,7 +44,7 @@ export const groupedOptions: readonly GroupedOption[] = [
 function FormatGroupLabel({ label, options }: GroupedOption) {
   return (
     <div className="flex items-center justify-between">
-      <span className="dark:text-black">{label}</span>
+      <span className="text-gray-600 dark:text-gray-400 font-bold">{label}</span>
       <span
         style={{
           backgroundColor: packageOptions[2].color,
@@ -89,7 +89,7 @@ const dropdownIndicatorStyles =
 const menuStyles =
   "p-1 mt-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-lg dark:text-gray-100";
 const groupHeadingStyles =
-  "ml-3 mt-2 mb-1 text-gray-500 dark:text-gray-100 text-sm";
+  "mt-2 mb-1 text-gray-500 dark:text-gray-100 text-sm";
 const optionStyles = {
   base: "hover:cursor-pointer px-3 py-2 rounded dark:text-gray-100",
   focus: "bg-gray-100 dark:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700",
@@ -141,4 +141,18 @@ export function ModuleSelect() {
       }}
     />
   );
+}
+
+export function ModuleContainer() {
+
+
+  return (
+    <>
+      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        Module
+      </label>
+      <ModuleSelect />
+    </>
+    
+  )
 }
