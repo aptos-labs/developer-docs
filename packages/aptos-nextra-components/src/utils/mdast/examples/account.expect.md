@@ -2,92 +2,92 @@
 
 # Module `0x1::account`
 
-* [Struct `KeyRotation`](#0x1_account_KeyRotation)
-* [Resource `Account`](#0x1_account_Account)
-* [Struct `KeyRotationEvent`](#0x1_account_KeyRotationEvent)
-* [Struct `CoinRegisterEvent`](#0x1_account_CoinRegisterEvent)
-* [Struct `CapabilityOffer`](#0x1_account_CapabilityOffer)
-* [Struct `RotationCapability`](#0x1_account_RotationCapability)
-* [Struct `SignerCapability`](#0x1_account_SignerCapability)
-* [Resource `OriginatingAddress`](#0x1_account_OriginatingAddress)
-* [Struct `RotationProofChallenge`](#0x1_account_RotationProofChallenge)
-* [Struct `RotationCapabilityOfferProofChallenge`](#0x1_account_RotationCapabilityOfferProofChallenge)
-* [Struct `SignerCapabilityOfferProofChallenge`](#0x1_account_SignerCapabilityOfferProofChallenge)
-* [Struct `RotationCapabilityOfferProofChallengeV2`](#0x1_account_RotationCapabilityOfferProofChallengeV2)
-* [Struct `SignerCapabilityOfferProofChallengeV2`](#0x1_account_SignerCapabilityOfferProofChallengeV2)
-* [Constants](#@Constants_0)
-* [Function `initialize`](#0x1_account_initialize)
-* [Function `create_account_if_does_not_exist`](#0x1_account_create_account_if_does_not_exist)
-* [Function `create_account`](#0x1_account_create_account)
-* [Function `create_account_unchecked`](#0x1_account_create_account_unchecked)
-* [Function `exists_at`](#0x1_account_exists_at)
-* [Function `get_guid_next_creation_num`](#0x1_account_get_guid_next_creation_num)
-* [Function `get_sequence_number`](#0x1_account_get_sequence_number)
-* [Function `increment_sequence_number`](#0x1_account_increment_sequence_number)
-* [Function `get_authentication_key`](#0x1_account_get_authentication_key)
-* [Function `rotate_authentication_key_internal`](#0x1_account_rotate_authentication_key_internal)
-* [Function `rotate_authentication_key_call`](#0x1_account_rotate_authentication_key_call)
-* [Function `rotate_authentication_key`](#0x1_account_rotate_authentication_key)
-* [Function `rotate_authentication_key_with_rotation_capability`](#0x1_account_rotate_authentication_key_with_rotation_capability)
-* [Function `offer_rotation_capability`](#0x1_account_offer_rotation_capability)
-* [Function `is_rotation_capability_offered`](#0x1_account_is_rotation_capability_offered)
-* [Function `get_rotation_capability_offer_for`](#0x1_account_get_rotation_capability_offer_for)
-* [Function `revoke_rotation_capability`](#0x1_account_revoke_rotation_capability)
-* [Function `revoke_any_rotation_capability`](#0x1_account_revoke_any_rotation_capability)
-* [Function `offer_signer_capability`](#0x1_account_offer_signer_capability)
-* [Function `is_signer_capability_offered`](#0x1_account_is_signer_capability_offered)
-* [Function `get_signer_capability_offer_for`](#0x1_account_get_signer_capability_offer_for)
-* [Function `revoke_signer_capability`](#0x1_account_revoke_signer_capability)
-* [Function `revoke_any_signer_capability`](#0x1_account_revoke_any_signer_capability)
-* [Function `create_authorized_signer`](#0x1_account_create_authorized_signer)
-* [Function `assert_valid_rotation_proof_signature_and_get_auth_key`](#0x1_account_assert_valid_rotation_proof_signature_and_get_auth_key)
-* [Function `update_auth_key_and_originating_address_table`](#0x1_account_update_auth_key_and_originating_address_table)
-* [Function `create_resource_address`](#0x1_account_create_resource_address)
-* [Function `create_resource_account`](#0x1_account_create_resource_account)
-* [Function `create_framework_reserved_account`](#0x1_account_create_framework_reserved_account)
-* [Function `create_guid`](#0x1_account_create_guid)
-* [Function `new_event_handle`](#0x1_account_new_event_handle)
-* [Function `register_coin`](#0x1_account_register_coin)
-* [Function `create_signer_with_capability`](#0x1_account_create_signer_with_capability)
-* [Function `get_signer_capability_address`](#0x1_account_get_signer_capability_address)
-* [Function `verify_signed_message`](#0x1_account_verify_signed_message)
-* [Specification](#@Specification_1)
-  * [High-level Requirements](#high-level-req)
-  * [Module-level Specification](#module-level-spec)
-  * [Function `initialize`](#@Specification_1_initialize)
-  * [Function `create_account_if_does_not_exist`](#@Specification_1_create_account_if_does_not_exist)
-  * [Function `create_account`](#@Specification_1_create_account)
-  * [Function `create_account_unchecked`](#@Specification_1_create_account_unchecked)
-  * [Function `exists_at`](#@Specification_1_exists_at)
-  * [Function `get_guid_next_creation_num`](#@Specification_1_get_guid_next_creation_num)
-  * [Function `get_sequence_number`](#@Specification_1_get_sequence_number)
-  * [Function `increment_sequence_number`](#@Specification_1_increment_sequence_number)
-  * [Function `get_authentication_key`](#@Specification_1_get_authentication_key)
-  * [Function `rotate_authentication_key_internal`](#@Specification_1_rotate_authentication_key_internal)
-  * [Function `rotate_authentication_key_call`](#@Specification_1_rotate_authentication_key_call)
-  * [Function `rotate_authentication_key`](#@Specification_1_rotate_authentication_key)
-  * [Function `rotate_authentication_key_with_rotation_capability`](#@Specification_1_rotate_authentication_key_with_rotation_capability)
-  * [Function `offer_rotation_capability`](#@Specification_1_offer_rotation_capability)
-  * [Function `is_rotation_capability_offered`](#@Specification_1_is_rotation_capability_offered)
-  * [Function `get_rotation_capability_offer_for`](#@Specification_1_get_rotation_capability_offer_for)
-  * [Function `revoke_rotation_capability`](#@Specification_1_revoke_rotation_capability)
-  * [Function `revoke_any_rotation_capability`](#@Specification_1_revoke_any_rotation_capability)
-  * [Function `offer_signer_capability`](#@Specification_1_offer_signer_capability)
-  * [Function `is_signer_capability_offered`](#@Specification_1_is_signer_capability_offered)
-  * [Function `get_signer_capability_offer_for`](#@Specification_1_get_signer_capability_offer_for)
-  * [Function `revoke_signer_capability`](#@Specification_1_revoke_signer_capability)
-  * [Function `revoke_any_signer_capability`](#@Specification_1_revoke_any_signer_capability)
-  * [Function `create_authorized_signer`](#@Specification_1_create_authorized_signer)
-  * [Function `assert_valid_rotation_proof_signature_and_get_auth_key`](#@Specification_1_assert_valid_rotation_proof_signature_and_get_auth_key)
-  * [Function `update_auth_key_and_originating_address_table`](#@Specification_1_update_auth_key_and_originating_address_table)
-  * [Function `create_resource_address`](#@Specification_1_create_resource_address)
-  * [Function `create_resource_account`](#@Specification_1_create_resource_account)
-  * [Function `create_framework_reserved_account`](#@Specification_1_create_framework_reserved_account)
-  * [Function `create_guid`](#@Specification_1_create_guid)
-  * [Function `new_event_handle`](#@Specification_1_new_event_handle)
-  * [Function `register_coin`](#@Specification_1_register_coin)
-  * [Function `create_signer_with_capability`](#@Specification_1_create_signer_with_capability)
-  * [Function `verify_signed_message`](#@Specification_1_verify_signed_message)
+- [Struct `KeyRotation`](#0x1_account_KeyRotation)
+- [Resource `Account`](#0x1_account_Account)
+- [Struct `KeyRotationEvent`](#0x1_account_KeyRotationEvent)
+- [Struct `CoinRegisterEvent`](#0x1_account_CoinRegisterEvent)
+- [Struct `CapabilityOffer`](#0x1_account_CapabilityOffer)
+- [Struct `RotationCapability`](#0x1_account_RotationCapability)
+- [Struct `SignerCapability`](#0x1_account_SignerCapability)
+- [Resource `OriginatingAddress`](#0x1_account_OriginatingAddress)
+- [Struct `RotationProofChallenge`](#0x1_account_RotationProofChallenge)
+- [Struct `RotationCapabilityOfferProofChallenge`](#0x1_account_RotationCapabilityOfferProofChallenge)
+- [Struct `SignerCapabilityOfferProofChallenge`](#0x1_account_SignerCapabilityOfferProofChallenge)
+- [Struct `RotationCapabilityOfferProofChallengeV2`](#0x1_account_RotationCapabilityOfferProofChallengeV2)
+- [Struct `SignerCapabilityOfferProofChallengeV2`](#0x1_account_SignerCapabilityOfferProofChallengeV2)
+- [Constants](#@Constants_0)
+- [Function `initialize`](#0x1_account_initialize)
+- [Function `create_account_if_does_not_exist`](#0x1_account_create_account_if_does_not_exist)
+- [Function `create_account`](#0x1_account_create_account)
+- [Function `create_account_unchecked`](#0x1_account_create_account_unchecked)
+- [Function `exists_at`](#0x1_account_exists_at)
+- [Function `get_guid_next_creation_num`](#0x1_account_get_guid_next_creation_num)
+- [Function `get_sequence_number`](#0x1_account_get_sequence_number)
+- [Function `increment_sequence_number`](#0x1_account_increment_sequence_number)
+- [Function `get_authentication_key`](#0x1_account_get_authentication_key)
+- [Function `rotate_authentication_key_internal`](#0x1_account_rotate_authentication_key_internal)
+- [Function `rotate_authentication_key_call`](#0x1_account_rotate_authentication_key_call)
+- [Function `rotate_authentication_key`](#0x1_account_rotate_authentication_key)
+- [Function `rotate_authentication_key_with_rotation_capability`](#0x1_account_rotate_authentication_key_with_rotation_capability)
+- [Function `offer_rotation_capability`](#0x1_account_offer_rotation_capability)
+- [Function `is_rotation_capability_offered`](#0x1_account_is_rotation_capability_offered)
+- [Function `get_rotation_capability_offer_for`](#0x1_account_get_rotation_capability_offer_for)
+- [Function `revoke_rotation_capability`](#0x1_account_revoke_rotation_capability)
+- [Function `revoke_any_rotation_capability`](#0x1_account_revoke_any_rotation_capability)
+- [Function `offer_signer_capability`](#0x1_account_offer_signer_capability)
+- [Function `is_signer_capability_offered`](#0x1_account_is_signer_capability_offered)
+- [Function `get_signer_capability_offer_for`](#0x1_account_get_signer_capability_offer_for)
+- [Function `revoke_signer_capability`](#0x1_account_revoke_signer_capability)
+- [Function `revoke_any_signer_capability`](#0x1_account_revoke_any_signer_capability)
+- [Function `create_authorized_signer`](#0x1_account_create_authorized_signer)
+- [Function `assert_valid_rotation_proof_signature_and_get_auth_key`](#0x1_account_assert_valid_rotation_proof_signature_and_get_auth_key)
+- [Function `update_auth_key_and_originating_address_table`](#0x1_account_update_auth_key_and_originating_address_table)
+- [Function `create_resource_address`](#0x1_account_create_resource_address)
+- [Function `create_resource_account`](#0x1_account_create_resource_account)
+- [Function `create_framework_reserved_account`](#0x1_account_create_framework_reserved_account)
+- [Function `create_guid`](#0x1_account_create_guid)
+- [Function `new_event_handle`](#0x1_account_new_event_handle)
+- [Function `register_coin`](#0x1_account_register_coin)
+- [Function `create_signer_with_capability`](#0x1_account_create_signer_with_capability)
+- [Function `get_signer_capability_address`](#0x1_account_get_signer_capability_address)
+- [Function `verify_signed_message`](#0x1_account_verify_signed_message)
+- [Specification](#@Specification_1)
+  - [High-level Requirements](#high-level-req)
+  - [Module-level Specification](#module-level-spec)
+  - [Function `initialize`](#@Specification_1_initialize)
+  - [Function `create_account_if_does_not_exist`](#@Specification_1_create_account_if_does_not_exist)
+  - [Function `create_account`](#@Specification_1_create_account)
+  - [Function `create_account_unchecked`](#@Specification_1_create_account_unchecked)
+  - [Function `exists_at`](#@Specification_1_exists_at)
+  - [Function `get_guid_next_creation_num`](#@Specification_1_get_guid_next_creation_num)
+  - [Function `get_sequence_number`](#@Specification_1_get_sequence_number)
+  - [Function `increment_sequence_number`](#@Specification_1_increment_sequence_number)
+  - [Function `get_authentication_key`](#@Specification_1_get_authentication_key)
+  - [Function `rotate_authentication_key_internal`](#@Specification_1_rotate_authentication_key_internal)
+  - [Function `rotate_authentication_key_call`](#@Specification_1_rotate_authentication_key_call)
+  - [Function `rotate_authentication_key`](#@Specification_1_rotate_authentication_key)
+  - [Function `rotate_authentication_key_with_rotation_capability`](#@Specification_1_rotate_authentication_key_with_rotation_capability)
+  - [Function `offer_rotation_capability`](#@Specification_1_offer_rotation_capability)
+  - [Function `is_rotation_capability_offered`](#@Specification_1_is_rotation_capability_offered)
+  - [Function `get_rotation_capability_offer_for`](#@Specification_1_get_rotation_capability_offer_for)
+  - [Function `revoke_rotation_capability`](#@Specification_1_revoke_rotation_capability)
+  - [Function `revoke_any_rotation_capability`](#@Specification_1_revoke_any_rotation_capability)
+  - [Function `offer_signer_capability`](#@Specification_1_offer_signer_capability)
+  - [Function `is_signer_capability_offered`](#@Specification_1_is_signer_capability_offered)
+  - [Function `get_signer_capability_offer_for`](#@Specification_1_get_signer_capability_offer_for)
+  - [Function `revoke_signer_capability`](#@Specification_1_revoke_signer_capability)
+  - [Function `revoke_any_signer_capability`](#@Specification_1_revoke_any_signer_capability)
+  - [Function `create_authorized_signer`](#@Specification_1_create_authorized_signer)
+  - [Function `assert_valid_rotation_proof_signature_and_get_auth_key`](#@Specification_1_assert_valid_rotation_proof_signature_and_get_auth_key)
+  - [Function `update_auth_key_and_originating_address_table`](#@Specification_1_update_auth_key_and_originating_address_table)
+  - [Function `create_resource_address`](#@Specification_1_create_resource_address)
+  - [Function `create_resource_account`](#@Specification_1_create_resource_account)
+  - [Function `create_framework_reserved_account`](#@Specification_1_create_framework_reserved_account)
+  - [Function `create_guid`](#@Specification_1_create_guid)
+  - [Function `new_event_handle`](#@Specification_1_new_event_handle)
+  - [Function `register_coin`](#@Specification_1_register_coin)
+  - [Function `create_signer_with_capability`](#@Specification_1_create_signer_with_capability)
+  - [Function `verify_signed_message`](#@Specification_1_verify_signed_message)
 
 ```move
 use 0x1::bcs;
@@ -329,10 +329,10 @@ The table in this struct makes it possible to do a reverse lookup: it maps an au
 
 This mapping is needed when recovering wallets for accounts whose authentication key has been rotated.
 
-For example, imagine a freshly-created wallet with address <code>a</code> and thus also with authentication key <code>a</code>, derived from a PK <code>pk\_a</code> with corresponding SK <code>sk\_a</code>.
-It is easy to recover such a wallet given just the secret key <code>sk\_a</code>, since the PK can be derived from the SK, the authentication key can then be derived from the PK, and the address equals the authentication key (since there was no key rotation).
+For example, imagine a freshly-created wallet with address <code>a</code> and thus also with authentication key <code>a</code>, derived from a PK <code>pk_a</code> with corresponding SK <code>sk_a</code>.
+It is easy to recover such a wallet given just the secret key <code>sk_a</code>, since the PK can be derived from the SK, the authentication key can then be derived from the PK, and the address equals the authentication key (since there was no key rotation).
 
-However, if such a wallet rotates its authentication key to <code>b</code> derived from a different PK <code>pk\_b</code> with SK <code>sk\_b</code>, how would account recovery work?
+However, if such a wallet rotates its authentication key to <code>b</code> derived from a different PK <code>pk_b</code> with SK <code>sk_b</code>, how would account recovery work?
 The recovered address would no longer be 'a'; it would be <code>b</code>, which is incorrect.
 This struct solves this problem by mapping the new authentication key <code>b</code> to the original address <code>a</code> and thus helping the wallet software during recovery find the correct address.
 
@@ -465,8 +465,8 @@ struct SignerCapabilityOfferProofChallenge has drop
 ## Struct `RotationCapabilityOfferProofChallengeV2`
 
 This struct stores the challenge message that should be signed by the source account, when the source account
-is delegating its rotation capability to the <code>recipient\_address</code>.
-This V2 struct adds the <code><a href="chain_id.md#0x1_chain_id">chain\_id</a></code> and <code>source\_address</code> to the challenge message, which prevents replaying the challenge message.
+is delegating its rotation capability to the <code>recipient_address</code>.
+This V2 struct adds the <code><a href="chain_id.md#0x1_chain_id">chain_id</a></code> and <code>source_address</code> to the challenge message, which prevents replaying the challenge message.
 
 ```move
 struct RotationCapabilityOfferProofChallengeV2 has drop
@@ -632,7 +632,7 @@ const EINVALID_PROOF_OF_KNOWLEDGE: u64 = 8;
 
 <a id="0x1_account_EINVALID_SCHEME"></a>
 
-Specified scheme required to proceed with the smart contract operation - can only be ED25519\_SCHEME(0) OR MULTI\_ED25519\_SCHEME(1)
+Specified scheme required to proceed with the smart contract operation - can only be ED25519_SCHEME(0) OR MULTI_ED25519_SCHEME(1)
 
 ```move
 const EINVALID_SCHEME: u64 = 12;
@@ -795,8 +795,8 @@ public fun create_account_if_does_not_exist(account_address: address) {
 
 ## Function `create_account`
 
-Publishes a new <code><a href="account.md#0x1_account_Account">Account</a></code> resource under <code>new\_address</code>. A signer representing <code>new\_address</code>
-is returned. This way, the caller of this function can publish additional resources under <code>new\_address</code>.
+Publishes a new <code><a href="account.md#0x1_account_Account">Account</a></code> resource under <code>new_address</code>. A signer representing <code>new_address</code>
+is returned. This way, the caller of this function can publish additional resources under <code>new_address</code>.
 
 ```move
 public(friend) fun create_account(new_address: address): signer
@@ -979,12 +979,12 @@ public fun get_authentication_key(addr: address): vector<u8> acquires Account {
 
 ## Function `rotate_authentication_key_internal`
 
-This function is used to rotate a resource account's authentication key to <code>new\_auth\_key</code>. This is done in
+This function is used to rotate a resource account's authentication key to <code>new_auth_key</code>. This is done in
 many contexts:
 
-1. During normal key rotation via <code>rotate\_authentication\_key</code> or <code>rotate\_authentication\_key\_call</code>
+1. During normal key rotation via <code>rotate_authentication_key</code> or <code>rotate_authentication_key_call</code>
 2. During resource account initialization so that no private key can control the resource account
-3. During multisig\_v2 account creation
+3. During multisig_v2 account creation
 
 ```move
 public(friend) fun rotate_authentication_key_internal(account: &signer, new_auth_key: vector<u8>)
@@ -1013,10 +1013,10 @@ public(friend) fun rotate_authentication_key_internal(account: &signer, new_auth
 ## Function `rotate_authentication_key_call`
 
 Private entry function for key rotation that allows the signer to update their authentication key.
-Note that this does not update the <code><a href="account.md#0x1_account_OriginatingAddress">OriginatingAddress</a></code> table because the <code>new\_auth\_key</code> is not "verified": it
+Note that this does not update the <code><a href="account.md#0x1_account_OriginatingAddress">OriginatingAddress</a></code> table because the <code>new_auth_key</code> is not "verified": it
 does not come with a proof-of-knowledge of the underlying SK. Nonetheless, we need this functionality due to
 the introduction of non-standard key algorithms, such as passkeys, which cannot produce proofs-of-knowledge in
-the format expected in <code>rotate\_authentication\_key</code>.
+the format expected in <code>rotate_authentication_key</code>.
 
 ```move
 entry fun rotate_authentication_key_call(account: &signer, new_auth_key: vector<u8>)
@@ -1040,28 +1040,28 @@ entry fun rotate_authentication_key_call(account: &signer, new_auth_key: vector<
 Generic authentication key rotation function that allows the user to rotate their authentication key from any scheme to any scheme.
 To authorize the rotation, we need two signatures:
 
-* the first signature <code>cap\_rotate\_key</code> refers to the signature by the account owner's current key on a valid <code><a href="account.md#0x1_account_RotationProofChallenge">RotationProofChallenge</a></code>,
+- the first signature <code>cap_rotate_key</code> refers to the signature by the account owner's current key on a valid <code><a href="account.md#0x1_account_RotationProofChallenge">RotationProofChallenge</a></code>,
   demonstrating that the user intends to and has the capability to rotate the authentication key of this account;
-* the second signature <code>cap\_update\_table</code> refers to the signature by the new key (that the account owner wants to rotate to) on a
-  valid <code><a href="account.md#0x1_account_RotationProofChallenge">RotationProofChallenge</a></code>, demonstrating that the user owns the new private key, and has the authority to update the <code><a href="account.md#0x1_account_OriginatingAddress">OriginatingAddress</a></code> map with the new address mapping <code>\<new\_address, originating\_address></code>.
-  To verify these two signatures, we need their corresponding public key and public key scheme: we use <code>from\_scheme</code> and <code>from\_public\_key\_bytes</code>
-  to verify <code>cap\_rotate\_key</code>, and <code>to\_scheme</code> and <code>to\_public\_key\_bytes</code> to verify <code>cap\_update\_table</code>.
+- the second signature <code>cap_update_table</code> refers to the signature by the new key (that the account owner wants to rotate to) on a
+  valid <code><a href="account.md#0x1_account_RotationProofChallenge">RotationProofChallenge</a></code>, demonstrating that the user owns the new private key, and has the authority to update the <code><a href="account.md#0x1_account_OriginatingAddress">OriginatingAddress</a></code> map with the new address mapping <code>\<new_address, originating_address></code>.
+  To verify these two signatures, we need their corresponding public key and public key scheme: we use <code>from_scheme</code> and <code>from_public_key_bytes</code>
+  to verify <code>cap_rotate_key</code>, and <code>to_scheme</code> and <code>to_public_key_bytes</code> to verify <code>cap_update_table</code>.
   A scheme of 0 refers to an Ed25519 key and a scheme of 1 refers to Multi-Ed25519 keys. <code>originating <b>address</b></code> refers to an account's original/first address.
 
-Here is an example attack if we don't ask for the second signature <code>cap\_update\_table</code>:
-Alice has rotated her account <code>addr\_a</code> to <code>new\_addr\_a</code>. As a result, the following entry is created, to help Alice when recovering her wallet: <code><a href="account.md#0x1_account_OriginatingAddress">OriginatingAddress</a>\[new\_addr\_a]</code> -> <code>addr\_a</code>
+Here is an example attack if we don't ask for the second signature <code>cap_update_table</code>:
+Alice has rotated her account <code>addr_a</code> to <code>new_addr_a</code>. As a result, the following entry is created, to help Alice when recovering her wallet: <code><a href="account.md#0x1_account_OriginatingAddress">OriginatingAddress</a>\[new_addr_a]</code> -> <code>addr_a</code>
 Alice has had a bad day: her laptop blew up and she needs to reset her account on a new one.
-(Fortunately, she still has her secret key <code>new\_sk\_a</code> associated with her new address <code>new\_addr\_a</code>, so she can do this.)
+(Fortunately, she still has her secret key <code>new_sk_a</code> associated with her new address <code>new_addr_a</code>, so she can do this.)
 
 But Bob likes to mess with Alice.
-Bob creates an account <code>addr\_b</code> and maliciously rotates it to Alice's new address <code>new\_addr\_a</code>. Since we are no longer checking a PoK,
+Bob creates an account <code>addr_b</code> and maliciously rotates it to Alice's new address <code>new_addr_a</code>. Since we are no longer checking a PoK,
 Bob can easily do this.
 
-Now, the table will be updated to make Alice's new address point to Bob's address: <code><a href="account.md#0x1_account_OriginatingAddress">OriginatingAddress</a>\[new\_addr\_a]</code> -> <code>addr\_b</code>.
-When Alice recovers her account, her wallet will display the attacker's address (Bob's) <code>addr\_b</code> as her address.
-Now Alice will give <code>addr\_b</code> to everyone to pay her, but the money will go to Bob.
+Now, the table will be updated to make Alice's new address point to Bob's address: <code><a href="account.md#0x1_account_OriginatingAddress">OriginatingAddress</a>\[new_addr_a]</code> -> <code>addr_b</code>.
+When Alice recovers her account, her wallet will display the attacker's address (Bob's) <code>addr_b</code> as her address.
+Now Alice will give <code>addr_b</code> to everyone to pay her, but the money will go to Bob.
 
-Because we ask for a valid <code>cap\_update\_table</code>, this kind of attack is not possible. Bob would not have the secret key of Alice's address
+Because we ask for a valid <code>cap_update_table</code>, this kind of attack is not possible. Bob would not have the secret key of Alice's address
 to rotate his address to Alice's address in the first place.
 
 ```move
@@ -1195,11 +1195,11 @@ public entry fun rotate_authentication_key_with_rotation_capability(
 
 ## Function `offer_rotation_capability`
 
-Offers rotation capability on behalf of <code><a href="account.md#0x1_account">account</a></code> to the account at address <code>recipient\_address</code>.
+Offers rotation capability on behalf of <code><a href="account.md#0x1_account">account</a></code> to the account at address <code>recipient_address</code>.
 An account can delegate its rotation capability to only one other address at one time. If the account
 has an existing rotation capability offer, calling this function will update the rotation capability offer with
-the new <code>recipient\_address</code>.
-Here, <code>rotation\_capability\_sig\_bytes</code> signature indicates that this key rotation is authorized by the account owner,
+the new <code>recipient_address</code>.
+Here, <code>rotation_capability_sig_bytes</code> signature indicates that this key rotation is authorized by the account owner,
 and prevents the classic "time-of-check time-of-use" attack.
 For example, users usually rely on what the wallet displays to them as the transaction's outcome. Consider a contract that with 50% probability
 (based on the current timestamp in Move), rotates somebody's key. The wallet might be unlucky and get an outcome where nothing is rotated,
@@ -1207,11 +1207,11 @@ incorrectly telling the user nothing bad will happen. But when the transaction a
 the execution path triggers the account key rotation.
 We prevent such attacks by asking for this extra signature authorizing the key rotation.
 
-@param rotation\_capability\_sig\_bytes is the signature by the account owner's key on <code><a href="account.md#0x1_account_RotationCapabilityOfferProofChallengeV2">RotationCapabilityOfferProofChallengeV2</a></code>.
-@param account\_scheme is the scheme of the account (ed25519 or multi\_ed25519).
-@param account\_public\_key\_bytes is the public key of the account owner.
-@param recipient\_address is the address of the recipient of the rotation capability - note that if there's an existing rotation capability
-offer, calling this function will replace the previous <code>recipient\_address</code> upon successful verification.
+@param rotation_capability_sig_bytes is the signature by the account owner's key on <code><a href="account.md#0x1_account_RotationCapabilityOfferProofChallengeV2">RotationCapabilityOfferProofChallengeV2</a></code>.
+@param account_scheme is the scheme of the account (ed25519 or multi_ed25519).
+@param account_public_key_bytes is the public key of the account owner.
+@param recipient_address is the address of the recipient of the rotation capability - note that if there's an existing rotation capability
+offer, calling this function will replace the previous <code>recipient_address</code> upon successful verification.
 
 ```move
 public entry fun offer_rotation_capability(account: &signer, rotation_capability_sig_bytes: vector<u8>, account_scheme: u8, account_public_key_bytes: vector<u8>, recipient_address: address)
@@ -1282,7 +1282,7 @@ public entry fun offer_rotation_capability(
 
 ## Function `is_rotation_capability_offered`
 
-Returns true if the account at <code>account\_addr</code> has a rotation capability offer.
+Returns true if the account at <code>account_addr</code> has a rotation capability offer.
 
 ```move
 #[view]
@@ -1305,7 +1305,7 @@ public fun is_rotation_capability_offered(account_addr: address): bool acquires 
 
 ## Function `get_rotation_capability_offer_for`
 
-Returns the address of the account that has a rotation capability offer from the account at <code>account\_addr</code>.
+Returns the address of the account that has a rotation capability offer from the account at <code>account_addr</code>.
 
 ```move
 #[view]
@@ -1332,7 +1332,7 @@ public fun get_rotation_capability_offer_for(account_addr: address): address acq
 
 ## Function `revoke_rotation_capability`
 
-Revoke the rotation capability offer given to <code>to\_be\_revoked\_recipient\_address</code> from <code><a href="account.md#0x1_account">account</a></code>
+Revoke the rotation capability offer given to <code>to_be_revoked_recipient_address</code> from <code><a href="account.md#0x1_account">account</a></code>
 
 ```move
 public entry fun revoke_rotation_capability(account: &signer, to_be_revoked_address: address)
@@ -1382,9 +1382,9 @@ public entry fun revoke_any_rotation_capability(account: &signer) acquires Accou
 
 ## Function `offer_signer_capability`
 
-Offers signer capability on behalf of <code><a href="account.md#0x1_account">account</a></code> to the account at address <code>recipient\_address</code>.
-An account can delegate its signer capability to only one other address at one time. <code>signer\_capability\_key\_bytes</code> is the <code><a href="account.md#0x1_account_SignerCapabilityOfferProofChallengeV2">SignerCapabilityOfferProofChallengeV2</a></code> signed by the account owner's key <code>account\_scheme</code> is the scheme of the account (ed25519 or multi\_ed25519). <code>account\_public\_key\_bytes</code> is the public key of the account owner. <code>recipient\_address</code> is the address of the recipient of the signer capability - note that if there's an existing <code>recipient\_address</code> in the account owner's <code>SignerCapabilityOffer</code>, this will replace the
-previous <code>recipient\_address</code> upon successful verification (the previous recipient will no longer have access
+Offers signer capability on behalf of <code><a href="account.md#0x1_account">account</a></code> to the account at address <code>recipient_address</code>.
+An account can delegate its signer capability to only one other address at one time. <code>signer_capability_key_bytes</code> is the <code><a href="account.md#0x1_account_SignerCapabilityOfferProofChallengeV2">SignerCapabilityOfferProofChallengeV2</a></code> signed by the account owner's key <code>account_scheme</code> is the scheme of the account (ed25519 or multi_ed25519). <code>account_public_key_bytes</code> is the public key of the account owner. <code>recipient_address</code> is the address of the recipient of the signer capability - note that if there's an existing <code>recipient_address</code> in the account owner's <code>SignerCapabilityOffer</code>, this will replace the
+previous <code>recipient_address</code> upon successful verification (the previous recipient will no longer have access
 to the account owner's signer capability).
 
 ```move
@@ -1426,7 +1426,7 @@ public entry fun offer_signer_capability(
 
 ## Function `is_signer_capability_offered`
 
-Returns true if the account at <code>account\_addr</code> has a signer capability offer.
+Returns true if the account at <code>account_addr</code> has a signer capability offer.
 
 ```move
 #[view]
@@ -1449,7 +1449,7 @@ public fun is_signer_capability_offered(account_addr: address): bool acquires Ac
 
 ## Function `get_signer_capability_offer_for`
 
-Returns the address of the account that has a signer capability offer from the account at <code>account\_addr</code>.
+Returns the address of the account that has a signer capability offer from the account at <code>account_addr</code>.
 
 ```move
 #[view]
@@ -1476,7 +1476,7 @@ public fun get_signer_capability_offer_for(account_addr: address): address acqui
 
 ## Function `revoke_signer_capability`
 
-Revoke the account owner's signer capability offer for <code>to\_be\_revoked\_address</code> (i.e., the address that
+Revoke the account owner's signer capability offer for <code>to_be_revoked_address</code> (i.e., the address that
 has a signer capability offer from <code><a href="account.md#0x1_account">account</a></code> but will be revoked in this function).
 
 ```move
@@ -1699,9 +1699,9 @@ public fun create_resource_address(source: &address, seed: vector<u8>): address 
 
 A resource account is used to manage resources independent of an account managed by a user.
 In Aptos a resource account is created based upon the sha3 256 of the source's address and additional seed data.
-A resource account can only be created once, this is designated by setting the <code>Account::signer\_capability\_offer::for</code> to the address of the resource account. While an entity may call <code>create\_account</code> to attempt to claim an account ahead of the creation of a resource account, if found Aptos will
+A resource account can only be created once, this is designated by setting the <code>Account::signer_capability_offer::for</code> to the address of the resource account. While an entity may call <code>create_account</code> to attempt to claim an account ahead of the creation of a resource account, if found Aptos will
 transition ownership of the account over to the resource account. This is done by validating that the account has
-yet to execute any transactions and that the <code>Account::signer\_capability\_offer::for</code> is none. The probability of a
+yet to execute any transactions and that the <code>Account::signer_capability_offer::for</code> is none. The probability of a
 collision where someone has legitimately produced a private key that maps to a resource account address is less
 than <code>(1/2)^(256)</code>.
 
@@ -2080,8 +2080,8 @@ pragma aborts_if_is_strict;
 public(friend) fun initialize(aptos_framework: &signer)
 ```
 
-Only the address <code>@aptos\_framework</code> can call.
-OriginatingAddress does not exist under <code>@aptos\_framework</code> before the call.
+Only the address <code>@aptos_framework</code> can call.
+OriginatingAddress does not exist under <code>@aptos_framework</code> before the call.
 
 ```move
 let aptos_addr = signer::address_of(aptos_framework);
@@ -2121,7 +2121,7 @@ public(friend) fun create_account(new_address: address): signer
 
 Check if the bytes of the new address is 32.
 The Account does not exist under the new address before creating the account.
-Limit the new account address is not @vm\_reserved / @aptos\_framework / @aptos\_toke.
+Limit the new account address is not @vm_reserved / @aptos_framework / @aptos_toke.
 
 ```move
 include CreateAccountAbortsIf {addr: new_address};
@@ -2211,7 +2211,7 @@ public(friend) fun increment_sequence_number(addr: address)
 ```
 
 The Account existed under the address.
-The sequence\_number of the Account is up to MAX\_U64.
+The sequence_number of the Account is up to MAX_U64.
 
 ```move
 let sequence_number = global<Account>(addr).sequence_number;
@@ -2246,7 +2246,7 @@ public(friend) fun rotate_authentication_key_internal(account: &signer, new_auth
 ```
 
 The Account existed under the signer before the call.
-The length of new\_auth\_key is 32.
+The length of new_auth_key is 32.
 
 ```move
 let addr = signer::address_of(account);
@@ -2291,7 +2291,7 @@ public entry fun rotate_authentication_key(account: &signer, from_scheme: u8, fr
 ```
 
 The Account existed under the signer
-The authentication scheme is ED25519\_SCHEME and MULTI\_ED25519\_SCHEME
+The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME
 
 ```move
 let addr = signer::address_of(account);
@@ -2521,7 +2521,7 @@ public entry fun offer_signer_capability(account: &signer, signer_capability_sig
 ```
 
 The Account existed under the signer.
-The authentication scheme is ED25519\_SCHEME and MULTI\_ED25519\_SCHEME.
+The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME.
 
 ```move
 let source_address = signer::address_of(account);
@@ -2600,7 +2600,7 @@ public entry fun revoke_signer_capability(account: &signer, to_be_revoked_addres
 ```
 
 The Account existed under the signer.
-The value of signer\_capability\_offer.for of Account resource under the signer is to\_be\_revoked\_address.
+The value of signer_capability_offer.for of Account resource under the signer is to_be_revoked_address.
 
 ```move
 aborts_if !exists<Account>(to_be_revoked_address);
@@ -2637,7 +2637,7 @@ public fun create_authorized_signer(account: &signer, offerer_address: address):
 ```
 
 The Account existed under the signer.
-The value of signer\_capability\_offer.for of Account resource under the signer is offerer\_address.
+The value of signer_capability_offer.for of Account resource under the signer is offerer_address.
 
 ```move
 // This enforces high-level requirement 8:
@@ -2746,7 +2746,7 @@ public fun create_resource_address(source: &address, seed: vector<u8>): address
 ```
 
 The Account existed under the signer
-The value of signer\_capability\_offer.for of Account resource under the signer is to\_be\_revoked\_address
+The value of signer_capability_offer.for of Account resource under the signer is to_be_revoked_address
 
 ```move
 pragma opaque;
@@ -2791,7 +2791,7 @@ public(friend) fun create_framework_reserved_account(addr: address): (signer, ac
 
 Check if the bytes of the new address is 32.
 The Account does not exist under the new address before creating the account.
-The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7 / @0x8 / @0x9 / @0xa.
+The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5 / @0x6 / @0x7 / @0x8 / @0x9 / @0xa.
 
 ```move
 aborts_if spec_is_framework_address(addr);
@@ -2826,7 +2826,7 @@ public fun create_guid(account_signer: &signer): guid::GUID
 ```
 
 The Account existed under the signer.
-The guid\_creation\_num of the account resource is up to MAX\_U64.
+The guid_creation_num of the account resource is up to MAX_U64.
 
 ```move
 let addr = signer::address_of(account_signer);
@@ -2847,7 +2847,7 @@ public fun new_event_handle<T: drop, store>(account: &signer): event::EventHandl
 ```
 
 The Account existed under the signer.
-The guid\_creation\_num of the Account is up to MAX\_U64.
+The guid_creation_num of the Account is up to MAX_U64.
 
 ```move
 include NewEventHandleAbortsIf;

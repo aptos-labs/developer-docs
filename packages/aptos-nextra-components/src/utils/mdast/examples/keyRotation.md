@@ -1,20 +1,13 @@
-
-
 <a id="0x1_account_KeyRotation"></a>
 
 ## Struct `KeyRotation`
-
-
 
 <pre><code>#[<a href="event.md#0x1_event">event</a>]
 <b>struct</b> <a href="account.md#0x1_account_KeyRotation">KeyRotation</a> <b>has</b> drop, store
 </code></pre>
 
-
-
 <details>
 <summary>Fields</summary>
-
 
 <dl>
 <dt>
@@ -37,7 +30,6 @@
 </dd>
 </dl>
 
-
 </details>
 
 <a id="0x1_account_Account"></a>
@@ -46,15 +38,11 @@
 
 Resource representing an account.
 
-
 <pre><code><b>struct</b> <a href="account.md#0x1_account_Account">Account</a> <b>has</b> store, key
 </code></pre>
 
-
-
 <details>
 <summary>Fields</summary>
-
 
 <dl>
 <dt>
@@ -100,6 +88,5 @@ Resource representing an account.
 
 </dd>
 </dl>
-
 
 </details>
