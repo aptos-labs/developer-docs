@@ -15,27 +15,30 @@ jobs:
       - name: Run Lychee Link Checker
         uses: lycheeverse/lychee-action@v1
         with:
-          args: |
-            --remap '(^[^.#]+)(\.?)(#.*)?$ $1.mdx$3' \
-            --exclude '.*/zh/.*' \
-            --exclude '^(file:|[./]).*\.html$' \
-            --exclude '^(file:|[./]).*\.png$' \
-            --exclude '^(file:|[./]).*\.jpg$' \
-            --exclude '^(file:|[./]).*\.jpeg$' \
-            --exclude '^(file:|[./]).*\.svg$' \
-            --exclude '^(file:|[./]).*\.mp4$' \
-            --exclude '^(file:|[./]).*\.gif$' \
-            --exclude 'aptos-api-spec' \
-            --exclude '^(https?:\/\/localhost|https?:\/\/127\.0\.0\.1).*' \
-            --exclude '.*your-app.*' \
-            --exclude '^https://packages\.ubuntu\.com/.*' \
-            --exclude '^https://app\.spaceandtime\.ai/.*' \
-            --exclude '.*%7BmenuImage%7D.*' \
-            --exclude '.*imageUrl.*' \
-            --accept '403,401,429' \
-            --retry-wait-time 1 \
-            --max-retries 2 \
-            --output ./lychee/out.md \
-            --base . --verbose --no-progress './apps/nextra/**/*.mdx' './apps/nextra/**/*.html'
+          args: >
+            --remap '(^[^.#]+)(\.?)(#.*)?$ $1.mdx$3'
+            --exclude '.*/zh/.*'
+            --exclude '^(file:|[./]).*\.html$'
+            --exclude '^(file:|[./]).*\.png$'
+            --exclude '^(file:|[./]).*\.jpg$'
+            --exclude '^(file:|[./]).*\.jpeg$'
+            --exclude '^(file:|[./]).*\.svg$'
+            --exclude '^(file:|[./]).*\.mp4$'
+            --exclude '^(file:|[./]).*\.gif$'
+            --exclude 'aptos-api-spec'
+            --exclude '^(https?:\/\/localhost|https?:\/\/127\.0\.0\.1).*'
+            --exclude '.*your-app.*'
+            --exclude '^https://packages\.ubuntu\.com/.*'
+            --exclude '^https://app\.spaceandtime\.ai/.*'
+            --exclude '.*%7BmenuImage%7D.*'
+            --exclude '.*imageUrl.*'
+            --accept '403,401,429'
+            --retry-wait-time 1
+            --max-retries 2
+            --output ./lychee/out.md
+            --base .
+            --verbose
+            --no-progress './apps/nextra/**/*.mdx' './apps/nextra/**/*.html'
           format: markdown
           fail: true
+          output: lychee/out.md
