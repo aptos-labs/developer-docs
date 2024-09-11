@@ -185,11 +185,11 @@ module 0x2::m {
   fun example() {
     let foo = Foo { x: 3, y: true };
     let foo_ref: &Foo = &foo;
-    let y: bool = foo_ref.y;          // reading a field via a reference to the struct
+    let y: bool = foo_ref.y;  // reading a field via a reference to the struct
     let x_ref: &u64 = &foo.x;
 
     let x_ref_mut: &mut u64 = &mut foo.x;
-    *x_ref_mut = 42;            // modifying a field via a mutable reference
+    *x_ref_mut = 42;  // modifying a field via a mutable reference
   }
 }
 ```
@@ -222,7 +222,7 @@ module 0x2::m {
 
 ### Reading and Writing Fields
 
-If you need to read and copy a field's value, you can then dereference the borrowed field:
+If a field is copyable, you can read and copy a field's value by dereferencing the borrowed field:
 
 ```move
 module 0x2::m {
@@ -236,8 +236,8 @@ module 0x2::m {
 }
 ```
 
-If the field is implicitly copyable, the dot operator can be used to read fields of a struct without
-any borrowing. (Only scalar values with the `copy` ability are implicitly copyable.)
+The dot operator can be used to read and copy any copyable field of a struct without explicit
+borrowing and dereferencing:
 
 ```move
 module 0x2::m {
@@ -245,6 +245,10 @@ module 0x2::m {
     let foo = Foo { x: 3, y: true };
     let x = foo.x;  // x == 3
     let y = foo.y;  // y == true
+
+    let bar = Bar { foo };
+    let foo2: Foo = *&bar.foo; // `Foo` must be copyable
+    let foo3: Foo = bar.foo;   // same as the statement above
   }
 }
 ```
@@ -260,26 +264,7 @@ module 0x2::m {
 }
 ```
 
-However, this is not permitted for fields that contain non-primitive types, such a vector or another
-struct:
-
-```move
-module 0x2::m {
-  fun example() {
-    let foo = Foo { x: 3, y: true };
-    let bar = Bar { foo };
-    let foo2: Foo = *&bar.foo;
-    let foo3: Foo = bar.foo; // error! must add an explicit copy with *&
-  }
-}
-```
-
-The reason behind this design decision is that copying a vector or another struct might be an
-expensive operation. It is important for a programmer to be aware of this copy and make others aware
-with the explicit syntax `*&`.
-
-In addition, reading from fields, the dot syntax can be used to modify fields, regardless of the
-field being a primitive type or some other struct.
+Furthermore, the dot syntax can be used to modify fields.
 
 ```move
 module 0x2::m {
