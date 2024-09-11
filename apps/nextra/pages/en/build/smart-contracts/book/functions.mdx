@@ -33,7 +33,7 @@ module m {
 module other {
     fun calls_m_foo(): u64 {
         0x42::m::foo() // ERROR!
-        //      ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+        //       ^^^^^ `foo` is internal to `0x42::m`
     }
 }
 }
@@ -41,7 +41,7 @@ module other {
 script {
     fun calls_m_foo(): u64 {
         0x42::m::foo() // ERROR!
-        //      ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+        //       ^^^^^ `foo` is internal to `0x42::m`
     }
 }
 ```
@@ -86,7 +86,7 @@ _Since Language Version 2.0_
 
 A `package` function can be only called within the same package. The notion of a package is
 defined by the hosting environment of Move, and not explicit in the language. Typically, the package
-is defined by a manifest file `Move.toml` which is processed by the build environment. 
+is defined by a manifest file `Move.toml` which is processed by the build environment.
 
 The following works, provided the two modules belong to the same package and are at the same address:
 
@@ -119,7 +119,7 @@ The `public(friend)` visibility modifier is a more restricted form of the `publi
 - other functions defined in the same module, or
 - functions defined in modules which are explicitly specified in the **friend list** (see [Friends](friends.mdx) on how to specify the friend list), and which reside at the same address.
 
-Note that since we cannot declare a script to be a friend of a module, the functions defined in scripts can never call a `public(friend)` function. 
+Note that since we cannot declare a script to be a friend of a module, the functions defined in scripts can never call a `public(friend)` function.
 
 ```move
 address 0x42 {
@@ -129,18 +129,28 @@ module m {
     friend fun foo2(): u64 { 0 } // Since Move 2.0
 
     fun calls_foo(): u64 { foo() } // valid
+    fun calls_foo2(): u64 { foo2() } // valid, since Move 2.0
 }
 
 module n {
     fun calls_m_foo(): u64 {
         0x42::m::foo() // valid
     }
+
+    fun calls_m_foo2(): u64 {
+        0x42::m::foo2() // valid, since Move 2.0
+    }
 }
 
 module other {
     fun calls_m_foo(): u64 {
         0x42::m::foo() // ERROR!
-        //      ^^^^^^^^^^^^ 'foo' can only be called from a 'friend' of module '0x42::m'
+        //       ^^^^^ `foo` can only be called from a `friend` of module `0x42::m`
+    }
+
+    fun calls_m_foo2(): u64 {
+        0x42::m::foo2() // ERROR!
+        //       ^^^^^^ `foo2` can only be called from a `friend` of module `0x42::m`
     }
 }
 }
@@ -148,7 +158,7 @@ module other {
 script {
     fun calls_m_foo(): u64 {
         0x42::m::foo() // ERROR!
-        //      ^^^^^^^^^^^^ 'foo' can only be called from a 'friend' of module '0x42::m'
+        //       ^^^^^ `foo` can only be called from a `friend` of module `0x42::m`
     }
 }
 ```
@@ -168,12 +178,12 @@ address 0x42 {
 module m {
     public entry fun foo() {}
 
-    fun calls_foo(): u64 { foo() } // valid!
+    fun calls_foo() { foo(); } // valid!
 }
 
 module n {
-    fun calls_m_foo(): u64 {
-        0x42::m::foo() // valid!
+    fun calls_m_foo() {
+        0x42::m::foo(); // valid!
     }
 }
 
@@ -185,8 +195,8 @@ module other {
 }
 
 script {
-    fun calls_m_foo(): u64 {
-        0x42::m::foo() // valid!
+    fun calls_m_foo() {
+        0x42::m::foo(); // valid!
     }
 }
 ```
@@ -196,28 +206,28 @@ Even internal functions can be marked as `entry`! This lets you guarantee that t
 ```move
 address 0x42 {
 module m {
-    entry fun foo() { 0 } // valid! entry functions do not have to be public
+    entry fun foo() {} // valid! entry functions do not have to be public
 }
 
 module n {
-    fun calls_m_foo(): u64 {
-        0x42::m::foo() // ERROR!
-        //      ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+    fun calls_m_foo() {
+        0x42::m::foo(); // ERROR!
+        //       ^^^^^ `foo` is internal to `0x42::m`
     }
 }
 
 module other {
     public entry fun calls_m_foo() {
-        0x42::m::foo() // ERROR!
-        //      ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+        0x42::m::foo(); // ERROR!
+        //       ^^^^^ `foo` is internal to `0x42::m`
     }
 }
 }
 
 script {
-    fun calls_m_foo(): u64 {
-        0x42::m::foo() // ERROR!
-        //      ^^^^^^^^^^^^ 'foo' is internal to '0x42::m'
+    fun calls_m_foo() {
+        0x42::m::foo(); // ERROR!
+        //       ^^^^^ `foo` is internal to `0x42::m`
     }
 }
 ```
@@ -690,7 +700,7 @@ passed to the function, but this need not be the case for an inline function, as
 value is in the function scope after inlining.
 
 The exact details of reference safety and "borrow checking" are complex and documented elsewhere.
-Advanced Move users find new expressiveness by understanding that 
+Advanced Move users find new expressiveness by understanding that
 "borrow checking" happens only after all `inline` function calls are expanded.
 
 However, with this power comes new responsibility: documentation of a nontrivial `inline` function should
