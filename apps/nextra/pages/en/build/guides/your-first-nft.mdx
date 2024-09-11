@@ -63,7 +63,7 @@ curl -sSL https://install.python-poetry.org | python3
 poetry install
 ```
 
-Run the Python [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/examples/simple_aptos_token.py) example:
+Run the Python [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simple_aptos_token.py) example:
 
 ```bash filename="Terminal"
 poetry run python -m examples.simple_aptos_token
@@ -236,7 +236,7 @@ Token owner: Alice
 </Tabs.Tab>
 <Tabs.Tab>
   <Callout type="info">
-  See [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/examples/simple_aptos_token.py) for the complete code as you follow the below steps.
+  See [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simple_aptos_token.py) for the complete code as you follow the below steps.
   </Callout>
 </Tabs.Tab>
 </Tabs>
@@ -281,7 +281,7 @@ Using the API client we can create a `TokenClient` that we use for common token 
 token_client = AptosTokenClient(rest_client)
 ```
 
-[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/examples/common.py) initializes these values as follows:
+[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/common.py) initializes these values as follows:
 
 ```python filename="example.py"
 NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")
