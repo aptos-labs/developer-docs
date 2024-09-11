@@ -35,7 +35,6 @@ jobs:
             --accept '403,401,429'
             --retry-wait-time 1
             --max-retries 2
-            --output ./lychee/out.md
             --base .
             --verbose
             --no-progress './apps/nextra/**/*.mdx' './apps/nextra/**/*.html'
