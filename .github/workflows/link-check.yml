@@ -27,6 +27,8 @@ jobs:
         # 5. --accept '403,401,429' - These errors generally mean the link works, but our tool can't access them.
         # 6. --retry-wait-time - The time in seconds to wait before trying again if we get a 429 error.
         # 7. --max-retries - How many times we're willing to try again before failing the link.
+        # 8. TODO: In the future, if we want to avoid GitHub rate limits, we should add a GitHub token to authenticate
+        #    with. This would change the rate limit from 60 requests/hour to 5,000 requests/hour.
           args: >
             --remap '(^[^.#]+)(\.?)(#.*)?$ $1.mdx$3'
             --exclude '.*/zh/.*'
