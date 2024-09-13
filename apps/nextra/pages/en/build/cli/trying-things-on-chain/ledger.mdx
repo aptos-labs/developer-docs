@@ -12,8 +12,10 @@ The `Ledger Nano S` has limited memory and may not be able to sign many transact
 
 You will need to do a few steps of configuration for the Aptos CLI and your Ledger device to sign transactions.
 <Steps>
-### Ensure you have the Aptos CLI installed. 
+
+### Ensure you have the Aptos CLI installed.
    You can install the Aptos CLI by following [these steps](../../cli.mdx) if you have not done so already.
+
 ### Ensure you have done the basic setup for your Ledger device.
    You can find those steps on [Ledger’s website](https://www.ledger.com/). For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
 ### Plug your Ledger device into your computer.
@@ -32,7 +34,7 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
 
    Then follow the terminal prompts like so:
 
-   ```bash filename="Terminal"
+   ```text filename="Terminal"
    Configuring for profile <your-profile>
    Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
 
@@ -117,3 +119,499 @@ yes
 After you have approved publishing this package you will be prompted to sign the transaction on your Ledger device. Once signed, the package will be published to the network!
 
 One error you might run into is `Error: Wrong raw transaction length`. This means that the transaction or package size was too big for your device to sign. Currently the Aptos Ledger app can only support transactions that are smaller than 20kb. The `Ledger Nano S` device has less memory than that, which is why it is more likely to produce this error.
+
+## Authentication key rotation
+
+If you have an active account that is not secured using a hardware wallet, then
+you may wish to rotate the account's authentication key so that it corresponds
+to a [BIP44 account index] private key held on your Ledger.
+
+Alternatively, if you have an account linked with a Ledger hardware wallet that
+you wish to publish a large package from, you might want to temporarily rotate
+the account's authentication key to a hot key to avoid memory issues.
+
+This tutorial will walk you through both scenarios.
+
+<Callout type="warning" emoji="❗">
+Before you start this tutorial make sure you have completed the
+[key rotation guide](../../guides/key-rotation.mdx).
+</Callout>
+
+<Steps>
+
+### Complete the key rotation guide
+
+Confirm that you have completed the
+[key rotation guide](../../guides/key-rotation.mdx).
+
+### Verify your Ledger is ready
+
+1. Connect and unlock your Ledger.
+1. Check what version of the Aptos app you have: `Aptos > About > Version`.
+1. If you do not have version `0.6.9` or higher, update it using Ledger Live.
+1. Enable blind signing: `Aptos > Settings > Enable Blind Signing`.
+
+### Start a localnet
+
+Start a localnet:
+
+```sh filename="Terminal"
+aptos node run-localnet
+```
+
+The localnet is ready when it prints out:
+
+```sh filename="Terminal"
+Applying post startup steps...
+
+Setup is complete, you can now use the localnet!
+```
+
+<Callout type="info" emoji="🧠">
+If you are a power user on MacOS or Linux, the following command can be used
+to start a fresh localnet as a background process:
+
+```sh filename="Terminal"
+mkdir -p localnet-data
+aptos node run-localnet \
+    --assume-yes \
+    --test-dir localnet-data \
+    --force-restart &
+export LOCALNET_PID=$!
+```
+
+You can then stop the localnet at any point with the following command:
+
+```sh filename="Terminal"
+kill $LOCALNET_PID
+```
+</Callout>
+
+### Set up localnet hot wallet profile
+
+Create a private key corresponding to an authentication key, and thus initial
+account address, that starts with the vanity prefix `0xaaa`:
+
+```sh filename="Terminal"
+aptos key generate \
+    --assume-yes \
+    --output-file private-key-a \
+    --vanity-prefix 0xaaa
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "PublicKey Path": "private-key-a.pub",
+    "PrivateKey Path": "private-key-a",
+    "Account Address:": "0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5"
+  }
+}
+```
+</details>
+
+Use the private key to initialize a `hot-wallet-1` profile on the localnet:
+
+```sh filename="Terminal"
+aptos init \
+    --assume-yes \
+    --network local \
+    --private-key-file private-key-a \
+    --profile hot-wallet-1
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+Configuring for profile hot-wallet-1
+Configuring for network Local
+Using command line argument for private key
+Account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 doesn\'t exist, creating it and funding it with 100000000 Octas
+Account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 funded successfully
+
+---
+Aptos CLI is now set up for account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 as profile hot-wallet-1!  Run `aptos --help` for more information about commands
+{
+  "Result": "Success"
+}
+```
+</details>
+
+### Rotate the hot wallet key
+
+Rotate the authentication key of the hot wallet to use [BIP44 account index]
+1000 on your Ledger:
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --new-derivation-index 1000 \
+    --profile hot-wallet-1 \
+    --save-to-profile ledger-wallet-1000
+```
+
+<Callout type="info" emoji="🧠">
+As a best practice, this command uses a [BIP44 account index] that starts at a
+large number (1000) to indicate that the account is secured by a rotated
+authentication key on a Ledger, to ensure it does not conflict with any other
+existing accounts.
+
+This practice aids in profile recovery, as shown below.
+</Callout>
+
+Follow the instructions from the CLI prompt:
+
+```sh filename="Terminal"
+Approve rotation proof challenge signature on your Ledger device
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile ledger-wallet-1000",
+    "transaction": {
+      "transaction_hash": "0x1a6df99651ac170bda10cfb9898fa196321d80a928033791b9d2231f77738bb2",
+      "gas_used": 448,
+      "gas_unit_price": 100,
+      "sender": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "sequence_number": 0,
+      "success": true,
+      "timestamp_us": 1717986382369736,
+      "version": 186,
+      "vm_status": "Executed successfully"
+    }
+  }
+}
+```
+</details>
+
+Compare the `hot-wallet-1` and `ledger-wallet-1000` profiles, noting that they
+have the same `account` address but different `public_key` values:
+
+```sh filename="Terminal"
+aptos config show-profiles --profile hot-wallet-1
+aptos config show-profiles --profile ledger-wallet-1000
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "hot-wallet-1": {
+      "has_private_key": true,
+      "public_key": "0xffb1240fd1267207cc3ed2e1b5386e090a9ca2c844d7f9e0077b3d7dd5d5e430",
+      "account": "aaa271bca468fb8518f73a732a484b29a1bc296ebcb23f15639d4865a5cebe87",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+{
+  "Result": {
+    "ledger-wallet-1000": {
+      "has_private_key": false,
+      "public_key": "0x20ba83f9b9fdab73b0ace8fda26ce24c98cf55060b72b69cfbd25add6a25d09b",
+      "account": "aaa271bca468fb8518f73a732a484b29a1bc296ebcb23f15639d4865a5cebe87",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+```
+</details>
+
+Since the account is no longer secured by the hot private key, delete the
+private and public key files.
+
+<Callout type="info" emoji="🧠">
+If you are using a UNIX-like machine:
+
+```shell filename="Terminal"
+rm private-key-a
+rm private-key-b
+rm private-key-a.pub
+rm private-key-b.pub
+```
+</Callout>
+
+Now that you have successfully rotated the authentication key of the hot wallet,
+you can delete the profiles too:
+
+```sh filename="Terminal"
+aptos config delete-profile --profile hot-wallet-1
+aptos config delete-profile --profile ledger-wallet-1000
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": "Deleted profile hot-wallet-1"
+}
+{
+  "Result": "Deleted profile ledger-wallet-1000"
+}
+```
+</details>
+
+### Recover profile
+
+Since you know that you rotated the authentication key of the hot wallet to the
+Ledger, and since you used the best practice of a [BIP44 account index] offset
+of 1000, you can easily recover the profile using the [BIP44 account index]
+alone:
+
+```sh filename="Terminal"
+aptos init \
+    --assume-yes \
+    --derivation-index 1000 \
+    --network local \
+    --profile ledger-wallet-1000-recovered
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+Configuring for profile ledger-wallet-1000-recovered
+Configuring for network Local
+Account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 has been already found onchain
+
+---
+Aptos CLI is now set up for account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 as profile ledger-wallet-1000-recovered!  Run `aptos --help` for more information about commands
+{
+  "Result": "Success"
+}
+```
+</details>
+
+Note that this profile corresponds to the specified `0xaaa...` vanity account
+address:
+
+```sh filename="Terminal"
+aptos config show-profiles --profile ledger-wallet-1000-recovered
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "ledger-wallet-1000-recovered": {
+      "has_private_key": false,
+      "public_key": "0x20ba83f9b9fdab73b0ace8fda26ce24c98cf55060b72b69cfbd25add6a25d09b",
+      "account": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+```
+</details>
+
+<Callout type="info" emoji="🧠">
+The `aptos init` command first checks the [`account::OriginatingAddress`] table
+for determining the account address associated with a public key, so as long as
+you follow best practices from the
+[key rotation guide](../../guides/key-rotation.mdx) and only
+authenticate one account at a time with a private key, you'll easily be able to
+recover your profile based on the [BIP44 account index] alone.
+</Callout>
+
+### Rotate to new hot private key
+
+If you have an account linked with a Ledger hardware wallet that you wish to use
+for publication of a large package, you'll be unable to sign the package
+publication transaction due to the Ledger's memory limitations. In this case,
+you'll want to temporarily rotate to a hot wallet.
+
+Start by generating a new private key:
+
+```sh filename="Terminal"
+aptos key generate \
+    --assume-yes \
+    --output-file private-key-b \
+    --vanity-prefix 0xbbb
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "PublicKey Path": "private-key-b.pub",
+    "PrivateKey Path": "private-key-b",
+    "Account Address:": "0xbbbede2b4f1d49eff0b156ab0756889a6f2bb68f215399d5015da9ac45921b47"
+  }
+}
+```
+</details>
+
+Rotate the authentication key of the account linked with the Ledger to the new
+private key:
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --new-private-key-file private-key-b \
+    --profile ledger-wallet-1000-recovered \
+    --save-to-profile temporary-hot-wallet
+```
+
+Follow the instructions from the CLI prompt:
+
+```sh filename="Terminal"
+Approve rotation proof challenge signature on your Ledger device
+```
+
+```sh filename="Terminal"
+Approve transaction on your Ledger device
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile temporary-hot-wallet",
+    "transaction": {
+      "transaction_hash": "0xe49782e92d8fd824fd6dce8f6ed42a11cf8ee84c201f3aa639c435e737c80eaa",
+      "gas_used": 449,
+      "gas_unit_price": 100,
+      "sender": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "sequence_number": 1,
+      "success": true,
+      "timestamp_us": 1717986617911082,
+      "version": 631,
+      "vm_status": "Executed successfully"
+    }
+  }
+```
+</details>
+
+Since the CLI profile `ledger-wallet-1000-recovered` is now stale, rename it
+in case you get interrupted and forget that the private key has been rotated:
+
+```sh filename="Terminal"
+aptos config rename-profile \
+    --profile ledger-wallet-1000-recovered \
+    --new-profile-name ledger-wallet-1000-stale
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": "Renamed profile ledger-wallet-1000-recovered to ledger-wallet-1000-stale"
+}
+```
+</details>
+
+### Rotate back to Ledger
+
+Once you've signed the large package publication transaction with the hot key,
+you can then rotate the authentication key back to to the corresponding to the
+private key on the Ledger at index 1000:
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --new-derivation-index 1000 \
+    --profile temporary-hot-wallet \
+    --save-to-profile ledger-wallet-1000
+```
+
+Follow the instructions from the CLI prompt:
+
+```sh filename="Terminal"
+Approve rotation proof challenge signature on your Ledger device
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile ledger-wallet-1000",
+    "transaction": {
+      "transaction_hash": "0x9503819d4ea13bcd9eafed25984807d86d22e8a9837565a7495b54d13890d103",
+      "gas_used": 449,
+      "gas_unit_price": 100,
+      "sender": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "sequence_number": 2,
+      "success": true,
+      "timestamp_us": 1717986672963544,
+      "version": 742,
+      "vm_status": "Executed successfully"
+    }
+  }
+}
+```
+</details>
+
+Verify that the `ledger-wallet-1000-stale` and `ledger-wallet-1000` profiles
+have the same `account` address and `public_key`:
+
+```sh filename="Terminal"
+aptos config show-profiles --profile ledger-wallet-1000-stale
+aptos config show-profiles --profile ledger-wallet-1000
+```
+
+Delete the `temporary-hot-wallet` and `ledger-wallet-1000-stale` profiles,
+which you no longer need.
+
+```sh filename="Terminal"
+aptos config delete-profile --profile temporary-hot-wallet
+aptos config delete-profile --profile ledger-wallet-1000-stale
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": "Deleted profile temporary-hot-wallet"
+}
+{
+  "Result": "Deleted profile ledger-wallet-1000-stale"
+}
+```
+</details>
+
+Since you no longer need the temporary private key, delete it too.
+
+<Callout type="info" emoji="🧠">
+If you are using a UNIX-like machine:
+
+```shell filename="Terminal"
+rm private-key-*
+```
+</Callout>
+
+### Clean up
+
+Delete the remaining test profile:
+
+```shell filename="Terminal"
+aptos config delete-profile --profile ledger-wallet-1000
+```
+
+Then stop the localnet.
+
+<Callout type="info" emoji="🧠">
+If you are using a UNIX-like machine:
+
+```shell filename="Terminal"
+aptos config delete-profile --profile ledger-wallet-1000
+kill $LOCALNET_PID
+rm -fr localnet-data
+```
+</Callout>
+
+</Steps>
+
+[`account::OriginatingAddress`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L70
+[BIP44 account index]: https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
