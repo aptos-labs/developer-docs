@@ -1,6 +1,69 @@
 import clsx from "clsx";
-import React, { useState } from "react";
-import Select from "react-select";
+import React, { useEffect, useState } from "react";
+import Select, { ActionMeta, SingleValue } from "react-select";
+import { Framework, GITHUB_APTOS_CORE, PKGS } from "./shared";
+import { useMoveReference } from "./MoveReferenceProvider";
+
+type FrameworkData = {
+  framework: Framework;
+  pages: { id: string; name: string }[];
+};
+
+async function loadFrameworkData(
+  branch: Branch,
+  framework: Framework,
+): Promise<FrameworkData> {
+  const pageUrl = `${GITHUB_APTOS_CORE}/${branch}/aptos-move/framework/${framework}/doc/overview.md`;
+  const response = await fetch(pageUrl);
+
+  if (!response.ok) {
+    throw new Error("Error loading framework data");
+  }
+
+  const rawContent = await response.text();
+  const linksRegex = /\[(.+)\]\(([^ ]+?)( "(.+)")?\)/g;
+  const pages = Array.from(rawContent.matchAll(linksRegex), (entry) => {
+    const name = entry[1].replace(/`/gi, "");
+    const page = entry[2].split("#")[0];
+    const id = `${framework}/doc/${page}`;
+
+    return { id, name };
+  });
+
+  return { framework, pages };
+}
+
+function useFrameworksData(branch: Branch) {
+  const [pkgsData, setFrameworksData] = useState<GroupedOption[]>([]);
+
+  useEffect(() => {
+    Promise.all(PKGS.map((framework) => loadFrameworkData(branch, framework)))
+      .then((data) => data.filter(Boolean))
+      .then((frameworkData) => {
+        const groupOptions: GroupedOption[] = [];
+        for (let framework of frameworkData) {
+          // Create the package options
+          const options: PackageOption[] = framework.pages.map((page) => {
+            const packageOption: PackageOption = {
+              value: page.id,
+              label: page.name,
+              color: "black",
+            };
+            return packageOption;
+          });
+
+          // Push package options to group options
+          groupOptions.push({
+            label: framework.framework,
+            options,
+          });
+        }
+        setFrameworksData(groupOptions ?? []);
+      });
+  }, [branch]);
+
+  return pkgsData;
+}
 
 export const MOVE_PACKAGES = [
   "move-stdlib",
@@ -34,17 +97,12 @@ export type GroupedOption = {
   readonly options: readonly PackageOption[];
 };
 
-export const groupedOptions: readonly GroupedOption[] = [
-  {
-    label: "Modules",
-    options: packageOptions,
-  },
-];
-
 function FormatGroupLabel({ label, options }: GroupedOption) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-gray-600 dark:text-gray-400 font-bold">{label}</span>
+      <span className="text-gray-600 dark:text-gray-400 font-bold">
+        {label}
+      </span>
       <span
         style={{
           backgroundColor: packageOptions[2].color,
@@ -88,30 +146,46 @@ const dropdownIndicatorStyles =
   "p-1 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-md hover:text-black dark:hover:text-white";
 const menuStyles =
   "p-1 mt-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-lg dark:text-gray-100";
-const groupHeadingStyles =
-  "mt-2 mb-1 text-gray-500 dark:text-gray-100 text-sm";
+const groupHeadingStyles = "mt-2 mb-1 text-gray-500 dark:text-gray-100 text-sm";
 const optionStyles = {
   base: "hover:cursor-pointer px-3 py-2 rounded dark:text-gray-100",
-  focus: "bg-gray-100 dark:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700",
+  focus:
+    "bg-gray-100 dark:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700",
   selected:
     "after:content-['✔'] after:ml-2 after:text-green-500 text-gray-500 dark:text-gray-400",
 };
 const noOptionsMessageStyles =
   "text-gray-500 dark:text-gray-400 p-2 bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-200 dark:border-gray-700 rounded-sm";
 
+const branches = ["mainnet", "testnet", "devnet", "main"] as const;
+type Branch = (typeof branches)[number];
 
-export function ModuleSelect() {
+interface ModuleSelectProps {
+  branch: Branch;
+}
+
+export function ModuleSelect({ branch }: ModuleSelectProps) {
+  const groupedOptions = useFrameworksData(branch);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const { updatePage } = useMoveReference();
 
-  const handleChange = (selectedOption: string) => {
-    setSelectedOption(selectedOption);
+  const handleChange = (
+    newValue: SingleValue<PackageOption>,
+    actionMeta: ActionMeta<PackageOption>,
+  ) => {
+    console.log("NEW VALUE: ", newValue?.value);
+    if (newValue?.value) {
+      updatePage(newValue.value as Branch);
+    }
   };
+
   return (
     <Select<PackageOption, false, GroupedOption>
       inputId="basic-grouped-id"
       defaultValue={packageOptions[0]}
       options={groupedOptions}
       formatGroupLabel={FormatGroupLabel}
+      onChange={handleChange}
       classNames={{
         control: ({ isFocused }) =>
           clsx(
@@ -143,16 +217,17 @@ export function ModuleSelect() {
   );
 }
 
-export function ModuleContainer() {
+interface ModuleContainerProps {
+  branch: Branch;
+}
 
-
+export function ModuleContainer({ branch }: ModuleContainerProps) {
   return (
     <>
       <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
         Module
       </label>
-      <ModuleSelect />
+      <ModuleSelect branch={branch} />
     </>
-    
-  )
+  );
 }

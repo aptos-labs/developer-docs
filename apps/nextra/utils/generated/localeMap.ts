@@ -103,6 +103,9 @@ export const localeMap = {
   "/build/create-aptos-dapp/templates/boilerplate": {
     "en": true
   },
+  "/build/create-aptos-dapp/templates/clicker-game-tg-mini-app": {
+    "en": true
+  },
   "/build/create-aptos-dapp/templates/nft-minting-dapp": {
     "en": true
   },
