@@ -1,4 +1,4 @@
-name: Links
+name: Link Check
 
 on:
   pull_request:
@@ -10,12 +10,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Run Lychee Link Checker
-      uses: lycheeverse/lychee-action@v1
-      with:
-        args: --base . --verbose --no-progress './apps/nextra/**/*.mdx' './apps/nextra/**/*.html' --exclude 'http://localhost*' --exclude 'https://localhost*'
-        format: markdown
-        output: lychee/out.md
+      - name: Run Lychee Link Checker
+        uses: lycheeverse/lychee-action@v1
+        with:
+        # These args ensure that all relevant links are checked, without flaky failures.
+        # 
+        # 1. The --remap helps resolve links which don't list their file extension since all relevant files are .mdx. 
+        #   It also accounts for headings in relative links. Ex. [abc](./file#header) -> .../file.mdx#header
+        # 2. TODO: When the /zh/ sections are all translated, please remove "--exclude '.*/zh/.*".
+        #    This is a temporary measure since not all pages have been translated yet, but the links are still there.
+        # 3. --exclude '^(file:|[./]).*\.html$' - This section of exclusions avoids file paths for resources which are
+        #   not actually relative links. They work at runtime by accessing the 'public' folder.
+        # 4. Other exclusions avoid flaky failures (from slow sites) or acceptable failures (from fake urls).
+        # 5. --accept '403,401,429' - These errors generally mean the link works, but our tool can't access them.
+        # 6. --retry-wait-time - The time in seconds to wait before trying again if we get a 429 error.
+        # 7. --max-retries - How many times we're willing to try again before failing the link.
+        # 8. TODO: In the future, if we want to avoid GitHub rate limits, we should add a GitHub token to authenticate
+        #    with. This would change the rate limit from 60 requests/hour to 5,000 requests/hour.
+          args: >
+            --remap '(^[^.#]+)(\.?)(#.*)?$ $1.mdx$3'
+            --exclude '.*/zh/.*'
+            --exclude '^(file:|[./]).*\.html$'
+            --exclude '^(file:|[./]).*\.png$'
+            --exclude '^(file:|[./]).*\.jpg$'
+            --exclude '^(file:|[./]).*\.jpeg$'
+            --exclude '^(file:|[./]).*\.svg$'
+            --exclude '^(file:|[./]).*\.mp4$'
+            --exclude '^(file:|[./]).*\.gif$'
+            --exclude 'aptos-api-spec'
+            --exclude '^(https?:\/\/localhost|https?:\/\/127\.0\.0\.1).*'
+            --exclude '.*your-app.*'
+            --exclude '^https://packages\.ubuntu\.com/.*'
+            --exclude '^https://app\.spaceandtime\.ai/.*'
+            --exclude '.*%7BmenuImage%7D.*'
+            --exclude '.*imageUrl.*'
+            --accept '403,401,429'
+            --retry-wait-time 1
+            --max-retries 2
+            --base .
+            --verbose
+            --no-progress './apps/nextra/**/*.mdx' './apps/nextra/**/*.html'
+          format: markdown
+          fail: true
+          output: lychee/out.md

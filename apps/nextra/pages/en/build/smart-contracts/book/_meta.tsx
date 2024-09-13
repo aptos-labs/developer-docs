@@ -2,6 +2,9 @@ export default {
   SUMMARY: {
     title: "Summary",
   },
+  "move-2.0": {
+    title: "Move 2.0 Release Notes",
+  },
   "---getting-started---": {
     type: "separator",
     title: "Getting Started",
@@ -61,6 +64,9 @@ export default {
   },
   "structs-and-resources": {
     title: "Structs and Resources",
+  },
+  enums: {
+    title: "Enum Types",
   },
   constants: {
     title: "Constants",

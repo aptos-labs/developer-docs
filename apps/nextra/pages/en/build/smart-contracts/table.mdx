@@ -50,72 +50,72 @@ The following constants define various error codes used within the module (these
 ### Creating and Using a Table
 
 ```move filename="table.move"
-module example::table_usage {
-    use aptos_std::table::{Self, Table};
+module 0x42::table_usage {
+    use aptos_std::table;
 
     public entry fun main() {
-        let mut table = Table::new<u64, u64>();
-        Table::add(&mut table, 1, 100);
-        Table::add(&mut table, 2, 200);
-        
-        let value1 = Table::borrow(&table, 1);
+        let table = table::new<u64, u64>();
+        table::add(&mut table, 1, 100);
+        table::add(&mut table, 2, 200);
+
+        let value1 = table::borrow(&table, 1);
         assert!(*value1 == 100, 0);
-        
-        let value2 = Table::borrow(&table, 2);
+
+        let value2 = table::borrow(&table, 2);
         assert!(*value2 == 200, 0);
-        
-        let removed_value = Table::remove(&mut table, 1);
+
+        let removed_value = table::remove(&mut table, 1);
         assert!(removed_value == 100, 0);
-        
-        let contains_key = Table::contains(&table, 2);
+
+        let contains_key = table::contains(&table, 2);
         assert!(contains_key, 0);
-        
-        Table::destroy(table);
+
+        // Note: A table must be stored in a resource at the end of a function
     }
 }
 ```
 
-### Adding Multiple Entries and Upserting
+### Adding and Upserting Multiple Entries
 
 ```move filename="table.move"
-module example::table_usage {
-    use aptos_std::table::{Self, Table};
+module 0x42::table_usage {
+    use aptos_std::table;
 
     public fun add_and_upsert_entries() {
-		let mut table = Table::new<u64, u64>();
-		Table::add(&mut table, 1, 100);
-		Table::upsert(&mut table, 1, 200);
-		Table::upsert(&mut table, 2, 300);
-		
-		let value1 = Table::borrow(&table, 1);
-		assert!(*value1 == 200, 0);
-		
-		let value2 = Table::borrow(&table, 2);
-		assert!(*value2 == 300, 0);
-		
-		Table::destroy(table);
-	}
+        let table = table::new<u64, u64>();
+        table::add(&mut table, 1, 100);
+        table::upsert(&mut table, 1, 200);
+        table::upsert(&mut table, 2, 300);
+
+        let value1 = table::borrow(&table, 1);
+        assert!(*value1 == 200, 0);
+
+        let value2 = table::borrow(&table, 2);
+        assert!(*value2 == 300, 0);
+
+        // Note: A table must be stored in a resource at the end of a function
+    }
 }
 ```
 
 ### Borrowing Mutable References
 
 ```move filename="table.move"
-module example::table_usage {
-    use aptos_std::table::{Self, Table};
+module 0x42::table_usage {
+    use aptos_std::table;
 
     public fun borrow_mutable_references() {
-		let mut table = Table::new<u64, u64>();
-		Table::add(&mut table, 1, 100);
-		
-		let value_mut = Table::borrow_mut(&mut table, 1);
-		*value_mut = 200;
-		
-		let value = Table::borrow(&table, 1);
-		assert!(*value == 200, 0);
-		
-		Table::destroy(table);
-	}
+        let table = table::new<u64, u64>();
+        table::add(&mut table, 1, 100);
+
+        let value_mut = table::borrow_mut(&mut table, 1);
+        *value_mut = 200;
+
+        let value = table::borrow(&table, 1);
+        assert!(*value == 200, 0);
+
+        // Note: A table must be stored in a resource at the end of a function
+    }
 }
 ```
 

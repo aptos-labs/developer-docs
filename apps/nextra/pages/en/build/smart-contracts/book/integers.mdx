@@ -152,6 +152,8 @@ For example:
 - `(1 + 3 as u128)`
 - `(4/2 + 12345 as u256)`
 
+Notice that since Language Version 2.0, casts don't always need to be in parentheses. Thus, `x as u8` is a valid expression.
+
 ## Ownership
 
 As with the other scalar values built-in to the language, integer values are implicitly copyable, meaning they can be copied without an explicit instruction such as [`copy`](variables.mdx#move-and-copy).

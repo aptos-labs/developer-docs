@@ -12,6 +12,9 @@ Move programs can create, delete, and update [resources](structs-and-resources.m
 
 Each of these instructions is parameterized by a type `T` with the [`key` ability](abilities.mdx). However, each type `T` _must be declared in the current module_. This ensures that a resource can only be manipulated via the API exposed by its defining module. The instructions also take either an [`address`](address.mdx) or [`&signer`](signer.mdx) representing the account address where the resource of type `T` is stored.
 
+See also [index notation (`[]`)](#index-notation-for-storage-operators) for accessing global storage.
+
+
 ## References to resources
 
 References to global resources returned by `borrow_global` or `borrow_global_mut` mostly behave like references to local storage: they can be extended, read, and written using ordinary [reference operators](references.mdx) and passed as arguments to other function. However, there is one important difference between local and global references: **a function cannot return a reference that points into global storage**. For example, these two functions will each fail to compile:
@@ -30,7 +33,8 @@ module 0x42::example {
 }
 ```
 
-Move must enforce this restriction to guarantee absence of dangling references to global storage. [This section](#reference-safety-for-global-resources) contains much more detail for the interested reader.
+Move must enforce this restriction to guarantee absence of dangling references to global 
+storage. [This section](#reference-safety-for-global-resources) contains much more detail for the interested reader.
 
 ## Global storage operators with generics
 
@@ -165,12 +169,12 @@ module 0x42::m {
   struct R<T> has key { t: T }
 
   // `acquires R`, not `acquires R<T>`
-  fun acquire_generic_resource<T: store>(a: addr) acquires R {
+  fun acquire_generic_resource<T: store>(a: address) acquires R {
     let _ = borrow_global<R<T>>(a);
   }
 
   // `acquires R`, not `acquires R<u64>
-  fun acquire_instantiated_generic_resource(a: addr) acquires R {
+  fun acquire_instantiated_generic_resource(a: address) acquires R {
     let _ = borrow_global<R<u64>>(a);
   }
 }
@@ -243,3 +247,43 @@ address 0x42 {
 Line 16 acquires a reference to a global resource `m1::T`, then line 17 removes that same resource, which makes `t_ref` dangle. In this case, `acquires` annotations do not help us because the `borrow_then_remove_bad` function is outside the `m1` module that declares `T` (recall that `acquires` annotations can only be used for resources declared in the current module). Instead, the type system avoids this problem by preventing the return of a global reference at line 6.
 
 Fancier type systems that would allow returning global references without sacrificing reference safety are possible, and we may consider them in future iterations of Move. We chose the current design because it strikes a good balance between being expressive, annotation burden, and type system complexity.
+
+
+## Index Notation for Storage Operators
+
+_Since language version 2.0_
+
+Instead of the verbose `borrow_global` and `borrow_global_mut` functions, one
+can also use index notations to access global storage.
+
+The table below gives an overview of index notations for storage:
+
+| Indexing Syntax         | Storage Operation                          |
+|-------------------------|--------------------------------------------|
+| `&T[address]`           | `borrow_global<T>(address)`                |
+| `&mut T[address]`       | `borrow_global_mut<T>(address)`            |
+| `T[address]`            | `*borrow_global<T>(address)`               |
+| `T[address] = x`        | `*borrow_global_mut<T>(address) = x`       |
+| `&T[address].field`     | `&borrow_global<T>(address).field`         |
+| `&mut T[address].field` | `&mut borrow_global_mut<T>(address).field` |
+| `T[address].field`      | `borrow_global<T>(address).field`          |
+| `T[address].field = x`  | `borrow_global_mut<T>(address).field = x`  |
+
+Here `T` represents a generic resource type that can take type parameters.
+
+Notice that `T[address].field` fetches a reference to the resource from storage and then makes a copy of the field value (which must
+have the copy ability); it is a shortcut for `*&T[address].field`.
+
+Examples:
+
+```move
+struct R has key, drop { value: bool }
+
+fun f1() acquires R {
+  let x = &mut R[@0x1];
+  x.value = false;
+  assert!(R[@0x1].value == false);
+  R[@0x1].value = true;
+  assert!(R[@0x1].value == true);
+}
+```

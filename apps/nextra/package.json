@@ -11,9 +11,7 @@
     "clean": "rimraf .next .turbo",
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "dev": "next -p 3030",
-    "prebuild": "node nextra-remote-filepaths/fetch.js",
     "postbuild": "next-sitemap --config next-sitemap.config.mjs; node generate-language-sitemaps.cjs; node generate-sitemap-index.cjs",
-    "predev": "pnpm prebuild",
     "start": "next start -p 3030",
     "types:check": "tsc --noEmit",
     "fmt": "prettier --write '**/*.(css|tsx|ts|jsx|js|cjs|mjs|json|md|html)'",
@@ -27,8 +25,8 @@
     "@next/third-parties": "^14.1.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-slot": "^1.0.2",
-    "@scalar/api-reference-react": "^0.2.5",
-    "@scalar/nextjs-api-reference": "^0.3.62",
+    "@scalar/api-reference-react": "0.3.86",
+    "@scalar/nextjs-api-reference": "0.4.85",
     "@vercel/og": "^0.5.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "2.1.0",
@@ -41,22 +39,14 @@
     "markdown-to-jsx": "^6.11.4",
     "next": "^14.2.3",
     "next-sitemap": "^4.2.3",
-    "nextra": "3.0.0-alpha.24",
-    "nextra-theme-docs": "3.0.0-alpha.24",
+    "nextra": "3.0.0-alpha.37",
+    "nextra-theme-docs": "3.0.0-alpha.37",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.2",
     "react-intersection-observer": "^8.26.2",
     "tailwind-merge": "^2.2.2",
     "xml2js": "^0.6.2"
-  },
-  "dependenciesMeta": {
-    "nextra": {
-      "injected": true
-    },
-    "nextra-theme-docs": {
-      "injected": true
-    }
   },
   "devDependencies": {
     "@csstools/postcss-oklab-function": "^3.0.13",

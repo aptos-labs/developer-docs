@@ -217,9 +217,6 @@ export const localeMap = {
   "/build/indexer/architecture": {
     "en": true
   },
-  "/build/indexer/fungible-asset-info": {
-    "en": true
-  },
   "/build/indexer/custom-processors/e2e-tutorial": {
     "en": true
   },
@@ -230,6 +227,9 @@ export const localeMap = {
     "en": true
   },
   "/build/indexer/fungible-asset-balances": {
+    "en": true
+  },
+  "/build/indexer/fungible-asset-info": {
     "en": true
   },
   "/build/indexer/get-delegators": {
@@ -277,7 +277,40 @@ export const localeMap = {
   "/build/indexer": {
     "en": true
   },
+  "/build/sdks/community-sdks/swift-sdk": {
+    "en": true
+  },
+  "/build/sdks/community-sdks": {
+    "en": true
+  },
   "/build/sdks/cpp-sdk": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/account": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/batching-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/bcs-format": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/multi-agent-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/simulating-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions/sponsoring-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/building-transactions": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/fetch-data-via-sdk": {
+    "en": true
+  },
+  "/build/sdks/go-sdk/go-examples": {
     "en": true
   },
   "/build/sdks/go-sdk": {
@@ -302,9 +335,6 @@ export const localeMap = {
     "en": true
   },
   "/build/sdks/rust-sdk": {
-    "en": true
-  },
-  "/build/sdks/swift-sdk": {
     "en": true
   },
   "/build/sdks/ts-sdk/account": {
@@ -424,6 +454,9 @@ export const localeMap = {
   "/build/smart-contracts/book/constants": {
     "en": true
   },
+  "/build/smart-contracts/bookums": {
+    "en": true
+  },
   "/build/smart-contracts/book/equality": {
     "en": true
   },
@@ -449,6 +482,9 @@ export const localeMap = {
     "en": true
   },
   "/build/smart-contracts/book/modules-and-scripts": {
+    "en": true
+  },
+  "/build/smart-contracts/book/move-2.0": {
     "en": true
   },
   "/build/smart-contracts/book/move-tutorial": {
@@ -836,10 +872,6 @@ export const localeMap = {
     "en": true,
     "zh": true
   },
-  "/network/nodes/identity-and-configuration": {
-    "en": true,
-    "zh": true
-  },
   "/network/nodes/localnet/local-development-network": {
     "en": true,
     "zh": true
@@ -967,6 +999,9 @@ export const localeMap = {
     "zh": true
   },
   "/network/nodes/aptos-api-spec": {
+    "zh": true
+  },
+  "/network/nodes/identity-and-configuration": {
     "zh": true
   }
 };

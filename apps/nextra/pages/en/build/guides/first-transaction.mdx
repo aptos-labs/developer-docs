@@ -64,7 +64,7 @@ curl -sSL https://install.python-poetry.org | python3
 poetry install
 ```
 
-Run the [`transfer-coin`](https://github.com/aptos-labs/aptos-python-sdk/examples/transfer_coin.py) example:
+Run the [`transfer-coin`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/transfer_coin.py) example:
 
 ```bash filename="Terminal"
 poetry run python -m examples.transfer_coin
@@ -220,7 +220,7 @@ See the TypeScript [`transfer_coin`](https://github.com/aptos-labs/aptos-ts-sdk/
 <Tabs.Tab>
 
 <Callout type="info">
-See the Python [`transfer_coin`](https://github.com/aptos-python-sdk/examples/transfer_coin.py) for the complete code as you follow the below steps.
+See the Python [`transfer_coin`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/transfer_coin.py) for the complete code as you follow the below steps.
 </Callout>
 </Tabs.Tab>
 <Tabs.Tab>
@@ -263,7 +263,7 @@ rest_client = RestClient(NODE_URL)
 faucet_client = FaucetClient(FAUCET_URL, rest_client)
 ```
 
-[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/examples/common.py) initializes these values as follows:
+[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/common.py) initializes these values as follows:
 
 ```python filename="common.py"
 NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")

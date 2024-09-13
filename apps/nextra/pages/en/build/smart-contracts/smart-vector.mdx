@@ -61,132 +61,130 @@ The following constants define various error codes used within the module:
 ### Creating and Using a SmartVector
 
 ```move filename="smart_vector.move"
-module example::smart_vector_usage {
-    use aptos_std::smart_vector::{Self, SmartVector};
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
 
     public entry fun main() {
-        let mut v = SmartVector::new<u64>();
-        SmartVector::push_back(&mut v, 10);
-        SmartVector::push_back(&mut v, 20);
-        let length = SmartVector::length(&v);
+        let v = smart_vector::new<u64>();
+        smart_vector::push_back(&mut v, 10);
+        smart_vector::push_back(&mut v, 20);
+        let length = smart_vector::length(&v);
         assert!(length == 2, 0);
-        let first_elem = SmartVector::borrow(&v, 0);
+        let first_elem = smart_vector::borrow(&v, 0);
         assert!(*first_elem == 10, 0);
-        let second_elem = SmartVector::borrow(&v, 1);
+        let second_elem = smart_vector::borrow(&v, 1);
         assert!(*second_elem == 20, 0);
-        let last_elem = SmartVector::pop_back(&mut v);
+        let last_elem = smart_vector::pop_back(&mut v);
         assert!(last_elem == 20, 0);
-        SmartVector::destroy_empty(v);
+        smart_vector::destroy_empty(v);
     }
 }
 ```
 
-### Advanced Operations
-
-#### Appending Vectors
+### Appending Vectors
 
 ```move filename="smart_vector.move"
-module example::smart_vector_usage {
-    use aptos_std::smart_vector::{Self, SmartVector};
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
 
     public fun append_vectors() {
-        let mut v1 = SmartVector::new<u64>();
-        let mut v2 = SmartVector::new<u64>();
-        
-        SmartVector::push_back(&mut v1, 1);
-        SmartVector::push_back(&mut v1, 2);
-        
-        SmartVector::push_back(&mut v2, 3);
-        SmartVector::push_back(&mut v2, 4);
-        
-        SmartVector::append(&mut v1, v2);
-        
-        let length = SmartVector::length(&v1);
+        let v1 = smart_vector::new<u64>();
+        let v2 = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v1, 1);
+        smart_vector::push_back(&mut v1, 2);
+
+        smart_vector::push_back(&mut v2, 3);
+        smart_vector::push_back(&mut v2, 4);
+
+        smart_vector::append(&mut v1, v2);
+
+        let length = smart_vector::length(&v1);
         assert!(length == 4, 0);
-        
-        let first_elem = SmartVector::borrow(&v1, 0);
+
+        let first_elem = smart_vector::borrow(&v1, 0);
         assert!(*first_elem == 1, 0);
-        
-        let second_elem = SmartVector::borrow(&v1, 1);
+
+        let second_elem = smart_vector::borrow(&v1, 1);
         assert!(*second_elem == 2, 0);
-        
-        let third_elem = SmartVector::borrow(&v1, 2);
+
+        let third_elem = smart_vector::borrow(&v1, 2);
         assert!(*third_elem == 3, 0);
-        
-        let fourth_elem = SmartVector::borrow(&v1, 3);
+
+        let fourth_elem = smart_vector::borrow(&v1, 3);
         assert!(*fourth_elem == 4, 0);
     }
 }
 ```
 
-#### Removing Elements
+### Removing Elements
 
 ```move filename="smart_vector.move"
-module example::smart_vector_usage {
-    use aptos_std::smart_vector::{Self, SmartVector};
-    
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
     public fun remove_elements() {
-        let mut v = SmartVector::new<u64>();
-        
-        SmartVector::push_back(&mut v, 1);
-        SmartVector::push_back(&mut v, 2);
-        SmartVector::push_back(&mut v, 3);
-        
-        let removed_elem = SmartVector::remove(&mut v, 1);
+        let v = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v, 1);
+        smart_vector::push_back(&mut v, 2);
+        smart_vector::push_back(&mut v, 3);
+
+        let removed_elem = smart_vector::remove(&mut v, 1);
         assert!(removed_elem == 2, 0);
-        
-        let length = SmartVector::length(&v);
+
+        let length = smart_vector::length(&v);
         assert!(length == 2, 0);
-        
-        let first_elem = SmartVector::borrow(&v, 0);
+
+        let first_elem = smart_vector::borrow(&v, 0);
         assert!(*first_elem == 1, 0);
-        
-        let second_elem = SmartVector::borrow(&v, 1);
+
+        let second_elem = smart_vector::borrow(&v, 1);
         assert!(*second_elem == 3, 0);
     }
 }
 ```
 
 
-#### Clearing the Vector
+### Clearing the Vector
 
 ```move filename="smart_vector.move"
-module example::smart_vector_usage {
-    use aptos_std::smart_vector::{Self, SmartVector};
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
 
     public fun clear_vector() {
-        let mut v = SmartVector::new<u64>();
-        
-        SmartVector::push_back(&mut v, 1);
-        SmartVector::push_back(&mut v, 2);
-        SmartVector::push_back(&mut v, 3);
-        
-        SmartVector::clear(&mut v);
-        let length = SmartVector::length(&v);
+        let v = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v, 1);
+        smart_vector::push_back(&mut v, 2);
+        smart_vector::push_back(&mut v, 3);
+
+        smart_vector::clear(&mut v);
+        let length = smart_vector::length(&v);
         assert!(length == 0, 0);
     }
 }
 ```
 
-#### Swapping Elements
+### Swapping Elements
 
 ```move filename="smart_vector.move"
-module example::smart_vector_usage {
-    use aptos_std::smart_vector::{Self, SmartVector};
-    
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
     public fun swap_elements() {
-        let mut v = SmartVector::new<u64>();
-        
-        SmartVector::push_back(&mut v, 1);
-        SmartVector::push_back(&mut v, 2);
-        SmartVector::push_back(&mut v, 3);
-        
-        SmartVector::swap(&mut v, 0, 2);
-        
-        let first_elem = SmartVector::borrow(&v, 0);
+        let v = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v, 1);
+        smart_vector::push_back(&mut v, 2);
+        smart_vector::push_back(&mut v, 3);
+
+        smart_vector::swap(&mut v, 0, 2);
+
+        let first_elem = smart_vector::borrow(&v, 0);
         assert!(*first_elem == 3, 0);
-        
-        let third_elem = SmartVector::borrow(&v, 2);
+
+        let third_elem = smart_vector::borrow(&v, 2);
         assert!(*third_elem == 1, 0);
     }
 }

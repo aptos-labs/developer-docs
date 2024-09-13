@@ -1,0 +1,93 @@
+---
+title: "Go SDK - Creating and Managing Accounts"
+---
+
+# Creating and Managing Accounts
+
+There are several ways to generate account credentials using the Go SDK. You can
+use:
+- `aptos.NewEd25519Account()`
+- `aptos.NewSecp256k1Account()`
+- `aptos.NewEd25519SingleSenderAccount()`
+- `aptos.NewAccountFromSigner()`
+
+`Account.NewEd25519Account()` is the most commonly used method to create keys
+for a new account. It defaults to `ED25519` key types, but you can also specify
+which signing scheme you would prefer like so:
+
+```go
+// To derive an ed25519 account
+account1 := aptos.NewEd25519Account()
+
+// To derive a secp256k1 account
+account2 := aptos.NewSecp256k1Account()
+```
+
+Once you have generated credentials, you **must** fund it for the network to know it exists.
+
+In test environments this can be done with a faucet by running the following command:
+
+```go filename="fund.go"
+client, err = aptos.NewClient(aptos.DevnetConfig)
+if err != nil {
+  panic("Failed to create client:" + err.Error())
+}
+
+// Fund an account with 1 Devnet APT
+client.Fund(account1.Address, 100_000_000)
+```
+
+## Other Ways To Represent Accounts
+If you have a private key, or equivalent representation, you can use that to
+create an `Account` struct to manage those credentials while using the Go SDK.
+
+Here are several examples that show how to do so with specific encoding schemes.
+
+### Derive an account from private key
+
+The SDK supports deriving an account from a private key with `NewAccountFromSigner()` method.
+In addition, this method supports deriving an account from a private key and account address.
+This method uses a local calculation and therefore is used to derive an `Account` that has not had its authentication key rotated.
+
+```go
+// to derive an account with a Ed25519 key scheme
+privateKey := &aptos.Ed25519PrivateKey{}
+err := privateKey.FromHex(privateKeyHex)
+if err != nil {
+  panic("Failed to parse private key:" + err.Error())
+}
+account := aptos.NewAccountFromSigner(privateKey)
+
+// to derive an account with a Single Sender Ed25519 key scheme
+privateKey := &aptos.Ed25519PrivateKey{}
+err := privateKey.FromHex(privateKeyHex)
+if err != nil {
+  panic("Failed to parse private key:" + err.Error())
+}
+singleSigner := &crypto.SingleSigner{Signer: privateKey}
+account := aptos.NewAccountFromSigner(singleSigner)
+
+// to derive an account with a Single Sender Secp256k1 key scheme
+privateKey := &aptos.Secp256k1PrivateKey{}
+err := privateKey.FromHex(privateKeyHex)
+if err != nil {
+  panic("Failed to parse private key:" + err.Error())
+}
+singleSigner := &crypto.SingleSigner{Signer: privateKey}
+account := aptos.NewAccountFromSigner(singleSigner)
+
+// to derive an account with a private key and account address
+address := &aptos.AccountAddress{}
+err := address.ParseStringRelaxed(addressHex)
+if err != nil {
+  panic("Failed to parse address:" + err.Error())
+}
+privateKey := &aptos.Ed25519PrivateKey{}
+err := privateKey.FromHex(privateKeyHex)
+if err != nil {
+  panic("Failed to parse private key:" + err.Error())
+}
+account := aptos.NewAccountFromSigner(privateKey, address.AuthKey())
+```
+
+{/* TODO: Once derivation path is supported ### Derive an account from derivation path */}

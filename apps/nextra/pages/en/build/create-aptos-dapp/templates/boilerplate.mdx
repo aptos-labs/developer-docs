@@ -10,35 +10,34 @@ The Boilerplate template provides a starter dapp with all necessary dapp infrast
 
 The Boilerplate template provides:
 
-- Folder structure - A pre-made dapp folder structure with `frontend` and `move` folders.
+- Folder structure - A pre-made dapp folder structure with `frontend` and `contract` folders.
 - Dapp infrastructure - All required dependencies a dapp needs to start building on the Aptos network.
 - Wallet Info implementation - Pre-made `WalletInfo` components to demonstrate how one can use to read a connected Wallet info.
+- Trasnfer APT implementation - Pre-made `transfer` component to send APT to an address.
+- Message board functionality implementation - Pre-made `message` component to send and read a message on chain
+
+## Generate the Boilerplate template
+
+On your terminal, navigate to the directory you want to work in and run:
+```bash
+npx create-aptos-dapp@latest
+```
+
+Follow the CLI prompts.
 
 ## Getting started
 
 <Steps>
-
-### Initialize contract publishing account
-
-```bash 
-npm run move:init
-```
-
-The CLI will prompt you to provide a private key for your contract publishing account. If you provide no input, it will generate one for you.
-
-This will create an account to publish the contract with, as well as set the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
-
-For example:
-```bash filename=".env"
-PROJECT_NAME=my-aptos-dapp
-VITE_APP_NETWORK=testnet
-```
 
 ### Publish the contract
 
 Run the below command to publish the contract on-chain:
 ```bash
 npm run move:publish
+```
+This command will:
+1. Publish the contract to chain.
+2. Setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
 
 ### Run the app
 
@@ -55,7 +54,7 @@ All dapp components should be added into the `components` folder and it is recom
 
 ### Writing a Move contract
 
-The boilerplate template comes with a `move` folder that holds all Move related files. Under the `sources` folder you will find a `.move` file with a super basic implementation of a Move module that stores a message and updates it. This is to help you get started with writing your own Smart Contract.
+The boilerplate template comes with a `contract` folder that holds all Move smart contract related files. Under the `sources` folder you will find a `*.move` file with a super basic implementation of a Move module that stores a message and updates it. This is to help you get started with writing your own Smart Contract.
 
 ### Smart contract and frontend communication
 
@@ -68,12 +67,14 @@ If you started your dapp on testnet, and you are happy with your testing, you wi
 
 To publish the smart contract on mainnet, we need to change some configuration.
 
-1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
-2. Run `npm run move:init` to initialize an account to work against Mainnet
-3. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
-4. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
-5. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
-7. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
+Open the `.env` file and:
+
+> Note: Make sure you have created an existing account on the Aptos `mainnet`
+
+1. Change the `APP_NETWORK` value to `mainnet`
+2. Update the `MODULE_PUBLISHER_ACCOUNT_ADDRESS` to be the existing account address
+3. Update the `MODULE_PUBLISHER_PRIVATE_KEY` to be the existing account private key
+4. Run `npm run move:publish` to publish your move module on Aptos mainnet.
 
 ## Deploy to a live server
 
