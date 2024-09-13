@@ -1,5 +1,6 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { docsConfig } from "@docs-config";
+import AskCookbook from "@components/ask-cookbook";
 import "../styles.css";
 
 export const config = {
@@ -16,6 +17,7 @@ export default function App({ Component, pageProps }) {
     <>
       <GoogleAnalytics gaId={docsConfig.googleAnalyticsId} />
       <Component {...pageProps} />
+      <AskCookbook />
     </>
   );
 }
