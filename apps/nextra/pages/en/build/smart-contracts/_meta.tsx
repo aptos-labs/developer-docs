@@ -89,8 +89,8 @@ export default {
       layout: "full",
     },
   },
-  "book": {
-    title: 'Move Book',
+  book: {
+    title: "Move Book",
   },
   "error-codes": {
     title: "Error Codes",
