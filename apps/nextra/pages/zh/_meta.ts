@@ -12,15 +12,15 @@ export default {
     type: "menu",
     title: "Build",
     items: {
-        "get-started": {
-          title: "Get Started",
-        },
+      "get-started": {
+        title: "Get Started",
+      },
       //   "smart-contracts": {
       //     title: "Smart Contracts (Move)",
       //   },
-        apis: {
-          title: "APIs",
-        },
+      apis: {
+        title: "APIs",
+      },
       //   sdks: {
       //     title: "SDKs",
       //   },
