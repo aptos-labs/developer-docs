@@ -1,0 +1,149 @@
+---
+title: "Get Started"
+---
+
+import { Cards, Card, GraphQLEditor } from '@components/index';
+
+# Get Started
+
+## 想学什么？
+
+<Cards>
+  <Card href="./smart-contracts">
+    <Card.Title>智能合约</Card.Title>
+    <Card.Description>学习如何使用 Move 编程语言在 Aptos 上编写智能合约</Card.Description>
+  </Card>
+  <Card href="./indexer">
+    <Card.Title>查询数据</Card.Title>
+    <Card.Description>使用 Aptos Indexer 高效地查询链上数据</Card.Description>
+  </Card>
+  <Card href="../network/blockchain/blockchain-deep-dive">
+    <Card.Title>区块链基础设施</Card.Title>
+    <Card.Description>了解 Aptos 区块链基础设施的不同组成部分</Card.Description>
+  </Card>
+</Cards>
+
+## 我可以使用哪些开发工具？
+
+<Cards>
+  <Card href="./sdks">
+    <Card.Title>SDK</Card.Title>
+    <Card.Description>使用我们的 TypeScript、Python、Rust 和其他 SDK 提交交易和读取链上数据</Card.Description>
+  </Card>
+  <Card href="./indexer">
+    <Card.Title>索引器</Card.Title>
+    <Card.Description>查询链上数据，如账户余额、历史交易、账户的 NFT 等</Card.Description>
+  </Card>
+  <Card href="./cli">
+    <Card.Title>命令行界面</Card.Title>
+    <Card.Description>使用 Aptos CLI 编译和分析 Move 智能合约，运行本地网络等</Card.Description>
+  </Card>
+</Cards>
+
+这是我们的[indexer](indexer.mdx)的交互式示例，您可以查询账户的当前可替代资产余额更多使用示例可以在[示例查询](indexer/fungible-asset-balances.mdx)中找到
+
+<GraphQLEditor
+  query={`query GetFungibleAssetBalances($address: String, $offset: Int) {
+  current_fungible_asset_balances(
+    where: {owner_address: {_eq: $address}},
+    offset: $offset,
+    limit: 100,
+    order_by: {amount: desc}
+  ) {
+    asset_type
+    amount
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "offset": 0
+}`}
+/>
+
+## 来自其他生态系统？
+
+快速了解 Aptos 与其他生态系统之间的一些差异和相似之处
+
+<Cards>
+  <Card href="./get-started/ethereum-cheatsheet">
+    <Card.Title>Ethereum / EVM 到 Aptos 的备忘单</Card.Title>
+    <Card.Description />
+  </Card>
+  <Card href="./get-started/solana-cheatsheet">
+    <Card.Title>Solana / SVM 到 Aptos 的备忘单</Card.Title>
+    <Card.Description />
+  </Card>
+  <Card href="../network/blockchain/move#comparison-to-other-vms">
+    <Card.Title>虚拟机比较</Card.Title>
+    <Card.Description />
+  </Card>
+</Cards>
+
+## 需要示例吗？
+
+我们有各种类型的示例和指南，根据您的需求进行定制
+
+### 全流程的指南
+
+<Cards>
+  <Card href="./guides/first-transaction">
+    <Card.Title>你的第一笔交易</Card.Title>
+    <Card.Description>本教程介绍了如何生成和提交交易到 Aptos 区块链，并验证这些提交的交易</Card.Description>
+  </Card>
+  <Card href="./guides/your-first-nft">
+    <Card.Title>你的第一个 NFT</Card.Title>
+    <Card.Description>本教程介绍了如何在 Aptos 区块链上创建和转移非同质化资产</Card.Description>
+  </Card>
+    <Card href="./guides/first-fungible-asset">
+    <Card.Title>你的第一个可替代资产</Card.Title>
+    <Card.Description>本教程介绍了如何编译、部署和铸造你自己的可替代资产（FA），名为 FACoin 的代币</Card.Description>
+  </Card>
+</Cards>
+
+### 智能合约指南
+
+查看更多关于智能合约的信息，请参阅[Smart Contract](smart-contracts.mdx)部分
+
+<Cards>
+  <Card href="./guides/build-e2e-dapp/1-create-smart-contract">
+    <Card.Title>创建智能合约</Card.Title>
+    <Card.Description>这是在 Aptos 上构建端到端 dapp 的教程的第一章</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples">
+    <Card.Title linkType="external">Aptos Move 示例</Card.Title>
+    <Card.Description>30+ 个关于在 Aptos 上开发 Move 的示例</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial">
+    <Card.Title linkType="external">Move 教程</Card.Title>
+    <Card.Description>介绍了使用 Move 进行编程的基础知识</Card.Description>
+  </Card>
+</Cards>
+
+### 交互式指南
+
+<Cards>
+  <Card href="https://learn.aptoslabs.com/guides">
+    <Card.Title linkType="external">Aptos Learn</Card.Title>
+    <Card.Description>基础和高级指南</Card.Description>
+  </Card>
+  <Card href="https://movespiders.com">
+    <Card.Title linkType="external">Move Spiders</Card.Title>
+    <Card.Description>通过开发者友好的 Move Spiders 了解 Move</Card.Description>
+  </Card>
+  <Card href="https://www.aptosshores.com">
+    <Card.Title linkType="external">Aptos Shores</Card.Title>
+    <Card.Description>通过 Aptos Shores 了解 Move</Card.Description>
+  </Card>
+</Cards>
+
+## 如何设置完整节点或验证节点？
+
+<Cards>
+  <Card href="../network/nodes/full-node">
+    <Card.Title>设置完整节点</Card.Title>
+  </Card>
+  <Card href="../network/nodes/validator-node">
+    <Card.Title>设置验证节点</Card.Title>
+  </Card>
+</Cards>
