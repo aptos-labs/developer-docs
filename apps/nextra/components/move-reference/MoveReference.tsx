@@ -16,6 +16,8 @@ import {
   useURLParams,
 } from "./MoveReferenceProvider";
 import { BRANCHES, FrameworkData, GITHUB_APTOS_CORE } from "./shared";
+import { useMoveContent } from "./useMoveContent";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const BranchSelector = () => {
   const { updateBranch, branch } = useMoveReference();
@@ -63,47 +65,67 @@ const ModulePageSelector = () => {
   );
 };
 
+const DocsSkeleton = () => {
+  return (
+    <div role="status" className="mt-8 w-full mx-auto">
+      {/* Title Placeholder */}
+      <div className="animate-pulse">
+        <div className="h-20 bg-gray-200 rounded-lg dark:bg-gray-700 w-3/4 mb-4"></div>
+      </div>
+
+      {/* Subtitle Placeholder */}
+      <div className="animate-pulse">
+        <div className="h-4 bg-gray-200 rounded-full dark:bg-gray-700 w-1/2 mb-6"></div>
+      </div>
+
+      {/* Paragraph Placeholders */}
+      <div className="space-y-4 animate-pulse">
+        <div className="h-4 bg-gray-200 rounded-full dark:bg-gray-700 w-full"></div>
+        <div className="h-4 bg-gray-200 rounded-full dark:bg-gray-700 w-full"></div>
+        <div className="h-4 bg-gray-200 rounded-full dark:bg-gray-700 w-5/6"></div>
+      </div>
+
+      {/* Code Block Placeholder */}
+      <div className="mt-6 animate-pulse">
+        {/* Code Block Title Placeholder */}
+        <div className="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-1/3 mb-4"></div>
+        {/* Code Block Content Placeholder */}
+        <div className="bg-gray-200 dark:bg-gray-700 rounded-lg p-4 overflow-hidden">
+          {/* Simulating multiple lines of code */}
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-full"></div>
+            <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-5/6"></div>
+            <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
+            <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+          </div>
+        </div>
+        <span className="sr-only">Loading code block...</span>
+      </div>
+
+      {/* Additional Paragraphs */}
+      <div className="space-y-4 mt-6 animate-pulse">
+        <div className="h-4 bg-gray-200 rounded-full dark:bg-gray-700 w-full"></div>
+        <div className="h-4 bg-gray-200 rounded-full dark:bg-gray-700 w-5/6"></div>
+        <div className="h-4 bg-gray-200 rounded-full dark:bg-gray-700 w-3/4"></div>
+      </div>
+
+      {/* Accessibility Text */}
+      <span className="sr-only">Loading documentation content...</span>
+    </div>
+  );
+};
+
 const Content = () => {
-  const [content, setContent] = useState<string | null>(null);
   const [compiledMdx, setCompiledMdx] = useState<string | null>(null);
   const location = usePathname();
   const { asPath } = useRouter();
   const { branch, page } = useMoveReference();
 
   const hash = asPath.split("#")[1];
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchContent = async () => {
-      if (page && isMounted) {
-        console.log("PAGE: ", page);
-        const pagePath = `${GITHUB_APTOS_CORE}/${branch}/aptos-move/framework/${page}`;
-        // const pagePath = "https://raw.githubusercontent.com/aptos-labs/aptos-core/main/aptos-move/framework/aptos-stdlib/doc/table.md"
-        const response = await fetch(pagePath);
-        if (response.ok) {
-          const rawContent = await response.text();
-          const tree = readMarkdownString(rawContent);
-          convertHtmlToMarkdownCodeBlocks(tree);
-          const mdxString = astToMarkdown(tree);
-          console.log(mdxString);
-          setContent(mdxString);
-        }
-      } else {
-        setContent(null);
-      }
-    };
-
-    if (page) {
-      fetchContent().catch((err) =>
-        console.log(`Error fetching content: ${err}`),
-      );
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [branch, page]);
+  const { data: content, isLoading } = useMoveContent({
+    args: { page, branch },
+  });
 
   useEffect(() => {
     if (content && hash) {
@@ -112,28 +134,36 @@ const Content = () => {
     }
   }, [content, hash]);
 
+  if (isLoading) {
+    return <DocsSkeleton />;
+  }
+
   // Conditional rendering based on whether a page is selected
   return (
-    <div className="move-content">
-      {content ? <Playground source={content} /> : null}
+    <div className="move-content lg:max-w-[calc(100%-16rem)]">
+      {content ? <Playground fallback={<DocsSkeleton />} source={content} /> : null}
     </div>
   );
 };
 
+const queryClient = new QueryClient();
+
 export const MoveReference = () => {
   const value = useURLParams();
   return (
-    <MoveReferenceContext.Provider value={value}>
-      <div className="move-reference-body">
-        <div className="move-reference-nav">
-          <BranchSelector />
-          <ModulePageSelector />
+    <QueryClientProvider client={queryClient}>
+      <MoveReferenceContext.Provider value={value}>
+        <div id="move-reference-body">
+          <div id="move-reference-nav">
+            <BranchSelector />
+            <ModulePageSelector />
+          </div>
+          <div id="move-reference-contents">
+            <Content />
+          </div>
         </div>
-        <div className="move-reference-contents">
-          <Content />
-        </div>
-      </div>
-    </MoveReferenceContext.Provider>
+      </MoveReferenceContext.Provider>
+    </QueryClientProvider>
   );
 };
 
