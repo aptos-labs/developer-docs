@@ -173,7 +173,6 @@ export function ModuleSelect({ branch }: ModuleSelectProps) {
     newValue: SingleValue<PackageOption>,
     actionMeta: ActionMeta<PackageOption>,
   ) => {
-    console.log("NEW VALUE: ", newValue?.value);
     if (newValue?.value) {
       updatePage(newValue.value as Branch);
     }
@@ -187,6 +186,7 @@ export function ModuleSelect({ branch }: ModuleSelectProps) {
       formatGroupLabel={FormatGroupLabel}
       onChange={handleChange}
       classNames={{
+        container: () => "lg:max-w-[calc(100%-16rem)]",
         control: ({ isFocused }) =>
           clsx(
             isFocused ? controlStyles.focus : controlStyles.nonFocus,
