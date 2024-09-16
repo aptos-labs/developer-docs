@@ -164,7 +164,7 @@ Read more about it [here](../account.mdx).
 ```ts filename="v2.ts"
 // generate a new account (or key pair)
 const account = Account.generate(); // defaults to Legacy Ed25519
-const account = Account.generate({ scheme: SigningSchemeInput.Secp256k1 }); // Single Sender Secp256k1
+const account = Account.generate({ scheme: SigningSchemeInput.Secp256k1Ecdsa }); // Single Sender Secp256k1
 const account = Account.generate({
   scheme: SigningSchemeInput.Ed25519,
   legacy: false,

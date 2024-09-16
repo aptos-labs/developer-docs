@@ -16,7 +16,7 @@ It defaults to `ED25519` key encodings, but you can also manually specify which 
 
 ```ts
 const account = Account.generate(); // defaults to Legacy Ed25519
-const account = Account.generate({ scheme: SigningSchemeInput.Secp256k1 }); // Single Sender Secp256k1
+const account = Account.generate({ scheme: SigningSchemeInput.Secp256k1Ecdsa }); // Single Sender Secp256k1
 const account = Account.generate({
   scheme: SigningSchemeInput.Ed25519,
   legacy: false,
