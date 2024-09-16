@@ -100,10 +100,17 @@ To generate a K-of-N multisig account's authentication key and the account addre
 
 ### Generalized authentication
 
-Generalized authentication supports both Ed25519 and Secp256k1 ECDSA. Like the previous authentication schemes, these schemes contain a scheme value, `0x02` and `0x03` for single and multikey respectively, but also each key contains a prefix value to indicate its key type:
+Generalized authentication supports both Ed25519 and Secp256k1 ECDSA. Like the
+previous authentication schemes, these schemes contain a scheme value, `0x02`
+and `0x03` for single and multikey respectively, but also each key contains a
+prefix value to indicate its key type:
 
-- **1-byte Ed25519 generalized scheme**: `0x00`,
-- **1-byte Secp256k1 ECDSA generalized scheme**: `0x01`.
+| Key type                          | Prefix byte |
+|-----------------------------------|-------------|
+| Ed25519 generalized scheme        | `0x00`      |
+| Secp256k1Ecdsa generalized scheme | `0x01`      |
+| Secp256r1Ecdsa WebAuthn scheme    | `0x02`      |
+| Keyless                           | `0x03`      |
 
 For a single key Secp256k1 ECDSA account, using public key `pubkey`, the authentication key would be derived as follows:
 
@@ -116,10 +123,12 @@ Where
 - the first entry, `0x01`, represents the use of a Secp256k1 ECDSA key;
 - the last entry, `0x02`, represents the authentication scheme.
 
-For a multi-key account containing, a single Secp256k1 ECDSA public key, `pubkey_0`, and a single Ed25519 public key, `pubkey_1`, where one signature suffices, the authentication key would be derived as follows:
+For a 1-of-2 multi-key account containing, a single Secp256k1 ECDSA public key, `pubkey_0`,
+and a single Ed25519 public key, `pubkey_1`, where one signature suffices, the
+authentication key would be derived as follows:
 
 ```text
-auth_key = sha3-256(0x02 | 0x01 | pubkey_0 | 0x02 | pubkey_2 | 0x01 | 0x03)
+auth_key = sha3-256(0x02 | 0x01 | pubkey_0 | 0x00 | pubkey_1 | 0x01 | 0x03)
 ```
 
 Where
