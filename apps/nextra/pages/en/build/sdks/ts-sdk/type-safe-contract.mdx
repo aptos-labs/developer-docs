@@ -58,6 +58,7 @@ First, download the ABI of the Move contract and save it to a TypeScript file. I
 With the ABI, you can use Surf as a layer on top of the Aptos TypeScript SDK client `Aptos`, when interacting with Move contracts. For non-contract related operations, the `Aptos` will still need to be used.
 
 ```ts filename="src/utils/aptos.ts"
+import { createSurfClient } from '@thalalabs/surf';
 import { Aptos, AptosConfig, NETWORK } from "@aptos-labs/ts-sdk";
 import { ABI } from "./abi";
 
