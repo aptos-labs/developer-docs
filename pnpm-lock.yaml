@@ -178,6 +178,9 @@ importers:
       mdast-util-from-markdown:
         specifier: ^2.0.1
         version: 2.0.1
+      mdast-util-mdx-expression:
+        specifier: ^2.0.1
+        version: 2.0.1
       mdast-util-to-markdown:
         specifier: ^2.1.0
         version: 2.1.0
@@ -196,6 +199,9 @@ importers:
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
+      unist-util-visit-parents:
+        specifier: ^6.0.1
+        version: 6.0.1
     devDependencies:
       '@types/node':
         specifier: ^20.11.17
@@ -8501,6 +8507,19 @@ packages:
       mdast-util-to-markdown: 2.1.0
     transitivePeerDependencies:
       - supports-color
+
+  /mdast-util-mdx-expression@2.0.1:
+    resolution: {integrity: sha512-J6f+9hUp+ldTZqKRSg7Vw5V6MqjATc+3E4gf3CFNcuZNWD8XdyI6zQ8GqH7f8169MM6P7hMBRDVGnn7oHB9kXQ==}
+    dependencies:
+      '@types/estree-jsx': 1.0.5
+      '@types/hast': 3.0.4
+      '@types/mdast': 4.0.4
+      devlop: 1.1.0
+      mdast-util-from-markdown: 2.0.1
+      mdast-util-to-markdown: 2.1.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /mdast-util-mdx-jsx@3.1.2:
     resolution: {integrity: sha512-eKMQDeywY2wlHc97k5eD8VC+9ASMjN8ItEZQNGwJ6E0XWKiW/Z0V5/H8pvoXUf+y+Mj0VIgeRRbujBmFn4FTyA==}
