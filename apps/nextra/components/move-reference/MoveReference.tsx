@@ -138,10 +138,14 @@ const Content = () => {
     return <DocsSkeleton />;
   }
 
+  console.log(content);
+
   // Conditional rendering based on whether a page is selected
   return (
     <div className="move-content lg:max-w-[calc(100%-16rem)]">
-      {content ? <Playground fallback={<DocsSkeleton />} source={content} /> : null}
+      {content ? (
+        <Playground fallback={<DocsSkeleton />} source={content} />
+      ) : null}
     </div>
   );
 };

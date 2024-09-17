@@ -6,7 +6,7 @@ import { GITHUB_APTOS_CORE } from "./shared";
 import { URLParams } from "./MoveReferenceProvider";
 import {
   astToMarkdown,
-  convertHtmlToMarkdownCodeBlocks,
+  markdownToMdx,
   readMarkdownString,
 } from "@aptos-labs/nextra-components";
 
@@ -25,7 +25,7 @@ const fetchContent = async ({ page, branch }: FetchContentParams) => {
     if (response.ok) {
       const rawContent = await response.text();
       const tree = readMarkdownString(rawContent);
-      convertHtmlToMarkdownCodeBlocks(tree);
+      markdownToMdx(tree);
       const mdxString = astToMarkdown(tree);
       return mdxString;
     } else {

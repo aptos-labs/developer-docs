@@ -1,7 +1,10 @@
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toMarkdown } from "mdast-util-to-markdown";
+import { Options } from "mdast-util-to-markdown/lib";
 import { Code, Root } from "mdast-util-from-markdown/lib";
 import { visit } from "unist-util-visit";
+import { visitParents } from "unist-util-visit-parents";
+import { mdxExpressionToMarkdown } from "mdast-util-mdx-expression";
 
 export function readMarkdownString(source: string): Root {
   const tree = fromMarkdown(source);
@@ -46,6 +49,89 @@ export function convertHtmlToMarkdownCodeBlocks(tree: Root) {
   });
 }
 
+// TODO: Keep for now, may delete later
+// export function escapeAngleBrackets(tree: Root) {
+//   visit(tree, "text", (node, index, parent) => {
+//     if (!parent || index === null || index === undefined) {
+//       return;
+//     }
+
+//     const excludedTypes = new Set(["code", "inlineCode", "html"]);
+//     const inExcludedNode = excludedTypes.has(parent.type);
+
+//     let inCodeSequence = false;
+
+//     if (!inExcludedNode) {
+//       if (parent.type === "paragraph" && parent.children) {
+//         const prevNode = parent.children[index - 1];
+//         const nextNode = parent.children[index + 1];
+
+//         if (
+//           prevNode &&
+//           nextNode &&
+//           prevNode.type === "html" &&
+//           nextNode.type === "html" &&
+//           prevNode.value === "<code>" &&
+//           nextNode.value === "</code>"
+//         ) {
+//           inCodeSequence = true;
+//         }
+//       }
+//     }
+
+//     if (!inExcludedNode && !inCodeSequence) {
+//       node.value = node.value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+//     }
+//   });
+// }
+
+export function escapeAngleBrackets(tree: Root) {
+  visit(tree, "text", (node, index, parent) => {
+    if (!parent || index === null || index === undefined) {
+      return;
+    }
+
+    const excludedTypes = new Set(["code", "inlineCode", "html"]);
+
+    // Check if we're inside an excluded node type
+    if (excludedTypes.has(parent.type)) {
+      return;
+    }
+
+    // Only escape the angle brackets for text nodes outside of code blocks
+    // node.value = node.value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // Ensure that we don't re-escape already escaped characters
+    node.value = node.value
+      .replace(/</g, (match, offset, str) => {
+        if (str[offset + 1] !== "&") {
+          return "&lt;";
+        }
+        return match; // don't escape if already an entity
+      })
+      .replace(/>/g, (match, offset, str) => {
+        if (str[offset - 1] !== ";") {
+          return "&gt;";
+        }
+        return match; // don't escape if already an entity
+      });
+  });
+}
+
+/**
+ * Primary function for transpiling markdown -> MDX
+ */
+export function markdownToMdx(tree: Root) {
+  convertHtmlToMarkdownCodeBlocks(tree);
+  escapeAngleBrackets(tree);
+}
+
+/**
+ * Convert AST to Markdown string
+ */
 export const astToMarkdown = (tree: Root) => {
-  return toMarkdown(tree);
+  const options: Options = {
+    extensions: [mdxExpressionToMarkdown()],
+  };
+  const textMarkdown = toMarkdown(tree, options);
+  return textMarkdown.replaceAll("\\&lt;", "&lt;").replaceAll("\\&gt;", "&gt;");
 };

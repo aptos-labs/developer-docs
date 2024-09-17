@@ -61,6 +61,9 @@ export const localeMap = {
     "en": true,
     "zh": true
   },
+  "/build/cli/start-from-template": {
+    "en": true
+  },
   "/build/cli/trying-things-on-chain/create-test-accounts": {
     "en": true,
     "zh": true
@@ -278,9 +281,6 @@ export const localeMap = {
     "en": true
   },
   "/build/indexer": {
-    "en": true
-  },
-  "/build/move/reference": {
     "en": true
   },
   "/build/sdks/community-sdks/swift-sdk": {
