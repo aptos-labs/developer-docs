@@ -1,7 +1,7 @@
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toMarkdown } from "mdast-util-to-markdown";
 import { Options } from "mdast-util-to-markdown/lib";
-import { Code, Root } from "mdast-util-from-markdown/lib";
+import { Code, Root, Text } from "mdast-util-from-markdown/lib";
 import { visit } from "unist-util-visit";
 import { visitParents } from "unist-util-visit-parents";
 import { mdxExpressionToMarkdown } from "mdast-util-mdx-expression";
@@ -43,6 +43,39 @@ export function convertHtmlToMarkdownCodeBlocks(tree: Root) {
       // Replace the current 'html' node with the new 'code' node
       if (parent && index !== undefined) {
         parent.children[index] = codeNode;
+        return;
+      }
+    }
+
+    // Move Docgen should be escaping "<" tags but is not
+    // Example from object.md: Convert Object<X> to Object<Y>.
+    // @see https://raw.githubusercontent.com/aptos-labs/aptos-core/main/aptos-move/framework/aptos-framework/doc/object.md
+    const preApprovedTagsRegex =
+      /^(?!<\/?(pre|code|p|a|b|i|strong|em|u|ul|ol|li|blockquote|h[1-6]|dl|dt|dd|details|summary|table|thead|tbody|tfoot|tr|th|td|caption)\b).*/;
+    const notHtmlTagMatch = preApprovedTagsRegex.exec(node.value);
+
+    if (notHtmlTagMatch) {
+      const nodeValueCopy = node.value.toString();
+      const textNode: Text = {
+        type: "text",
+        value: nodeValueCopy
+          .replace(/</g, (match, offset, str) => {
+            if (str[offset + 1] !== "&") {
+              return "&lt;";
+            }
+            return match; // don't escape if already an entity
+          })
+          .replace(/>/g, (match, offset, str) => {
+            if (str[offset - 1] !== ";") {
+              return "&gt;";
+            }
+            return match; // don't escape if already an entity
+          }),
+      };
+
+      // Replace the current 'html' node with the new 'text' node
+      if (parent && index !== undefined) {
+        parent.children[index] = textNode;
         return;
       }
     }

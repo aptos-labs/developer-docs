@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { astToMarkdown, markdownToMdx } from "./mdast";
-import { readFileAsTree } from "./fsast";
+import { readFileAsTree, writeFile } from "./fsast";
 
 test("keyRotation.md parse and fix AST", () => {
   const tree = readFileAsTree("./examples/keyRotation.md");
@@ -33,3 +33,15 @@ test("vector_snippet.md parse and fix AST", () => {
     ).toString()
   );
 });
+
+// test("object_snippet.md parse and fix AST", () => {
+//   const tree = readFileAsTree("./examples/object_snippet.md");
+//   markdownToMdx(tree);
+//   console.log(JSON.stringify(tree))
+//   const markdown = astToMarkdown(tree);
+//   expect(markdown).toEqual(
+//     astToMarkdown(
+//       readFileAsTree("./examples/object_snippet.expect.md")
+//     ).toString()
+//   );
+// });
