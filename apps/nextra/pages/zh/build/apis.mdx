@@ -1,0 +1,72 @@
+---
+title: "Aptos APIs"
+---
+
+import { Cards, Card } from '@components/index'
+
+# Aptos API
+
+Aptos 区块链网络可以通过多种 API 进行访问，具体取决于您的使用场景。
+
+## Aptos Fullnode
+
+此 API 嵌入在 Fullnodes 中，提供了一种简单、低延迟但低级别的方式来读取状态和提交交易到 Aptos 区块链。它还支持交易模拟。
+
+<Cards>
+   <Card href="./apis/fullnode-rest-api-reference?network=mainnet">
+      <Card.Title>Aptos Fullnode REST API（主网）</Card.Title>
+      <Card.Description>Aptos Fullnode REST API 的主网 API playground</Card.Description>
+   </Card>
+   <Card href="./apis/fullnode-rest-api-reference?network=testnet">
+      <Card.Title>Aptos Fullnode REST API（测试网）</Card.Title>
+      <Card.Description>Aptos Fullnode REST API 的测试网 API playground</Card.Description>
+   </Card>
+   <Card href="./apis/fullnode-rest-api-reference?network=devnet">
+      <Card.Title>Aptos Fullnode REST API（开发网）</Card.Title>
+      <Card.Description>Aptos Fullnode REST API 的开发网 API playground</Card.Description>
+   </Card>
+</Cards>
+
+## Indexer
+
+<Cards>
+   <Card href="./indexer">
+      <Card.Title>Indexer GraphQL API</Card.Title>
+      <Card.Description>
+         GraphQL API 提供可传参数可定制的 GraphQL 接口，用于从 Aptos 区块链读取状态。
+         它非常适合与 NFTs、Aptos Objects 或自定义 Move 合约进行交互。
+         在这里了解更多关于 Indexer 支持的 GraphQL API。
+      </Card.Description>
+   </Card>
+   <Card href="./indexer/txn-stream">
+      <Card.Title>Transaction Stream API</Card.Title>
+      <Card.Description>
+         这个 GRPC API 将历史和实时交易数据流式传输到索引处理器。
+         它正在被 Aptos Core Indexing 使用，也可以支持自定义应用程序特定的索引处理器
+         进行实时区块链数据处理。在这里了解更多。
+      </Card.Description>
+   </Card>
+</Cards>
+
+## Faucet (Only Testnet/Devnet)
+
+<Cards>
+   <Card href="./guides/system-integrators-guide#integrating-with-the-faucet">
+      <Card.Title>Faucet API</Card.Title>
+      <Card.Description>
+         该 API 提供在开发网和测试网上接收测试代币的能力。其主要目的是在将应用程序和 Move 合约部署到主网之前进行开发和测试。
+      </Card.Description>
+   </Card>
+</Cards>
+
+
+上述 API 的代码在 [GitHub](https://github.com/aptos-labs/aptos-core) 上开源。因此，任何人都可以操作这些 API，全球有许多独立的运营商和开发者选择这样做。
+
+### Aptos Labs 运营的 API 部署
+
+[Aptos Labs](https://aptoslabs.com) 代表 [Aptos Foundation](https://aptosfoundation.org/) 为每个 [Aptos Network](../network/nodes/networks.mdx) 运营这些 API 部署，并将其公开供大家使用。
+
+目前有两组 Aptos Labs API 部署：
+
+1. [具有匿名访问和基于 IP 的速率限制的 API](../network/nodes/networks.mdx)
+2. [[Beta] 通过 Aptos Labs Developer Portal 进行身份验证和基于开发者账户的速率限制的 API](apis/aptos-labs-developer-portal.mdx)
