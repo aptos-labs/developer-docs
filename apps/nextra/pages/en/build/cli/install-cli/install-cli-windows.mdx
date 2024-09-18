@@ -13,7 +13,7 @@ For Windows, the easiest way to install the Aptos CLI tool is via Python script.
 ### In PowerShell, run the install script:
 
    ```powershell filename="Terminal"
-   iwr "https://aptos.dev/scripts/install_cli.py" -useb | Select-Object -ExpandProperty Content | python3
+   Invoke-WebRequest -Uri "https://aptos.dev/scripts/install_cli.py" -OutFile "$env:TEMP\install_cli.py"; python3 "$env:TEMP\install_cli.py"
    ```
 
    <Callout type="warning">
