@@ -7,14 +7,14 @@ import { RemoteCodeblock, permalinkFetch } from '@components/index';
 
 export async function getStaticProps() {
   return await permalinkFetch([
-    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
+    'https://github.com/aptos-labs/aptos-core/blob/afd3706c17bcccfb39a9d6059aecbfa648ed295d/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L64'
   ])
 }
 
 # Create Package
 
 <Callout>
-We recommend installing the Aptos CLI before beginning. 
+We recommend installing the Aptos CLI before beginning.
 If you haven't already installed the Aptos CLI, see the [CLI section](../cli)
 </Callout>
 
@@ -36,6 +36,10 @@ You should now have a Move project that looks like so:
   <FileTree.Folder name="tests" defaultOpen></FileTree.Folder>
   <FileTree.File name="Move.toml" />
 </FileTree>
+
+<Callout type={"default"}>
+  You can also create a Move package from a [template](../cli/start-from-template).
+</Callout>
 
 ### Update `Move.toml`
 
@@ -66,8 +70,8 @@ subdir = "aptos-move/framework/aptos-framework"
 
 Add your code in the `sources` directory. Here we have a `hello_blockchain.move` example.
 
-<RemoteCodeblock 
-  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
+<RemoteCodeblock
+  permalink="https://github.com/aptos-labs/aptos-core/blob/afd3706c17bcccfb39a9d6059aecbfa648ed295d/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L64"
 />
 
 </Steps>

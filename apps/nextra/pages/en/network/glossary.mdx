@@ -148,6 +148,13 @@ nodes, [validators](#validator) and [fullnodes](#fullnodes).
 - Block number is analogous to "block height" in blockchain literature.
 - Transactions are referenced by ledger version rather than by block.
 
+### BlockSTM
+
+- **BlockSTM** is the state-of-the-art dynamic parallelism execution engine developed by the Aptos Labs team.
+- Dynamic parallelism allows developers to flexibly write applications without facing design constraints of statically declaring write sets of transactions.
+- It has been adopted across the industry by multiple blockchains.
+- More details can be found in [the blog post](https://medium.com/aptoslabs/block-stm-how-we-execute-over-160k-transactions-per-second-on-the-aptos-blockchain-3b003657e4ba) and [presentation at a16z crypto](https://www.youtube.com/watch?v=2SE5tqPzhyw)
+
 ### Byzantine (Validator)
 
 - A **validator** that does not follow the specification of the consensus
@@ -504,7 +511,6 @@ other Move scripts. It is a single-use program.
 
 To see example uses of Move scripts,
 follow [Move scripts](../build/smart-contracts/scripts/script-tutorial.mdx).
-{/* TODO: This tutorial seems to have disappeared and the [Your First Multisig](../) tutorial. */}
 
 ### Move Virtual Machine (MVM)
 
@@ -562,6 +568,14 @@ follow [Move scripts](../build/smart-contracts/scripts/script-tutorial.mdx).
 uniqueness and legitimacy of blockchain transactions. The PoS consensus
 mechanism is leveraged by the Aptos blockchain powered by a network of
 validators, which in turn update the system and process transactions.
+
+## Q
+
+### Quorum Store
+- **Quorum Store** is the component that disseminates transactions (in batches) within the validator set.
+- It significantly improves consensus throughput by removing the leader bottleneck.
+- It decouples data dissemination from metadata ordering, allowing validators to disseminate data asynchronously in parallel.
+- More details can be found in the [blog post](https://medium.com/aptoslabs/quorum-store-how-consensus-horizontally-scales-on-the-aptos-blockchain-988866f6d5b0)
 
 ## R
 

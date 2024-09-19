@@ -58,6 +58,7 @@ First, download the ABI of the Move contract and save it to a TypeScript file. I
 With the ABI, you can use Surf as a layer on top of the Aptos TypeScript SDK client `Aptos`, when interacting with Move contracts. For non-contract related operations, the `Aptos` will still need to be used.
 
 ```ts filename="src/utils/aptos.ts"
+import { createSurfClient } from '@thalalabs/surf';
 import { Aptos, AptosConfig, NETWORK } from "@aptos-labs/ts-sdk";
 import { ABI } from "./abi";
 
@@ -86,7 +87,7 @@ const [balance] = await surfClient.view.balance({
 
 - [Surf GitHub](https://github.com/ThalaLabs/surf)
 - [A simple Next.js example demonstrating Surf](https://github.com/ThalaLabs/surf/tree/main/example)
-- [An example of a fungible asset launchpad using Surf](https://github.com/aptos-labs/move-by-examples/tree/main/fungible-asset-launchpad): This example is part of the Solana to Aptos guide on Aptos Learn, you can try it [here](https://fungible-asset-launchpad.vercel.app/) and read the complete tutorial [here](https://learn.aptoslabs.com/example/solana-to-aptos-2/fa-launchpad/demo).
+- [An example of a fungible asset launchpad using Surf](https://github.com/aptos-labs/move-by-examples/tree/main/fungible-asset-launchpad): This example is part of the Solana to Aptos guide on Aptos Learn, you can try it [here](https://fungible-asset-launchpad.vercel.app/) and read the complete tutorial [here](https://learn.aptoslabs.com/en/tutorials/aptogotchi-intermediate/fungible-assets?workshop=solana-to-aptos).
 
 ## Credits
 

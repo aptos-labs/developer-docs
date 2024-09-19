@@ -26,22 +26,18 @@ The Token minting dapp template provides 3 pages:
 - [Customizing the frontend](#customizing-the-front-end)
 - [Deploy to a live server](#deploy-to-a-live-server)
 
+## Generate the Token minting dapp template
+
+On your terminal, navigate to the directory you want to work in and run:
+```bash
+npx create-aptos-dapp@latest
+```
+
+Follow the CLI prompts.
 
 ## Publish the Move Contract
 
 <Steps>
-
-### On the project root folder, use the below command to initiliaze an account to publish the contract with.
-
-```bash filename="Terminal"
-npm run move:init
-```
-
-The CLI will prompt you to provide the private key for your wallet in order for the tool to publish the contract on your behalf. If you provide no input, it will generate one for you.
-
-This will:
-1. Create an account you will later publish the contract with.
-2. Create a `./aptos/config.yaml` file with the newly created account information.
 
 ### In the `.env` file, set `VITE_FA_CREATOR_ADDRESS` to be the same as your account address.
 This determines which account is allowed to create assets using the dapp.
@@ -109,7 +105,7 @@ The rest are optional fields to help customize your mint.
 ### Click "Create Asset"
 When adding the image, it submits the file to [Irys](https://irys.xyz/), a decentralized asset server, that will store your files.
 
-During the upload process, you will need to sign a message to approve file uploading to Irys. Additionally, you may need to fund an Irys node. Read more about the process [here](https://docs.irys.xyz/hands-on/tutorials/uploading-nfts).
+During the upload process, you will need to sign a message to approve file uploading to Irys. Additionally, you may need to fund an Irys node. Read more about the process [here](https://arweave-tools.irys.xyz/tutorials/nfts/uploading-nfts).
 
 ### Once you approve the transaction, you have successfully created a fungible asset on Aptos!
 
@@ -163,14 +159,14 @@ If you started your dapp on testnet, and you are happy with your asset testing, 
 
 Creating a asset on mainnet is the same flow as creating on testnet, but we need to change some configuration.
 
-1. Change the `VITE_APP_NETWORK` value to `mainnet` in the `.env` file
-2. Run `npm run move:init` to initialize an account to work against Mainnet
-3. If you already have an account you would like to use to publish the contract under, you can pass its private key when the prompt asks for that.
-4. If you are generating a new account, you need to transfer this account some APT on Aptos Mainnet since the tool can’t fund the account when it is against Mainnet.
-5. Check: open `.aptos/config.yaml` file and see that you have a profile under the `{PROJECT_NAME}-mainnet` name (where `PROJECT_NAME` is specified in your `.env` file). In addition, open the `.env` file and check the `VITE_MODULE_ADDRESS` value is the same as the new profile's account account address.
-6. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_FA_CREATOR_ADDRESS` value.
-7. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
-8. The next step would be to create an asset using this account. Simply follow [Create a Fungible Asset Page](#create-a-fungible-asset-page)
+> Note: Make sure you have created an existing account on the Aptos `mainnet`
+
+1. Change the `VITE_APP_NETWORK` value to `mainnet` on the `.env` file
+2. Update the `VITE_MODULE_PUBLISHER_ACCOUNT_ADDRESS` to be the existing account address on the `.env` file
+3. Update the `VITE_MODULE_PUBLISHER_PRIVATE_KEY` to be the existing account private key on the `.env` file
+4. Create or get the account you want to create a asset with, open the `.env` file and assign the account address as the `VITE_FA_CREATOR_ADDRESS` value.
+5. Finally, run `npm run move:publish` to publish your move module on Aptos mainnet.
+6. The next step would be to create an asset using the account you set as the `VITE_FA_CREATOR_ADDRESS`. Simply follow [Create a Fungible Asset Page](#create-a-fungible-asset-page)
 
 ## Deploy to a live server
 

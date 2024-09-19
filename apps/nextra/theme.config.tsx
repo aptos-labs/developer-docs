@@ -26,6 +26,10 @@ function isFullUrl(url: string): boolean {
   return pattern.test(url);
 }
 
+function getLocale(locale?: string): string {
+  return locale || "en";
+}
+
 const url = new URL(docsConfig.githubUrl);
 const pathname =
   url.pathname.endsWith("/") && url.pathname !== "/"
@@ -39,7 +43,7 @@ const config: DocsThemeConfig = {
   editLink: {
     content: function useText() {
       const { locale } = useRouter();
-      return i18nConfig[locale!].editText;
+      return i18nConfig[getLocale(locale)].editText;
     },
     component: ({ children, className, filePath }) => {
       const href = `${githubUrl}/edit/main${docsConfig.relativeDocsPath}/${filePath}`;
@@ -69,7 +73,7 @@ const config: DocsThemeConfig = {
   feedback: {
     content: function useFeedback() {
       const { locale } = useRouter();
-      return i18nConfig[locale!].feedbackText;
+      return i18nConfig[getLocale(locale)].feedbackText;
     },
     labels: "feedback",
     useLink() {
@@ -84,9 +88,9 @@ const config: DocsThemeConfig = {
           rel="noreferrer"
           target="_blank"
           className="flex items-center gap-2 font-semibold"
-          href={i18nConfig[locale!].footerLinkText}
+          href={i18nConfig[getLocale(locale)].footerLinkText}
         >
-          {i18nConfig[locale!].footerLinkElement}
+          {i18nConfig[getLocale(locale)].footerLinkElement}
         </a>
       );
     },
@@ -95,7 +99,7 @@ const config: DocsThemeConfig = {
     const { locale } = useRouter();
     return (
       <>
-        {i18nConfig[locale!].lastUpdatedOn + " "}
+        {i18nConfig[getLocale(locale)].lastUpdatedOn + " "}
         <time dateTime={timestamp.toISOString()}>
           {timestamp.toLocaleDateString(locale, {
             day: "numeric",
@@ -207,7 +211,7 @@ const config: DocsThemeConfig = {
       <>
         <span
           className="select-none font-semibold uppercase ltr:ml-2 rtl:mr-2 gap-3 flex items-center"
-          title={`${docsConfig.defaultTitle}: ${i18nConfig[locale!].title || ""}`}
+          title={`${docsConfig.defaultTitle}: ${i18nConfig[getLocale(locale)].title || ""}`}
         >
           <img
             src="/docs/aptos-black.svg"
@@ -239,21 +243,21 @@ const config: DocsThemeConfig = {
       const { locale } = useRouter();
       return (
         <span className="_block _select-none _p-8 _text-center _text-sm _text-gray-400">
-          {i18nConfig[locale!].searchEmptyText}
+          {i18nConfig[getLocale(locale)].searchEmptyText}
         </span>
       );
     },
     error: function useError() {
       const { locale } = useRouter();
-      return i18nConfig[locale!].searchErrorText;
+      return i18nConfig[getLocale(locale)].searchErrorText;
     },
     loading: function useLoading() {
       const { locale } = useRouter();
-      return i18nConfig[locale!].searchEmptyText;
+      return i18nConfig[getLocale(locale)].searchEmptyText;
     },
     placeholder: function usePlaceholder() {
       const { locale } = useRouter();
-      return i18nConfig[locale!].searchPlaceholderText;
+      return i18nConfig[getLocale(locale)].searchPlaceholderText;
     },
   },
   sidebar: {

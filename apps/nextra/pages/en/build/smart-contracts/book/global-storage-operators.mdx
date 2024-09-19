@@ -169,12 +169,12 @@ module 0x42::m {
   struct R<T> has key { t: T }
 
   // `acquires R`, not `acquires R<T>`
-  fun acquire_generic_resource<T: store>(a: addr) acquires R {
+  fun acquire_generic_resource<T: store>(a: address) acquires R {
     let _ = borrow_global<R<T>>(a);
   }
 
   // `acquires R`, not `acquires R<u64>
-  fun acquire_instantiated_generic_resource(a: addr) acquires R {
+  fun acquire_instantiated_generic_resource(a: address) acquires R {
     let _ = borrow_global<R<u64>>(a);
   }
 }

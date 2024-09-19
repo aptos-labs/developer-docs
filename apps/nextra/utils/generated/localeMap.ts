@@ -61,6 +61,9 @@ export const localeMap = {
     "en": true,
     "zh": true
   },
+  "/build/cli/start-from-template": {
+    "en": true
+  },
   "/build/cli/trying-things-on-chain/create-test-accounts": {
     "en": true,
     "zh": true
@@ -101,6 +104,9 @@ export const localeMap = {
     "en": true
   },
   "/build/create-aptos-dapp/templates/boilerplate": {
+    "en": true
+  },
+  "/build/create-aptos-dapp/templates/clicker-game-tg-mini-app": {
     "en": true
   },
   "/build/create-aptos-dapp/templates/nft-minting-dapp": {
@@ -568,6 +574,9 @@ export const localeMap = {
   "/build/smart-contracts/objects": {
     "en": true
   },
+  "/build/smart-contracts/pokemon/[name]": {
+    "en": true
+  },
   "/build/smart-contracts/prover/prover-guide": {
     "en": true
   },
@@ -581,6 +590,9 @@ export const localeMap = {
     "en": true
   },
   "/build/smart-contracts/randomness": {
+    "en": true
+  },
+  "/build/smart-contracts/reference": {
     "en": true
   },
   "/build/smart-contracts/resource-accounts": {

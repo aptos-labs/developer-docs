@@ -5,26 +5,33 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "main": "lib/index.js",
-  "module": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "files": [
-    "lib",
     "dist"
   ],
   "scripts": {
     "tsc": "tsc",
-    "build:dev": "rimraf lib && tsup --watch",
-    "build:prod": "rimraf dist && env NODE_ENV=production tsup",
+    "build": "rimraf dist && env NODE_ENV=production tsup",
     "build:watch": "tsup --watch",
     "lint:fix": "eslint --ext .ts,.tsx --quiet --fix --ignore-path ./.gitignore",
     "lint:format": "prettier  --loglevel warn --write \"./**/*.{ts,tsx,css,md,json}\" ",
-    "lint": "pnpm lint:format && pnpm lint:fix "
+    "lint": "pnpm lint:format && pnpm lint:fix ",
+    "test": "vitest"
   },
   "dependencies": {
     "clsx": "2.1.0",
-    "tailwind-merge": "^2.2.2"
+    "mdast-util-from-markdown": "^2.0.1",
+    "mdast-util-mdx-expression": "^2.0.1",
+    "mdast-util-to-markdown": "^2.1.0",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "tailwind-merge": "^2.2.2",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0",
+    "unist-util-visit-parents": "^6.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
@@ -39,7 +46,8 @@
     "react-dom": "^18.2.0",
     "rimraf": "6.0.1",
     "tsup": "8.2.2",
-    "typescript": "5.5.3"
+    "typescript": "5.5.3",
+    "vitest": "1.3.0"
   },
   "peerDependencies": {
     "nextra-theme-docs": "3.0.0-alpha.24",

@@ -18,7 +18,7 @@ import {Callout, Steps} from 'nextra/components'
 ### 在 PowerShell 中，运行安装脚本：
 
 ```powershell filename="Terminal"
-iwr "https://aptos.dev/scripts/install_cli.py"  -useb | Select-Object -ExpandProperty Content | python3
+Invoke-WebRequest -Uri "https://aptos.dev/scripts/install_cli.py" -OutFile "$env:TEMP\install_cli.py"; python3 "$env:TEMP\install_cli.py"
 ```
 
    <Callout type="warning">

@@ -1,0 +1,82 @@
+---
+title: "Create Aptos Dapp Telegram Clicker Game Mini App Template"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Create Aptos Dapp Telegram Clicker Game Mini App Template
+
+This template provides a ready to use clicker game dapp that can be run as a Telegram Mini App.
+
+We provide 2 signing experience for the Telegram Mini App, you can choose one of them during the setup:
+- explicit signing - the user needs to sign each transaction, this is powered by [Aptos Wallet Adapter](https://github.com/aptos-labs/aptos-wallet-adapter) similar to other dapps
+  - [demo](https://t.me/aptos_explict_siging_bot/)
+- seamless signing - the user doesn't need to sign each transaction because the approval is done in the background, this is powered by [Mizu Wallet SDK Core](https://docs.mizu.io/docs/api-connect/core)
+  - [demo](https://t.me/seamless345_bot/)
+
+## Getting started
+
+<Steps>
+
+### Publish the contract
+
+Run the below command to publish the contract on-chain:
+```bash
+npm run move:publish
+```
+This command will:
+1. Publish the contract to chain.
+2. Setting the `VITE_MODULE_ADDRESS` in the `.env` file to set the contract object address.
+
+### Create a Telegram bot
+
+Start a chat with [BotFather](https://t.me/BotFather), use the `/newbot` command to create a new bot. You can learn more about the process at [Telegram Docs](https://docs.telegram-mini-apps.com/platform/creating-new-app#creating-application-in-botfather).
+
+### (Optional)  Obtain the app ID from Mizu wallet
+
+If you choose the seamless signing experience, you are using `@mizuwallet-sdk/core` instead of Aptos Wallet Adapter. You need to obtain a Mizu App ID from the Mizu team by filling up their [form](https://ankaalabs.typeform.com/to/bAPqSxDu). Once you have the App ID, set it in the `.env` file as `VITE_MIZU_WALLET_APP_ID`.
+
+You can learn more about using it in the [Mizu doc](https://docs.mizu.io/docs/api-connect/core).
+
+### Host the frontend
+
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). 
+
+At the root of the folder, simply run 
+
+```bash filename="Terminal"
+npm run deploy
+```
+
+Then, follow the prompts. Please refer to Vercel docs to learn more about the [Vercel CLI](https://vercel.com/docs/cli)
+
+If you are looking for different services to deploy the static site to, `create-aptos-dapp` utilizes Vite as the development tool, so you can follow the [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+
+1. Run `npm run build` to build a static site
+2. Run `npm run preview` to see how your dapp would look like on a live server
+3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy) on how to use each
+
+### Create a Telegram mini app
+
+Use the `/newapp` command to create a new mini app and link the mini app with the bot you just created. When BotFather asks for the mini app's URL, provide the URL of the frontend you deployed in the previous step. You can learn more about the process at [Telegram Docs](https://docs.telegram-mini-apps.com/platform/creating-new-app#creating-application-in-botfather).
+
+
+### Set the menu button of the bot to open the mini app
+
+Use the `/mybots` command to find your bot, choose `bot settings` -> `menu button` -> `configure menu button`, provide the mini app's name and URL. Now you can access the mini app from your bot's menu. You can learn more about the process at [Telegram Docs](https://docs.telegram-mini-apps.com/platform/creating-new-app#web-application-link).
+
+</Steps>
+
+## Ready for Mainnet
+
+If you started your dapp on testnet, and you are happy with your testing, you will want to get the dapp on mainnet.
+
+To publish the smart contract on mainnet, we need to change some configuration.
+
+Open the `.env` file and:
+
+> Note: Make sure you have created an existing account on the Aptos `mainnet`
+1. Change the `APP_NETWORK` value to `mainnet`
+2. Update the `MODULE_PUBLISHER_ACCOUNT_ADDRESS` to be the existing account address
+3. Update the `MODULE_PUBLISHER_PRIVATE_KEY` to be the existing account private key
+4. Run `npm run move:publish` to publish your move module on Aptos mainnet.

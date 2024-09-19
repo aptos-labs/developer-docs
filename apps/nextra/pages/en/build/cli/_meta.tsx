@@ -9,6 +9,9 @@ export default {
   "setup-cli": {
     title: "Setup",
   },
+  "start-from-template": {
+    title: "Start from template",
+  },
   "---usage---": {
     type: "separator",
     title: "Usage",
