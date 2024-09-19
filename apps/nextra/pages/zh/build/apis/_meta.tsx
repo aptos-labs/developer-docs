@@ -10,7 +10,7 @@ export default {
   "fullnode-rest-api": "Fullnode REST API 教程",
   "indexer-graphql-api": {
     title: "Indexer GraphQL API",
-    href: "/zh/build/indexer",
+    href: "/en/build/indexer",
   },
   "data-providers": "Data Providers",
   "faucet-api": {
