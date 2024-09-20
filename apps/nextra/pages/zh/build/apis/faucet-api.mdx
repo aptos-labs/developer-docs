@@ -1,0 +1,64 @@
+---
+title: "Faucet API"
+---
+
+
+# 水龙头 API
+
+水龙头允许用户在 Devnet 和 Testnet 上获取测试用的 `APT`。在 Mainnet 上不可用。
+
+## Devnet 和 Testnet 的区别
+
+Devnet 和 Testnet 之间有什么区别？实际上没有。过去，Testnet 的水龙头有一些异常的方式。但现在已经不再如此。
+每个水龙头的端点如下：
+
+- Devnet: https://faucet.devnet.aptoslabs.com
+- Testnet: https://faucet.testnet.aptoslabs.com
+
+## 与水龙头集成
+
+有关如何在项目中使用水龙头的更多信息，请参阅[系统集成指南](../guides/system-integrators-guide.mdx)。
+
+### 通过终端调用水龙头
+
+如果您想在其他语言中调用水龙头，有两种选择：
+
+1. 从 [OpenAPI 规范](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-faucet/doc/spec.yaml)生成客户端。
+2. 自行调用水龙头。
+
+对于后者，您将需要构建类似于以下的查询：
+
+```bash filename="Terminal"
+curl -X POST
+'https://faucet.devnet.aptoslabs.com/mint?amount=10000&address=0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6'
+```
+
+这意味着铸造 10000 个 [Octas](../../network/glossary.mdx#Octa) 到地址 `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6`。
+
+### 调用水龙头：JavaScript / TypeScript
+
+如果您正在使用 JavaScript 或 TypeScript 构建客户端，您应该使用 
+[@aptos-labs/aptos-faucet-client](https://www.npmjs.com/package/@aptos-labs/aptos-faucet-client)
+ 包。该客户端是根据水龙头服务发布的 OpenAPI 规范生成的。
+
+Example use:
+
+```ts filename="index.ts"
+import {
+  AptosFaucetClient,
+  FundRequest,
+} from "@aptos-labs/aptos-faucet-client";
+
+async function callFaucet(amount: number, address: string): Promise<string []> {
+  const faucetClient = new AptosFaucetClient({
+    BASE: "https://faucet.devnet.aptoslabs.com",
+  });
+  const request: FundRequest = {
+    amount,
+    address,
+  };
+  const response = await faucetClient.fund({ requestBody: request });
+  return response.txn_hashes;
+}
+```
+

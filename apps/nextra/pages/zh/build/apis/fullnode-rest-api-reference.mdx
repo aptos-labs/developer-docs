@@ -1,0 +1,11 @@
+---
+title: "Fullnode API Reference"
+---
+
+import { DynamicApiReference, fetchApiReference } from '@components/index';
+
+export async function getStaticProps() {
+  return await fetchApiReference()
+}
+
+<DynamicApiReference />

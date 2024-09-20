@@ -1,0 +1,80 @@
+---
+title: "Data Providers"
+---
+
+# 数据提供
+
+如果您想访问 Aptos 区块链数据，但不需要实时数据。
+我们有几个选项，可以使用 SQL 或 UI 来访问这些数据以构建仪表板。
+这种类型的数据通常用于分析，因为它允许进行聚合。
+
+## 数据端点概述
+
+直接访问完整节点将提供最新数据（如果不是存档完整节点，则会缺少历史数据），使用 [REST API](/apis#aptos-fullnode)
+
+在此之上的索引层将提供 [GRPC 事务流](../indexer/txn-stream/aptos-hosted-txn-stream)
+
+在此事务流之上，我们构建了一些产品逻辑表，可以通过 [GraphQL](../indexer/) 进行查询。
+
+由于解析事务的逻辑是 [公开的](https://github.com/aptos-labs/aptos-indexer-processors)，一些供应商已经实现了类似的解析逻辑，创建了一些子集表，并使其可供查询。
+
+## SQL表
+
+索引器定义了创建不同数据库表的几个处理器。
+
+### 核心表
+
+这些表直接从节点API响应中解析，一种选择是将其拆分为以下表：
+
+- 区块 - 版本、区块高度、时代、时间戳
+- 交易 - 版本、发送者、入口函数、燃料
+- 签名 - 签名类型、签名者、付费地址
+- 事件 - 事件类型和数据
+
+我们将数据存储为表项、资源或模块
+
+- （写集）更改 - 更改索引、更改类型、资源地址
+- 表项 - 表键、表句柄、键（内容和类型）、值（内容和类型）
+- （移动）资源 - 资源地址、资源类型、数据
+- （移动）模块 - 部署模块的字节码
+
+## 离链数据供应商
+
+我们的大多数数据供应商只提供核心数据集。
+以下是[供应商的子集](https://aptosfoundation.org/currents/aptos-on-chain-data-capabilities-with-dune-nansen-and-other-providers)列表
+
+### Google BigQuery公共数据集
+
+通过[Google公共数据](https://console.cloud.google.com/marketplace/product/bigquery-public-data/crypto-aptos-mainnet-us)提供数据
+
+![bq_sql](/screenshots/bq_sql.png)
+
+我们还有一些使用上述资源的示例分析查询[在这里](https://github.com/aptos-labs/explorer/tree/main/analytics)
+
+### Dune
+
+我们在这里有一个仪表板：https://dune.com/aptos/aptos-chain-metrics-overview
+
+### Flipside
+
+另一个仪表板供应商，核心表中的签名已合并到 `fact_transactions`
+他们还有一些更方便的表格（ defi、nft、price ），[表格列表](https://flipsidecrypto.github.io/aptos-models/#!/overview)
+
+### Sentio
+
+他们在这里有一个指南：https://docs.sentio.xyz/docs/aptos
+数据可以在数据源->外部项目-> sentio/aptos-overview 中找到
+
+### Space and Time
+
+数据可以在这里找到：https://app.spaceandtime.ai/data-sets?selectedChain=aptos
+他们还有一些非核心表格（Token、Staking等）
+
+## 其他供应商
+
+我们还有一些针对更企业用例的合作伙伴
+
+- [Token Terminal](https://tokenterminal.com/resources/articles/aptos-data-partnership)
+- [The Tie](https://www.thetie.io/insights/news/introducing-aptos-ecosystem-dashboard-and-on-chain-data/)
+- [Elliptic](https://www.elliptic.co/media-center/elliptic-partners-with-aptos-foundation-as-a-data-integration-provider-to-offer-compliance-screening-and-risk-services-for-aptos-network)
+
