@@ -6,12 +6,12 @@ import { Callout, FileTree, Steps } from 'nextra/components';
 
 # Create Aptos Dapp Token Minting Dapp Template
 
-The Token minting dapp template provides an end-to-end [Fungible Asset](../../smart-contracts/digital-asset.mdx) minting dapp. 
+The Token minting dapp template provides an end-to-end [Fungible Asset](../../smart-contracts/digital-asset.mdx) minting dapp.
 
 With this dapp, you can:
 1. Create a Fungible Asset on Aptos.
 2. Modify a pre-made UI to build a Token minting dapp users can quickly adjust.
-3. Learn how to write a Move contract and front end connected to that contract. 
+3. Learn how to write a Move contract and front end connected to that contract.
 
 Read more about the [Aptos Fungible Asset Standard](../../smart-contracts/digital-asset.mdx)
 
@@ -78,8 +78,8 @@ After you have [published the Move contract to chain](#publish-the-move-contract
 npm run dev
 ```
 
-### In the top-right corner, click "Connect a Wallet". 
-Use the same account that you set in `.env` for the `VITE_FA_CREATOR_ADDRESS`. 
+### In the top-right corner, click "Connect a Wallet".
+Use the same account that you set in `.env` for the `VITE_FA_CREATOR_ADDRESS`.
 Or, if you use a different account, set the `VITE_FA_CREATOR_ADDRESS` to the account you sign in with and republish the contract.
 
 <Callout type="warning">
@@ -105,7 +105,7 @@ The rest are optional fields to help customize your mint.
 ### Click "Create Asset"
 When adding the image, it submits the file to [Irys](https://irys.xyz/), a decentralized asset server, that will store your files.
 
-During the upload process, you will need to sign a message to approve file uploading to Irys. Additionally, you may need to fund an Irys node. Read more about the process [here](https://arweave-tools.irys.xyz/tutorials/nfts/uploading-nfts).
+During the upload process, you will need to sign a message to approve file uploading to Irys. Additionally, you may need to fund an Irys node. Read more about the process [here](https://docs.irys.xyz/build/d/guides/uploading-nfts).
 
 ### Once you approve the transaction, you have successfully created a fungible asset on Aptos!
 
@@ -113,11 +113,11 @@ During the upload process, you will need to sign a message to approve file uploa
 
 ## Customizing the Front-End
 
-Most data on the front end is customizable in `frontend/config.ts`. 
+Most data on the front end is customizable in `frontend/config.ts`.
 
 ### Set the `fa_address` config
 
-In order to add a fungible asset to the public mint page, set `fa_address` in `.env` with the asset address. 
+In order to add a fungible asset to the public mint page, set `fa_address` in `.env` with the asset address.
 
 You can use an assset that you have minted using the tool by going to the "My Assets" page and copying its address.
 
@@ -170,9 +170,9 @@ Creating a asset on mainnet is the same flow as creating on testnet, but we need
 
 ## Deploy to a live server
 
-`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). 
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home).
 
-At the root of the folder, simply run 
+At the root of the folder, simply run
 
 ```bash filename="Terminal"
 npm run deploy
