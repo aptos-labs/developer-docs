@@ -37,7 +37,7 @@ export function BlockchainSection() {
           }
           label={t.parallelExecutionLabel}
           description={t.parallelExecutionDescription}
-          href="https://medium.com/aptoslabs/block-stm-how-we-execute-over-160k-transactions-per-second-on-the-aptos-blockchain-3b003657e4ba"
+          href={`/${locale}/network/blockchain/execution`}
         />
         <FeatureCard
           illustration={

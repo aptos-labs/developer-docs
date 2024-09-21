@@ -1,6 +1,7 @@
 export default {
   "aptos-white-paper": "Aptos White Paper",
   "blockchain-deep-dive": "Aptos Blockchain Deep Dive",
+  execution: "Execution",
   "gas-txn-fee": "Gas and Storage Fees",
   events: "Events",
   // TODO: Decide what to do with these pages. Below this line is not included in the information architecture rewrite.
