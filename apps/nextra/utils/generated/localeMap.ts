@@ -4,22 +4,28 @@
 
 export const localeMap = {
   "/build/apis/aptos-labs-developer-portal": {
-    "en": true
+    "en": true,
+    "zh": true
   },
   "/build/apis/data-providers": {
-    "en": true
+    "en": true,
+    "zh": true
   },
   "/build/apis/faucet-api": {
-    "en": true
+    "en": true,
+    "zh": true
   },
   "/build/apis/fullnode-rest-api-reference": {
-    "en": true
+    "en": true,
+    "zh": true
   },
   "/build/apis/fullnode-rest-api": {
-    "en": true
+    "en": true,
+    "zh": true
   },
   "/build/apis": {
-    "en": true
+    "en": true,
+    "zh": true
   },
   "/build/cli/install-cli/install-cli-linux": {
     "en": true,
@@ -131,7 +137,8 @@ export const localeMap = {
     "en": true
   },
   "/build/get-started": {
-    "en": true
+    "en": true,
+    "zh": true
   },
   "/build/guides/aptos-keyless/how-keyless-works": {
     "en": true
@@ -574,9 +581,6 @@ export const localeMap = {
   "/build/smart-contracts/objects": {
     "en": true
   },
-  "/build/smart-contracts/pokemon/[name]": {
-    "en": true
-  },
   "/build/smart-contracts/prover/prover-guide": {
     "en": true
   },
@@ -753,6 +757,9 @@ export const localeMap = {
     "en": true
   },
   "/network/blockchain/events": {
+    "en": true
+  },
+  "/network/blockchain/execution": {
     "en": true
   },
   "/network/blockchain/fullnodes": {
