@@ -12,12 +12,14 @@
 aptos update movefmt
 ```
 
-When a newer version of `movefmt` is available, use the following command to install it:
+To install a specific version of `movefmt`:
 
 ```bash filename="Terminal"
 # Install movefmt with the target <VERSION>
 aptos update movefmt --target-version <VERSION>
 ```
+
+The latest release of `movefmt` can be found [here](https://github.com/movebit/movefmt/releases).
 
 ## Format your code
 
@@ -33,14 +35,14 @@ aptos move fmt
 Different ways of emitting the formatting result is supported:
 
 ```bash filename="Terminal"
-# Format and overwrite the move file `target.move`
+# Format and overwrite all the target move files in the package.
 # This is the default behavior if `--emit-mode` is not explicitly specified
 aptos move fmt --emit-mode=overwrite
 
 # Print the formatting result to terminal
 aptos move fmt --emit-mode=std-out
 
-# Print the formatting result to new files
+# Print the formatting result to new files with the suffix `.fmt.out` in the same directory
 aptos move fmt --emit-mode=new-file
 
 # Print the difference between before and after formatting
@@ -48,15 +50,13 @@ aptos move fmt --emit-mode=diff
 ```
 
 `movefmt` also provides different options to configure how the code will be formatted.
-Here is the default configuration,
-which says 1) each line can have at most 90 characters, 2) the ident is 4 spaces,
-3) each tab is identical 4 spaces and 4) when a tab is inserted, it will be automatically replaced by 4 spaces.
+Here is the default configuration:
 
 ```
-max_width = 90
-indent_size = 4
-tab_spaces = 4
-hard_tabs = false
+max_width = 90 # each line can have at most 90 characters
+indent_size = 4 # the indent is 4 spaces
+tab_spaces = 4 # each tab is identical to 4 spaces
+hard_tabs = false # when a tab is inserted, it will be automatically replaced by 4 spaces
 ```
 
 To override the default option, users can either specify a configuration file `movefmt.toml`
