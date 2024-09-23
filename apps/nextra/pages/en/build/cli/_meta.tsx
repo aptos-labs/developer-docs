@@ -19,6 +19,9 @@ export default {
   "working-with-move-contracts": {
     title: "Working With Move Contracts",
   },
+  "formatting-move-contracts": {
+    title: "Formatting Move Contracts",
+  },
   "trying-things-on-chain": {
     title: "Trying Things On-Chain",
   },

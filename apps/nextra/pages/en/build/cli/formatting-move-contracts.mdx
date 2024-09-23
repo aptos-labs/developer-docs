@@ -1,0 +1,75 @@
+
+# Formatting Move Contracts
+
+`movefmt` is a formatter tool that makes Move code much easier to write, read, and maintain — greatly improving the development experience on Aptos.
+
+## Installation
+
+`movefmt` is integrated into the Aptos CLI. To begin using it, first install it using the CLI update command.
+
+```bash filename="Terminal"
+# Install movefmt for first time usage
+aptos update movefmt
+```
+
+To install a specific version of `movefmt`:
+
+```bash filename="Terminal"
+# Install movefmt with the target <VERSION>
+aptos update movefmt --target-version <VERSION>
+```
+
+The latest release of `movefmt` can be found [here](https://github.com/movebit/movefmt/releases).
+
+## Format your code
+
+
+Similar to compilation and testing, you can use the following command to format the Move package:
+
+
+```bash filename="Terminal"
+# Format the Move package
+aptos move fmt
+```
+
+Different ways of emitting the formatting result is supported:
+
+```bash filename="Terminal"
+# Format and overwrite all the target move files in the package.
+# This is the default behavior if `--emit-mode` is not explicitly specified
+aptos move fmt --emit-mode=overwrite
+
+# Print the formatting result to terminal
+aptos move fmt --emit-mode=std-out
+
+# Print the formatting result to new files with the suffix `.fmt.out` in the same directory
+aptos move fmt --emit-mode=new-file
+
+# Print the difference between before and after formatting
+aptos move fmt --emit-mode=diff
+```
+
+`movefmt` also provides different options to configure how the code will be formatted.
+Here is the default configuration:
+
+```
+max_width = 90 # each line can have at most 90 characters
+indent_size = 4 # the indent is 4 spaces
+tab_spaces = 4 # each tab is identical to 4 spaces
+hard_tabs = false # when a tab is inserted, it will be automatically replaced by 4 spaces
+```
+
+To override the default option, users can either specify a configuration file `movefmt.toml`
+and put it in Move package directory or manually specify it in the command line:
+
+```bash filename="Terminal"
+# When formatting the code, set `max_width` to 80 and `indent_size` to 2
+aptos move fmt --config max_width=80,indent_size=2
+```
+
+
+## Feedback
+
+Aptos Labs remains committed to improving the developer experience for builders using Move on Aptos.
+If you’re interested in shaping the style guidelines for Move, we would love to hear your comments and feedback
+[here](https://github.com/movebit/movefmt/issues).
