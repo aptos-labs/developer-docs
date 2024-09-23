@@ -82,7 +82,7 @@ fun f(data: VersionedData) {
 The value of an enum value can be inspected using a match expression. For example:
 
 ```move
-fun area(self: &Rectangle): u64 {
+fun area(self: &Shape): u64 {
     match (self) {
         Circle{radius}           => mul_with_pi(*radius * *radius),
         Rectangle{width, height) => *width * *height
@@ -93,7 +93,7 @@ fun area(self: &Rectangle): u64 {
 Notice above that the value matched is an immutable reference to an enum value. A match expression can also consume a value, or match over a mutable reference for interior updates:
 
 ```move
-fun scale_radius(self: &mut Rectangle, factor:  u64) {
+fun scale_radius(self: &mut Shape, factor:  u64) {
     match (self) {
         Circle{radius: r} => *r = *r * factor,
         _                 => {} // do nothing if not a Circle
