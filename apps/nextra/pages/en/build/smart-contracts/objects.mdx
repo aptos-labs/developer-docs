@@ -14,21 +14,21 @@ module my_addr::object_playground {
   use std::signer;
   use std::string::{Self, String};
   use aptos_framework::object::{Self, ObjectCore};
-  
+
   struct MyStruct1 has key {
     message: String,
   }
-  
+
   struct MyStruct2 has key {
     message: String,
   }
- 
+
   entry fun create_and_transfer(caller: &signer, destination: address) {
     // Create object
     let caller_address = signer::address_of(caller);
     let constructor_ref = object::create_object(caller_address);
     let object_signer = object::generate_signer(&constructor_ref);
-    
+
     // Set up the object by creating 2 resources in it
     move_to(&object_signer, MyStruct1 {
       message: string::utf8(b"hello")
@@ -36,7 +36,7 @@ module my_addr::object_playground {
     move_to(&object_signer, MyStruct2 {
       message: string::utf8(b"world")
     });
- 
+
     // Transfer to destination
     let object = object::object_from_constructor_ref<ObjectCore>(
       &constructor_ref
@@ -46,7 +46,7 @@ module my_addr::object_playground {
 }
 ```
 
-During construction, Objects can be configured to be transferrable, burnable, and extensible.
+During construction, Objects can be configured to be transferrable and extensible.
 
 For example, you could use an Object to represent a soulbound NFT by making it only transferrable once, and have it own resources for an image link and metadata. Objects can also own other Objects, so you could implement your own NFT collection Object by transferring several of the soulbound NFTs to it.
 
