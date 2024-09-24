@@ -124,16 +124,15 @@ mutable or immutable during creation.
 Follow the standard below to ensure your NFT can be correctly displayed by
 various wallets.
 
-You should store the metadata in a JSON file located in an off-chain storage
-solution such as [arweave](https://www.arweave.org/) and provide the URL to the
+You should store the metadata in a JSON file located in an onchain data solution like [Irys](https://docs.irys.xyz/), and provide the URL to the
 JSON file in the `uri` field of the token or the collection. We recommend the
 developers follow the [ERC-1155 off-chain data](https://eips.ethereum.org/EIPS/eip-1155)
 schema to format their JSON files.
 
 ```json
 {
-  "image": "https://www.arweave.net/abcd5678?ext=png",
-  "animation_url": "https://www.arweave.net/efgh1234?ext=mp4",
+  "image": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjGzb4POUibCEG-TGPInmofp-O-o",
+  "animation_url": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjHzb4POUibCEG-TGPInmofp-O-o",
   "external_url": "https://petra.app/",
   "attributes": [
     {
@@ -152,16 +151,16 @@ schema to format their JSON files.
   "properties": {
     "files": [
       {
-        "uri": "https://www.arweave.net/abcd5678?ext=png",
+        "uri": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjGzb4POUibCEG-ENXUnmofp-O-o",
         "type": "image/png"
       },
       {
-        "uri": "https://watch.videodelivery.net/9876jkl",
+        "uri": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjGzb4POUibCEG-UENCnmofp-O-o",
         "type": "unknown",
         "cdn": true
       },
       {
-        "uri": "https://www.arweave.net/efgh1234?ext=mp4",
+        "uri": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjGzb4POUibCEG-DJHUUnmofp-O-o",
         "type": "video/mp4"
       }
     ],
