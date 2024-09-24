@@ -15,11 +15,11 @@ module my_addr::object_playground {
   use std::string::{Self, String};
   use aptos_framework::object::{Self, ObjectCore};
   
-  struct MyStruct1 {
+  struct MyStruct1 has key {
     message: String,
   }
   
-  struct MyStruct2 {
+  struct MyStruct2 has key {
     message: String,
   }
  
@@ -27,7 +27,7 @@ module my_addr::object_playground {
     // Create object
     let caller_address = signer::address_of(caller);
     let constructor_ref = object::create_object(caller_address);
-    let object_signer = object::generate_signer(constructor_ref);
+    let object_signer = object::generate_signer(&constructor_ref);
     
     // Set up the object by creating 2 resources in it
     move_to(&object_signer, MyStruct1 {
