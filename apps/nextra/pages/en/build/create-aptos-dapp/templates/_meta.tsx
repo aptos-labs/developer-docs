@@ -16,5 +16,5 @@ export default {
   },
   "custom-indexer": {
     title: "Custom Indexer Template",
-  }
+  },
 };
