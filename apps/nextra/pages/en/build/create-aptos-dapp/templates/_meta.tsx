@@ -14,4 +14,7 @@ export default {
   "token-staking-dapp": {
     title: "Token staking dapp Template",
   },
+  "custom-indexer": {
+    title: "Custom Indexer Template",
+  }
 };

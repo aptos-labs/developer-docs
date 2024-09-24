@@ -1,0 +1,219 @@
+---
+title: "Create Aptos Dapp Custom Indexer Template"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Create Aptos Dapp Custom Indexer Template
+
+The Custom Indexer template provides a starter dapp with all necessary infrastructure to build a full stack app with custom indexer support.
+
+The Custom Indexer template provides:
+
+- Folder structure - A pre-made dapp folder structure with `src` for frontend, `contract` for Move contract and `indexer` for custom indexer.
+- Dapp infrastructure - All required dependencies a dapp needs to start building on the Aptos network.
+- Wallet Info implementation - Pre-made `WalletInfo` components to demonstrate how one can use to read a connected Wallet info.
+- Message board functionality implementation - Pre-made `MessageBoard` component to create, update and read messages from the Move smart contract.
+- Analytics dashboard - Pre-made `Analytics` component to show the number of messages created and updated.
+- Point program - Minimal example to show you how to define a point program based on events (e.g. create message, update message) and show that on the analytics dashboard, with sorting support.
+
+## Generate the Boilerplate template
+
+On your terminal, navigate to the directory you want to work in and run:
+```bash
+npx create-aptos-dapp@latest
+```
+
+Follow the CLI prompts.
+
+## Getting started
+
+<Steps>
+
+### Publish the contract
+
+Run the below command to publish the contract on-chain:
+```bash
+npm run move:publish
+```
+This command will:
+1. Publish the contract to chain.
+2. Setting the `MODULE_ADDRESS` in the `.env` file to set the contract object address.
+
+### Create a postgres database
+
+Sign up for [Neon postgres](https://neon.tech/) which is our cloud Postgres provider and create a new project. Find the connection string and put it in `DATABASE_URL` in the `.env` file of frontend. 
+
+### Setup the database
+
+Everything here should be run in the `indexer` folder.
+
+Install diesel cli to run migrations.
+
+```sh
+cargo install diesel_cli --no-default-features --features postgres
+```
+
+Run all pending database migrations. This will create all the tables in the database.
+
+```sh
+diesel migration run \
+    --config-file="src/db_migrations/diesel.toml" \
+    --database-url="postgresql://username:password@neon_host/db_name?sslmode=require"
+```
+
+In case you want to revert all migrations to delete all tables because you want to re-index all data.
+
+```sh
+diesel migration revert \
+	--all \
+	--config-file="src/db_migrations/diesel.toml" \
+    --database-url="postgresql://username:password@neon_host/db_name?sslmode=require"
+```
+
+In case you want to make any change to the database, you can add a new migration.
+
+```sh
+diesel migration generate create-abc-table \
+    --config-file="src/db_migrations/diesel.toml"
+```
+
+### Sign up for Aptos Build
+
+Sign up for [Aptos Build](https://developers.aptoslabs.com/), create a new project and get the API token.
+
+### Run the custom indexer locally
+
+Make a copy of `example.config.yaml` of `indexer` folder and rename it to `config.yaml`. Follow the comments to fill in the 
+- `starting_version`: The tx version (Aptos concept, similar to block height) from which you want to start indexing
+- `postgres_connection_string`: The connection string of the postgres database
+- `contract_address`: The address of the Move contract
+- `auth_token`: Aptos Build API token
+
+Run the below command to run the custom indexer locally:
+
+```sh
+cargo run --release -- -c config.yaml
+```
+
+### Run the frontend
+
+```bash
+npm run dev
+```
+
+</Steps>
+
+### Building the frontend
+
+The boilerplate template utilizes React as the frontend framework and Next.js as the development tool, and is styled with [Tailwind CSS](https://tailwindcss.com/) and [shadcn/ui](https://ui.shadcn.com/).
+All dapp components should be added into the `components` folder and it is recommended to create a `app` folder to hold all future pages in your project.
+
+### Writing a Move contract
+
+The boilerplate template comes with a `contract` folder that holds all Move smart contract related files. Under the `sources` folder you will find a `*.move` file with a super basic implementation of a Move module that stores a message and updates it. This is to help you get started with writing your own Smart Contract.
+
+### Smart contract and frontend communication
+
+For a frontend to submit a transaction to a smart contract, it needs to call an entry function. The boilerplate provides you with an `entry-functions` folder to hold all your dapp entry function requests.
+Additionaly, for a frontend to fetch data from a smart contract, it needs to submit a request to a view function. The boilerplate provides you with a `view-functions` folder to hold all your dapp view function requests.
+
+## Ready for Mainnet
+
+If you started your dapp on testnet, and you are happy with your testing, you will want to get the dapp on mainnet.
+
+To publish the smart contract on mainnet, we need to change some configuration.
+
+Open the `.env` file and:
+
+> Note: Make sure you have created an existing account on the Aptos `mainnet`
+
+1. Change the `APP_NETWORK` value to `mainnet`
+2. Update the `MODULE_PUBLISHER_ACCOUNT_ADDRESS` to be the existing account address
+3. Update the `MODULE_PUBLISHER_PRIVATE_KEY` to be the existing account private key
+4. Run `npm run move:publish` to publish your move module on Aptos mainnet.
+
+## Deploy frontend to a live server
+
+`create-aptos-dapp` provides an npm command to easily deploy the static site to [Vercel](https://vercel.com/home). 
+
+At the root of the folder, simply run 
+
+```bash filename="Terminal"
+npm run deploy
+```
+
+Then, follow the prompts. Please refer to Vercel docs to learn more about the [Vercel CLI](https://vercel.com/docs/cli)
+
+If you are looking for different services to deploy the static site to, `create-aptos-dapp` utilizes Vite as the development tool, so you can follow the [Vite deployment guide](https://vitejs.dev/guide/static-deploy). In a nutshell, you would need to:
+
+1. Run `npm run build` to build a static site
+2. Run `npm run preview` to see how your dapp would look like on a live server
+3. Next, all you need is to deploy your static site to a live server, there are some options for you to choose from and can follow [this guide](https://vitejs.dev/guide/static-deploy) on how to use each
+
+## Deploy indexer to a live server
+
+We recommend using Google Cloud Run to host the indexer, Secret Manager to store `config.yaml` and Artifact Registry to store the indexer docker image.
+
+### Build the docker image locally and run the container locally
+
+Build the docker image targeting linux/amd64 because eventually, we will push the image to Artifact Registry and deploy it to Cloud Run, which only supports linux/amd64.
+
+```sh
+docker build --platform linux/amd64 -t indexer .
+```
+
+You can run the docker container locally to make sure it works. Mac supports linux/amd64 emulation so you can run the x86 docker image on Mac.
+
+```sh
+docker run -p 8080:8080 -it indexer
+```
+
+### Push the locally build docker image to Artifact Registry
+
+Login to google cloud
+
+```sh
+gcloud auth login
+```
+
+Create a repo in the container registry and push to it. You can learn more about publishing to Artifact Registry on their [docs](https://cloud.google.com/artifact-registry/docs/docker/pushing-and-pulling#pushing).
+
+Authorize docker to push to Artifact Registry. Please update the region to your region.
+
+```sh
+# update us-west2 to your region, you can find it in google cloud
+gcloud auth configure-docker us-west2-docker.pkg.dev
+```
+
+Tag the docker image.
+
+```sh
+# update us-west2 to your region, you can find it in google cloud
+docker tag indexer us-west2-docker.pkg.dev/google-cloud-project-id/repo-name/indexer
+```
+
+Push to the Artifact Registry.
+
+```sh
+# update us-west2 to your region, you can find it in google cloud
+docker push us-west2-docker.pkg.dev/google-cloud-project-id/repo-name/indexer
+```
+
+### Upload the config.yaml file to Secret Manager
+
+Go to secret manager and create a new secret using the `config.yaml` file. Please watch this video walkthrough carefully: https://drive.google.com/file/d/1bbwe617fqM31swqc9W5ck8G8eyg3H4H2/view
+
+### Run the container on Cloud Run
+
+Please watch this video walkthrough carefully and follow the exact same setup: https://drive.google.com/file/d/1JayWuH2qgnqOgzVuZm9MwKT42hj4z0JN/view.
+
+Go to cloud run dashboard, create a new service, and select the container image from Artifact Registry, also add a volume to ready the config.yaml file from Secret Manager, then mount the volume to the container.
+
+You can learn more about cloud run on their [docs](https://cloud.google.com/run/docs/quickstarts/deploy-container).
+
+**NOTE**: Always allocate CPU so it always runs instead of only run when there is traffic. Min and max instances should be 1.
+
+## Re-indexing
+
+**WARNING**: Do not ever try to backfill the data, logic like point calculation is incremental, if you backfill like processing same event twice, you will get wrong point data. So please always revert all migrations and re-index from the first tx your contract deployed.
