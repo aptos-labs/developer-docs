@@ -1,0 +1,262 @@
+---
+title: "Exchange Integration Guide"
+---
+
+import { Callout } from "nextra/components";
+
+# Exchange Integration Guide
+
+This describes how to integrate Aptos and Aptos assets into an exchange.  It provides
+generic information for tracking balances, transferring assets, and testing the integration.
+
+## Overview
+
+This document will guide you through the following tasks to integrate with Aptos:
+* Infrastructure
+* Address standards
+* Asset standards
+* Retrieving balances
+* Tracking balance changes
+* Transferring assets
+* Testing the integration
+
+## Infrastructure
+
+It's suggested that you run your own [full node](/network/nodes/full-node.mdx) to interact with the Aptos blockchain.
+This will allow you to query the blockchain for the latest state and submit transactions.
+You can also use the [Indexer](/build/apis/indexer.mdx) to query for on-chain data efficiently.
+
+## Address Standards
+
+A single address can be represented in three ways.  We recommend you show all leading zeros, and the `0x`. Here is an example of all three representations for the framework address `0x1`:
+* `0x00000000000000000000000000000001` - A full representation of 32-bytes in hex with a leading `0x`.  This is preferred.
+* `0x1` - The short representation of the address with a leading `0x`. This is kept around for compatibility, but preferred with all leading 0s.
+* `00000000000000000000000000000001` - A full representation of 32-bytes in hex without a leading `0x`. This is kept around for compatibility, but preferred with leading 0x.
+
+For example SDKs will handle this parsing automatically, and we suggest you use the SDKs directly to handle it for you.
+
+```ts filename="example.ts"
+import { AccountAddress } from "@aptos-labs/ts-sdk";
+const address = AccountAddress.from("0x1");
+address.toStringLong(); // 0x00000000000000000000000000000001
+```
+
+## Account Standards
+
+Accounts must exist prior to sending a transaction to the blockchain.  This is done by creating an account resource, which can
+be created by simply calling `0x1::aptos_account::transfer` with a zero amount to the account you want to create.  Optionally,
+`0x1::aptos_account::create_account` can be used to create an account with a zero balance.
+
+{/* TODO Code snippet */}
+
+
+## Asset Standards
+
+Aptos provides two standards for fungible tokens, similar to ERC-20 tokens on Ethereum:
+
+* An earlier [Coin standard](/build/smart-contracts/coin.mdx) used by assets on Aptos.
+* A newer [Fungible Asset Standard](/build/smart-contracts/fungible-assets.mdx) which is more featured.
+
+Additionally, there is a migratory period for assets from Coin to Fungible Asset standards.
+We will call this from now on **migrated coins**.
+There is no support for migration in the other direction.
+
+### Coin Standard (tldr)
+
+A **coin** has an associated contract that holds the on-chain struct that represents the coin.  The coin is
+represented as a struct name e.g. `0x1::aptos_coin::AptosCoin` for `APT`.
+
+All coins are stored in an account resource called `0x1::coin::CoinStore<CoinType>`.  Coins must be registered
+prior to using the `CoinStore`, but if using the proper functions e.g. `0x1::aptos_account::transfer`
+or `0x1::aptos_account::transfer_coins<CoinType>`, this will be done automatically.
+
+Coins can be *migrated* to a fungible asset.  In order to support a migrated asset,
+continue calling the coin functions as will be mentioned later.
+
+More info can be found at: [Coin Standard](/build/smart-contracts/coin.mdx)
+
+### Fungible Asset Standard (tldr)
+
+A **fungible asset** has an associated metadata address that holds the metadata for the fungible asset.  This is commonly called the
+fa metadata address.  The asset is represented as an address e.g. `0xA` for `APT`.
+
+All fungible assets are stored in an `object`, which is called a `fungible asset store`.
+
+For exchanges, the most important store is `primary_fungible_store`, which is the default store for fungible assets.
+This is directly connected to an owner. From this point on in this guide, we will
+only talk about supporting `primary_fungible_store` for fungible assets.
+
+More info can be found at: [Fungible Asset Standard](/build/smart-contracts/fungible-assets.mdx)
+
+## Retrieving Balances
+
+Retrieving current balances for assets are different for each standard.  Integration is considered complete when it can handle both.
+
+### Coin (and migrated coins) Balances
+
+<Callout type="info">
+  Note: This includes APT and any other coin that was migrated to a fungible
+  asset.
+</Callout>
+
+To retrieve the balance of a coin, or a coin that was migrated to a fungible asset, you can use
+the `0x1::coin::balance<CoinType>(account address)` view function.  This will combine the coin and coin migrated to fungible asset balances.
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(config);
+
+const coinType = "0x1::aptos_coin::AptosCoin";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::coin::balance",
+    typeArguments: [coinType],
+    functionArguments: [account]
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+A specific ledger version (transaction height) can be provided to get the balance at that point in time.  The below example shows for ledger version `1,000,000`.
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(config);
+
+const coinType = "0x1::aptos_coin::AptosCoin";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::coin::balance",
+    typeArguments: [coinType],
+    functionArguments: [account],
+    options: {
+      ledgerVersion: 1_000_000
+    }
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+### Fungible Asset Balances
+
+To retrieve the balance of a fungible asset, you can use
+the `0x1::primary_fungible_store::balance<0x1::object::ObjectCore>(account address, fungible asset metadata address)` view function.
+Note, that this will not include the balance of coins if it's a migrated coin.
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(config);
+
+const faMetadataAddress = "0xA";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::primary_fungible_store::balance",
+    typeArguments: ["0x1::object::ObjectCore"],
+    functionArguments: [account, faMetadataAddress]
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+A specific ledger version (transaction height) can be provided to get the balance at that point in time.  The below example shows for ledger version `1,000,000`.
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(config);
+
+const faMetadataAddress = "0xA";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::primary_fungible_store::balance",
+    typeArguments: ["0x1::object::ObjectCore"],
+    functionArguments: [account, faMetadataAddress]
+  },
+  options: {
+    ledgerVersion: 1_000_000
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+## Tracking Balance Changes
+
+### Coin Balance Changes
+
+### Fungible Asset Balance Changes
+
+### Coins migrated to Fungible Asset Balance Changes
+
+## Transferring Assets
+
+### Coin (or migrated coin) Transfers
+
+We suggest you use `0x1::aptos_account::transfer_coins<CoinType>(receiver address, amount)` for transferring coins.  It will
+register the coin if it hasn't been registered yet, and create the associated account if it hasn't been created yet.
+This will continue to work with any coins that were migrated to a fungible asset, including APT.
+
+Coins can be transferred in the following ways:
+* [`0x1::aptos_account::transfer_coins<CoinType>(receiver address, amount)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L108-L112) - Transfer a coin to another account.
+* [`0x1::aptos_account::batch_transfer_coins<CoinType>(receiver addresses, amounts)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L93-L106) - Transfer a coin to multiple accounts.
+* [`0x1::aptos_account::transfer(receiver address, amount)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L74-L91) - Transfer specifically APT to another account.
+
+{/* TODO examples */}
+
+### Fungible Asset Transfers
+
+We suggest you use `0x1::primary_fungible_store::transfer<0x1::object::ObjectCore>(receiver address, amount)` for transferring fungible assets.
+It will send the associated fungible asset, and create a primary store for the asset if it hasn't been created yet.
+
+{/* TODO examples */}
+
+<Callout type="warning">
+  Note: This will not create an account for the user if it hasn't been created
+  yet. You will need to call
+  `0x1::aptos_account::create_account(account address)` to create the account
+  before the user can
+  submit transactions.
+</Callout>
+
+{ /* TODO Staking some other day */ }
+
+## Testing
+
+In order to check that everything is working correctly, we've provided these checks.
+
+### Balance Checks
+
+To test balance checks, you can check the balance for the account `0x5` for the asset `0x1::aptos_coin::AptosCoin`.
+The balance should show `0.002 APT`, where 0.001 APT is a coin, and 0.001 APT is a migrated coin (fungible asset).
+
+If your balance is not correct, see [Coin and Migrated Coin Balances](#coin-and-migrated-coin-balances) for more information.
+
+### Balance Change Checks
+
+
+### Transfer Checks
+
+
+
+## FAQ
+
+### What is the finality of a transaction?
+
+Aptos uses a BFT consensus algorithm, so transactions are finalized immediately
+after committing to the blockchain.
+
+### What is the transaction fee on a transaction?
+
+Transaction fees are variable, but for most cases here are fixed.  Check out
+[simulating transactions](/network/blockchain/gas-txn-fee#estimating-gas-consumption-via-simulation)
+to get an idea of the fee.
