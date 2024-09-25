@@ -86,7 +86,7 @@ Sign up for [Aptos Build](https://developers.aptoslabs.com/), create a new proje
 
 Make a copy of `example.config.yaml` of `indexer` folder and rename it to `config.yaml`. Follow the comments to fill in the 
 - `starting_version`: The tx version (Aptos concept, similar to block height) from which you want to start indexing
-- `postgres_connection_string`: The connection string of the postgres database
+- `postgres_connection_string`: The connection string of the postgres database, DO NOT include the `?sslmode=require` because diesel doesn't recognize it correctly, instead we handle it in the code
 - `contract_address`: The address of the Move contract
 - `auth_token`: Aptos Build API token
 
