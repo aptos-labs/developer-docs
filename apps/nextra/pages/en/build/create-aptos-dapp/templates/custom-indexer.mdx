@@ -168,7 +168,7 @@ We recommend using Google Cloud Run to host the indexer, Secret Manager to store
 
 ### Build the docker image locally and run the container locally
 
-Build the docker image targeting linux/amd64 because eventually, we will push the image to Artifact Registry and deploy it to Cloud Run, which only supports linux/amd64.
+Build the docker image targeting linux/amd64 as we will eventually push the image to Artifact Registry and deploy it to Cloud Run, which only supports linux/amd64.
 
 ```sh
 docker build --platform linux/amd64 -t indexer .
