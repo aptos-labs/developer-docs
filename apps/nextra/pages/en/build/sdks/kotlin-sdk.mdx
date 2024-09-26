@@ -7,7 +7,7 @@ import { RemoteCodeblock, permalinkFetch, Cards, Card } from '@components/index'
 
 export async function getStaticProps() {
   return await permalinkFetch([
-    'https://github.com/mcxross/kaptos/blob/8172fa716f87411e80ca66d5ac04d2c370b8741a/sample/jvmApp/src/main/kotlin/APTTransfer.kt#L60-L82'
+    'https://github.com/mcxross/kaptos/blob/64731d7085bfa64e93941aad78ba5ac429787552/sample/jvmApp/src/main/kotlin/APTTransfer.kt#L59-L71'
   ])
 }
 
@@ -163,8 +163,23 @@ The snippet demonstrates how to build a transaction to transfer APT. We then
 sign and submit the transaction to the blockchain in a single step.
 
 <RemoteCodeblock
-  permalink="https://github.com/mcxross/kaptos/blob/8172fa716f87411e80ca66d5ac04d2c370b8741a/sample/jvmApp/src/main/kotlin/APTTransfer.kt#L60-L82"
+  permalink="https://github.com/mcxross/kaptos/blob/64731d7085bfa64e93941aad78ba5ac429787552/sample/jvmApp/src/main/kotlin/APTTransfer.kt#L59-L71"
 />
+
+The SDK also provides pre-built methods for common transaction operations. For
+example, you can use the `transferCoinTransaction` method to generate a transfer
+transaction between two accounts as shown below:
+
+```kotlin
+val txn = aptos.transferCoinTransaction(
+     alice.accountAddress,
+     bob.accountAddress,
+     SEND_AMOUNT
+   )
+```
+
+You can then [sign](kotlin-sdk/building-transactions#sign-the-transaction) and
+[submit](kotlin-sdk/building-transactions#submit-the-transaction) this transaction.
 
 ## Examples
 

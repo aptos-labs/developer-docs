@@ -35,7 +35,7 @@ For example, you can look up the supply of tokens as follows:
 ```kotlin
 val inputViewFunctionData = InputViewFunctionData(
       "0x1::coin::supply",
-      listOf(TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())),
+      listOf(TypeTagStruct("0x1::aptos_coin::AptosCoin")),
       emptyList(),)
 
   val view = aptos
