@@ -4,6 +4,10 @@ title: "IndexerClient Class"
 
 import { Callout } from 'nextra/components';
 
+<Callout emoji="🚨" type="error">
+  The Legacy TypeScript SDK package `aptos` is deprecated and will be replaced by the new TypeScript SDK. Please refer to the [new TypeScript SDK](/build/sdks/ts-sdk) for the latest features and updates.
+</Callout>
+
 # Legacy TypeScript IndexerClient Class
 
 The [IndexerClient](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/src/providers/indexer.ts) is responsible for handling the communication between the client-side application and the blockchain network. It uses the [Hasura framework](https://hasura.io/) to generate a set of [GraphQL queries](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) that can be used to retrieve data from the blockchain. The queries are optimized for performance and can retrieve data in real-time.

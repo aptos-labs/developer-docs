@@ -82,7 +82,7 @@ fun f(data: VersionedData) {
 The value of an enum value can be inspected using a match expression. For example:
 
 ```move
-fun area(self: &Rectangle): u64 {
+fun area(self: &Shape): u64 {
     match (self) {
         Circle{radius}           => mul_with_pi(*radius * *radius),
         Rectangle{width, height) => *width * *height
@@ -93,7 +93,7 @@ fun area(self: &Rectangle): u64 {
 Notice above that the value matched is an immutable reference to an enum value. A match expression can also consume a value, or match over a mutable reference for interior updates:
 
 ```move
-fun scale_radius(self: &mut Rectangle, factor:  u64) {
+fun scale_radius(self: &mut Shape, factor:  u64) {
     match (self) {
         Circle{radius: r} => *r = *r * factor,
         _                 => {} // do nothing if not a Circle
@@ -167,7 +167,7 @@ enum VersionedData has key {
 }
 
 data.name
- // ^^^^^ compile time error that `name` field selection is ambigious
+ // ^^^^^ compile time error that `name` field selection is ambiguous
 ```
 
 ## Using Enums Patterns in Lets
@@ -181,6 +181,31 @@ let V1{name} = data;
 
 Unpacking the enum value will abort if the variant is not the expected one. To ensure that all variants of an enum are handled, a `match` expression is recommended instead of a `let`. The `match` is checked at compile time, ensuring that all variants are covered. In some cases, tools like the Move Prover can be used to verify that unexpected aborts cannot happen with a `let`.
 
+## Destroying Enums via Pattern Matching
+
+Similar to struct values, enum values can be destroyed by explicitly unpacking them. Enums can be unpacked with pattern matching in a `match` expression, enum pattern in a `let` binding, or enum pattern in an assignment.
+
+```move
+// Note: `Shape` has no `drop` ability, so must be destroyed with explicit unpacking.
+enum Shape {
+    Circle{radius: u64},
+    Rectangle{width: u64, height: u64}
+}
+
+fun destroy_empty(self: Shape) {
+    match (self) {
+        Shape::Circle{radius} => assert!(radius == 0),
+        Shape::Rectangle{width, height: _} => assert!(width == 0),
+    }
+}
+
+fun example_destroy_shapes() {
+    let c = Shape::Circle{radius: 0};
+    let r = Shape::Rectangle{width: 0, height: 0};
+    c.destroy_empty();
+    r.destroy_empty();
+}
+```
 
 ## Enum Type Upgrade Compatibility 
 

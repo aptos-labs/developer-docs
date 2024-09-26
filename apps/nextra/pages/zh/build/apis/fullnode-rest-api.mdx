@@ -1,0 +1,110 @@
+---
+title: "Fullnode Rest API"
+---
+
+import { Callout } from 'nextra/components'
+import { Card, Cards } from '@components/index'
+
+# Aptos全节点REST API
+
+该API嵌入到全节点中，提供了一种简单、低延迟、但低级别的方式来读取状态和提交交易到Aptos区块链。它还支持交易模拟。
+对于更高级的查询，我们建议使用 [Indexer GraphQL API](../indexer.mdx)。
+
+<Callout type="info">
+还请参阅[系统集成指南](../guides/system-integrators-guide.mdx)，以获得Aptos集成的详细步骤。
+</Callout>
+
+## Aptos全节点REST API浏览器
+
+<Cards>
+  <Card href="https://fullnode.mainnet.aptoslabs.com/v1/spec#/">
+    <Card.Title linkType="external">主网全节点 REST API</Card.Title>
+    <Card.Description>主网的REST API浏览器</Card.Description>
+  </Card>
+  <Card href="https://fullnode.testnet.aptoslabs.com/v1/spec#/">
+    <Card.Title linkType="external">测试网全节点 REST API</Card.Title>
+    <Card.Description>测试网的REST API浏览器</Card.Description>
+  </Card>
+  <Card href="https://fullnode.devnet.aptoslabs.com/v1/spec#/">
+    <Card.Title linkType="external">开发网全节点 REST API</Card.Title>
+    <Card.Description>开发网的REST API浏览器</Card.Description>
+  </Card>
+</Cards>
+
+## 理解速率限制
+
+与 [Aptos Indexer](../indexer/aptos-hosted.mdx) 一样，Aptos REST API对每个IP地址的请求有一个每五分钟 5000 个的速率限制，无论是提交交易还是查询Aptos提供的节点上的API。（作为节点运营商，您可以在自己的节点上提高这些限制。）请注意，此限制可能会在有或没有事先通知的情况下更改。
+
+## 查看当前和历史状态
+
+大多数对接到 Aptos 区块链的集成都需要全面了解当前和历史状态。Aptos 提供了历史交易、状态和事件，这些都是交易执行的结果。
+
+- 历史交易指定了执行状态、输出和与相关事件的关联。每个交易都有一个唯一的版本号，它决定了它在区块链账本历史中的全局顺序。
+- 状态是特定版本之前所有交易输出的表示。换句话说，状态版本是包括该交易版本在内的所有交易的累积。
+- 当交易执行时，它们可能会发出事件。[事件](../../network/blockchain/events.mdx)是关于链上数据变化的提示。
+
+<Callout type="info">
+确保您正在与之通信的 [全节点](../../network/nodes/networks.mdx)是最新的。
+全节点必须达到包含您的交易的版本，才能从中检索相关数据。
+全节点从[验证者全节点](../../network/blockchain/fullnodes.mdx)检索状态可能会有延迟，而验证者全节点又依赖于[验证者节点](../../network/blockchain/validator-nodes.mdx)作为可信来源。
+</Callout>
+
+节点上的存储服务采用两种修剪方式来擦除数据：
+
+- 状态
+- 事件、交易和其他所有内容
+
+虽然这两者都可以禁用，但存储状态版本并不是特别可持续的。
+
+可以通过在 `storage_config.rs` 中将 [`enable_ledger_pruner`](https://github.com/aptos-labs/aptos-core/blob/cf0bc2e4031a843cdc0c04e70b3f7cd92666afcf/config/src/config/storage_config.rs#L141) 设置为 `false` 来禁用事件和交易修剪。
+这是主网的默认行为。
+在不久的将来，Aptos 将提供索引器，从而减少直接从节点查询的需求。
+
+REST API提供以下方式查询交易和事件：
+
+- [按账户查询交易](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_account_transactions)
+- [按版本查询交易](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_version)
+- [按事件句柄查询事件](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)
+
+
+## 使用View函数读取状态
+
+当通过API调用时，View函数不会修改区块链状态。可以使用[View函数](https://github.com/aptos-labs/aptos-core/blob/main/api/src/view_function.rs)及其[输入](https://github.com/aptos-labs/aptos-core/blob/main/api/types/src/view.rs)来读取可能复杂的链上状态，使用Move语言。例如，可以评估拍卖合约中的最高出价者。以下是相关文件：
+
+- [`view_function.rs`](https://github.com/aptos-labs/aptos-core/blob/main/api/src/tests/view_function.rs)的示例
+- 相关的 [Move](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/aptos-move/framework/aptos-framework/sources/coin.move#L226) 代码
+- [规范](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/api/doc/spec.yaml#L8513)。
+
+View 函数的操作方式类似于[Aptos 模拟 API](../guides/system-integrators-guide.mdx)，但没有副作用，并且具有可访问的输出路径。可以通过 `/view` 端点调用 View 函数。对 View 函数的调用需要模块和函数名称以及输入类型参数和值。
+
+函数不必是不可变的才能被标记为 `#[view]`，但如果函数是可变的，则在通过API调用时不会导致状态变更。如果要将可变函数标记为 `#[view]`，可以考虑将其设置为私有函数，以防止在运行时恶意调用。
+
+要使用 View 函数，需要通过 [Aptos CLI](../cli.mdx) 将模块发布。
+
+在 Aptos CLI 中，View 函数的请求如下所示：
+
+```bash filename="Terminal"
+aptos move view --function-id devnet::message::get_message --profile devnet --args address:devnet
+{
+  "Result": [
+    "View functions rock!"
+  ]
+}
+```
+
+在 TypeScript SDK 中，一个 view 函数请求的示例如下所示：
+
+```ts filename="index.ts"
+import { Aptos } from "@aptos-labs/ts-sdk";
+
+const aptos = new Aptos();
+const [balance] = aptos.view<[string]>({
+  function: "0x1::coin::balance",
+  typeArguments: ["0x1::aptos_coin::AptosCoin"],
+  functionArguments: [alice.accountAddress]
+});
+
+expect(balance).toBe("100000000");
+```
+
+查看函数返回一个值列表。默认情况下，结果以JSON格式返回；但是，可以选择以二进制规范序列化（BCS）编码格式返回。

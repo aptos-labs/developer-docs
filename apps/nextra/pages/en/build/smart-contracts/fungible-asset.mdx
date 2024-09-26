@@ -116,16 +116,16 @@ module my_addr::fungible_asset_example {
     
     // Generate the MintRef for this object
     // Used by fungible_asset::mint() and fungible_asset::mint_to()
-		let mint_ref = fungible_asset::generate_mint_ref(&constructor_ref)
-		
+    let mint_ref = fungible_asset::generate_mint_ref(constructor_ref);
+
     // Generate the TransferRef for this object
-    // Used by fungible_asset::set_frozen_flag(), fungible_asset::withdraw_with_ref(),  
+    // Used by fungible_asset::set_frozen_flag(), fungible_asset::withdraw_with_ref(),
     // fungible_asset::deposit_with_ref(), and fungible_asset::transfer_with_ref().
-		let transfer_ref = fungible_asset::generate_transfer_ref(&constructor_ref)
-		
+    let transfer_ref = fungible_asset::generate_transfer_ref(constructor_ref);
+
     // Generate the BurnRef for this object
     // Used by fungible_asset::burn() and fungible_asset::burn_from()
-		let burn_ref = fungible_asset::generate_burn_ref(&constructor_ref)
+    let burn_ref = fungible_asset::generate_burn_ref(constructor_ref);
     
     // Add any other logic required for your use case.
     // ...
