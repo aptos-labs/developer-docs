@@ -128,6 +128,12 @@ The template comes with a `contract` folder that holds all Move smart contract r
 For a frontend to submit a transaction to a smart contract, it needs to call an entry function. The boilerplate provides you with an `entry-functions` folder to hold all your dapp entry function requests.
 Additionaly, for a frontend to fetch data, it reads the data from the databse. You can find the database queries in the `src/db` folder.
 
+## Re-indexing
+
+<Callout>
+Do not ever try to backfill the data, as data like user statistics is incremental. If you backfill (e.g. processing same event twice), you will get wrong statistics. So please always revert all migrations and re-index from the first tx your contract deployed.
+</Callout>
+
 ## Ready for Mainnet
 
 If you started your dapp on testnet, and you are happy with your testing, you will want to get the dapp on mainnet.
@@ -223,8 +229,6 @@ Go to the Cloud Run dashboard, create a new service, then select the container i
 
 You can learn more about Cloud Run in their [docs](https://cloud.google.com/run/docs/quickstarts/deploy-container).
 
-**NOTE**: Always allocate CPU so it always runs instead of only run when there is traffic. Min and max instances should be 1.
-
-## Re-indexing
-
-**WARNING**: Do not ever try to backfill the data, as logic like point calculation is incremental. If you backfill (e.g. processing same event twice), you will get wrong point data. So please always revert all migrations and re-index from the first tx your contract deployed.
+<Callout>
+Always allocate CPU so it always runs instead of only run when there is traffic. Min and max instances should be 1.
+</Callout>
