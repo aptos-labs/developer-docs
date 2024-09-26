@@ -227,4 +227,4 @@ You can learn more about cloud run on their [docs](https://cloud.google.com/run/
 
 ## Re-indexing
 
-**WARNING**: Do not ever try to backfill the data, logic like point calculation is incremental, if you backfill like processing same event twice, you will get wrong point data. So please always revert all migrations and re-index from the first tx your contract deployed.
+**WARNING**: Do not ever try to backfill the data, as logic like point calculation is incremental. If you backfill (e.g. processing same event twice), you will get wrong point data. So please always revert all migrations and re-index from the first tx your contract deployed.
