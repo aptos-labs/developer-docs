@@ -372,9 +372,7 @@ You cannot create a `DeleteRef` for a non-deletable Object.
 ```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
-  use std::option;
-  use std::string::{self, String};
-  use aptos_framework::object::{self, Object};
+  use aptos_framework::object::{Self, Object};
 
   /// Caller is not the owner of the object
   const E_NOT_OWNER: u64 = 1;
@@ -386,8 +384,8 @@ module my_addr::object_playground {
 
   entry fun create_my_object(
     caller: &signer,
-    transferrable: bool,
-    controllable: bool
+    _transferrable: bool,
+    _controllable: bool
   ) {
     let caller_address = signer::address_of(caller);
 
@@ -409,12 +407,12 @@ module my_addr::object_playground {
   entry fun delete(
     caller: &signer,
     object: Object<ObjectController>,
-  ) {
+  ) acquires ObjectController {
     // Only let caller delete
     let caller_address = signer::address_of(caller);
-    assert!(object::is_owner(&object, caller_address), E_NOT_OWNER);
+    assert!(object::is_owner(object, caller_address), E_NOT_OWNER);
 
-    let object_address = object::object_address(object);
+    let object_address = object::object_address(&object);
 
     // Retrieve the delete ref, it is consumed so it must be extracted
     // from the resource
