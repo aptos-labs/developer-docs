@@ -43,10 +43,10 @@ val txn = aptos.buildTransaction.simple(
     data = entryFunctionData {
         function = "0x1::coin::transfer"
         typeArguments = typeArguments {
-            +TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())
+            +TypeTagStruct("0x1::aptos_coin::AptosCoin")
         }
         functionArguments = functionArguments {
-            +MoveString(bobAccount.accountAddress)
+            +bobAccount.accountAddress
             +U64(SEND_AMOUNT)
         }
     },
@@ -96,12 +96,6 @@ The following is a complete example of how to build and send a transaction to tr
 
 ```kotlin filename="transaction.kt"
 
-import xyz.mcxross.kaptos.Aptos
-import xyz.mcxross.kaptos.account.Account
-import xyz.mcxross.kaptos.extension.toStructTag
-import xyz.mcxross.kaptos.model.*
-import xyz.mcxross.kaptos.util.runBlocking
-
 const val FUNDING_AMOUNT = 100_000_000L
 const val SEND_AMOUNT_APT = 0.5f
 const val UNIT_CONVERSION = 100_000_000
@@ -144,11 +138,9 @@ fun main() = runBlocking {
       data =
         entryFunctionData {
           function = "0x1::coin::transfer"
-          typeArguments = typeArguments {
-            +TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())
-          }
+          typeArguments = typeArguments { +TypeTagStruct("0x1::aptos_coin::AptosCoin") }
           functionArguments = functionArguments {
-            +MoveString(bob.accountAddress.toString())
+            +bob.accountAddress
             +U64(SEND_AMOUNT_UNITS.toULong())
           }
         },
