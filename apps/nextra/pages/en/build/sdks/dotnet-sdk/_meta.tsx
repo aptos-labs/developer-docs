@@ -14,4 +14,7 @@ export default {
   transactions: {
     title: "Transactions",
   },
+  "dotnet-examples": {
+    title: "Examples",
+  },
 };
