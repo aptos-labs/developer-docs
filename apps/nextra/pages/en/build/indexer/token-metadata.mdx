@@ -10,22 +10,22 @@ Explore the capabilities of this query! Modify the variables below to tailor the
 </Callout>
 
 <GraphQLEditor
-  query={`query GetTokensDataByName($name: String, $collectionId: String) {
+  query={`query GetTokensDataByName($token_name: String, $collectionId: String) {
   current_token_datas_v2(
-    where: {name: {_eq: $name}, collection_id: {_eq: $collectionId}}
+    where: {token_name: {_eq: $token_name}, collection_id: {_eq: $collectionId}}
   ) {
     token_uri
     __typename
   }
 }`}
   variables={`{
-  "name": "The Mexican",
+  "token_name": "The Mexican",
   "collectionId": "0xe6a7399d10406b993e25d8a3bf24842413ba8f1a08444dbfa5f1c31b09f0d16e"
 }`}
 />
 
 #### Variables:
-- `$name`: **String** - The name of the token to search within the collection. Example: `"The Mexican"`.
+- `$token_name`: **String** - The name of the token to search within the collection. Example: `"The Mexican"`.
 - `$collectionId`: **String** - The collection id calculated based on collection name and creator address. Example: `"0xe6a7399d10406b993e25d8a3bf24842413ba8f1a08444dbfa5f1c31b09f0d16e"`.
 
 
