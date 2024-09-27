@@ -64,7 +64,7 @@ async function callFaucet(amount: number, address: string): Promise<string []> {
     amount,
     address,
   };
-  const response = await faucetClient.fund({ requestBody: request });
+  const response = await faucetClient.fund.fund({ requestBody: request });
   return response.txn_hashes;
 }
 ```
