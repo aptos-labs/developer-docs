@@ -8,6 +8,9 @@ export default {
   "rust-sdk": {
     title: "Rust SDK",
   },
+  "dotnet-sdk": {
+    title: ".NET SDK",
+  },
   "unity-sdk": {
     title: "Unity SDK",
   },

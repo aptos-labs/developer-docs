@@ -1,0 +1,157 @@
+---
+title: "Basic Transactions"
+---
+
+import { Steps, Callout } from "nextra/components";
+
+<Callout type="warning" emoji="❗">
+  This SDK is currently in beta. Please report any issues you encounter by
+  creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# Basic Transactions
+
+This section covers the basic transaction types that can be built and submitted to the Aptos blockchain.
+
+<Steps>
+
+### Set up your AptosClient
+
+Set up your Aptos client by adding the `Aptos` namespace and instantiating an `AptosClient`. You can use a predefined
+configuration from `Networks` or configuring your own.
+
+```csharp filename="Program.cs"  {1-1, 7-8}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Mainnet);
+        var client = new AptosClient(config);
+    }
+}
+```
+
+### Set up an Account
+
+To create a transaction, you will need an account to sign the transaction. This can be done using a private key,
+mnemonic, or a combination of both. In this example, we will generate a random new account.
+
+```csharp filename="Program.cs" {10-12}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Mainnet);
+        var client = new AptosClient(config);
+
+        // 1. Create an account and fund it.
+        var account = Account.Generate();
+        await client.Faucet.FundAccount(account.Address, 100_000_000);
+    }
+}
+```
+
+### Build the Transaction
+
+To interact with the blockchain, you will need to build a transaction. The `AptosClient` can be
+used to build a transaction payload that can be signed and submitted to chain. In the transaction,
+we can specify the sender, entry function, and arguments.
+
+```csharp filename="Program.cs" {12-20}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Devnet);
+        var client = new AptosClient(config);
+
+        var account = Account.Generate();
+
+        // 2. Build the transaction
+        var transaction = await client.Transaction.Build(
+            sender: account,
+            data: new GenerateEntryFunctionPayloadData(
+                function: "0x1::aptos_account::transfer_coins",
+                typeArguments: ["0x1::aptos_coin::AptosCoin"],
+                functionArguments: [account.Address, "100000"]
+            )
+        );
+    }
+}
+```
+
+### Sign and Submit Transactions
+
+Once the transaction is built, it can be signed and submitted to the blockchain. The `AptosClient` can be
+used to sign and submit the transaction.
+
+```csharp filename="Program.cs" {21-22}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Devnet);
+        var client = new AptosClient(config);
+
+        var account = Account.Generate();
+
+        var transaction = await client.Transaction.Build(
+            sender: account,
+            data: new GenerateEntryFunctionPayloadData(
+                function: "0x1::aptos_account::transfer_coins",
+                typeArguments: ["0x1::aptos_coin::AptosCoin"],
+                functionArguments: [account.Address, "100000"]
+            )
+        );
+
+        // 3. Sign the transaction
+        var submittedTransaction = await client.Transaction.SignAndSubmitTransaction(signer, transaction);
+    }
+}
+```
+
+### (Optional) Wait for the Transaction to Execute
+
+After the transaction has been submitted, it will have to process before its committed to the blockchain. The `AptosClient` can be
+used to wait for the transaction to be processed and executed.
+
+```csharp filename="Program.cs" {23-24}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Devnet);
+        var client = new AptosClient(config);
+
+        var account = Account.Generate();
+
+        var transaction = await client.Transaction.Build(
+            sender: account,
+            data: new GenerateEntryFunctionPayloadData(
+                function: "0x1::aptos_account::transfer_coins",
+                typeArguments: ["0x1::aptos_coin::AptosCoin"],
+                functionArguments: [account.Address, "100000"]
+            )
+        );
+
+        var submittedTransaction = await client.Transaction.SignAndSubmitTransaction(account, transaction);
+
+        // 4. Wait for the transaction to be processed
+        var transactionResult = await client.Transaction.WaitForTransaction(submittedTransaction.Hash);
+    }
+}
+```
+
+</Steps>
