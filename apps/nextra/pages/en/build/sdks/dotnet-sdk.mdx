@@ -1,0 +1,97 @@
+---
+title: ".NET SDK "
+---
+
+import { Card, Cards } from "@components/index";
+import { Callout } from "nextra/components";
+
+<Callout type="warning" emoji="❗">
+  This SDK is currently in beta. Please report any issues you encounter by
+  creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# Aptos .NET SDK (Beta)
+
+Integrate Aptos web3 capabilities within your .NET applications. The goal of this SDK is to provide a set of tools
+for developers to build multi-platform applications across compatible game engines and platforms.
+
+**Supported Features**
+
+- Binary Canonical Serialization (BCS) encoding and decoding
+- Ed25519, SingleKey, MultiKey, and Keyless signer support
+- Utilities for transaction building, signing, and submission
+- Abstractions over the Aptos Fullnode and Indexer APIs
+- Aptos Names (ANS) support for resolution and lookup
+
+## Installation
+
+The .NET SDK is available on [NuGet](https://www.nuget.org/packages/Aptos).
+
+You can install the .NET SDK using the following command:
+
+```bash
+dotnet add package Aptos
+```
+
+## Gaming Integrations
+
+Begin using the Aptos .NET SDK in your game engine of choice.
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./dotnet-sdk/godot-integration" className="flex flex-row gap-4">
+    <Card.Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Godot_icon.svg/2048px-Godot_icon.svg.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Godot Integration</Card.Title>
+      <Card.Description>
+        Begin integrating into Godot projects.
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./dotnet-sdk/unity-integration" className="flex flex-row gap-4">
+    <Card.Image src="https://cdn-icons-png.freepik.com/512/5969/5969346.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Unity Integration</Card.Title>
+      <Card.Description>
+        Begin integrating into Unity projects.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>
+
+### Compatibility
+
+| .NET Version      | Supported | Target Game Engines |
+| ----------------- | --------- | ------------------- |
+| .NET Standard 2.1 | ✅        | Unity               |
+| .NET 6.0          | ✅        | Godot               |
+| .NET 7.0          | ✅        | Godot (Android)     |
+| .NET 8.0          | ✅        | Godot (iOS)         |
+
+## Resources
+
+<Cards className="xl:grid-cols-2">
+  <Card
+    href="./dotnet-sdk/getting-started"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <div className="flex flex-col gap-2">
+      <Card.Title>Getting Started</Card.Title>
+      <Card.Description>
+        Begin developing using the Aptos .NET SDK.
+      </Card.Description>
+    </div>
+  </Card>
+  <Card
+    href="https://aptos-labs.github.io/aptos-dotnet-sdk/"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <div className="flex flex-col gap-2">
+      <Card.Title>Full API Reference</Card.Title>
+      <Card.Description>
+        The full API reference for the Aptos .NET SDK.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>
