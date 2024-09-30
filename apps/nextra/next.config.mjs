@@ -1698,6 +1698,43 @@ export default withBundleAnalyzer(
         destination: "/en/build/sdks/community-sdks/swift-sdk",
         permanent: false,
       },
+      {
+        source: "/en/build/sdks/ts-sdk/legacy-ts-sdk/sdk-client-layer",
+        destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
+        permanent: true,
+      },
+      {
+        source:
+          "/en/build/sdks/ts-sdk/legacy-ts-sdk/sdk-client-layer/aptos-client",
+        destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
+        permanent: true,
+      },
+      {
+        source:
+          "/en/build/sdks/ts-sdk/legacy-ts-sdk/sdk-client-layer/indexer-client",
+        destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
+        permanent: true,
+      },
+      {
+        source: "/en/build/sdks/ts-sdk/legacy-ts-sdk/sdk-core-layer",
+        destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
+        permanent: true,
+      },
+      {
+        source: "/en/build/sdks/ts-sdk/legacy-ts-sdk/sdk-plugins-layer",
+        destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
+        permanent: true,
+      },
+      {
+        source: "/en/build/sdks/ts-sdk/legacy-ts-sdk/sdk-tests",
+        destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
+        permanent: true,
+      },
+      {
+        source: "/en/build/sdks/ts-sdk/legacy-ts-sdk/typescript-sdk-overview",
+        destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
+        permanent: true,
+      },
     ],
   }),
 );
