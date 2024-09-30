@@ -1692,7 +1692,7 @@ export default withBundleAnalyzer(
         destination: "/en/build/indexer/fungible-asset-info",
         permanent: true,
       },
-      /* Redirect Swift SDK until it's vetted */
+      /* Redirect community swift SDK */
       {
         source: "/en/build/sdks/swift-sdk",
         destination: "/en/build/sdks/community-sdks/swift-sdk",
@@ -1734,6 +1734,12 @@ export default withBundleAnalyzer(
         source: "/en/build/sdks/ts-sdk/legacy-ts-sdk/typescript-sdk-overview",
         destination: "/en/build/sdks/ts-sdk/legacy-ts-sdk/migration-guide",
         permanent: true,
+      },
+      /* Redirect community Kotlin SDK */
+      {
+        source: "/en/build/sdks/kotlin-sdk",
+        destination: "/en/build/sdks/community-sdks/kotlin-sdk",
+        permanent: false,
       },
     ],
   }),
