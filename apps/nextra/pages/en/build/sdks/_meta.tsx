@@ -5,20 +5,20 @@ export default {
   "python-sdk": {
     title: "Python SDK",
   },
-  "rust-sdk": {
-    title: "Rust SDK",
+  "go-sdk": {
+    title: "Go SDK",
   },
   "dotnet-sdk": {
     title: ".NET SDK",
   },
-  "unity-sdk": {
-    title: "Unity SDK",
-  },
-  "go-sdk": {
-    title: "Go SDK",
-  },
   "cpp-sdk": {
     title: "C++ / Unreal SDK",
+  },
+  "rust-sdk": {
+    title: "Rust SDK",
+  },
+  "unity-sdk": {
+    title: "Unity SDK",
   },
   "wallet-adapter": {
     title: "Wallet Adapter",
