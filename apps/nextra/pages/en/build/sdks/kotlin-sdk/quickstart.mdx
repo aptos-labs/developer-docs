@@ -106,13 +106,13 @@ val aptos = Aptos(aptosConfig)
   ```kotlin
   val txn = aptos.buildTransaction.simple(
       sender = aliceAccount.accountAddress,
-      data = inputEntryFunctionData {
+      data = entryFunctionData {
           function = "0x1::coin::transfer"
           typeArguments = typeArguments {
-              +TypeTagStruct(type = "0x1::aptos_coin::AptosCoin".toStructTag())
+              +TypeTagStruct("0x1::aptos_coin::AptosCoin")
           }
           functionArguments = functionArguments {
-              +MoveString(bobAccount.accountAddress)
+              +bobAccount.accountAddress
               +U64(SEND_AMOUNT)
           }
   },)

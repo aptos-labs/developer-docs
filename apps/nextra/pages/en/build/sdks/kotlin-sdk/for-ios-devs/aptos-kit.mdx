@@ -1,0 +1,43 @@
+---
+title: "Swift SDK"
+---
+
+import { Callout } from 'nextra/components'
+import { Cards, Card } from '@components/index'
+
+# AptosKit
+
+**AptosKit** is a Swift SDK for interacting with the Aptos blockchain.
+It provides a simple and easy-to-use interface for interacting with the Aptos
+blockchain.
+
+The SDK is a Swift package export for [Kaptos](./kotlin-sdk), a Kotlin SDK for
+the Aptos blockchain. It is build by making its iOS binary available as a
+dependency to iOS developers working on native Swift projects.
+
+<Callout>
+  **AptosKit** is currently under development, please give feedback [here](https://github.com/mcxross/swift-aptos/issues)
+</Callout>
+
+## Installation
+
+To install **AptosKit**, add the following to your `Package.swift` file:
+
+```swift filename="Package.swift"
+dependencies: [
+    .package(url: "https://github.com/mcxross/swift-aptos.git", .upToNextMajor(from: <version>))
+]
+```
+
+## Example
+
+<Cards>
+  <Card href="./swift-sdk/quickstart">
+    <Card.Title>Quickstart</Card.Title>
+    <Card.Description>Integrate Aptos in < 5 minutes</Card.Description>
+  </Card>
+  <Card href="https://github.com/mcxross/swift-aptos/tree/main/iOSDemo/iOSDemo">
+    <Card.Title>iOS Demo</Card.Title>
+    <Card.Description>Sample iOS app using AptosKit</Card.Description>
+  </Card>
+</Cards>

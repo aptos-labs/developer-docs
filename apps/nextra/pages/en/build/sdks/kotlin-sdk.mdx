@@ -7,17 +7,20 @@ import { RemoteCodeblock, permalinkFetch, Cards, Card } from '@components/index'
 
 export async function getStaticProps() {
   return await permalinkFetch([
-    'https://github.com/mcxross/kaptos/blob/199fab35400a4658cb2f50371519b22575c1cfb4/sample/jvmApp/src/main/kotlin/Transaction.kt#L67-L87'
+    'https://github.com/mcxross/kaptos/blob/64731d7085bfa64e93941aad78ba5ac429787552/sample/jvmApp/src/main/kotlin/APTTransfer.kt#L59-L71'
   ])
 }
 
 # Kaptos
 
-Kaptos, a Kotlin Multiplatform lib, is a Multiplatform SDK for connecting, exploring, and interacting
-with the Aptos blockchain across multiple platforms. It offers a uniform API for
-requesting data, sending transactions, and more; making cross-platform application
-development with shared business logic easy. The SDK provides asynchronous
-Aptos clients for seamless blockchain interactions.
+Kaptos is a Kotlin **Multiplatform** SDK for interacting with the Aptos blockchain
+across various platforms. It offers a **consistent** API for data requests,
+transaction submissions, and more, facilitating cross-platform app development
+with shared business logic. The SDK includes **asynchronous** Aptos clients for
+smooth blockchain interactions.
+
+Kaptos also provides **platform-specific** SDKs for JVM, Android, iOS, JS, Linux,
+macOS, and Windows.
 
 <div className="flex gap-2 mt-6 flex-wrap">
   <img src="http://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android" alt="Android Badge" />
@@ -29,6 +32,10 @@ Aptos clients for seamless blockchain interactions.
   <img src="http://img.shields.io/badge/Platform-Linux-lightgrey.svg?logo=linux" alt="Linux Badge" />
   <img src="http://img.shields.io/badge/Platform-macOS-orange.svg?logo=apple" alt="macOS Badge" />
   <img src="http://img.shields.io/badge/Platform-Windows-blue.svg?logo=windows" alt="Windows Badge" />
+</div>
+
+<div className="flex gap-2 mt-6 flex-wrap">
+  <img src="https://img.shields.io/maven-central/v/xyz.mcxross.kaptos/kaptos.svg?label=Maven%20Central" alt="Maven Central"/>
   <a target="_blank" href="https://mcxross.github.io/kaptos/">
     ![Static Badge](https://img.shields.io/badge/SDK_Reference-Docs)
   </a>
@@ -156,8 +163,23 @@ The snippet demonstrates how to build a transaction to transfer APT. We then
 sign and submit the transaction to the blockchain in a single step.
 
 <RemoteCodeblock
-  permalink="https://github.com/mcxross/kaptos/blob/199fab35400a4658cb2f50371519b22575c1cfb4/sample/jvmApp/src/main/kotlin/Transaction.kt#L67-L87"
+  permalink="https://github.com/mcxross/kaptos/blob/64731d7085bfa64e93941aad78ba5ac429787552/sample/jvmApp/src/main/kotlin/APTTransfer.kt#L59-L71"
 />
+
+The SDK also provides pre-built methods for common transaction operations. For
+example, you can use the `transferCoinTransaction` method to generate a transfer
+transaction between two accounts as shown below:
+
+```kotlin
+val txn = aptos.transferCoinTransaction(
+     alice.accountAddress,
+     bob.accountAddress,
+     SEND_AMOUNT
+   )
+```
+
+You can then [sign](kotlin-sdk/building-transactions#sign-the-transaction) and
+[submit](kotlin-sdk/building-transactions#submit-the-transaction) this transaction.
 
 ## Examples
 
