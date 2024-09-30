@@ -52,7 +52,7 @@ module my_addr::object_playground {
   #[view]
   fun has_object(creator: address): bool {
     let object_address = object::create_object_address(&creator, NAME);
-    object_exists<0x1::object::ObjectCore>(object_address)
+    object::object_exists<0x1::object::ObjectCore>(object_address)
   }
 }
 ```
@@ -123,8 +123,8 @@ You can control who has permission to use the `ExtendRef` via smart contract log
 ```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
-  use std::string::{self, String};
-  use aptos_framework::object::{self, Object};
+  use std::string::{Self, String};
+  use aptos_framework::object::{Self, Object};
 
   /// Caller is not the owner of the object
   const E_NOT_OWNER: u64 = 1;
@@ -179,12 +179,12 @@ module my_addr::object_playground {
     // Or any other permission scheme you can think of, the possibilities are endless!
 
     // Use the extend ref to get a signer
-    let object_address = object::object_address(object);
-    let extend_ref = borrow_global<ObjectController>(object_address).extend_ref;
-    let object_signer = object::generate_signer_for_extending(&extend_ref);
+    let object_address = object::object_address(&object);
+    let extend_ref = &borrow_global<ObjectController>(object_address).extend_ref;
+    let object_signer = object::generate_signer_for_extending(extend_ref);
 
     // Extend the object to have a message
-    move_to(object_signer, Message { message });
+    move_to(&object_signer, Message { message });
   }
 }
 ```
@@ -198,8 +198,7 @@ The example below shows how you could generate and manage permissions for determ
 ```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
-  use std::string::{self, String};
-  use aptos_framework::object::{self, Object};
+  use aptos_framework::object::{Self, Object};
 
   /// Caller is not the publisher of the contract
   const E_NOT_PUBLISHER: u64 = 1;
@@ -250,18 +249,16 @@ module my_addr::object_playground {
     assert!(caller_address == @my_addr, E_NOT_PUBLISHER);
 
     // Retrieve the transfer ref
-    let object_address =
-
- object::object_address(object);
-    let transfer_ref = borrow_global<ObjectController>(
+    let object_address = object::object_address(&object);
+    let transfer_ref = &borrow_global<ObjectController>(
       object_address
     ).transfer_ref;
 
     // Toggle it based on its current state
     if (object::ungated_transfer_allowed(object)) {
-      object::disable_ungated_transfer(&transfer_ref);
+      object::disable_ungated_transfer(transfer_ref);
     } else {
-      object::enable_ungated_transfer(&transfer_ref);
+      object::enable_ungated_transfer(transfer_ref);
     }
   }
 }
@@ -375,9 +372,7 @@ You cannot create a `DeleteRef` for a non-deletable Object.
 ```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
-  use std::option;
-  use std::string::{self, String};
-  use aptos_framework::object::{self, Object};
+  use aptos_framework::object::{Self, Object};
 
   /// Caller is not the owner of the object
   const E_NOT_OWNER: u64 = 1;
@@ -389,8 +384,8 @@ module my_addr::object_playground {
 
   entry fun create_my_object(
     caller: &signer,
-    transferrable: bool,
-    controllable: bool
+    _transferrable: bool,
+    _controllable: bool
   ) {
     let caller_address = signer::address_of(caller);
 
@@ -412,12 +407,12 @@ module my_addr::object_playground {
   entry fun delete(
     caller: &signer,
     object: Object<ObjectController>,
-  ) {
+  ) acquires ObjectController {
     // Only let caller delete
     let caller_address = signer::address_of(caller);
-    assert!(object::is_owner(&object, caller_address), E_NOT_OWNER);
+    assert!(object::is_owner(object, caller_address), E_NOT_OWNER);
 
-    let object_address = object::object_address(object);
+    let object_address = object::object_address(&object);
 
     // Retrieve the delete ref, it is consumed so it must be extracted
     // from the resource
