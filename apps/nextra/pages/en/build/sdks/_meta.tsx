@@ -2,20 +2,20 @@ export default {
   "ts-sdk": {
     title: "TypeScript SDK",
   },
+  "python-sdk": {
+    title: "Python SDK",
+  },
   "go-sdk": {
     title: "Go SDK",
+  },
+  "rust-sdk": {
+    title: "Rust SDK",
   },
   "dotnet-sdk": {
     title: ".NET SDK",
   },
-  "python-sdk": {
-    title: "Python SDK",
-  },
   "cpp-sdk": {
     title: "C++ / Unreal SDK",
-  },
-  "rust-sdk": {
-    title: "Rust SDK",
   },
   "unity-sdk": {
     title: "Unity SDK",
