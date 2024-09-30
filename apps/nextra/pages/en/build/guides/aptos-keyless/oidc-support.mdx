@@ -12,12 +12,20 @@ Aptos Keyless supports the following IdPs on our network(s). Support for additio
 | ----------------- | --------- | ------- | ------- |
 | Google            | Live      | Live    | Live    |
 | Apple             | Live      | Live    | Live    |
-| Auht0 (Federated) | Live      | Live    | -       |
+| Auth0 (Federated) | Live      | Live    | -       |
 | Cognito (Federated)| Live      | Live    | -       |
 | Okta              | In review | -       | -       |
 | Microsoft         | In review | -       | -       |
 | Github            | In review | -       | -       |
 | Facebook          | In review | -       | -       |
+
+<Callout type="info">
+  **Federated Keyless**
+
+  Support for federated Keyless Accounts via IAM providers such as Auth0 and Cognito is coming soon.  
+  
+  For the latest updates join us here: https://t.me/+h5CN-W35yUFiYzkx
+</Callout>
 
 To integrate Aptos Keyless into your dApp, you must register your dApp with at least one of the available identity providers via their OIDC registration process. Each respective registration process will assign a Client ID to your application, which will serve as an identifier for your application in the Keyless architecture.
 
