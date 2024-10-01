@@ -1,6 +1,6 @@
 import { Card, Cards } from '@components/index'
 
-# SDKs
+# Official SDKs
 Use these Aptos software development kits (SDKs), in combination with the [Aptos CLI](cli.mdx) for your development on the Aptos blockchain.
 
 <Cards className="xl:grid-cols-2">
@@ -79,11 +79,30 @@ Use these Aptos software development kits (SDKs), in combination with the [Aptos
       </Card.Description>
     </div>
   </Card>
-  <Card href="./sdks/community-sdks" className="flex flex-row gap-4">
+</Cards>
+
+## [Community SDKs](./sdks/community-sdks.mdx)
+
+SDKs provided by the community for Aptos.  These may not be fully vetted by the
+Aptos team, and may still be in development. They are still provided as a
+resource for all developers.
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./sdks/community-sdks/kotlin-sdk" className="flex flex-row gap-4">
+    <Card.Image className="object-contain" src="https://upload.wikimedia.org/wikipedia/commons/3/37/Kotlin_Icon_2021.svg" />
     <div className="flex flex-col gap-2">
-      <Card.Title>Community SDKs</Card.Title>
+      <Card.Title>Kotlin SDK</Card.Title>
       <Card.Description>
-        Community built SDKs, including Kotlin and Swift
+        Aptos Kotlin Multiplatform SDK by Kaptos
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./sdks/community-sdks/swift-sdk" classname="flex flex-row gap-4">
+    <Card.Image classname="object-contain" src="https://developer.apple.com/swift/images/swift-og.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Swift SDK</Card.Title>
+      <Card.Description>
+        Aptos Swift SDK by Alcove
       </Card.Description>
     </div>
   </Card>
