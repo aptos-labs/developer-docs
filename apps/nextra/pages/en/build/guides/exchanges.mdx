@@ -698,12 +698,13 @@ This is the address of the `FungibleStore` for the asset, where the balance is s
 2. Next, we take a look at the `0x1::fungible_asset::FungibleStore` changes.  This
 will show the end state of the balance for the fungible asset.  The balance is in
 the `data.balance` field.  The `address` field will match the `store` field from
-the events.
+the events.  The identifier of the fungible asset, is the `metadata` field.  It
+is the address of the `metadata` for the fungible asset.
 
 Additionally, to figure out the actual owner of the assets, you will need to look
-at the owner of the store.  In this case, you will need the `0x1::object::ObjectCore`,
-resource to determine the owner of the store.  The `owner` field will show the owner
-of the assets.
+at the owner of the store.  In this case, you will need the `0x1::object::ObjectCore`, where
+the `address` field matches the `store` field from the events.  The `owner` field
+will show the asset owner's address.
 
 <details>
   <summary>Fungible Asset Changes</summary>
