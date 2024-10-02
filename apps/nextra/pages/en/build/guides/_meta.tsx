@@ -47,10 +47,10 @@ export default {
     type: "separator",
     title: "Integration Guides",
   },
-  "system-integrators-guide": {
-    title: "Applications",
-  },
   exchanges: {
     title: "Exchanges",
+  },
+  "system-integrators-guide": {
+    title: "Applications",
   },
 };
