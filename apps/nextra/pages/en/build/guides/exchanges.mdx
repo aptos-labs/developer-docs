@@ -1,0 +1,1180 @@
+---
+title: "Exchange Integration Guide"
+---
+
+import { Callout } from "nextra/components";
+
+# Exchange Integration Guide
+
+This describes how to integrate Aptos and Aptos assets into an exchange.  It provides
+generic information for tracking balances, transferring assets, and testing the integration.
+
+## Overview
+
+This document will guide you through the following tasks to integrate with Aptos:
+* Infrastructure
+* Address standards
+* Asset standards
+* Retrieving balances
+* Tracking balance changes
+* Transferring assets
+* Testing the integration
+
+## Infrastructure
+
+It's suggested that you run your own [full node](/network/nodes/full-node.mdx) to interact with the Aptos blockchain.
+This will allow you to query the blockchain for the latest state and submit transactions.
+You can also use the [Indexer](/build/apis/indexer.mdx) to query for on-chain data efficiently.
+
+## Address Standards
+
+### Addresses
+A single address can be represented in three ways.  We recommend you show all leading zeros, and the `0x`. Here is an example of all three representations for the framework address `0x1`:
+* `0x00000000000000000000000000000001` - A full representation of 32-bytes in hex with a leading `0x`.  This is preferred.
+* `0x1` - The short representation of the address with a leading `0x`. This is kept around for compatibility, but preferred with all leading 0s.
+* `00000000000000000000000000000001` - A full representation of 32-bytes in hex without a leading `0x`. This is kept around for compatibility, but preferred with leading 0x.
+
+For example SDKs will handle this parsing automatically, and we suggest you use the SDKs directly to handle it for you.
+
+```ts filename="example.ts"
+import { AccountAddress } from "@aptos-labs/ts-sdk";
+const address = AccountAddress.from("0x1");
+address.toStringLong(); // 0x00000000000000000000000000000001
+```
+
+There is additionally, Aptos Name Service (ANS) for friendly .apt names.  For more information about addresses
+and Aptos Names, see our page on [Accounts](../../network/blockchain/accounts).
+
+## Account Standards
+
+Accounts must exist prior to sending a transaction to the blockchain.  This is done by creating an account resource, which can
+be created by simply calling `0x1::aptos_account::transfer` with a zero amount to the account you want to create.  Optionally,
+`0x1::aptos_account::create_account` can be used to create an account with a zero balance.
+
+```ts filename="example.ts"
+import { Aptos, Ed25519Account, Ed25519PrivateKey } from "@aptos-labs/ts-sdk";
+
+const aptos = new Aptos();
+const account = new Ed25519Account({privateKey: new Ed25519PrivateKey("private key")})
+const transaction = await aptos.transferCoinTransaction({sender: account.accountAddress, recipient: "receiver address", amount: 100000000})
+const pendingTransaction = await aptos.transaction.signAndSubmitTransaction({signer: account, transaction})
+const committedTransaction = await aptos.waitForTransaction({transactionHash: pendingTransaction.hash});
+```
+
+## Asset Standards
+
+Aptos provides two standards for fungible tokens, similar to ERC-20 tokens on Ethereum:
+
+* An earlier [Coin standard](/build/smart-contracts/coin.mdx) used by assets on Aptos.
+* A newer [Fungible Asset Standard](/build/smart-contracts/fungible-assets.mdx) which is more featured.
+
+Additionally, there is a migratory period for assets from Coin to Fungible Asset standards.
+We will call this from now on **migrated coins**. Migrated coins can be used interchangeably
+with Fungible Asset and Coin standards.  This is important to note when querying balances, to
+use coin functions and not fungible asset functions.
+
+### Coin Standard (tl;dr)
+
+A **coin** has an associated contract that holds the on-chain struct that represents the coin.  The coin is
+represented as a struct name e.g. `0x1::aptos_coin::AptosCoin` for `APT`.
+
+All coins are stored in an account resource called `0x1::coin::CoinStore<CoinType>`.  Coins must be registered
+prior to using the `CoinStore`, but if using the proper functions e.g. `0x1::aptos_account::transfer`
+or `0x1::aptos_account::transfer_coins<CoinType>`, this will be done automatically.
+
+Coins can be *migrated* to a fungible asset.  In order to support a migrated asset,
+continue calling the coin functions as will be mentioned later.
+
+More info can be found at: [Coin Standard](/build/smart-contracts/coin.mdx)
+
+### Fungible Asset Standard (tl;dr)
+
+A **fungible asset** has an associated metadata address that holds the metadata for the fungible asset.  This is commonly called the
+fa metadata address.  The asset is represented as an address e.g. `0xA` for `APT`.
+
+All fungible assets are stored in an `object`, which is called a `fungible asset store`.
+
+For exchanges, the most important store is `primary_fungible_store`, which is the default store for fungible assets.
+This is directly connected to an owner. From this point on in this guide, we will
+only talk about supporting `primary_fungible_store` for fungible assets.
+
+More info can be found at: [Fungible Asset Standard](/build/smart-contracts/fungible-assets.mdx)
+
+## Retrieving Balances
+
+Retrieving current balances for assets are different for each standard.  Integration is considered complete when it can handle both.
+
+Balances are always returned in their subunits.  For example, `APT` is returned in `octas` (1e-8 APT).  So, when an API
+returns a balance of `100000000`, this is `1 APT`.  If it returns `100` this is `0.000001 APT`.
+
+### Coin (and migrated coins) Balances
+
+<Callout type="info">
+  Note: This includes APT and any other coin that was migrated to a fungible
+  asset.
+</Callout>
+
+To retrieve the balance of a coin, or a coin that was migrated to a fungible asset, you can use
+the `0x1::coin::balance<CoinType>(account address)` view function.  This will combine the coin and coin migrated to fungible asset balances.
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(config);
+
+const coinType = "0x1::aptos_coin::AptosCoin";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::coin::balance",
+    typeArguments: [coinType],
+    functionArguments: [account]
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+A specific ledger version (transaction height) can be provided to get the balance at that point in time.  The below example shows for ledger version `1,000,000`.
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(config);
+
+const coinType = "0x1::aptos_coin::AptosCoin";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::coin::balance",
+    typeArguments: [coinType],
+    functionArguments: [account],
+    options: {
+      ledgerVersion: 1_000_000
+    }
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+### Fungible Asset Balances
+
+To retrieve the balance of a fungible asset, you can use
+the `0x1::primary_fungible_store::balance<0x1::object::ObjectCore>(account address, fungible asset metadata address)` view function.
+Note, that this will not include the balance of coins if it's a migrated coin.
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(config);
+
+const faMetadataAddress = "0xA";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::primary_fungible_store::balance",
+    typeArguments: ["0x1::object::ObjectCore"],
+    functionArguments: [account, faMetadataAddress]
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+A specific ledger version (transaction height) can be provided to get the balance at that point in time.  The below example shows for ledger version `1,000,000`.
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.TESTNET });
+const aptos = new Aptos(config);
+
+const faMetadataAddress = "0xA";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::primary_fungible_store::balance",
+    typeArguments: ["0x1::object::ObjectCore"],
+    functionArguments: [account, faMetadataAddress]
+  },
+  options: {
+    ledgerVersion: 1_000_000
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+## Tracking Balance Changes
+
+Balance changes can be queried in one of two ways:
+1. By watching for events that change the balance for each transaction.
+2. By querying the indexer for indexed balance change events.
+
+In the past, it was able to use the `events` endpoint for an account to get the
+transactions that changed the balance.  This is still possible, but will be deprecated
+in the future, and is not recommended for new integrations.
+
+### Coin Balance Changes
+
+Coin balances are tracked as two items, write set changes, and events.  Write set
+changes are end state of the coin balance, and events are the events that are
+emitted when a coin is withdrawn or deposited.
+
+Here is an [example of a coin transfer](https://explorer.aptoslabs.com/txn/1747361321?network=mainnet).
+The coin transfer can be tracked as an individual transaction
+[here](https://fullnode.mainnet.aptoslabs.com/v1/transactions/by_version/1747361321)
+from the REST API.
+
+We'll break it down into a few parts:
+
+1. The general transaction details tell information about the transaction.  The
+most important thing here is the transaction version is `1747361321`.  This gives
+us total order of all transactions on the blockchain. Think of it like block
+height, but for transactions.
+<details>
+  <summary>Transaction Details</summary>
+  ```json
+  {
+    "version": "1747361321",
+    "hash": "0x7c56ad56c7d02bb11887e535b9f1b221626d5b0d4cb5a1ffbadc358c1db515ea",
+    "state_change_hash": "0xc901b5e9e0965201e8205977720d7dea8a3709ee0d818fd5ec752cac13eaf18a",
+    "event_root_hash": "0x0077cb7df9db9ee7194c489db177fe9a325bcf3f1309ea99ed934085e5592041",
+    "state_checkpoint_hash": null,
+    "gas_used": "999",
+    "success": true,
+    "vm_status": "Executed successfully",
+    "accumulator_root_hash": "0xb531e918441ff0a37b49856e0f1b80c329146461582287cf9788964d25e31a68",
+  }
+  ```
+</details>
+2. The Write set `changes` are the end state of the transaction.  It shows all
+resources that were modified by the transaction, and what it's final state was.
+
+In this case, we only care about coin store changes.
+
+<details>
+<summary>Coin Store Changes</summary>
+```json
+  "changes": [
+  {
+    "address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "state_key_hash": "0xb2bfa7198457291a0e582b912be2bf8577feff08e352c9f16935a55ebd202dcc",
+    "data": {
+      "type": "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+      "data": {
+        "coin": {
+          "value": "903837250"
+        },
+        "deposit_events": {
+          "counter": "10",
+          "guid": {
+            "id": {
+              "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+              "creation_num": "2"
+            }
+          }
+        },
+        "frozen": false,
+        "withdraw_events": {
+          "counter": "52485",
+          "guid": {
+            "id": {
+              "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+              "creation_num": "3"
+            }
+          }
+        }
+      }
+    },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "state_key_hash": "0xa45b7cfe18cc0ef1d6588f0f548a6a6a260d5e6bbab174507ed40cd21b7bd082",
+    "data": {
+      "type": "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+      "data": {
+        "coin": {
+          "value": "10"
+        },
+        "deposit_events": {
+          "counter": "1",
+          "guid": {
+            "id": {
+              "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+              "creation_num": "2"
+            }
+          }
+        },
+        "frozen": false,
+        "withdraw_events": {
+          "counter": "0",
+          "guid": {
+            "id": {
+              "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+              "creation_num": "3"
+            }
+          }
+        }
+      }
+    },
+    "type": "write_resource"
+  }],
+```
+</details>
+
+3. Events are the events that were emitted by the transaction.  In this case, we
+only care about the `0x1::coin::deposit` and `0x1::coin::withdraw` events.
+
+The Coin deposit event is emitted when coins are deposited into an account. The
+account's balance will increase by that amount in the field `data.amoount`.  To
+determine the matching asset, you must match the `guid` in the `deposit_events`
+to the `guid` in the `changes` section for a `CoinStore`.
+
+<details>
+  <summary>Coin Deposit Event</summary>
+  ```json
+  {
+    "events": [{
+      "guid": {
+        "creation_number": "2",
+        "account_address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28"
+      },
+      "sequence_number": "0",
+      "type": "0x1::coin::DepositEvent",
+      "data": {
+        "amount": "10"
+      }
+    }]
+  }
+  ```
+</details>
+
+The Coin withdraw event is emitted when coins are withdrawn from an account. The
+account's balance will decrease by that amount in the field `data.amount`.  To
+determine the matching asset, you must match the `guid` in the `deposit_events`
+to the `guid` in the `changes` section for a `CoinStore`.
+
+<details>
+  <summary>Coin Withdraw Event</summary>
+  ```json
+  {
+    "events": [{
+      "guid": {
+        "creation_number": "3",
+        "account_address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0"
+      },
+      "sequence_number": "52484",
+      "type": "0x1::coin::WithdrawEvent",
+      "data": {
+        "amount": "10"
+      }
+    }]
+  }
+  ```
+</details>
+
+4. Gas usage only is tracked for APT.  There is no direct event for tracking gas,
+but it can be calculated from the transaction.  Using the `gas_used` field, and
+the `gas_unit_price` field, you can calculate the total gas used.  In this case,
+the `gas_used` is `999` and the `gas_unit_price` is `100`, so the total gas deducted
+from the sender(`0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0`)
+is `999 * 100 = 99900 subunits`  Remember that the subunits are used here. The
+value in the gas token `APT` is `0.00099900 APT`.
+
+
+<details>
+  <summary>Gas Information</summary>
+```json
+ {
+   "gas_used": "999",
+   "max_gas_amount": "100000",
+   "gas_unit_price": "100",
+   "sender": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+}
+```
+</details>
+
+
+5. Overall, you need both the events and the changes to determine the amount transferred
+of the account.  The final balances will show in the changes alone.  If you watch
+all of these events, you will be able to handle all possible transactions.  Below
+is the full example of the transaction response.
+
+<details>
+  <summary>Full Response</summary>
+  ```json
+  {
+    "version": "1747361321",
+    "hash": "0x7c56ad56c7d02bb11887e535b9f1b221626d5b0d4cb5a1ffbadc358c1db515ea",
+    "state_change_hash": "0xc901b5e9e0965201e8205977720d7dea8a3709ee0d818fd5ec752cac13eaf18a",
+    "event_root_hash": "0x0077cb7df9db9ee7194c489db177fe9a325bcf3f1309ea99ed934085e5592041",
+    "state_checkpoint_hash": null,
+    "gas_used": "999",
+    "success": true,
+    "vm_status": "Executed successfully",
+    "accumulator_root_hash": "0xb531e918441ff0a37b49856e0f1b80c329146461582287cf9788964d25e31a68",
+    "changes": [
+  {
+    "address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "state_key_hash": "0xb2bfa7198457291a0e582b912be2bf8577feff08e352c9f16935a55ebd202dcc",
+    "data": {
+    "type": "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+    "data": {
+    "coin": {
+    "value": "903837250"
+  },
+    "deposit_events": {
+    "counter": "10",
+    "guid": {
+    "id": {
+    "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "creation_num": "2"
+  }
+  }
+  },
+    "frozen": false,
+    "withdraw_events": {
+    "counter": "52485",
+    "guid": {
+    "id": {
+    "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "creation_num": "3"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "state_key_hash": "0xa3f2635d084b3cc01ae545c96ee15901549dab594363a46bf18e3d575c83102d",
+    "data": {
+    "type": "0x1::account::Account",
+    "data": {
+    "authentication_key": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "coin_register_events": {
+    "counter": "1",
+    "guid": {
+    "id": {
+    "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "creation_num": "0"
+  }
+  }
+  },
+    "guid_creation_num": "4",
+    "key_rotation_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "creation_num": "1"
+  }
+  }
+  },
+    "rotation_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  },
+    "sequence_number": "104628",
+    "signer_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "state_key_hash": "0xa45b7cfe18cc0ef1d6588f0f548a6a6a260d5e6bbab174507ed40cd21b7bd082",
+    "data": {
+    "type": "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+    "data": {
+    "coin": {
+    "value": "10"
+  },
+    "deposit_events": {
+    "counter": "1",
+    "guid": {
+    "id": {
+    "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "creation_num": "2"
+  }
+  }
+  },
+    "frozen": false,
+    "withdraw_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "creation_num": "3"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "state_key_hash": "0xba04f5a13812778031f67322e9801be65a846224e46f1360a6008402fcd0e0e0",
+    "data": {
+    "type": "0x1::account::Account",
+    "data": {
+    "authentication_key": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "coin_register_events": {
+    "counter": "1",
+    "guid": {
+    "id": {
+    "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "creation_num": "0"
+  }
+  }
+  },
+    "guid_creation_num": "4",
+    "key_rotation_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "creation_num": "1"
+  }
+  }
+  },
+    "rotation_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  },
+    "sequence_number": "0",
+    "signer_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "state_key_hash": "0x6e4b28d40f98a106a65163530924c0dcb40c1349d3aa915d108b4d6cfc1ddb19",
+    "handle": "0x1b854694ae746cdbd8d44186ca4929b2b337df21d1c74633be19b2710552fdca",
+    "key": "0x0619dc29a0aac8fa146714058e8dd6d2d0f3bdf5f6331907bf91f3acd81e6935",
+    "value": "0x9f9835f429758d010000000000000000",
+    "data": null,
+    "type": "write_table_item"
+  }
+    ],
+    "sender": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "sequence_number": "104627",
+    "max_gas_amount": "100000",
+    "gas_unit_price": "100",
+    "expiration_timestamp_secs": "1727826277",
+    "payload": {
+    "function": "0x1::aptos_account::transfer",
+    "type_arguments": [],
+    "arguments": [
+    "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "10"
+    ],
+    "type": "entry_function_payload"
+  },
+    "signature": {
+    "public_key": "0xfd448fada2bac29c5f3213277e001ca8851d5644578e79484b0426c41357a457",
+    "signature": "0x40d8a6ee9150aa5736bee23ce1b1b851790bc0aa7e2485c0760d5808027040a2ef4170b88962867b045197576c5e89a4c640bf43586e6b3ead2b510b59acc20a",
+    "type": "ed25519_signature"
+  },
+    "events": [
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28"
+  },
+    "sequence_number": "0",
+    "type": "0x1::account::CoinRegisterEvent",
+    "data": {
+    "type_info": {
+    "account_address": "0x1",
+    "module_name": "0x6170746f735f636f696e",
+    "struct_name": "0x4170746f73436f696e"
+  }
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "3",
+    "account_address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0"
+  },
+    "sequence_number": "52484",
+    "type": "0x1::coin::WithdrawEvent",
+    "data": {
+    "amount": "10"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "2",
+    "account_address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28"
+  },
+    "sequence_number": "0",
+    "type": "0x1::coin::DepositEvent",
+    "data": {
+    "amount": "10"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::transaction_fee::FeeStatement",
+    "data": {
+    "execution_gas_units": "6",
+    "io_gas_units": "5",
+    "storage_fee_octas": "98800",
+    "storage_fee_refund_octas": "0",
+    "total_charge_gas_units": "999"
+  }
+  }
+    ],
+    "timestamp": "1727825677775812",
+    "type": "user_transaction"
+  }
+  ```
+</details>
+
+
+### Fungible Asset Balance Changes
+
+For fungible assets, the balance changes are tracked in the `primary_fungible_store`.
+The primary fungible store address is deterministic, and will always be tracked by
+the owner of the store.
+
+An example: https://api.mainnet.aptoslabs.com/v1/transactions/by_version/1750174030
+
+There are a few steps when tracking fungible assets:
+
+1. There will be two types of events for fungible assets.  `0x1::fungible_asset::Deposit` and `0x1::fungible_asset::Withdraw`.
+
+`Withdraw` events are similar to the coin events, where the balance will decrease by the amount in the `data.amount` field.
+And similarly `Deposit` events will increase the balance by the amount in the `data.amount` field.
+
+Note that, I've omitted the sequence number, and GUID fields, as they do not apply to these events.
+
+Each event has a `store` field, which in this case is `0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a`.
+This is the address of the `FungibleStore` for the asset, where the balance is stored.  Note this, for the next step.
+
+<details>
+  <summary>Fungible Asset Events</summary>
+```json
+{
+  "events": [
+    {
+      "type": "0x1::fungible_asset::Withdraw",
+      "data": {
+        "amount": "1",
+        "store": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a"
+      }
+    },
+    {
+      "type": "0x1::fungible_asset::Deposit",
+      "data": {
+        "amount": "1",
+        "store": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a"
+      }
+    }
+  ]
+}
+```
+</details>
+
+2. Next, we take a look at the `0x1::fungible_asset::FungibleStore` changes.  This
+will show the end state of the balance for the fungible asset.  The balance is in
+the `data.balance` field.  The `address` field will match the `store` field from
+the events.  The identifier of the fungible asset, is the `metadata` field.  It
+is the address of the `metadata` for the fungible asset.
+
+Additionally, to figure out the actual owner of the assets, you will need to look
+at the owner of the store.  In this case, you will need the `0x1::object::ObjectCore`, where
+the `address` field matches the `store` field from the events.  The `owner` field
+will show the asset owner's address.
+
+<details>
+  <summary>Fungible Asset Changes</summary>
+```json
+{
+  "changes":[
+    {
+      "address": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a",
+      "state_key_hash": "0x5b587931247dd5b43874ab29c3305c0ee7d26e7571fed3aea409375530e3a62c",
+      "data": {
+        "type": "0x1::fungible_asset::FungibleStore",
+        "data": {
+          "balance": "126691270443",
+          "frozen": false,
+          "metadata": {
+            "inner": "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12"
+          }
+        }
+      },
+      "type": "write_resource"
+    },
+    {
+      "address": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a",
+      "state_key_hash": "0x5b587931247dd5b43874ab29c3305c0ee7d26e7571fed3aea409375530e3a62c",
+      "data": {
+        "type": "0x1::object::ObjectCore",
+        "data": {
+          "allow_ungated_transfer": false,
+          "guid_creation_num": "1125899906842628",
+          "owner": "0xc67545d6f3d36ed01efc9b28cbfd0c1ae326d5d262dd077a29539bcee0edce9e",
+          "transfer_events": {
+            "counter": "0",
+            "guid": {
+              "id": {
+                "addr": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a",
+                "creation_num": "1125899906842624"
+              }
+            }
+          }
+        }
+      },
+      "type": "write_resource"
+    }
+  ]
+}
+```
+</details>
+
+
+### Coins migrated to Fungible Asset Balance Changes
+
+For coins migrated to fungible assets, it is just simply tracking of the two above.
+A coin migrated to a fungible asset will have both the coin store changes and the
+primary fungible asset store changes.  The amounts would need to be aggregated
+together, and otherwise, handled as a coin.
+
+The Fungible asset metadata address is the hash of the coin type and 0xA
+
+```
+address = sha3_256(0xA | coin_type)
+```
+
+Here is an example of a migrated coin with APT: https://api.mainnet.aptoslabs.com/v1/transactions/by_version/1642580695
+<details>
+  <summary>Full response</summary>
+  ```json
+  {
+    "version": "1642580695",
+    "hash": "0xe67ba1c4242d5c1de42eb8419558c4edf2318e185a3940a00f4150b519d06508",
+    "state_change_hash": "0x07c5ec97afdf731c2778fccb37fe209369b28dcf6dcf11c3cf13b83c962f7f96",
+    "event_root_hash": "0xad349cbea90bef601dfae9df822f5698af296951fc5f94359fcacc1e69e9fa3d",
+    "state_checkpoint_hash": null,
+    "gas_used": "545",
+    "success": true,
+    "vm_status": "Executed successfully",
+    "accumulator_root_hash": "0x88e81bde70f32a86e46b288a917a44b2868a46973fac7fad16b5e780f48b0e67",
+    "changes": [
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::coin::PairedCoinType",
+    "data": {
+    "type": {
+    "account_address": "0x1",
+    "module_name": "0x6170746f735f636f696e",
+    "struct_name": "0x4170746f73436f696e"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::coin::PairedFungibleAssetRefs",
+    "data": {
+    "burn_ref_opt": {
+    "vec": [
+  {
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+    ]
+  },
+    "mint_ref_opt": {
+    "vec": [
+  {
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+    ]
+  },
+    "transfer_ref_opt": {
+    "vec": [
+  {
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+    ]
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::fungible_asset::ConcurrentSupply",
+    "data": {
+    "current": {
+    "max_value": "340282366920938463463374607431768211455",
+    "value": "47948384"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::fungible_asset::Metadata",
+    "data": {
+    "decimals": 8,
+    "icon_uri": "",
+    "name": "Aptos Coin",
+    "project_uri": "",
+    "symbol": "APT"
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::object::ObjectCore",
+    "data": {
+    "allow_ungated_transfer": true,
+    "guid_creation_num": "1125899906842625",
+    "owner": "0x1",
+    "transfer_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0xa",
+    "creation_num": "1125899906842624"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::primary_fungible_store::DeriveRefPod",
+    "data": {
+    "metadata_derive_ref": {
+    "self": "0xa"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188",
+    "state_key_hash": "0x5ce89e323a23fb5570694dfb687d474d44563638c5ef774a2364d8347f5732b8",
+    "data": {
+    "type": "0x1::coin::MigrationFlag",
+    "data": {
+    "dummy_field": false
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188",
+    "state_key_hash": "0x5ce89e323a23fb5570694dfb687d474d44563638c5ef774a2364d8347f5732b8",
+    "data": {
+    "type": "0x1::fungible_asset::FungibleStore",
+    "data": {
+    "balance": "37949184",
+    "frozen": false,
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188",
+    "state_key_hash": "0x5ce89e323a23fb5570694dfb687d474d44563638c5ef774a2364d8347f5732b8",
+    "data": {
+    "type": "0x1::object::ObjectCore",
+    "data": {
+    "allow_ungated_transfer": false,
+    "guid_creation_num": "1125899906842625",
+    "owner": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "transfer_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188",
+    "creation_num": "1125899906842624"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x8a4613c356c21a45045e06dcc404bfee363aabd65a774d4d43defd71289239b2",
+    "state_key_hash": "0x7c2d6e31d4ac5bbf93e19412437c0c288766b240674f71f457b9e3ef68be5003",
+    "data": {
+    "type": "0x1::fungible_asset::FungibleStore",
+    "data": {
+    "balance": "10000",
+    "frozen": false,
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x8a4613c356c21a45045e06dcc404bfee363aabd65a774d4d43defd71289239b2",
+    "state_key_hash": "0x7c2d6e31d4ac5bbf93e19412437c0c288766b240674f71f457b9e3ef68be5003",
+    "data": {
+    "type": "0x1::object::ObjectCore",
+    "data": {
+    "allow_ungated_transfer": false,
+    "guid_creation_num": "1125899906842625",
+    "owner": "0x5",
+    "transfer_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x8a4613c356c21a45045e06dcc404bfee363aabd65a774d4d43defd71289239b2",
+    "creation_num": "1125899906842624"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "state_key_hash": "0xfb7c1f2762da89f00a222f93bd771b478edb4361475c4a518178564be8616dd6",
+    "data": {
+    "type": "0x1::account::Account",
+    "data": {
+    "authentication_key": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "coin_register_events": {
+    "counter": "14",
+    "guid": {
+    "id": {
+    "addr": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "creation_num": "0"
+  }
+  }
+  },
+    "guid_creation_num": "44",
+    "key_rotation_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "creation_num": "1"
+  }
+  }
+  },
+    "rotation_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  },
+    "sequence_number": "52",
+    "signer_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  }
+    ],
+    "sender": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "sequence_number": "51",
+    "max_gas_amount": "817",
+    "gas_unit_price": "100",
+    "expiration_timestamp_secs": "1724196316",
+    "payload": {
+    "function": "0x1::primary_fungible_store::transfer",
+    "type_arguments": [
+    "0x1::fungible_asset::Metadata"
+    ],
+    "arguments": [
+  {
+    "inner": "0xa"
+  },
+    "0x5",
+    "10000"
+    ],
+    "type": "entry_function_payload"
+  },
+    "signature": {
+    "public_key": "0x330e75a102e37270b788caee8dd819e5badedd5fa17fe9f72017732e9bb98c60",
+    "signature": "0xd4666df2887cf2d8192230e4a03d842ea75a86ffbc46a9a16a9baede6ff646c6b2bcafc524d3a4a7a66c223b5db576beb5cfefbd549620e69097c0a364c7a800",
+    "type": "ed25519_signature"
+  },
+    "events": [
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::fungible_asset::Withdraw",
+    "data": {
+    "amount": "10000",
+    "store": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::fungible_asset::Deposit",
+    "data": {
+    "amount": "10000",
+    "store": "0x8a4613c356c21a45045e06dcc404bfee363aabd65a774d4d43defd71289239b2"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::fungible_asset::Withdraw",
+    "data": {
+    "amount": "54500",
+    "store": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::transaction_fee::FeeStatement",
+    "data": {
+    "execution_gas_units": "6",
+    "io_gas_units": "7",
+    "storage_fee_octas": "53240",
+    "storage_fee_refund_octas": "0",
+    "total_charge_gas_units": "545"
+  }
+  }
+    ],
+    "timestamp": "1724196287102837",
+    "type": "user_transaction"
+  }
+  ```
+</details>
+
+## Transferring Assets
+
+### Coin (or migrated coin) Transfers
+
+We suggest you use `0x1::aptos_account::transfer_coins<CoinType>(receiver address, amount)` for transferring coins.  It will
+register the coin if it hasn't been registered yet, and create the associated account if it hasn't been created yet.
+This will continue to work with any coins that were migrated to a fungible asset, including APT.
+
+Coins can be transferred in the following ways:
+* [`0x1::aptos_account::transfer_coins<CoinType>(receiver address, amount)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L108-L112) - Transfer a coin to another account.
+* [`0x1::aptos_account::batch_transfer_coins<CoinType>(receiver addresses, amounts)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L93-L106) - Transfer a coin to multiple accounts.
+* [`0x1::aptos_account::transfer(receiver address, amount)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L74-L91) - Transfer specifically APT to another account.
+
+{/* TODO examples */}
+
+### Fungible Asset Transfers
+
+We suggest you use `0x1::primary_fungible_store::transfer<0x1::object::ObjectCore>(receiver address, amount)` for transferring fungible assets.
+It will send the associated fungible asset, and create a primary store for the asset if it hasn't been created yet.
+
+{/* TODO examples */}
+
+<Callout type="warning">
+  Note: This will not create an account for the user if it hasn't been created
+  yet. You will need to call
+  `0x1::aptos_account::create_account(account address)` to create the account
+  before the user can
+  submit transactions.
+</Callout>
+
+{ /* TODO Staking some other day */ }
+
+## Testing
+
+In order to check that everything is working correctly, we've provided these checks.
+
+### Balance Checks
+
+To test balance checks, you can check the balance for the account `0x5` for the asset `0x1::aptos_coin::AptosCoin`.
+The balance should show `0.002 APT`, where 0.001 APT is a coin, and 0.001 APT is a migrated coin (fungible asset).
+
+If your balance is not correct, see [Coin and Migrated Coin Balances](#coin-and-migrated-coin-balances) for more information.
+
+### Balance Change / Transfer Checks
+
+#### Check Coin Transfer
+
+To test a transfer, create a transaction to transfer 0.001 APT to another account.
+The transaction should be successful, and the balance should be updated, where
+the balance is 0.001 APT smaller and minus the gas cost associated.
+
+#### Check Fungible Asset Transfer
+
+To test a transfer, you can fund an account with the fungible asset here https://test-token-faucet.vercel.app/
+and then transfer the fungible asset to another account.  The balance should be updated
+according to the change, and you should be able to track the mint on the website.
+
+
+## FAQ
+
+### What is the finality of a transaction?
+
+Aptos uses a BFT consensus algorithm, so transactions are finalized immediately
+after committing to the blockchain.
+
+### What is the transaction fee on a transaction?
+
+Transaction fees are variable, but for most cases here are fixed.  Check out
+[simulating transactions](/network/blockchain/gas-txn-fee#estimating-gas-consumption-via-simulation)
+to get an idea of the fee.

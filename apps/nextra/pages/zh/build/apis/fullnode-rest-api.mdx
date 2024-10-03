@@ -10,10 +10,6 @@ import { Card, Cards } from '@components/index'
 该API嵌入到全节点中，提供了一种简单、低延迟、但低级别的方式来读取状态和提交交易到Aptos区块链。它还支持交易模拟。
 对于更高级的查询，我们建议使用 [Indexer GraphQL API](../indexer.mdx)。
 
-<Callout type="info">
-还请参阅[系统集成指南](../guides/system-integrators-guide.mdx)，以获得Aptos集成的详细步骤。
-</Callout>
-
 ## Aptos全节点REST API浏览器
 
 <Cards>
@@ -75,7 +71,7 @@ REST API提供以下方式查询交易和事件：
 - 相关的 [Move](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/aptos-move/framework/aptos-framework/sources/coin.move#L226) 代码
 - [规范](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/api/doc/spec.yaml#L8513)。
 
-View 函数的操作方式类似于[Aptos 模拟 API](../guides/system-integrators-guide.mdx)，但没有副作用，并且具有可访问的输出路径。可以通过 `/view` 端点调用 View 函数。对 View 函数的调用需要模块和函数名称以及输入类型参数和值。
+View 函数的操作方式类似于 Aptos 模拟 API，但没有副作用，并且具有可访问的输出路径。可以通过 `/view` 端点调用 View 函数。对 View 函数的调用需要模块和函数名称以及输入类型参数和值。
 
 函数不必是不可变的才能被标记为 `#[view]`，但如果函数是可变的，则在通过API调用时不会导致状态变更。如果要将可变函数标记为 `#[view]`，可以考虑将其设置为私有函数，以防止在运行时恶意调用。
 
