@@ -619,6 +619,48 @@ script {
 
 For more details, see [Move references](references.mdx).
 
+### Compound Assignments
+
+_Since language version 2.1_
+
+Move also supports compound assignment operators.
+
+| Syntax | Description                                                |
+| ------ | ---------------------------------------------------------- |
+| `+=`   | Performs addition and update the left-hand value           |
+| `-=`   | Performs subtraction and update the left-hand value        |
+| `*=`   | Performs multiplication and update the left-hand value     |
+| `%=`   | Performs modular division and update the left-hand value   |
+| `/=`   | Performs truncating division and update the left-hand value|
+| `&=`   | Performs bitwise and and update the left-hand value        |
+| `\|=`   | Performs bitwise or and update the left-hand value         |
+| `^=`   | Performs bitwise xor and update the left-hand value        |
+| `<<=`  | Performs shift left and update the left-hand value         |
+| `>>=`  | Performs shift right and update the left-hand value        |
+
+For `e1 op= e2`, the **modifying operand** `e2` is evaluated first, followed by the **assigned operand** `e1`. The result of performing `op` on the operand values is then stored in the left-hand side location. The assigned operand is only evaluated once.
+
+```move
+module 0x42::example {
+  struct S { f: u64 }
+
+  fun example() {
+    let x = 41;
+    x += 1;
+    assert!(x == 42);
+
+    let y = 41;
+    let p = &mut y;
+    *p += 1;
+    assert!(*p == 42);
+
+    let z = S { f: 41 };
+    z.f += 1;
+    assert!(z.f == 42);
+  }
+}
+```
+
 ## Scopes
 
 Any local declared with `let` is available for any subsequent expression, _within that scope_.
