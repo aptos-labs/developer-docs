@@ -16,42 +16,28 @@ import { Card, Cards } from "@components/index";
 
 This guide will walk you through the process of integrating the Aptos .NET SDK.
 
-<Callout type="info" emoji="ℹ️">
-  We are currently working on a `.unitypackage` for Unity developers. In the
-  meantime, you can use the [NuGet](https://github.com/GlitchEnzo/NuGetForUnity)
-  package manager to install the SDK into your Unity project.
-</Callout>
-
 <Steps>
 
-### Install NuGetForUnity
+### Install the Aptos Unity SDK
+
+#### Option 1: Import via Unity Package Manager (UPM)
 
 1. Open Package Manager window (Window | Package Manager)
 2. Click + button on the upper-left of a window, and select _Add package from git URL..._
 3. Enter the following URL and click Add button
 
+```bash
+https://github.com/aptos-labs/unity-sdk.git?path=/Packages/com.aptoslabs.aptos-unity-sdk
 ```
-https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity
-```
 
-### Open NuGetForUnity and install the Aptos SDK
+#### Option 2: Import via `unitypackage`
 
-4. Click on `Manage NuGet Packages` from the `NuGet` menu in the Unity Editor.
-
-<div className="border dark:border-white/30 w-fit rounded-md overflow-clip shadow-md max-w-lg">
-  ![launch-nuget](https://i.imgur.com/DSvM5BM.png)
-</div>
-
-5. Make sure to turn on `Show Prerelease` in the top left of the manager window.
-6. Search for Aptos and install the package.
-
-<div className="border dark:border-white/30 w-fit rounded-md overflow-clip shadow-md max-w-lg">
-  ![search-aptos](https://i.imgur.com/8UTvYtj.png)
-</div>
+1. Go to the [`aptos-labs/unity-sdk Releases`](https://github.com/aptos-labs/unity-sdk/releases) and download the latest release.
+2. Drag and drop the `.unitypackage` file into your Unity project.
 
 ### Use the Aptos SDK
 
-7. Import the `Aptos` namespace in your C# script and use the SDK.
+Import the `Aptos` namespace in your C# script and use the SDK.
 
 ```csharp {2-2,8-8,11-15}
 using UnityEngine;
@@ -82,11 +68,28 @@ you can start building your game and interacting with the Aptos blockchain. Belo
 are some resources to help you get started.
 
 <Cards className="xl:grid-cols-2">
-  <Card href="./getting-started" className="col-span-2 flex flex-row gap-4">
+  <Card href="./getting-started" className="flex flex-row gap-4">
     <div className="flex flex-col gap-2">
       <Card.Title>Getting Started</Card.Title>
       <Card.Description>
         Begin developing using the Aptos .NET SDK.
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="../unity-sdk" className="flex flex-row gap-4">
+    <div className="flex flex-col gap-2">
+      <Card.Title>Unity SDK</Card.Title>
+      <Card.Description>Overview of the Unity SDK.</Card.Description>
+    </div>
+  </Card>
+  <Card
+    href="https://github.com/aptos-labs/aptos-unity-starter"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <div className="flex flex-col gap-2">
+      <Card.Title>Aptos Wallet Starter</Card.Title>
+      <Card.Description>
+        Example Unity project with an integration of the Aptos Unity SDK.
       </Card.Description>
     </div>
   </Card>
