@@ -6,23 +6,58 @@ title: "Faucet API"
 
 The faucet allows users to get test `APT` on Devnet and Testnet. It is not available on Mainnet.
 
-## Differences between devnet and testnet
-
-What are the differences between devnet and testnet? Effectively none. In the
-past, the testnet faucet had a Captcha in front of it, making it unqueryable
-by
-normal means. This is no longer true.
-
 The endpoints for each faucet are:
 
 - Devnet: https://faucet.devnet.aptoslabs.com
 - Testnet: https://faucet.testnet.aptoslabs.com
 
-## Integrating with the faucet
+## Using the faucet
 
-See the [System Integrators Guide](../guides/system-integrators-guide.mdx) for more information on how to use the faucet with your project.
+Each SDK has integration for devnet and testnet to use the faucet. Below are a few examples, but you can
+see more information on each individual [SDK's documentation](../sdks.mdx).
 
-### Calling the faucet via Terminal
+### Using the faucet in a wallet
+
+Most wallets, such as [Petra](https://aptosfoundation.org/ecosystem/project/petra) or [Pontem](https://aptosfoundation.org/ecosystem/project/pontem-wallet)
+will have a faucet button for devnet and testnet. See full list of [Aptos Wallets](https://aptosfoundation.org/ecosystem/projects/wallets).
+
+### Using the faucet in the Aptos CLI
+
+Once you've [set up your CLI](../cli/setup-cli.mdx), you can simply call fund-with-faucet.  The amount used is in Octas (1 APT = 1,000,000,000 Octas).
+
+```bash filename="Terminal"
+aptos account fund-with-faucet --account 0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6 --amount 100000000
+```
+
+### Using the faucet in the TypeScript SDK
+
+Here is an example funding the account `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6` with 1 APT in Devnet. The amount used is in Octas (1 APT = 1,000,000,000 Octas).
+
+```ts filename="index.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const aptos = new Aptos(new AptosConfig({network: Network.Devnet}));
+aptos.fundAccount({accountAddress: "0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6", amount: 100000000});
+```
+
+### Using the faucet in the Go SDK
+
+Here is an example funding the account `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6` with 1 APT in Devnet. The amount used is in Octas (1 APT = 1,000,000,000 Octas).
+
+```go filename="index.go"
+import "github.com/aptos-labs/aptos-go-sdk"
+
+func main() {
+	client, err := aptos.NewClient(aptos.LocalnetConfig)
+	if err != nil {
+		panic(err)
+	}
+
+  client.Fund("0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6", 100000000)
+}
+```
+
+### Calling the faucet: Other languages not supported by SDKs
 
 If you are trying to call the faucet in other languages, you have two options:
 
@@ -37,35 +72,5 @@ curl -X POST
 'https://faucet.devnet.aptoslabs.com/mint?amount=10000&address=0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6'
 ```
 
-This means mint 10000 [Octas](../../network/glossary.mdx#Octa) to
+This means mint 10000 [octas](../../network/glossary.mdx#Octa) to
 address `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6`.
-
-
-### Calling the faucet: JavaScript / TypeScript
-
-If you are building a client in JavaScript or TypeScript, you should make use
-of the [@aptos-labs/aptos-faucet-client](https://www.npmjs.com/package/@aptos-labs/aptos-faucet-client)
-package. This client is generated based on the OpenAPI spec published by the
-faucet service.
-
-Example use:
-
-```ts filename="index.ts"
-import {
-  AptosFaucetClient,
-  FundRequest,
-} from "@aptos-labs/aptos-faucet-client";
-
-async function callFaucet(amount: number, address: string): Promise<string []> {
-  const faucetClient = new AptosFaucetClient({
-    BASE: "https://faucet.devnet.aptoslabs.com",
-  });
-  const request: FundRequest = {
-    amount,
-    address,
-  };
-  const response = await faucetClient.fund.fund({ requestBody: request });
-  return response.txn_hashes;
-}
-```
-
