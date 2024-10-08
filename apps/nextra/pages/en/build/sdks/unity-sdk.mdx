@@ -2,64 +2,65 @@
 title: "Unity SDK"
 ---
 
+import { Card, Cards } from "@components/index";
 import { Callout } from "nextra/components";
 
 <Callout type="warning" emoji="❗">
-  This SDK is currently unmaintained. You can use the [.NET
-  SDK](./dotnet-sdk.mdx) for the latest features.
+  This SDK is currently in beta. Please report any issues you encounter by
+  creating an issue in the
+  [aptos-labs/unity-sdk](https://github.com/aptos-labs/unity-sdk) repository.
 </Callout>
 
-# Unity SDK
+# Aptos Unity SDK (Beta)
 
-The [Aptos Unity SDK](https://github.com/aptos-labs/Aptos-Unity-SDK) is a .NET implementation of the [Aptos SDK](../sdks.mdx), compatible with .NET Standard 2.0 and .NET 4.x for Unity. The goal of this SDK is to provide a set of tools for developers to build multi-platform applications (mobile, desktop, web, VR) using the Unity game engine and the Aptos blockchain infrastructure.
+Integrate Aptos Web3 capabilities within your Unity applications. The goal of this SDK is to provide a set of tools
+for developers to build Web3 games using the Unity game engine.
 
-See the post [Aptos Labs brings Web3 to Gaming with its new SDK for Unity developers](https://medium.com/aptoslabs/aptos-labs-brings-web3-to-gaming-with-its-new-sdk-for-unity-developers-e6544bdf9ba9) and the [Technical details](https://github.com/aptos-labs/Aptos-Unity-SDK#technical-details) section of the Unity SDK README for all the features offered to game developers by the Aptos Unity SDK.
+**Supported Features**
 
-## User flows
+- Support for the [Aptos .NET SDK](../dotnet-sdk.mdx)
 
-The Aptos Unity SDK supports these use cases:
+  > - Binary Canonical Serialization (BCS) encoding and decoding
+  > - Ed25519, SingleKey, MultiKey, and Keyless signer support
+  > - Utilities for transaction building, signing, and submission
+  > - Abstractions over the Aptos Fullnode and Indexer APIs
+  > - Aptos Names (ANS) support for resolution and lookup
 
-- _Progressive onboarding flow_ in which users can log into a game by email. In this flow, transactions are proxied, and Aptos uses a distributed key system. The users can then onboard to a full custodial wallet if desired.
-- _In-game non-custodial wallet integration_ in which game developers have the option to allow users to create full non-custodial wallets in the games.
-- _Off-game non-custodial wallet integration_ in which game developers may allow users to connect to a desktop wallet or a mobile wallet within the game or create burner wallets from the parent wallet seamlessly.
+**Compatibility**
 
-## Prerequisites
+| .NET Version      | Supported |
+| ----------------- | --------- |
+| .NET Standard 2.1 | ✅        |
 
-### Supported Unity versions
+## Installation
 
-| Supported Version: | Tested |
-| ------------------ | ------ |
-| 2021.3.x           | ✅     |
-| 2022.2.x           | ✅     |
+### Install via Unity Package Manager (UPM)
 
-| Windows | macOS | iOS | Android | WebGL |
-| ------- | ----- | --- | ------- | ----- |
-| ✅      | ✅    | ✅  | ✅      | ✅    |
+1. Open the Unity Package Manager (`Window` > `Package Manager`).
+2. Click on the `+` button and select `Add package from git URL...`.
+3. Enter the URL of the Aptos Unity SDK path in this repository:
 
-### Dependencies
+```bash
+https://github.com/aptos-labs/unity-sdk.git?path=/Packages/com.aptoslabs.aptos-unity-sdk
+```
 
-> As of Unity 2021.x.x, Newtonsoft Json is a common dependency. Prior versions of Unity require installing Newtonsoft.
+### Install via `unitypackage`
 
-- [Chaos.NaCl.Standard](https://www.nuget.org/packages/Chaos.NaCl.Standard/)
-- Microsoft.Extensions.Logging.Abstractions.1.0.0 — required by NBitcoin.7.0.22
-- Newtonsoft.Json
-- NBitcoin.7.0.22
-- [Portable.BouncyCastle](https://www.nuget.org/packages/Portable.BouncyCastle)
-- Zxing
+1. Go to the [`aptos-labs/unity-sdk Releases`](https://github.com/aptos-labs/unity-sdk/releases) and download the latest release.
+2. Drag and drop the `.unitypackage` file into your Unity project.
 
-## Install the Unity SDK
+## Resources
 
-You may install the Unity SDK either through our `unitypackage` or the [Unity Package Manager](https://docs.unity3d.com/Manual/Packages.html).
-
-### Install by `unitypackage`
-
-1. Start Unity.
-2. Download the latest `Aptos.Unity.unitypackage` file from the [Unity Asset Store](https://assetstore.unity.com/packages/decentralization/aptos-sdk-244713).
-3. Click **Assets** → **Import Packages** → **Custom Package** and select the downloaded file.
-
-### Install by Unity Package Manager
-
-1. Open the [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui.html) window.
-2. Click the add **+** button in the top status bar.
-3. Select _Add package from git URL_ from the dropdown menu.
-4. Enter the URL *https://github.com/aptos-labs/Aptos-Unity-SDK.git* and click **Add**.
+<Cards className="xl:grid-cols-2">
+  <Card
+    href="https://github.com/aptos-labs/aptos-unity-starter"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <div className="flex flex-col gap-2">
+      <Card.Title>Aptos Wallet Starter</Card.Title>
+      <Card.Description>
+        Example Unity project with an integration of the Aptos Unity SDK.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>
