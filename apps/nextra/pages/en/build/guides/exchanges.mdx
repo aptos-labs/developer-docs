@@ -22,9 +22,9 @@ This document will guide you through the following tasks to integrate with Aptos
 
 ## Infrastructure
 
-It's suggested that you run your own [full node](/network/nodes/full-node.mdx) to interact with the Aptos blockchain.
+It's suggested that you run your own [full node](../../network/nodes/full-node.mdx) to interact with the Aptos blockchain.
 This will allow you to query the blockchain for the latest state and submit transactions.
-You can also use the [Indexer](/build/apis/indexer.mdx) to query for on-chain data efficiently.
+You can also use the [Indexer](../indexer.mdx) to query for on-chain data efficiently.
 
 ## Address Standards
 
@@ -65,8 +65,8 @@ const committedTransaction = await aptos.waitForTransaction({transactionHash: pe
 
 Aptos provides two standards for fungible tokens, similar to ERC-20 tokens on Ethereum:
 
-* An earlier [Coin standard](/build/smart-contracts/coin.mdx) used by assets on Aptos.
-* A newer [Fungible Asset Standard](/build/smart-contracts/fungible-assets.mdx) which is more featured.
+* An earlier [Coin standard](../smart-contracts/aptos-coin.mdx) used by assets on Aptos.
+* A newer [Fungible Asset Standard](../smart-contracts/fungible-asset.mdx) which is more featured.
 
 Additionally, there is a migratory period for assets from Coin to Fungible Asset standards.
 We will call this from now on **migrated coins**. Migrated coins can be used interchangeably
@@ -85,7 +85,7 @@ or `0x1::aptos_account::transfer_coins<CoinType>`, this will be done automatical
 Coins can be *migrated* to a fungible asset.  In order to support a migrated asset,
 continue calling the coin functions as will be mentioned later.
 
-More info can be found at: [Coin Standard](/build/smart-contracts/coin.mdx)
+More info can be found at: [Coin Standard](../smart-contracts/aptos-coin.mdx)
 
 ### Fungible Asset Standard (tl;dr)
 
@@ -98,7 +98,7 @@ For exchanges, the most important store is `primary_fungible_store`, which is th
 This is directly connected to an owner. From this point on in this guide, we will
 only talk about supporting `primary_fungible_store` for fungible assets.
 
-More info can be found at: [Fungible Asset Standard](/build/smart-contracts/fungible-assets.mdx)
+More info can be found at: [Fungible Asset Standard](../smart-contracts/fungible-asset.mdx)
 
 ## Retrieving Balances
 
@@ -1176,5 +1176,5 @@ after committing to the blockchain.
 ### What is the transaction fee on a transaction?
 
 Transaction fees are variable, but for most cases here are fixed.  Check out
-[simulating transactions](/network/blockchain/gas-txn-fee#estimating-gas-consumption-via-simulation)
+[simulating transactions](../../network/blockchain/gas-txn-fee#estimating-gas-consumption-via-simulation)
 to get an idea of the fee.

@@ -127,7 +127,7 @@ Unexpected error: Failed to apply pre-run steps for Postgres: Docker is not avai
 - [Indexer API](../indexer/aptos-hosted.mdx)：这是一个 [GraphQL](https://graphql.org/) API，它提供了丰富的操作，以允许您读取索引了的区块链数据。点击上述的 Indexer API URL，默认是 [http://127.0.0.1:8090](http://127.0.0.1:8090/)，即可打开 Hasura 控制台。这是一个 Web 界面，便于您查询 Indexer GraphQL API。
 - [交易流服务](../indexer/txn-stream.mdx)：这是一个通过 Indexer API 实现的 gRPC 交易流。仅当您在开发[自定义处理器](../../indexer/custom-processors.mdx)时，此信息对您才有相关性。
 - [Postgres](https://www.postgresql.org/)：这是 Indexer 处理器用来存储数据的数据库，而 Indexer API 则从此数据库中读取信息。
-- [水龙头（Faucet）](../../../build/apis/faucet-api.mdx)：您可以使用它为您的本地网络中的账户提供资金。
+- [水龙头（Faucet）](../apis/faucet-api.mdx)：您可以使用它为您的本地网络中的账户提供资金。
 
 如果您不想运行网络的任何这些子组件，可以使用一些参数来禁用它们。
 
