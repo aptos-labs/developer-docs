@@ -623,22 +623,27 @@ For more details, see [Move references](references.mdx).
 
 _Since language version 2.1_
 
-Move also supports compound assignment operators.
+Move also supports compound assignment operators. These are like an assignment to a variable,
+or a mutation through a reference, except that the assigned location must already have a value,
+which is read and operated on before being stored back into the location.
+Currently these are only applicable to numeric values.
 
-| Syntax | Description                                                 |
-| ------ | ----------------------------------------------------------  |
-| `+=`   | Performs addition and update the left-hand value            |
-| `-=`   | Performs subtraction and update the left-hand value         |
-| `*=`   | Performs multiplication and update the left-hand value      |
-| `%=`   | Performs modular division and update the left-hand value    |
-| `/=`   | Performs truncating division and update the left-hand value |
-| `&=`   | Performs bitwise and and update the left-hand value         |
-| `\|=`  | Performs bitwise or and update the left-hand value          |
-| `^=`   | Performs bitwise xor and update the left-hand value         |
-| `<<=`  | Performs shift left and update the left-hand value          |
-| `>>=`  | Performs shift right and update the left-hand value         |
+| Syntax | Description                                                  |
+| ------ | ------------------------------------------------------------ |
+| `+=`   | Performs addition and updates the left-hand value            |
+| `-=`   | Performs subtraction and updates the left-hand value         |
+| `*=`   | Performs multiplication and updates the left-hand value      |
+| `%=`   | Performs modular division and updates the left-hand value    |
+| `/=`   | Performs truncating division and updates the left-hand value |
+| `&=`   | Performs bitwise and and updates the left-hand value         |
+| `\|=`  | Performs bitwise or and updates the left-hand value          |
+| `^=`   | Performs bitwise xor and updates the left-hand value         |
+| `<<=`  | Performs shift left and updates the left-hand value          |
+| `>>=`  | Performs shift right and updates the left-hand value         |
 
-For `e1 op= e2`, the **modifying operand** `e2` is evaluated first, followed by the **assigned operand** `e1`. The result of performing `op` on the operand values is then stored in the left-hand side location. The assigned operand is only evaluated once.
+For `e1 += e2`, the **modifying operand** `e2` is evaluated first, followed by the **assigned operand** `e1`.
+The result of performing `+` on the operand values is then stored in the left-hand side location.
+The assigned operand is only evaluated once. Similarly for all other operations listed in the table above.
 
 ```move
 module 0x42::example {
