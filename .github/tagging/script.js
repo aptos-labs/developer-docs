@@ -1,14 +1,12 @@
-const fs = require("fs")
+const tagsByIssueSection = require("./tagsByIssueSection.json");
 
 module.exports = async ({ inputSectionsStr, github, context }) => {
   console.log("Running tagging script")
   console.log(`Input: ${inputSectionsStr}`)
 
-  const sectionTagsString = fs.readFileSync("./.github/tagging/tagsByIssueSection.json")
-  const sectionTags = JSON.parse(sectionTagsString)
   const inputSections = inputSectionsStr.split(",").map(s => s.trim())
   const body = inputSections
-    .map(section => sectionTags[section])
+    .map(section => tagsByIssueSection[section])
     .filter(Boolean)
     .join(" ")
 
