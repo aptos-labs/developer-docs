@@ -73,6 +73,11 @@ We will call this from now on **migrated coins**. Migrated coins can be used int
 with Fungible Asset and Coin standards.  This is important to note when querying balances, to
 use coin functions and not fungible asset functions.
 
+<Callout type="info">
+APT, the native token of Aptos, is a migrated coin.  This means it can be used
+with both the Coin and Fungible Asset standards.
+</Callout>
+
 ### Coin Standard (tl;dr)
 
 A **coin** has an associated contract that holds the on-chain struct that represents the coin.  The coin is
@@ -111,7 +116,8 @@ returns a balance of `100000000`, this is `1 APT`.  If it returns `100` this is 
 
 <Callout type="info">
   Note: This includes APT and any other coin that was migrated to a fungible
-  asset.
+  asset.  If the asset is a migrated coin, use this over fungible asset balance.  The
+  fungible asset balance will not include the coin portion of the balance.
 </Callout>
 
 To retrieve the balance of a coin, or a coin that was migrated to a fungible asset, you can use
@@ -1111,6 +1117,11 @@ Here is an example of a migrated coin with APT: https://api.mainnet.aptoslabs.co
 ## Transferring Assets
 
 ### Coin (or migrated coin) Transfers
+
+<Callout type="info">
+  APT, the native token of Aptos, is a migrated coin.  Please use the `aptos_account::transfer` functions
+  to transfer APT tokens.
+</Callout>
 
 We suggest you use `0x1::aptos_account::transfer_coins<CoinType>(receiver address, amount)` for transferring coins.  It will
 register the coin if it hasn't been registered yet, and create the associated account if it hasn't been created yet.
