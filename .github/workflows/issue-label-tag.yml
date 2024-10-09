@@ -1,4 +1,4 @@
-name: Issue labeler
+name: Label and tag issue
 on:
   issues:
     types: [ opened ]
@@ -8,6 +8,7 @@ permissions:
 
 jobs:
   label-component:
+    name: Set issue label and tag users/teams as comment
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -35,23 +36,12 @@ jobs:
       - name: Add comment tagging relevant teams/users based on the section field
         uses: actions/github-script@v7
         env:
-          PARSED_SECTIONS: ${{ steps.issue-parser.outputs.issueparser_section }}
+          INPUT_SECTIONS: ${{ steps.issue-parser.outputs.issueparser_section }}
         with:
           script: |
-            const fs = require('fs')
-            const { PARSED_SECTIONS } = process.env
-
-            const jsonStr = fs.readFileSync("${{ github.workspace }}/.github/tagsByIssueSection.json")
-            const sectionsToTags = JSON.parse(jsonStr)
-            const sections = PARSED_SECTIONS.split(", ").map(s => s.trim())
-            const body = sections
-              .map(section => sectionsToTags[section])
-              .filter(Boolean)
-              .join(" ")
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body
+            const script = require('./.github/tagging/script.js')
+            await script({
+              inputSectionsStr: process.env.INPUT_SECTIONS,
+              github,
+              context
             })
