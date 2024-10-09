@@ -12,12 +12,12 @@ module.exports = async ({ inputSectionsStr, github, context }) => {
     .filter(Boolean)
     .join(" ")
 
-  console.log(`Creating comment: ${body}`)
+  console.log(`Creating comment via github REST API: ${body}`)
   const result = await github.rest.issues.createComment({
     issue_number: context.issue.number,
     owner: context.repo.owner,
     repo: context.repo.repo,
     body
   })
-  console.log("Result", result)
+  console.log(`Result: ${result.status}`)
 }
