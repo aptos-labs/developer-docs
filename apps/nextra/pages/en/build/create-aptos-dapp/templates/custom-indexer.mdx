@@ -46,6 +46,8 @@ This command will:
 
 Sign up for [Neon postgres](https://neon.tech/) which is our cloud Postgres provider and create a new project. Find the connection string in Neon console's quickstart section, it should look like `postgresql://username:password@host/neondb?sslmode=require` and set it in the `.env` file as `DATABASE_URL`.
 
+If you want to run the database locally, you can follow [this tutorial](https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/) to run a postgres database in a docker container.
+
 ### Setup the database
 
 <Callout>
@@ -92,7 +94,7 @@ diesel migration generate create-abc-table \
 
 Sign up for [Aptos Build](https://developers.aptoslabs.com/), create a new project and get the API token.
 
-### Run the custom indexer locally
+### Build the indexer as a docker container
 
 In the `indexer` folder, make a copy of `example.config.yaml` and rename it to `config.yaml`. Fill in the following:
 - `starting_version`: The tx version (Aptos concept, similar to block height) from which you want to start indexing
@@ -100,10 +102,18 @@ In the `indexer` folder, make a copy of `example.config.yaml` and rename it to `
 - `contract_address`: The address of the Move contract
 - `auth_token`: Aptos Build API token
 
-Start the custom indexer locally:
+Build the docker image targeting linux/amd64 as we will eventually push the image to Artifact Registry and deploy it to Cloud Run, which only supports linux/amd64.
 
 ```bash filename="Terminal"
-cargo run --release -- -c config.yaml
+docker build --platform linux/amd64 -t indexer .
+```
+
+### Run the indexer locally
+
+You can run the docker container locally to make sure it works. Mac supports linux/amd64 emulation so you can run the x86 docker image on Mac.
+
+```bash filename="Terminal"
+docker run -p 8080:8080 -it indexer
 ```
 
 ### Run the frontend
@@ -171,20 +181,6 @@ If you are looking for different services to deploy the static site to, `create-
 ## Deploy indexer to a live server
 
 We recommend using Google Cloud Run to host the indexer, Secret Manager to store `config.yaml` and Artifact Registry to store the indexer docker image.
-
-### Build the docker image locally and run the container locally
-
-Build the docker image targeting linux/amd64 as we will eventually push the image to Artifact Registry and deploy it to Cloud Run, which only supports linux/amd64.
-
-```bash filename="Terminal"
-docker build --platform linux/amd64 -t indexer .
-```
-
-You can run the docker container locally to make sure it works. Mac supports linux/amd64 emulation so you can run the x86 docker image on Mac.
-
-```bash filename="Terminal"
-docker run -p 8080:8080 -it indexer
-```
 
 ### Push the locally build docker image to Artifact Registry
 
