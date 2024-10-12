@@ -94,7 +94,7 @@ diesel migration generate create-abc-table \
 
 Sign up for [Aptos Build](https://developers.aptoslabs.com/), create a new project and get the API token.
 
-### Build the docker image locally and run the container locally
+### Build the indexer as a docker container
 
 In the `indexer` folder, make a copy of `example.config.yaml` and rename it to `config.yaml`. Fill in the following:
 - `starting_version`: The tx version (Aptos concept, similar to block height) from which you want to start indexing
@@ -107,6 +107,8 @@ Build the docker image targeting linux/amd64 as we will eventually push the imag
 ```bash filename="Terminal"
 docker build --platform linux/amd64 -t indexer .
 ```
+
+### Run the indexer locally
 
 You can run the docker container locally to make sure it works. Mac supports linux/amd64 emulation so you can run the x86 docker image on Mac.
 
