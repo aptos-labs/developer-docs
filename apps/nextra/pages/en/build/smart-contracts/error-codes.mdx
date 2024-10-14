@@ -31,15 +31,15 @@ This means that the highest possible gas used for the transaction is greater tha
 the balance of APT in the transaction sender's (or fee payer's) account.  To resolve,
 please submit with a lower max gas amount, and try again.
 
-For example, if the max gas amount is 1000, and the gas unit price is 100, the total
-APT required in the account would be 0.00100000 APT.  The default is often 200000 which
-would end up requiring 0.20000000 APT.  If you are having issues with this, please
+For example, if the max gas amount is 1000 gas units, and the gas unit price is `100` octas, the total
+APT required in the account would be `0.00100000` APT (`1000 * 100 / 100000000`).  The default is often `200000` gas units which
+would end up requiring `0.20000000` APT.  If you are having issues with this, please
 reach out to your wallet provider.
 
 ### OUT_OF_GAS
 
-This means that the transaction took more gas than the sender specified as the max
-gas amount for the transaction, and cancelled as a result.  To resolve, please
+This means that the transaction used more gas than the sender specified as the max
+gas amount for the transaction, and aborted as a result.  To resolve, please
 try to increase the max gas amount, and submit the transaction again.
 
 ### SEQUENCE_NUMBER_TOO_OLD
