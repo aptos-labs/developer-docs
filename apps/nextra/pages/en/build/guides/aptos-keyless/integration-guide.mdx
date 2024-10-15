@@ -51,9 +51,9 @@ To register the JWK - call the entry function 0x1::jwks::update_federated_jwk_se
 
 The JWK set can be found as follows -
 
-AWS Cognito - `https://cognito-idp.<Region>.amazonaws.com/<userPoolId>/.well-known/jwks.json`
+AWS Cognito - `https://cognito-idp.{Region}.amazonaws.com/{userPoolId}/.well-known/jwks.json`
 
-Auth0 - `https://<yourDomain>/.well-known/jwks.json`
+Auth0 - `https://{yourDomain}/.well-known/jwks.json`
 
 The typescript SDK has a function to simplify the process given the iss for your IAM provider setup (the iss claim value on your user’s JWT tokens).
 
