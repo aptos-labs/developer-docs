@@ -23,6 +23,37 @@ Help us update this list by sending pull requests containing the errors you
 encounter. If you don't know how to resolve the error, as described int the
 _Action_ column, simply leave it blank.
 
+## Frequent Errors
+
+### INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE
+
+This means that the highest possible gas used for the transaction is greater than
+the balance of APT in the transaction sender's (or fee payer's) account.  To resolve,
+please submit with a lower max gas amount, and try again.
+
+For example, if the max gas amount is 1000 gas units, and the gas unit price is `100` octas, the total
+APT required in the account would be `0.00100000` APT (`1000 * 100 / 100000000`).  The default is often `200000` gas units which
+would end up requiring `0.20000000` APT.  If you are having issues with this, please
+reach out to your wallet provider.
+
+### OUT_OF_GAS
+
+This means that the transaction used more gas than the sender specified as the max
+gas amount for the transaction, and aborted as a result.  To resolve, please
+try to increase the max gas amount, and submit the transaction again.
+
+### SEQUENCE_NUMBER_TOO_OLD
+
+This means that the transaction's sequence number in the sender's account has already
+been used and committed to the blockchain.  In order to submit a new transaction
+to the blockchain, please try and submit it again with a new sequence number.
+
+### SEQUENCE_NUMBER_TOO_NEW
+
+This only occurs in simulation, but means that the sequence number being submitted
+is greater than the next sequence number for the account.  Please reduce the
+sequence number and try again.
+
 ## Move Virtual Machine (VM)
 
 {/* TODO improve formatting on table */}
