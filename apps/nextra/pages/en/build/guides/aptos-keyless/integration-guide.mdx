@@ -59,7 +59,7 @@ The typescript SDK has a function to simplify the process given the iss for your
 
         ```ts
         const jwkOwner = <Instantiate the account you want to use here>
-        const jwkUpdateTxn = await aptos.updateFederatedKeylessJwkSetTransaction({ sender: alice, iss });
+        const jwkUpdateTxn = await aptos.updateFederatedKeylessJwkSetTransaction({ sender: jwkOwner, iss });
         await aptos.signAndSubmitTransaction({ signer: jwkOwner, transaction: jwkUpdateTxn });
         ```
 
