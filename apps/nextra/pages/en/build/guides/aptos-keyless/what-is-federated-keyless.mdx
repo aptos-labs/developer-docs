@@ -40,7 +40,7 @@ It is important to not lose access to the account used in JWK updates.  Whenever
 ## Frequently Asked Questions
 
 **What if I stop using my IAM for my application? What if I switch IAM providers?**
-- An account address depends on values of several variables that are specific to an IAM service, including aud (client ID) and `iss` (issuer).  If these values are changed, then a different address will be derived. 
+- An account address depends on values of several variables that are specific to an IAM service, including `aud` (client ID) and `iss` (issuer).  If these values are changed, then a different address will be derived. 
 - If you want to switch IAM providers, you will need to develop an account migration flow, resulting in a key rotation from the account derived from the prior IAM provider to the account derived from the new IAM provider. 
 - We recommend allowing your users to add a secondary authentication method to their accounts (e.g. back-up private key) so that they can maintain access should the authentication path into their account via Federated Keyless is disrupted via service provider change
 
