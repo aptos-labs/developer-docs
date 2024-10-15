@@ -92,8 +92,8 @@ importers:
         specifier: ^0.10.0
         version: 0.10.0
       markdown-to-jsx:
-        specifier: ^6.11.4
-        version: 6.11.4(react@18.3.1)
+        specifier: ^7.4.0
+        version: 7.4.0(react@18.3.1)
       next:
         specifier: ^14.2.10
         version: 14.2.14(react-dom@18.3.1)(react@18.3.1)
@@ -8205,15 +8205,13 @@ packages:
   /markdown-table@3.0.3:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
 
-  /markdown-to-jsx@6.11.4(react@18.3.1):
-    resolution: {integrity: sha512-3lRCD5Sh+tfA52iGgfs/XZiw33f7fFX9Bn55aNnVNUd2GzLDkOWyKYYD8Yju2B1Vn+feiEdgJs8T6Tg0xNokPw==}
-    engines: {node: '>= 4'}
+  /markdown-to-jsx@7.4.0(react@18.3.1):
+    resolution: {integrity: sha512-zilc+MIkVVXPyTb4iIUTIz9yyqfcWjszGXnwF9K/aiBWcHXFcmdEMTkG01/oQhwSCH7SY1BnG6+ev5BzWmbPrg==}
+    engines: {node: '>= 10'}
     peerDependencies:
       react: '>= 0.14.0'
     dependencies:
-      prop-types: 15.8.1
       react: 18.3.1
-      unquote: 1.1.1
     dev: false
 
   /marked@13.0.3:
@@ -11656,10 +11654,6 @@ packages:
       '@types/unist': 3.0.3
       unist-util-is: 6.0.0
       unist-util-visit-parents: 6.0.1
-
-  /unquote@1.1.1:
-    resolution: {integrity: sha512-vRCqFv6UhXpWxZPyGDh/F3ZpNv8/qo7w6iufLpQg9aKnQ71qM4B5KiI7Mia9COcjEhrO9LueHpMYjYzsWH3OIg==}
-    dev: false
 
   /update-browserslist-db@1.1.1(browserslist@4.24.0):
     resolution: {integrity: sha512-R8UzCaa9Az+38REPiJ1tXlImTJXlVfgHZsglwBD/k6nj76ctsH1E3q4doGrukiLQd3sGQYu56r5+lo5r94l29A==}
