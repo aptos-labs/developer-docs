@@ -21,16 +21,20 @@ What is the flow between the user, the application, the IAM, and Aptos Keyless?
 The flow for Federated Keyless transactions is the same as described [here](how-keyless-works.mdx). However, the difference is that in Federated Keyless, instead of the OIDC provider (e.g. Google, Apple) acting as the issuer of the JWT, the IAM provider (e.g. Auth0, Cognito) acts as the issuer. The user authenticates with the application, the IAM receives the user’s credentials, and then the IAM issues the Keyless-compatible JWT. 
 
 **What authentication methods are available via Federated Keyless?**
+
 All authentication methods that are supported by the IAM providers are available for use - this includes SMS OTP, email link, and the traditional username + password.
 
 **Configuration limitations**
+
 A Keyless account address varies according to the AUD, or application ID, and ISS, or issuer. The setup of your user data within the IAM must reflect the interoperability you seek to provide to your users. 
 
 **Integration Guide**
+
 To start integrating with Federated Keyless　Accounts, follow the integration guide here.  Make sure to follow any additional steps needed to setup Federated Keyless.
 
 
 **Managing JWKs**
+
 If you or the IAM platform rotates the key pairs used to signed the JWT tokens, the JWK set 
 must be updated on chain.  Use the same account in step 3 above to update the JWK set.
 Existing JWTs will continue to work so long as the old JWK has not been removed.  Any new JWTs issued by the new keypair will not be accepted until the JWK set is updated.
