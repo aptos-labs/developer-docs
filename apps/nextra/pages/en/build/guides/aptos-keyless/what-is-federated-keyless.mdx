@@ -1,0 +1,54 @@
+---
+title: "What is Federated Keyless?"
+---
+
+# What is Federated Keyless?
+
+Federated Keyless is an extension of Aptos Keyless to support more OpenID Connect (OIDC) providers, beyond the ones that are allow-listed in 0x1::jwks via JWK consensus, while maintaining its decentralization. Federated keyless requires your project to use a supported identity & access management (IAM) provider for user authentication. 
+
+Federated Keyless allows for:
+    1. Extension of authentication methods
+        a. All authentication methods supported by the IAM are available to the dApp including email/SMS OTP and their marketplace of social login integrations like Discord, Naver, X and more. Auth0 marketplace linked [here](https://marketplace.auth0.com/) as an example.  
+    
+    2. Compatibility with existing account systems
+        a. Since IAMs also support custom authentication, it allows an application to bring its own username/password (Cognito [docs](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html), Auth0 [docs](https://auth0.com/blog/Custom-Authentication-With-Auth0/)). An application can start using an existing account system already set up with an IAM or they can migrate their existing account system to an IAM to generate Keyless-compatible JWTs. 
+
+**What IAMs are supported?**
+
+Currently, the three supported IAMs are Amazon Cognito, Auth0, and Okta across devnet, testnet, and mainnet. See table of full set of Aptos Keyless supported issuers [here](oidc-support.mdx).
+
+What is the flow between the user, the application, the IAM, and Aptos Keyless?
+The flow for Federated Keyless transactions is the same as described [here](how-keyless-works.mdx). However, the difference is that in Federated Keyless, instead of the OIDC provider (e.g. Google, Apple) acting as the issuer of the JWT, the IAM provider (e.g. Auth0, Cognito) acts as the issuer. The user authenticates with the application, the IAM receives the user’s credentials, and then the IAM issues the Keyless-compatible JWT. 
+
+**What authentication methods are available via Federated Keyless?**
+All authentication methods that are supported by the IAM providers are available for use - this includes SMS OTP, email link, and the traditional username + password.
+
+**Configuration limitations**
+A Keyless account address varies according to the AUD, or application ID, and ISS, or issuer. The setup of your user data within the IAM must reflect the interoperability you seek to provide to your users. 
+
+**Integration Guide**
+To start integrating with Federated Keyless　Accounts, follow the integration guide here.  Make sure to follow any additional steps needed to setup Federated Keyless.
+
+
+**Managing JWKs**
+If you or the IAM platform rotates the key pairs used to signed the JWT tokens, the JWK set 
+must be updated on chain.  Use the same account in step 3 above to update the JWK set.
+Existing JWTs will continue to work so long as the old JWK has not been removed.  Any new JWTs issued by the new keypair will not be accepted until the JWK set is updated.
+
+It is important to not lose access to the account used in JWK updates.  Whenever a keypair is rotated it is important for the JWK data on chain to reflect that for JWT tokens to stay valid.
+
+## Frequently Asked Questions
+
+**What if I stop using my IAM for my application? What if I switch IAM providers?**
+- An account address depends on values of several variables that are specific to an IAM service, including aud (client ID) and `iss` (issuer).  If these values are changed, then a different address will be derived. 
+- If you want to switch IAM providers, you will need to develop an account migration flow, resulting in a key rotation from the account derived from the prior IAM provider to the account derived from the new IAM provider. 
+- We recommend allowing your users to add a secondary authentication method to their accounts (e.g. back-up private key) so that they can maintain access should the authentication path into their account via Federated Keyless is disrupted via service provider change
+
+**How do I make sure my users can continue accessing their accounts?**
+- We recommend allowing your users to add a secondary authentication method to their accounts (e.g. back-up private key) so that they can maintain access should the authentication path into their account via Federated Keyless is disrupted via service provider change or other 
+ (In some future I would love to be able to tell users that email backup is possible)
+
+**What differences in legal considerations between standard keyless and federated keyless?**
+- Custody - Admin has the ability to impersonate a user.
+
+
