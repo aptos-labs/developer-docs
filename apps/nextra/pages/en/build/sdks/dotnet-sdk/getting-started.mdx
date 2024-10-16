@@ -113,6 +113,35 @@ class Program
 }
 ```
 
+### Smart Contract View Functions
+
+Call view functions to query smart contracts.
+
+```csharp filename="Program.cs" {10-17,19-20}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Mainnet);
+        var client = new AptosClient(config);
+
+        // Call the view function by specifying the function name, arguments, and type arguments
+        var values = await client.Contract.View(
+            new GenerateViewFunctionPayloadData(
+                function: "0x1::coin::name",
+                functionArguments: [],
+                typeArguments: ["0x1::aptos_coin::AptosCoin"]
+            )
+        );
+
+        // Returns a list of return values: ["Aptos Coin"]
+        Console.WriteLine("APT Name: " + values[0]);
+    }
+}
+```
+
 </Steps>
 
 ## Additional Resources

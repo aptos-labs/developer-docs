@@ -1,3 +1,5 @@
+import { title } from "process";
+
 export default {
   "getting-started": {
     title: "Getting Started",
@@ -13,6 +15,9 @@ export default {
   },
   transactions: {
     title: "Transactions",
+  },
+  queries: {
+    title: "Queries",
   },
   "dotnet-examples": {
     title: "Examples",
