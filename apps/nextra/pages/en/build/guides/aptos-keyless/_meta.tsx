@@ -14,6 +14,9 @@ export default {
   "how-keyless-works": {
     title: "How Keyless Works",
   },
+  "what-is-federated-keyless": {
+    title: "What is Federated Keyless?",
+  },
   other: {
     title: "Terminology and FAQ",
   },
