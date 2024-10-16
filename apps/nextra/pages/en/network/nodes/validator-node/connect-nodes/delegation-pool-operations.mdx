@@ -194,3 +194,79 @@ Use this formula to calculate _rewards earned_ for `active` and `pending_inactiv
 3. Compute rewards earned:
    - active rewards = `active` - active principal.
    - pending_inactive_rewards = `pending_inactive` - "pending inactive principal".
+
+## Allowlisting for delegation pools
+
+Delegation pool owners can set an allowlist for their delegation pool. They can add or remove addresses from the allowlist and evict delegators who are not on the allowlist. Here is the flow:
+
+1. By default, a delegation pool is permissionless and does not have an allowlist. The pool owner can set an allowlist, transitioning the pool to a permissioned state.
+2. When an allowlist is first established in a delegation pool, it starts empty. This initial empty allowlist does not impact existing stakes in the pool. However, the pool will not accept any new stakes or reactivation of pending-inactive stakes from any stakers because no one is on the allowlist initially.
+3. The pool owner may add stakers' wallet addresses to the allowlist. Once an address is added, the staker can add new stakes or reactivate existing stakes in the pool. Note that this feature does not facilitate a mechanism for stakers to request to be added to the allowlist; such requests must be managed off-chain (e.g., through private communication between the operator and staker, or UI-based solutions).
+4. If a delegator is removed from the allowlist, they are no longer able to add or reactivate stakes. However, they retain the ability to unlock and withdraw their existing stakes.
+5. The pool owner can evict a delegator who is not included on the allowlist. This action will unlock the delegator's entire stake, transitioning all of their active stakes to a pending inactive state. As the evicted delegator is not on the allowlist, they cannot reactive their stake. Note that these tokens will remain locked up until the end of the lockup period, and the existing stake will also continue to earn rewards until then. When the lockup period ends, the funds will be unstaked (inactive), but will remain in the pool until the delegator initiates a withdrawal.
+6. If a delegator's stake enters the pending inactive state due to eviction, the pool owner can subsequently add the delegator back to the allowlist. However, this action will not automatically reactivate the stake. Automatic reactivation is not provided to prevent potential misuse by a malicious pool owner who might repeatedly evict and re-allowlist a delegator to prevent them from leaving the pool. Once a delegator is back on the allowlist, the delegator must manually call the reactivate_stake function to reactivate their stake.
+7. Delegation pools that have enabled allowlisting can disable it. When disabled, the delegation pool becomes permissionless, allowing any staker to stake to the pool.
+
+- The delegation pool owner can enable allow listing and create an empty allowlist using the following command:
+
+  ```bash filename="Terminal"
+  aptos move run --profile delegation_pool_owner \
+    --function-id 0x1::delegation_pool::enable_delegators_allowlisting
+  ```
+
+- The delegation pool owner can disable allow listing and delete the existing allowlist using the following command:
+
+  ```bash filename="Terminal"
+  aptos move run --profile delegation_pool_owner \
+    --function-id 0x1::delegation_pool::disable_delegators_allowlisting
+  ```
+
+- The delegation pool owner can add an address to the allowlist using the following command:
+
+    ```bash filename="Terminal"
+    aptos move run --profile delegation_pool_owner \
+      --function-id 0x1::delegation_pool::allowlist_delegator \
+      --args address:<delegator_address>
+    ```
+
+- The delegation pool owner can remove an address from the allowlist using the following command:
+
+      ```bash filename="Terminal"
+      aptos move run --profile delegation_pool_owner \
+        --function-id 0x1::delegation_pool::remove_delegator_from_allowlist \
+        --args address:<delegator_address>
+      ```
+
+- The delegation pool owner can evict a delegator from the pool by unlocking their entire stake using the following command:
+
+      ```bash filename="Terminal"
+      aptos move run --profile delegation_pool_owner \
+        --function-id 0x1::delegation_pool::evict_delegator \
+        --args address:<delegator_address>
+      ```
+
+There are also view functions available to check the allowlist status and the addresses on the allowlist:
+
+- The following view function returns whether `pool` has allow listing enabled:
+
+  ```bash filename="Terminal"
+  aptos move view --url <REST API for the network> \
+    --function-id 0x1::delegation_pool::allowlisting_enabled \
+    --args address:<pool>
+  ```
+
+- The following view function returns whether `delegator` is on the allowlist of `pool`:
+
+  ```bash filename="Terminal"
+  aptos move view --url <REST API for the network> \
+    --function-id 0x1::delegation_pool::delegator_allowlisted \
+    --args address:<pool> address:<delegator>
+  ```
+
+- The following view function returns the allowlist defined on pool:
+
+  ```bash filename="Terminal"
+  aptos move view --url <REST API for the network> \
+    --function-id 0x1::delegation_pool::get_delegators_allowlist \
+    --args address:<pool>
+  ```
