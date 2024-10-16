@@ -135,6 +135,7 @@ when you build the binary, and download the correct genesis and waypoint files f
     - `consensus.initial_safety_rules_config`: The waypoint for the genesis transaction on the network you are connecting to,
       as well as the `validator-identity.yaml` file location.
     - `execution.genesis_file_location`: The genesis blob for the network you are connecting to.
+    - `storage.rocksdb_configs.enable_storage_sharding`: Set to `true`.
     - `validator_network.identity`: The `validator-identity.yaml` file location.
 
     For the `fullnode.yaml` file, you will need to modify the following fields:
@@ -142,6 +143,7 @@ when you build the binary, and download the correct genesis and waypoint files f
     - `base.data_dir`: The directory where the blockchain data will be stored.
     - `base.waypoint`: The waypoint for the genesis transaction on the network you are connecting to.
     - `execution.genesis_file_location`: The genesis blob for the network you are connecting to.
+    - `storage.rocksdb_configs.enable_storage_sharding`: Set to `true`.
     - `full_node_networks`: - The `public` network will need to be updated with the `validator-full-node-identity.yaml`
       file location. - The `vfn` network will need to be updated with the correct IP address or DNS address of the validator.
       For example, if you are using IP addresses, you will need to update the `addresses` field as follows:
