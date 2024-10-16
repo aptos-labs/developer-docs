@@ -9,9 +9,11 @@ import { Callout } from 'nextra/components'
 
 ### How random numbers have been obtained, insecurely/awkwardly
 
-Building a lottery system and pick a random winner from `n` participants is trivial, at least in the centralized world with a trusted server: the backend simply calls a `random.randint(0, n-1)` (this is a python example).
+Building a lottery system and pick a random winner from `n` participants is trivial, at least in the centralized world with a trusted server:
+the backend simply calls a random integer sampling function
+(`random.randint(0, n-1)` in python, or `Math.floor(Math.random() * n)` in JS).
 
-Unfortunately, without an equivalent of `random.randomint()` in Aptos Move, building a dApp version of it was actually much harder.
+Unfortunately, without an equivalent of `random.randint()` in Aptos Move, building a dApp version of it was actually much harder.
 
 One may have written a contract where the random numbers are sampled insecurely (e.g., from the blockchain timestamp):
 
@@ -122,25 +124,8 @@ Compiler helps with test and abort attacks, requiring functions using randomness
 
 ## How to use Aptos randomness API
 
-### Currently supported network
-
-Randomness APIs are enabled on devnet, testnet and mainnet.
-
-### Build Aptos CLI from latest source
-
-Some changes have been made to [Aptos CLI](../cli.mdx) to support compiling a randomness consuming contract.
-While the changes haven't been included in an official Aptos CLI release (but coming soon),
-you can build it from source to support your randomness-dependent contract development.
-
-```sh filename="Terminal"
-git clone https://github.com/aptos-labs/aptos-core
-cd aptos-core
-./scripts/dev_setup.sh -b
-sudo apt-get install libudev-dev
-. ~/.profile
-cargo build -p aptos
-alias aptos=target/debug/aptos
-```
+### Prerequisites
+Ensure you have the latest [aptos-cli](https://aptos.dev/en/build/cli) installed.
 
 ### Keep undergasing attacks in mind
 
