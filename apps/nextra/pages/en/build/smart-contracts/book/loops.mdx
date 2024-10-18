@@ -259,3 +259,28 @@ script {
   }
 }
 ```
+
+## Loop Labels
+
+_Since language version 2.1_
+
+A `while` or `loop` statement can have a label which can be referred to by a `break` or `continue` statement. In the presence of nested loops, this allows to refer to outer loops. Example:
+
+```move
+script {
+  fun example(x: u64): u64 {
+    'label1: while (x > 10) {
+      loop {
+        if (x % 2 == 0) {
+          x -= 1;
+          continue 'label1;
+        } else if (x < 10) {
+          break 'label1
+        } else
+          x -= 2
+      }
+    };
+    x
+  }
+}
+```
