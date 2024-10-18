@@ -2,8 +2,8 @@ export default {
   SUMMARY: {
     title: "Summary",
   },
-  "move-2.0": {
-    title: "Move 2.0 Release Notes",
+  "move-2": {
+    title: "Move 2 Release Notes",
   },
   "---getting-started---": {
     type: "separator",
