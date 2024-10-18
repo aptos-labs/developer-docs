@@ -3,7 +3,7 @@ export default {
     title: "Summary",
   },
   "move-2.0": {
-    title: "Move 2.0 Release Notes",
+    title: "Move 2 Release Notes",
   },
   "---getting-started---": {
     type: "separator",
