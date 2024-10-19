@@ -3,4 +3,48 @@ title: "Federated Keyless Integration Guide"
 ---
 import { Callout, Steps } from "nextra/components";
 
-# Aptos Federated Keyless Integration Guide
+# Federated Keyless Integration Guide
+
+### Step 1. Setup your IAM provider
+
+Set up your project with your IAM to match the account structure you are looking for.
+
+### Step 2. Register the JSON Web Key Set (JWKS) on-chain
+
+Federated Keyless accounts require the JWKS to be registeed on-chain.
+
+To register the JWKS - call the `0x1::jwks::update_federated_jwk_set` entry function with an Aptos account that will store the JWKs that will be used to validate transactions signed by federated keyless accounts.
+
+The JWK set can be found as follows -
+
+AWS Cognito - `https://cognito-idp.<region>.amazonaws.com/<userPoolId>/.well-known/jwks.json`
+
+Auth0 - `https://<yourDomain>/.well-known/jwks.json`
+
+Okta - `https://<yourOktaDomain>/oauth2/default/v1/keys`
+
+The typescript SDK contains functionality to simplify the process given the issuer for your IAM provider setup (the `iss` claim value on your user’s JWT tokens).
+
+```tsx
+import {Aptos} from '@aptos-labs/ts-sdk'; // Requires version v1.29.1 or later
+
+const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET })); // Configure your network here
+const alice = // Derive your Aptos account here
+const jwkTxn = await aptos.updateFederatedKeylessJwkSetTransaction({ sender: alice, iss });
+await aptos.signAndSubmitTransaction({ signer: alice, transaction: jwkTxn });
+```
+
+You can use the interactive example provided by the SDK to easily register the JWKS for your IAM provider in devnet or testnet.  This will setup the JWK owner account with a Google Keyless account.
+
+```bash
+git clone https://github.com/aptos-labs/aptos-ts-sdk
+cd aptos-ts-sdk
+pnpm install && pnpm build
+cd examples/typescript
+pnpm install
+pnpm jwk_update
+```
+
+To setup the JWK owner account in mainnet, you will need create an account and use it to register the JWKS.
+
+To learn more about the `0x1::jwks::update_federated_jwk_set` entry function, see the [documentation](https://aptos.dev/en/build/smart-contracts/move-reference?page=aptos-framework%2Fdoc%2Fjwks.md#0x1_jwks_update_federated_jwk_set).
