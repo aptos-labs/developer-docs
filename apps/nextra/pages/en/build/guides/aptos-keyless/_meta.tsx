@@ -17,7 +17,7 @@ export default {
   other: {
     title: "Terminology and FAQ",
   },
-  "aptos-federated-keyless": {
+  "federated-keyless": {
     title: "Federated Keyless",
   },
 };
