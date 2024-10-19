@@ -44,25 +44,6 @@ pnpm install @aptos-labs/ts-sdk
 
 Below are the default steps for a client to integrate Keyless Accounts
 
-
-#### 0. -Federated Keyless only- Register JWK on-chain
-
-To register the JWK - call the entry function 0x1::jwks::update_federated_jwk_set with an Aptos account that will store the JWKs that will be used to validate transactions signed by federated keyless accounts.
-
-The JWK set can be found as follows -
-
-AWS Cognito - `https://cognito-idp.{Region}.amazonaws.com/{userPoolId}/.well-known/jwks.json`
-
-Auth0 - `https://{yourDomain}/.well-known/jwks.json`
-
-The typescript SDK has a function to simplify the process given the iss for your IAM provider setup (the iss claim value on your user’s JWT tokens).
-
-        ```ts
-        const jwkOwner = <Instantiate the account you want to use here>
-        const jwkUpdateTxn = await aptos.updateFederatedKeylessJwkSetTransaction({ sender: jwkOwner, iss });
-        await aptos.signAndSubmitTransaction({ signer: jwkOwner, transaction: jwkUpdateTxn });
-        ```
-
 #### 1. Present the user with a "Sign In with [IdP]" button on the UI
 
     1. In the background, we create an ephemeral key pair. Store this in local storage.
@@ -194,7 +175,9 @@ export const decodeEphemeralKeyPair = (encodedEkp: string): EphemeralKeyPair =>
 
     4. Instantiate the user’s `KeylessAccount`
 
-        Normal Keyless
+        Depending on the type of Keyless you are using, follow the instructions below:
+
+        1. Normal Keyless
         ```tsx
         import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
@@ -205,9 +188,7 @@ export const decodeEphemeralKeyPair = (encodedEkp: string): EphemeralKeyPair =>
         });
         ```
 
-      If you are using an IAM provider, set the jwkAddress to the address of the account used in step 0
-
-        Federated Keyless
+        2. Federated Keyless
         ```tsx
         import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
@@ -217,7 +198,7 @@ export const decodeEphemeralKeyPair = (encodedEkp: string): EphemeralKeyPair =>
             ephemeralKeyPair,
             jwkAddress: jwkOwner.accountAddress
         });
-        ```      
+        ```
 
 
 #### 3. Store the KeylessAccount in local storage (Optional)  
