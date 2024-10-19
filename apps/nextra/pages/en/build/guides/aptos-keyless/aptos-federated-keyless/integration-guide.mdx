@@ -9,6 +9,10 @@ import { Callout, Steps } from "nextra/components";
 
 Set up your project with your IAM to match the account structure you are looking for.
 
+[AWS Cognito](https://aws.amazon.com/cognito/getting-started/)
+
+[Auth0](https://auth0.com/docs/get-started)
+
 ### Step 2. Register the JSON Web Key Set (JWKS) on-chain
 
 Federated Keyless accounts require the JWKS to be registeed on-chain.
@@ -20,8 +24,6 @@ The JWK set can be found as follows -
 AWS Cognito - `https://cognito-idp.<region>.amazonaws.com/<userPoolId>/.well-known/jwks.json`
 
 Auth0 - `https://<yourDomain>/.well-known/jwks.json`
-
-Okta - `https://<yourOktaDomain>/oauth2/default/v1/keys`
 
 The typescript SDK contains functionality to simplify the process given the issuer for your IAM provider setup (the `iss` claim value on your user’s JWT tokens).
 
