@@ -5,7 +5,7 @@ export default {
   "integration-guide": {
     title: "Integration Guide",
   },
-  "other": {
+  other: {
     title: "FAQs",
   },
 };
