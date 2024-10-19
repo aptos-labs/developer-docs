@@ -14,14 +14,13 @@ Set up your project with your IAM to match the account structure you are looking
 
 ### Step 2. Register the JSON Web Key Set (JWKS) on-chain
 
-Federated Keyless accounts require the JWKS to be registeed on-chain.
+Federated Keyless accounts require the JWKS to be registered on-chain.
 
 To register the JWKS - call the `0x1::jwks::update_federated_jwk_set` entry function with an Aptos account that will store the JWKs that will be used to validate transactions signed by federated keyless accounts.
 
 The JWK set can be found as follows -
 
 AWS Cognito - `https://cognito-idp.<region>.amazonaws.com/<userPoolId>/.well-known/jwks.json`
-
 Auth0 - `https://<yourDomain>/.well-known/jwks.json`
 
 The typescript SDK contains functionality to simplify the process given the issuer for your IAM provider setup (the `iss` claim value on your user’s JWT tokens).
@@ -48,8 +47,12 @@ pnpm jwk_update
 
 To setup the JWK owner account in mainnet, you will need create an account and use it to register the JWKS.
 
-To learn more about the `0x1::jwks::update_federated_jwk_set` entry function, see the [documentation](https://aptos.dev/en/build/smart-contracts/move-reference?page=aptos-framework%2Fdoc%2Fjwks.md#0x1_jwks_update_federated_jwk_set).
+Save the address of the account you used to register the JWKS as you will need it for the next step.
 
-### Step 3. Follow the same flow as the Aptos Keyless integration guide
+To learn more about the `0x1::jwks::update_federated_jwk_set` entry function, see the [reference documentation](https://aptos.dev/en/build/smart-contracts/move-reference?page=aptos-framework%2Fdoc%2Fjwks.md#0x1_jwks_update_federated_jwk_set).
+
+### Step 3. Follow the Aptos Keyless integration guide
+
+Now that you have registered the JWKS, you can follow the Aptos Keyless integration guide.  Be sure to set the `jwkAddress` to the address of the account you used to register the JWKS when deriving the `KeylessAccount`.
 
 [Aptos Keyless Integration Guide](../aptos-keyless/integration-guide.mdx)
