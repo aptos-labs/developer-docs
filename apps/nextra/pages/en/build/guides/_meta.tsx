@@ -34,9 +34,6 @@ export default {
   "aptos-keyless": {
     title: "Aptos Keyless Accounts",
   },
-  "aptos-federated-keyless": {
-    title: "Aptos Federated Keyless",
-  },
   "sponsored-transactions": {
     title: "Sponsored Transactions",
   },
