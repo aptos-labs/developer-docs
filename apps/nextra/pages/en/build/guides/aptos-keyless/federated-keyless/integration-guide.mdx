@@ -21,6 +21,7 @@ To register the JWKS - call the `0x1::jwks::update_federated_jwk_set` entry func
 
 <Callout type="warning">
 **Losing access to the JWK owner account compromises the Federated Keyless accounts created with it**
+
 The JWK owner account is the only account that can update the JWKS.  If you lose access to the JWK owner account, you will not be able to update the JWKS and the Federated Keyless accounts created with it will stop working in the case of a key rotation.  Users will be unable to validate their JWT tokens as they will be signed with the new key whos public key is not registered on the Aptos blockchain.
 </Callout>
 
@@ -59,6 +60,7 @@ To learn more about the `0x1::jwks::update_federated_jwk_set` entry function, se
 
 <Callout type="warning">
 **Handling key roations**
+
 Whenever there is a key rotation of the JWKS, it is important to update the JWKS registered on chain promptly to avoid any loss of access to Federated Keyless accounts.  See [here](key-considerations.mdx) for more info.
 </Callout>
 
