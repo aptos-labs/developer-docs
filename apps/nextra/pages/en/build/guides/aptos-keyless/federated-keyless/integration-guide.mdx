@@ -19,6 +19,11 @@ Federated Keyless accounts require the JWKS to be registered on-chain.
 
 To register the JWKS - call the `0x1::jwks::update_federated_jwk_set` entry function with an Aptos account that will store the JWKs that will be used to validate transactions signed by federated keyless accounts.
 
+<Callout type="warning">
+**Losing access to the JWK owner account compromises the Federated Keyless accounts created with it**
+The JWK owner account is the only account that can update the JWKS.  If you lose access to the JWK owner account, you will not be able to update the JWKS and the Federated Keyless accounts created with it will stop working in the case of a key rotation.  Users will be unable to validate their JWT tokens as they will be signed with the new key whos public key is not registered on the Aptos blockchain.
+</Callout>
+
 The JWK set can be found as follows -
 
 AWS Cognito - `https://cognito-idp.<region>.amazonaws.com/<userPoolId>/.well-known/jwks.json`
