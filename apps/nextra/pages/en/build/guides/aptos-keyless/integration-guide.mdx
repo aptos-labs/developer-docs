@@ -175,6 +175,9 @@ export const decodeEphemeralKeyPair = (encodedEkp: string): EphemeralKeyPair =>
 
     4. Instantiate the user’s `KeylessAccount`
 
+        Depending on the type of Keyless you are using, follow the instructions below:
+
+        1. Normal Keyless
         ```tsx
         import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
@@ -182,6 +185,18 @@ export const decodeEphemeralKeyPair = (encodedEkp: string): EphemeralKeyPair =>
         const keylessAccount = await aptos.deriveKeylessAccount({
             jwt,
             ephemeralKeyPair,
+        });
+        ```
+
+        2. Federated Keyless
+        ```tsx
+        import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
+
+        const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET })); // Configure your network here
+        const keylessAccount = await aptos.deriveKeylessAccount({
+            jwt,
+            ephemeralKeyPair,
+            jwkAddress: jwkOwner.accountAddress
         });
         ```
 

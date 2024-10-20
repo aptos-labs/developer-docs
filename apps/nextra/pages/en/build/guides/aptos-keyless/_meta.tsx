@@ -17,4 +17,7 @@ export default {
   other: {
     title: "Terminology and FAQ",
   },
+  "federated-keyless": {
+    title: "Federated Keyless",
+  },
 };
