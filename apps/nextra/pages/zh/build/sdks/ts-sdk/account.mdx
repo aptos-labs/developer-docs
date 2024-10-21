@@ -1,0 +1,74 @@
+---
+主題: "創造和管理帳戶口"
+---
+
+import { Callout } from 'nextra/components'
+
+# 創造和管理帳戶口
+
+這裡有幾種方法用 TypeScript SDK 去生成Aptos的帳戶。你可以使用:
+
+- `Account.generate()`
+- `Account.fromPrivateKey()`
+- `Account.fromDerivationPath()`
+
+`Account.generate()` 是最常使用的方法去生成一個全新的私鑰帳戶。
+
+它默認使用`ED25519`解密私鑰,但您也可以手動指定您喜歡的簽名標準:
+
+```ts
+const account = Account.generate(); // defaults to Legacy Ed25519
+const account = Account.generate({ scheme: SigningSchemeInput.Secp256k1Ecdsa }); // Single Sender Secp256k1
+const account = Account.generate({
+  scheme: SigningSchemeInput.Ed25519,
+  legacy: false,
+}); // Single Sender Ed25519
+```
+
+<Callout type="info">
+根據 [AIP-55](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-55.md) SDK 支援「Legacy」和「Unified」身份驗證.“Legacy”包括“ED25519”和“MultiED25519”，“Unified”包括“SingleSender”和“MultiSender”驗證器。
+</Callout>
+
+當你產生了新的憑證，你 **一定要** 把資金傳入，讓aptos的網路知道它的存在。 
+
+在測試的環境中，這個可以使用以下的命令去領取測試幣完成:
+
+```ts filename="fund.ts"
+const transaction = await aptos.fundAccount({
+  accountAddress: account.accountAddress,
+  amount: 100,
+});
+```
+
+## 表示帳戶的其他方式
+如果你有私鑰, 或同等表示,你可以使用它們去創建 `Account` 物件在使用 TypeScript SDK 時管理這些憑證。 
+
+這裡有一些例子是教你怎麼使用具體的解碼方案：
+
+### 從私鑰生成帳戶
+
+SDK 支援使用「fromPrivateKey()」靜態方法從私鑰衍生出帳戶。
+另外，該方法支援從私鑰和帳戶地址衍生帳戶。
+此方法使用本地計算，因此適合用於衍生尚未輪換身份驗證金鑰的「帳戶」。
+
+```ts
+// to derive an account with a legacy Ed25519 key scheme
+const privateKey = new Ed25519PrivateKey(privateKeyBytes);
+const account = Account.fromPrivateKey({ privateKey });
+
+// to derive an account with a Single Sender Ed25519 key scheme
+const privateKey = new Ed25519PrivateKey(privateKeyBytes);
+const account = Account.fromPrivateKey({ privateKey, legacy: false });
+
+// to derive an account with a Single Sender Secp256k1 key scheme
+const privateKey = new Secp256k1PrivateKey(privateKeyBytes);
+const account = Account.fromPrivateKey({ privateKey });
+
+// to derive an account with a private key and account address
+const privateKey = new Ed25519PrivateKey(privateKeyBytes);
+const address = AccountAddress.from(address);
+const account = Account.fromPrivateKey({ privateKey, address });
+```
+### 從派生路徑生成帳戶
+
+SDK支援使用「fromDerivationPath()」靜態方法從衍生路徑生成帳戶。
