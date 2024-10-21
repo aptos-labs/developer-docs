@@ -1,13 +1,13 @@
 export default {
   "fullnode-rest-api-reference": {
-    title: "Fullnode REST API Reference",
+    title: "全節點 REST API 參考",
     theme: {
       toc: false,
       layout: "full",
       sidebar: false,
     },
   },
-  "fullnode-rest-api": "Fullnode REST API 教程",
+  "fullnode-rest-api": "全節點 REST API 教程",
   "indexer-graphql-api": {
     title: "Indexer GraphQL API",
     href: "/en/build/indexer",
