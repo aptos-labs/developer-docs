@@ -1,5 +1,5 @@
 export default {
-  "get-started": "Get Started",
+  "get-started": "開始",
   cli: "CLI",
   apis: "APIs",
 };
