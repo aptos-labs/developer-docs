@@ -144,6 +144,29 @@ Additionaly, for a frontend to fetch data, it reads the data from the databse. Y
 Do not ever try to backfill the data, as data like user statistics is incremental. If you backfill (e.g. processing same event twice), you will get wrong statistics. So please always revert all migrations and re-index from the first tx your contract deployed.
 </Callout>
 
+<Steps>
+
+Revert all migrations, this should stop the indexer by making it panic if indexer is running on the cloud.
+
+```sh
+diesel migration revert \
+    --all \
+    --config-file="src/db_migrations/diesel.toml" \
+    --database-url="postgresql://username:password@neon_host/db_name?sslmode=require"
+```
+
+Run all migrations again.
+
+```sh
+diesel migration run \
+    --config-file="src/db_migrations/diesel.toml" \
+    --database-url="postgresql://username:password@neon_host/db_name?sslmode=require"
+```
+
+Follow the guide below to re-build the indexer docker image and redeploy it to cloud run or run it locally.
+
+</Steps>
+
 ## Ready for Mainnet
 
 If you started your dapp on testnet, and you are happy with your testing, you will want to get the dapp on mainnet.
