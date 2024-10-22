@@ -1,0 +1,100 @@
+---
+title: "創建-aptos-dapp"
+---
+
+import { Tabs, Steps } from 'nextra/components'
+
+# create-aptos-dapp
+
+`create-aptos-dapp` 為 dapp 開發者建立一個範本項目，以便在 Aptos 網路上輕鬆建立前端和智慧合約。 
+
+## 為什麼使用 `create-aptos-dapp`?
+
+- **Templated Setup**:
+
+  `create-aptos-dapp`為您產生預先定義的端對端 dapp 範本和設定檔。它節省了專案結構的手動設置，這既耗時又容易出錯。
+- **Contract Directory:** 
+
+  `create-aptos-dapp` 產生一個「contract」目錄，其中包含 Move 智慧合約模組的基本結構。
+- **Best Practices**: 
+
+  `create-aptos-dapp` 納入了針對 Aptos 網路進行開發的最佳實務和結構建議。
+- **Built-in Move Commands**: 
+
+  `create-aptos-dapp` 包括用於常見任務的內建命令，例如初始化 Move 編譯器、編譯和在鏈上發布智能合約
+
+## 先決條件
+
+  - [node and npm](https://nodejs.org/en) (npm ≥ 5.2.0)
+  - [Python 3.6+](https://www.python.org/)
+
+## 使用 `create-aptos-dapp`
+
+<Steps>
+### 導航到您想要工作的目錄。 
+
+  ```bash filename="Terminal"
+  cd /你想要使用create aptos dapp 的目錄
+  ```
+
+### 安裝 `create-aptos-dapp`.
+  
+  <Tabs items={['npx', 'pnpx', 'yarn', 'pnpm']}>
+    <Tabs.Tab>
+      ```bash filename="Terminal"
+      npx create-aptos-dapp@latest
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash filename="Terminal"
+      pnpx create-aptos-dapp@latest
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash filename="Terminal"
+      yarn create aptos-dapp
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash filename="Terminal"
+      pnpm create create-aptos-dapp@latest
+      ```
+    </Tabs.Tab>
+  </Tabs>
+
+### 跟著 CLI 的指示。
+  
+  安裝之後,你需要回答一些關於你想要怎麼樣子的dapp:
+  1. 你的專案名字
+  2. 使用哪個模板 ([看以下](#current-templates))
+  3. 使用Mainnet/Testnet/Devnet進行測試
+
+</Steps>
+
+## 模板
+
+  `create-aptos-dapp` 為您提供預製的端對端 dapp 模板，即具有配置和漂亮 UI 的現成 dapp，可協助您開始在 Aptos 上建立 dapp。
+
+  模板的目標：
+
+  1. 透過端對端 dapp 範本範例，讓使用者熟悉不同的 Aptos 標準。
+  2. 教育使用者如何在 Aptos 上建立從前端層到智慧合約層的 dapp，以及中間的一切。
+  3. 提供使用者預製模板，快速部署簡單的dapp
+
+### 可使用的 模板
+
+  - [Boilerplate Template](create-aptos-dapp/templates/boilerplate.mdx) - 基本模板
+  - [NFT minting dapp Template](create-aptos-dapp/templates/nft-minting-dapp.mdx) - NFT Mint dapp
+  - [Token minting dapp Template](create-aptos-dapp/templates/token-minting-dapp.mdx) - Mint 代幣的dapp 
+  - [Token staking dapp Template](create-aptos-dapp/templates/token-staking-dapp.mdx) - 創建質押的dapp
+  - [Telegram Mini app Template](create-aptos-dapp/templates/clicker-game-tg-mini-app.mdx) - 創建電報的dapp
+  - [Custom indexer template](create-aptos-dapp/templates/custom-indexer.mdx) - 客製化的indexer模板
+
+## 工具 `create-aptos-dapp` 利用
+  
+  - React framework
+  - Vite development tool
+  - shadcn/ui + tailwind for styling
+  - Aptos TS SDK
+  - Aptos Wallet Adapter
+  - Node based Move commands
