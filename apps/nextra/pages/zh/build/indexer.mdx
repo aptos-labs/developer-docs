@@ -9,14 +9,14 @@ import { Tabs, Callout } from 'nextra/components'
 
 <IndexerBetaNotice />
 
-你可以使用Aptos 索引器的API去取得以下的資料:
+你可以使用Aptos 索引器的API去取得以下的资料:
 
 
-1. 匯總數據 (ex. 有幾個NFTs存在?)
-2. 歷史資料 (ex. 這個地址提交了多少次交易?)
-3. 難以從簡單的數據中獲得的數據 [Aptos Node API](apis/fullnode-rest-api.mdx) (ex. 有哪些地址是擁有 - "ExampleToken" 這個Token?).
+1. 汇总数据 (ex. 有几个NFTs存在?)
+2. 历史资料 (ex. 这个地址提交了多少次交易?)
+3. 难以从简单的数据中获得的数据 [Aptos Node API](apis/fullnode-rest-api.mdx) (ex. 有哪些地址是拥有 - "ExampleToken" 这个Token?).
 
-例如，您可以使用 Indexer API 來尋找任何帳戶的可替代資產餘額，如下所示：
+例如，您可以使用 Indexer API 来寻找任何帐户的可替代资产余额，如下所示：
 
 <GraphQLEditor
   query={`query GetFungibleAssetBalances($address: String, $offset: Int) {
@@ -39,48 +39,48 @@ import { Tabs, Callout } from 'nextra/components'
 
 
 <Callout type="info">
-Indexer 追蹤鏈上發生的每筆交易，然後透過 GraphQL API 公開該資料。
+Indexer 追踪链上发生的每笔交易，然后透过 GraphQL API 公开该资料。
 </Callout>
 
 ## 使用 Indexer API
 
-學習怎麼使用 Indexer API,每個表代表什麼，以及如何將自訂資料新增至索引器。
+学习怎么使用 Indexer API,每个表代表什么，以及如何将自订资料新增至索引器。
 
 <Cards>
   <Card href="indexer/aptos-hosted">
     <Card.Title>存取 API</Card.Title>
-    <Card.Description>了解如何查詢 Indexer API。</Card.Description>
+    <Card.Description>了解如何查询 Indexer API。</Card.Description>
   </Card>
     <Card href="indexer/indexer-reference">
-    <Card.Title>Indexer 表參考</Card.Title>
-    <Card.Description>索引器表及其架構的詳細參考。</Card.Description>
+    <Card.Title>Indexer 表参考</Card.Title>
+    <Card.Description>索引器表及其架构的详细参考。</Card.Description>
   </Card>
   <Card href="indexer/architecture">
-    <Card.Title>Indexer 架構</Card.Title>
-    <Card.Description>Indexer 架構的詳細佈局。</Card.Description>
+    <Card.Title>Indexer 架构</Card.Title>
+    <Card.Description>Indexer 架构的详细布局。</Card.Description>
   </Card>
 </Cards>
 
-### 查詢範例
+### 查询范例
 
-為了幫助您入門，以下是索引器最常見的查詢。
+为了帮助您入门，以下是索引器最常见的查询。
 
 <Cards>
   <Card href="indexer/fungible-asset-balances">
-    <Card.Title>取得可替代資產的餘額</Card.Title>
-    <Card.Description>取得一個地址所擁有的所有可替代資產。</Card.Description>
+    <Card.Title>取得可替代资产的余额</Card.Title>
+    <Card.Description>取得一个地址所拥有的所有可替代资产。</Card.Description>
   </Card>
   <Card href="indexer/account-transactions">
-    <Card.Title>取得地址的交易記錄</Card.Title>
-    <Card.Description>取得影響帳戶的所有交易。</Card.Description>
+    <Card.Title>取得地址的交易记录</Card.Title>
+    <Card.Description>取得影响帐户的所有交易。</Card.Description>
   </Card>
   <Card href="indexer/ans-lookup">
     <Card.Title>取得 Aptos Name</Card.Title>
-    <Card.Description>檢索與帳戶關聯的 Aptos 名稱（透過 ANS）。</Card.Description>
+    <Card.Description>检索与帐户关联的 Aptos 名称（透过 ANS）。</Card.Description>
   </Card>
   <Card href="indexer/fungible-asset-info">
-    <Card.Title>取得可替代資產資訊</Card.Title>
-    <Card.Description>取得特定可替代資產的詳細資料。</Card.Description>
+    <Card.Title>取得可替代资产资讯</Card.Title>
+    <Card.Description>取得特定可替代资产的详细资料。</Card.Description>
   </Card>
   <Card href="indexer/get-nft-collections">
     <Card.Title>Get NFT Collections</Card.Title>
