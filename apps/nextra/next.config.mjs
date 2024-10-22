@@ -1741,6 +1741,11 @@ export default withBundleAnalyzer(
         destination: "/en/build/sdks/community-sdks/kotlin-sdk",
         permanent: false,
       },
+      {
+        source: "/en/build/smart-contracts/book/move-2.0",
+        destination: "/en/build/smart-contracts/book/move-2",
+        permanent: true,
+      },
     ],
   }),
 );
