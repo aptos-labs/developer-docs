@@ -69,7 +69,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 
    module "aptos-node" {
      # Download the Terraform module from the aptos-core repository.
-     source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/azure?ref=mainnet"
+     source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/azure"
      region        = <azure region>  # Specify the Azure region
      era           = 1  # Bump the era number to wipe the chain data
      chain_id      = 1  # Use 1 for mainnet, or different values for other networks.
