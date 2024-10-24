@@ -1,0 +1,126 @@
+---
+title: "索引器"
+---
+
+import { IndexerBetaNotice, ThemedImage, Cards, Card, GraphQLEditor } from '@components/index';
+import { Tabs, Callout } from 'nextra/components'
+
+# 索引器
+
+<IndexerBetaNotice />
+
+Aptos 索引器是一个 API，您可以使用它来获取：
+
+1. 聚合数据（例如：有多少 NFTs 存在？）
+2. 历史数据（例如：此账户提交了哪些交易？）
+3. 从简单的 [Aptos 节点 API](apis/fullnode-rest-api.mdx) 很难获取的数据（例如：哪个账户拥有名为“ExampleToken”的代币？）
+
+例如，您可以使用索引器 API 查询任意账户的可替代资产余额，代码如下：
+
+<GraphQLEditor
+  query={`query GetFungibleAssetBalances($address: String, $offset: Int) {
+  current_fungible_asset_balances(
+    where: {owner_address: {_eq: $address}},
+    offset: $offset,
+    limit: 100,
+    order_by: {amount: desc}
+  ) {
+    asset_type
+    amount
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "offset": 0
+}`}
+/>
+
+<Callout type="info">
+索引器会跟踪链上发生的每笔交易，然后通过 GraphQL API 公开这些数据。
+</Callout>
+
+## 使用索引器 API
+
+了解如何使用索引器 API、每个表代表的含义，以及如何向索引器添加自定义数据。
+
+<Cards>
+  <Card href="indexer/aptos-hosted">
+    <Card.Title>访问 API</Card.Title>
+    <Card.Description>了解如何查询索引器 API。</Card.Description>
+  </Card>
+    <Card href="indexer/indexer-reference">
+    <Card.Title>索引器表参考</Card.Title>
+    <Card.Description>详细的索引器表格及其架构参考。</Card.Description>
+  </Card>
+  <Card href="indexer/architecture">
+    <Card.Title>架构</Card.Title>
+    <Card.Description>索引器架构的详细布局。</Card.Description>
+  </Card>
+</Cards>
+
+### 示例查询
+
+为了帮助您快速入门，以下是索引器常用的一些查询示例。
+
+<Cards>
+  <Card href="indexer/fungible-asset-balances">
+    <Card.Title>获取可替代资产余额</Card.Title>
+    <Card.Description>获取某账户当前拥有的所有可替代资产。</Card.Description>
+  </Card>
+  <Card href="indexer/account-transactions">
+    <Card.Title>获取账户交易</Card.Title>
+    <Card.Description>获取影响某账户的所有交易记录。</Card.Description>
+  </Card>
+  <Card href="indexer/ans-lookup">
+    <Card.Title>获取 Aptos 名称</Card.Title>
+    <Card.Description>通过 ANS 检索与某账户关联的 Aptos 名称。</Card.Description>
+  </Card>
+  <Card href="indexer/fungible-asset-info">
+    <Card.Title>获取可替代资产信息</Card.Title>
+    <Card.Description>获取特定可替代资产的详细信息。</Card.Description>
+  </Card>
+  <Card href="indexer/get-nft-collections">
+    <Card.Title>获取 NFT 集合</Card.Title>
+    <Card.Description>检索某账户拥有的 NFT 集合。</Card.Description>
+  </Card>
+  <Card href="indexer/get-nfts">
+    <Card.Title>获取 NFT</Card.Title>
+    <Card.Description>检索某账户拥有的个人 NFT。</Card.Description>
+  </Card>
+  <Card href="indexer/token-metadata">
+    <Card.Title>获取代币元数据</Card.Title>
+    <Card.Description>获取特定代币的元数据信息。</Card.Description>
+  </Card>
+  <Card href="indexer/get-delegators">
+    <Card.Title>统计质押池中的委托人</Card.Title>
+    <Card.Description>检索质押池中活跃的委托人数量。</Card.Description>
+  </Card>
+</Cards>
+
+## 自定义索引器（进阶）
+
+如果托管的索引器 API 不够用，您可以自定义并托管自己的索引器版本。
+
+<Cards>
+  <Card href="indexer/architecture">
+    <Card.Title>架构</Card.Title>
+    <Card.Description>索引器架构的详细布局。</Card.Description>
+  </Card>
+  <Card href="indexer/custom-processors">
+    <Card.Title>自定义处理器</Card.Title>
+    <Card.Description>自定义索引器中数据处理和共享的方式。</Card.Description>
+  </Card>
+  <Card href="indexer/txn-stream">
+    <Card.Title>交易流服务</Card.Title>
+    <Card.Description>索引器使用的 GRPC 交易流服务。</Card.Description>
+  </Card>
+  <Card href="indexer/self-hosted">
+    <Card.Title>自托管索引器 API</Card.Title>
+    <Card.Description>托管您自己的索引器 API。</Card.Description>
+  </Card>
+</Cards>
+
+## 旧版索引器
+
+在此处查找旧版索引器的相关信息 [here](indexer/legacy.mdx).
