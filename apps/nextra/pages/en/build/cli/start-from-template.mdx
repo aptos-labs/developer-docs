@@ -1,5 +1,5 @@
 import { Card, RemoteCodeblock, permalinkFetch } from '@components/index';
-import { Steps } from "nextra/components"
+import { Cards, Steps } from "nextra/components"
 
 export async function getStaticProps() {
   return await permalinkFetch([
@@ -29,7 +29,11 @@ Follow the steps below to quickly get started.
   aptos move init --help
   ```
 
-  ### Learn More
+</Steps>
+
+### Learn More
+
+<Cards>
   <Card href="../smart-contracts">
     <Card.Title>Smart Contracts</Card.Title>
     <Card.Description>Learn how to build in Move</Card.Description>
@@ -38,5 +42,4 @@ Follow the steps below to quickly get started.
     <Card.Title>Create Package</Card.Title>
     <Card.Description>Get started by learning how to create a Move package</Card.Description>
   </Card>
-
-</Steps>
+</Cards>
