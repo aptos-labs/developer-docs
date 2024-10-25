@@ -1560,48 +1560,58 @@ export default withBundleAnalyzer(
       },
       {
         source: "/en/build/create-aptos-dapp/templates/boilerplate",
-        destination: "https://aptos.dev/en/build/create-aptos-dapp/templates/boilerplate",
-        permanent: true
+        destination:
+          "https://aptos.dev/en/build/create-aptos-dapp/templates/boilerplate",
+        permanent: true,
       },
       {
-        source: "/en/build/create-aptos-dapp/templates/clicker-game-tg-mini-app",
-        destination: "https://learn.aptoslabs.com/en/dapp-templates/telegram-mini-app-template",
-        permanent: true
+        source:
+          "/en/build/create-aptos-dapp/templates/clicker-game-tg-mini-app",
+        destination:
+          "https://learn.aptoslabs.com/en/dapp-templates/telegram-mini-app-template",
+        permanent: true,
       },
       {
         source: "/en/build/create-aptos-dapp/templates/nft-minting-dapp",
-        destination: "https://learn.aptoslabs.com/en/dapp-templates/nft-minting-template",
-        permanent: true
+        destination:
+          "https://learn.aptoslabs.com/en/dapp-templates/nft-minting-template",
+        permanent: true,
       },
       {
         source: "/en/build/create-aptos-dapp/templates/token-minting-dapp",
-        destination: "https://learn.aptoslabs.com/en/dapp-templates/token-minting-template",
-        permanent: true
+        destination:
+          "https://learn.aptoslabs.com/en/dapp-templates/token-minting-template",
+        permanent: true,
       },
       {
         source: "/en/build/create-aptos-dapp/templates/token-staking-dapp",
-        destination: "https://learn.aptoslabs.com/en/dapp-templates/token-staking-template",
-        permanent: true
+        destination:
+          "https://learn.aptoslabs.com/en/dapp-templates/token-staking-template",
+        permanent: true,
       },
       {
         source: "/en/build/create-aptos-dapp/templates/custom-indexer",
-        destination: "https://learn.aptoslabs.com/en/dapp-templates/custom-indexer-template",
-        permanent: true
+        destination:
+          "https://learn.aptoslabs.com/en/dapp-templates/custom-indexer-template",
+        permanent: true,
       },
       // Old templates redirects
       {
         source: "/create-aptos-dapp/templates/digital-asset",
-        destination: "https://learn.aptoslabs.com/en/dapp-templates/nft-minting-template",
+        destination:
+          "https://learn.aptoslabs.com/en/dapp-templates/nft-minting-template",
         permanent: true,
       },
       {
         source: "/en/build/create-aptos-dapp/templates/digital-asset",
-        destination: "https://learn.aptoslabs.com/en/dapp-templates/nft-minting-template",
-        permanent: true
+        destination:
+          "https://learn.aptoslabs.com/en/dapp-templates/nft-minting-template",
+        permanent: true,
       },
       {
         source: "/create-aptos-dapp/templates/fungible-asset",
-        destination: "https://learn.aptoslabs.com/en/dapp-templates/token-minting-template",
+        destination:
+          "https://learn.aptoslabs.com/en/dapp-templates/token-minting-template",
         permanent: true,
       },
       {
