@@ -1,8 +1,8 @@
 ---
 title: "Creating objects"
 ---
-import { Callout } from 'nextra/components'
 
+import { Callout } from 'nextra/components'
 
 # Creating and Configuring Objects
 
@@ -16,7 +16,7 @@ Creating an Object involves two steps:
   transaction you create it. Later on it is impossible to change those settings.
 </Callout>
 
-### Creating an Object
+## Creating an Object
 
 There are three types of Object you can create:
 
@@ -71,7 +71,7 @@ module my_addr::object_playground {
 }
 ```
 
-# Customizing Object Features
+## Customizing Object Features
 
 Once you create your object, you will receive a `ConstructorRef` you can use to generate additional `Ref`s. `Ref`s can be used in future to enable / disable / execute certain Object functions such as transferring resources, transferring the object itself, or deleting the Object.
 
@@ -332,7 +332,7 @@ module my_addr::object_playground {
 }
 ```
 
-## **Allowing Deletion of an Object (`DeleteRef`)**
+## Allowing Deletion of an Object (`DeleteRef`)
 
 For Objects created with the default method (allowing deletion) you can generate a `DeleteRef` which can be used later. This can help remove clutter as well as receive a storage refund.
 
@@ -401,7 +401,7 @@ module my_addr::object_playground {
 
 An object can be made immutable by making the contract associated immutable, and removing any ability to extend or mutate the object. By default, contracts are not immutable, and objects can be extended with an `ExtendRef`, and resources can be mutated if the contract allows for it.
 
-# Further Reading
+## Further Reading
 
 You can find documentation for all possible `Refs` by looking at the Move reference docs for `0x1::object` [here](https://aptos.dev/reference/move?branch=mainnet&page=aptos-framework/doc/object.md).
 
