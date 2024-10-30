@@ -1561,7 +1561,7 @@ export default withBundleAnalyzer(
       {
         source: "/en/build/create-aptos-dapp/templates/boilerplate",
         destination:
-          "https://aptos.dev/en/build/create-aptos-dapp/templates/boilerplate",
+          "https://learn.aptoslabs.com/en/dapp-templates/boilerplate-template",
         permanent: true,
       },
       {
