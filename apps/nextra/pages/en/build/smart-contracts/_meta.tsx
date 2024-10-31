@@ -125,6 +125,9 @@ export default {
   compiler_v2: {
     title: "Compiler V2",
   },
+  linter: {
+    title: "Linter",
+  },
   "learn-move": {
     display: "hidden",
   },
