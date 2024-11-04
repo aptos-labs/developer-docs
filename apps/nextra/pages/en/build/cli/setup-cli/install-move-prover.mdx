@@ -3,6 +3,20 @@ import { Callout } from 'nextra/components'
 # Install the Move Prover
 
 If you want to use the [Move Prover](../../smart-contracts/prover.mdx), install the Move Prover dependencies after [installing the CLI binary](.).
+There are two ways to install Prover dependencies.
+
+## Installation through Aptos CLI (Recommended)
+
+1. [Install the latest Aptos CLI binary](../install-cli/install-cli-mac.mdx).
+
+2. Execute the command `aptos update prover-dependencies`.
+
+<Callout type="info">
+  Environment variables `BOOGIE_EXE` and `Z3_EXE` will be set automatically after installation. Please make sure
+  they are in effect in the current environment.
+</Callout>
+
+## Installation through `aptos-core` (Not Recommended)
 
 1. See [Building Aptos From Source](../../../network/nodes/building-from-source.mdx)
 
@@ -27,7 +41,8 @@ If you want to use the [Move Prover](../../smart-contracts/prover.mdx), install 
 
    </details>
 
-3. You can now run the Move Prover to prove an [example](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_prover):
+
+After installation, you can run the Move Prover to prove an [example](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_prover):
    ```bash filename="Terminal"
    aptos move prove --package-dir aptos-move/move-examples/hello_prover/
    ```
