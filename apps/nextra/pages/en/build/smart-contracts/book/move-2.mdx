@@ -10,6 +10,8 @@ The Move 2.1 language release adds the following features to Move:
 
 - **Loop Labels** One can now use labels for loops and have a `break` or `continue` expression refer to those labels. This allows to continue or break outer loops from within nested loops. See [reference doc here](loops.mdx#loop-labels).
 
+- **Underscore function parameters are wildcards, not symbols** Function parameters named `_` no longer act like variables: they do not bind a value, and multiple such parameters to a function does not cause a conflict.  Using `_` in a value expression will yield an error, as it has no value.  This makes the behavior of `_` more like the wildcard it is in patterns and let expressions, where it does not bind a value.
+
 ## Move 2.0 
 
 The Move 2.0 language release adds the following features to Move:
