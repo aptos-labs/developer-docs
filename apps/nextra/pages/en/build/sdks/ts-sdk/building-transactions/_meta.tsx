@@ -14,4 +14,7 @@ export default {
   "bcs-format": {
     title: "BCS Format",
   },
+  "script-composer": {
+    title: "Script Composer",
+  },
 };
