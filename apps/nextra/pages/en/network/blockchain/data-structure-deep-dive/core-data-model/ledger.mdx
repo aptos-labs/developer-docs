@@ -1,0 +1,43 @@
+---
+title: "The Ledger"
+---
+
+import { Callout } from 'nextra/components';
+
+## The Ledger
+
+"The ledger" or "the ledger history" is the totality of all the state transitions that have ever happened on the blockchain.
+In theory, with merely the transactions themselves one can recalculate whatever happened on the chain at any point in time.
+But that requires the one who's recreating the history has access to a backward compatible Move VM implementation and
+the relevant part of the state at that point that's involved in the state transition represented by a transaction.
+
+In reality, the transactions themselves and the side effects of the state transitions, dubbed transaction outputs are
+stored as the ledger history.
+
+<Callout type="error">
+    FIXME(aldenhu): Add table of "version, transaction, transaction output(status, gas_used, write_set, events)"
+</Callout>
+
+<Callout type="info">
+
+</Callout>
+
+For each state transition, notable things persisted:
+
+### Version
+
+A sequence number identifying the state transition. The first state transition, or "the genesis", has version 0
+and each state transition following that has a version number that's one greater than the previous one. There is no gaps
+in the sequence of versions, i.e. we know there is exactly 1 other state transition between transition 1000
+and transition 1002.
+
+### Transaction
+
+Represents the intention of a blockchain user to change the state of the blockchain, and how she's willing to change it.
+A transaction is a signed message that contains the sender's account address, the sender's public key, the payload of the transaction.
+A transaction can be submitted
+Only "accepted" transactions are recorded in the ledger, on the contrary, "discarded" transactions are not part of the
+ledger and it's only possible to know
+
+Learn more about transactions here [Transactions and States](../../txns-states.mdx)
+and the lifetime of a transaction in this deep dive [Aptos Blockchain Deep Dive](../../blockchain-deep-dive.mdx).
