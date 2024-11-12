@@ -47,19 +47,27 @@ const feePayerAuthenticator = aptos.transaction.signAsFeePayer({
 })
 ```
 
-### (Optional) When simulating the transaction, include the parameter `feePayerPublicKey: account.publicKey`
+### (Optional) Simulate the sponsoring transaction
 
-<Callout type="warning">
-Currently, simulating a sponsor transaction must happen AFTER signing with the sponsor or it will fail to recognize this transaction has a sponsor.
-</Callout>
-
+You can simulate the sponsoring transaction to preview the result before submitting it as follows:
 ```ts filename="sponsor.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+    signerPublicKey: sender.publicKey,
+    transaction,
+});
+```
+By default, the `transaction`’s `feePayerAddress` is set to `0x0`, which directs the transaction simulation to skip the gas fee payment. This allows you to simulate the transaction without specifying a fee payer. Note that `signerPublicKey` is optional and can be omitted if you want to skip the authentication key check for the sender.
+
+You can also simulate the transaction with a specific fee payer by setting the `feePayerAddress` in the `transaction` object as follows:
+```ts filename="sponsor.ts"
+transaction.feePayerAddress = feePayer.accountAddress;
 const [userTransactionResponse] = await aptos.transaction.simulate.simple({
     signerPublicKey: sender.publicKey,
     feePayerPublicKey: feePayer.publicKey,
     transaction,
 });
 ```
+This setup will verify that `feePayer` has sufficient balance to cover the gas fee for the transaction. Similarly, `feePayerPublicKey` is optional and can be omitted if you wish to bypass the authentication key check for the fee payer.
 
 ### Submit the transaction by combining both signatures.
 
