@@ -16,7 +16,7 @@ upgrade_policy = "compatible"
 test_account = "_"
 
 [dependencies]
-AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-framework.git", rev = "mainnet", subdir = "aptos-framework" }
 ```
 
 Here, the package is deployed under the named address `test_account`.
@@ -131,7 +131,7 @@ module test_account::cli_args {
       address_vec_vec: vector<vector<address>>,
       type_info_1: TypeInfo,
       type_info_2: TypeInfo,
-  } 
+  }
 ```
 
 A public entry function with multi-nested vectors can be used to set the fields:
