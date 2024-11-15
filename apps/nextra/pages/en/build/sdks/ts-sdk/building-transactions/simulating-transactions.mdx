@@ -28,7 +28,7 @@ async function example() {
     await aptos.fundAccount({
         accountAddress: sender.accountAddress,
         amount: 100_000_000,
-    }); 
+    });
 
     // 1. Build the transaction to preview the impact of it
     const transaction = await aptos.transaction.build.simple({
@@ -55,6 +55,14 @@ example();
 ```
 
 This will produce the same output as if the transaction was submitted.
+
+The `signerPublicKey` parameter in `aptos.transaction.simulate.simple` is used to verify the signer’s authentication key during transaction simulation. This parameter is optional, and simulation will bypass checking the authentication key if omitted. For example below:
+```ts
+// 2. Simulate to see what would happen if we execute this transaction, skipping the authentication key check
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+    transaction,
+});
+```
 
 <details>
 <summary>Example Output</summary>
@@ -156,6 +164,58 @@ This will produce the same output as if the transaction was submitted.
 
 Look [here](../building-transactions.mdx) to see the full example of how to build, simulate, and submit a transaction.
 
+# Simulating more advanced Transactions
+
 You can also learn how to simulate more advanced transactions by looking at the following guides:
  - [Sponsored Transactions](sponsoring-transactions.mdx)
  - [Multi-Agent Transactions](multi-agent-transactions.mdx)
+ - Multisig V2 Transactions: See the next section for details.
+
+## Simulating On-Chain Multisig (v2) Transactions
+For multisig transactions, there are two types of simulation:
+1. Simulation of the target payload before it’s submitted on-chain, ignoring the voting status.
+2. Simulation of the approved on-chain multisig transaction before execution to verify output and gas estimation.
+
+To perform the first type, you can simulate the target payload as a sponsored transaction with the multisig account as the sender, and set the fee payer to `0x0` to bypass gas fee payment during simulation. For example:
+```ts
+// Generate a raw transaction with the multisig address as the sender,
+// the provided entry function payload, and 0x0 as the fee payer address.
+const transactionToSimulate = await aptos.transaction.build.simple({
+  sender: multisigAddress,
+  data: {
+    function: "0x1::aptos_account::transfer",
+    functionArguments: [recipient.accountAddress, 1_000_000],
+  },
+  withFeePayer: true,
+});
+
+// Simulate the transaction, skipping the public/auth key check for both the sender and the fee payer.
+const [simulateMultisigTx] = await aptos.transaction.simulate.simple({
+  transaction: transactionToSimulate,
+});
+```
+This setup allows you to preview the target payload's result before submitting it on-chain. Here, `signerPublicKey` is omitted to skip the authentication key check for the sender, as the multisig account does not have a public key. Additionally, `feePayerAddress` defaults to `0x0`, and `feePayerPublicKey` is omitted to bypass the gas fee payment during simulation. When this payload is later executed after submission and approval, the owner executing the transaction will cover the gas fee.
+
+For the second type of simulation, where the on-chain multisig payload transaction is simulated for final validation and gas estimation, use the following approach:
+```ts
+const transactionPayload: TransactionPayloadMultiSig = await generateTransactionPayload({
+  multisigAddress,
+  function: "0x1::aptos_account::transfer",
+  functionArguments: [recipient.accountAddress, 1_000_000],
+  aptosConfig: config,
+});
+
+const rawTransaction = await generateRawTransaction({
+  aptosConfig: config,
+  sender: owner.accountAddress,
+  payload: transactionPayload,
+});
+
+const [simulateMultisigTx] = await aptos.transaction.simulate.simple({
+  signerPublicKey: owner.publicKey,
+  transaction: new SimpleTransaction(rawTransaction),
+});
+```
+Note that `signerPublicKey` is optional and can be omitted if you wish to skip the authentication key check for the sender during simulation.
+
+For the complete source code, see the [Multisig V2 Example](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/multisig_v2.ts).
