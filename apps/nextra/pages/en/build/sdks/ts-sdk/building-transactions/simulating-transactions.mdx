@@ -173,8 +173,8 @@ You can also learn how to simulate more advanced transactions by looking at the 
 
 ## Simulating On-Chain Multisig (v2) Transactions
 For multisig transactions, there are two types of simulation:
-1. Simulating the target payload before it’s submitted on-chain, ignoring the voting status.
-2. Simulating the on-chain approved multisig transaction for a final review and gas estimation before execution.
+1. Simulation of the target payload before it’s submitted on-chain, ignoring the voting status.
+2. Simulation of the approved on-chain multisig transaction before execution to verify output and gas estimation.
 
 To perform the first type, you can simulate the target payload as a sponsored transaction with the multisig account as the sender, and set the fee payer to `0x0` to bypass gas fee payment during simulation. For example:
 ```ts
