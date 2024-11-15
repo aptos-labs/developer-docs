@@ -51,7 +51,7 @@ const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
   },
 );
 ```
-The `signerPublicKey` and `secondarySignersPublicKeys` inputs are optional and can be omitted to skip authentication key checks for the signers during simulation.  If you want to skip the authentication key check for only some of the secondary signers, you can provide `secondarySignersPublicKeys` with the public keys of the specific signers you want to check, using `undefined` as a placeholder for the others.
+The `signerPublicKey` and `secondarySignersPublicKeys` inputs are optional and can be omitted to skip authentication key checks for the signers during simulation. If you want to skip the authentication key check for only some of the secondary signers, you can provide `secondarySignersPublicKeys` with the public keys of the specific signers you want to check, using `undefined` as a placeholder for the others.
 
 For example, if `bob` and `carol` are secondary signers and you only want to check `carol`’s authentication key, you can set `secondarySignersPublicKeys: [undefined, carol.publicKey]`, leaving `undefined` as a placeholder for `bob`.
 
