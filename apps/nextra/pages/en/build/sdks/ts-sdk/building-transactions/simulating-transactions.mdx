@@ -56,7 +56,7 @@ example();
 
 This will produce the same output as if the transaction was submitted.
 
-The `signerPublicKey` parameter in `aptos.transaction.simulate.simple` is used to verify the signer’s authentication key during transaction simulation. This parameter is optional, allowing the simulation to bypass the authentication key check if omitted. To skip this check, the code can be modified as follows:
+The `signerPublicKey` parameter in `aptos.transaction.simulate.simple` is used to verify the signer’s authentication key during transaction simulation. This parameter is optional, and simulation will bypass checking the authentication key if omitted. For example below:
 ```ts
 // 2. Simulate to see what would happen if we execute this transaction, skipping the authentication key check
 const [userTransactionResponse] = await aptos.transaction.simulate.simple({
