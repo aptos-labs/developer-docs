@@ -6,7 +6,7 @@ export function useDraw(paths = {}, name = "") {
     defaultLocale: string;
   };
 
-  if (!Object.hasOwn(paths, defaultLocale)) {
+  if (!Object.prototype.hasOwnProperty.call(paths, defaultLocale)) {
     throw new Error(
       `Please provide '${defaultLocale}' locale inside '${paths}'.`,
     );
