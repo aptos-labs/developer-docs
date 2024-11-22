@@ -23,13 +23,13 @@ At a high-level, there are four steps required to connect your nodes to an Aptos
 
 First, you will need to initialize the stake pool.
 
-### Join validator set
-
-Second, you will need to join the validator set.
-
 ### Update identities
 
-Third, you will need to update your node identity configurations to match the pool address.
+Second, you will need to update your node identity configurations to match the pool address.
+
+### Join validator set
+
+Third, you will need to join the validator set.
 
 ### Bootstrap your nodes
 
@@ -49,6 +49,86 @@ To initialize a staking pool, follow the instructions in
 [staking pool operations](staking-pool-operations.mdx#initialize-a-staking-pool). Otherwise,
 to initialize a delegation pool, follow the instructions in
 [delegation pool operations](delegation-pool-operations.mdx#initialize-a-delegation-pool).
+
+## Update identities
+
+Before joining the validator set, you will need to update your node identity configuration files to match the pool address.
+This is required to ensure that your nodes are able to connect to other peers in the network.
+
+<Callout type="warning">
+**UPDATING THE POOL ADDRESS**<br />
+It is a common error to forget to update the pool address in the node identity configurations. If you do not
+update the pool address for **both your validator and VFN identity files**, your nodes will not be able to connect to
+other peers in the network.
+</Callout>
+
+Follow the steps below to update your node identity configurations, depending on the deployment method you used.
+
+### Using Source Code
+
+If you used the source code to deploy your nodes, follow these steps:
+
+1. Stop your validator and VFN and remove the data directory from both nodes. Make sure to remove the
+   `secure-data.json` file on the validator, too. You can see the location of the `secure-data.json` file in your
+   validator's configuration file.
+2. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
+3. Restart the validator and VFN.
+
+### Using Docker
+
+If you used Docker to deploy your nodes, follow these steps:
+
+1. Stop your node and remove the data volumes: `docker compose down --volumes`. Make sure to remove the
+   `secure-data.json` file on the validator, too. You can see the location of the `secure-data.json` file in your
+   validator's configuration file.
+2. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**.
+   Do not change anything else.
+3. Restart the nodes with: `docker compose up`
+
+### Using Terraform
+
+If you used Terraform to deploy your nodes (e.g., for AWS, Azure or GCP), follow these steps:
+
+1. Increase the `era` number in your Terraform configuration. When this configuration is applied, it will wipe the data.
+
+2. Set the `enable_monitoring` variable in your terraform module. For example:
+
+   ```terraform filename="config.tf"
+   module "aptos-node" {
+     ...
+     enable_monitoring           = true
+     utility_instance_num        = 3  # this will add one more utility instance to run monitoring component
+   }
+   ```
+
+3. Apply the changes with: `terraform apply` You will see a new pod getting created. Run `kubectl get pods` to check.
+
+4. Find the IP/DNS for the monitoring load balancer, using:
+
+   ```bash filename="Terminal"
+   kubectl get svc ${WORKSPACE}-mon-aptos-monitoring --output jsonpath='{.status.loadBalancer.ingress[0]}'
+   ```
+
+   You will be able to access the Terraform dashboard on `http://<ip/DNS>`.
+
+5. Pull the latest of the terraform module `terraform get -update`, and then apply the Terraform: `terraform apply`.
+6. Download the `genesis.blob` and `waypoint.txt` files for your network. See [Node Files](../../configure/node-files-all-networks.mdx) for locations and commands to download these files.
+7. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
+8. Recreate the secrets. Make sure the secret name matches your `era` number, e.g. if you have `era = 3`, then you should replace the secret name to be:
+
+```bash filename="Terminal"
+${WORKSPACE}-aptos-node-0-genesis-e3
+```
+
+```bash filename="Terminal"
+export WORKSPACE=<your workspace name>
+
+kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e2 \
+    --from-file=genesis.blob=genesis.blob \
+    --from-file=waypoint.txt=waypoint.txt \
+    --from-file=validator-identity.yaml=keys/validator-identity.yaml \
+    --from-file=validator-full-node-identity.yaml=keys/validator-full-node-identity.yaml
+```
 
 ## Join the validator set
 
@@ -171,86 +251,6 @@ below to see your validator in the "active_validators" list:
 
 ```bash filename="Terminal"
 aptos node show-validator-set --profile mainnet-operator | jq -r '.Result.active_validators' | grep <pool_address>
-```
-
-## Update identities
-
-After joining the validator set, you will need to update your node identity configuration files to match the pool address.
-This is required to ensure that your nodes are able to connect to other peers in the network.
-
-<Callout type="warning">
-**UPDATING THE POOL ADDRESS**<br />
-It is a common error to forget to update the pool address in the node identity configurations. If you do not
-update the pool address for **both your validator and VFN identity files**, your nodes will not be able to connect to
-other peers in the network.
-</Callout>
-
-Follow the steps below to update your node identity configurations, depending on the deployment method you used.
-
-### Using Source Code
-
-If you used the source code to deploy your nodes, follow these steps:
-
-1. Stop your validator and VFN and remove the data directory from both nodes. Make sure to remove the
-   `secure-data.json` file on the validator, too. You can see the location of the `secure-data.json` file in your
-   validator's configuration file.
-2. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
-3. Restart the validator and VFN.
-
-### Using Docker
-
-If you used Docker to deploy your nodes, follow these steps:
-
-1. Stop your node and remove the data volumes: `docker compose down --volumes`. Make sure to remove the
-   `secure-data.json` file on the validator, too. You can see the location of the `secure-data.json` file in your
-   validator's configuration file.
-2. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**.
-   Do not change anything else.
-3. Restart the nodes with: `docker compose up`
-
-### Using Terraform
-
-If you used Terraform to deploy your nodes (e.g., for AWS, Azure or GCP), follow these steps:
-
-1. Increase the `era` number in your Terraform configuration. When this configuration is applied, it will wipe the data.
-
-2. Set the `enable_monitoring` variable in your terraform module. For example:
-
-   ```terraform filename="config.tf"
-   module "aptos-node" {
-     ...
-     enable_monitoring           = true
-     utility_instance_num        = 3  # this will add one more utility instance to run monitoring component
-   }
-   ```
-
-3. Apply the changes with: `terraform apply` You will see a new pod getting created. Run `kubectl get pods` to check.
-
-4. Find the IP/DNS for the monitoring load balancer, using:
-
-   ```bash filename="Terminal"
-   kubectl get svc ${WORKSPACE}-mon-aptos-monitoring --output jsonpath='{.status.loadBalancer.ingress[0]}'
-   ```
-
-   You will be able to access the Terraform dashboard on `http://<ip/DNS>`.
-
-5. Pull the latest of the terraform module `terraform get -update`, and then apply the Terraform: `terraform apply`.
-6. Download the `genesis.blob` and `waypoint.txt` files for your network. See [Node Files](../../configure/node-files-all-networks.mdx) for locations and commands to download these files.
-7. Update your `account_address` in the `validator-identity.yaml` and `validator-fullnode-identity.yaml` files to your **pool address**. Do not change anything else.
-8. Recreate the secrets. Make sure the secret name matches your `era` number, e.g. if you have `era = 3`, then you should replace the secret name to be:
-
-```bash filename="Terminal"
-${WORKSPACE}-aptos-node-0-genesis-e3
-```
-
-```bash filename="Terminal"
-export WORKSPACE=<your workspace name>
-
-kubectl create secret generic ${WORKSPACE}-aptos-node-0-genesis-e2 \
-    --from-file=genesis.blob=genesis.blob \
-    --from-file=waypoint.txt=waypoint.txt \
-    --from-file=validator-identity.yaml=keys/validator-identity.yaml \
-    --from-file=validator-full-node-identity.yaml=keys/validator-full-node-identity.yaml
 ```
 
 ## Bootstrap your nodes

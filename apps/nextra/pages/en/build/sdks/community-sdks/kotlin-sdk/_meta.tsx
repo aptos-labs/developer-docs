@@ -19,6 +19,9 @@ export default {
   "building-transactions": {
     title: "Building and Sending Transactions",
   },
+  "sponsored-transactions": {
+    title: "Sponsoring Transactions (Fee Payer)",
+  },
   "for-ios-devs": {
     title: "For iOS Developers",
   },
