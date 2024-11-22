@@ -4,6 +4,8 @@ title: "Dynamically invoke chains of Move calls with ScriptComposer"
 
 # Dynamically invoke chains of Move calls with ScriptComposer
 
+This is so far an **expermiental** feature that is only released to [this particular](https://www.npmjs.com/package/@aptos-labs/ts-sdk/v/1.33.0-sc.0) version of typescript SDK.
+
 In the naive api, you only get to specify one entry function to invoke for one transaction. An advanced builder might want to be able to invoke multiple **public** Move functions inside one transaction. This is now enabled by the new `scriptComposer` api provided in the transaction builder.
 
 Here's an example how you can invoke the api:
