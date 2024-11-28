@@ -1,7 +1,7 @@
 ### Description
 
 ### Checklist
-<!-- Read the [Nextra README.md](../apps/nextra/README.md) for details on how to contribute? -->
+<!-- Read the Nextra Contributor's Guide here: https://aptos.dev/en/developer-platforms/contribute -->
 
 - If any existing pages were renamed or removed:
   - [ ] Were redirects added to [next.config.mjs](../apps/nextra/next.config.mjs)?
