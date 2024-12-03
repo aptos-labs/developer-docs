@@ -41,7 +41,7 @@ Don't delete `identity_blob_path`. It is a required field.
 
 Field `overriding_identity_paths` is optional, and allows multiple identities to be specified.
 
-Among all the identidies, the node finds the one that appears on-chain validator set, and uses it as the consensus key.
+Among all the identities, the node finds the one that appears on-chain validator set, and uses it as the consensus key.
 </Callout>
 
 <Callout type="info">
@@ -51,7 +51,7 @@ due to the reasons below.
 
 There is a separate **secure storage** (typically a file `secure_storage.json`) hosting all identities.
 The content of `identity_blob_path` and `overriding_identity_paths` are added to the secure storage on node start, if missing.
-However, keys are never deleted automatically from the stroage.
+However, keys are never deleted automatically from the storage.
 
 To completely wipe out an old key, you will have to manually make changes to the secure storage.
 See the end of the guide for more details.
@@ -88,7 +88,7 @@ aptos move run \
     --function-id 0x1::stake::rotate_consensus_key \
     --args \
         address:0x1eb42885d7d5232269229e56bb80d0959584e14485097ebf9ab619cf4fda5c02 \
-        hex:0xacb7859468ca85cf9935e64ebb2b9b3fa8187de42d541acebaf732365a0131eaa994098f9d0d7e6b8ddea8ef11e16c55
+        hex:0xacb7859468ca85cf9935e64ebb2b9b3fa8187de42d541acebaf732365a0131eaa994098f9d0d7e6b8ddea8ef11e16c55 \
         hex:0x8e27fd9300433191b1123217928a6f5190a6ec344ea8623555712a850029b34f5c4bab68df7568b48bcced408cde5174064284407ee760df5dbf12d1c6090589ea1a692997018aca740e91d2182e5715c7745565fe99361e279ccfcfa10ae1f7
 ```
 
@@ -102,7 +102,7 @@ In the secure storage (typically a file named `secure_storage.json`),
 consensus identities are organized as follows.
 - Field `consensus` contains the default consensus identity.
   - Typically created when you start the node for the first time.
-  - Must exists.
+  - Must exist.
 - Field `consensus_X` contains additional consensus identities with `X` as its public key.
   - Created because you once added it to `overriding_identity_paths` in node config yaml.
 
