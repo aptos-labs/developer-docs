@@ -5,7 +5,7 @@ import {
   Framework,
   GITHUB_APTOS_CORE,
   GITHUB_APTOS_CORE_CONTENT,
-  PKGS
+  PKGS,
 } from "./shared";
 import { useMoveReference } from "./MoveReferenceProvider";
 
@@ -233,11 +233,10 @@ export function ModuleSelectContainer({ branch }: ModuleSelectContainerProps) {
   return (
     <>
       <div className="flex-1">
-        <label
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Module
         </label>
-        <ModuleSelect branch={branch}/>
+        <ModuleSelect branch={branch} />
       </div>
     </>
   );

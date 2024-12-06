@@ -51,7 +51,7 @@ const LinkToGithub = () => {
   const url = `${GITHUB_APTOS_CORE_CONTENT}/${branch}/aptos-move/framework/${page}`;
   const buttonProps = {
     width: 18,
-    height: 18
+    height: 18,
   };
 
   return (
@@ -153,7 +153,9 @@ const Content = () => {
   // Conditional rendering based on whether a page is selected
   return (
     <div className="move-content lg:max-w-[calc(100%-16rem)]">
-      {content ? <Playground fallback={<DocsSkeleton />} source={content} /> : null}
+      {content ? (
+        <Playground fallback={<DocsSkeleton />} source={content} />
+      ) : null}
     </div>
   );
 };
