@@ -17,4 +17,5 @@ export default {
   staking: "Staking",
   "delegated-staking": "Delegated Staking",
   governance: "Governance",
+  "data-structure-deep-dive": "Data Structure Deep Dive",
 };
