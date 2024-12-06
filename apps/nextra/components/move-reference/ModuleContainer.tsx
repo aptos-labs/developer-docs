@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Select, { ActionMeta, SingleValue } from "react-select";
 import { Framework, GITHUB_APTOS_CORE, PKGS } from "./shared";
 import { useMoveReference } from "./MoveReferenceProvider";
@@ -166,13 +166,16 @@ interface ModuleSelectProps {
 
 export function ModuleSelect({ branch }: ModuleSelectProps) {
   const groupedOptions = useFrameworksData(branch);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const { updatePage } = useMoveReference();
+  const { updatePage, page } = useMoveReference();
 
-  const handleChange = (
-    newValue: SingleValue<PackageOption>,
-    actionMeta: ActionMeta<PackageOption>,
-  ) => {
+  // Controlled value of the select is derived from `page`
+  const value = !page
+    ? null
+    : groupedOptions.reduce((found, group) => {
+        return found || group.options.find((opt) => opt.value === page) || null;
+      }, null);
+
+  const handleChange = (newValue: SingleValue<PackageOption>) => {
     if (newValue?.value) {
       updatePage(newValue.value as Branch);
     }
@@ -181,9 +184,9 @@ export function ModuleSelect({ branch }: ModuleSelectProps) {
   return (
     <Select<PackageOption, false, GroupedOption>
       inputId="basic-grouped-id"
-      defaultValue={packageOptions[0]}
       options={groupedOptions}
       formatGroupLabel={FormatGroupLabel}
+      value={value}
       onChange={handleChange}
       classNames={{
         container: () => "lg:max-w-[calc(100%-16rem)]",
