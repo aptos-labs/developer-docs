@@ -1,7 +1,12 @@
 import clsx from "clsx";
 import React, { useEffect, useRef, useState } from "react";
 import Select, { ActionMeta, SingleValue } from "react-select";
-import { Framework, GITHUB_APTOS_CORE, PKGS } from "./shared";
+import {
+  Framework,
+  GITHUB_APTOS_CORE,
+  GITHUB_APTOS_CORE_CONTENT,
+  PKGS
+} from "./shared";
 import { useMoveReference } from "./MoveReferenceProvider";
 
 type FrameworkData = {
@@ -220,17 +225,20 @@ export function ModuleSelect({ branch }: ModuleSelectProps) {
   );
 }
 
-interface ModuleContainerProps {
+interface ModuleSelectContainerProps {
   branch: Branch;
 }
 
-export function ModuleContainer({ branch }: ModuleContainerProps) {
+export function ModuleSelectContainer({ branch }: ModuleSelectContainerProps) {
   return (
     <>
-      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-        Module
-      </label>
-      <ModuleSelect branch={branch} />
+      <div className="flex-1">
+        <label
+          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          Module
+        </label>
+        <ModuleSelect branch={branch}/>
+      </div>
     </>
   );
 }
