@@ -11,6 +11,8 @@ export const PKGS = [
 export const GITHUB_APTOS_CORE =
   "https://raw.githubusercontent.com/aptos-labs/aptos-core";
 
+export const GITHUB_APTOS_CORE_CONTENT = `https://github.com/aptos-labs/aptos-core/blob`;
+
 // BRANCHES
 export const BRANCHES = ["mainnet", "testnet", "devnet", "main"] as const;
 export const DEFAULT_BRANCH = BRANCHES[0];

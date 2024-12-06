@@ -1,4 +1,4 @@
 export * from "./MoveReference";
-export * from "./ModuleContainer";
+export * from "./ModuleSelectContainer";
 export * from "./shared";
 export * from "./MoveReferenceProvider";
