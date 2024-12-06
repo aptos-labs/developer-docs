@@ -271,9 +271,7 @@ Additionally, if the creator wants to control all transfers, a `LinearTransferRe
 ```move filename="Example.move"
 module my_addr::object_playground {
   use std::signer;
-  use std::option;
-  use std::string::{self, String};
-  use aptos_framework::object::{self, Object};
+  use aptos_framework::object::{Self, Object};
 
   /// Caller is not the publisher of the contract
   const E_NOT_PUBLISHER: u64 = 1;
@@ -281,13 +279,10 @@ module my_addr::object_playground {
   #[resource_group_member(group = aptos_framework::object::ObjectGroup)]
   struct ObjectController has key {
     transfer_ref: object::TransferRef,
-    linear_transfer_ref: option::Option<object::LinearTransferRef>,
   }
 
   entry fun create_my_object(
     caller: &signer,
-    transferrable: bool,
-    controllable: bool
   ) {
     let caller_address = signer::address_of(caller);
 
@@ -304,58 +299,32 @@ module my_addr::object_playground {
     object::disable_ungated_transfer(&transfer_ref);
     move_to(&object_signer, ObjectController {
       transfer_ref,
-      linear_transfer_ref: option::none(),
     });
     // ...
   }
 
   /// In this example, we'll only let the publisher of the contract change the
   /// permissions of transferring
-  entry fun allow_single_transfer(
-    caller: &signer,
-    object: Object<ObjectController>
-  ) acquires ObjectController {
-    // Only let the publisher toggle transfers
-    let caller_address = signer::address_of(caller);
-    assert!(caller_address == @my_addr, E_NOT_PUBLISHER);
-
-    let object_address = object::object_address(object);
-
-    // Retrieve the transfer ref
-    let transfer_ref = borrow_global<ObjectController>(
-      object_address
-    ).transfer_ref;
-
-    // Generate a one time use `LinearTransferRef`
-    let linear_transfer_ref = object::generate_linear_transfer_ref(
-      &transfer_ref
-    );
-
-    // Store it for later usage
-    let object_controller = borrow_global_mut<ObjectController>(
-      object_address
-    );
-    option::fill(
-      &mut object_controller.linear_transfer_ref,
-      linear_transfer_ref
-    )
-  }
-
   /// Now only owner can transfer exactly once
   entry fun transfer(
     caller: &signer,
     object: Object<ObjectController>,
     new_owner: address
   ) acquires ObjectController {
-    let object_address = object::object_address(object);
+    // Only let the publisher toggle transfers
+    let caller_address = signer::address_of(caller);
+    assert!(caller_address == @my_addr, E_NOT_PUBLISHER);
 
-    // Retrieve the linear_transfer ref, it is consumed so it must be extracted
-    // from the resource
-    let object_controller = borrow_global_mut<ObjectController>(
+    let object_address = object::object_address(&object);
+
+    // Retrieve the transfer ref
+    let transfer_ref = &borrow_global<ObjectController>(
       object_address
-    );
-    let linear_transfer_ref = option::extract(
-      &mut object_controller.linear_transfer_ref
+    ).transfer_ref;
+
+    // Generate a one time use `LinearTransferRef`
+    let linear_transfer_ref = object::generate_linear_transfer_ref(
+      transfer_ref
     );
 
     object::transfer_with_ref(linear_transfer_ref, new_owner);
