@@ -417,7 +417,7 @@ There are two changes needed for off-chain services:
 
 Since a user may possess **both** a `coin` balance and a paired FA balance, off-chain applications should be updated to reflect the **sum** of both the `coin` balance and its paired FA balance.
 
-- For Aptos Indexer users, you may utilize a new table called `current_unified_fungible_asset_balances` to obtain the latest sum of coin balance and FA balance representing the same asset type.
+- For Aptos Indexer users, you may utilize the table called `current_fungible_asset_balances` to obtain the latest sum of coin balance and FA balance representing the same asset type. If the FA has a paired coin type, the asset type would be set to the coin type, such as `0x1::aptos_coin::AptosCoin`. Otherwise, for FA not paired from a coin, the asset type would be the metadata address. Users could filter by this field to get the FA balance of their interest.
 - For users employing Node API or other customized indexing, they should add the balance of the paired FA in users' `FungibleStore` and `ConcurrentFungibleBalance` if any of them exist to the coin balance.
 
 To retrieve the balance of the `PrimaryFungibleStore` for a paired FA to an existing `coin` of type `CoinType`:
