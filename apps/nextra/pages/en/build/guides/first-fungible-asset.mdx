@@ -5,7 +5,7 @@ import { Callout, Steps } from 'nextra/components'
 
 # Your First Fungible Asset
 
-This tutorial will teach you how to create your own Fungible Asset (FA) named [FACoin](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset/fa_coin). The [Fungible Asset Standard](https://aptos.dev/en/build/smart-contracts/fungible-asset) provides built-in support for minting, transferring, burning, and tracking account balances, so is useful for representing fungible assets. We will use the [TypeScript SDK](https://aptos.dev/en/build/sdks/ts-sdk) to deploy the contract and test it once it is on-chain.
+This tutorial will teach you how to create your own Fungible Asset (FA) named [FACoin](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset/fa_coin). The [Fungible Asset Standard](../smart-contracts/fungible-asset.mdx) provides built-in support for minting, transferring, burning, and tracking account balances, so is useful for representing fungible assets. We will use the [TypeScript SDK](../sdks/ts-sdk.mdx) to deploy the contract and test it once it is on-chain.
 
 At a high level, the Fungible Asset Standard works through two main Objects:
 
@@ -19,7 +19,7 @@ Sending a fungible asset to someone will cause them to receive a `FungibleStore`
 Here we will modify, deploy, and test the example [FACoin](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/move/facoin/sources/fa_coin.move) contract to see how the Fungible Asset Standard works. If you are writing your own fungible asset contract, you may also want to reference the Stablecoin example contract [here](https://learn.aptoslabs.com/en/code-examples/stablecoin).
 
 <Steps>
-### Install the [Aptos CLI](https://aptos.dev/en/build/cli).
+### Install the [Aptos CLI](../../build/cli.mdx).
 
 This will be used by the deploy scripts to publish the `FACoin` contract onchain.
 
