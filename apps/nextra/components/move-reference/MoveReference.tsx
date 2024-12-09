@@ -58,7 +58,7 @@ const LinkToGithub = () => {
     <Link
       href={url}
       target="_blank"
-      className="flex body-200 items-center gap-1.5 w-fit transition rounded-md py-1 px-2 border border-gray-300 dark:border-neutral-700 contrast-more:border-gray-900 contrast-more:dark:border-gray-50"
+      className="flex body-100 items-center gap-1.5 w-fit transition rounded-md py-1 px-2 border border-gray-300 dark:border-neutral-700 contrast-more:border-gray-900 contrast-more:dark:border-gray-50"
     >
       View source
       <Image
