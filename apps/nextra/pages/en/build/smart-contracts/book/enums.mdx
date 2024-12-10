@@ -85,7 +85,7 @@ The value of an enum value can be inspected using a match expression. For exampl
 fun area(self: &Shape): u64 {
     match (self) {
         Circle{radius}           => mul_with_pi(*radius * *radius),
-        Rectangle{width, height) => *width * *height
+        Rectangle{width, height} => *width * *height
     }
 }
 ```
@@ -227,7 +227,7 @@ enum VersionedData has key {
 }
 ```
 
-That following upgrade would not be allowed, since the order of variants must be preserved:
+The following upgrade would not be allowed, since the order of variants must be preserved:
 
 ```move
 enum VersionedData has key {

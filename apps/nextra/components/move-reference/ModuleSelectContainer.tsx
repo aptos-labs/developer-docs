@@ -1,7 +1,12 @@
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Select, { ActionMeta, SingleValue } from "react-select";
-import { Framework, GITHUB_APTOS_CORE, PKGS } from "./shared";
+import {
+  Framework,
+  GITHUB_APTOS_CORE,
+  GITHUB_APTOS_CORE_CONTENT,
+  PKGS,
+} from "./shared";
 import { useMoveReference } from "./MoveReferenceProvider";
 
 type FrameworkData = {
@@ -166,13 +171,16 @@ interface ModuleSelectProps {
 
 export function ModuleSelect({ branch }: ModuleSelectProps) {
   const groupedOptions = useFrameworksData(branch);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const { updatePage } = useMoveReference();
+  const { updatePage, page } = useMoveReference();
 
-  const handleChange = (
-    newValue: SingleValue<PackageOption>,
-    actionMeta: ActionMeta<PackageOption>,
-  ) => {
+  // Controlled value of the select is derived from `page`
+  const value = !page
+    ? null
+    : groupedOptions.reduce((found, group) => {
+        return found || group.options.find((opt) => opt.value === page) || null;
+      }, null);
+
+  const handleChange = (newValue: SingleValue<PackageOption>) => {
     if (newValue?.value) {
       updatePage(newValue.value as Branch);
     }
@@ -181,9 +189,9 @@ export function ModuleSelect({ branch }: ModuleSelectProps) {
   return (
     <Select<PackageOption, false, GroupedOption>
       inputId="basic-grouped-id"
-      defaultValue={packageOptions[0]}
       options={groupedOptions}
       formatGroupLabel={FormatGroupLabel}
+      value={value}
       onChange={handleChange}
       classNames={{
         container: () => "lg:max-w-[calc(100%-16rem)]",
@@ -217,17 +225,19 @@ export function ModuleSelect({ branch }: ModuleSelectProps) {
   );
 }
 
-interface ModuleContainerProps {
+interface ModuleSelectContainerProps {
   branch: Branch;
 }
 
-export function ModuleContainer({ branch }: ModuleContainerProps) {
+export function ModuleSelectContainer({ branch }: ModuleSelectContainerProps) {
   return (
     <>
-      <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-        Module
-      </label>
-      <ModuleSelect branch={branch} />
+      <div className="flex-1">
+        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          Module
+        </label>
+        <ModuleSelect branch={branch} />
+      </div>
     </>
   );
 }
