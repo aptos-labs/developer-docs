@@ -64,7 +64,7 @@ import { Callout, Steps } from 'nextra/components';
 
     module "aptos-node" {
       # 从aptos-core仓库下载Terraform模块。
-      source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/aws?ref=mainnet"
+      source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/aws"
       region        = <aws region>  # 指定AWS区域
       # zone_id     = "<Route53 zone id>"  # 如果您想使用DNS，请使用Route53
       era           = 1  # 提高时代编号以清除链数据

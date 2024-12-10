@@ -27,9 +27,9 @@ The default `Move.toml` includes `AptosFramework` as a git repository dependency
 
 ```toml filename="Move.toml"
   [dependencies.AptosFramework]
-  git = "<https://github.com/aptos-labs/aptos-core.git>"
+  git = "<https://github.com/aptos-labs/aptos-framework.git>"
   rev = "mainnet"
-  subdir = "aptos-move/framework/aptos-framework"
+  subdir = "aptos-framework"
 ```
 
 When Aptos CLI commands are ran, updates to the dependency are automatically retrieved and compiled against.
@@ -88,10 +88,10 @@ Reference it as a local source file after changing the file type to `{ModuleName
 
 ### Bytecode
 
-The Aptos CLI allows for downloading a [package's](book/packages.mdx) bytecode. 
+The Aptos CLI allows for downloading a [package's](book/packages.mdx) bytecode.
 
 ```bash filename="Terminal"
-aptos move download --account {account_addr} --bytecode --package {package_name} 
+aptos move download --account {account_addr} --bytecode --package {package_name}
 ```
 
 Each bytecode dependency requires their own package, with a structure of:

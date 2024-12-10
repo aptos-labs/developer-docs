@@ -100,7 +100,7 @@ pnpm fmt
 
 The src/contributors.json file (which powers the list of Authors at the bottom of doc pages) needs to be manually generated.
 
-In order to generate the contributor map you must authenticate with GitHub. The best way to do that is using GitHub CLI ([installation guide(https://github.com/cli/cli#installation)]). Once you have the GitHub CLI installed, you can run the following command to authenticate:
+In order to generate the contributor map you must authenticate with GitHub. The best way to do that is using GitHub CLI [installation guide](https://github.com/cli/cli#installation). Once you have the GitHub CLI installed, you can run the following command to authenticate:
 
 ```sh
 gh auth login --scopes read:user,user:email
