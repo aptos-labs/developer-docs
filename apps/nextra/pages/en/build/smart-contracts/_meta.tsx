@@ -23,7 +23,7 @@ export default {
     type: "separator",
     title: "Aptos Standards",
   },
-  "object": {
+  object: {
     title: "Object",
   },
   "digital-asset": {
@@ -49,7 +49,7 @@ export default {
   table: {
     title: "Table",
   },
-  "objects": {
+  objects: {
     title: "Objects",
   },
   "resource-accounts": {
