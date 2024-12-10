@@ -694,11 +694,13 @@ module 0x42::example {
   }
 
   public entry fun pause_protocol(admin: &signer) {
+    assert!(signer::address_of(admin)==@protocol_address, ERR_NOT_ADMIN);
     let state = borrow_global_mut<State>(@protocol_address);
     state.is_paused = true;
   }
 
   public entry fun resume_protocol(admin: &signer) {
+    assert!(signer::address_of(admin)==@protocol_address, ERR_NOT_ADMIN);
     let state = borrow_global_mut<State>(@protocol_address);
     state.is_paused = false;
   }

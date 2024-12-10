@@ -1,0 +1,127 @@
+---
+Title: Use Oracles in Your Aptos Applications
+---
+
+import { Callout } from "nextra/components";
+
+# Oracles  
+This reference guide presents various Oracles that you can utilize while building on Aptos. Oracles supply offchain data to the blockchain, enabling smart contracts to access a diverse range of information.
+
+## Pyth Network
+
+The [Pyth Network](https://pyth.network/) is one of the largest first-party Oracle network, delivering real-time data across [a vast number of chains](https://docs.pyth.network/price-feeds/contract-addresses).
+
+The network comprises some of the world’s [largest exchanges, market makers, and financial services providers](https://pyth.network/publishers). These publish proprietary data on-chain for aggregation and distribution to smart contract applications. 
+
+## How to Use Pyth Real-Time Data in Aptos Contracts
+
+This guide explains how to use real-time Pyth data in Aptos applications.
+
+## Configuring the `Move.toml` file
+
+Add the Pyth Contract to your project dependencies in the `Move.toml` file:
+
+```toml copy
+[dependencies]
+Pyth = { git = "https://github.com/pyth-network/pyth-crosschain.git", subdir = "target_chains/aptos/contracts", rev = "main" }
+```
+
+The named addresses of `pyth`, `wormhole`, and `deployers` must be defined at compile time. These addresses are used to interact with the Pyth contract on Aptos.
+
+```toml copy
+[addresses]
+pyth = "0x7e783b349d3e89cf5931af376ebeadbfab855b3fa239b7ada8f5a92fbea6b387"
+deployer = "0xb31e712b26fd295357355f6845e77c888298636609e93bc9b05f0f604049f434"
+wormhole = "0x5bc11445584a763c1fa7ed39081f1b920954da14e04b32440cba863d03e19625"
+```
+
+Consult [Aptos Contract Addresses](https://docs.pyth.network/price-feeds/contract-addresses/aptos) for the complete list of contract addresses on different Aptos networks.
+
+## Write Contract Code
+
+The code snippet below provides an example module fetching the BTC/USD price from Pyth price feeds:
+
+```rust {21} copy
+module example::example {
+    use pyth::pyth;
+    use pyth::price::Price;
+    use pyth::price_identifier;
+    use aptos_framework::coin;
+
+    // Add the pyth_price_update argument to any method on your contract that needs to read the Pyth price.
+    // See https://docs.pyth.network/price-feeds/fetch-price-updates for more information on how to fetch the pyth_price_update.
+    public fun get_btc_usd_price(user: &signer, pyth_price_update: vector<vector<u8>>): Price {
+
+        // First update the Pyth price feeds
+        let coins = coin::withdraw(user, pyth::get_update_fee(&pyth_price_update));
+        pyth::update_price_feeds(pyth_price_update, coins);
+
+        // Read the current price from a price feed.
+        // Each price feed (e.g., BTC/USD) is identified by a price feed ID.
+        // The complete list of feed IDs is available at https://pyth.network/developers/price-feed-ids
+        // Note: Aptos uses the Pyth price feed ID without the `0x` prefix.
+        let btc_price_identifier = x"e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43";
+        let btc_usd_price_id = price_identifier::from_byte_vec(btc_price_identifier);
+        pyth::get_price(btc_usd_price_id)
+    }
+}
+
+```
+
+<Callout type="info" emoji="ℹ️">
+  The `pyth_price_update` argument contains verified prices from Pyth. Calling
+  `pyth::update_price_feeds` with this value updates the on-chain Pyth price and
+  ensures your application has recent price data. The pyth_price_update can be
+  fetched from Hermes; Consult [Fetch Price Updates](../fetch-price-updates) for
+  more information on how to fetch the `pyth_price_update`.
+</Callout>
+
+The code snippet above does the following things:
+
+1. Call `pyth::get_update_fee` to get the fee required to update the Pyth price feeds.
+1. Call `pyth::update_price_feeds` and pass `pyth_price_update` to update the Pyth price feeds.
+1. Call `pyth::get_price` to read the current price, providing the [price feed ID](https://pyth.network/developers/price-feed-ids) you wish to read.
+
+## Additional Resources
+
+You may find these additional resources helpful for developing your Aptos application.
+
+## Sponsored Feeds on Aptos
+
+The price feeds listed in the table below are currently sponsored in **Aptos mainnet**.
+
+Update Parameters: **1 second heartbeat or 0.5% price deviation**
+
+| Name      | Price Feed Id                                                      |
+| --------- | ------------------------------------------------------------------ |
+| APT/USD   | `03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5` |
+| BTC/USD   | `e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43` |
+| ETH/USD   | `ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace` |
+| SOL/USD   | `ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d` |
+| USDC/USD  | `eaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a` |
+| USDT/USD  | `2b89b9dc8fdf9f34709a5b106b472f0f39bb6ca9ce04b0fd7f2e971688e2e53b` |
+| CAKE/USD  | `2356af9529a1064d41e32d617e2ce1dca5733afa901daba9e2b68dee5d53ecf9` |
+| SUI/USD   | `23d7315113f5b1d3ba7a83604c44b94d79f4fd69af77f804fc7f920a6dc65744` |
+| CETUS/USD | `e5b274b2611143df055d6e7cd8d93fe1961716bcd4dca1cad87a83bc1e78c1ef` |
+| BNB/USD   | `2f95862b045670cd22bee3114c39763a4a08beeb663b145d283c31d7d1101c4f` |
+| WBTC/USD  | `c9d8b075a5c69303365ae23633d4e085199bf5c520a3b90fed1322a0342ffc33` |
+| THL/USD   | `74e3fbb0d33e0ed8c0078b56134dcebdae38852f0858a8ea4de4c5ea7474bd42` |
+| USDY/USD  | `e393449f6aff8a4b6d3e1165a7c9ebec103685f3b41e60db4277b5b6d10e7326` |
+| WETH/USD  | `9d4294bbcd1174d6f2003ec365831e64cc31d9f6f15a2b85399db8d5000960f6` |
+| THAPT/USD | `b29276972267db5d64ae718fb7f107ad9e72a79cabf9992f0e9bc75ad451a7f6` |
+| EZETH/USD | `06c217a791f5c4f988b36629af4cb88fad827b2485400a358f3b02886b54de92` |
+| WEETH/USD | `9ee4e7c60b940440a261eb54b6d8149c23b580ed7da3139f7f08f4ea29dad395` |
+| USDM/USD  | `a6a0dfa49b6b3a93510658245618099f5e842514970f596cf64fad9e0d658193` |
+| STONE/USD | `4dcc2fb96fb89a802ef9712f6bd2246d3607cf95ca5540cb24490d37003f8c46` |
+
+For more details on sponsored feeds, check [here](https://docs.pyth.network/price-feeds/sponsored-feeds) 
+
+
+### API Reference
+
+The [Aptos API reference](https://docs.pyth.network/price-feeds/api-reference/aptos) lets you interactively explore the complete API of the Pyth contract.
+
+### Example Applications
+
+- [Minimal on-chain contract](https://github.com/pyth-network/pyth-examples/blob/main/price_feeds/aptos/fetch_btc_price/sources/example.move), which updates and returns the BTC/USD price from Pyth price feeds.
+- [Mint NFT](https://github.com/pyth-network/pyth-examples/tree/main/price_feeds/aptos/mint_nft) that use Pyth price feeds to mint an NFT.

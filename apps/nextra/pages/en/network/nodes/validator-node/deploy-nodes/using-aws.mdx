@@ -69,7 +69,7 @@ correct configurations (e.g., `source`, `image_tag` and `chain_id`).
 
     module "aptos-node" {
       # Download the Terraform module from the aptos-core repository.
-      source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/aws?ref=mainnet"
+      source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/aws"
       region        = <aws region>  # Specify the AWS region
       # zone_id     = "<Route53 zone id>"  # Use Route53 if you want to use DNS
       era           = 1  # Bump the era number to wipe the chain data

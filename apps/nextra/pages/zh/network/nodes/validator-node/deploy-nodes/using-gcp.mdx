@@ -62,7 +62,7 @@ import { Callout, Steps } from 'nextra/components';
 
    module "aptos-node" {
      # 从 aptos-core 仓库下载 Terraform 模块。
-     source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/gcp?ref=mainnet"
+     source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/gcp"
      region        = "us-central1"  # 指定 GCP 区域
      zone          = "c"            # 指定区域后缀
      project       = "<GCP Project ID>" # 指定您的 GCP 项目 ID

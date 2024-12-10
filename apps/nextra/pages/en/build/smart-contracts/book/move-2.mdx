@@ -1,0 +1,37 @@
+# Move 2 Release Notes
+
+The Move 2 language releases are described on this page. The reference documentation of the new features is integrated into the book, and marked in the text with "_Since language version 2.n_".
+
+## Move 2.1
+
+The Move 2.1 language release adds the following features to Move:
+
+- **Compound Assignments** One can now use `x += n`, `x -= n`, etc. to combine assignments and arithmetic operations. See [reference doc here](variables.mdx#compound-assignments) for the supported operations.
+
+- **Loop Labels** One can now use labels for loops and have a `break` or `continue` expression refer to those labels. This allows to continue or break outer loops from within nested loops. See [reference doc here](loops.mdx#loop-labels).
+
+- **Underscore function parameters are wildcards, not symbols** Function parameters named `_` no longer act like variables: they do not bind a value, and multiple such parameters to a function does not cause a conflict.  Using `_` in a value expression will yield an error, as it has no value.  This makes the behavior of `_` more like the wildcard it is in patterns and let expressions, where it does not bind a value.
+
+## Move 2.0
+
+The Move 2.0 language release adds the following features to Move:
+
+- **Enum Types** add the option to define different variants of data layout in one storable type. They are documented in the [Enum Type section](enums.mdx).
+
+- **Receiver Style Functions** add the ability to call functions in the familiar notation `value.func(arg)`. They are documented in [this section](functions.mdx#dot-receiver-function-call-style).
+
+- **Index Notation** allows access to [elements of vectors](vector.mdx#index-notation-for-vectors) and of [resource storage](global-storage-operators.mdx#index-notation-for-storage-operators) with notations like `&mut vector[index]`, or `&mut Resource[addr]`, respectively.
+
+- **Positional Structs** allow to define wrapper types such as `struct Wrapped(u64)`. Positional structs are described [here](structs-and-resources.mdx#positional-structs). Enum variants are also allowed to be positional.
+
+- **Dot-dot pattern wildcards** enable statements like `let Struct{x, ..} = value` to match selective parts of data. They are described [here](structs-and-resources.mdx#partial-patterns). Those patterns are also allowed for enum variants.
+
+- **Package visibility** allows to declare a function to be visible anywhere inside, but not outside a package. Friend functions continue to be supported, although package visibility is in many cases more suitable. As a more concise notation, package and friend functions can be simply declared as `package fun` or `friend fun`, respectively, instead of the longer `public(package) fun` and `public(friend) fun`. This feature is documented [here](functions.mdx#package-visibility).
+
+- **Assert abort code optional** The `assert!` macro can now be used with just one argument, omitting the abort code, in which case a default code will be chosen. See also [here](abort-and-assert.mdx#assert).
+
+- **New Cast Syntax** Until now, casts had to always be in parentheses, requiring code like `function((x as u256))`. This requirement is now dropped and casts can be top-level expressions without parenthesis, as in `function(x as u256)`. One still needs to write `(x as u64) + (y as u64)` in expressions. This similarly applies to the new enum variant test, `data is VersionedData::V1`.
+
+- **Well-defined evaluation order** The evaluation order in the cases below is now well-defined (these were previously unspecified):
+    - The (a) arguments to a function call, and the (b) operand expressions in a binary operation, are both evaluated from left-to-right.
+    - Given a "mutate" expression (see [mutating through a reference](variables.mdx#mutating-through-a-reference)) of the form `*lexp = rexp`, where `lexp` is an expression of type `&mut T` and `rexp` is an expression of type `T`, `rexp` is evaluated first, followed by `lexp`.

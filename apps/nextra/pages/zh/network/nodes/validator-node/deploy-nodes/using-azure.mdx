@@ -63,7 +63,7 @@ import { Callout, Steps } from 'nextra/components';
 
    module "aptos-node" {
      # 从 aptos-core 仓库下载 Terraform 模块。
-     source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/azure?ref=mainnet"
+     source        = "github.com/aptos-labs/aptos-core.git//terraform/aptos-node/azure"
      region        = <azure region>  # 指定 Azure 区域
      era           = 1  # 提高时代编号以清除链数据
      chain_id      = 1  # 对于主网使用 1，或对于其他网络使用不同的值。
