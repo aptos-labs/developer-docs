@@ -19,7 +19,7 @@ In this guide, we will provide snippets of view functions and how they are typed
 
 ## Dynamically Typed View Functions
 
-When you don't care about the return type of a view function, you can use the `View` function without any types arguments.
+When you don't care about the return type of a view function, you can use the `View` function without any type arguments.
 
 The Move function we will be calling:
 
@@ -93,7 +93,7 @@ class Program
 ## Complex Typed View Functions
 
 For view functions with complex return types, you can leverage `Newtonson.Json` to deserialize the return values. By default,
-all types passed into the View function leverage `JsonConvert.DeserializeObject<T>()` from `Newtonson.Json` to deserialize the
+all types passed into the View function leverage `JsonConvert.DeserializeObject<T>()` from `Newtonson.Json` to deserialize
 the return values. You can override the deserialization behavior by creating a custom `JsonConverter`.
 
 The Move function we will be calling:
