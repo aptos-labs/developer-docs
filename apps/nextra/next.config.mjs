@@ -1773,6 +1773,11 @@ export default withBundleAnalyzer(
         destination: "/en/build/smart-contracts/book/move-2",
         permanent: true,
       },
+      {
+        source: "/network/faucet",
+        destination: "/en/network/faucet",
+        permanent: true,
+      },
     ],
   }),
 );
