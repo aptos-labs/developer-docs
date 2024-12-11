@@ -17,8 +17,13 @@ function getCookie(cookies, key) {
 
 function getLocaleFromHeader(headerValue: string | null) {
   const allowedLocales = Object.keys(i18nConfig);
-  const possibleLocales = (headerValue || "").split(/[;,]/).map(s => s.trim()).map(s => s.split('-')[0])
-  return possibleLocales.find(locale => allowedLocales.includes(locale)) || null;
+  const possibleLocales = (headerValue || "")
+    .split(/[;,]/)
+    .map((s) => s.trim())
+    .map((s) => s.split("-")[0]);
+  return (
+    possibleLocales.find((locale) => allowedLocales.includes(locale)) || null
+  );
 }
 
 export function middleware(request: NextRequest) {
@@ -39,7 +44,9 @@ export function middleware(request: NextRequest) {
 
   // Otherwise, try to figure it out via the `accept-languages` header.
   if (!locale) {
-    const headerLocale = getLocaleFromHeader(request.headers.get("accept-language"))
+    const headerLocale = getLocaleFromHeader(
+      request.headers.get("accept-language"),
+    );
     locale = headerLocale ?? "en";
   }
 

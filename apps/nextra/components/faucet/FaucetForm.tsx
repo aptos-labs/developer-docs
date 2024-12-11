@@ -1,14 +1,19 @@
 "use client";
 
-import React, { FormEvent, FormEventHandler, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Button } from "@components/landing/components/Button";
 import * as Form from "@radix-ui/react-form";
 import { useAuth } from "../../hooks/useAuth";
 import { IconCheck, IconWarning } from "@components/landing/components/Icons";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export function FaucetForm() {
-  const [accountAddress, setAccountAddress] = useState<string>("");
+  const searchParams = useSearchParams();
+  const paramsAddress = searchParams.get("address");
+  const [accountAddress, setAccountAddress] = useState<string>(
+    () => paramsAddress || "",
+  );
   const [txnHash, setTxnHash] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
