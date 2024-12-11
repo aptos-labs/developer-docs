@@ -3,4 +3,10 @@ export default {
   nodes: "Nodes",
   releases: "Releases",
   glossary: "Glossary",
+  faucet: {
+    title: "Faucet",
+    theme: {
+      toc: false,
+    },
+  },
 };
