@@ -60,7 +60,7 @@ export function FaucetForm() {
         } else if (data.message) {
           setError(data.message);
         } else {
-          setError(`Unknown error: ${e}`);
+          setError(`Unknown error: ${JSON.stringify(data)}`);
         }
       }
     } catch (e) {
