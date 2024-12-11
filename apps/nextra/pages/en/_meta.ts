@@ -54,6 +54,9 @@ export default {
       glossary: {
         title: "Glossary",
       },
+      faucet: {
+        title: "Faucet",
+      },
     },
   },
   "developer-platforms": {
