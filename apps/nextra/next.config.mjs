@@ -278,18 +278,13 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/move/move-on-aptos/objects/creating-objects",
-        destination: "/en/build/smart-contracts/objects/creating-objects",
+        source: "/move/move-on-aptos/object/configuring-objects",
+        destination: "/en/build/smart-contracts/object/creating-objects",
         permanent: true,
       },
       {
-        source: "/move/move-on-aptos/objects/configuring-objects",
-        destination: "/en/build/smart-contracts/objects/configuring-objects",
-        permanent: true,
-      },
-      {
-        source: "/move/move-on-aptos/objects/using-objects",
-        destination: "/en/build/smart-contracts/objects/using-objects",
+        source: "/move/move-on-aptos/object/:path",
+        destination: "/en/build/smart-contracts/object/:path",
         permanent: true,
       },
       {
@@ -1061,19 +1056,14 @@ export default withBundleAnalyzer(
       },
       {
         source:
-          "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
-        destination: "/en/build/smart-contracts/objects/creating-objects",
+          "/en/build/smart-contracts/aptos-standards/object/creating-objects",
+        destination: "/en/build/smart-contracts/object/creating-objects",
         permanent: true,
       },
       {
         source:
-          "/en/build/smart-contracts/aptos-standards/objects/configuring-objects",
-        destination: "/en/build/smart-contracts/objects/creating-objects",
-        permanent: true,
-      },
-      {
-        source: "/en/build/smart-contracts/objects/creating-objects",
-        destination: "/en/build/smart-contracts/objects/using-objects",
+          "/en/build/smart-contracts/aptos-standards/object/configuring-objects",
+        destination: "/en/build/smart-contracts/object/creating-objects",
         permanent: true,
       },
       {
@@ -1463,8 +1453,8 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/en/build/smart-contracts/objects/configuring-objects",
-        destination: "/en/build/smart-contracts/objects",
+        source: "/en/build/smart-contracts/object/configuring-objects",
+        destination: "/en/build/smart-contracts/object",
         permanent: true,
       },
       {
@@ -1781,6 +1771,11 @@ export default withBundleAnalyzer(
       {
         source: "/en/build/smart-contracts/book/move-2.0",
         destination: "/en/build/smart-contracts/book/move-2",
+        permanent: true,
+      },
+      {
+        source: "/network/faucet",
+        destination: "/en/network/faucet",
         permanent: true,
       },
     ],
