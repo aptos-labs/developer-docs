@@ -51,16 +51,16 @@ export function FaucetForm() {
       } else {
         const text = await response.text();
         const data: any = JSON.parse(text);
-        if (typeof data === "string") {
-          setError(data);
-        } else if (data.message) {
-          setError(data.message);
-        } else {
+        if (data.rejection_reasons && data.rejection_reasons.length > 0) {
           setError(
             data["rejection_reasons"]
               .map((reason: any) => reason.reason)
               .join(", "),
           );
+        } else if (data.message) {
+          setError(data.message);
+        } else {
+          setError(`Unknown error: ${JSON.stringify(data)}`);
         }
       }
     } catch (e) {
