@@ -79,13 +79,13 @@ export function FaucetForm() {
       >
         <Form.Field className="w-full grid" name="email">
           <div className="flex items-baseline justify-between">
-            <Form.Label className="text-[15px] font-medium leading-[35px] text-white">
+            <Form.Label className="text-[15px] font-medium leading-[35px] text-text-primary">
               Enter an account address below to receive APT
             </Form.Label>
           </div>
           <Form.Control asChild>
             <input
-              className="box-border inline-flex h-[34px] w-full appearance-none items-center justify-center rounded px-2.5 text-[15px] leading-none text-white shadow-[0_0_0_1px_#DEDEE0] outline-none selection:text-white hover:shadow-[0_0_0_1px_white] focus:shadow-[white]"
+              className="box-border inline-flex h-[34px] w-full appearance-none items-center justify-center rounded px-2.5 text-[15px] leading-none text-text-primary outline-none selection:text-text-primary shadow-[0_0_0_1px_#DEDEE0] dark:hover:shadow-[0_0_0_1px_white] dark:focus:shadow-[white] hover:shadow-[0_0_0_1px_#45454F] focus:shadow-[#45454F]"
               type="text"
               value={accountAddress}
               onChange={(e) => setAccountAddress(e.target.value)}
