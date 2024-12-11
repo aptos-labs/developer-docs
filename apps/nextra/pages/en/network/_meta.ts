@@ -7,6 +7,7 @@ export default {
     title: "Faucet",
     theme: {
       toc: false,
+      timestamp: false,
     },
   },
 };
