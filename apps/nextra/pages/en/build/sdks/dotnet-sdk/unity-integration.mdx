@@ -51,7 +51,7 @@ class Example : MonoBehaviour
     }
 
     async void PrintLedgerInfo() {
-        var client = new AptosClient(Networks.Mainnet);
+        var client = new AptosUnityClient(Networks.Mainnet);
         var ledgerInfo = await client.Block.GetLedgerInfo();
         Debug.Log(ledgerInfo.BlockHeight);
     }
