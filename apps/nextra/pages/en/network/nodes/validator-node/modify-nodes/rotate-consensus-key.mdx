@@ -8,15 +8,15 @@ import { Callout, Steps } from 'nextra/components';
 
 Consensus key rotation is an action taken by a node operator to change the identity of a validator they control.
 It happens typically when the corresponding private key is (potentially) lost/leaked,
-or every X months as a common security practice.
+or every few months as a common security practice.
 
 Below is the step-by-step guide of performing a consensus key rotation with detailed examples.
 
 ## New key generation
 
-Using the following [aptos CLI](https://aptos.dev/en/build/cli) command to generate a new consensus identity.
+Using the following [Aptos CLI](https://aptos.dev/en/build/cli) command to generate a new consensus identity.
 In this example, identity files are saved to directory `/new/key/root`.
-```bash
+```bash filename="Terminal"
 aptos genesis generate-keys --output-dir /new/key/root
 ```
 
@@ -37,28 +37,13 @@ consensus:
                 - /new/key/root/validator-identity.yaml # new!
 ```
 <Callout type="info">
-Don't delete `identity_blob_path`. It is a required field.
-
-Field `overriding_identity_paths` is optional, and allows multiple identities to be specified.
-
-Among all the identities, the node finds the one that appears on-chain validator set, and uses it as the consensus key.
-</Callout>
-
-<Callout type="info">
-Old keys may still be available even if you update `identity_blob_path`
-or delete items from `overriding_identity_paths`,
-due to the reasons below.
-
-There is a separate **secure storage** (typically a file `secure_storage.json`) hosting all identities.
-The content of `identity_blob_path` and `overriding_identity_paths` are added to the secure storage on node start, if missing.
-However, keys are never deleted automatically from the storage.
-
-To completely wipe out an old key, you will have to manually make changes to the secure storage.
-See the end of the guide for more details.
+* Field `identity_blob_path` is required.
+* Field `overriding_identity_paths` is optional, and allows multiple identities to be specified for rotation purposes.
+* The node will choose the identity that matches the on-chain state.
 </Callout>
 
 Now restart the node.
-It should be aware of the new key but continue consensus participation with the old key.
+It should load the new key but continue using the old key for consensus.
 
 ## Add new public key on chain
 
@@ -113,7 +98,7 @@ even if you delete the corresponding identity from the node config yaml.
 If you need to ensure the old key is completely gone, manually clean-up is needed.
 
 Here is an example of `secure_storage.json`.
-```json
+```js
 {
     // ...
     "consensus": {
