@@ -1,0 +1,248 @@
+---
+title: "The State"
+---
+
+import { Callout } from 'nextra/components';
+
+# The State
+
+The state is a flat tier of mapping from state keys to state values.
+A state key uniquely identifies an entry, or slot, in the state storage, and a state value is data stored at that entry.
+A state key-value pair is often referred to as a "state item" or a "state slot".
+
+From Move code, the state is the "disk" that holds all the persisted data across transactions.
+
+<Callout type="error">
+    FIXME(aldenhu): Add illustration
+</Callout>
+
+From the storage point of view, there is no nested structure in the state.
+For example, while in Move a resource is logically associated with an account address,
+all resources belonging to the same account are not associated with each other in
+or stored together "under the account", as a result, there is no way in Move to list
+all resources of an account.
+
+In fact, to list out anything in move, one needs to use an explicit traversable data structure like a vector,
+which packs the list to a single value or a BigVector which distributes items across multiple State Values and manages them automatically.
+However, outside of Move, dApps usually rely on external services which put on additional indices on the state to do advanced data querying.
+Learn more about [The Aptos Indexer](../../../build/indexer).
+
+The Move VM translates reads and writes of various types of state items into queries and updates by state keys, which returns state values as results or takes state values as input.
+
+## Types of State Items
+
+There are currently 4 types of state items, identified by 4 different flavors of state keys:
+
+### Modules
+
+Modules are Move binary code.
+`use` statements in Move code loads contents from a module, for example:
+
+```move filename="example.move"
+module Alice::Example {
+    use 0x1::table::Table; // loads the 0x1::table module from state storage
+}
+```
+
+The above statement results in the entirety of module `table` published under address `0x1` being loaded into the VM at runtime.
+
+One way to publish a compiled module is to use the Aptos Cli:
+```bash filename="Terminal"
+aptos move publish --named-addresses hello_blockchain=default
+```
+See the full guide here: [Your First Move Module](../../../build/guides/first-move-module)
+
+
+<Callout type="info">
+    Pseudo Code: StateKey for Module
+
+    In the state storage, a module is identified by the address of the account publishing the module and the module name.
+
+    ```rust filename="StateKey::Module"
+    enum StateKey {
+        /// for example, 0x1::aptos_framework
+        Module {
+            address: AccountAddress,
+            module_name: String,
+        },
+        ...
+    }
+    ```
+</Callout>
+
+
+### Resources
+
+Move structures with both the `key` and `store` abilities can be stored as a resource in the state storage.
+One with only the `store` ability can be part of a resource, but it alone cannot be stored as a resource.
+
+``` move filename="storable structure"
+struct Storable: store {
+    value: u64,
+}
+
+struct MyResource: key, store {
+    field1: Storable,
+}
+```
+
+See more here [Storing Resources in Global Storage](../../../build/smart-contracts/book/structs-and-resources#storing-resources-in-global-storage).
+
+One can access resources in various ways:
+
+```move filename="Accessing state storage"
+use 0x1::res::Res; // Load the module `0x1::res` to get the defiition of `Res`.
+
+fun example() acquires Res {
+  let x = &mut Res[@0xcafe]; // get a mutable reference to resource `Res` under address `@0xcafe`
+  x.value = false; // write to a field of it
+  R[@0x1].value = true; // the same thing
+
+  let r = move_from::<Res>(0xcafe); // remove the resource from the state storage and return it
+}
+```
+
+See details here [Global Storage - Operators](../../../build/smart-contracts/book/global-storage-operators)
+and here [Index Notation for Storage Operators](../../../build/smart-contracts/book/global-storage-operators#index-notation-for-storage-operators)
+
+<Callout type="info">
+    Pseudo Code: State Key for Resource
+
+    In the state storage, a resource is identified by it's owning address and the resource type.
+
+    Notice that two account addresses are involved in a resource state key: the one whose module defined the struct and the one who owns the resource.
+
+    ```rust filename="StateKey::Resource"
+    /// for example, 0x1::aptos_framework::Account
+    struct StructType {
+        address: AccountAddress,
+        module_name: String,
+        struct_name: String,
+    }
+
+    enum StateKey {
+        Resource {
+            /// for example, 0xcafe
+            address: AccountAddress,
+            /// for example, 0x1::aptos_framework::Account
+            struct_type: StructType,
+        },
+        ...
+    }
+    ```
+</Callout>
+
+### Resource Groups
+
+Resource groups are a way to share a single state storage slot among a group of relevant resources.
+With resource groups the developer
+1. enjoys the elegance of decoupling the granularity of abstraction with the granularity of storage
+2. has the flexibility of adding new content to an existing state slot without redefining a resource with added fields and
+write chunky code to deal with backward compatibility and data migration.
+
+Learn more about the Resource Group design in this AIP: [AIP-9 Resource Groups](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-9.md)
+
+```move filename="Resource Groups"
+// This defines the group and represents the storage slot being shared.
+#[resource_group(scope = global)]
+struct ObjectGroup { }
+
+// This defines a group member, an incremental content of the group.
+#[resource_group_member(group = aptos_framework::object::ObjectGroup)]
+struct Object has key {
+    guid_creation_num: u64,
+}
+
+// This defines another group member, another incremental content of the group.
+#[resource_group_member(group = aptos_framework::object::ObjectGroup)]
+struct Token has key {
+    name: String,
+}
+```
+
+In Move, resource group members can be accessed just like individual resources.
+Behind the scenes, the Move VM translates access to a group member to the group and extracts the part of the group content that maps to the requested member.
+
+The developer can model their data with resource groups directly,
+but often times they use them indirectly through various standards provided by the Aptos Framework. [Move Objects](../../../build/smart-contracts/objects), for example, is the motivating use case for resource groups. [Digital Assets](../../../build/smart-contracts/digital-asset) and [Fungible Assets](../../../build/smart-contracts/fungible-asset) standards were built on top of objects.
+
+<Callout type="info">
+    Pseudo Code: State Key for Resource Group
+
+    In the state storage, a resource group is identified by it's owning address and the structure type, similar to resources.
+
+    Notice that given an account address and a struct type,
+    both StateKey::Resource and StateKey::ResourceGroup can be constructed out of the two and they are two distinct state keys,
+    but the Move compiler and framework guarantees at most one of them exists in the state storage.
+
+    ```rust filename="StateKey::ResourceGroup"
+    /// for example, 0x1::object::ObjectGroup
+    struct StructType {
+        address: AccountAddress,
+        module_name: String,
+        struct_name: String,
+    }
+
+    enum StateKey {
+        ResourceGroup {
+            /// for example, 0xcafe
+            address: AccountAddress,
+            /// for example, 0x1::object::ObjectGroup
+            struct_type: StructType,
+        },
+        ...
+    }
+    ```
+</Callout>
+
+### Table Items
+
+A table is provided as a way to store a large data structure across multiple state storage slots.
+The `0x1::table::Table` itself is a regular resource that resides in an enclosing resource or table entry,
+but adding an entry to the table results in a separate state item to be allocated.
+
+```move filename="Table"
+
+    struct Table<phantom K: copy + drop, phantom V> has store {
+        /// identifies the table with a 256 bits hash value
+        /// (note that `address` is not necessarily an Aptos account address,
+        /// rather, it's just a Move type to represent a 256 bits hash value)
+        handle: address,
+    }
+
+    fun table_example() {
+        let table = MyStruct[@0xcafe].table; // reference a table in a resource
+        table.insert(0, 1); // insert a key-value pair to the table, residing in a seperate state slot
+    }
+```
+
+See more about tables here [Tables](../../../build/smart-contracts/table).
+
+Various advanced data structures in the Aptos Framework are implemented base on tables,
+for example: [SmartVector](../../../build/smart-contracts/smart-vector).
+
+<Callout type="info">
+
+    Pseudo Code: State Key for Table Item
+
+    ```rust filename="StateKey::TableItem"
+    enum StateKey {
+        TableItem {
+            /// the 256 bits table handle
+            table_handle: [u8; 32],
+            /// serialized bytes of the key
+            key: Bytes,
+        },
+        ...
+    }
+    ```
+
+</Callout>
+
+## Conclusion
+
+The state is the persistent storage of smart contracts.
+On Aptos, the developer has the tools to model the data with right abstractions at the same time
+has the tools to manage the storage granularity for performance and cost. Compared to a traditional
+Ethereum like state db, a flat level of state key-values with developer defined packing granularity
+provides better and more predictable storage performance.
