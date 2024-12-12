@@ -6,7 +6,11 @@ import { LoginButton } from "@components/login-button";
 import { IconGithub, IconGoogle } from "@components/landing/components/Icons";
 import { FaucetForm } from "@components/faucet/FaucetForm";
 
-export function Faucet() {
+export interface FaucetProps {
+  showGithub?: boolean;
+}
+
+export function Faucet({ showGithub = false }: FaucetProps) {
   const { error, user, handleGithubLogin, handleGoogleLogin, handleLogout } =
     useAuth();
 
@@ -41,11 +45,13 @@ export function Faucet() {
               provider="Google"
               icon={<IconGoogle style={{ width: "16", height: "16" }} />}
             />
-            <LoginButton
-              handleLogin={handleGithubLogin}
-              provider="GitHub"
-              icon={<IconGithub />}
-            />
+            {showGithub && (
+              <LoginButton
+                handleLogin={handleGithubLogin}
+                provider="GitHub"
+                icon={<IconGithub />}
+              />
+            )}
           </div>
         )}
       </div>
