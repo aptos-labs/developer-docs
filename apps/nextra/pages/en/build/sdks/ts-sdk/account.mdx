@@ -11,7 +11,7 @@ There are several ways to generate account credentials using the TypeScript SDK.
 - `Account.fromPrivateKey()`
 - `Account.fromDerivationPath()`
 
-`Account.generate()` is the most commonly used method to create keys for a new account. 
+`Account.generate()` is the most commonly used method to create keys for a new account.
 It defaults to `ED25519` key encodings, but you can also manually specify which signing scheme you would prefer like so:
 
 ```ts
@@ -27,9 +27,9 @@ const account = Account.generate({
 Following [AIP-55](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-55.md) the SDK supports `Legacy` and `Unified` authentications. `Legacy` includes `ED25519` and `MultiED25519` and `Unified` includes `SingleSender` and `MultiSender` authenticators.
 </Callout>
 
-Once you have generated credentials, you **must** fund it for the network to know it exists. 
+Once you have generated credentials, you **must** fund it for the network to know it exists.
 
-In test environments this can be done with a faucet by running the following command:
+In localnet / devnet this can be done with a faucet by running the following command:
 
 ```ts filename="fund.ts"
 const transaction = await aptos.fundAccount({
@@ -38,8 +38,10 @@ const transaction = await aptos.fundAccount({
 });
 ```
 
+For testnet you can use the mint page [here](/network/faucet).
+
 ## Other Ways To Represent Accounts
-If you have a private key, or equivalent representation, you can use that to create an `Account` object to manage those credentials while using the TypeScript SDK. 
+If you have a private key, or equivalent representation, you can use that to create an `Account` object to manage those credentials while using the TypeScript SDK.
 
 Here are several examples that show how to do so with specific encoding schemes.
 
