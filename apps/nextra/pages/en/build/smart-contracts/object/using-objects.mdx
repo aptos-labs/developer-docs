@@ -208,19 +208,25 @@ module 0x42::example {
   use aptos_framework::fungible_asset::Metadata;
   use aptos_framework::object::{Self, Object};
 
-  struct LiquidityPool has key {
+  #[resource_group_member(group = aptos_framework::object::ObjectGroup)]  
+  struct LiquidityPoolResourceGroup has key {
+    pool: LiquidityPool,
+    event_store: LiquidityPoolEventStore,
+  }
+
+  struct LiquidityPool has store {
     metadata_token_a: Object<Metadata>,
     metadata_token_b: Object<Metadata>,
     reserves_a: u128,
     reserves_b: u128,
   }
 
-  struct LiquidityPoolEventStore has key {
+  struct LiquidityPoolEventStore has store {
     create_events: event::EventHandle<CreateLiquidityPoolEvent>,
   }
 
   #[event]
-  struct CreateLiquidityPoolEvent has store,drop {
+  struct CreateLiquidityPoolEvent has store, drop {
     token_a: address,
     token_b: address,
     reserves_a: u128,
@@ -251,15 +257,16 @@ module 0x42::example {
       reserves_b,
     });
 
-    move_to(liquidity_pool_signer, LiquidityPool {
-      metadata_token_a,
-      metadata_token_b,
-      reserves_a,
-      reserves_b
-    });
-
-    move_to(liquidity_pool_signer, LiquidityPoolEventStore {
-      create_events: event_handle
+    move_to(liquidity_pool_signer, LiquidityPoolResourceGroup {
+      pool: LiquidityPool {
+        metadata_token_a,
+        metadata_token_b,
+        reserves_a,
+        reserves_b
+      },
+      event_store: LiquidityPoolEventStore {
+        create_events: event_handle
+      }
     });
   }
 }
