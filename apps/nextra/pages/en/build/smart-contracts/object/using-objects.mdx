@@ -216,7 +216,7 @@ module 0x42::example {
   }
 
   struct LiquidityPoolEventStore has key {
-    create_events: event::EventHandle<CreateLiquidtyPoolEvent>,
+    create_events: event::EventHandle<CreateLiquidityPoolEvent>,
   }
 
   #[event]
@@ -240,11 +240,11 @@ module 0x42::example {
     let liquidity_pool_signer = &object::generate_signer(
       liquidity_pool_constructor_ref
     );
-    let event_handle = object::new_event_handle<CreateLiquidtyPoolEvent>(
+    let event_handle = object::new_event_handle<CreateLiquidityPoolEvent>(
       liquidity_pool_signer
     );
 
-    event::emit_event<CreateLiquidtyPoolEvent>(&mut event_handle, CreateLiquidtyPoolEvent {
+    event::emit_event<CreateLiquidityPoolEvent>(&mut event_handle, CreateLiquidityPoolEvent {
       token_a: object::object_address(&metadata_token_a),
       token_b: object::object_address(&metadata_token_b),
       reserves_a,
