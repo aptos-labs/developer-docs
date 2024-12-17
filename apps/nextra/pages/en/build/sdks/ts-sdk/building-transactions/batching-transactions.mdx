@@ -27,7 +27,7 @@ async function example() {
     console.log("This example will send several transactions in a batch.");
 
     // Setup the client and test accounts
-    const config = new AptosConfig({ network: Network.TESTNET });
+    const config = new AptosConfig({ network: Network.DEVNET });
     const aptos = new Aptos(config);
 
     let sender = Account.generate();

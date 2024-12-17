@@ -12,7 +12,7 @@ You can use the `Aptos` client to get on-chain data using a variety of helper fu
 Here’s an example showing how to fetch common data you may need in your application:
 
 ```ts filename="fetch-data.ts"
-const aptosConfig = new AptosConfig({ network: Network.TESTNET });
+const aptosConfig = new AptosConfig({ network: Network.DEVNET });
 const aptos = new Aptos(aptosConfig);
 
 const fund = await aptos.getAccountInfo({ accountAddress: "0x123" });
