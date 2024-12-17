@@ -40,17 +40,17 @@ To test if you have initialized the package correctly run:
 
 <Tabs items={['npm', 'pnpm', 'yarn']}>
   <Tabs.Tab>
-    ```bash 
+    ```bash
     npx ts-node src/quickstart.ts
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash 
+    ```bash
     pnpx ts-node src/quickstart.ts
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash 
+    ```bash
     yarn ts-node src/quickstart.ts
     ```
   </Tabs.Tab>
@@ -76,7 +76,7 @@ async function example() {
   );
 
   // Setup the client
-  const config = new AptosConfig({ network: Network.TESTNET });
+  const config = new AptosConfig({ network: Network.DEVNET });
   const aptos = new Aptos(config);
 }
 
@@ -107,7 +107,7 @@ To begin with though, here’s how you can send a basic transaction to transfer 
 
 #### 1. Create an Account
 
-To create a new account, you first generate new credentials then fund the account. On test networks you can fund an account programmatically by asking a "faucet" which has a lot of test APT to send some to your new account.
+To create a new account, you first generate new credentials then fund the account. On localnet / devnet you can fund an account programmatically by asking a "faucet" which has a lot of test APT to send some to your new account.
 
 ```ts filename="quickstart.ts"
 ...
@@ -196,17 +196,17 @@ const executedTransaction = await aptos.waitForTransaction({ transactionHash: pe
 
 <Tabs items={['npm', 'pnpm', 'yarn']}>
   <Tabs.Tab>
-    ```bash 
+    ```bash
     npx ts-node src/quickstart.ts
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash 
+    ```bash
     pnpx ts-node src/quickstart.ts
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash 
+    ```bash
     yarn ts-node src/quickstart.ts
     ```
   </Tabs.Tab>
@@ -231,7 +231,7 @@ async function example() {
   );
 
   // Setup the client
-  const config = new AptosConfig({ network: Network.TESTNET });
+  const config = new AptosConfig({ network: Network.DEVNET });
   const aptos = new Aptos(config);
 
   // Generate two account credentials
