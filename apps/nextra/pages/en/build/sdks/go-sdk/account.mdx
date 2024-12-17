@@ -25,7 +25,7 @@ account2 := aptos.NewSecp256k1Account()
 
 Once you have generated credentials, you **must** fund it for the network to know it exists.
 
-In test environments this can be done with a faucet by running the following command:
+In devnet environments this can be done with a faucet by running the following command:
 
 ```go filename="fund.go"
 client, err = aptos.NewClient(aptos.DevnetConfig)
@@ -36,6 +36,8 @@ if err != nil {
 // Fund an account with 1 Devnet APT
 client.Fund(account1.Address, 100_000_000)
 ```
+
+On testnet you can mint at the [mint page](/network/faucet).
 
 ## Other Ways To Represent Accounts
 If you have a private key, or equivalent representation, you can use that to

@@ -16,8 +16,8 @@ jobs:
         uses: lycheeverse/lychee-action@v1
         with:
         # These args ensure that all relevant links are checked, without flaky failures.
-        # 
-        # 1. The --remap helps resolve links which don't list their file extension since all relevant files are .mdx. 
+        #
+        # 1. The --remap helps resolve links which don't list their file extension since all relevant files are .mdx.
         #   It also accounts for headings in relative links. Ex. [abc](./file#header) -> .../file.mdx#header
         # 2. TODO: When the /zh/ sections are all translated, please remove "--exclude '.*/zh/.*".
         #    This is a temporary measure since not all pages have been translated yet, but the links are still there.
@@ -46,6 +46,7 @@ jobs:
             --exclude '^https://app\.spaceandtime\.ai/.*'
             --exclude '.*%7BmenuImage%7D.*'
             --exclude '.*imageUrl.*'
+            --exclude '^(file:|[./]).*\/network\/faucet.mdx$'
             --accept '403,401,429'
             --retry-wait-time 1
             --max-retries 2

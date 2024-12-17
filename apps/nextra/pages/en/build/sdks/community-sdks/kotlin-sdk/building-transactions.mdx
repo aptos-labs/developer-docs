@@ -16,7 +16,7 @@ The typical flow for sending a transaction is as follows:
 <Steps>
 ### Create an Account
   To create a new account, you first generate new credentials then fund the
-  account. On test networks, you can fund an account programmatically by asking
+  account. On devnet, you can fund an account programmatically by asking
   a "faucet".
 ```kotlin
 val aliceAccount = Account.generate()
@@ -30,6 +30,8 @@ val bobAccount = Account.generate()
 val privateKey = Ed25519PrivateKey("myEd25519privatekeystring")
 val account = Account.fromPrivateKey(privateKey)
 ```
+
+On testnet you can mint at the [mint page](/network/faucet).
 
 ### Build the Transaction
   Kaptos provides a `buildTransaction.simple` method to build a transaction. You can specify
