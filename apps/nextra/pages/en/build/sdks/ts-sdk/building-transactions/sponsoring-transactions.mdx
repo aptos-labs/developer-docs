@@ -106,7 +106,7 @@ async function example() {
     console.log("This example will send a sponsored transaction from Alice to Carol.");
 
     // 0. Setup the client and test accounts
-    const config = new AptosConfig({ network: Network.TESTNET });
+    const config = new AptosConfig({ network: Network.DEVNET });
     const aptos = new Aptos(config);
 
     let alice = Account.generate();
