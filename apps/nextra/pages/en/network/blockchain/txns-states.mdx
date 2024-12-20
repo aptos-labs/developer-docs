@@ -10,20 +10,20 @@ import { ThemedImage } from '@components/index'
 The Aptos blockchain stores three types of data:
 
 - **Transactions**: Transactions represent an intended operation being performed by an account on the blockchain (e.g., transferring assets).
-- **States**: The (blockchain ledger) state represents the accumulation of the output of execution of transactions, the values stored within all [resources](resources.mdx).
+- **State**: The blockchain state represents the accumulation of the output of execution of transactions, the values stored within all [resources](resources.mdx).
 - [**Events**](events.mdx): Ancillary data published by the execution of a transaction.
 
 <Callout type="info">
-Only transactions can change the ledger state.
+Only transactions can change the blockchain state.
 </Callout>
 
 ## Transactions
 
 Aptos transactions contain information such as the sender’s account address, authentication from the sender, the desired operation to be performed on the Aptos blockchain, and the amount of gas the sender is willing to pay to execute the transaction.
 
-### Transaction states
+### Transaction status
 
-A transaction may end in one of the following states:
+A transaction may end in one of the following statuses:
 
 - Committed on the blockchain and executed. This is considered as a successful transaction.
 - Committed on the blockchain and aborted. The abort code indicates why the transaction failed to execute.
@@ -76,11 +76,11 @@ See the tutorial on [Your First Transaction](../../build/guides/first-transactio
 The Aptos REST API supports generating BCS-encoded transactions from JSON. This is useful for rapid prototyping, but be cautious using it in Mainnet as this places a lot of trust on the fullnode generating the transaction.
 </Callout>
 
-## States
+## State
 
-The Aptos blockchain's ledger state, or global state, represents the state of all accounts in the Aptos blockchain. Each validator node in the blockchain must know the latest version of the global state to execute any transaction.
+The Aptos blockchain's state, or global state, represents the persisted storage that's accessible from smart contracts in the Aptos blockchain. Each validator node in the blockchain must know the latest version of the global state to execute any transaction.
 
-Anyone can submit a transaction to the Aptos blockchain to modify the ledger state. Upon execution of a transaction, a transaction output is generated. A transaction output contains zero or more operations to manipulate the ledger state called **write sets** emitting a vector of resulting events, the amount of gas consumed, and the executed transaction status.
+Anyone can submit a transaction to the Aptos blockchain to modify the state. Upon execution of a transaction, a transaction output is generated. A transaction output contains zero or more operations to manipulate the ledger state called **write sets** emitting a vector of resulting events, the amount of gas consumed, and the executed transaction status.
 
 ### Proofs
 
@@ -102,7 +102,7 @@ The ledger state is versioned using an unsigned 64-bit integer corresponding to 
 - Execute a transaction against the ledger state at the latest version.
 - Respond to client queries about ledger history at both current and previous versions.
 
-## Transactions change ledger state
+## Transactions change the global state
 
 <ThemedImage
   alt="Signed Transaction Flow"

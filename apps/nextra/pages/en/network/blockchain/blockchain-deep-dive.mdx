@@ -188,7 +188,7 @@ The REST service of the fullnode transfers the transaction to its mempool. After
 
 The mempool on the fullnode sends the transaction to the mempool of a validator fullnode, which then sends the transaction to validator node V<sub>X</sub>'s mempool. Note that the transaction will not be sent to the next mempool (or passed to consensus) until the sequence number matches the sequence number of the sender’s account. Furthermore, each mempool performs the same initial checks upon receiving a transaction, this may result in a transaction being discarded on its way to consensus. The current implementation of mempool does not provide any feedback if a transaction is discarded during this process.
 
-### 4. REST Service → Storage
+### 4. REST Service -> Storage
 
 When a client performs a read query on the Aptos blockchain (for example, to get the balance of Alice's account), the REST service interacts with the storage component directly to obtain the requested information.
 
