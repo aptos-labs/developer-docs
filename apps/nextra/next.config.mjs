@@ -1413,8 +1413,12 @@ export default withBundleAnalyzer(
       },
       {
         source: "/nodes/full-node/fullnode-source-code-or-docker",
-        destination:
-          "/en/network/nodes/full-node/fullnode-source-code-or-docker",
+        destination: "/en/network/nodes/full-node/deployments",
+        permanent: true,
+      },
+      {
+        source: "/en/network/nodes/full-node/fullnode-source-code-or-docker",
+        destination: "/en/network/nodes/full-node/deployments",
         permanent: true,
       },
       {
