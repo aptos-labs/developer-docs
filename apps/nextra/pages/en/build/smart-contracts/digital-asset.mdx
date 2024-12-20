@@ -266,30 +266,44 @@ public entry fun transfer<T: key>(owner: &signer, object: object::Object<T>, to:
 Burning / deleting a `Token` requires storing a `BurnRef` with `token::generate_burn_ref`, then calling `token::burn`.
 
 ```move filename="example.move"
-use std::option::{Self, Option};
+module 0x42::example {
+  use std::option;
+  use aptos_token_objects::token::{Self, BurnRef, Token};
+  use std::string::utf8;
+  use aptos_framework::object::{Self, Object};
 
-public entry fun mint_token(creator: &signer) {
-    let royalty = option::none();
+  struct CustomData has key, drop { 
+    burn_ref: BurnRef,
+  }
+
+  public entry fun mint_token(creator: &signer) {
     let token_constructor_ref = &token::create(
-        creator,
-        "My Collection",
-        "My named Token description",
-        "My named token",
-        royalty,
-        "https://mycollection.com/my-named-token.jpeg",
+      creator,
+      utf8(b"My Collection"),
+      utf8(b"My named Token description"),
+      utf8(b"My named token"),
+      option::none(),
+      utf8(b"https://mycollection.com/my-named-token.jpeg"),
     );
+
+    let token_signer = &object::generate_signer(token_constructor_ref);
+
     let burn_ref = token::generate_burn_ref(token_constructor_ref);
+        
     // Store the burn ref somewhere safe
-}
+    move_to(token_signer, CustomData {
+      burn_ref,
+    });
+  }
 
-public entry fun burn_token(token: Object<Token>) {
-    // Remove all custom data from the token object.
+  public entry fun burn_token(token: Object<Token>) acquires CustomData {
     let token_address = object::object_address(&token);
-    let CustomData { ... } = move_from<CustomData>(token_address);
-
+    // Remove all custom data from the token object.
     // Retrieve the burn ref from storage
-    let burn_ref = ...;
+    let CustomData { burn_ref } = move_from<CustomData>(token_address);
+    // Burn the token
     token::burn(burn_ref);
+  }
 }
 ```
 
@@ -302,22 +316,45 @@ If any custom resources were moved onto the Token, those must be removed / delet
 Mutating a `Token`’s `URI` or `description` requires a `MutatorRef` (which must be generated when creating the `Token`, then stored for later).
 
 ```move filename="example.move"
-use std::option::{Self, Option};
+module 0x42::example {
+  use std::option;
+  use aptos_token_objects::token::{Self, MutatorRef, Token};
+  use std::string::utf8;
+  use aptos_framework::object::{Self, Object};
 
-public entry fun mint_token(creator: &signer) {
-    let royalty = option::none();
+  struct CustomData has key, drop { 
+    mutator_ref: MutatorRef,
+  }
+
+  public entry fun mint_token(creator: &signer) {
     // Constructor ref is a non-storable struct returned when creating a new object.
     // It can be exchanged for signer to add resources to the token object.
     let token_constructor_ref = &token::create(
-        creator,
-        "My Collection",
-        "My named Token description",
-        "My named token",
-        royalty,
-        "https://mycollection.com/my-named-token.jpeg",
+      creator,
+      utf8(b"My Collection"),
+      utf8(b"My named Token description"),
+      utf8(b"My named Token"),
+      option::none(),
+      utf8(b"https://mycollection.com/my-named-token.jpeg"),
     );
+
+    let token_signer = &object::generate_signer(token_constructor_ref);
+    
     let mutator_ref = token::generate_mutator_ref(token_constructor_ref);
+    
     // Store the mutator ref somewhere safe
+    move_to(token_signer, CustomData {
+      mutator_ref,
+    });
+  }
+
+  public entry fun mutate_token(token: Object<Token>) acquires CustomData {
+    let token_address = object::object_address(&token);
+    // Retrieve the mutator ref from storage
+    let CustomData { mutator_ref } = move_from<CustomData>(token_address);
+    // Change token description
+    token::set_description(&mutator_ref, utf8(b"This is my named Token description"));
+  }
 }
 ```
 
