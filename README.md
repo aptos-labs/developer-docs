@@ -1,4 +1,4 @@
-# Developer Documentation
+#gh auth login --scopes read:user,user:email Developer Documentation
 
 - [Developer Documentation](#developer-documentation)
   - [Installation](#installation)
