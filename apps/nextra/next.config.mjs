@@ -408,6 +408,11 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/steps",
+        destination: "/en/build/indexer/indexer-sdk/documentation/steps",
+        permanent: true,
+      },
+      {
         source: "/indexer/indexer-sdk/documentation/parsing-txns",
         destination: "/en/build/indexer/indexer-sdk/documentation/parsing-txns",
         permanent: true,

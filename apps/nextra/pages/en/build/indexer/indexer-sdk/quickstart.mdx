@@ -1,9 +1,11 @@
 # Quickstart Guide on Aptos Indexer SDK
-In this guide, we’re going to walk you through all the steps involved with creating a basic events processor in Rust to
-track events on the Aptos blockchain. At the end of this guide, you’ll be able to run a simple events processor and customize
-the processor for your indexing needs.
 
-# Getting started
+## What to expect from this guide
+This guide will walk you through setting up and running a Rust processor to index events on the Aptos blockchain into PostgreSQL. 
+We provide a template processor that you can customize to index events from your custom contracts.
+By the end of the guide, you should have a basic understanding of how a processor works and be able to customize the processor for your indexing needs.
+
+## Getting started
 
 To get started, clone
 the [aptos-indexer-processors-example](https://github.com/aptos-labs/aptos-indexer-processor-example/tree/main) repo.
@@ -48,7 +50,7 @@ towards PostgreSQL for the sake of simplicity. We use the following database con
 Explaining how to create a database is beyond the scope of this tutorial. If you are not sure how to do it, consider
 checking out tutorials on how to create a database with the `psql` tool.
 
-# Setting up your environment
+## Setting up your environment
 
 Make sure to start the `postgresql` service:
 
@@ -64,7 +66,7 @@ For mac, if you’re using brew, start it up with:
 brew services start postgresql
 ```
 
-# **Configuring your processor**
+## **Configuring your processor**
 
 Now let’s set up the configuration details for the actual indexer processor we’re going to use.
 
@@ -122,7 +124,7 @@ indexer_grpc_data_service_address: grpc.testnet.aptoslabs.com:443
 indexer_grpc_data_service_address: grpc.mainnet.aptoslabs.com:443
 ```
 
-# Explanation of the processor
+## Explanation of the processor
 
 At a high level, each processor is responsible for receiving a stream of transactions, parsing and transforming the
 relevant data, and storing the data into a database.
