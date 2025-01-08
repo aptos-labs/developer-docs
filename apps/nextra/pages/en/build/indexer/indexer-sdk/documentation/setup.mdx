@@ -1,0 +1,29 @@
+---
+title: "Initial Setup"
+---
+import { Callout } from 'nextra/components'
+import { IndexerBetaNotice } from '@components/index';
+
+# Initial Setup
+
+If you're creating a custom processor from scratch, we recommend following the [Quickstart Guide](../quickstart.mdx).
+
+If you're looking to use the Indexer SDK in an existing Rust project, follow the steps below.
+
+The Indexer SDK provides several Rust crates:
+1. `aptos-indexer-processor-sdk` - The core SDK that provides the building blocks for creating a processor.
+2. `aptos-indexer-processor-sdk-server-framework` - A server framework for creating a server that runs the processor and includes health checks and metrics logging probes.
+3. `aptos-indexer-testing-framework` - An e2e testing framework for testing processors.
+
+Depending on what you need, you can choose to include one or more of these crates in your project.
+
+To your `Cargo.toml`, add
+
+```yaml
+aptos-indexer-processor-sdk = { git = "https://github.com/aptos-labs/aptos-indexer-processor-sdk.git", rev = "aptos-indexer-processor-sdk-v1.0.0" }
+aptos-indexer-processor-sdk-server-framework = { git = "https://github.com/aptos-labs/aptos-indexer-processor-sdk.git", rev = "aptos-indexer-processor-sdk-v1.0.0" }
+aptos-indexer-testing-framework = { git = "https://github.com/aptos-labs/aptos-indexer-processor-sdk.git", rev = "aptos-indexer-processor-sdk-v1.0.0" }
+```
+
+
+{/* <!-- Add list of SDK releases once we have that --> */}

@@ -403,6 +403,11 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/setup",
+        destination: "/en/build/indexer/indexer-sdk/documentation/setup",
+        permanent: true,
+      },
+      {
         source: "/indexer/indexer-sdk/documentation/parsing-txns",
         destination: "/en/build/indexer/indexer-sdk/documentation/parsing-txns",
         permanent: true,
