@@ -1,7 +1,7 @@
 import LocaleError from "@components/error/LocaleError";
 import { Error } from "@components/index";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "nextra/hooks";
 import { useEffect, useState } from "react";
 import { checkIfEnglishPathAvailable } from "utils/locale";
 
