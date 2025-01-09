@@ -16,8 +16,8 @@ export default {
     type: "separator",
     title: "Indexer Customizations (Advanced)",
   },
-  "custom-processors": {
-    title: "Custom Processors",
+  "indexer-sdk": {
+    title: "Indexer SDK",
   },
   "txn-stream": {
     title: "Transaction Stream Service",

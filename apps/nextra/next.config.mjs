@@ -393,13 +393,28 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/indexer/custom-processors/e2e-tutorial",
-        destination: "/en/build/indexer/custom-processors/e2e-tutorial",
+        source: "/indexer/indexer-sdk/quickstart",
+        destination: "/en/build/indexer/indexer-sdk/quickstart",
         permanent: true,
       },
       {
-        source: "/indexer/custom-processors/parsing-txns",
-        destination: "/en/build/indexer/custom-processors/parsing-txns",
+        source: "/indexer/indexer-sdk/documentation",
+        destination: "/en/build/indexer/indexer-sdk/documentation",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/setup",
+        destination: "/en/build/indexer/indexer-sdk/documentation/setup",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/steps",
+        destination: "/en/build/indexer/indexer-sdk/documentation/steps",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/parsing-txns",
+        destination: "/en/build/indexer/indexer-sdk/documentation/parsing-txns",
         permanent: true,
       },
       {
