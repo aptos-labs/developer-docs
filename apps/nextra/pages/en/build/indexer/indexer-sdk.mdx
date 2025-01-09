@@ -29,7 +29,6 @@ Learn how to use the Indexer SDK through guides and documentation.
 ## Architecture of the Indexer SDK
 
 In the Aptos indexing stack, a processor indexes a specific subset of data from the blockchain and ingests the data into an external database.
-As a reference, you can see all Aptos-Hosted processors that comprise the Indexer API [here](https://github.com/aptos-labs/aptos-indexer-processors). 
 
 Each processor follows this general flow:
 
@@ -48,3 +47,6 @@ The Indexer SDK's architecture simplifies writing custom processors in several w
 2. The SDK collects basic performance metrics, like the number of transactions processed, for each `Step`, which enables observability into subcomponents of the processor. 
 3. Since each `Step` is independent, you can safely customize parts of the processor without breaking the other pieces. 
 For example, you can add additional `Step`'s to pre/post-process data or batch data writes. Each `Step` can also be tested in isolation from the rest of the processor. 
+
+## Example Processors 
+As a reference, you can see all Aptos-Hosted processors that comprise the Indexer API [here](https://github.com/aptos-labs/aptos-indexer-processors). 
