@@ -398,11 +398,6 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/indexer/indexer-sdk/documentation",
-        destination: "/en/build/indexer/indexer-sdk/documentation",
-        permanent: true,
-      },
-      {
         source: "/indexer/indexer-sdk/documentation/setup",
         destination: "/en/build/indexer/indexer-sdk/documentation/setup",
         permanent: true,

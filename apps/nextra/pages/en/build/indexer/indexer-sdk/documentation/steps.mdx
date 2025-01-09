@@ -5,7 +5,7 @@ title: "Creating a Step"
 # Creating a Step
 
 ## What is a step?
-A step is a unit of processing lgoic in the SDK. It can be used to extract, transform, or store data. Steps are the building blocks of a processor.
+A step is a unit of processing logic in the SDK and can be used to define logic for the extraction, transformation, or storing of data. Steps are the building blocks of a processor.
 
 There are two types of steps in the SDK:
 1. **AsyncStep**: Processes a batch of input items and returns a batch of output items.
@@ -87,7 +87,7 @@ To create a step with the SDK, follow these instructions:
         }
         ```
 
-## How to connect step's 
+## How to connect steps
 
 Now that you have created a step, you can connect it to other steps in the processor. 
 `ProcessorBuilder` is used to connect a graph of steps to construct a processor. 
