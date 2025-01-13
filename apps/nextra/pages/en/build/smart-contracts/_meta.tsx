@@ -23,7 +23,7 @@ export default {
     type: "separator",
     title: "Aptos Standards",
   },
-  objects: {
+  object: {
     title: "Object",
   },
   "digital-asset": {
@@ -49,8 +49,7 @@ export default {
   table: {
     title: "Table",
   },
-  "aptos-objects": {
-    href: "/en/build/smart-contracts/objects",
+  objects: {
     title: "Objects",
   },
   "resource-accounts": {
@@ -102,10 +101,6 @@ export default {
   scripts: {
     title: "Scripts",
   },
-  patterns: {
-    display: "hidden",
-    title: "Patterns",
-  },
   prover: {
     title: "Move Prover",
   },
@@ -127,14 +122,5 @@ export default {
   },
   linter: {
     title: "Linter",
-  },
-  "learn-move": {
-    display: "hidden",
-  },
-  "aptos-standards": {
-    display: "hidden",
-  },
-  tokens: {
-    display: "hidden",
   },
 };

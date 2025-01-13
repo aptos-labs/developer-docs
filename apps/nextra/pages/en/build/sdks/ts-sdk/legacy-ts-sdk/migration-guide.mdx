@@ -56,7 +56,7 @@ const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
 To configure your `Aptos` client, you can use an `AptosConfig` object.
 
 ```ts filename="v2.ts"
-const aptosConfig = new AptosConfig({ network: Network.TESTNET }); // default to devnet
+const aptosConfig = new AptosConfig({ network: Network.DEVNET }); // default to devnet
 const aptos = new Aptos(config);
 ```
 

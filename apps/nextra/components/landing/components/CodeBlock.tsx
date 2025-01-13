@@ -4,7 +4,7 @@ import { cn } from "utils/cn";
 
 // This component is loosely based on Nextra's `Pre` component.
 // I originally tried to use `Pre` directly, but ended up needing more control
-// Reference: https://github.com/shuding/nextra/blob/main/packages/nextra/src/components/pre.tsx
+// Reference: https://github.com/shuding/nextra/blob/main/packages/nextra/src/client/components/pre.tsx
 
 export interface CodeBlockProps {
   codeSnippet: TrustedHTML;

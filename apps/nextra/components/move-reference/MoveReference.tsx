@@ -1,29 +1,26 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Playground } from "nextra/components";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
-import {
-  readMarkdownString,
-  convertHtmlToMarkdownCodeBlocks,
-  astToMarkdown,
-} from "@aptos-labs/nextra-components";
-import { ModuleContainer } from "./ModuleContainer";
+import { useRouter } from "nextra/hooks";
+import { ModuleSelectContainer } from "./ModuleSelectContainer";
 import {
   MoveReferenceContext,
   useMoveReference,
   useURLParams,
 } from "./MoveReferenceProvider";
-import { BRANCHES, FrameworkData, GITHUB_APTOS_CORE } from "./shared";
+import { BRANCHES, FrameworkData, GITHUB_APTOS_CORE_CONTENT } from "./shared";
 import { useMoveContent } from "./useMoveContent";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Link from "next/link";
+import Image from "next/image";
 
 const BranchSelector = () => {
   const { updateBranch, branch } = useMoveReference();
 
   return (
-    <form className="w-full mt-6">
+    <form className="w-full">
       <label
         htmlFor="branches"
         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -49,19 +46,34 @@ const BranchSelector = () => {
   );
 };
 
-type ModulePageSelectorProps = {
-  pkgsData: FrameworkData[];
-  selectedPage: string | null;
-  onSelectPage: (newPage: string) => void;
-};
-
-const ModulePageSelector = () => {
-  const itemRefs = useRef({});
+const LinkToGithub = () => {
+  const { branch, page } = useMoveReference();
+  const url = `${GITHUB_APTOS_CORE_CONTENT}/${branch}/aptos-move/framework/${page}`;
+  const buttonProps = {
+    width: 18,
+    height: 18,
+  };
 
   return (
-    <div className="mt-6">
-      <ModuleContainer branch="main" />
-    </div>
+    <Link
+      href={url}
+      target="_blank"
+      className="flex body-100 items-center gap-1.5 w-fit transition rounded-md py-1 px-2 border border-gray-300 dark:border-neutral-700 contrast-more:border-gray-900 contrast-more:dark:border-gray-50"
+    >
+      View source
+      <Image
+        src="/docs/github-dark.svg"
+        alt="GitHub icon"
+        className="h-fit hidden dark:block"
+        {...buttonProps}
+      />
+      <Image
+        src="/docs/github-light.svg"
+        alt="GitHub icon"
+        className="h-fit dark:hidden"
+        {...buttonProps}
+      />
+    </Link>
   );
 };
 
@@ -138,8 +150,6 @@ const Content = () => {
     return <DocsSkeleton />;
   }
 
-  console.log(content);
-
   // Conditional rendering based on whether a page is selected
   return (
     <div className="move-content lg:max-w-[calc(100%-16rem)]">
@@ -158,9 +168,10 @@ export const MoveReference = () => {
     <QueryClientProvider client={queryClient}>
       <MoveReferenceContext.Provider value={value}>
         <div id="move-reference-body">
-          <div id="move-reference-nav">
+          <div id="move-reference-nav" className="flex flex-col gap-6 my-6">
             <BranchSelector />
-            <ModulePageSelector />
+            <ModuleSelectContainer branch="main" />
+            <LinkToGithub />
           </div>
           <div id="move-reference-contents">
             <Content />

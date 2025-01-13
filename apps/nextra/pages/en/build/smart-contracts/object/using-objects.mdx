@@ -205,14 +205,28 @@ Generated event handles can be transferred to the Object as long as you have the
 ```move filename="example.move"
 module 0x42::example {
   use aptos_framework::event;
-  use aptos_framework::fungible_asset::FungibleAsset;
+  use aptos_framework::fungible_asset::Metadata;
   use aptos_framework::object::{Self, Object};
 
-  struct LiquidityPoolEventStore has key {
-    create_events: event::EventHandle<CreateLiquidtyPoolEvent>,
+  #[resource_group_member(group = aptos_framework::object::ObjectGroup)]  
+  struct LiquidityPoolResourceGroup has key {
+    pool: LiquidityPool,
+    event_store: LiquidityPoolEventStore,
   }
 
-  struct CreateLiquidtyPoolEvent {
+  struct LiquidityPool has store {
+    metadata_token_a: Object<Metadata>,
+    metadata_token_b: Object<Metadata>,
+    reserves_a: u128,
+    reserves_b: u128,
+  }
+
+  struct LiquidityPoolEventStore has store {
+    create_events: event::EventHandle<CreateLiquidityPoolEvent>,
+  }
+
+  #[event]
+  struct CreateLiquidityPoolEvent has store, drop {
     token_a: address,
     token_b: address,
     reserves_a: u128,
@@ -220,38 +234,39 @@ module 0x42::example {
   }
 
   public entry fun create_liquidity_pool_with_events(
-        token_a: Object<FungibleAsset>,
-        token_b: Object<FungibleAsset>,
+        account_signer: &signer,
+        metadata_token_a: Object<Metadata>,
+        metadata_token_b: Object<Metadata>,
         reserves_a: u128,
         reserves_b: u128
   ) {
-    let exchange_signer = &get_exchange_signer();
     let liquidity_pool_constructor_ref = &object::create_object_from_account(
-      exchange_signer
+      account_signer
     );
     let liquidity_pool_signer = &object::generate_signer(
       liquidity_pool_constructor_ref
     );
-    let event_handle = object::new_event_handle<CreateLiquidtyPoolEvent>(
+    let event_handle = object::new_event_handle<CreateLiquidityPoolEvent>(
       liquidity_pool_signer
     );
 
-    event::emit_event<CreateLiquidtyPoolEvent>(&mut event_handle, CreateLiquidtyPoolEvent {
-      token_a: object::object_address(&token_a),
-      token_b: object::object_address(&token_b),
+    event::emit_event<CreateLiquidityPoolEvent>(&mut event_handle, CreateLiquidityPoolEvent {
+      token_a: object::object_address(&metadata_token_a),
+      token_b: object::object_address(&metadata_token_b),
       reserves_a,
       reserves_b,
     });
 
-    move_to(liquidity_pool_signer, LiquidityPool {
-      token_a,
-      token_b,
-      reserves_a,
-      reserves_b
-    });
-
-    move_to(liquidity_pool_signer, LiquidityPoolEventStore {
-      create_events: event_handle
+    move_to(liquidity_pool_signer, LiquidityPoolResourceGroup {
+      pool: LiquidityPool {
+        metadata_token_a,
+        metadata_token_b,
+        reserves_a,
+        reserves_b
+      },
+      event_store: LiquidityPoolEventStore {
+        create_events: event_handle
+      }
     });
   }
 }

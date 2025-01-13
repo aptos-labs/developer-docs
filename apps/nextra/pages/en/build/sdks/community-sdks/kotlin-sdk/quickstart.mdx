@@ -94,12 +94,14 @@ val aptos = Aptos(aptosConfig)
     ### Create an Account
 
     To create a new account, you first generate new credentials then fund the account.
-    On test networks, you can fund an account programmatically by asking a "faucet"
+    On devnet networks, you can fund an account programmatically by asking a "faucet"
 
     ```kotlin
     val aliceAccount = Account.generate()
     val bobAccount = Account.generate()
     ```
+
+    On testnet you can mint at the [mint page](/network/faucet).
 
     ### Build the Transaction
 
