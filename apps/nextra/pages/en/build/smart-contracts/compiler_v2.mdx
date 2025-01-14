@@ -6,15 +6,15 @@ title: "Move On Aptos Compiler (beta)"
 
 The Move on Aptos compiler (codename 'compiler v2') is a new tool which translates Move source code into Move bytecode. It unifies the architectures of the Move compiler and the Move Prover, enabling faster innovation in the Move language. It also offers new tools for defining code optimizations which can be leveraged to generate more gas efficient code for Move programs.
 
-The new compiler supports Move 2, the latest revision of the Move language. Head over to the [release page in the book](book/move-2.mdx) to learn more about the new features in Move 2. You can select both this language version and the new compiler by using `aptos move compile --move-2`.
+The new compiler supports Move 2, the latest revision of the Move language. Head over to the [release page in the book](book/move-2.mdx) to learn more about the new features in Move 2. Starting at Aptos CLI v6.0.0, this language version and the new compiler are the default.
 
 ## Compiler v2 Release State
 
-Compiler v2 is ready for production but not yet the default. You opt in to use compiler v2 and language Move 2 by using the `--move-2` flag passed to the Aptos CLI.
+Compiler v2 is now the default.
 
 ## Bug Bounty
 
-We award a bounty for each unique semantic bug identified in the compiler. Bugs need to surface as a difference of execution outcome of the v1 and v2 compilers, as demonstrated by a Move unit test. Try your existing Move tests with the new compiler, it is as easy as calling `aptos move test --compiler-version=2 --language-version=1`! Not all differences in the compiler behavior count for the program, [head over here](https://hackenproof.com/programs/move-on-aptos-compiler) for details of the bounty program. Even if a difference in behavior does not qualify for a bounty, we encourage you to open an issue using the link below.
+We award a bounty for each unique semantic bug identified in the compiler. Bugs need to surface as a difference of execution outcome of the v1 and v2 compilers, as demonstrated by a Move unit test. Not all differences in the compiler behavior count for the program, [head over here](https://hackenproof.com/programs/move-on-aptos-compiler) for details of the bounty program. Even if a difference in behavior does not qualify for a bounty, we encourage you to open an issue using the link below.
 
 ## Reporting an Issue
 
@@ -31,10 +31,21 @@ aptos update aptos # on supported OS
 brew upgrade aptos # on MacOS
 ```
 
-To run compiler v2 and Move 2, pass the flag `--move-2` to the Aptos CLI. Examples:
+Compiler v2 and Move 2 are now the default, requiring no changes to your usage. Examples:
 
 ```bash filename="Terminal"
-aptos move compile --move-2
-aptos move test --move-2
-aptos move prove --move-2
+aptos move compile
+aptos move test
+aptos move prove
+```
+
+## Using Compiler v1
+
+Compiler v1 (i.e., the old compiler) is expected to be sunset soon, as it does not support any of the Move 2 features, and is thus not recommended for use. However, if you still want to use compiler v1 before it is sunset, on your project that does not use any Move 2 features, you can do so with the `--move-1` flag (eg., `aptos move compile --move-1` or `aptos move test --move-1`). You may need to specify the `aptos-release-v1.25` version of the Aptos framework in the dependencies (this is the last version of the Aptos framework that does not use any Move 2 features), as shown below.
+
+```toml filename="Move.toml"
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-framework.git"
+rev = "aptos-release-v1.25"
+subdir = "aptos-framework"
 ```
