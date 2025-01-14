@@ -1,26 +1,45 @@
 ---
 title: "Documentation"
 ---
-import { Callout } from 'nextra/components'
-import { IndexerBetaNotice } from '@components/index';
+import { ThemedImage } from '@components/index';
 
 # Documentation
 
 ## Architecture of the Indexer SDK
 
-In the Aptos indexing stack, a processor indexes a specific subset of data from the blockchain and ingests the data into an external database.
+In the Aptos indexing stack, a processor indexes a specific subset of data from the blockchain and writes the data into an external database.
 
 Each processor follows this general flow:
 
-1. Receive a stream of Aptos transactions
-2. Extract the relevant data from the transactions
-3. Transform and merge the extracted data into a coherent, standardized schema
-4. Store the transformed data into a database
+1. Receive a stream of transactions from [Transaction Stream](../txn-stream.mdx)
+2. Extract the relevant data from the transactions and transform it into a standardized schema
+3. Store the transformed data into a database
+4. Keep track of the transaction versions that have been processed
 
-The Aptos Indexer SDK allows you to write and model each of your processor as a graph of independent `Step`'s'.
-Each `Step` has an input and an output, and the output of one `Step` is connected to the input of another `Step` by a channel.
-The flow above can be modeled as a graph of `Step`'s connected by channels.
+The Indexer SDK allows you to write a processor as a directed graph of independent steps. 
+Each `Step` has an input and output, and the output of each `Step` is connected to the input of the next `Step` by a [Kanal channel](https://github.com/fereidani/kanal).
 
+<center>
+  <ThemedImage
+    alt="Indexer SDK Custom Processor Architecture"
+    sources={{
+      light: '/docs/indexer-custom-processor-light.svg',
+      dark: '/docs/indexer-custom-processor-dark.svg',
+    }}
+  />
+</center>
+
+## When to use the Indexer SDK
+The Indexer SDK is useful when you want to index a custom contract or you realize you need a new kind of data that isn't available in the [Indexer API](../aptos-hosted.mdx).
+
+The general flow to write a custom processor with the Indexer SDK is:
+1. Define your database schema
+2. Create a new processor
+3. Create `Step`s that extract and transform data into your storage schema 
+2. Customize your processor by adding and connecting steps
+3. Run your processor and see the data indexed into your database
+
+## Benefits of the Indexer SDK
 The Indexer SDK's architecture simplifies writing custom processors in several ways:
 
 1. You can reuse `Step` implementations across processors which reduces duplication of common data extraction logic. 
