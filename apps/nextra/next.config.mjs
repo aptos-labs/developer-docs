@@ -408,6 +408,12 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/create-processor",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/create-processor",
+        permanent: true,
+      },
+      {
         source: "/indexer/indexer-sdk/documentation/steps",
         destination: "/en/build/indexer/indexer-sdk/documentation/steps",
         permanent: true,

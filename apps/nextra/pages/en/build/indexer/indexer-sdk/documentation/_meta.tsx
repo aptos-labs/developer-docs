@@ -1,5 +1,8 @@
 export default {
   setup: { title: "Initial Setup" },
+  "create-processor": {
+    title: "Create a Processor",
+  },
   steps: {
     title: "Creating a Step",
   },
