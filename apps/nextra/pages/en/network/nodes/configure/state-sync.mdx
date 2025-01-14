@@ -29,7 +29,7 @@ Need to start a node quickly?
 If you need to start a node quickly, here's what we recommend by network and use case:
 
 - **Devnet**: To sync the entire blockchain history, use [intelligent syncing](state-sync.mdx#intelligent-syncing). Otherwise, use [fast sync](state-sync.mdx#fast-syncing).
-- **Testnet**: To sync the entire blockchain history, restore from a [backup](../bootstrap-fullnode/aptos-db-restore.mdx). Otherwise, download [a snapshot](../bootstrap-fullnode.mdx) or use [fast sync](state-sync.mdx#fast-syncing).
+- **Testnet**: To sync the entire blockchain history, restore from a [backup](../bootstrap-fullnode/aptos-db-restore.mdx). Otherwise, download [a snapshot](../bootstrap-fullnode/bootstrap-fullnode.mdx) or use [fast sync](state-sync.mdx#fast-syncing).
 - **Mainnet**: To sync the entire blockchain history, restore from a [backup](../bootstrap-fullnode/aptos-db-restore.mdx). Otherwise, use [fast sync](state-sync.mdx#fast-syncing).
 </Callout>
 
@@ -96,7 +96,7 @@ configuration will lead to slower syncing times and degraded performance.
 
 To execute all the transactions since genesis and continue to execute new
 transactions as they are committed, add the following to your node
-configuration file (for example,`fullnode.yaml` or `validator.yaml`):
+configuration file (for example, `fullnode.yaml` or `validator.yaml`):
 
 ```yaml filename="fullnode.yaml"
 state_sync:
