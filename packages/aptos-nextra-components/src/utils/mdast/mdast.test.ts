@@ -7,9 +7,7 @@ test("keyRotation.md parse and fix AST", () => {
   markdownToMdx(tree);
   const markdown = astToMarkdown(tree);
   expect(markdown).toEqual(
-    astToMarkdown(
-      readFileAsTree("./examples/keyRotation.expect.md"),
-    ).toString(),
+    astToMarkdown(readFileAsTree("./examples/keyRotation.expect.md")).toString()
   );
 });
 
@@ -20,8 +18,8 @@ test("account_snippet.md parse and fix AST", () => {
   const markdown = astToMarkdown(tree);
   expect(markdown).toEqual(
     astToMarkdown(
-      readFileAsTree("./examples/account_snippet.expect.md"),
-    ).toString(),
+      readFileAsTree("./examples/account_snippet.expect.md")
+    ).toString()
   );
 });
 
@@ -31,8 +29,8 @@ test("vector_snippet.md parse and fix AST", () => {
   const markdown = astToMarkdown(tree);
   expect(markdown).toEqual(
     astToMarkdown(
-      readFileAsTree("./examples/vector_snippet.expect.md"),
-    ).toString(),
+      readFileAsTree("./examples/vector_snippet.expect.md")
+    ).toString()
   );
 });
 
