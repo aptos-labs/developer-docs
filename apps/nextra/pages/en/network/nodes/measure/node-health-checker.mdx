@@ -99,7 +99,7 @@ A single NHC instance can be configured to check the health of multiple node con
 
 In all the above cases, a baseline node is used to compare your node's health. For example, for a public fullnode connected to the Aptos devnet, the baseline node might be a node run by the Aptos team and this node demonstrates optimal performance and participation characteristics.
 
-You will download the baseline configuration YAML before running the NHC service for your node. The baseline node's configuration YAML describes where to find this baseline node (URL + port), what evaluators (e.g. metrics checks, TPS tests, API validations, etc.) the NHC service should run, what parameters the NHC should use for those evaluators, what name the configuration has, and so on. See these [example baseline configuration YAML files](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples).
+You will download the baseline configuration YAML before running the NHC service for your node. The baseline node's configuration YAML describes where to find this baseline node (URL + port), what evaluators (e.g., metrics checks, TPS tests, API validations, etc.) the NHC service should run, what parameters the NHC should use for those evaluators, what name the configuration has, and so on. See these [example baseline configuration YAML files](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/node-checker/configuration_examples).
 
 When you send requests to the NHC service, you must include a baseline configuration. For example, a request to NHC to use `devnet_fullnode` as the baseline configuration will look like this:
 
@@ -127,7 +127,7 @@ These configurations are not quite ready to be used as they are. You will need t
 
 ### Required files
 
-For some NHC configurations, you will need accompanying files, e.g. `mint.key` to use for running a TPS test against a validator. You should make sure these files are also available to NHC, either on disk or mounted into your container. NHC expects them on startup at a path specified in the baseline configuration YAML.
+For some NHC configurations, you will need accompanying files, e.g., `mint.key` to use for running a TPS test against a validator. You should make sure these files are also available to NHC, either on disk or mounted into your container. NHC expects them on startup at a path specified in the baseline configuration YAML.
 
 ## Running NHC: Docker
 
@@ -154,7 +154,7 @@ git clone git@github.com:aptos-labs/aptos-core.git
 cd aptos-core
 ```
 
-Depending on your setup, you may want to check out a particular branch, to ensure NHC is compatible with your node, e.g. `git checkout --track devnet`.
+Depending on your setup, you may want to check out a particular branch, to ensure NHC is compatible with your node, e.g., `git checkout --track devnet`.
 
 Run NHC:
 
