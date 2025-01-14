@@ -424,6 +424,12 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/connect-steps",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/connect-steps",
+        permanent: true,
+      },
+      {
         source: "/indexer/txn-stream/labs-hosted",
         destination: "/en/build/indexer/api/labs-hosted",
         permanent: true,

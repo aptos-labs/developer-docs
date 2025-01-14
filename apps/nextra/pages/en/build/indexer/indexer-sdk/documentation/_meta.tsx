@@ -9,4 +9,7 @@ export default {
   "parsing-txns": {
     title: "Parsing Transactions",
   },
+  "connect-steps": {
+    title: "Connecting Steps",
+  },
 };

@@ -87,30 +87,6 @@ To create a step with the SDK, follow these instructions:
         }
         ```
 
-## How to connect steps
-
-Now that you have created a step, you can connect it to other steps in the processor. 
-`ProcessorBuilder` is used to connect a graph of steps to construct a processor. 
-It uses trait bounds to ensure that the output type of each step matches the input type of its connected step. 
-
-### How to use `ProcessorBuilder`
-
-1. Initialize the processor with the first step using `ProcessorBuilder::new_with_inputless_first_step`. 
-2. Connect the next step using `.connect_to(second_step.into_runnable_step(), channel_size)`. 
-- `.into_runnable_step()` converts your step into a `RunnableStep`, which enables it to store the step's input and output channels and allows the step to be spawned in a task. 
-- When you use `.connect_to`, a channel gets created with size `channel_size` and connected to the previous and current steps, and the previous step is spawned in a task. 
-3. To close off the `ProcessorBuilder`, use `.end_and_return_output_receiver(channel_size)`. This returns a channel receiver that can be used to receive the final output of the processor.
-
-### Example
-```rust
-let (pb, buffer_receiver) = ProcessorBuilder::new_with_inputless_first_step(
-      first_step.into_runnable_step(),
-  )
-  .connect_to(second_step.into_runnable_step(), channel_size)
-  .connect_to(third_step.into_runnable_step(), channel_size)
-  .end_and_return_output_receiver(channel_size);
-```
-
 ## Common steps
 
 The SDK provides several common steps that you can use in your processor. 
