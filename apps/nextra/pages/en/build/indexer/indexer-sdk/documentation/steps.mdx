@@ -5,7 +5,9 @@ title: "Creating a Step"
 # Creating a Step
 
 ## What is a step?
-A step is a unit of processing logic in the SDK and can be used to define logic for the extraction, transformation, or storing of data. Steps are the building blocks of a processor.
+A step is a unit of processing logic in the SDK and can be used to define logic for the extraction, transformation, or storing of data. 
+Steps are the building blocks of a processor.
+The Aptos core processors represent (1) getting a stream of transactions from [Transaction Stream](../../txn-stream.mdx), (2) extracting the data, (3) writing to a database, and (4) tracking the progress, each as separate steps.  
 
 There are two types of steps in the SDK:
 1. **AsyncStep**: Processes a batch of input items and returns a batch of output items.
