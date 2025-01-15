@@ -16,11 +16,11 @@ async fn save_processor_status(
         last_success_batch: &TransactionContext<()>,
     ) -> Result<(), ProcessorError>;
 ```
-This method is where checkpointing should be written. Examples can be found [here](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/sdk-processor/src/steps/common/processor_status_saver.rs#L23). Note that it is possible to checkpoint progress in different ways by using enums. [This example](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/sdk-processor/src/steps/common/processor_status_saver.rs#L131) inserts into Postgres using a simple [processor_status model](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/db/postgres/models/processor_status.rs). 
+This method is where checkpointing should be written. Examples can be found [here](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/sdk-processor/src/steps/common/processor_status_saver.rs#L23). It is possible to checkpoint progress in different ways by using enums. [This example](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/sdk-processor/src/steps/common/processor_status_saver.rs#L131) inserts into Postgres using a simple [`processor_status` model](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/db/postgres/models/processor_status.rs). 
 
 
 ## Restart Behavior 
-Now that the processor successfully writes to the chosen store for checkpointing, upon restarting it needs to retrieve the latest successful version from that store. Here is an example of a `get_starting_version()` method that returns the latest processed version saved. This `starting_version: u64` can then be used as below. If there is no checkpoint, the processor will start from the beginning of the chain.
+Now that the processor successfully writes to the chosen store for version tracking, upon restarting it needs to retrieve the latest successful version from that store. [Here is an example](https://github.com/aptos-labs/aptos-indexer-processors/blob/29f4e9c2266db11cbec2177c17fc210d4c687d32/rust/sdk-processor/src/utils/starting_version.rs#L26) of a `get_starting_version()` method that returns the latest processed version saved. This `starting_version: u64` can then be used as below. If there is no checkpoint, the processor will start from the beginning of the chain.
 
 ```rust
  let transaction_stream = TransactionStreamStep::new(TransactionStreamConfig {
@@ -32,7 +32,7 @@ Now that the processor successfully writes to the chosen store for checkpointing
 
 
 ## Backfilling
-The `IndexerProcessorConfig`, `ProcessorStatusSaver` and `get_starting_version()` can all be modified to allow for convenient backfills. Without these changes, it is difficult to run a live processor at the latest transaction version as well as a backfill processor. 
+To enable backfilling, `IndexerProcessorConfig`, `ProcessorStatusSaver` and `get_starting_version()` need some updates. Without these changes, it is difficult to run a live processor at the latest transaction version as well as a backfill processor. 
 
 ### Updates to Config
 [Add an additional field](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/sdk-processor/src/config/indexer_processor_config.rs#L44) on your `IndexerProcessorConfig` for a `BackfillConfig` which contains a single field, `backfill_alias`. The introduction of this field will be used to determine whether the processor is a backfill processor or regular one.
@@ -54,7 +54,7 @@ pub struct BackfillConfig {
 ```
 
 ### Backfill Processor Status Table
-To avoid write conflicts with the regular `processor_status` table, introduce a `backfill_processor_status_table` that will use `backfill_alias` as the primary key instead of `processor_name`. Expand on this [implementation](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/sdk-processor/src/db/common/models/backfill_processor_status.rs). This model introduces a new state, `BackfillStatus`, which is either `InProgress` or `Complete` which will determine the backfilling restart behavior as expected.
+To avoid write conflicts with the regular `processor_status` table, introduce a `backfill_processor_status_table` that will use `backfill_alias` as the primary key instead of `processor_name`. Expand on this [implementation](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/sdk-processor/src/db/common/models/backfill_processor_status.rs). This model introduces a new state, `BackfillStatus`, which is either `InProgress` or `Complete` which will determine the backfilling restart behavior.
 
 ### Updates to ProcessorStatusSaver
 Expand your `ProcessorStatusSaverEnum` to include a `Backfill` variant that extracts the `backfill_alias` from the `BackfillConfig`, and the `backfill_start_version` `backfill_end_version` from `IndexerProcessorConfig.transaction_stream_config` [like this](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/sdk-processor/src/steps/common/processor_status_saver.rs#L27). Update the corresponding write query to write to the new `backfill_processor_status` table.
