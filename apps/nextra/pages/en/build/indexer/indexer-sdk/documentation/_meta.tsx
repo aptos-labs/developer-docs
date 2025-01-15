@@ -13,6 +13,6 @@ export default {
     title: "Connecting Steps",
   },
   "version-tracking": {
-    title: "Version Tracking, Restart Behavior, and Backfilling",
+    title: "Version Tracking",
   },
 };
