@@ -408,11 +408,15 @@ class Installer:
         )
 
     def get_version(self):
-        latest_version = self.latest_release_info["tag_name"].split("-v")[-1]
-        self._write(colorize("info", "Latest CLI release: {}".format(latest_version)))
+        if self._version:
+            version_to_install = self._version
+            self._write(colorize("info", "Installing CLI version: {}".format(version_to_install)))
+        else:
+            version_to_install = self.latest_release_info["tag_name"].split("-v")[-1]
+            self._write(colorize("info", "Latest CLI release: {}".format(version_to_install)))
 
         if self._force:
-            return latest_version, None
+            return version_to_install, None
 
         binary_path = self.bin_path
         try:
@@ -433,18 +437,22 @@ class Installer:
             if (
                 Version is not None
                 and current_version
-                and Version(current_version) >= Version(latest_version)
+                and Version(current_version) >= Version(version_to_install)
             ):
                 self._write("")
                 self._write(
-                    f'The latest version ({colorize("b", latest_version)}) is already installed.'
+                    f'The latest version ({colorize("b", current_version)}) is already installed.'
                 )
+                if Version(version_to_install) < Version(current_version):
+                    self._write(
+                        f"The version you are trying to install ({colorize('b', version_to_install)}) is older than the currently installed version ({colorize('b', current_version)}). Use --force to bypass."
+                    )
 
                 return None, current_version
             else:
-                self._write(f"Installing {colorize('b', latest_version)}")
+                self._write(f"Installing {colorize('b', version_to_install)}")
 
-        return latest_version, current_version
+        return version_to_install, current_version
 
     # Given the OS and CPU architecture, determine the "target" to download.
     def get_target(self):
@@ -537,6 +545,10 @@ def main():
         "--bin-dir",
         help="If given, the CLI binary will be downloaded here instead",
     )
+    parser.add_argument(
+        "--cli-version",
+        help="If given, the CLI version to install",
+    )
 
     args = parser.parse_args()
 
@@ -544,6 +556,7 @@ def main():
         force=args.force,
         accept_all=args.accept_all or not is_interactive(),
         bin_dir=args.bin_dir,
+        version=args.cli_version,
     )
 
     try:
