@@ -32,23 +32,26 @@ You also need the following tools:
 
 - Rust 1.79: [Installation Guide](https://www.rust-lang.org/tools/install)
 - Cargo: [Installation Guide](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo)
-- Diesel CLI: [Installation Guide](https://diesel.rs/guides/getting-started.html)
 
-We use PostgreSQL as our database in this tutorial. You’re free to use whatever you want, but this tutorial is geared
+We use PostgreSQL as our database and Diesel as our ORM in this tutorial. You’re free to use whatever you want, but this tutorial is geared
 towards PostgreSQL for the sake of simplicity. We use the following database configuration and tools:
 
+### PostgreSQL Installation
 [PostgreSQL](https://www.postgresql.org/download/)
+1. `brew install libpq` ([this is a postgres C API library](https://formulae.brew.sh/formula/libpq)). Also perform all export commands post-installation
+2. `brew install postgres`
+3. `pg_ctl -D /opt/homebrew/var/postgres start` or `brew services start postgresql`
+4. `/opt/homebrew/bin/createuser -s postgres`
+5. Ensure you're able to do: `psql postgres`
+6. `cargo install diesel_cli --no-default-features --features postgres`
+7. Make sure that you're in the DB folder (run `cd src/db/postgres` from base directory), run `diesel migration run --database-url postgresql://localhost/postgres`
+   a. If for some reason this database is already being used, try a different db. e.g.
+      `DATABASE_URL=postgres://postgres@localhost:5432/indexer_v2 diesel database reset`
 
 - We will use a database hosted on `localhost` on the port `5432`, which should be the default.
 - When you create your username, keep track of it and the password you use for it.
-- You can view a tutorial for installing PostgreSQL and
-  psql [here](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-22-04-quickstart)
-  tool to set up your database more quickly.
 - To easily view your database data, consider using a GUI like [DBeaver](https://dbeaver.io/)
   *recommended*, [pgAdmin](https://www.pgadmin.org/), or [Postico](https://eggerapps.at/postico2/).
-
-Explaining how to create a database is beyond the scope of this tutorial. If you are not sure how to do it, consider
-checking out tutorials on how to create a database with the `psql` tool.
 
 ## Setting up your environment
 
