@@ -454,6 +454,19 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/advanced-tutorials",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/advanced-tutorials",
+        permanent: true,
+      },
+      {
+        source:
+          "/indexer/indexer-sdk/documentation/advanced-tutorials/txn-importer",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/advanced-tutorials/txn-importer",
+        permanent: true,
+      },
+      {
         source: "/indexer/txn-stream/labs-hosted",
         destination: "/en/build/indexer/api/labs-hosted",
         permanent: true,
