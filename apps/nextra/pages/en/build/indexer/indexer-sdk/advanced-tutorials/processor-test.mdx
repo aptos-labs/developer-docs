@@ -1,0 +1,284 @@
+---
+title: "Testing Processor"
+---
+
+import { Callout } from "nextra/components"
+
+
+# Overview
+### What Is a Processor?
+A processor is a core component of the Aptos Indexer that handles blockchain transaction processing. It validates, transforms, and stores transactions into a database, enabling downstream applications like analytics, indexing, and querying. Testing the processor ensures that all transactions are correctly handled, maintaining data accuracy and consistency.
+
+
+### What Are We Testing With This?
+
+- **Transaction correctness**: Ensure that each transaction is processed and stored accurately.
+- **Schema consistency**: Verify that the database schema is correctly set up and maintained throughout the tests.
+
+
+### General Flow of how Processor Testing Works
+
+1. You specify the transactions to test
+2. Testing framework SDK spins up a mock gRPC Service with the transactions you specified to return when the processor requests transactions.
+3. Processor processes the transactions and writes the output to a database.
+4. Optionally, you can generate expected database output for validation.
+
+Type of Scenarios it Supports:
+1. A single transaction
+2. A single batch of multiple transactions
+    Input [A, B, C]
+    1. Processor processes A, B, and C
+3. Sequential multiple transaction batches:
+    Input [A, B, C]
+    1. Processor processes A and B
+    2. Processor processes C
+
+## Prerequisites
+1. Ensure Docker Desktop is running for PostgreSQL container support.
+    - **Docker Desktop Installation**: Install Docker Desktop following [this guide](https://docs.docker.com/desktop/) on your machine.
+    - Start Docker Desktop if it's not running
+2. Identify the transactions to test.
+   - Use imported transactions or write your own custom Move scripts to generate test transactions. Refer to [Importing Transaction Guide](./txn-importer.mdx) and [Generating Transaction using Move Script Guide](./txn-script.mdx) for detailed instructions.
+3. Import aptos-indexer-testing-framework to your Cargo.toml
+
+<Callout> - This tutorial assumes you are using Postgres as the database. </Callout>
+- **Adapting to Other Databases**:
+  - Replace PostgreSQL-specific code with relevant database code you intend to use (e.g., MySQL).
+  - Update schema initialization and query methods.
+- **References to Processor Tests**:
+  - Example: [Event Processor Tests](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/integration-tests/src/sdk_tests/events_processor_tests.rs#L139).
+
+
+## Steps to Write a Test
+
+### 1. Set Up the Test Environment
+Before setting up the test environment, it’s important to understand the configurations being used in this step:
+
+
+**What Are These Configurations?**
+
+`generate_file_flag`
+- If `generate_file_flag` is true, the test will overwrite any saved database outputs from previous test runs. If `generate_file_flag` is false, the test will only compare the the actual database output with the expected database output and log differences.
+
+
+`custom_output_path`
+- An optional configuration to specify a custom path where the expected database output will be stored.
+If not provided, the test will use the default path defined by DEFAULT_OUTPUT_FOLDER.
+
+`DEFAULT_OUTPUT_FOLDER`
+- This constant defines the default folder where the system stores output files for the tests.
+Example: "sdk_expected_db_output_files".
+Modify this value in your configuration if you prefer a different default directory.
+
+
+```rust
+let (generate_file_flag, custom_output_path) = get_test_config();
+let output_path = custom_output_path.unwrap_or_else(|| format!("{}/imported_mainnet_txns", DEFAULT_OUTPUT_FOLDER));
+
+// Setup DB and replace as needed
+let mut db = PostgresTestDatabase::new();
+db.setup().await.unwrap();
+
+let mut test_context = SdkTestContext::new(&[CONST_VARIABLE_OF_YOUR_TEST_TRANSACTION]); // Replace with your test transaction
+if test_context.init_mock_grpc().await.is_err() {
+    panic!("Failed to initialize mock grpc");
+};
+```
+
+**Explanation of Each Component:**
+
+`get_test_config():`
+
+This function fetches the configurations (diff_flag and custom_output_path) for the test.
+Modify or extend this function if you want to support additional custom flags or configurations.
+output_path:
+
+Combines DEFAULT_OUTPUT_FOLDER with the subfolder imported_mainnet_txns if no custom_output_path is specified.
+This ensures all output files are stored in a predictable location.
+
+`PostgresTestDatabase::new():`
+
+Creates a new PostgreSQL database instance for testing.
+This database is isolated, ensuring no interference with production or other test environments.
+
+`SdkTestContext::new():`
+
+Initializes the test context with the transaction(s) you want to test.
+Replace CONST_VARIABLE_OF_YOUR_TEST_TRANSACTION with the appropriate variable or constant representing the transaction(s) to be tested.
+
+`init_mock_grpc():`
+
+Initializes a mock gRPC service for the test.
+This allows the processor to simulate transactions without interacting with live blockchain data.
+
+
+### 2. Configure the Processor
+<Callout>
+ - Each test runs in an isolated environment using a PostgreSQL container to prevent interference.
+</Callout>
+
+```rust
+let db_url = db.get_db_url();
+let transaction_stream_config = test_context.create_transaction_stream_config();
+let postgres_config = PostgresConfig {
+    connection_string: db_url.to_string(),
+    db_pool_size: 100,
+};
+
+let db_config = DbConfig::PostgresConfig(postgres_config);
+let default_processor_config = DefaultProcessorConfig {
+    per_table_chunk_sizes: AHashMap::new(),
+    channel_size: 100,
+    deprecated_tables: HashSet::new(),
+};
+
+let processor_config = ProcessorConfig::DefaultProcessor(default_processor_config);
+let processor_name = processor_config.name();
+```
+
+### 3. Create the Processor
+
+```rust
+let processor = DefaultProcessor::new(indexer_processor_config)
+    .await
+    .expect("Failed to create processor");
+```
+Note: Replace `DefaultProcessor` with the processor you are testing.
+
+### 4. Setup a Query
+
+Set up a query to load data from the local database and compare it with expected results, see [example loading function](https://github.com/aptos-labs/aptos-indexer-processors/blob/a8f9c5915f4e3f1f596ed3412b8eb01feca1aa7b/rust/integration-tests/src/diff_test_helper/default_processor.rs#L45)
+
+
+### 5. Setup a Test Context run function
+Use the test_context.run() function to execute the processor, validate outputs using your query, and optionally generate database output files:
+
+<Callout>
+    Key Considerations:
+ - Each test runs in an isolated environment using a PostgreSQL container to prevent interference.
+ - Proper handling of versions ensures transactions are processed and validated in the correct order.
+ - Validation logic must detect changes or issues by comparing processor output with the expected baseline.
+</Callout>
+
+```rust
+    let txn_versions: Vec<i64> = test_context
+        .get_test_transaction_versions()
+        .into_iter()
+        .map(|v| v as i64)
+        .collect();
+
+    let db_values = test_context
+        .run(
+            &processor,
+            generate_file_flag,
+            output_path.clone(),
+            custom_file_name,
+            move || {
+                let mut conn = PgConnection::establish(&db_url).unwrap_or_else(|e| {
+                    eprintln!("[ERROR] Failed to establish DB connection: {:?}", e);
+                    panic!("Failed to establish DB connection: {:?}", e);
+                });
+
+                let db_values = match load_data(&mut conn, txn_versions.clone()) {
+                    Ok(db_data) => db_data,
+                    Err(e) => {
+                        eprintln!("[ERROR] Failed to load data {}", e);
+                        return Err(e);
+                    },
+                };
+
+                if db_values.is_empty() {
+                    eprintln!("[WARNING] No data found for versions: {:?}", txn_versions);
+                }
+
+                Ok(db_values)
+            },
+        )
+```
+
+
+### 6. Run the Processor Test
+
+Once you have your test ready, run the following command to generate the expected output for validation:
+
+```bash
+cargo test sdk_tests -- generate-output
+```
+
+Arguments:
+generate-output: Set this true if you want to generate or overwrite saved database output, or false if you want to compare database outputs in diff mode.
+output-path: it's an optional argument to specify the output path for the db output.
+
+The expected database output will be saved in the specified output_path or `sdk_expected_db_output_files` by default.
+
+
+---
+
+## FAQ
+
+### What Types of Tests Does It Support?
+
+- The testing framework allows you to write tests that compare the database outputs of processors. It helps you catch changes in database output when you're updating or developing your processor.
+
+### What Is `TestContext`?
+
+`TestContext` is a struct that manages:
+
+- `transaction_batches`: A collection of transaction batches.
+- `postgres_container`: A PostgreSQL container for test isolation.
+
+It initializes and manages the database and transaction context for tests.
+
+#### What Does `TestContext.run` Do?
+
+This function executes the processor, applies validation logic, and optionally generates output files.
+
+#### Key Features:
+
+- Flexible Validation: Accepts a user-provided verification function.
+- Multi-Table Support: Handles data across multiple tables.
+- Retries: Uses exponential backoff and timeout for retries.
+- Optional File Generation: Controlled by a flag.
+
+#### Example Usage:
+
+```rust
+pub async fn run<F>(
+    &mut self,
+    processor: &impl ProcessorTrait,
+    txn_version: u64,
+    generate_files: bool,             // Flag to control file generation
+    output_path: String,              // Output path
+    custom_file_name: Option<String>, // Custom file name
+    verification_f: F,                // Verification function
+) -> anyhow::Result<HashMap<String, Value>>
+where
+```
+
+### How to Generate Expected DB Output?
+
+Run the following command:
+
+```bash
+cargo test sdk_tests -- --nocapture generate-output
+```
+
+Supported Test Args:
+
+1. `generate-output`
+2. `output_path`
+
+---
+
+## Troubleshooting and Tips
+
+1. **Isolate Tests**: Use Docker containers for database isolation.
+2. **Handle Non-Deterministic Fields**: Use helpers like `remove_inserted_at` to clean up timestamps before validation.
+3. **Enable Debugging**: Use `eprintln!` for detailed error logging.
+
+#### How to Debug Test Failures?
+run following command to get detailed logs:
+
+```bash
+cargo test sdk_tests -- --nocapture
+```
