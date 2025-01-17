@@ -1,4 +1,7 @@
 export default {
+  "test-transactions": {
+    title: "Preparing Test Transactions",
+  },
   "txn-importer": {
     title: "Importing Transactions",
   },
