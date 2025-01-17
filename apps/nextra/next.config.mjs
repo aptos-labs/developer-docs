@@ -474,6 +474,13 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source:
+          "/indexer/indexer-sdk/documentation/advanced-tutorials/processor-test",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/advanced-tutorials/processor-test",
+        permanent: true,
+      },
+      {
         source: "/indexer/txn-stream/labs-hosted",
         destination: "/en/build/indexer/api/labs-hosted",
         permanent: true,
