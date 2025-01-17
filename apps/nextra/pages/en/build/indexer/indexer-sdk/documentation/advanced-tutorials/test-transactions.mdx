@@ -1,0 +1,36 @@
+# Aptos Indexer Testing Framework Overview
+
+The Aptos Indexer Testing Framework provides two methods to generate testing transactions: **aptos-indexer-transaction-generator** and **Move Scripts**. Both approaches are suited for specific scenarios based on your development and testing requirements, enabling you to test how your system handles various transaction types.
+
+
+## When to Import transactions
+### 1. Fetching Historical Transactions
+- Retrieve specific historical transactions from the Aptos blockchain (Testnet or Mainnet) for testing or analysis.
+- Ideal for creating mocked transaction inputs for processor tests or regression checks.
+
+### 2. Simulating Real-World Scenarios
+- Validate processor logic or database integrity by replaying transactions from live networks.
+- Simulate conditions that mirror real-world environments to ensure robustness.
+
+
+## When to Use **Move Script** to generate transactions
+### 1. Deploying Custom Logic
+- Write, deploy, and execute custom logic using Move to test your new AIPs (Aptos Improvement Proposals).
+- Ideal for creating smart contracts, defining new modules, or implementing specific on-chain functionalities.
+
+### 2. Prototyping New Features
+- Experiment with new decentralized application (dApp) ideas or test custom on-chain workflows.
+- Perform operations like:
+  - Account creation
+  - Token minting
+  - Custom transactions
+- Define business rules and execute state changes directly on the Aptos blockchain.
+
+## Summary
+
+Aptos-indexer-transaction-generator tool is an essential tool in the Aptos Indexer Testing Framework. Import transactions for replaying and analyzing real-world transactions, while generating transactions with **Move Scripts** is best for testing custom logic and prototyping features. Choose the method that aligns with your testing goals to ensure a comprehensive validation process.
+
+## Next Steps
+For detailed instructions on how to use these methods, refer to the following guides:
+1. [Importing Transactions](./txn-importer)
+2. [Generating Transactions with Move Scripts](./txn-script)
