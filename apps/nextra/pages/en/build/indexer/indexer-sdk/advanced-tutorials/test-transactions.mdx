@@ -1,0 +1,18 @@
+# Aptos Indexer Testing Framework Overview
+
+The Aptos Indexer Testing Framework provides two ways to generate test transactions: **by Importing Transactions from Network** and **By writing a Move Scripts**. Both approaches are suited for specific scenarios based on your development and testing requirements, enabling you to test how your system handles various transaction types.
+
+
+## When to Import transactions
+Imported transactions are primarily used to validate processor logic or database integrity by replaying transactions from live networks.
+
+## When to Use **Move Script** to generate transactions
+Scripted transactions are primarily used to create and test transaction scenarios that are not yet live on the network. In most cases, you should use transaction importing to test your processor logic.
+
+## Summary
+Aptos-indexer-transaction-generator tool is an essential tool in the Aptos Indexer Testing Framework. Import transactions for replaying and analyzing real-world transactions, while generating transactions with **Move Scripts** is best for testing new AIPs that may impact processing logic. Choose the method that aligns with your testing goals to ensure a comprehensive validation process.
+
+## Next Steps
+For detailed instructions on how to use these methods, refer to the following guides:
+1. [Importing Transactions](./txn-importer)
+2. [Generating Transactions with Move Scripts](./txn-script)
