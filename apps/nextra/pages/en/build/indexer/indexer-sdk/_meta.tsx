@@ -5,4 +5,7 @@ export default {
   documentation: {
     title: "Documentation",
   },
+  "advanced-tutorials": {
+    title: "Advanced Tutorials",
+  },
 };
