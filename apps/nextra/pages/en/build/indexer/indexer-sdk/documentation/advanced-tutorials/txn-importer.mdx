@@ -1,0 +1,109 @@
+---
+title: "Aptos Transaction Import"
+---
+
+## Overview
+
+This guide explains how to import Aptos transactions for testing using the `aptos-indexer-transaction-generator` tool. These test transactions can be used to test your custom processors and support their local development. 
+
+## General Flow of Transaction Importing
+
+First, identify the transaction versions you need to fetch from the Aptos network. This tool interacts with the [Transaction Stream](https://aptos.dev/en/build/indexer/txn-stream) to retrieve transaction data in JSON format. The transactions are then consolidated into a Rust file, where each transaction is represented as a constant variable. These constants can be seamlessly used as mocked inputs in processor automated tests. During testing, the processor fetches the specified transactions, processes them, and writes the results to a database. You can then verify the outcomes by loading the written data and validating it against the expected data.
+
+## Prerequisites
+
+1. A valid API key to connect to [Transaction Stream](https://aptos.dev/en/build/indexer/txn-stream/aptos-hosted-txn-stream)
+2. Clone the [aptos-core](https://github.com/aptos-labs/aptos-core) repository:
+    - Navigate to the `aptos-core/ecosystem/indexer-grpc/indexer-transaction-generator` directory.
+
+## How to Import Test Transactions
+
+### 1. Specify Versions to Import
+
+Locate and make a copy of the file:
+
+```bash
+ecosystem/indexer-grpc/indexer-transaction-generator/imported_transactions/imported_transactions.yaml
+```
+
+In this file, specify the versions to import from Devnet|Testnet|Mainnet by configuring the appropriate endpoint, API key, and mapping version numbers to descriptive output names. An example configuration is shown below:
+
+```yaml
+testnet:
+  transaction_stream_endpoint: https://grpc.testnet.aptoslabs.com:443
+  api_key: TESTNET_API_KEY  # <--- Replace this with your API key to generate files locally
+  versions_to_import:
+    # Replace these with the versions you want to import
+    1: 1_genesis
+    2: 2_new_block_event
+    3: 3_empty_txn
+    278556781: 278556781_v1_coin_register_fa_metadata
+    1255836496: 1255836496_v2_fa_metadata
+    5979639459: 5979639459_coin_register
+    5992795934: 5992795934_fa_activities
+    5523474016: 5523474016_validator_txn
+
+mainnet:
+  transaction_stream_endpoint: https://grpc.mainnet.aptoslabs.com:443
+  api_key: MAINNET_API_KEY
+  versions_to_import:
+    308783012: 308783012_fa_transfer
+```
+
+### 2. Run the Command to Import Transactions
+
+Navigate to the `indexer-transaction-generator` directory:
+
+```bash
+cd aptos-core/ecosystem/indexer-grpc/indexer-transaction-generator
+```
+
+To import the specified transaction versions, execute the following command:
+
+```bash
+cargo run -- --testing-folder  /path/to/your/imported_transactions.yaml --output-folder /path/to/your/processor-repo/src
+```
+
+This command will:
+
+1. Read the configuration from the `imported_transactions.yaml` file located in the folder specified by the --testing-folder flag.
+2. Fetch the specified transaction versions from the selected network (Devnet, Testnet or Mainnet).
+3. Store the resulting JSON files in the specified output folder (/path/to/your/processor-repo/src/json_transactions).
+4. Generate a Rust file (`generated_transactions.rs`) that converts the generated transaction JSON files into constant variables for use in tests.
+
+Note: Replace /path/to/your/processor-repo with the path to your processor repository or preferred storage location.
+
+**Explanation of Command Flags**
+1. `--testing-folder`
+What is the --testing-folder flag?
+The --testing-folder flag specifies the directory containing the imported_transactions.yaml configuration file. The tool uses this folder to read versions you wish to import.
+ - Ensure the folder path matches the location of your imported_transactions.yaml file.
+ - By default, this guide assumes the configuration is stored in ./imported_transactions. Adjust the flag value if you place the file elsewhere.
+
+2. `--output-folder`
+Specifies the destination directory where the generated transaction JSON files and Rust constants will be saved.
+ - Replace /path/to/your/processor-repo with your processor repository src directory or desired storage location.
+ - Ensure this folder is part of your version control setup if these files need to be shared.
+
+## How to Use the Testing Transactions
+
+### Export the Generated File
+
+Update the `mod.rs` file to include the generated Rust file containing the transaction constants. If `mod.rs` doesn’t exist, create one in the target folder:
+
+[Reference mod.rs](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/test-transactions-example/src/json_transactions/mod.rs).
+
+### Export the `json_transactions` Folder
+
+Since the `generated_transactions.rs` reles on the `json_transactions` Ensure the `json_transactions` folder is properly exported in the library file for your tests have direct access to the transaction data.
+
+[Reference lib.rs](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/test-transactions-example/src/lib.rs).
+
+### Integrate into Test Cases
+
+Use the exported transaction constants directly in your test cases to simulate real transactions and validate processing logic.
+
+[Example Crate](https://github.com/aptos-labs/aptos-indexer-processor-example/tree/main/test-transactions-example).
+
+## Next Steps
+Once the transaction constants are integrated, you can use them in processor tests to validate functionality. For detailed instructions on writing processor tests, refer to Writing Processor Tests.
