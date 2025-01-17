@@ -467,6 +467,13 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source:
+          "/indexer/indexer-sdk/documentation/advanced-tutorials/txn-script",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/advanced-tutorials/txn-script",
+        permanent: true,
+      },
+      {
         source: "/indexer/txn-stream/labs-hosted",
         destination: "/en/build/indexer/api/labs-hosted",
         permanent: true,

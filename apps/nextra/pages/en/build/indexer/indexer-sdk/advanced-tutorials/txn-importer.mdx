@@ -1,5 +1,5 @@
 ---
-title: "Aptos Transaction Import"
+title: "Importing Transactions"
 ---
 
 ## Overview
@@ -61,7 +61,7 @@ cd aptos-core/ecosystem/indexer-grpc/indexer-transaction-generator
 To import the specified transaction versions, execute the following command:
 
 ```bash
-cargo run -- --testing-folder  /path/to/your/imported_transactions.yaml --output-folder /path/to/your/processor-repo/src
+cargo run -- --testing-folder  /path/to/your/imported_transactions.yaml --output-folder /path/to/your/processor-repo/src --mode=import --network=testnet
 ```
 
 This command will:
@@ -84,6 +84,20 @@ The --testing-folder flag specifies the directory containing the imported_transa
 Specifies the destination directory where the generated transaction JSON files and Rust constants will be saved.
  - Replace /path/to/your/processor-repo with your processor repository src directory or desired storage location.
  - Ensure this folder is part of your version control setup if these files need to be shared.
+
+3. `--mode`
+Specifies that the transaction generator should operate in script mode, meaning it will execute Move scripts and generate corresponding transaction data. By default, the mode is set to import, which fetches transactions from the network.
+or Use Import Mode to fetch transactions from the network. By default, the mode is set to import.
+
+Options available:
+- import
+- script
+
+4. `--network`
+Specifies the network to fetch transactions from. Options available:
+- devnet
+- testnet
+- mainnet
 
 ## How to Use the Testing Transactions
 
