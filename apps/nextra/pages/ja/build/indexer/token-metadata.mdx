@@ -1,0 +1,59 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# Get Token Metadata by Name
+
+`GetTokensDataByName` retrieves metadata URIs for tokens by their names within a specified collection. This query is particularly useful for marketplaces to show metadata from tokens within a collection.
+
+<Callout type="info">
+Explore the capabilities of this query! Modify the variables below to tailor the query to your needs.
+</Callout>
+
+<GraphQLEditor
+  query={`query GetTokensDataByName($token_name: String, $collectionId: String) {
+  current_token_datas_v2(
+    where: {token_name: {_eq: $token_name}, collection_id: {_eq: $collectionId}}
+  ) {
+    token_uri
+    __typename
+  }
+}`}
+  variables={`{
+  "token_name": "The Mexican",
+  "collectionId": "0xe6a7399d10406b993e25d8a3bf24842413ba8f1a08444dbfa5f1c31b09f0d16e"
+}`}
+/>
+
+#### Variables:
+- `$token_name`: **String** - The name of the token to search within the collection. Example: `"The Mexican"`.
+- `$collectionId`: **String** - The collection id calculated based on collection name and creator address. Example: `"0xe6a7399d10406b993e25d8a3bf24842413ba8f1a08444dbfa5f1c31b09f0d16e"`.
+
+
+### Note
+
+To get the collection id, you can use the python code snippet to get:
+
+```python
+import hashlib
+
+def standardized_address(creator_address: str) -> str:
+    # Strip the '0x' prefix if it exists and format the address to be 64 characters long
+    handle = creator_address.removeprefix("0x") if creator_address.startswith("0x") else creator_address
+    return f"0x{handle:0>64}"
+
+def sha256_hex(creator_address: str, collection_name: str) -> str:
+    # Process the creator address
+    processed_address = standardized_address(creator_address)
+    
+    # Combine processed creator address and collection name
+    combined_string = f"{creator_address}::{collection_name}"
+    # Compute SHA256 hash and return as a hexadecimal string
+    return standardized_address(hashlib.sha256(combined_string.encode()).hexdigest())
+
+# Example usage
+creator_address = "0xc0e3fbf8ae61056d66ce624d71ccf1888f879355cc4e364ef117249b5e3160a8"
+collection_name = "Aptomingos"
+# Collection Id is `0xe6a7399d10406b993e25d8a3bf24842413ba8f1a08444dbfa5f1c31b09f0d16e`
+print(sha256_hex(creator_address, collection_name))
+
+```

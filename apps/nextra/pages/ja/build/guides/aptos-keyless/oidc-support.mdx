@@ -1,0 +1,112 @@
+---
+title: "キーレスOIDCサポート"
+---
+
+import { Callout, Steps } from "nextra/components";
+
+# OIDCプロバイダーの設定
+
+Aptos Keylessは、以下のIdPとIAMプロバイダーを当社のネットワークでサポートしています。追加のIdPのサポートは今後追加予定です。特定のユースケースのカバレッジが必要な場合は、お問い合わせください。
+
+| アイデンティティプロバイダー | フェデレーテッドのみ | Devnet    | Testnet  | Mainnet  |
+|-------------------|----------------|-----------|----------|----------|
+| Google            | いいえ          | 利用可能    | 利用可能   | 利用可能   |
+| Apple             | いいえ          | 利用可能    | 利用可能   | 利用可能   |
+| Auth0             | はい           | 利用可能    | 利用可能   | 利用可能   |
+| Cognito           | はい           | 利用可能    | 利用可能   | 利用可能   |
+| Firebase          | はい           | レビュー中  | -        | -        |
+| Microsoft         | いいえ          | レビュー中  | -        | -        |
+| Github            | いいえ          | レビュー中  | -        | -        |
+| Facebook          | いいえ          | レビュー中  | -        | -        |
+
+アイデンティティプロバイダーが「フェデレーテッドのみ」とマークされている場合は、[フェデレーテッドキーレス](../aptos-keyless/federated-keyless.mdx)の手順に従う必要があります。
+
+dAppにAptos Keylessを統合するには、利用可能なアイデンティティプロバイダーの少なくとも1つにdAppをOIDC登録プロセスを通じて登録する必要があります。それぞれの登録プロセスでは、アプリケーションにClient IDが割り当てられ、これがKeylessアーキテクチャでのアプリケーションの識別子として機能します。
+
+## GoogleでのdAppの登録
+
+<Steps>
+
+### ステップ1：Google Developer Consoleにサインイン
+
+1. [Google Cloud Console](https://console.cloud.google.com/)に移動します。
+2. Googleアカウントの認証情報でサインインします。
+
+### ステップ2：新しいプロジェクトの作成
+
+1. 既存のプロジェクトがない場合は、ページ上部の「プロジェクトを選択」ドロップダウンメニューをクリックし、「新しいプロジェクト」を選択します。
+2. プロジェクト名を入力し、「作成」をクリックします。詳細な手順は[こちら](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project)をご覧ください。
+
+### ステップ3：同意画面の設定
+
+1. 左サイドバーで「APIとサービス」>「OAuth同意画面」に移動します。
+2. ユーザータイプとして「外部」を選択し、「作成」をクリックします。
+3. アプリケーション名、ユーザーサポートメール、開発者連絡先情報など、必要な詳細を入力します。
+4. オプションで、アプリケーションのロゴやプライバシーポリシーURLなどの追加情報を入力します。
+5. 「保存して続行」をクリックします。詳細な手順は[こちら](https://developers.google.com/workspace/guides/create-credentials#configure_the_oauth_consent_screen)をご覧ください。
+
+### ステップ4：アプリケーションの登録
+
+1. 左サイドバーで「APIとサービス」>「認証情報」に移動します。
+   ![Google認証情報ナビゲーションのスクリーンショット](/docs/aptos-keyless/google-credentials-nav.png "Google認証情報ナビゲーションのスクリーンショット")
+
+2. 「認証情報を作成」をクリックし、「OAuthクライアントID」を選択します。
+   ![Google認証情報作成のスクリーンショット](/docs/aptos-keyless/google-create-credentials.png "Google認証情報作成のスクリーンショット")
+
+3. アプリケーションの種類（Webアプリケーション、デスクトップアプリ、モバイルアプリなど）を選択します。
+4. アプリケーション名や承認済みリダイレクトURIなどの必要な詳細を入力します。OIDCの場合、リダイレクトURIは https://your-app-domain.com/auth/google/callback の形式に従う必要があります。
+5. 「作成」をクリックします。
+
+### ステップ5：クライアントIDとクライアントシークレットの取得
+
+1. OAuthクライアントIDを作成すると、GoogleはクライアントIDとクライアントシークレットを提供します。これらの認証情報はアプリケーションの認証に不可欠です。
+2. クライアントIDとクライアントシークレットを安全に記録します。これらを公開しないでください。
+
+### ステップ6：アプリケーションでのOIDC統合の設定
+
+1. 適切なOIDCライブラリやフレームワーク（Node.jsのPassport.js、JavaのSpring Security、または様々なプラットフォーム用のAuth0など）を使用して、アプリケーションにOIDC認証を統合します。
+2. Googleから取得したクライアントIDとクライアントシークレットを使用して、アプリケーション設定でOIDC認証を設定します。
+3. Googleからの認証レスポンスを処理するための適切なコールバックURL（https://your-app-domain.com/auth/google/callback）を設定します。
+
+</Steps>
+
+## AppleでのdAppの登録
+
+<Steps>
+
+### ステップ1：Apple Developer Accountにサインイン
+
+1. [Apple Developerウェブサイト](https://developer.apple.com/)に移動します。
+2. Apple IDでサインインします。
+3. まだの場合は、Apple Developer Programに登録します。
+   ![Apple開発者プログラム登録のスクリーンショット](/docs/aptos-keyless/apple-dev-program.png "Apple開発者プログラム登録のスクリーンショット")
+
+### ステップ2：新しいApp IDの作成
+
+1. 「証明書、識別子＆プロファイル」セクションに移動します。
+2. サイドバーで「識別子」をクリックします。
+3. 「+」ボタンをクリックして新しいApp IDを作成します。
+4. アプリの名前やバンドルIDなど、アプリの詳細を入力します。
+5. 「機能」セクションで「Sign in with Apple」を有効にします。
+6. 「続行」をクリックし、「登録」をクリックしてApp IDを作成します。
+
+### ステップ3：秘密鍵の生成
+
+1. 「証明書、識別子＆プロファイル」ページの「キー」セクションで、「+」ボタンをクリックして新しいキーを作成します。
+2. キーの名前を入力し、「Sign in with Apple」機能を有効にして、「続行」をクリックします。
+3. 生成された秘密鍵をダウンロードし、安全に保管します。このキーはAppleのOIDCサービスでのアプリの認証に使用されます。
+
+### ステップ4：リダイレクトURIの設定
+
+1. 「App ID」セクションで、新しく作成したApp IDを見つけてクリックします。
+2. 「Sign in with Apple」セクションまでスクロールし、「編集」をクリックします。
+3. 認証後のコールバック用にアプリケーションが使用するリダイレクトURIを追加します。形式は https://your-app-domain.com/auth/apple/callback である必要があります。
+4. 「保存」をクリックして設定を更新します。
+
+### ステップ5：OIDCの統合設定
+
+1. AppleのOIDCサービスと互換性のあるOIDCライブラリやフレームワーク（Node.jsのPassport.js、JavaのSpring Securityなど）を使用します。
+2. 登録プロセス中にAppleから取得したクライアントIDと秘密鍵を使用して、アプリケーションを設定します。
+3. Appleからの認証レスポンスを処理するための適切なコールバックURL（https://your-app-domain.com/auth/apple/callback）を設定します。
+
+</Steps>

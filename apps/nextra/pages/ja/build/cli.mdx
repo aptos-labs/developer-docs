@@ -1,0 +1,85 @@
+---
+title: "CLI"
+---
+
+import { Card, Cards } from '@components/index'
+
+# CLI
+
+Aptosコマンドラインインターフェース（CLI）は、Moveコントラクトのコンパイルとテストを支援するツールです。また、Aptosの機能をチェーン上で素早く試すのにも役立ちます。
+
+上級ユーザーの場合、CLIはプライベートAptosネットワークの実行（コードをローカルでテストするのに役立ちます）にも使用でき、ネットワークノードの管理にも役立ちます。
+
+## 📥 Aptos CLIのインストール
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./cli/install-cli/install-cli-mac" className="flex flex-row gap-4">
+    <Card.Image className="object-contain dark:invert" src="/docs/apple.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Mac</Card.Title>
+      <Card.Description>
+         homebrewでAptos CLIをインストール 
+         ```sh
+         brew install aptos
+         ```
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./cli/install-cli/install-cli-windows" className="flex flex-row gap-4">
+    <Card.Image src="/docs/windows.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Windows</Card.Title>
+      <Card.Description>
+         Pythonスクリプトまたはプリコンパイル済みバイナリでWindowsにAptos CLIをインストール
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./cli/install-cli/install-cli-linux" className="flex flex-row gap-4">
+    <Card.Image className="object-contain" src="/docs/linux.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Linux</Card.Title>
+      <Card.Description>
+         Pythonスクリプトまたはプリコンパイル済みバイナリでLinuxにAptos CLIをインストール
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./cli/install-cli/install-cli-specific-version" className="flex flex-row gap-4">
+    <Card.Image className="dark:invert" src="/docs/advanced.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>上級者向け（特定バージョンのインストール）</Card.Title>
+      <Card.Description>
+         ソースから特定バージョンのAptos CLIをビルド
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>
+
+## ⚙️ Aptos CLIのセットアップ
+
+<Cards>
+  <Card href="./cli/setup-cli">
+    <Card.Title>CLIのセットアップ</Card.Title>
+    <Card.Description>Aptos CLIのセットアップと設定 </Card.Description>
+  </Card>
+  <Card href="./cli/setup-cli/install-move-prover">
+    <Card.Title>上級者向け（Move Prover）</Card.Title>
+    <Card.Description>Move Proverのセットアップとインストール</Card.Description>
+  </Card>
+</Cards>
+
+## 🛠️ Aptos CLIの使用
+
+<Cards>
+  <Card href="./cli/working-with-move-contracts">
+    <Card.Title>Moveコントラクト</Card.Title>
+    <Card.Description>Moveコントラクトのコンパイル、公開、シミュレーション、ベンチマーク </Card.Description>
+  </Card>
+  <Card href="./cli/trying-things-on-chain">
+    <Card.Title>チェーン上での試行</Card.Title>
+    <Card.Description>Aptosとの対話、アカウントの作成、アカウントの照会、Ledgerなどのハードウェアデバイスの使用</Card.Description>
+  </Card>
+  <Card href="./cli/running-a-local-network">
+    <Card.Title>ローカルネットワークの実行</Card.Title>
+    <Card.Description>ローカルノード/ネットワークの実行</Card.Description>
+  </Card>
+</Cards>

@@ -1,0 +1,92 @@
+---
+title: "Go SDK - アカウントの作成と管理"
+---
+
+# アカウントの作成と管理
+
+Go SDKを使用してアカウント認証情報を生成するには、以下のような複数の方法があります：
+- `aptos.NewEd25519Account()`
+- `aptos.NewSecp256k1Account()`
+- `aptos.NewEd25519SingleSenderAccount()`
+- `aptos.NewAccountFromSigner()`
+
+`Account.NewEd25519Account()`は新しいアカウントのキーを作成する最も一般的な方法です。
+デフォルトで`ED25519`キータイプを使用しますが、以下のように使用する署名方式を指定することもできます：
+
+```go
+// Ed25519アカウントを生成する場合
+account1 := aptos.NewEd25519Account()
+
+// secp256k1アカウントを生成する場合
+account2 := aptos.NewSecp256k1Account()
+```
+
+認証情報を生成したら、ネットワークがそのアカウントを認識するために**必ず**資金を提供する必要があります。
+
+devnet環境では、以下のコマンドでフォーセットを使用して資金を提供できます：
+
+```go filename="fund.go"
+client, err = aptos.NewClient(aptos.DevnetConfig)
+if err != nil {
+  panic("Failed to create client:" + err.Error())
+}
+
+// アカウントに1 Devnet APTを提供
+client.Fund(account1.Address, 100_000_000)
+```
+
+testnetでは、[ミントページ](/network/faucet)でミントできます。
+
+## アカウントを表現する他の方法
+秘密鍵や同等の表現がある場合、それを使用してGo SDKを使用する際に認証情報を管理するための`Account`構造体を作成できます。
+
+以下に、特定のエンコーディング方式でそれを行う方法の例を示します。
+
+### 秘密鍵からアカウントを生成
+
+SDKは`NewAccountFromSigner()`メソッドを使用して秘密鍵からアカウントを生成することをサポートしています。
+さらに、このメソッドは秘密鍵とアカウントアドレスからアカウントを生成することもサポートしています。
+このメソッドはローカルでの計算を使用するため、認証キーが回転していない`Account`を生成するために使用されます。
+
+```go
+// Ed25519キー方式でアカウントを生成する場合
+privateKey := &aptos.Ed25519PrivateKey{}
+err := privateKey.FromHex(privateKeyHex)
+if err != nil {
+  panic("Failed to parse private key:" + err.Error())
+}
+account := aptos.NewAccountFromSigner(privateKey)
+
+// シングルセンダーEd25519キー方式でアカウントを生成する場合
+privateKey := &aptos.Ed25519PrivateKey{}
+err := privateKey.FromHex(privateKeyHex)
+if err != nil {
+  panic("Failed to parse private key:" + err.Error())
+}
+singleSigner := &crypto.SingleSigner{Signer: privateKey}
+account := aptos.NewAccountFromSigner(singleSigner)
+
+// シングルセンダーSecp256k1キー方式でアカウントを生成する場合
+privateKey := &aptos.Secp256k1PrivateKey{}
+err := privateKey.FromHex(privateKeyHex)
+if err != nil {
+  panic("Failed to parse private key:" + err.Error())
+}
+singleSigner := &crypto.SingleSigner{Signer: privateKey}
+account := aptos.NewAccountFromSigner(singleSigner)
+
+// 秘密鍵とアカウントアドレスからアカウントを生成する場合
+address := &aptos.AccountAddress{}
+err := address.ParseStringRelaxed(addressHex)
+if err != nil {
+  panic("Failed to parse address:" + err.Error())
+}
+privateKey := &aptos.Ed25519PrivateKey{}
+err := privateKey.FromHex(privateKeyHex)
+if err != nil {
+  panic("Failed to parse private key:" + err.Error())
+}
+account := aptos.NewAccountFromSigner(privateKey, address.AuthKey())
+```
+
+{/* TODO: 派生パスがサポートされたら ### 派生パスからアカウントを生成 */}

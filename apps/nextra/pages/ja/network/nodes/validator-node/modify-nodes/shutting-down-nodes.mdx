@@ -1,0 +1,76 @@
+---
+title: "Shutdown Nodes"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Shutdown Nodes
+
+If you want to shut down your validator and validator fullnode (VFN), follow the instructions below to leave the
+validator set and clean up the resources used by the nodes.
+
+<Callout type="warning">
+**LEAVE THE VALIDATOR SET FIRST**<br />
+It is important to leave the validator set before shutting down your nodes. Otherwise, you will reduce stake
+participation in the network and risk degrading network health.
+</Callout>
+
+## Leave the validator set
+
+Before shutting down your nodes, you must leave the validator set. This will ensure that your node is no longer
+responsible for participating in consensus. Validator nodes can leave the validator set at any time. This also
+happens automatically when there is insufficient stake in the validator account.
+
+When you leave the validator set, your node will be marked as "inactive" in the next epoch. To leave the validator set,
+run the following command using the Aptos CLI. You will need to set the `profile` and `owner-address` flags.
+
+```bash filename="Terminal"
+aptos node leave-validator-set --profile <operator-profile> --pool-address <owner-address>
+```
+
+<Callout type="warning">
+**WAITING FOR EPOCH CHANGES**<br />
+If you leave the validator set, it will only take effect at the beginning of the next epoch. You will
+need to wait for the next epoch to start before shutting down your nodes. Similarly, if you leave
+the validator set and then rejoin in the same epoch, the rejoin will fail. You should wait for the
+next epoch to start before rejoining the validator set.
+</Callout>
+
+## Shutdown methods
+
+Once you have successfully left the validator set, you can shut down your nodes. The method for shutting down your
+nodes depends on how you deployed them. Choose the appropriate section below to shut down your nodes.
+
+## Using Source Code
+
+1. Stop your node by killing the `aptos-node` process. This is sufficient to shut down your node.
+2. (Optional) If you wish to free up space, remove the data directory, e.g., `rm -r <your-data-directory>`.
+3. (Optional) If you wish to reuse your node identity, you should keep the configuration files:
+   - `public-keys.yaml`
+   - `private-keys.yaml`
+   - `validator-identity.yaml`
+   - `validator-full-node-identity.yaml`
+
+## Using Docker
+
+1. Stop your node and remove the data volumes by running the command: `docker compose down --volumes`.
+   This is sufficient to shut down your node.
+2. (Optional) If you wish to reuse your node identity, you should keep the configuration files:
+   - `public-keys.yaml`
+   - `private-keys.yaml`
+   - `validator-identity.yaml`
+   - `validator-full-node-identity.yaml`
+
+## Using Terraform
+
+<Callout type="info">
+Terraform is commonly used to setup nodes on cloud providers like AWS, Azure, and GCP.
+</Callout>
+
+1. Stop your node and delete all the resources by running the command: `terraform destroy`. This
+   is sufficient to shut down your node.
+2. (Optional) If you wish to reuse your node identity, you should keep the configuration files:
+   - `public-keys.yaml`
+   - `private-keys.yaml`
+   - `validator-identity.yaml`
+   - `validator-full-node-identity.yaml`

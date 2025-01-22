@@ -1,0 +1,199 @@
+# アボートとアサート
+
+[`return`](functions.mdx)と`abort`は実行を終了させる2つの制御フロー構文です。1つは現在の関数の実行を終了させ、もう1つはトランザクション全体を終了させます。
+
+[`return`についての詳細はリンク先のセクション](functions.mdx)を参照してください。
+
+## `abort`
+
+`abort`は**アボートコード**として`u64`型の値を1つ引数に取る式です。例：
+
+```move
+abort 42
+```
+
+`abort`式は現在の関数の実行を停止し、現在のトランザクションによってグローバル状態に加えられたすべての変更を元に戻します。`abort`を「キャッチ」したり処理したりするメカニズムはありません。
+
+幸いなことに、Moveではトランザクションはすべて原子的です。つまり、グローバルストレージへの変更はトランザクションが成功した場合にのみ一度に行われます。このトランザクション的なコミットのため、アボート後に変更を元に戻す心配をする必要はありません。このアプローチは柔軟性に欠けますが、非常にシンプルで予測可能です。
+
+[`return`](functions.mdx)と同様に、`abort`は何らかの条件が満たされない場合に制御フローを終了させるのに便利です。
+
+この例では、関数はベクターから2つの要素をポップしますが、ベクターに2つの要素がない場合は早期にアボートします：
+
+```move
+script {
+  use std::vector;
+  fun pop_twice<T>(v: &mut vector<T>): (T, T) {
+      if (vector::length(v) < 2) abort 42;
+
+      (vector::pop_back(v), vector::pop_back(v))
+  }
+}
+```
+
+これは制御フロー構文の深い部分でさらに便利です。例えば、この関数はベクター内のすべての数値が指定された`bound`未満であることを確認し、そうでない場合はアボートします：
+
+```move
+script {
+  use std::vector;
+  fun check_vec(v: &vector<u64>, bound: u64) {
+      let i = 0;
+      let n = vector::length(v);
+      while (i < n) {
+          let cur = *vector::borrow(v, i);
+          if (cur > bound) abort 42;
+          i = i + 1;
+      }
+  }
+}
+```
+
+### `assert`
+
+`assert`はMoveコンパイラによって提供されるビルトインのマクロのような操作です。`bool`型の条件と`u64`型のコードの2つの引数を取ります：
+
+```move
+assert!(condition: bool, code: u64)
+assert!(condition: bool) // Move 2.0以降
+```
+
+この操作はマクロであるため、`!`を付けて呼び出す必要があります。これは`assert`への引数が式による呼び出しであることを示します。言い換えると、`assert`は通常の関数ではなく、バイトコードレベルでは存在しません。コンパイラ内で以下のように置き換えられます：
+
+```move
+if (condition) () else abort code
+```
+
+Move 2.0以降、エラーコードのない`assert`がサポートされています。この形式のアサートを使用すると、アボートコード`0xCA26CBD9BE0B0000`が生成されます。`std::error`の規約では、このコードはカテゴリ`std::error::INTERNAL`、理由`0`を持ちます。
+
+`assert`は単独の`abort`よりも一般的に使用されます。上記の`abort`の例は`assert`を使用して書き直すことができます：
+
+```move
+script {
+  use std::vector;
+  fun pop_twice<T>(v: &mut vector<T>): (T, T) {
+      assert!(vector::length(v) >= 2, 42); // assertを使用
+
+      (vector::pop_back(v), vector::pop_back(v))
+  }
+}
+```
+
+そして：
+
+```move
+script {
+  use std::vector;
+  fun check_vec(v: &vector<u64>, bound: u64) {
+      let i = 0;
+      let n = vector::length(v);
+      while (i < n) {
+          let cur = *vector::borrow(v, i);
+          assert!(cur <= bound, 42); // assertを使用
+          i = i + 1;
+      }
+  }
+}
+```
+
+この操作は`if-else`に置き換えられるため、`code`の引数は常に評価されるわけではないことに注意してください。例えば：
+
+```move
+assert!(true, 1 / 0)
+```
+
+は算術エラーを引き起こしません。これは以下と同等です：
+
+```move
+if (true) () else (1 / 0)
+```
+
+したがって、算術式は決して評価されません！
+
+### Move VMでのアボートコード
+
+`abort`を使用する際は、VMがどのように`u64`コードを使用するかを理解することが重要です。
+
+通常、正常に実行された後、Move VMはグローバルストレージに加えられた変更（リソースの追加/削除、既存のリソースの更新など）のチェンジセットを生成します。
+
+`abort`に到達すると、VMは代わりにエラーを示します。そのエラーには2つの情報が含まれます：
+
+- アボートを生成したモジュール（アドレスと名前）
+- アボートコード
+
+例えば：
+
+```move
+module 0x42::example {
+  public fun aborts() {
+    abort 42
+  }
+}
+
+script {
+  fun always_aborts() {
+    0x2::example::aborts()
+  }
+}
+```
+
+スクリプト`always_aborts`のように`0x2::example::aborts`を呼び出すトランザクションの場合、VMはモジュル`0x2::example`とコード`42`を示すエラーを生成します。
+
+これは、モジュール内で複数のアボートをグループ化するのに便利です。
+
+この例では、モジュールは複数の関数で使用される2つの異なるエラーコードを持っています：
+
+```move
+module 0x42::example {
+
+  use std::vector;
+
+  const EMPTY_VECTOR: u64 = 0;
+  const INDEX_OUT_OF_BOUNDS: u64 = 1;
+
+  // i をj に、j をk に、k をi に移動
+  public fun rotate_three<T>(v: &mut vector<T>, i: u64, j: u64, k: u64) {
+    let n = vector::length(v);
+    assert!(n > 0, EMPTY_VECTOR);
+    assert!(i < n, INDEX_OUT_OF_BOUNDS);
+    assert!(j < n, INDEX_OUT_OF_BOUNDS);
+    assert!(k < n, INDEX_OUT_OF_BOUNDS);
+
+    vector::swap(v, i, k);
+    vector::swap(v, j, k);
+  }
+
+  public fun remove_twice<T>(v: &mut vector<T>, i: u64, j: u64): (T, T) {
+    let n = vector::length(v);
+    assert!(n > 0, EMPTY_VECTOR);
+    assert!(i < n, INDEX_OUT_OF_BOUNDS);
+    assert!(j < n, INDEX_OUT_OF_BOUNDS);
+    assert!(i > j, INDEX_OUT_OF_BOUNDS);
+
+    (vector::remove<T>(v, i), vector::remove<T>(v, j))
+  }
+}
+```
+
+## `abort`の型
+
+`abort i`式は任意の型を持つことができます！これは、両方の構文が通常の制御フローから離脱するため、その型の値を評価する必要がないためです。
+
+以下は有用ではありませんが、型チェックは通過します：
+
+```move
+let y: address = abort 0;
+```
+
+この動作は、一部の分岐でのみ値を生成する分岐命令がある場合に役立ちます。例えば：
+
+```move
+script {
+  fun example() {
+    let b =
+        if (x == 0) false
+        else if (x == 1) true
+        else abort 42;
+    //       ^^^^^^^^ `abort 42`は`bool`型を持つ
+  }
+}
+```

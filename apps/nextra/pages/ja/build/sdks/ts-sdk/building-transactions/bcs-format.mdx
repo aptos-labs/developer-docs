@@ -1,0 +1,28 @@
+---
+title: "BCSフォーマット"
+---
+
+# バイナリ正規シリアライゼーション（BCS）フォーマット
+
+Aptos SDKには、トランザクションパラメータに対して2つのフォーマットが用意されています：
+
+1. **シンプル** - 文字列や整数などのプリミティブ型を使用してトランザクションパラメータを表現します。
+2. **バイナリ正規シリアライゼーション（BCS）** - これはAptosチェーンが認識するフォーマットで、特定の型を使用します（例：整数の代わりに`U64`や`U128`を使用）。
+
+通常、TypeScript SDKはネットワークと通信する際に、関数パラメータのシンプルな型を自動的にBCSに変換します。ただし、一部のコントラクトでは、複雑な型を指定するためにBCSを直接使用する必要があります。
+
+BCSを直接使用すると、SDKがTypeScriptのプリミティブパラメータフォーマットをBCSフォーマットに変換するためのAPI呼び出しをスキップできるため、若干のパフォーマンス上の利点があります。
+
+以下のように、引数の型を明示的に指定することで、BCSフォーマットを直接使用してトランザクションを構築できます：
+
+```ts filename="example.ts"
+const transaction = await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      function: "0x1::aptos_account::transfer",
+      functionArguments: [AccountAddress.fromString("0x123"), new U64(1_000_000)],
+    },
+  });
+```
+
+BCSについて詳しく知りたい場合は、[BCS GitHubリポジトリ](https://github.com/aptos-labs/bcs)をご覧ください。

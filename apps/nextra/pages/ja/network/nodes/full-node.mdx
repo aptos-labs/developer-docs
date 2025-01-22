@@ -1,0 +1,21 @@
+---
+title: "Run a Public Fullnode"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Run a Public Fullnode
+
+You can run your own public fullnode (PFN) to synchronize the state of the Aptos blockchain and stay
+up-to-date. PFNs replicate the entire state of the blockchain by syncing from other Aptos VFNs and PFNs. PFNs
+can be run by anyone. This section explains how to deploy a PFN and connect to an Aptos network. You can learn
+more about the different types of nodes in the [Blockchain Deep Dive](../blockchain.mdx) section.
+
+<Callout type="info">
+**Default connection to mainnet**<br />
+If you follow the default setup in this document, then your PFN will be connected to the Aptos mainnet. To connect
+to a different Aptos network, such as devnet or testnet, make sure you have the correct docker image tag, or source
+code branch if you build the binary directly.
+
+You can find the genesis and waypoint files for all the networks, here ➜ https://github.com/aptos-labs/aptos-networks.
+</Callout>

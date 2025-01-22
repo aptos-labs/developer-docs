@@ -1,0 +1,102 @@
+---
+title: "SDKを使用したデータの取得"
+---
+
+
+import { Callout } from 'nextra/components'
+
+# TypeScript SDKを使用したデータの取得
+
+`Aptos`クライアントを使用して、さまざまなヘルパー関数を使用してオンチェーンデータを取得できます。具体的には、[こちら](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.12.2/classes/Aptos.html)のリファレンスドキュメントにリストされている`get...`で始まる多くの関数がオンチェーンからデータを取得します。
+
+以下は、アプリケーションで必要となる一般的なデータを取得する例です：
+
+```ts filename="fetch-data.ts"
+const aptosConfig = new AptosConfig({ network: Network.DEVNET });
+const aptos = new Aptos(aptosConfig);
+
+const fund = await aptos.getAccountInfo({ accountAddress: "0x123" });
+const modules = await aptos.getAccountModules({ accountAddress: "0x123" });
+const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
+```
+
+<Callout type="info">
+多くのクエリには結果をカスタマイズするための`options`パラメータがあります。必要な情報を具体的に取得するために使用してください。
+</Callout>
+
+`Aptos`クライアントは、[フルノード](https://api.mainnet.aptoslabs.com/v1/spec#/)からのネットワークデータと、集計および強化されたデータを含む[Indexer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) APIの両方を標準でクエリできます。Indexer APIデータにカスタムクエリを使用したい場合は、以下のように`aptos.queryIndexer`を使用できます：
+
+```ts filename="fetch-data.ts"
+  const ledgerInfo = await aptos.queryIndexer({
+    query: {
+      query: `
+        query MyQuery {
+          ledger_infos {
+            chain_id
+          }
+        }
+      `
+    }
+  })
+```
+
+## ジェネリッククエリの使用
+
+一部のクエリは意図的に広範囲をカバーしていますが、これにより適切な戻り値の型を推論することが難しくなる場合があります。これに対応するため、`getAccountResources`のような広範なリクエストでは、期待するレスポンスの型を指定できます。
+
+```ts filename="fetch-data.ts"
+type Coin = { coin: { value: string } };
+
+const resource = await aptos.getAccountResource<Coin>({
+  accountAddress: testAccount.accountAddress,
+  resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+});
+
+// これでレスポンスの型プロパティにアクセスできます
+const value = resource.coin.value;
+```
+
+## Move View関数の使用
+
+`aptos.view`を使用して、オンチェーンからカスタムデータを返すview関数を呼び出すことができます。
+
+例えば、`chain_id` view関数を使用して使用しているネットワークを確認できます：
+
+```ts filename="fetch-data.ts"
+const payload: InputViewFunctionData = {
+  function: "0x1::chain_id::get",
+};
+
+const chainId = (await aptos.view({ payload }))[0];
+```
+
+## 最新のIndexerデータの確保
+
+内部的には、一部のリクエストは処理または集計されたデータにアクセスするために[Indexer API](../../indexer.mdx)を使用します。その追加の解析には少し時間がかかるため、データが最新のレジャーよりも若干遅れる可能性があります。
+
+データが最新であることを確認したい場合は、Indexer APIを使用するリクエストで`minimumLedgerVersion`を指定できます。
+
+```ts filename="fetch-data.ts"
+// 最新のレジャーバージョン番号を取得
+const ledgerVersion = await aptos.getLedgerInfo().ledger_version;
+
+const tokens = await aptos.getAccountOwnedTokens({
+  accountAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(response.version),
+});
+```
+
+送信したトランザクションのデータが確実に含まれるようにするには、トランザクションの検証から直接レジャーバージョンを取得することもできます。
+
+```ts filename="fetch-data.ts"
+// 送信したトランザクションの完了を待つ
+const response = await aptos.waitForTransaction({
+  transactionHash: pendingTransaction.hash,
+});
+
+// そのトランザクションがAliceのアカウントにどのような影響を与えたかを確認
+const tokens = await aptos.getAccountOwnedTokens({
+  accountAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(response.version),
+});
+```

@@ -1,0 +1,204 @@
+---
+title: "マルチエージェントトランザクション"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# マルチエージェントトランザクション
+
+マルチエージェントトランザクションでは、複数のアカウントがMoveコントラクトのロジックに参加することができます。
+
+これは、トランザクションを実行する前に複数の当事者の合意を必要とする場合や、複数のアカウントのリソースを使用する場合に利用できます。
+
+## マルチエージェントトランザクションの作成
+
+マルチエージェントトランザクションの作成と実行は、[シンプルなトランザクションのフロー](../building-transactions.mdx)と似ていますが、いくつかの重要な違いがあります。
+
+<Callout type="info">
+`.simple`の代わりに、マルチエージェントトランザクション関数では`.multiAgent`を使用します。
+</Callout>
+
+<Steps>
+### 追加の各エージェントを含む`secondarySignerAddresses`を指定してトランザクションを構築します。
+
+<Callout type="info">
+以下の`function`フィールドを、複数のエージェントの署名を必要とするエントリ関数に置き換えてください。
+</Callout>
+
+```ts filename="multi-agent.ts"
+const transaction = await aptos.transaction.build.multiAgent({
+  sender: alice.accountAddress,
+  secondarySignerAddresses: [bob.accountAddress],
+  data: {
+    // ここにあなたのマルチエージェント関数を指定してください
+    function:
+      "<マルチエージェントMoveエントリ関数を指定してください> (構文 {address}::{module}::{function})",
+    // 上で指定した関数の引数を渡してください
+    functionArguments: [],
+  },
+});
+```
+
+### （オプション）トランザクションをシミュレートします。
+
+以下のようにマルチエージェントトランザクションをシミュレートして、送信前に結果をプレビューできます：
+```ts filename="multi-agent.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
+  {
+    signerPublicKey: alice.publicKey,
+    secondarySignersPublicKeys: [bob.publicKey],
+    transaction,
+  },
+);
+```
+`signerPublicKey`と`secondarySignersPublicKeys`の入力はオプションであり、シミュレーション中の署名者の認証キーチェックをスキップする場合は省略できます。一部の副署名者の認証キーチェックのみをスキップしたい場合は、チェックしたい特定の署名者の公開鍵を`secondarySignersPublicKeys`に指定し、他の署名者には`undefined`をプレースホルダーとして使用できます。
+
+例えば、`bob`と`carol`が副署名者で、`carol`の認証キーのみをチェックしたい場合、`bob`のプレースホルダーとして`undefined`を使用し、`secondarySignersPublicKeys: [undefined, carol.publicKey]`と設定できます。
+
+### 各エージェントごとに1回ずつ署名します。
+
+次のステップでこれらの署名を組み合わせます。
+
+```ts filename="multi-agent.ts"
+const aliceSenderAuthenticator = aptos.transaction.sign({
+  signer: alice,
+  transaction,
+});
+// Bobはこのトランザクションの副署名者です
+const bobSenderAuthenticator = aptos.transaction.sign({
+  signer: bob,
+  transaction,
+});
+```
+
+### `additionalSignerAuthenticators`パラメータを使用して全エージェントの署名を組み合わせ、トランザクションを送信します。
+
+```ts filename="multi-agent.ts"
+const committedTransaction = await aptos.transaction.submit.multiAgent({
+  transaction,
+  senderAuthenticator: aliceSenderAuthenticator,
+  additionalSignersAuthenticators: [bobSenderAuthenticator],
+});
+```
+
+### 最後に、トランザクションの完了を待ちます。
+
+```ts filename="multi-agent.ts"
+const executedTransaction = await aptos.waitForTransaction({
+  transactionHash: committedTransaction.hash,
+});
+```
+</Steps>
+
+## TypeScriptマルチエージェントコードの完全な例
+
+<Callout type="warning">
+以下のスニペットを正しく動作させるには、軽微な編集が必要です！（以下の手順を参照）
+</Callout>
+
+1. `pnpm i @aptos-labs/ts-sdk`を実行するか、お好みのパッケージマネージャーを使用して`@aptos-labs/ts-sdk`をインストールします。
+2. マルチエージェント署名を必要とするトランザクションを構築するために、以下のスニペットを更新します。
+    1. このコメントの下のfunction部分を置き換えてください：`// ここにあなたのマルチエージェント関数を指定してください`
+    2. この変更が必要な理由は、マルチエージェント署名を必要とする既製のAptosコントラクトが存在しないためです。独自のマルチエージェントコントラクトの例をデプロイしたい場合は、["transfer two by two" サンプルMoveコントラクト](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/tests/move/transfer/sources/script_two_by_two.move#L5)をデプロイできます。
+
+```ts filename="multi-agent.ts"
+/**
+ * この例では、Aptos SDKを使用してトランザクションを送信する方法を示します。
+ */
+
+import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+async function example() {
+  console.log(
+    "この例では、2つのアカウント（AliceとBob）を作成し、BobのアカウントにAPTを転送するトランザクションを送信します。",
+  );
+
+  // 0. クライアントとテストアカウントのセットアップ
+  const config = new AptosConfig({ network: Network.DEVNET });
+  const aptos = new Aptos(config);
+
+  let alice = Account.generate();
+  let bob = Account.generate();
+  let carol = Account.generate();
+
+  console.log("=== アドレス ===\n");
+  console.log(`Aliceのアドレス: ${alice.accountAddress}`);
+  console.log(`Bobのアドレス: ${bob.accountAddress}`);
+  console.log(`Carolのアドレス: ${carol.accountAddress}`);
+
+  console.log("\n=== アカウントへの資金提供 ===\n");
+  await aptos.fundAccount({
+    accountAddress: alice.accountAddress,
+    amount: 100_000_000,
+  });
+  await aptos.fundAccount({
+    accountAddress: bob.accountAddress,
+    amount: 100_000_000,
+  });
+  await aptos.fundAccount({
+    accountAddress: carol.accountAddress,
+    amount: 100_000_000,
+  });
+  console.log("Alice、Bob、Carolのアカウントへの資金提供が完了しました。");
+
+  // 1. 構築
+  console.log("\n=== 1. トランザクションの構築 ===\n");
+  const transaction = await aptos.transaction.build.multiAgent({
+    sender: alice.accountAddress,
+    secondarySignerAddresses: [bob.accountAddress],
+    data: {
+      // ここにあなたのマルチエージェント関数を指定してください
+      function:
+        "<マルチエージェントMoveエントリ関数を指定してください> (構文 {address}::{module}::{function})",
+      functionArguments: [],
+    },
+  });
+  console.log("トランザクション:", transaction);
+
+  // 2. シミュレーション（オプション）
+  console.log("\n === 2. シミュレーション結果（オプション） === \n");
+  const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
+    {
+      signerPublicKey: alice.publicKey,
+      secondarySignersPublicKeys: [bob.publicKey],
+      transaction,
+    },
+  );
+  console.log(userTransactionResponse);
+
+  // 3. 署名
+  console.log("\n=== 3. トランザクションの署名 ===\n");
+  const aliceSenderAuthenticator = aptos.transaction.sign({
+    signer: alice,
+    transaction,
+  });
+  const bobSenderAuthenticator = aptos.transaction.sign({
+    signer: bob,
+    transaction,
+  });
+  console.log(aliceSenderAuthenticator);
+  console.log(bobSenderAuthenticator);
+
+  // 4. 送信
+  console.log("\n=== 4. トランザクションの送信 ===\n");
+  const committedTransaction = await aptos.transaction.submit.multiAgent({
+    transaction,
+    senderAuthenticator: aliceSenderAuthenticator,
+    additionalSignersAuthenticators: [bobSenderAuthenticator],
+  });
+  console.log("送信されたトランザクションハッシュ:", committedTransaction.hash);
+
+  // 5. 結果を待つ
+  console.log("\n=== 5. トランザクションの結果を待機中 ===\n");
+  const executedTransaction = await aptos.waitForTransaction({
+    transactionHash: committedTransaction.hash,
+  });
+  console.log(executedTransaction);
+}
+
+example();
+```
+
+## よくあるエラー
+
+`NUMBER_OF_SIGNER_ARGUMENTS_MISMATCH` - これは、その数のアカウントを必要としない関数に対してマルチエージェント署名を試みた場合に発生します。例えば、`0x1::aptos_account::transfer`関数に対して複数の署名を使用しようとした場合、この関数は1つのアドレスしか期待していないため、複数のアドレスが提供されるとエラーが発生します。

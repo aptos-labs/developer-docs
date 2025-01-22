@@ -1,0 +1,82 @@
+---
+title: "スマートコントラクト"
+---
+
+import { RemoteCodeblock, permalinkFetch, Card, Cards } from '@components/index'
+import { Callout } from 'nextra/components'
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
+  ])
+}
+
+# Aptosのスマートコントラクト
+
+Aptosのコントラクトは、複数のチェーンで使用される安全でサンドボックス化され、正式に検証されたプログラミングのための次世代言語であるMoveを使用して記述されます。
+Moveを使用することで、開発者はアセットに対する攻撃から保護しながら、アセットを柔軟に管理および転送するプログラムを作成することができます。
+
+## 📖 Moveを学ぶ
+
+<Cards>
+  <Card href="smart-contracts/why-move">
+    <Card.Title>なぜMove？</Card.Title>
+    <Card.Description>AptosがMove言語を使用する理由を学ぶ</Card.Description>
+  </Card>
+  {/* <Card href="smart-contracts/prover">
+    <Card.Title>Move Prover</Card.Title>
+    <Card.Description>AptosにおけるMoveコントラクトの形式的仕様と検証</Card.Description>
+  </Card> */}
+  <Card href="smart-contracts/create-package">
+    <Card.Title>パッケージの作成</Card.Title>
+    <Card.Description>Moveパッケージの作成方法を学んで始めましょう</Card.Description>
+  </Card>
+  <Card href="smart-contracts/objects">
+    <Card.Title>オブジェクト</Card.Title>
+    <Card.Description>Aptosのオブジェクト標準を使用して、チェーン上で組み合わせ可能で柔軟なプリミティブを作成する方法を学ぶ</Card.Description>
+  </Card>
+</Cards>
+
+## 👨‍💻 Moveの例
+
+<Cards>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples">
+    <Card.Title linkType="external">Aptos Moveの例</Card.Title>
+    <Card.Description>Aptos上でMoveを開発する方法の30以上の例</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial">
+    <Card.Title linkType="external">Moveチュートリアル</Card.Title>
+    <Card.Description>Moveでのプログラミングの基礎をカバー</Card.Description>
+  </Card>
+  <Card href="guides/first-move-module">
+    <Card.Title>最初のMoveモジュール</Card.Title>
+    <Card.Description>最初のMoveモジュールを公開する方法の`hello_blockchain`の例</Card.Description>
+  </Card>
+</Cards>
+
+以下は`hello_blockchain`のMoveの例です
+
+<RemoteCodeblock 
+  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
+/>
+
+## ⚒️ 開発者リソース
+
+### よくある質問とディスカッション
+
+- Moveに関する質問のための[Aptos開発者ディスカッション](https://github.com/aptos-labs/aptos-developer-discussions/discussions)
+
+### Move IDE プラグイン
+
+- Visual Studio用の[Aptos Move Analyzer](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer)
+- [JetBrains IDE用のMove言語プラグイン](https://plugins.jetbrains.com/plugin/14721-move-language): 構文ハイライト、コードナビゲーション、名前の変更、フォーマット、型チェック、コード生成をサポート
+
+### 外部リソース
+
+- [例で学ぶAptos Move](https://move-developers-dao.gitbook.io/aptos-move-by-example)
+- [Aptosで独学するMove](https://github.com/econia-labs/teach-yourself-move)
+- [形式検証、Move言語、Move Prover](https://www.certik.com/resources/blog/2wSOZ3mC55AB6CYol6Q2rP-formal-verification-the-move-language-and-the-move-prover)
+- [Pontem Moveプレイグラウンド](https://playground.pontem.network/)
+- [ネスト可能なMoveリソースのコレクション](https://github.com/taoheorg/taohe)
+
+新しいMoveコンパイラと言語バージョンは現在ベータテストの初期段階にあります。試してみたい方は[このページ](smart-contracts/compiler_v2.mdx)をご確認ください。

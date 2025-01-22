@@ -1,0 +1,162 @@
+---
+title: "Customize PFN Networks"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Customize PFN Networks
+
+<Callout type="warning">
+**Advanced customization**<br />
+Most PFN operators will not need to customize their PFN's network connections. This is only required
+for advanced use cases, such as connecting to specific peers, or configuring a private PFN. If you do
+not have a relevant use case, you should avoid making changes to your PFN's network connections.
+</Callout>
+
+When running a PFN, you can configure your node's network connections for a few different purposes.
+For example, you can add a seed peer to your node's configuration to connect your node to a specific
+peer of your choosing. Or you can leverage a static network identity for your PFN to allow other nodes
+to connect to you, as described in [Generate a PFN Identity](network-identity-fullnode.mdx).
+
+This document outlines how to configure the network of your PFN for different use cases, including:
+
+- Allowing nodes to connect to your PFN.
+- Connecting your PFN to seed peers.
+- Configuring priority access for other PFNs.
+- Configuring your PFN as a private PFN.
+
+## Allowing PFN connections
+
+<Callout type="info">
+**Generate a static identity**<br />
+Before allowing other nodes to connect to your PFN, you will need to create a static identity. See [Generate a PFN Identity](network-identity-fullnode.mdx).
+</Callout>
+
+Once you start your PFN with a static identity you can allow others to connect to your PFN:
+
+<Callout type="info">
+**Default port settings**<br />
+In the steps below, the port numbers used are for illustration only. You can use your choice of port numbers.
+See [PFN Requirements](../pfn-requirements.mdx) for more information on port settings.
+</Callout>
+
+- Make sure you open the TCP port of the network you wish to allow external connections on (e.g., `6180` or `6182`).
+  This is required to allow other nodes to connect to your PFN.
+- If you are using Docker, simply add `- "6180:6180"` or `- "6182:6182"` under ports in your `docker-compose.yaml` file.
+- Share your PFN static network identity with others. They can then use it in the `seeds` key of their node's
+  configuration file to connect to your PFN. See the section below.
+- Make sure the port number you put in the `addresses` matches the one you have in the PFN configuration file
+  (for example, `6180` or `6182`).
+
+<Callout type="info">
+You can share your PFN's network identity in our Discord to advertise your node for others to connect to. Note:
+this is optional (and not required!).
+</Callout>
+
+The snippets below show the configuration file entries and format for allowing other nodes to connect to your PFN.
+The format of each seed peer entry should have a unique `peer_id`, list of `addresses`, and a `role`:
+
+```yaml filename="docker-compose.yaml"
+<Peer_ID>:
+  addresses:
+  # with DNS
+  - "/dns4/<DNS_Name>/tcp/<Port_Number>/noise-ik/<Public_Key>/handshake/0"
+  role: Upstream
+<Peer_ID>:
+  addresses:
+  # with IP
+  - "/ip4/<IP_Address>/tcp/<Port_Number>/noise-ik/<Public_Key>/handshake/0"
+  role: Upstream
+```
+
+For example:
+
+```yaml filename="docker-compose.yaml"
+B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813:
+  addresses:
+  - "/dns4/pfn0.node.devnet.aptoslabs.com/tcp/6182/noise-ik/B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813/handshake/0"
+  role: "Upstream"
+B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813:
+  addresses:
+  - "/ip4/100.20.221.187/tcp/6182/noise-ik/B881EA2C174D8211C123E5A91D86227DB116A44BB345A6E66874F83D8993F813/handshake/0"
+  role: "Upstream"
+```
+
+## Connecting to seed peers
+
+<Callout type="warning">
+**Seeds are not required**<br />
+Seed peers are not required for your PFN to connect to any Aptos network. All networks (e.g., devnet, testnet
+and mainnet) are automatically discoverable. Adding seed peers should only be done if you wish to
+connect to a specific peer (or set of peers), and are confident that the peers are high quality.
+</Callout>
+
+To add seed peers to your PFN, the seed peers' addresses should be added to your PFN configuration file, under
+the `seeds` key in the public network configuration. Each seed peer entry should have a unique `peer_id`, list of
+`addresses`, and a `role` (e.g., `Upstream`). The snippet below shows an example
+of a configuration file with seed peers manually added:
+
+```yaml
+full_node_networks:
+  - discovery_method: "onchain"
+    listen_address: ...
+    seeds: # All seeds are declared below
+      bb14af025d226288a3488b4433cf5cb54d6a710365a2d95ac6ffbd9b9198a86a:
+        addresses:
+          - "/dns4/pfn0.node.devnet.aptoslabs.com/tcp/6182/noise-ik/bb14af025d226288a3488b4433cf5cb54d6a710365a2d95ac6ffbd9b9198a86a/handshake/0"
+        role: "Upstream"
+      7fe8523388084607cdf78ff40e3e717652173b436ae1809df4a5fcfc67f8fc61:
+        addresses:
+          - "/dns4/pfn1.node.devnet.aptoslabs.com/tcp/6182/noise-ik/7fe8523388084607cdf78ff40e3e717652173b436ae1809df4a5fcfc67f8fc61/handshake/0"
+        role: "Upstream"
+      f6b135a59591677afc98168791551a0a476222516fdc55869d2b649c614d965b:
+        addresses:
+          - "/dns4/pfn2.node.devnet.aptoslabs.com/tcp/6182/noise-ik/f6b135a59591677afc98168791551a0a476222516fdc55869d2b649c614d965b/handshake/0"
+        role: "Upstream"
+```
+
+## Configuring priority access
+
+To configure your PFN to allow other nodes to connect to it even when your PFN has hit the maximum number
+of available network connections, follow this method:
+
+In the configuration file for your PFN add the other node as a seed peer with the `Downstream` role.
+This will allow the other node to connect directly to you with priority access. For example:
+
+```yaml
+seeds:
+  <other node's peer id>
+    addresses:
+    - <address of the other node>
+    role: Downstream # Allows the node to connect to us
+```
+
+Similarly, to make the other node dial out to your PFN, add the following to the other node's configuration file:
+
+```yaml
+seeds:
+  <your node's peer id>
+    addresses:
+    - <address of your npde>
+    role: PreferredUpstream # Allows the node to connect to the seed peer
+```
+
+## Configuring private PFNs
+
+You can also configure your PFN as a private PFN should you wish. What this means is that your PFN will
+not allow unauthenticated connections, specifically, any node that is not a validator, VFN or seed peer
+will be unable to connect to your PFN.
+
+To configure your PFN as a private PFN, add the following to your PFN configuration file. Note, you
+should add this to the public network entry in the `full_node_networks` configuration:
+
+```yaml
+...
+full_node_networks:
+  - discovery_method: "onchain"
+    listen_address: ...
+    max_inbound_connections: 0  # Prevents any unauthenticated inbound connections
+    mutual_authentication: true  # Requires authenticated connections
+    ...
+...
+```
