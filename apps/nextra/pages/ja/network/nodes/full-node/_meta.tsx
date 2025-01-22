@@ -1,6 +1,6 @@
 export default {
-  "pfn-requirements": "PFN Requirements",
-  deployments: "Deploy a PFN",
-  "verify-pfn": "Verify a PFN",
-  modify: "Modify a PFN",
+  "pfn-requirements": "PFNの要件",
+  deployments: "PFNのデプロイ",
+  "verify-pfn": "PFNの検証",
+  modify: "PFNの変更",
 };

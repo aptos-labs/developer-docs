@@ -1,5 +1,5 @@
 export default {
-  "update-validator-node": "Upgrade Nodes",
-  "shutting-down-nodes": "Shutdown Nodes",
-  "rotate-consensus-key": "Rotate Consensus Key",
+  "update-validator-node": "ノードのアップグレード",
+  "shutting-down-nodes": "ノードのシャットダウン",
+  "rotate-consensus-key": "コンセンサスキーのローテーション",
 };

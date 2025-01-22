@@ -1,4 +1,4 @@
 export default {
-  "node-liveness-criteria": "Node Health",
-  "leaderboard-metrics": "Validator Leaderboard",
+  "node-liveness-criteria": "ノードの健全性",
+  "leaderboard-metrics": "バリデーターリーダーボード",
 };

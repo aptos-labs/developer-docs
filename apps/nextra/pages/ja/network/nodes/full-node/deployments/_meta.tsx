@@ -1,5 +1,5 @@
 export default {
-  "using-source-code": "Using Source Code",
-  "using-docker": "Using Docker",
-  "using-gcp": "Using GCP",
+  "using-source-code": "ソースコードを使用",
+  "using-docker": "Dockerを使用",
+  "using-gcp": "GCPを使用",
 };

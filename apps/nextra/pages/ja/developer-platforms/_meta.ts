@@ -1,3 +1,3 @@
 export default {
-  contribute: "Contribute",
+  contribute: "貢献する",
 };

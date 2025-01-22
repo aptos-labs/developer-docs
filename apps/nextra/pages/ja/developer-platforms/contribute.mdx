@@ -1,62 +1,62 @@
 ---
-title: Contribute
+title: 貢献する
 searchable: false
 ---
 
 import { Callout, Steps, FileTree } from 'nextra/components'
 import { Card, Cards } from '@components/index'
 
-# Contribute
+# 貢献する
 
 <Callout type="info">
-**Note:** this section is aimed at helping those who are contributing to the Aptos docs.
-For those looking to build on Aptos, see the `build` section in the navbar.
+**注意:** このセクションは、Aptosドキュメントに貢献する方々を支援することを目的としています。
+Aptos上で開発したい方は、ナビゲーションバーの`build`セクションをご覧ください。
 </Callout>
 
 ![](https://akns-images.eonline.com/eol_images/Entire_Site/201553/rs_500x210-150603125232-anigif_enhanced-buzz-11799-1403287509-4.gif?fit=around%7C500:210&output-quality=90&crop=500:210;center,top)
 
-### Setup
+### セットアップ
 
 <Cards>
   <Card href="./contribute/setup/migrating-from-docusaurus">
-    <Card.Title>Migrating from Docusaurus</Card.Title>
-    <Card.Description>Learn how to migrate docs from Docusaurus to Nextra</Card.Description>
+    <Card.Title>Docusaurusからの移行</Card.Title>
+    <Card.Description>DocusaurusからNextraへのドキュメント移行方法を学びます</Card.Description>
   </Card>
   <Card href="./contribute/setup/organize-files">
-    <Card.Title>Organize Files</Card.Title>
-    <Card.Description>How file-based routing works with Nextra.</Card.Description>
+    <Card.Title>ファイルの整理</Card.Title>
+    <Card.Description>Nextraでのファイルベースのルーティングの仕組みについて。</Card.Description>
   </Card>
   <Card href="./contribute/setup/organize-files-advanced">
-    <Card.Title>Organize Files (Advanced)</Card.Title>
-    <Card.Description>How to customize file routing, use `_meta.tsx` files, hide routes, and more</Card.Description>
+    <Card.Title>ファイルの整理（上級）</Card.Title>
+    <Card.Description>ファイルルーティングのカスタマイズ、`_meta.tsx`ファイルの使用、ルートの非表示などの方法</Card.Description>
   </Card>
 </Cards>
 
-### Components
+### コンポーネント
 
 <Cards>
   <Card href="./contribute/components/codeblock">
-    <Card.Title>Codeblock</Card.Title>
+    <Card.Title>コードブロック</Card.Title>
     <Card.Description>
-      Syntax highlighting, codeblock icons, filenames, and more
+      シンタックスハイライト、コードブロックアイコン、ファイル名など
       ```bash filename="Terminal"
       aptos move --woohoo
       ```
     </Card.Description>
   </Card>
   <Card href="./contribute/components/callout">
-    <Card.Title>Callout</Card.Title>
+    <Card.Title>注釈</Card.Title>
     <Card.Description>
-      Highlight important information and providing warnings
+      重要な情報の強調と警告の提供
       <Callout type="info">
-        **Note:** highlight important information!
+        **注意:** 重要な情報を強調します！
       </Callout>
     </Card.Description>
   </Card>
   <Card href="./contribute/components/latex">
     <Card.Title>LaTeX</Card.Title>
     <Card.Description>
-      Add mathematical formulas directly into your markdown with Katex
+      Katexを使用してマークダウンに数式を直接追加
       ```math
       E = mc^2
       ```
@@ -65,7 +65,7 @@ For those looking to build on Aptos, see the `build` section in the navbar.
   <Card href="./contribute/components/mermaid">
     <Card.Title>Mermaid</Card.Title>
     <Card.Description>
-      Vector based diagrams
+      ベクターベースの図表
       ```mermaid
       pie title What Voldemort doesn't have?
          "FRIENDS" : 2
@@ -75,9 +75,9 @@ For those looking to build on Aptos, see the `build` section in the navbar.
     </Card.Description>
   </Card>
   <Card href="./contribute/components/filetree">
-    <Card.Title>Filetree</Card.Title>
+    <Card.Title>ファイルツリー</Card.Title>
     <Card.Description>
-      Clear filetrees for more complex projects
+      より複雑なプロジェクトのための明確なファイルツリー
       <FileTree>
         <FileTree.Folder name="pages" defaultOpen>
           <FileTree.File name="_meta.json" />
@@ -95,20 +95,20 @@ For those looking to build on Aptos, see the `build` section in the navbar.
   <Card href="./contribute/components/npm2yarn">
     <Card.Title>npm2yarn</Card.Title>
     <Card.Description>
-      Easily do pnpm, npm, yarn, and bun installation
+      pnpm、npm、yarn、bunのインストールを簡単に
       ```bash npm2yarn
       npm i -D @aptos-labs/ts-sdk
       ```
     </Card.Description>
   </Card>
   <Card href="./contribute/components/card">
-    <Card.Title>Card</Card.Title>
-    <Card.Description>Create beautiful cards just like this one!</Card.Description>
+    <Card.Title>カード</Card.Title>
+    <Card.Description>このカードのような美しいカードを作成！</Card.Description>
   </Card>
   <Card href="./contribute/components/steps">
-    <Card.Title>Steps</Card.Title>
+    <Card.Title>ステップ</Card.Title>
     <Card.Description>
-      Layout sequential steps clearly
+      順序のあるステップを明確にレイアウト
     </Card.Description>
   </Card>
 </Cards>

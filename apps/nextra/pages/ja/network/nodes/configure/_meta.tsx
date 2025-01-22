@@ -1,6 +1,6 @@
 export default {
-  "state-sync": "State Synchronization",
-  "data-pruning": "Data Pruning",
-  telemetry: "Telemetry",
-  "node-files-all-networks": "Locating Node Files",
+  "state-sync": "状態同期",
+  "data-pruning": "データの削除",
+  telemetry: "テレメトリー",
+  "node-files-all-networks": "ノードファイルの場所",
 };

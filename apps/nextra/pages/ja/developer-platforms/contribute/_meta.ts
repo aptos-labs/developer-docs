@@ -1,5 +1,5 @@
 export default {
-  setup: "Setup",
-  components: "Components",
-  examples: "Examples",
+  setup: "セットアップ",
+  components: "コンポーネント",
+  examples: "例",
 };

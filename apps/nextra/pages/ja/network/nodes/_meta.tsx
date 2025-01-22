@@ -1,13 +1,13 @@
 export default {
-  localnet: "Develop with Localnet",
-  "validator-node": "Run a Validator and VFN",
-  "full-node": "Run a Public Fullnode",
-  "bootstrap-fullnode": "Bootstrap a Node",
-  configure: "Configure a Node",
-  measure: "Monitor a Node",
-  "building-from-source": "Building Aptos from Source",
+  localnet: "ローカルネットで開発",
+  "validator-node": "バリデーターとVFNを実行",
+  "full-node": "パブリックフルノードを実行",
+  "bootstrap-fullnode": "ノードのブートストラップ",
+  configure: "ノードの設定",
+  measure: "ノードの監視",
+  "building-from-source": "ソースからAptosをビルド",
   networks: {
-    title: "Networks",
+    title: "ネットワーク",
     theme: {
       toc: false,
       layout: "full",

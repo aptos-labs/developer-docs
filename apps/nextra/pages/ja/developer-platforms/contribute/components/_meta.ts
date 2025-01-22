@@ -1,10 +1,10 @@
 export default {
-  codeblock: "Codeblock",
-  mermaid: "Mermaid",
-  npm2yarn: "Npm2Yarn",
-  latex: "LaTeX",
-  table: "Rendering Tables",
-  "themed-image": "Themed Image",
-  "graphql-editor": "GraphQL Editor",
-  "remote-codeblock": "Remote Codeblock",
+  codeblock: "コードブロック",
+  mermaid: "Mermaid図表",
+  npm2yarn: "Npm2Yarn変換",
+  latex: "LaTeX数式",
+  table: "テーブルのレンダリング",
+  "themed-image": "テーマ対応画像",
+  "graphql-editor": "GraphQLエディター",
+  "remote-codeblock": "リモートコードブロック",
 };

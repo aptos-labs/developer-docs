@@ -1,10 +1,10 @@
 export default {
-  blockchain: "Blockchain",
-  nodes: "Nodes",
-  releases: "Releases",
-  glossary: "Glossary",
+  blockchain: "ブロックチェーン",
+  nodes: "ノード",
+  releases: "リリース",
+  glossary: "用語集",
   faucet: {
-    title: "Faucet",
+    title: "フォーセット",
     theme: {
       toc: false,
       timestamp: false,
