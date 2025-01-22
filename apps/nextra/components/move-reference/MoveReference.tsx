@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Playground } from "nextra/components";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter } from "nextra/hooks";
 import { ModuleSelectContainer } from "./ModuleSelectContainer";
 import {
   MoveReferenceContext,

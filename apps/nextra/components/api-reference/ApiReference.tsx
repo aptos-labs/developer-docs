@@ -3,7 +3,7 @@
 import { ApiReferenceReact } from "@scalar/api-reference-react";
 import { useTheme } from "nextra-theme-docs";
 import { useData } from "nextra/hooks";
-import { useRouter } from "next/router";
+import { useRouter } from "nextra/hooks";
 import {
   ChangeEventHandler,
   cloneElement,

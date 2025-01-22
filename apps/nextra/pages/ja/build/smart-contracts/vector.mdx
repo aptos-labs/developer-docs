@@ -1,0 +1,190 @@
+---
+title: "Vector"
+---
+
+# Vector
+
+Moveにおけるベクトルは、インデックス付け、要素の追加、削除などの様々な操作をサポートする柔軟で動的な配列のようなデータ構造を提供します。Moveのベクトルは拡張可能で、0ベースのインデックスをサポートしています。
+
+## Vectorの主な機能
+
+### 構造
+
+`vector`モジュールは、動的配列を管理するための様々なネイティブ関数とMove関数を提供します：
+
+- `empty`：空のベクトルを作成
+- `length`：ベクトルの長さを返す
+- `borrow`：指定されたインデックスの要素への不変参照を返す
+- `push_back`：ベクトルの末尾に要素を追加
+- `borrow_mut`：指定されたインデックスの要素への可変参照を返す
+- `pop_back`：ベクトルの最後の要素を削除して返す
+- `destroy_empty`：空のベクトルを破棄
+- `swap`：指定された2つのインデックスの要素を交換
+
+### 定数
+
+モジュール内で使用される各種エラーコードを定義する定数：
+
+- `EINDEX_OUT_OF_BOUNDS`: 0x20000
+
+### API概要
+
+#### ベクトルの作成
+
+- `empty<Element>(): vector<Element>`：空のベクトルを作成
+- `singleton<Element>(e: Element): vector<Element>`：単一要素のベクトルを作成
+
+#### 要素の管理
+
+- `push_back<Element>(v: &mut vector<Element>, e: Element)`：ベクトルの末尾に要素を追加
+- `pop_back<Element>(v: &mut vector<Element>): Element`：ベクトルの最後の要素を削除して返す
+- `remove<Element>(v: &mut vector<Element>, i: u64): Element`：特定のインデックスの要素を削除し、後続の要素をシフト
+- `swap_remove<Element>(v: &mut vector<Element>, i: u64): Element`：指定されたインデックスの要素を最後の要素と交換して削除
+
+#### 要素の取得
+
+- `borrow<Element>(v: &vector<Element>, i: u64): &Element`：指定されたインデックスの要素への不変参照を返す
+- `borrow_with_default<Element>(v: &vector<Element>, i: u64, default: &Element): &Element`：要素への参照を返す、またはインデックスが範囲外の場合はデフォルト値を返す
+- `borrow_mut<Element>(v: &mut vector<Element>, i: u64): &mut Element`：指定されたインデックスの要素への可変参照を返す
+
+#### ユーティリティ関数
+
+- `length<Element>(v: &vector<Element>): u64`：ベクトル内の要素数を返す
+- `is_empty<Element>(v: &vector<Element>): bool`：ベクトルが空かどうかを確認
+- `contains<Element>(v: &vector<Element>, e: &Element): bool`：ベクトルに指定された要素が含まれているかを確認
+- `index_of<Element>(v: &vector<Element>, e: &Element): (bool, u64)`：指定された要素のインデックスを返す（見つかった場合）
+- `reverse<Element>(v: &mut vector<Element>)`：ベクトル内の要素の順序を反転
+- `append<Element>(lhs: &mut vector<Element>, other: vector<Element>)`：あるベクトルの全要素を別のベクトルに追加
+- `for_each<Element>(v: vector<Element>, f: |Element|)`：ベクトルの各要素に関数を適用
+- `for_each_ref<Element>(v: &vector<Element>, f: |&Element|)`：ベクトルの各要素への参照に関数を適用
+- `for_each_mut<Element>(v: &mut vector<Element>, f: |&mut Element|)`：ベクトルの各要素への可変参照に関数を適用
+- `fold<Accumulator, Element>(v: vector<Element>, init: Accumulator, f: |Accumulator, Element|Accumulator): Accumulator`：ベクトルの要素に対して関数を適用して値を蓄積
+- `map<Element, NewElement>(v: vector<Element>, f: |Element|NewElement): vector<NewElement>`：ベクトルの要素に関数を適用して新しいベクトルを生成
+- `filter<Element: drop>(v: vector<Element>, p: |&Element|bool): vector<Element>`：述語関数を使用してベクトルをフィルタリング
+
+## 使用例
+
+### ベクトルの作成と使用
+
+```move filename="vector.move"
+module 0x42::vector_usage {
+    use std::vector;
+
+    public entry fun main() {
+        let v = vector::empty<u64>();
+        vector::push_back(&mut v, 10);
+        vector::push_back(&mut v, 20);
+
+        let length = vector::length(&v);
+        assert!(length == 2, 0);
+
+        let first_elem = vector::borrow(&v, 0);
+        assert!(*first_elem == 10, 0);
+
+        let second_elem = vector::borrow(&v, 1);
+        assert!(*second_elem == 20, 0);
+
+        let last_elem = vector::pop_back(&mut v);
+        assert!(last_elem == 20, 0);
+
+        vector::destroy_empty(v);
+    }
+}
+```
+
+### ベクトルの結合
+
+```move filename="vector.move"
+module 0x42::vector_usage {
+    use std::vector;
+
+    public fun append_vectors() {
+        let v1 = vector::empty<u64>();
+        let v2 = vector::empty<u64>();
+
+        vector::push_back(&mut v1, 1);
+        vector::push_back(&mut v1, 2);
+
+        vector::push_back(&mut v2, 3);
+        vector::push_back(&mut v2, 4);
+
+        vector::append(&mut v1, v2);
+
+        let length = vector::length(&v1);
+        assert!(length == 4, 0);
+
+        let first_elem = vector::borrow(&v1, 0);
+        assert!(*first_elem == 1, 0);
+
+        let second_elem = vector::borrow(&v1, 1);
+        assert!(*second_elem == 2, 0);
+
+        let third_elem = vector::borrow(&v1, 2);
+        assert!(*third_elem == 3, 0);
+
+        let fourth_elem = vector::borrow(&v1, 3);
+        assert!(*fourth_elem == 4, 0);
+    }
+}
+```
+
+### 要素の削除
+
+```move filename="vector.move"
+module 0x42::vector_usage {
+    use std::vector;
+
+    public fun remove_elements() {
+        let v = vector::empty<u64>();
+
+        vector::push_back(&mut v, 1);
+        vector::push_back(&mut v, 2);
+        vector::push_back(&mut v, 3);
+
+        let removed_elem = vector::remove(&mut v, 1);
+        assert!(removed_elem == 2, 0);
+
+        let length = vector::length(&v);
+        assert!(length == 2, 0);
+
+        let first_elem = vector::borrow(&v, 0);
+        assert!(*first_elem == 1, 0);
+
+        let second_elem = vector::borrow(&v, 1);
+        assert!(*second_elem == 3, 0);
+    }
+}
+```
+
+### 要素の交換
+
+```move filename="vector.move"
+module 0x42::vector_usage {
+    use std::vector;
+
+    public fun swap_elements() {
+        let v = vector::empty<u64>();
+
+        vector::push_back(&mut v, 1);
+        vector::push_back(&mut v, 2);
+        vector::push_back(&mut v, 3);
+
+        vector::swap(&mut v, 0, 2);
+
+        let first_elem = vector::borrow(&v, 0);
+        assert!(*first_elem == 3, 0);
+
+        let third_elem = vector::borrow(&v, 2);
+        assert!(*third_elem == 1, 0);
+    }
+}
+```
+
+## ソースコード
+
+- [vector.move](https://github.com/aptos-labs/aptos-core/blob/main/third_party/move/move-stdlib/sources/vector.move)
+
+## その他の例
+
+- [Move Spidersのベクターチュートリアル](https://movespiders.com/courses/modules/datastructures/lessonId/1)
+- [Move Spidersのベクターチュートリアル2](https://movespiders.com/courses/modules/basics/lessonId/7)

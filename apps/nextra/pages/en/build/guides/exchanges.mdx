@@ -126,7 +126,7 @@ the `0x1::coin::balance<CoinType>(account address)` view function.  This will co
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
-const config = new AptosConfig({ network: Network.TESTNET });
+const config = new AptosConfig({ network: Network.DEVNET });
 const aptos = new Aptos(config);
 
 const coinType = "0x1::aptos_coin::AptosCoin";
@@ -146,7 +146,7 @@ A specific ledger version (transaction height) can be provided to get the balanc
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
-const config = new AptosConfig({ network: Network.TESTNET });
+const config = new AptosConfig({ network: Network.DEVNET });
 const aptos = new Aptos(config);
 
 const coinType = "0x1::aptos_coin::AptosCoin";
@@ -173,7 +173,7 @@ Note, that this will not include the balance of coins if it's a migrated coin.
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
-const config = new AptosConfig({ network: Network.TESTNET });
+const config = new AptosConfig({ network: Network.DEVNET });
 const aptos = new Aptos(config);
 
 const faMetadataAddress = "0xA";
@@ -193,7 +193,7 @@ A specific ledger version (transaction height) can be provided to get the balanc
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
-const config = new AptosConfig({ network: Network.TESTNET });
+const config = new AptosConfig({ network: Network.DEVNET });
 const aptos = new Aptos(config);
 
 const faMetadataAddress = "0xA";
@@ -1176,6 +1176,13 @@ To test a transfer, you can fund an account with the fungible asset here https:/
 and then transfer the fungible asset to another account.  The balance should be updated
 according to the change, and you should be able to track the mint on the website.
 
+## Stablecoin Addresses
+
+| Token Name           | Token Symbol | Token Address                                                                                                                                                              | Source of Address                                                                                     |
+|----------------------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| Tether USD           | USDt         | [0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b](https://explorer.aptoslabs.com/fungible_asset/0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b?network=mainnet) | [Aptos Foundation](https://aptosfoundation.org/currents/global-finance-moves-faster-on-aptos)       |
+| USDC                 | USDC         | [0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b](https://explorer.aptoslabs.com/fungible_asset/0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b?network=mainnet) | [Circle](https://developers.circle.com/stablecoins/usdc-on-main-networks)                |
+| Ondo US Dollar Yield | USDY         | [0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc::usdy::USDY](https://explorer.aptoslabs.com/coin/0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc::usdy::USDY?network=mainnet) | [Ondo Finance](https://ondo.finance/usdy)                                                           |
 
 ## FAQ
 

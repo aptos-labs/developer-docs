@@ -278,18 +278,13 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/move/move-on-aptos/objects/creating-objects",
-        destination: "/en/build/smart-contracts/objects/creating-objects",
+        source: "/move/move-on-aptos/object/configuring-objects",
+        destination: "/en/build/smart-contracts/object/creating-objects",
         permanent: true,
       },
       {
-        source: "/move/move-on-aptos/objects/configuring-objects",
-        destination: "/en/build/smart-contracts/objects/configuring-objects",
-        permanent: true,
-      },
-      {
-        source: "/move/move-on-aptos/objects/using-objects",
-        destination: "/en/build/smart-contracts/objects/using-objects",
+        source: "/move/move-on-aptos/object/:path",
+        destination: "/en/build/smart-contracts/object/:path",
         permanent: true,
       },
       {
@@ -398,13 +393,52 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/indexer/custom-processors/e2e-tutorial",
-        destination: "/en/build/indexer/custom-processors/e2e-tutorial",
+        source: "/indexer/indexer-sdk/quickstart",
+        destination: "/en/build/indexer/indexer-sdk/quickstart",
         permanent: true,
       },
       {
-        source: "/indexer/custom-processors/parsing-txns",
-        destination: "/en/build/indexer/custom-processors/parsing-txns",
+        source: "/indexer/indexer-sdk/documentation",
+        destination: "/en/build/indexer/indexer-sdk/documentation",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/setup",
+        destination: "/en/build/indexer/indexer-sdk/documentation/setup",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/define-schema",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/define-schema",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/create-processor",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/create-processor",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/steps",
+        destination: "/en/build/indexer/indexer-sdk/documentation/steps",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/parsing-txns",
+        destination: "/en/build/indexer/indexer-sdk/documentation/parsing-txns",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/connect-steps",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/connect-steps",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/run-processor",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/run-processor",
         permanent: true,
       },
       {
@@ -1061,19 +1095,14 @@ export default withBundleAnalyzer(
       },
       {
         source:
-          "/en/build/smart-contracts/aptos-standards/objects/creating-objects",
-        destination: "/en/build/smart-contracts/objects/creating-objects",
+          "/en/build/smart-contracts/aptos-standards/object/creating-objects",
+        destination: "/en/build/smart-contracts/object/creating-objects",
         permanent: true,
       },
       {
         source:
-          "/en/build/smart-contracts/aptos-standards/objects/configuring-objects",
-        destination: "/en/build/smart-contracts/objects/creating-objects",
-        permanent: true,
-      },
-      {
-        source: "/en/build/smart-contracts/objects/creating-objects",
-        destination: "/en/build/smart-contracts/objects/using-objects",
+          "/en/build/smart-contracts/aptos-standards/object/configuring-objects",
+        destination: "/en/build/smart-contracts/object/creating-objects",
         permanent: true,
       },
       {
@@ -1423,8 +1452,12 @@ export default withBundleAnalyzer(
       },
       {
         source: "/nodes/full-node/fullnode-source-code-or-docker",
-        destination:
-          "/en/network/nodes/full-node/fullnode-source-code-or-docker",
+        destination: "/en/network/nodes/full-node/deployments",
+        permanent: true,
+      },
+      {
+        source: "/en/network/nodes/full-node/fullnode-source-code-or-docker",
+        destination: "/en/network/nodes/full-node/deployments",
         permanent: true,
       },
       {
@@ -1463,8 +1496,8 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/en/build/smart-contracts/objects/configuring-objects",
-        destination: "/en/build/smart-contracts/objects",
+        source: "/en/build/smart-contracts/object/configuring-objects",
+        destination: "/en/build/smart-contracts/object",
         permanent: true,
       },
       {
@@ -1781,6 +1814,11 @@ export default withBundleAnalyzer(
       {
         source: "/en/build/smart-contracts/book/move-2.0",
         destination: "/en/build/smart-contracts/book/move-2",
+        permanent: true,
+      },
+      {
+        source: "/network/faucet",
+        destination: "/en/network/faucet",
         permanent: true,
       },
     ],

@@ -1,0 +1,64 @@
+---
+title: "リソース"
+id: "resources"
+---
+
+# リソース
+
+Aptosでは、オンチェーンの状態はリソースとモジュールに整理されています。これらは個々のアカウント内に保存されます。これは、各スマートコントラクトが独自のストレージスペースを維持するEthereumなどの他のブロックチェーンとは異なります。アカウントの詳細については[アカウント](accounts.mdx)をご覧ください。
+
+## リソースとインスタンス
+
+Moveモジュールは構造体の定義を行います。構造体の定義には`key`や`store`などのアビリティを含めることができます。リソースは`key`アビリティを持つ構造体のインスタンスで、グローバルストレージまたはアカウントに直接保存されます。`store`アビリティを使用すると、構造体のインスタンスをリソース内に保存できます。APTコインの保存方法を例に挙げると、CoinStoreはAPTコインを含むリソースであり、Coin自体はインスタンスです：
+
+```move
+/// A holder of a specific coin type and associated event handles.
+/// These are kept in a single resource to ensure locality of data.
+struct CoinStore<phantom CoinType> has key {
+    coin: Coin<CoinType>,
+}
+
+/// Main structure representing a coin/token in an account's custody.
+struct Coin<phantom CoinType> has store {
+    /// Amount of coin this address has.
+    value: u64,
+}
+```
+
+CoinインスタンスはCoinStoreから所有アカウントの許可を得て取り出し、別のCoinStoreリソースに簡単に転送することができます。また、定義で許可されている場合は、以下の例のように他のカスタムリソースに保持することもできます：
+
+```move
+struct CustomCoinBox<phantom CoinType> has key {
+    coin: Coin<CoinType>,
+}
+```
+
+## リソースとオブジェクトの定義
+
+すべてのインスタンスとリソースは、アドレスに保存されたモジュール内で定義されます。例えば、`0x1234::coin::Coin<0x1234::coin::SomeCoin>`は以下のように表現されます：
+
+```move
+module 0x1234::coin {
+    struct CoinStore<phantom CoinType> has key {
+        coin: Coin<CoinType>,
+    }
+
+    struct SomeCoin { }
+}
+```
+
+この例では、`0x1234`はアドレス、`coin`はモジュール、`Coin`はリソースとして保存できる構造体、`SomeCoin`はインスタンスとして表現される可能性が低い構造体です。ファントム型を使用することで、異なる`CoinType`パラメータを持つ多くの異なる種類の`CoinStore`リソースが存在することを可能にします。
+
+## リソースを含むインスタンスの権限
+
+リソースやその他のインスタンスの権限は、構造体が定義されているモジュールによって決定されます。例えば、リソース内のインスタンスにアクセスしたり、リソースから削除したりすることはできますが、インスタンスの構造体が定義されているモジュールの許可なしに内部状態を変更することはできません。
+
+一方、所有権は、アカウントの下にリソースを保存するか、構造体を定義するモジュール内のロジックによって示されます。
+
+## リソースの表示
+
+リソースはアカウント内に保存されます。リソースは、保存されているアカウントやそのアドレス、モジュールを含む完全なクエリパスで、所有者のアカウント内を検索することで見つけることができます。リソースは[Aptos Explorer](https://explorer.aptoslabs.com/)で所有アカウントを検索するか、フルノードのAPIから直接取得することで表示できます。
+
+## リソースの保存方法
+
+構造体を定義するモジュールは、インスタンスの保存方法を指定します。例えば、トークンの預け入れイベントは、預け入れが発生する受信者アカウントや、トークンモジュールがデプロイされているアカウントに保存できます。一般的に、個々のユーザーアカウントにデータを保存することで、異なるアカウントからのトランザクション間で状態の読み書きの競合が発生しないため、シームレスな並列実行が可能になり、より高い実行効率を実現できます。

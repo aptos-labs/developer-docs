@@ -17,15 +17,15 @@
     "build": "rimraf dist && env NODE_ENV=production tsup",
     "build:watch": "tsup --watch",
     "lint:fix": "eslint --ext .ts,.tsx --quiet --fix --ignore-path ./.gitignore",
-    "lint:format": "prettier  --loglevel warn --write \"./**/*.{ts,tsx,css,md,json}\" ",
+    "lint:format": "prettier --log-level warn --write \"./**/*.{ts,tsx,css,md,json}\"",
     "lint": "pnpm lint:format && pnpm lint:fix ",
     "test": "vitest"
   },
   "dependencies": {
-    "clsx": "2.1.0",
-    "mdast-util-from-markdown": "^2.0.1",
-    "mdast-util-mdx-expression": "^2.0.1",
-    "mdast-util-to-markdown": "^2.1.0",
+    "clsx": "2.1.1",
+    "mdast-util-from-markdown": "2.0.1",
+    "mdast-util-mdx-expression": "2.0.1",
+    "mdast-util-to-markdown": "2.1.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "tailwind-merge": "^2.2.2",
@@ -40,18 +40,18 @@
     "@typescript-eslint/eslint-plugin": "^8.8.0",
     "@typescript-eslint/parser": "^8.8.0",
     "eslint": "^8.57.1",
-    "nextra-theme-docs": "3.0.0-alpha.24",
-    "prettier": "^3.3.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "nextra-theme-docs": "3.3.1",
+    "prettier": "^3.4.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "rimraf": "6.0.1",
     "tsup": "8.3.0",
-    "typescript": "5.6.2",
+    "typescript": "5.7.2",
     "vitest": "2.1.1"
   },
   "peerDependencies": {
     "nextra-theme-docs": "3.0.0-alpha.24",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }

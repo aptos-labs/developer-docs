@@ -1,0 +1,34 @@
+import { GraphQLEditor } from '@components/index'
+import { Callout } from 'nextra/components'
+
+# ファンジブルアセット情報の取得
+
+ファンジブルアセットタイプのリストを指定することで、`GetFungibleAssetInfo`はシンボル、名前、小数点以下の桁数、アセットタイプ自体などのデータを取得できます。これは、トークンの詳細を表示する必要があるアプリケーションに特に役立ちます。また、`Coin`情報の検索との後方互換性も維持されています。
+
+<Callout type="info">
+自分で試してみましょう！エディターの下部で変数をカスタマイズできます。
+</Callout>
+
+<GraphQLEditor
+  query={`query GetFungibleAssetInfo($in: [String!], $offset: Int) {
+  fungible_asset_metadata(
+    where: {asset_type: {_in: $in}},
+    offset: $offset,
+    limit: 100
+  ) {
+    symbol
+    name
+    decimals
+    asset_type
+    __typename
+  }
+}`}
+  variables={`{
+  "in": ["0x1::aptos_coin::AptosCoin", "0x1::example_coin::ExampleCoin"],
+  "offset": 0
+}`}
+/>
+
+#### 変数:
+- `$in`: **文字列のリスト** - 情報を照会したいファンジブルアセットタイプのリストを含む変数。例: `["0x1::aptos_coin::AptosCoin"]`
+- `$offset`: **整数** (オプション) - 結果をページ分割するために使用できる変数で、結果の返却を開始する前にスキップするレコード数を指定します。

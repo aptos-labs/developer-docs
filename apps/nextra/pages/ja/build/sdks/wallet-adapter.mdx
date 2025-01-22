@@ -1,0 +1,32 @@
+---
+title: "ウォレットアダプター"
+---
+
+# ウォレットアダプター
+
+Aptos Wallet Adapterは、AptosのdappとAptosウォレットが相互に通信するための単一のインターフェースを提供します。
+
+アプリ開発者にとって、これは単一の統合で増え続けるAptosウォレットのリストに接続できることを意味します。新しいウォレットがエコシステムに参加しWallet Adapterと統合すると、Wallet Adapterのバージョンを更新するだけでそれらをサポートできます。
+
+Aptosウォレットプロバイダーにとって、Wallet Adapterと統合することで、幅広いAptosアプリでサポートされることになります。
+
+## Aptos Dapps向け
+
+[Wallet Adapter for Dapp Builders Guide](./wallet-adapter/dapp.mdx)に従って、Wallet Adapter（[Wallet Adapter Reactパッケージ](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-react)経由）の使用方法を学んでください。
+
+## Aptosウォレットプロバイダー向け
+
+dappが接続できるWallet Adapterプラグインを実装する方法については、以下のガイドのいずれかに従ってください：
+
+1. [ブラウザ拡張ウォレット](./wallet-adapter/browser-extension-wallets.mdx)向け（例：[Petra](https://chromewebstore.google.com/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci?hl=en)）
+2. [SDKウォレット](./wallet-adapter/wallets.mdx)向け（例：[AptosConnect](https://aptosconnect.app/dashboard/main-account/tokens/)）
+
+## 参考資料
+
+- [Dapp開発者ガイド](./wallet-adapter/dapp.mdx)
+- [ウォレットブラウザ拡張ガイド](./wallet-adapter/browser-extension-wallets.mdx)
+- [SDKウォレット開発者ガイド](./wallet-adapter/wallets.mdx)
+- [モダンウォレット標準（AIP-62）](https://github.com/aptos-foundation/AIPs/blob/1bd0c41971701e54cf35da86c2877e58be61ee38/aips/aip-62.md)
+- [Wallet Adapter Reactパッケージ](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-react)
+- [Wallet Standard](https://github.com/aptos-labs/wallet-standard/tree/main)リポジトリ（AIP-62ウォレットプラグインを作成するためのテンプレート例付き）
+- [aptos-wallet-adapter](https://github.com/aptos-labs/aptos-wallet-adapter)のコアロジックとReactコンポーネント

@@ -1,0 +1,233 @@
+# Quickstart Guide on Aptos Indexer SDK
+
+## What to expect from this guide
+This guide will walk you through setting up and running a Rust processor to index events on the Aptos blockchain into PostgreSQL. 
+We provide a template processor that you can customize to index events from your custom contracts.
+By the end of the guide, you should have a basic understanding of how a processor works and be able to customize the processor for your indexing needs.
+
+## Getting started
+
+To get started, clone
+the [aptos-indexer-processors-example](https://github.com/aptos-labs/aptos-indexer-processor-example/tree/main) repo.
+
+```text
+# HTTPS
+https://github.com/aptos-labs/aptos-indexer-processor-example.git
+ 
+# SSH
+git@github.com:aptos-labs/aptos-indexer-processor-example.git
+```
+
+Processors consume transactions from the Transaction Stream Service. In order to use the Labs-Hosted Transaction Stream
+Service you need an authorization token.
+Follow [this guide](https://aptos.dev/en/build/indexer/txn-stream/aptos-hosted-txn-stream#authorization-via-api-key)
+to guide to get a token from the Developer Portal. Create an API Key for `Testnet`, as this tutorial is for `Testnet`.
+Once you’re done, you should have a token that looks like this:
+
+```text
+aptoslabs_yj4bocpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx
+```
+
+You also need the following tools:
+
+- Rust 1.79: [Installation Guide](https://www.rust-lang.org/tools/install)
+- Cargo: [Installation Guide](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo)
+
+We use [PostgreSQL](https://www.postgresql.org/) as our database and [Diesel](https://diesel.rs/guides/getting-started) as our ORM in this tutorial. You’re free to use whatever you want, but this tutorial is geared
+towards PostgreSQL for the sake of simplicity. We use the following database configuration and tools:
+
+### PostgreSQL Installation (for macOS)
+1. `brew install libpq` ([this is a postgres C API library](https://formulae.brew.sh/formula/libpq)). Also perform all export commands post-installation
+```bash
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+export LDFLAGS="-L/opt/homebrew/opt/libpq/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/libpq/include"
+```
+2. `brew install postgres`
+3. `pg_ctl -D /opt/homebrew/var/postgres start` or `brew services start postgresql`
+4. `/opt/homebrew/bin/createuser -s postgres`
+5. Ensure you're able to do: `psql postgres`
+6. `cargo install diesel_cli --no-default-features --features postgres`
+7. Make sure that you're in the DB folder (run `cd src/db/postgres` from base directory), run `diesel migration run --database-url postgresql://localhost/postgres`
+   a. If for some reason this database is already being used, try a different db. e.g.
+      `DATABASE_URL=postgres://postgres@localhost:5432/indexer_v2 diesel database reset`
+
+- We will use a database hosted on `localhost` on the port `5432`, which should be the default.
+- When you create your username, keep track of it and the password you use for it.
+- To easily view your database data, consider using a GUI like [DBeaver](https://dbeaver.io/)
+  *recommended*, [pgAdmin](https://www.pgadmin.org/), or [Postico](https://eggerapps.at/postico2/).
+
+## Setting up your environment
+
+Make sure to start the `postgresql` service:
+
+The command for Linux/WSL might be something like:
+
+```bash
+sudo service postgresql start
+```
+
+For mac, if you’re using brew, start it up with:
+
+```bash
+brew services start postgresql
+```
+
+## **Configuring your processor**
+
+Now let’s set up the configuration details for the actual indexer processor we’re going to use.
+
+### **Set up your config.yaml file**
+
+In the example repo, there is a sample config.yaml file that should look something like this:
+
+```yaml
+health_check_port: 8085
+server_config:
+  processor_config:
+    type: "events_processor"
+  transaction_stream_config:
+    indexer_grpc_data_service_address: "https://grpc.testnet.aptoslabs.com:443"
+    starting_version: 0
+    # request_ending_version: 10000
+    auth_token: "AUTH_TOKEN"
+    request_name_header: "events-processor"
+  db_config:
+    postgres_connection_string: postgresql://postgres:@localhost:5432/example
+```
+
+Open the `config.yaml` file and update these fields:
+
+- `auth_token` - the auth token you got from the Developer Portal
+- `postgres_connection_string` - connection string to your PostgreSQL database
+
+### More customization with config.yaml
+
+You can customize additional configuration with the `config.yaml` file.
+
+To start at a specific ledger version, you can specify the version in the `config.yaml` file with:
+
+```yaml
+starting_version: <Starting Version>
+```
+
+To stop processing at a specific ledger version, you can specify the ending version with:
+
+```yaml
+request_ending_version: <Ending Version>
+```
+
+If you want to use a different network, change the `indexer_grpc_data_service_address` field to the corresponding
+desired value:
+
+```yaml
+# Devnet
+indexer_grpc_data_service_address: grpc.devnet.aptoslabs.com:443
+
+# Testnet
+indexer_grpc_data_service_address: grpc.testnet.aptoslabs.com:443
+
+# Mainnet
+indexer_grpc_data_service_address: grpc.mainnet.aptoslabs.com:443
+```
+
+## Explanation of the processor
+
+At a high level, each processor is responsible for receiving a stream of transactions, parsing and transforming the
+relevant data, and storing the data into a database.
+
+### Defining the events database model
+
+In `src/db/postgres/schema.rs` , you will see events table which has the following schema:
+
+```rust
+diesel::table! {
+    events (transaction_version, event_index) {
+        sequence_number -> Int8,
+        creation_number -> Int8,
+        #[max_length = 66]
+        account_address -> Varchar,
+        transaction_version -> Int8,
+        transaction_block_height -> Int8,
+        #[sql_name = "type"]
+        type_ -> Text,
+        data -> Jsonb,
+        inserted_at -> Timestamp,
+        event_index -> Int8,
+        #[max_length = 300]
+        indexed_type -> Varchar,
+    }
+}
+```
+
+The events schema represents the data that this processor is indexing. This [`schema.rs`](http://schema.rs) file is an
+autogenerated from the database migrations. In the next section, we’ll go over how these migrations are run.
+
+There are two other important tables:
+
+- `ledger_infos` which tracks the chain id of the ledger being indexed
+- `processor_status` which tracks the `last_success_version` of the processor
+
+### Defining the events processor
+
+The file `src/processors/events/events_processor.rs` contains the code which defines the events processor. Inside of
+`run_processor` there are a few key components:
+
+1. First, we setup the processor:
+    1. `run_migrations` automatically runs the database migrations defined in `src/db/postgres/migrations`
+    2. We merge the starting version in `config.yaml`  and the `processor_status.last_success_version` in the database
+       to get the final starting version for the processor. This allows us to restart the processor from a previously
+       processed version.
+    3. We check the `ledger_infos.chain_id` to make sure the processor is indexing the correct chain
+2. Next, we instantiate the processor steps. Here we explain the purpose of each step:
+    1. `TransactionStreamStep` provides a stream of transactions to the processor
+    2. `EventsExtractor` extracts events data from each transaction
+    3. `EventsStorer` inserts the extracted events into the `events` table
+    4. `LatestVersionTracker` keeps track of the latest processed version and updates the `processor_status` table
+3. Lastly, we connect the processor steps together.
+    1. `ProcessorBuilder::new_with_inputless_first_step` takes in the first step of the processor. In most cases, the
+       first step is a `TransactionStreamStep` .
+    2. The rest of the steps are connected with `connect_to`. `connect_to` creates a channel between the steps so the
+       output of one step becomes the input of the next step.
+    3. And then we end the builder with `end_and_return_output_receiver`.
+
+# Running the processor
+
+With the `config.yaml` you created earlier, you’re ready to run the events processor:
+
+```bash
+cd aptos-indexer-processor-example
+cargo run --release -- -c config.yaml
+```
+
+You should see the processor start to index Aptos blockchain events!
+
+```text
+{"timestamp":"2024-08-15T01:06:35.169217Z","level":"INFO","message":"[Transaction Stream] Received transactions from GRPC.","stream_address":"https://grpc.testnet.aptoslabs.com/","connection_id":"5575cb8c-61fb-498f-aaae-868d1e8773ac","start_version":0,"end_version":4999,"start_txn_timestamp_iso":"1970-01-01T00:00:00.000000000Z","end_txn_timestamp_iso":"2022-09-09T01:49:02.023089000Z","num_of_transactions":5000,"size_in_bytes":5708539,"duration_in_secs":0.310734,"tps":16078,"bytes_per_sec":18371143.80788713,"filename":"/Users/reneetso/.cargo/git/checkouts/aptos-indexer-processor-sdk-2f3940a333c8389d/e1e1bdd/rust/transaction-stream/src/transaction_stream.rs","line_number":400,"threadName":"tokio-runtime-worker","threadId":"ThreadId(6)"}
+{"timestamp":"2024-08-15T01:06:35.257756Z","level":"INFO","message":"Events version [0, 4999] stored successfully","filename":"src/processors/events/events_storer.rs","line_number":75,"threadName":"tokio-runtime-worker","threadId":"ThreadId(10)"}
+{"timestamp":"2024-08-15T01:06:35.257801Z","level":"INFO","message":"Finished processing events from versions [0, 4999]","filename":"src/processors/events/events_processor.rs","line_number":90,"threadName":"tokio-runtime-worker","threadId":"ThreadId(17)"}
+```
+
+# Customizing the processor
+
+In most cases, you want to index events from your own contracts. The example processor offers a good starting point to
+creating your own custom processor.
+
+To customize the processor to index events from your custom contract, you can make change in these places:
+
+- `EventsExtractor`
+    - In `process()`, you can filter by specific event types and extract specific event data from your custom contract
+- `EventsStorer`
+    - If you need to change the database model, you can generate a new database migration by going to `src/db/postgres`
+      and running
+    ```bash
+    diesel migration generate {migration_name} 
+    ```
+    - Add your migration changes to `up.sql` and `down.sql`, then run
+  
+    ```bash
+    diesel migration run --database-url={YOUR_DATABASE_URL}
+    ```
+    to update `schema.rs`.
+
+    - And then update the `EventsStorer.process()` to handle storing the events data to the updated database model

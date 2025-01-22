@@ -1,0 +1,84 @@
+# Reactアプリのセットアップ
+
+これは[Aptos上でのエンドツーエンドdappの構築](../build-e2e-dapp.mdx)チュートリアルの2番目のチャプターです。[スマートコントラクトを作成](1-create-smart-contract.mdx)した後、Reactアプリをセットアップします。
+
+## アプリのセットアップ
+
+クライアントサイドの構築には`react`ライブラリを使用し、[Create React App](https://create-react-app.dev/docs/getting-started#creating-an-app)を利用します。
+
+UIには[Ant Design](https://ant.design/)を使用します。これは個人的な選択であり、他のUIライブラリ/フレームワークを使用しても構いません。
+
+1. `my-first-dapp`プロジェクトのルートフォルダで以下を実行します：
+
+```bash filename="Terminal"
+npx create-react-app client --template typescript
+```
+
+これにより、現在のパスに新しい`client`フォルダが作成されます：
+
+2. ファイル構造は以下のようになるはずです：
+
+   ![client-folder](/docs/build-e2e-dapp-img-2.png)
+
+3. `cd client`を実行
+4. `npm start`を実行
+
+   この時点で、アプリは[http://localhost:3000](http://localhost:3000)で実行され、デフォルトのReactレイアウトが表示されているはずです。
+
+5. `client/src`ディレクトリにReactアプリのファイルがあります。少し整理しましょう。
+6. `App.tsx`ファイルを開き、内容を以下のように更新します：
+
+```ts filename="App.tsx"
+function App() {
+  return <div>My app goes here</div>;
+}
+
+export default App;
+```
+
+変更を保存すると、ブラウザでアプリの内容が変更され、`My app goes here`が表示されるはずです。
+
+7. `App.tsx`ファイルを開き、`import './App.css';`と`import logo from './logo.svg';`の行を削除します。このファイルからデフォルトのインポートを削除したので、プロジェクトからいくつかのファイルを削除できます。`App.css`と`logo.svg`ファイルを削除します。
+8. `index.tsx`ファイルを開き、ファイル上部の`import './index.css';`の行を削除します。
+   これで`src/index.css`ファイルも削除できます。
+
+## dappのUI
+
+まず、dappのUIレイアウトを構築します。アプリには2つのUI状態があります：
+
+- アカウントがまだリストを作成していない場合（左側）
+- アカウントがリストを作成し、タスクを追加できる場合（右側）
+  ![dapp-ui](/docs/build-e2e-dapp-img-3.png)
+
+UIには[Ant Design](https://ant.design/)ライブラリを使用します：
+
+1. ローカルサーバーが実行中の場合は停止します。
+2. `client`ディレクトリで、UIライブラリパッケージをインストールします：`npm i antd@5.1.4`
+3. `App.tsx`を初期状態のUIで更新します：
+
+```ts filename="App.tsx"
+return (
+  <>
+    <Layout>
+      <Row align="middle">
+        <Col span={10} offset={2}>
+          <h1>Our todolist</h1>
+        </Col>
+        <Col span={12} style={{ textAlign: "right", paddingRight: "200px" }}>
+          <h1>Connect Wallet</h1>
+        </Col>
+      </Row>
+    </Layout>
+  </>
+);
+```
+
+4. 追加したコンポーネントをインポートするのを忘れないでください：
+
+```ts filename="App.tsx"
+import { Layout, Row, Col } from "antd";
+```
+
+5. `npm start`でローカルサーバーを実行すると、UIモックアップに一致するヘッダーが表示されるはずです。
+
+次のチャプター3で[ウォレットサポートを追加](3-add-wallet-support.mdx)する準備が整いました。

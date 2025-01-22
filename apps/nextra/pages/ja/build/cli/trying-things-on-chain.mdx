@@ -1,0 +1,17 @@
+# Aptos CLIを使用してオンチェーンで試してみる
+
+CLIは、オンチェーンデータの素早い検索やアカウントからのトランザクション送信に便利なツールです。
+
+アカウントとの対話を指定する最も一般的な方法は、プロファイルを通じて行います。以下のコマンドを実行することで、CLIに新しいプロファイルを作成できます：
+
+```bash filename="Terminal"
+aptos init --profile <your-profile-name>
+```
+
+コマンドがアカウントを必要とする場合、プロファイルの名前を渡すことができます。コマンドがデフォルトプロファイルを暗黙的に使用する場合、通常は指定したプロファイルを使用するためのオプションパラメータがあり、`aptos <your-command> --help`を実行することで見つけることができます。
+
+これにより、CLIを使用してオンチェーンで実行できる主な3つのことは以下の通りです：
+
+1. [オンチェーンアカウント情報の検索](trying-things-on-chain/looking-up-account-info.mdx)
+2. [テストアカウントの作成とトランザクションの送信](trying-things-on-chain/create-test-accounts.mdx)
+3. [ハードウェアレッジャーを介したセキュアなオンチェーン操作](trying-things-on-chain/ledger.mdx)

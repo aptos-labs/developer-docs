@@ -1,6 +1,6 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { createContext, useCallback, useContext } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "nextra/hooks";
 import { useSearchParams } from "next/navigation";
 import { Branch, BRANCHES, DEFAULT_BRANCH } from "./shared";
 

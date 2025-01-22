@@ -63,7 +63,7 @@ import { Aptos, AptosConfig, NETWORK } from "@aptos-labs/ts-sdk";
 import { ABI } from "./abi";
 
 // First, create an Aptos client, make sure the network is the one that contract lives on
-export const aptos = new Aptos(new AptosConfig({ network: NETWORK.TESTNET }));
+export const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET }));
 // Second, create a SurfClient with the Aptos client and the ABI
 export const surfClient = createSurfClient(aptos).useABI(ABI);
 

@@ -1,0 +1,206 @@
+---
+title: "トランザクションの構築"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# トランザクションの使用
+
+トランザクションを使用することで、チェーン上のデータを変更したりイベントをトリガーしたりすることができます。一般的に、トランザクションは構築から実行まで5つのステップを経ます：構築、シミュレーション、署名、送信、待機です。
+
+<Callout type="info">
+これらの例では、`aptos`は[`Aptos`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.12.2/classes/Aptos.html)クライアントオブジェクトのインスタンスです。
+</Callout>
+
+<Steps>
+### 構築
+
+トランザクションの構築では、以下を指定します：
+
+1. **`sender`アカウント。** <br/>通常、このアカウントがトランザクションのガス料金を支払います。他のアカウントに料金を支払わせる方法については、[トランザクションのスポンサリング](building-transactions/sponsoring-transactions.mdx)を参照してください。
+2. **呼び出される`function`。** <br/>これは、このトランザクションを実行したときにトリガーされるチェーン上のスマートコントラクトエントリ関数の識別子です。
+3. **`functionArguments`。** <br/>これは関数の実行に必要なデータです。
+
+これらは`aptos.transaction.build.simple(...)`を使用して`SimpleTransaction`にパッケージ化できます：
+
+```ts filename="build-a-transaction.ts"
+const transaction = await aptos.transaction.build.simple({
+  sender: sender.accountAddress,
+  data: {
+    // Aptosのすべてのトランザクションはスマートコントラクトを通じて実装されています。
+    function: "0x1::aptos_account::transfer",
+    functionArguments: [destination.accountAddress, 100],
+  },
+});
+```
+
+<Callout type="info">
+`functionArguments`を渡すためのより高度な形式として、[バイナリ正規シリアライゼーション（BCS）](building-transactions/bcs-format.mdx)形式があります。これはAptosチェーンが関数引数を解析する方法です。SDKはAPIコールを通じてTypeScriptのプリミティブ型をBCS形式に変換します。
+</Callout>
+
+#### 構築オプション
+
+トランザクションの実行方法は、構築時に`options: {...}`を渡すことでカスタマイズできます。よく使用されるオプションには以下があります：
+
+1. `maxGasAmount` - このトランザクションの実行に支払う意思のあるガス量の上限を設定します。
+2. `gasUnitPrice` - 最小価格よりも高いガス単価を指定することで、Aptosネットワークでより高い優先度で実行されるようになります。
+3. `expireTimestamp` - トランザクションが実行されなければならない具体的な期限を設定します。期限を過ぎると取り消されます。
+
+これらの値が明示的に指定されない場合、SDKは適切なデフォルト値を提供します。
+
+### シミュレーション（オプション）
+
+Aptosチェーン上のすべてのトランザクションには、ネットワークマシンがトランザクションを実行する際の作業量に応じたガス料金が関連付けられています。その費用を見積もるために、トランザクションをコミットする前にシミュレーションを実行できます。
+
+<Callout type="info">
+このシミュレーションは実際の台帳の状態に影響を与えないため、アカウントの`publicKey`のみを必要とします。
+</Callout>
+
+シミュレーションは`aptos.transaction.simulate.simple(...)`を使用して実行できます：
+
+```ts filename="build-a-transaction.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+  signerPublicKey: signer.publicKey,
+  transaction,
+});
+// 料金が適切であれば、署名に進みます！
+```
+
+### 署名
+
+トランザクションが構築され、料金が適切だと判断されたら、`aptos.transaction.sign`でトランザクションに署名できます。署名は`sender`アカウントから行う必要があります。
+
+```ts filename="build-a-transaction.ts"
+// 3. 署名
+const senderAuthenticator = aptos.transaction.sign({
+  signer: sender,
+  transaction,
+});
+```
+
+### 送信
+
+トランザクションに署名したら、`aptos.transaction.submit.simple`を使用してネットワークに送信できます：
+
+```ts filename="build-a-transaction.ts"
+// 4. 送信
+const committedTransaction = await aptos.transaction.submit.simple({
+  transaction,
+  senderAuthenticator,
+});
+```
+
+### 待機
+
+最後に、[`aptos.waitForTransaction`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.12.2/classes/Aptos.html#waitForTransaction)を使用して、送信したトランザクションのハッシュを指定することで、トランザクションの結果を待つことができます：
+
+```ts filename="build-a-transaction.ts"
+// 5. 待機
+const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
+```
+</Steps>
+
+## 完全なTypeScript例
+
+```ts filename="build-a-transaction.ts"
+/**
+ * この例では、Aptos SDKを使用してトランザクションを送信する方法を示します。
+ * この例を実行する前に@aptos-labs/ts-sdkをインストールすることを忘れないでください！
+ */
+
+import {
+    Account,
+    Aptos,
+    AptosConfig,
+    Network,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+    console.log("この例では、2つのアカウント（AliceとBob）を作成し、BobのアカウントにAPTを送金するトランザクションを送信します。");
+
+    // 0. クライアントとテストアカウントのセットアップ
+    const config = new AptosConfig({ network: Network.DEVNET });
+    const aptos = new Aptos(config);
+
+    let alice = Account.generate();
+    let bob = Account.generate();
+
+    console.log("=== アドレス ===\n");
+    console.log(`Aliceのアドレス: ${alice.accountAddress}`);
+    console.log(`Bobのアドレス: ${bob.accountAddress}`);
+
+    console.log("\n=== アカウントへの資金提供 ===\n");
+    await aptos.fundAccount({
+        accountAddress: alice.accountAddress,
+        amount: 100_000_000,
+    });  
+    await aptos.fundAccount({
+        accountAddress: bob.accountAddress,
+        amount: 100,
+    });
+    console.log("AliceとBobのアカウントに資金を提供しました！")
+
+    // 1. 構築
+    console.log("\n=== 1. トランザクションの構築 ===\n");
+    const transaction = await aptos.transaction.build.simple({
+        sender: alice.accountAddress,
+        data: {
+        // Aptosのすべてのトランザクションはスマートコントラクトを通じて実装されています。
+        function: "0x1::aptos_account::transfer",
+        functionArguments: [bob.accountAddress, 100],
+        },
+    });
+    console.log("トランザクションを構築しました！")
+
+    // 2. シミュレーション（オプション）
+    console.log("\n === 2. シミュレーション結果（オプション） === \n")
+    const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+        signerPublicKey: alice.publicKey,
+        transaction,
+    });
+    console.log(userTransactionResponse)
+
+    // 3. 署名
+    console.log("\n=== 3. トランザクションの署名 ===\n");
+    const senderAuthenticator = aptos.transaction.sign({
+        signer: alice,
+        transaction,
+    });
+    console.log("トランザクションに署名しました！")
+
+    // 4. 送信
+    console.log("\n=== 4. トランザクションの送信 ===\n");
+    const submittedTransaction = await aptos.transaction.submit.simple({
+        transaction,
+        senderAuthenticator,
+    });
+
+    console.log(`送信されたトランザクションのハッシュ: ${submittedTransaction.hash}`);
+
+    // 5. 結果の待機
+    console.log("\n=== 5. トランザクションの結果を待機中 ===\n");
+    const executedTransaction = await aptos.waitForTransaction({ transactionHash: submittedTransaction.hash });
+    console.log(executedTransaction)
+};
+
+example();
+```
+
+## まとめ
+
+チェーン上でトランザクションを構築して送信するには、以下の5つのステップが必要です：
+1. トランザクションを**構築**する。
+2. コストを**シミュレーション**する。（オプション）
+3. シミュレートされたコストが適切であれば、トランザクションに**署名**する。
+4. トランザクションをネットワークに**送信**する。
+5. チェーンが検証して更新するのを**待機**する。
+
+## 高度なトランザクション機能の探索
+
+トランザクションには、ニーズに応じて適応できるいくつかの追加機能があります：
+
+1. [マルチエージェント署名](building-transactions/multi-agent-transactions.mdx) - 単一のコントラクトに複数のアカウントを使用できるようにします。
+2. [トランザクションのスポンサリング](building-transactions/sponsoring-transactions.mdx) - 他のアカウントにこのトランザクションのガス料金を支払わせます。
+3. [バッチトランザクションの送信](building-transactions/batching-transactions.mdx) - 単一のアカウントから複数のトランザクションを素早く送信する方法。
+4. [バイナリ正規シリアライゼーション（BCS）](building-transactions/bcs-format.mdx) - Aptosトランザクションのデータをシリアライズするために使用される形式。
+5. [ScriptComposerを使用した複数のMove呼び出しの構成](building-transactions/script-composer.mdx) - （実験的）複数のMove関数を動的に呼び出すより複雑なトランザクションペイロードの構築。

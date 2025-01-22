@@ -49,6 +49,65 @@ https://github.com/aptos-labs/unity-sdk.git?path=/Packages/com.aptoslabs.aptos-u
 1. Go to the [`aptos-labs/unity-sdk Releases`](https://github.com/aptos-labs/unity-sdk/releases) and download the latest release.
 2. Drag and drop the `.unitypackage` file into your Unity project.
 
+## Usage
+
+Set up your Aptos client by adding the `Aptos` namespace and instantiating an `AptosUnityClient`. You can use a predefined
+configuration from `Networks` or configuring your own.
+
+```csharp {2-2,8-8,11-15}
+using UnityEngine;
+using Aptos;
+
+class Example : MonoBehaviour
+{
+    public void Start()
+    {
+        PrintLedgerInfo();
+    }
+
+    async void PrintLedgerInfo() {
+        var client = new AptosUnityClient(Networks.Mainnet);
+        var ledgerInfo = await client.Block.GetLedgerInfo();
+        Debug.Log(ledgerInfo.BlockHeight);
+    }
+
+}
+```
+
+To interact with the blockchain, you will need to create a signer and build a transaction.
+
+```csharp filename="Program.cs" {10-11,13-21,23-24,26-27}
+using UnityEngine;
+using Aptos;
+
+class Example : MonoBehaviour
+{
+    public async void Start()
+    {
+        var client = new AptosUnityClient(Networks.Mainnet);
+
+        // 1. Create a signer
+        var signer = Account.Generate();
+
+        // 2. Build the transaction
+        var transaction = await client.Transaction.Build(
+            sender: account,
+            data: new GenerateEntryFunctionPayloadData(
+                function: "0x1::aptos_account::transfer_coins",
+                typeArguments: ["0x1::aptos_coin::AptosCoin"],
+                functionArguments: [account.Address, "100000"]
+            )
+        );
+
+        // 3. Sign and submit the transaction
+        var pendingTransaction = client.Transaction.SignAndSubmitTransaction(account, transaction);
+
+        // 4. (Optional) Wait for the transaction to be committed
+        var committedTransaction = await client.Transaction.WaitForTransaction(pendingTransaction);
+    }
+}
+```
+
 ## Resources
 
 <Cards className="xl:grid-cols-2">

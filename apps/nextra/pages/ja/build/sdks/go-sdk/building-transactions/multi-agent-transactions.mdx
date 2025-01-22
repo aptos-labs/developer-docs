@@ -1,0 +1,91 @@
+---
+title: "Go SDK - マルチエージェントトランザクション"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# マルチエージェントトランザクション
+
+マルチエージェントトランザクションでは、複数のアカウントがMoveコントラクトのロジックに参加することができます。
+
+これは、トランザクションを実行する前に複数の当事者の合意を必要とする場合や、
+複数のアカウントのリソースを使用する場合に使用できます。
+
+## マルチエージェントトランザクションの作成
+
+マルチエージェントトランザクションの作成と実行は、[通常のトランザクションフロー](../building-transactions.mdx)と同様のフローに従いますが、
+いくつかの重要な違いがあります。
+
+<Callout type="info">
+  `client.BuildTransaction`の代わりに、マルチエージェントトランザクションとスポンサードトランザクションでは
+  `client.BuildTransactionMultiAgent`を使用します。
+</Callout>
+
+<Steps>
+  ### 追加の署名者のリストを含む`aptos.AdditionalSigners`を使用してトランザクションを構築します。
+
+  <Callout type="info">
+    以下の`Function`フィールドを、複数のエージェントの署名を必要とするエントリ関数に置き換えてください。
+  </Callout>
+
+  ```go filename="multi_agent.go"
+  transaction, err := client.BuildTransactionMultiAgent(alice.AccountAddress(), aptos.TransactionPayload{
+    Payload: &aptos.EntryFunction{
+      // モジュールと関数を、マルチエージェント関数に置き換えてください
+      Module: aptos.ModuleId{
+        Address: aptos.AccountOne,
+        Name:    "aptos_account",
+      },
+      Function: "transfer",
+      ArgTypes: []aptos.TypeTag{},
+      Args: [][]byte{
+        accountBytes,
+        amountBytes,
+      },
+    },
+    AdditionalSigners: []aptos.AccountAddress{bob.AccountAddress()},
+  })
+  ```
+
+{/* TODO Support simulation of multiagent */}
+
+  ### 各署名者に対して1回ずつ署名します。
+
+  次のステップでこれらの署名を組み合わせます。
+
+  ```go filename="multi_agent.go"
+  aliceAuth, err := rawTxn.Sign(alice)
+  if err != nil {
+      panic("Failed to sign transaction as sender:" + err.Error())
+  }
+  bobAuth, err := rawTxn.Sign(bob)
+  if err != nil {
+      panic("Failed to sign transaction as second signer:" + err.Error())
+  }
+  ```
+
+  ### 生のトランザクションと署名を組み合わせて、マルチエージェント署名付きトランザクションを作成します。
+
+  ```go filename="multi_agent.go"
+  signedTxn, ok := rawTxn.ToMultiAgentSignedTransaction(aliceAuth, []crypto.AccountAuthenticator{bobAuth})
+  ```
+  ### `aptos.AdditionalSigners`パラメータを介してすべてのエージェントの署名を組み合わせてトランザクションを送信します。
+
+  ```go filename="multi_agent.go"
+  submitResponse, err := client.SubmitTransaction(signedTxn)
+  ```
+
+  ### 最後に、トランザクションの完了を待ちます。
+
+  ```go filename="multi_agent.go"
+  txnResult, err := client.WaitForTransaction(submitResponse.Hash)
+  ```
+</Steps>
+
+{/* TODO: Add full code snippet for Go */}
+
+## 一般的なエラー
+
+`NUMBER_OF_SIGNER_ARGUMENTS_MISMATCH` - これは、その数のアカウントを必要としない関数に対してマルチエージェント署名を試みた場合に発生します。
+例えば、`0x1::aptos_account::transfer`関数に対して複数の署名を使用しようとすると、この関数は1つのアドレスのみを想定しているため、
+複数のアドレスが提供されるとエラーが発生します。

@@ -1,0 +1,216 @@
+---
+title: "フェデレーテッドキーレス統合ガイド"
+---
+import { Callout, Steps } from "nextra/components";
+
+# フェデレーテッドキーレス統合ガイド
+
+このガイドでは、フェデレーテッドキーレスをdappに統合する方法を説明します。
+
+## 前提条件
+
+- [Node.js](https://nodejs.org/en/)がインストールされていること
+- [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/)がインストールされていること
+- [Aptos Wallet Adapter](https://github.com/aptos-labs/aptos-wallet-adapter)を使用していること
+
+## 統合ステップ
+
+### 1. 依存関係のインストール
+
+```bash
+npm install @aptos-labs/keyless-ts
+```
+
+### 2. OIDCプロバイダーの設定
+
+OIDCプロバイダーを設定する必要があります。詳細な手順については、[OIDCサポート](../oidc-support)を参照してください。
+
+### 3. フェデレーテッドキーレスプロバイダーの設定
+
+フェデレーテッドキーレスプロバイダーを設定するには、以下のコードを使用します：
+
+```typescript
+import { FederatedKeylessProvider } from "@aptos-labs/keyless-ts";
+
+const federatedKeylessProvider = new FederatedKeylessProvider({
+  // 必須: OIDCプロバイダーの設定
+  oidcProvider: {
+    // 必須: OIDCプロバイダーの名前
+    name: "auth0",
+    // 必須: OIDCプロバイダーのクライアントID
+    clientId: "YOUR_CLIENT_ID",
+    // 必須: OIDCプロバイダーのリダイレクトURI
+    redirectUri: "YOUR_REDIRECT_URI",
+    // 必須: OIDCプロバイダーのドメイン
+    domain: "YOUR_DOMAIN",
+  },
+  // 必須: ガーディアンのURL
+  guardianUrl: "https://guardian.aptoslabs.com",
+  // 必須: プルーバーのURL
+  proverUrl: "https://prover.aptoslabs.com",
+  // オプション: ノードのURL（デフォルト: mainnet）
+  nodeUrl: "https://fullnode.mainnet.aptoslabs.com/v1",
+  // オプション: 一時的な鍵の有効期限（デフォルト: 1時間）
+  ephemeralKeyExpiration: 3600,
+  // オプション: 一時的な鍵の保存場所（デフォルト: localStorage）
+  ephemeralKeyStorage: "localStorage",
+});
+```
+
+### 4. フェデレーテッドキーレスプロバイダーの初期化
+
+フェデレーテッドキーレスプロバイダーを初期化するには、以下のコードを使用します：
+
+```typescript
+// フェデレーテッドキーレスプロバイダーを初期化
+await federatedKeylessProvider.init();
+```
+
+### 5. サインインの実装
+
+ユーザーがサインインできるようにするには、以下のコードを使用します：
+
+```typescript
+// ユーザーをサインインさせる
+await federatedKeylessProvider.signIn();
+```
+
+### 6. トランザクションの送信
+
+トランザクションを送信するには、以下のコードを使用します：
+
+```typescript
+// トランザクションペイロードを作成
+const payload = {
+  function: "0x1::coin::transfer",
+  type_arguments: ["0x1::aptos_coin::AptosCoin"],
+  arguments: [recipientAddress, amount],
+};
+
+// トランザクションを送信
+const response = await federatedKeylessProvider.signAndSubmitTransaction(payload);
+```
+
+### 7. サインアウトの実装
+
+ユーザーがサインアウトできるようにするには、以下のコードを使用します：
+
+```typescript
+// ユーザーをサインアウトさせる
+await federatedKeylessProvider.signOut();
+```
+
+## エラー処理
+
+フェデレーテッドキーレスプロバイダーは以下のエラーを投げる可能性があります：
+
+```typescript
+// エラーの種類
+export enum FederatedKeylessError {
+  // OIDCプロバイダーのエラー
+  OIDC_PROVIDER_ERROR = "OIDC_PROVIDER_ERROR",
+  // ガーディアンのエラー
+  GUARDIAN_ERROR = "GUARDIAN_ERROR",
+  // プルーバーのエラー
+  PROVER_ERROR = "PROVER_ERROR",
+  // ネットワークのエラー
+  NETWORK_ERROR = "NETWORK_ERROR",
+  // 一時的な鍵のエラー
+  EPHEMERAL_KEY_ERROR = "EPHEMERAL_KEY_ERROR",
+  // その他のエラー
+  OTHER_ERROR = "OTHER_ERROR",
+}
+```
+
+エラーを処理するには、以下のコードを使用します：
+
+```typescript
+try {
+  await federatedKeylessProvider.signIn();
+} catch (error) {
+  if (error instanceof FederatedKeylessError) {
+    switch (error.code) {
+      case FederatedKeylessError.OIDC_PROVIDER_ERROR:
+        // OIDCプロバイダーのエラーを処理
+        break;
+      case FederatedKeylessError.GUARDIAN_ERROR:
+        // ガーディアンのエラーを処理
+        break;
+      case FederatedKeylessError.PROVER_ERROR:
+        // プルーバーのエラーを処理
+        break;
+      case FederatedKeylessError.NETWORK_ERROR:
+        // ネットワークのエラーを処理
+        break;
+      case FederatedKeylessError.EPHEMERAL_KEY_ERROR:
+        // 一時的な鍵のエラーを処理
+        break;
+      default:
+        // その他のエラーを処理
+        break;
+    }
+  }
+}
+```
+
+## 完全な例
+
+以下は、フェデレーテッドキーレスプロバイダーを使用した完全な例です：
+
+```typescript
+import { FederatedKeylessProvider } from "@aptos-labs/keyless-ts";
+
+// フェデレーテッドキーレスプロバイダーを作成
+const federatedKeylessProvider = new FederatedKeylessProvider({
+  oidcProvider: {
+    name: "auth0",
+    clientId: "YOUR_CLIENT_ID",
+    redirectUri: "YOUR_REDIRECT_URI",
+    domain: "YOUR_DOMAIN",
+  },
+  guardianUrl: "https://guardian.aptoslabs.com",
+  proverUrl: "https://prover.aptoslabs.com",
+});
+
+// フェデレーテッドキーレスプロバイダーを初期化
+await federatedKeylessProvider.init();
+
+// サインインボタンのクリックハンドラー
+const handleSignIn = async () => {
+  try {
+    await federatedKeylessProvider.signIn();
+  } catch (error) {
+    console.error("サインインエラー:", error);
+  }
+};
+
+// トランザクション送信ボタンのクリックハンドラー
+const handleSendTransaction = async () => {
+  try {
+    const payload = {
+      function: "0x1::coin::transfer",
+      type_arguments: ["0x1::aptos_coin::AptosCoin"],
+      arguments: [recipientAddress, amount],
+    };
+    const response = await federatedKeylessProvider.signAndSubmitTransaction(payload);
+    console.log("トランザクション送信成功:", response);
+  } catch (error) {
+    console.error("トランザクション送信エラー:", error);
+  }
+};
+
+// サインアウトボタンのクリックハンドラー
+const handleSignOut = async () => {
+  try {
+    await federatedKeylessProvider.signOut();
+  } catch (error) {
+    console.error("サインアウトエラー:", error);
+  }
+};
+```
+
+## 次のステップ
+
+- [フェデレーテッドキーレスの仕組み](./how-federated-keyless-works)を理解する
+- [OIDCサポート](../oidc-support)の詳細を確認する
+- [フェデレーテッドキーレスの簡単な例](./simple-example)を試す

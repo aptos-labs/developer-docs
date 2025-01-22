@@ -9,24 +9,20 @@
     "spellcheck": "turbo run spellcheck"
   },
   "dependencies": {
-    "turbo": "2.0.14"
+    "turbo": "2.3.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "prettier": "^3.2.5"
+    "prettier": "^3.4.2"
   },
-  "packageManager": "pnpm@8.9.0",
+  "packageManager": "pnpm@9.15.1",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "pnpm": {
     "overrides": {
-      "ws": "^8.17.1",
-      "rollup": "^4.22.4",
-      "dompurify": "^2.5.4",
-      "micromatch": "^4.0.8",
-      "vite": "^5.2.14"
+      "cross-spawn": ">=6.0.6"
     }
   }
 }

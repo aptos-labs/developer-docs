@@ -1,0 +1,38 @@
+---
+title: "Go SDK - バイナリ正規シリアライゼーション（BCS）フォーマット"
+---
+
+# バイナリ正規シリアライゼーション（BCS）フォーマット
+
+Aptos Go SDKのすべてのトランザクション引数は、バイナリ正規シリアライゼーション（BCS）フォーマットでバイトとしてエンコードされます。
+これはAptosチェーンが認識するフォーマットで、特定の型（例：uint64やbig.Intの代わりに、`u64`や`u128`のような型）を使用します。
+
+引数の型を明示的に指定することで、BCSフォーマットを直接使用してトランザクションを構築できます：
+
+```go filename="example.go"
+	accountBytes, err := bcs.Serialize(&bob.Address)
+	if err != nil {
+		panic("Failed to serialize bob's address:" + err.Error())
+	}
+
+	amountBytes, err := bcs.SerializeU64(TransferAmount)
+	if err != nil {
+		panic("Failed to serialize transfer amount:" + err.Error())
+	}
+	rawTxn, err := client.BuildTransaction(alice.AccountAddress(), aptos.TransactionPayload{
+		Payload: &aptos.EntryFunction{
+			Module: aptos.ModuleId{
+				Address: aptos.AccountOne,
+				Name:    "aptos_account",
+			},
+			Function: "transfer",
+			ArgTypes: []aptos.TypeTag{},
+			Args: [][]byte{
+				accountBytes,
+				amountBytes,
+			},
+		}},
+	)
+```
+
+BCSについての詳細は、[BCS GitHubリポジトリ](https://github.com/aptos-labs/bcs)をご覧ください。

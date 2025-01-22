@@ -1,0 +1,39 @@
+---
+title: "ネットワーク"
+hide_table_of_contents: true
+toc: false
+---
+
+# Aptosネットワーク
+
+## ネットワーク概要
+
+1. [ローカルネット](http://127.0.0.1:8080) -- コードベースの特定バージョンに対してローカル開発を行うためのスタンドアロンツールで、外部ネットワークは不要です。
+2. [デブネット](https://api.devnet.aptoslabs.com/v1/spec#/) -- コミュニティ向けの共有リソースで、データは毎週リセットされ、aptos-coreのメインブランチから毎週更新されます。
+3. [テストネット](https://api.testnet.aptoslabs.com/v1/spec#/) -- コミュニティ向けの共有リソースで、データは保持され、ネットワーク構成はメインネットを模倣します。
+4. [メインネット](https://api.mainnet.aptoslabs.com/v1/spec#/) -- 実際の資産を扱う本番ネットワークです。
+
+{/* TODO 画面に合わせて調整する */}
+
+### ネットワークの特性
+
+| ネットワーク名 | チェーンID | Genesis & Waypoint | フォーセット | エポック期間 | ネットワークプロバイダー | リリース頻度 | データ消去頻度 |
+|--------------|------------|-------------------|-------------|-------------|----------------------|-------------|--------------|
+| メインネット | 1 | [ファイルはこちら](https://github.com/aptos-labs/aptos-networks/tree/main/mainnet) | N/A | 2時間 | 完全分散型 | 月次（変動あり） | なし |
+| テストネット | 2 | [ファイルはこちら](https://github.com/aptos-labs/aptos-networks/tree/main/testnet) | プログラムによるアクセスなし、[ミントページ](/network/faucet)を使用 | 2時間 | Aptos財団に代わってAptos Labsが管理 | 月次（変動あり） | なし |
+| デブネット | [Aptos Explorerで確認 **右上からデブネットを選択**](https://explorer.aptoslabs.com/?network=Devnet) | [ファイルはこちら](https://github.com/aptos-labs/aptos-networks/tree/main/devnet) | APIを通じてプログラムによるアクセス可能 | 2時間 | Aptos財団に代わってAptos Labsが管理 | 週次 | 更新時 |
+
+### ネットワークURL
+
+以下のURLはAptos Labsによって提供されています。
+
+| ネットワーク名 | REST API | REST API仕様 | Indexer GraphQL API | Indexer GraphQL API仕様 | Indexer GRPC | フォーセット | 現在のトークン供給API |
+|--------------|-----------|--------------|-------------------|----------------------|---------------|------------|-------------------|
+| メインネット | [REST API](https://api.mainnet.aptoslabs.com/v1) | [REST API仕様](https://api.mainnet.aptoslabs.com/v1/spec#/) | [Indexer API](https://api.mainnet.aptoslabs.com/v1/graphql) | [Indexer API仕様](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) | [GRPC](https://grpc.mainnet.aptoslabs.com) | N/A | [API](https://aptos-supply.dev.gcp.aptosdev.com/supply) |
+| テストネット | [REST API](https://api.testnet.aptoslabs.com/v1) | [REST API仕様](https://api.testnet.aptoslabs.com/v1/spec#/) | [Indexer API](https://api.testnet.aptoslabs.com/v1/graphql) | [Indexer API仕様](https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql) | [GRPC](https://grpc.testnet.aptoslabs.com) | [ミント](/network/faucet) | N/A |
+| デブネット | [REST API](https://api.devnet.aptoslabs.com/v1) | [REST API仕様](https://api.devnet.aptoslabs.com/v1/spec#/) | [Indexer API](https://api.devnet.aptoslabs.com/v1/graphql) | [Indexer API仕様](https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql) | [GRPC](https://grpc.devnet.aptoslabs.com) | [フォーセット](https://faucet.devnet.aptoslabs.com/) | N/A |
+
+<details>
+<summary>トークン供給APIの更新</summary>
+2024年12月12日、Aptos財団は現在のトークン供給APIを更新しました。このAPIの更新版は、現在の月次期間の開始時点での流通供給量を更新することで、メインネットの現在の流通供給量をより正確に反映しています。以前のバージョンのAPIは、前月の期間の流通供給量を報告していました。ネットワークの流通供給スケジュールに変更はなく、ネットワークの流通供給量は[こちら](https://aptosfoundation.org/currents/aptos-tokenomics-overview)で公開されている元のトークノミクスと一致しています。
+</details>

@@ -290,7 +290,7 @@ the `0x1::coin::balance<CoinType>(account address)` view function.  This will co
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
-const config = new AptosConfig({ network: Network.TESTNET });
+const config = new AptosConfig({ network: Network.DEVNET });
 const aptos = new Aptos(config);
 
 const coinType = "0x1::aptos_coin::AptosCoin";

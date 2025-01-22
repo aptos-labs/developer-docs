@@ -1,0 +1,117 @@
+---
+title: "オブジェクトコードのデプロイ"
+---
+
+# オブジェクトコードのデプロイ
+
+このドキュメントでは、[オブジェクト](objects.mdx)にコードをデプロイする方法について説明します。これはブロックチェーンにコードをデプロイする推奨される方法です。デプロイの複雑さを軽減し、コード所有者のアクセス制御ポリシーを安全に管理できるためです。なお、ここでのコードとは[パッケージ](book/packages.mdx)を指します。
+
+オブジェクトにコードをデプロイすることで、以下が保証されます：
+- 各デプロイは新しいアドレスに公開されます。
+- **コードオブジェクトの所有者**のみがコードをアップグレードおよび凍結できます。
+
+これは、オブジェクトを新しい所有者に譲渡した場合、その所有者がコードの完全な所有権を持つことを意味します。コードのアップグレードと凍結の権限を付与することになります。
+シードを管理したり、デプロイごとに新しいアドレスにデプロイしたりする必要はありません。オブジェクトコードのデプロイにより、デプロイプロセスが大幅に簡素化されます。
+
+## 手順
+
+以下は、オブジェクトにコードをコンパイル、デプロイ、アップグレードする手順です。
+
+import { Steps } from 'nextra/components'
+
+<Steps>
+
+### コードのコンパイル
+
+`<named_address>` がプレースホルダー `_` のままであることを確認してください。これはCLIコマンドがアドレスを上書きするために必要です。`<named_address>` の値は、コードの所有者、またはコードをデプロイするオブジェクトの所有者を表します。
+以下は `<named_address>` の値が `my_address` の例です。
+
+```toml filename="Move.toml"
+[addresses]
+my_address = "_"
+```
+
+以下のコマンドを実行してMoveコードをコンパイルします。
+- `<named_address>` を名前付きアドレスに置き換えてください。
+- `<your_address>` をあなたのアカウントのアドレスに置き換えてください。
+
+```bash filename="Terminal"
+aptos move compile --named-addresses <named_address>=<your_address>
+```
+
+### オブジェクトへのコードのデプロイ
+
+以下のコマンドでコンパイルしたコードをオブジェクトにデプロイします：
+- `<named_address>` を名前付きアドレスに置き換えてください。
+
+```bash filename="Terminal"
+aptos move deploy-object --address-name <named_address>
+```
+
+**以下は例です：**
+
+```bash filename="Terminal"
+aptos move deploy-object --address-name my_address
+```
+
+指定されたオブジェクトアドレスでコードを公開するかどうか確認されます。
+
+**出力例：**
+
+```bash filename="Terminal"
+Do you want to publish this package at object address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab [yes/no] >
+```
+
+**おめでとうございます！固有のアドレスを持つ新しいオブジェクトにコードをデプロイしました！**
+
+後でアップグレードに必要になるので、オブジェクトアドレスをメモしておいてください。
+
+### 既存パッケージのコードの転送とアップグレード
+
+まず、デプロイアカウントから管理者アカウントにオブジェクトを転送することができます。管理者アカウントがコードをアップグレードする権限を持つことになります。
+
+以下はCLIを使用して転送する方法です。`deployer_account` は現在のオブジェクトの所有者である必要があります。
+```bash
+aptos move run —-function-id 0x1::object::transfer --type-args 0x1::object::ObjectCore -—args address:<object_address> address:<new_owner_address> —-profile <deployer_account_profile>
+```
+
+以下はTypeScript SDKを使用して転送する方法です：
+```typescript
+const transaction = await aptos.transaction.build.simple({
+  sender: deployerAccount.accountAddress,
+  data: {
+	  function: "0x1::object::transfer",
+      typeArguments: [`0x1::object::ObjectCore`],
+	  functionArguments: [object_address, new_owner_address],
+  },
+});
+```
+これで、以下のように指定された管理者アカウントでコードをアップグレードできます。
+
+デプロイされたオブジェクト内のコードをアップグレードする場合は、以下を実行します：
+- `<named_address>` を既存の名前付きアドレスに置き換えてください。
+- `<code_object_addr>` をコードをホストしているオブジェクトのアドレスに置き換えてください。
+
+注意：パッケージがそのアドレスにデプロイされているため、アカウント名の値は現在オブジェクトアドレスである必要があります。
+
+```bash filename="Terminal"
+aptos move upgrade-object --address-name <named_address> --object-address <code_object_addr>
+```
+
+上記コマンドの例：
+
+```bash filename="Terminal"
+aptos move upgrade-object --address-name my_address --object-address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab
+```
+
+オブジェクトアドレスにデプロイされている既存のコードをアップグレードするかどうか確認されます。
+
+**出力例：**
+
+```bash filename="Terminal"
+Do you want to upgrade the package 'MyPackage' at object address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab [yes/no]
+```
+
+**おめでとうございます！既存のオブジェクト内のコードをアップグレードしました！**
+
+</Steps>
