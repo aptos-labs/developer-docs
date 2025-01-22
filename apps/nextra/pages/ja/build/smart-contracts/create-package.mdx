@@ -1,5 +1,5 @@
 ---
-title: "Create Package (Move)"
+title: "パッケージの作成 (Move)"
 ---
 
 import { Steps, Callout, FileTree } from "nextra/components";
@@ -11,24 +11,24 @@ export async function getStaticProps() {
   ])
 }
 
-# Create Package
+# パッケージの作成
 
 <Callout>
-We recommend installing the Aptos CLI before beginning.
-If you haven't already installed the Aptos CLI, see the [CLI section](../cli)
+開始する前にAptos CLIをインストールすることをお勧めします。
+まだAptos CLIをインストールしていない場合は、[CLIセクション](../cli)をご覧ください。
 </Callout>
 
 <Steps>
 
 ### `aptos move init`
 
-In a new project directory, initialize a Move package by running:
+新しいプロジェクトディレクトリで、以下のコマンドを実行してMoveパッケージを初期化します：
 
 ```bash filename="Terminal"
 aptos move init --name <PROJECT_NAME>
 ```
 
-You should now have a Move project that looks like so:
+以下のような構造のMoveプロジェクトが作成されます：
 
 <FileTree>
   <FileTree.Folder name="scripts" defaultOpen></FileTree.Folder>
@@ -38,19 +38,19 @@ You should now have a Move project that looks like so:
 </FileTree>
 
 <Callout type={"default"}>
-  You can also create a Move package from a [template](../cli/start-from-template).
+  [テンプレート](../cli/start-from-template)からMoveパッケージを作成することもできます。
 </Callout>
 
-### Update `Move.toml`
+### `Move.toml`の更新
 
-In `Move.toml`, fill in the following key information:
+`Move.toml`で、以下の重要な情報を入力します：
 
-1. `name`: name of your package
-2. `version`: package version (default is `"0.0.0"`)
-3. `addresses`: Describes which address the module will be deployed to.  These are named addresses that can be used as aliases.  In the below example, we will use `hello_blockchain` as the named address.
-4. `dependencies`: You will likely want to use `AptosFramework` and other [Third Party Dependencies](./third-party-dependencies)
+1. `name`: パッケージの名前
+2. `version`: パッケージのバージョン（デフォルトは`"0.0.0"`）
+3. `addresses`: モジュールがデプロイされるアドレスを記述します。これらは別名として使用できる名前付きアドレスです。以下の例では、`hello_blockchain`を名前付きアドレスとして使用します。
+4. `dependencies`: `AptosFramework`やその他の[サードパーティの依存関係](./third-party-dependencies)を使用することになるでしょう。
 
-Below is an example
+以下は例です：
 
 ```toml filename="Move.toml"
 [package]
@@ -66,9 +66,9 @@ rev = "mainnet"
 subdir = "aptos-framework"
 ```
 
-### Add to `sources` directory
+### `sources`ディレクトリへの追加
 
-Add your code in the `sources` directory. Here we have a `hello_blockchain.move` example.
+`sources`ディレクトリにコードを追加します。以下は`hello_blockchain.move`の例です。
 
 <RemoteCodeblock
   permalink="https://github.com/aptos-labs/aptos-core/blob/afd3706c17bcccfb39a9d6059aecbfa648ed295d/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L64"

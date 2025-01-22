@@ -1,12 +1,12 @@
 import { GraphQLEditor } from 'components/index'
 import { Callout } from 'nextra/components'
 
-# Get Token Metadata by Name
+# 名前によるトークンメタデータの取得
 
-`GetTokensDataByName` retrieves metadata URIs for tokens by their names within a specified collection. This query is particularly useful for marketplaces to show metadata from tokens within a collection.
+`GetTokensDataByName`は、指定されたコレクション内のトークン名に基づいてメタデータURIを取得します。このクエリは、コレクション内のトークンのメタデータを表示するマーケットプレイスにとって特に有用です。
 
 <Callout type="info">
-Explore the capabilities of this query! Modify the variables below to tailor the query to your needs.
+このクエリの機能を探索してみましょう！以下の変数を変更してクエリをニーズに合わせてカスタマイズできます。
 </Callout>
 
 <GraphQLEditor
@@ -24,36 +24,36 @@ Explore the capabilities of this query! Modify the variables below to tailor the
 }`}
 />
 
-#### Variables:
-- `$token_name`: **String** - The name of the token to search within the collection. Example: `"The Mexican"`.
-- `$collectionId`: **String** - The collection id calculated based on collection name and creator address. Example: `"0xe6a7399d10406b993e25d8a3bf24842413ba8f1a08444dbfa5f1c31b09f0d16e"`.
+#### 変数:
+- `$token_name`: **String** - コレクション内で検索するトークンの名前。例: `"The Mexican"`
+- `$collectionId`: **String** - コレクション名とクリエイターアドレスに基づいて計算されたコレクションID。例: `"0xe6a7399d10406b993e25d8a3bf24842413ba8f1a08444dbfa5f1c31b09f0d16e"`
 
 
-### Note
+### 注意
 
-To get the collection id, you can use the python code snippet to get:
+コレクションIDを取得するには、以下のPythonコードスニペットを使用できます:
 
 ```python
 import hashlib
 
 def standardized_address(creator_address: str) -> str:
-    # Strip the '0x' prefix if it exists and format the address to be 64 characters long
+    # '0x'プレフィックスが存在する場合は削除し、アドレスを64文字の長さにフォーマットする
     handle = creator_address.removeprefix("0x") if creator_address.startswith("0x") else creator_address
     return f"0x{handle:0>64}"
 
 def sha256_hex(creator_address: str, collection_name: str) -> str:
-    # Process the creator address
+    # クリエイターアドレスを処理
     processed_address = standardized_address(creator_address)
     
-    # Combine processed creator address and collection name
+    # 処理済みのクリエイターアドレスとコレクション名を結合
     combined_string = f"{creator_address}::{collection_name}"
-    # Compute SHA256 hash and return as a hexadecimal string
+    # SHA256ハッシュを計算し、16進数文字列として返す
     return standardized_address(hashlib.sha256(combined_string.encode()).hexdigest())
 
-# Example usage
+# 使用例
 creator_address = "0xc0e3fbf8ae61056d66ce624d71ccf1888f879355cc4e364ef117249b5e3160a8"
 collection_name = "Aptomingos"
-# Collection Id is `0xe6a7399d10406b993e25d8a3bf24842413ba8f1a08444dbfa5f1c31b09f0d16e`
+# コレクションIDは `0xe6a7399d10406b993e25d8a3bf24842413ba8f1a08444dbfa5f1c31b09f0d16e` です
 print(sha256_hex(creator_address, collection_name))
 
 ```

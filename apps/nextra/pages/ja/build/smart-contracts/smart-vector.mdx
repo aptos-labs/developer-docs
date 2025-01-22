@@ -4,22 +4,22 @@ title: "Smart Vector"
 
 # Smart Vector
 
-The Smart Vector is a scalable vector implementation based on `tables`, where elements are grouped into buckets. This data structure allows for efficient handling of large data sets by combining the flexibility of small vectors with the scalability of larger structures.
+Smart Vectorは`tables`に基づくスケーラブルなベクトル実装で、要素がバケットにグループ化されています。このデータ構造により、小規模ベクトルの柔軟性と大規模構造のスケーラビリティを組み合わせることで、大規模なデータセットを効率的に処理することができます。
 
-## Core Features of `SmartVector`
+## `SmartVector`の主な機能
 
-### Structure
+### 構造
 
-The `SmartVector` struct is designed to handle dynamic data with efficiency:
+`SmartVector`構造体は、効率的に動的データを処理するように設計されています：
 
-- `inline_vec`: A small vector that stores elements directly.
-- `big_vec`: An optional large vector for scalable storage.
-- `inline_capacity`: An optional value defining the capacity of `inline_vec`.
-- `bucket_size`: An optional value defining the size of buckets in `big_vec`.
+- `inline_vec`：要素を直接格納する小規模ベクトル
+- `big_vec`：スケーラブルな保存のためのオプショナルな大規模ベクトル
+- `inline_capacity`：`inline_vec`の容量を定義するオプショナルな値
+- `bucket_size`：`big_vec`のバケットサイズを定義するオプショナルな値
 
-### Constants
+### 定数
 
-The following constants define various error codes used within the module:
+モジュール内で使用される各種エラーコードを定義する定数：
 
 - `EINDEX_OUT_OF_BOUNDS`: 1
 - `EVECTOR_NOT_EMPTY`: 2
@@ -27,38 +27,38 @@ The following constants define various error codes used within the module:
 - `EZERO_BUCKET_SIZE`: 4
 - `ESMART_VECTORS_LENGTH_MISMATCH`: 0x20005
 
-## API Overview
+## API概要
 
-### Creating Vectors
+### ベクトルの作成
 
-- `new<T: store>(): SmartVector<T>`: Creates an empty vector.
-- `empty_with_config<T: store>(inline_capacity: u64, bucket_size: u64): SmartVector<T>`: Creates an empty vector with custom capacity and bucket size.
-- `singleton<T: store>(element: T): SmartVector<T>`: Creates a vector with a single element.
+- `new<T: store>(): SmartVector<T>`：空のベクトルを作成
+- `empty_with_config<T: store>(inline_capacity: u64, bucket_size: u64): SmartVector<T>`：カスタム容量とバケットサイズで空のベクトルを作成
+- `singleton<T: store>(element: T): SmartVector<T>`：単一要素のベクトルを作成
 
-### Destroying Vectors
+### ベクトルの破棄
 
-- `destroy_empty<T>(v: SmartVector<T>)`: Destroys an empty vector.
-- `destroy<T: drop>(v: SmartVector<T>)`: Destroys a vector and its elements.
+- `destroy_empty<T>(v: SmartVector<T>)`：空のベクトルを破棄
+- `destroy<T: drop>(v: SmartVector<T>)`：ベクトルとその要素を破棄
 
-### Managing Elements
+### 要素の管理
 
-- `push_back<T: store>(v: &mut SmartVector<T>, val: T)`: Adds an element to the end of the vector.
-- `pop_back<T>(v: &mut SmartVector<T>): T`: Removes the last element from the vector.
-- `remove<T>(v: &mut SmartVector<T>, i: u64): T`: Removes an element at a specific index.
-- `swap_remove<T>(v: &mut SmartVector<T>, i: u64): T`: Swaps an element at a specific index with the last element and removes it.
-- `borrow<T>(v: &SmartVector<T>, i: u64): &T`: Returns an immutable reference to an element at a specific index.
-- `borrow_mut<T>(v: &mut SmartVector<T>, i: u64): &mut T`: Returns a mutable reference to an element at a specific index.
+- `push_back<T: store>(v: &mut SmartVector<T>, val: T)`：ベクトルの末尾に要素を追加
+- `pop_back<T>(v: &mut SmartVector<T>): T`：ベクトルの最後の要素を削除
+- `remove<T>(v: &mut SmartVector<T>, i: u64): T`：特定のインデックスの要素を削除
+- `swap_remove<T>(v: &mut SmartVector<T>, i: u64): T`：特定のインデックスの要素を最後の要素と交換して削除
+- `borrow<T>(v: &SmartVector<T>, i: u64): &T`：特定のインデックスの要素への不変参照を返す
+- `borrow_mut<T>(v: &mut SmartVector<T>, i: u64): &mut T`：特定のインデックスの要素への可変参照を返す
 
-### Utility Functions
+### ユーティリティ関数
 
-- `length<T>(v: &SmartVector<T>): u64`: Returns the number of elements in the vector.
-- `is_empty<T>(v: &SmartVector<T>): bool`: Checks if the vector is empty.
-- `clear<T: drop>(v: &mut SmartVector<T>)`: Clears all elements from the vector.
-- `to_vector<T: store + copy>(v: &SmartVector<T>): vector<T>`: Converts a smart vector to a native vector.
+- `length<T>(v: &SmartVector<T>): u64`：ベクトル内の要素数を返す
+- `is_empty<T>(v: &SmartVector<T>): bool`：ベクトルが空かどうかを確認
+- `clear<T: drop>(v: &mut SmartVector<T>)`：ベクトルからすべての要素を削除
+- `to_vector<T: store + copy>(v: &SmartVector<T>): vector<T>`：スマートベクトルをネイティブベクトルに変換
 
-## Example Usage
+## 使用例
 
-### Creating and Using a SmartVector
+### SmartVectorの作成と使用
 
 ```move filename="smart_vector.move"
 module 0x42::smart_vector_usage {
@@ -81,7 +81,7 @@ module 0x42::smart_vector_usage {
 }
 ```
 
-### Appending Vectors
+### ベクトルの結合
 
 ```move filename="smart_vector.move"
 module 0x42::smart_vector_usage {
@@ -117,7 +117,7 @@ module 0x42::smart_vector_usage {
 }
 ```
 
-### Removing Elements
+### 要素の削除
 
 ```move filename="smart_vector.move"
 module 0x42::smart_vector_usage {
@@ -145,8 +145,7 @@ module 0x42::smart_vector_usage {
 }
 ```
 
-
-### Clearing the Vector
+### ベクトルのクリア
 
 ```move filename="smart_vector.move"
 module 0x42::smart_vector_usage {
@@ -166,7 +165,7 @@ module 0x42::smart_vector_usage {
 }
 ```
 
-### Swapping Elements
+### 要素の交換
 
 ```move filename="smart_vector.move"
 module 0x42::smart_vector_usage {
@@ -190,11 +189,11 @@ module 0x42::smart_vector_usage {
 }
 ```
 
-## Source Code
+## ソースコード
 
 - [smart_vector.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/data_structures/smart_vector.move)
 
-## Other Examples
+## その他の例
 
-- [move spiders tutorial on smart vectors](https://movespiders.com/courses/modules/datastructures/lessonId/6)
-- [move spiders tutorial on querying smart vectors](https://movespiders.com/courses/modules/datastructures/lessonId/9)
+- [move spidersのスマートベクターチュートリアル](https://movespiders.com/courses/modules/datastructures/lessonId/6)
+- [move spidersのスマートベクタークエリチュートリアル](https://movespiders.com/courses/modules/datastructures/lessonId/9)

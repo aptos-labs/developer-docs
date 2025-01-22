@@ -1,8 +1,8 @@
 ---
-title: "Running Locally"
+title: "ローカルでの実行"
 ---
 
-# Running the Transaction Stream Service Locally
+# トランザクションストリームサービスをローカルで実行する
 
 import { Callout } from 'nextra/components'
 import { IndexerBetaNotice } from '@components/index';
@@ -10,42 +10,42 @@ import { IndexerBetaNotice } from '@components/index';
 <IndexerBetaNotice />
 
 <Callout type="info">
-This has been tested on macOS 13 on ARM and Debian 11 on x86_64.
+これはmacOS 13 (ARM)とDebian 11 (x86_64)でテスト済みです。
 </Callout>
 
-When building a custom processor, you might find it helpful to develop against a local development stack. The Transaction Stream Service is a complicated, multi-component system. To assist with local development, we offer a Python script that wraps a Docker compose file to set up the entire system.
+カスタムプロセッサーを構築する際、ローカル開発環境に対して開発を行うと便利な場合があります。トランザクションストリームサービスは複雑な、マルチコンポーネントシステムです。ローカル開発を支援するため、Docker composeファイルをラップしたPythonスクリプトを提供しており、システム全体をセットアップすることができます。
 
-This script sets up the following:
+このスクリプトは以下をセットアップします：
 
-- Single node testnet with the indexer GRPC stream enabled.
-- A Redis instance.
-- Transaction Stream Service, including the following components:
-  - [cache-worker](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/indexer-grpc/indexer-grpc-cache-worker): Pulls transactions from the node and stores them in Redis.
-  - [file-store](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/indexer-grpc/indexer-grpc-file-store): Fetches transactions from Redis and stores them in a filesystem.
-  - [data-service](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/indexer-grpc/indexer-grpc-data-service): Serves transactions via a GRPC stream to downstream clients. It pulls from either the cache or the file store depending on the age of the transaction.
-- Shared volumes and networking to hook it all up.
+- インデクサーGRPCストリームが有効化された単一ノードのテストネット
+- Redisインスタンス
+- トランザクションストリームサービス。以下のコンポーネントを含みます：
+  - [cache-worker](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/indexer-grpc/indexer-grpc-cache-worker): ノードからトランザクションを取得しRedisに保存します。
+  - [file-store](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/indexer-grpc/indexer-grpc-file-store): Redisからトランザクションを取得しファイルシステムに保存します。
+  - [data-service](https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/indexer-grpc/indexer-grpc-data-service): ダウンストリームクライアントにGRPCストリームを介してトランザクションを提供します。トランザクションの経過時間に応じて、キャッシュまたはファイルストアから取得します。
+- すべてを接続するための共有ボリュームとネットワーキング
 
-You can learn more about the Transaction Stream Service architecture [here](../txn-stream.mdx) and the Docker compose file [here](https://github.com/aptos-labs/aptos-core/blob/main/docker/compose/indexer-grpc/docker-compose.yaml).
+トランザクションストリームサービスのアーキテクチャについては[こちら](../txn-stream.mdx)で、Docker composeファイルについては[こちら](https://github.com/aptos-labs/aptos-core/blob/main/docker/compose/indexer-grpc/docker-compose.yaml)で詳しく学ぶことができます。
 
-## Prerequisites
+## 前提条件
 
-In order to use the local development script you must have the following installed:
+ローカル開発スクリプトを使用するには、以下のものがインストールされている必要があります：
 
-- Python 3.8+: [Installation Guide](https://docs.python-guide.org/starting/installation/#python-3-installation-guides).
-- Poetry: [Installation Guide](https://python-poetry.org/docs/#installation).
-- Docker: [Installation Guide](https://docs.docker.com/get-docker/).
-- Docker Compose v2: This should be installed by default with modern Docker installations, verify with this command:
+- Python 3.8以上: [インストールガイド](https://docs.python-guide.org/starting/installation/#python-3-installation-guides)
+- Poetry: [インストールガイド](https://python-poetry.org/docs/#installation)
+- Docker: [インストールガイド](https://docs.docker.com/get-docker/)
+- Docker Compose v2: 最新のDockerインストールではデフォルトでインストールされているはずです。以下のコマンドで確認できます：
 
 ```bash filename="Terminal"
 docker-compose version --short
 ```
 
-- grpcurl: [Installation Guide](https://github.com/fullstorydev/grpcurl#installation)
+- grpcurl: [インストールガイド](https://github.com/fullstorydev/grpcurl#installation)
 - OpenSSL
 
-## Preparation
+## 準備
 
-Clone the aptos-core repo:
+aptos-coreリポジトリをクローンします：
 
 ```bash filename="Terminal"
 # HTTPS
@@ -55,95 +55,95 @@ git clone https://github.com/aptos-labs/aptos-core.git
 git clone git@github.com:aptos-labs/aptos-core.git
 ```
 
-Navigate to the `testsuite` directory:
+`testsuite`ディレクトリに移動します：
 
 ```bash filename="Terminal"
 cd aptos-core
 cd testsuite
 ```
 
-Install the Python dependencies:
+Pythonの依存関係をインストールします：
 
 ```bash filename="Terminal"
 poetry install
 ```
 
-## Running the script
+## スクリプトの実行
 
-### Starting the service
+### サービスの開始
 
 ```bash filename="Terminal"
 poetry run python indexer_grpc_local.py start
 ```
 
-You will know this succeeded if the command exits, and you see the following:
+コマンドが終了し、以下のような出力が表示されれば成功です：
 
 ```bash filename="Terminal"
 Attempting to stream from indexer grpc for 10s
 Stream finished successfully
 ```
 
-### Stopping the service
+### サービスの停止
 
 ```bash filename="Terminal"
 poetry run python indexer_grpc_local.py stop
 ```
 
-### Wiping the data
+### データの消去
 
-When you start, stop, and start the service again, it will re-use the same localnet data. If you wish to wipe the locnet and start from scratch you can run the following command:
+サービスを開始、停止、再開始すると、同じlocalnetデータが再利用されます。localnetを消去してゼロから始めたい場合は、以下のコマンドを実行できます：
 
 ```bash filename="Terminal"
 poetry run python indexer_grpc_local.py wipe
 ```
 
-## Using the local service
+## ローカルサービスの使用
 
-You can connect to the local Transaction Stream Service, e.g. from a custom processor, using the following configuration values:
+カスタムプロセッサーなどからローカルのTransaction Stream Serviceに接続する場合は、以下の設定値を使用できます：
 
 ```bash filename="Terminal"
 indexer_grpc_data_service_address: 127.0.0.1:50052
 auth_token: dummy_token
 ```
 
-You can connect to the node at the following address:
+以下のアドレスでノードに接続できます：
 
 ```bash filename="Terminal"
 http://127.0.0.1:8080/v1
 ```
 
-## Debugging
+## デバッグ
 
-### Usage on ARM systems
+### ARMシステムでの使用
 
-If you have a machine with an ARM processor, e.g. an M1/M2 Mac, the script should detect that and set the appropriate environment variables to ensure that the correct images will be used. If you have issues with this, try setting the following environment variable:
+M1/M2 Macなど、ARMプロセッサーを搭載したマシンをお使いの場合、スクリプトはそれを検出し、適切なイメージが使用されるように環境変数を設定します。これに問題がある場合は、以下の環境変数を設定してみてください：
 
 ```bash filename="Terminal"
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 ```
 
-Additionally, make sure the following settings are correct in Docker Desktop:
+また、Docker Desktopで以下の設定が正しく行われていることを確認してください：
 
-- Enabled: Preferences > General > Use Virtualization framework
-- Enabled: Preferences > General > Use Docker Compose V2
-- Disabled: Features in development -> Use Rosetta for x86/amd64 emulation on Apple Silicon
+- 有効化: 環境設定 > 一般 > 仮想化フレームワークを使用
+- 有効化: 環境設定 > 一般 > Docker Compose V2を使用 
+- 無効化: 開発中の機能 -> Apple SiliconでのX86/amd64エミュレーションにRosettaを使用
 
-This script has not been tested on Linux ARM systems.
+このスクリプトはLinux ARMシステムではテストされていません。
 
-### Redis fails to start
+### Redisの起動に失敗する場合
 
-Try setting the following environment variable before running the script:
+スクリプトを実行する前に、以下の環境変数を設定してみてください：
 
 ```bash filename="Terminal"
 export REDIS_IMAGE_REPO=arm64v8/redis
 ```
 
-### Cache worker is crash-looping or `Redis latest version update failed.` in log
+### キャッシュワーカーがクラッシュループしている、またはログに `Redis latest version update failed.` と表示される場合
 
-Wipe the data:
+データを消去してください：
 
 ```bash filename="Terminal"
 poetry run python indexer_grpc_local.py wipe
 ```
 
-This means historical data will be lost.
+これは履歴データが失われることを意味します。

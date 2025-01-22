@@ -1,21 +1,16 @@
 ---
-title: "Run a Public Fullnode"
+title: "パブリックフルノードを実行"
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Run a Public Fullnode
+# パブリックフルノードを実行
 
-You can run your own public fullnode (PFN) to synchronize the state of the Aptos blockchain and stay
-up-to-date. PFNs replicate the entire state of the blockchain by syncing from other Aptos VFNs and PFNs. PFNs
-can be run by anyone. This section explains how to deploy a PFN and connect to an Aptos network. You can learn
-more about the different types of nodes in the [Blockchain Deep Dive](../blockchain.mdx) section.
+独自のパブリックフルノード(PFN)を実行して、Aptosブロックチェーンの状態を同期し、最新の状態を維持することができます。PFNは他のAptosのVFNやPFNと同期することで、ブロックチェーン全体の状態を複製します。PFNは誰でも実行できます。このセクションでは、PFNをデプロイしてAptosネットワークに接続する方法について説明します。ノードの種類の詳細については、[ブロックチェーンの詳細](../blockchain.mdx)セクションで学ぶことができます。
 
 <Callout type="info">
-**Default connection to mainnet**<br />
-If you follow the default setup in this document, then your PFN will be connected to the Aptos mainnet. To connect
-to a different Aptos network, such as devnet or testnet, make sure you have the correct docker image tag, or source
-code branch if you build the binary directly.
+**メインネットへのデフォルト接続**<br />
+このドキュメントのデフォルト設定に従うと、PFNはAptosメインネットに接続されます。devnetやtestnetなど、異なるAptosネットワークに接続する場合は、正しいDockerイメージタグを使用するか、バイナリを直接ビルドする場合は適切なソースコードブランチを使用していることを確認してください。
 
-You can find the genesis and waypoint files for all the networks, here ➜ https://github.com/aptos-labs/aptos-networks.
+すべてのネットワークのgenesisファイルとwaypointファイルは、こちらで確認できます ➜ https://github.com/aptos-labs/aptos-networks
 </Callout>

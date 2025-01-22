@@ -1,14 +1,14 @@
-# 6. Handle Tasks
+# タスクの処理
 
-In the sixth and final chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx), you will add functionality to the app so the user interface is able to handle cases where an account has created a list.
+[Aptos上でのエンドツーエンドdappの構築](../build-e2e-dapp.mdx)チュートリアルの最後の6番目のチャプターでは、アカウントがリストを作成した場合にユーザーインターフェースが処理できるように機能を追加します。
 
-We have covered how to [fetch data](4-fetch-data-from-chain.mdx) (an account’s todo list) from chain and how to [submit a transaction](5-submit-data-to-chain.mdx) (new todo list) to chain using Wallet.
+チェーンからの[データ取得](4-fetch-data-from-chain.mdx)（アカウントのTodoリスト）とウォレットを使用したチェーンへの[トランザクション送信](5-submit-data-to-chain.mdx)（新しいTodoリスト）について説明しました。
 
-Let’s finish building our app by implementing fetch tasks and adding a task function.
+アプリの構築を完了するために、タスクの取得と追加機能を実装しましょう。
 
-## Fetch tasks
+## タスクの取得
 
-1. Create a local state `tasks` that will hold our tasks. It will be a state of a Task type (that has the same properties we set on our smart contract):
+1. タスクを保持するローカルステート`tasks`を作成します。これはスマートコントラクトで設定したのと同じプロパティを持つTaskタイプのステートになります：
 
 ```ts filename="App.tsx"
 type Task = {
@@ -24,7 +24,7 @@ function App() {
 }
 ```
 
-2. Update our `fetchList` function to fetch the tasks in the account’s `TodoList` resource:
+2. アカウントの`TodoList`リソース内のタスクを取得するように`fetchList`関数を更新します：
 
 ```ts filename="App.tsx"
 const fetchList = async () => {
@@ -35,9 +35,9 @@ const fetchList = async () => {
           resourceType:`${moduleAddress}::todolist::TodoList`}
       );
     setAccountHasList(true);
-		// tasks table handle
+		// タスクテーブルのハンドル
     const tableHandle = (todoListResource as any).tasks.handle;
-		// tasks table counter
+		// タスクテーブルのカウンター
     const taskCounter = (todoListResource as any).task_counter;
 
     let tasks = [];
@@ -52,7 +52,7 @@ const fetchList = async () => {
       tasks.push(task);
       counter++;
     }
-		// set tasks in local state
+		// ローカルステートにタスクを設定
     setTasks(tasks);
   } catch (e: any) {
     setAccountHasList(false);
@@ -60,18 +60,18 @@ const fetchList = async () => {
 };
 ```
 
-**This part is a bit confusing, so stick with us!**
+**この部分は少し複雑なので、しっかり説明します！**
 
-Tasks are stored in a table (this is how we built our contract). To fetch a table item (i.e a task), we need that task's table handle. We also need the `task_counter` in that resource so we can loop over and fetch the task with the `task_id` that matches the `task_counter`.
+タスクはテーブルに保存されています（これは私たちがコントラクトを構築した方法です）。テーブルアイテム（つまりタスク）を取得するには、そのタスクのテーブルハンドルが必要です。また、`task_counter`と一致する`task_id`を持つタスクを取得するためにループできるように、そのリソース内の`task_counter`も必要です。
 
 ```ts filename="App.tsx"
 const tableHandle = (TodoListResource as any).data.tasks.handle;
 const taskCounter = (TodoListResource as any).data.task_counter;
 ```
 
-Now that we have our tasks table handle and our `task_counter` variable, lets loop over the `taskCounter` . We define a `counter` and set it to 1 as the task_counter / task_id is never less than 1.
+タスクテーブルのハンドルと`task_counter`変数を取得したので、`taskCounter`をループしましょう。`counter`を定義して1に設定します。これは、task_counter / task_idが1未満になることはないためです。
 
-We loop while the `counter` is less then the `taskCounter` and fetch the table item and push it to the tasks array:
+`counter`が`taskCounter`より小さい間ループし、テーブルアイテムを取得してタスク配列にプッシュします：
 
 ```ts filename="App.tsx"
 let tasks = [];
@@ -88,20 +88,20 @@ while (counter <= taskCounter) {
 }
 ```
 
-We build a `tableItem` object to fetch. If we take a look at our table structure from the contract:
+取得する`tableItem`オブジェクトを構築します。コントラクトからテーブル構造を見てみましょう：
 
 ```ts filename="App.tsx"
 tasks: Table<u64, Task>,
 ```
 
-We see that it has a `key` type `u64` and a `value` of type `Task`. And whenever we create a new task, we assign the `key` to be the incremented task counter.
+`key`タイプが`u64`で、`value`タイプが`Task`であることがわかります。また、新しいタスクを作成するたびに、インクリメントされたタスクカウンターを`key`として割り当てています。
 
 ```move filename="todolist.move"
-// adds the new task into the tasks table
+// 新しいタスクをタスクテーブルに追加
 table::upsert(&mut todo_list.tasks, counter, new_task);
 ```
 
-So the object we built is:
+したがって、構築したオブジェクトは：
 
 ```ts filename="App.tsx"
 {
@@ -111,15 +111,15 @@ So the object we built is:
 }
 ```
 
-Where `key_type` is the table `key` type, `key` is the key value we are looking for, and the `value_type` is the table `value` which is a `Task` struct. The Task struct uses the same format from our previous resource query:
+ここで、`key_type`はテーブルの`key`タイプ、`key`は探している値のキー、`value_type`はテーブルの`value`で、これは`Task`構造体です。Task構造体は、前回のリソースクエリと同じ形式を使用します：
 
-- The account address who holds that module = our profile account address
-- The module name the resource lives in = `todolist`
-- The struct name = `Task`
+- モジュールを保持するアカウントアドレス = プロファイルアカウントアドレス
+- リソースが存在するモジュール名 = `todolist`
+- 構造体名 = `Task`
 
-The last thing we want to do is display the tasks we just fetched.
+最後にやりたいことは、取得したタスクを表示することです。
 
-6. In our `App.tsx` file, update our UI with the following code:
+6. `App.tsx`ファイルで、UIを以下のコードで更新します：
 
 ```tsx filename="App.tsx"
 {
@@ -166,24 +166,24 @@ The last thing we want to do is display the tasks we just fetched.
 }
 ```
 
-That will display the **Add new list** button if account doesn’t have a list or instead the tasks if the account has a list.
+これにより、アカウントがリストを持っていない場合は**Add new list**ボタンが表示され、リストを持っている場合はタスクが表示されます。
 
-Go ahead and refresh your browser - see the magic!
+ブラウザを更新してみてください - 魔法を見てください！
 
-We haven’t added any tasks yet, so we simply see a box of empty data. Let’s add some tasks!
+まだタスクを追加していないので、単に空のデータのボックスが表示されます。タスクを追加しましょう！
 
-## Add task
+## タスクの追加
 
-1. Update our UI with an _add task_ input:
+1. タスク入力フォームでUIを更新します：
 
-Import `Input` from `antd` - `import { Input } from "antd";`
+`antd`から`Input`をインポートします - `import { Input } from "antd";`
 
 ```tsx filename="App.tsx"
 {!accountHasList ? (
   ...
 ) : (
   <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
-		// Add this!
+		// これを追加！
     <Col span={8} offset={8}>
       <Input.Group compact>
         <Input
@@ -204,9 +204,9 @@ Import `Input` from `antd` - `import { Input } from "antd";`
 )}
 ```
 
-We have added a text input to write the task and a button to add the task.
+タスクを書くためのテキスト入力とタスクを追加するためのボタンを追加しました。
 
-2. Create a new local state that holds the task content:
+2. タスクの内容を保持する新しいローカルステートを作成します：
 
 ```tsx filename="App.tsx"
 function App() {
@@ -216,7 +216,7 @@ function App() {
 }
 ```
 
-3. Add an `onWriteTask` function that will get called whenever a user types something in the input text:
+3. ユーザーが入力テキストに何かを入力するたびに呼び出される`onWriteTask`関数を追加します：
 
 ```tsx filename="App.tsx"
 function App() {
@@ -231,25 +231,25 @@ function App() {
 }
 ```
 
-4. Find our `<Input/>` component, add the `onChange` event to it, pass it our `onWriteTask` function and set the input value to be the `newTask` local state:
+4. `<Input/>`コンポーネントを見つけ、`onChange`イベントを追加し、`onWriteTask`関数を渡し、入力値を`newTask`ローカルステートに設定します：
 
 ```tsx filename="App.tsx"
 <Input
-  onChange={(event) => onWriteTask(event)} // add this
+  onChange={(event) => onWriteTask(event)} // これを追加
   style={{ width: "calc(100% - 60px)" }}
   placeholder="Add a Task"
   size="large"
-  value={newTask} // add this
+  value={newTask} // これを追加
 />
 ```
 
-Cool! Now we have a working flow that when the user types something on the Input component, a function will get fired and set our local state with that content.
+いいですね！これで、ユーザーがInput componentに何かを入力すると、関数が発火してその内容をローカルステートに設定するフローができました。
 
-5. Let’s also add a function that submits the typed task to chain! Find our Add `<Button />` component and update it with the following
+5. 入力されたタスクをチェーンに送信する関数も追加しましょう！Add `<Button />`コンポーネントを見つけて以下のように更新します：
 
 ```tsx filename="App.tsx"
 <Button
-  onClick={onTaskAdded} // add this
+  onClick={onTaskAdded} // これを追加
   type="primary"
   style={{ height: "40px", backgroundColor: "#3f67ff" }}
 >
@@ -257,21 +257,21 @@ Cool! Now we have a working flow that when the user types something on the Input
 </Button>
 ```
 
-That adds an `onClickevent` that triggers an `onTaskAdded` function.
+これにより、`onTaskAdded`関数をトリガーする`onClick`イベントが追加されます。
 
-When someones adds a new task we:
+誰かが新しいタスクを追加する場合：
 
-- want to verify they are connected with a wallet.
-- build a transaction payload that would be submitted to chain.
-- submit it to chain using our wallet.
-- wait for the transaction.
-- update our UI with that new task (without the need to refresh the page).
+- ウォレットが接続されていることを確認したい
+- チェーンに送信されるトランザクションペイロードを構築したい
+- ウォレットを使用してチェーンに送信したい
+- トランザクションを待ちたい
+- そのタスクでUIを更新したい（ページを更新する必要なし）
 
-6. Add an `onTaskAdded` function with:
+6. 以下の`onTaskAdded`関数を追加します：
 
 ```tsx filename="App.tsx"
   const onTaskAdded = async () => {
-    // check for connected account
+    // 接続されたアカウントを確認
     if (!account) return;
     setTransactionInProgress(true);
     const transaction:InputTransactionData = {
@@ -281,10 +281,10 @@ When someones adds a new task we:
       }
     }
 
-    // hold the latest task.task_id from our local state
+    // ローカルステートから最新のtask.task_idを保持
     const latestId = tasks.length > 0 ? parseInt(tasks[tasks.length - 1].task_id) + 1 : 1;
 
-    // build a newTaskToPush object into our local state
+    // ローカルステートにプッシュする新しいタスクオブジェクトを構築
     const newTaskToPush = {
       address: account.address,
       completed: false,
@@ -293,19 +293,19 @@ When someones adds a new task we:
     };
 
     try {
-      // sign and submit transaction to chain
+      // トランザクションに署名してチェーンに送信
       const response = await signAndSubmitTransaction(transaction);
-      // wait for transaction
+      // トランザクションの完了を待つ
       await aptos.waitForTransaction({transactionHash:response.hash});
 
-      // Create a new array based on current state:
+      // 現在のステートに基づいて新しい配列を作成：
       let newTasks = [...tasks];
 
-      // Add item to the tasks array
+      // タスク配列にアイテムを追加
       newTasks.push(newTaskToPush);
-      // Set state
+      // ステートを設定
       setTasks(newTasks);
-      // clear input text
+      // 入力テキストをクリア
       setNewTask("");
     } catch (error: any) {
       console.log("error", error);
@@ -315,11 +315,11 @@ When someones adds a new task we:
   };
 ```
 
-**Let’s go over on what is happening.**
+**何が起こっているのか見ていきましょう。**
 
-First, note we use the `account` property from our wallet provider to make sure there is an account connected to our app.
+まず、アプリにアカウントが接続されていることを確認するために、ウォレットプロバイダーの`account`プロパティを使用することに注意してください。
 
-Then we build our transaction data to be submitted to chain:
+次に、チェーンに送信するトランザクションデータを構築します：
 
 ```tsx filename="App.tsx"
 const transaction:InputTransactionData = {
@@ -330,23 +330,23 @@ const transaction:InputTransactionData = {
     }
 ```
 
-- `function`- is built from the module address, module name and the function name.
-- `functionArguments` - the arguments the function expects, in our case the task content.
+- `function` - モジュールアドレス、モジュール名、関数名から構築されます。
+- `functionArguments` - 関数が期待する引数で、この場合はタスクの内容です。
 
-Then, within our try/catch block, we use a wallet provider function to submit the transaction to chain and an SDK function to wait for that transaction.
-If all goes well, we want to find the current latest task ID so we can add it to our current tasks state array. We will also create a new task to push to the current tasks state array (so we can display the new task in our tasks list on the UI without the need to refresh the page).
+次に、try/catchブロック内で、ウォレットプロバイダー関数を使用してトランザクションをチェーンに送信し、SDKの関数を使用してそのトランザクションを待ちます。
+すべてがうまくいけば、現在の最新のタスクIDを見つけて、現在のタスクステート配列に追加したいと思います。また、現在のタスクステート配列に追加する新しいタスクを作成します（ページを更新する必要なく、UIのタスクリストに新しいタスクを表示できるようにするため）。
 
-TRY IT!
+試してみましょう！
 
-Type a new task in the text input, click **Add**, approve the transaction and see it being added to the tasks list.
+テキスト入力に新しいタスクを入力し、**Add**をクリックし、トランザクションを承認して、タスクリストに追加されるのを確認してください。
 
-## Mark task as completed
+## タスクを完了としてマーク
 
-Next, we can implement the `complete_task` function. We have the checkbox in our UI so users can mark a task as completed.
+次に、`complete_task`関数を実装できます。UIにはチェックボックスがあり、ユーザーがタスクを完了としてマークできます。
 
-1. Update the `<Checkbox/>` component with an `onCheck` property that would call an `onCheckboxChange` function once it is checked:
+1. タスクがチェックされたときに`onCheckboxChange`関数を呼び出す`onCheck`プロパティを持つように`<Checkbox/>`コンポーネントを更新します：
 
-Import `List` from `antd` - `import { List } from "antd";`
+`antd`から`List`をインポートします - `import { List } from "antd";`
 
 ```tsx filename="App.tsx"
 <List.Item actions={[
@@ -354,7 +354,7 @@ Import `List` from `antd` - `import { List } from "antd";`
 ]}>
 ```
 
-2. Create the `onCheckboxChange` function (make sure to import `CheckboxChangeEvent` from `antd` - `import { CheckboxChangeEvent } from "antd/es/checkbox";`):
+2. `onCheckboxChange`関数を作成します（`antd`から`CheckboxChangeEvent`をインポートすることを忘れないでください - `import { CheckboxChangeEvent } from "antd/es/checkbox";`）：
 
 ```tsx filename="App.tsx"
 const onCheckboxChange = async (
@@ -372,19 +372,19 @@ const onCheckboxChange = async (
     }
 
     try {
-      // sign and submit transaction to chain
+      // トランザクションに署名してチェーンに送信
       const response = await signAndSubmitTransaction(transaction);
-      // wait for transaction
+      // トランザクションの完了を待つ
       await aptos.waitForTransaction({transactionHash:response.hash});
 
       setTasks((prevState) => {
         const newState = prevState.map((obj) => {
-          // if task_id equals the checked taskId, update completed property
+          // task_idがチェックされたtaskIdと一致する場合、completedプロパティを更新
           if (obj.task_id === taskId) {
             return { ...obj, completed: true };
           }
 
-          // otherwise return object as is
+          // それ以外の場合はオブジェクトをそのまま返す
           return obj;
         });
 
@@ -398,13 +398,13 @@ const onCheckboxChange = async (
   };
 ```
 
-Here we basically do the same thing we did when we created a new list or a new task.
+ここでは基本的に、新しいリストや新しいタスクを作成したときと同じことを行います。
 
-We make sure there is an account connected, set the transaction in progress state, build the transaction payload, submit the transaction, wait for it and update the task on the UI as completed.
+アカウントが接続されていることを確認し、トランザクション進行中のステートを設定し、トランザクションペイロードを構築し、トランザクションを送信し、それを待ち、UIでタスクを完了としてマークします。
 
-3. Update the `Checkbox` component to be checked by default if a task has already marked as completed:
+3. タスクが既に完了としてマークされている場合、デフォルトでチェックされるように`Checkbox`コンポーネントを更新します：
 
-Import `Checkbox` from `antd` - `import { Checkbox } from "antd";`
+`antd`から`Checkbox`をインポートします - `import { Checkbox } from "antd";`
 
 ```tsx filename="App.tsx"
 ...
@@ -426,6 +426,6 @@ Import `Checkbox` from `antd` - `import { Checkbox } from "antd";`
 ...
 ```
 
-Try it! Check a task’s checkbox, approve the transaction and see the task marked as completed.
+試してみましょう！タスクのチェックボックスをチェックし、トランザクションを承認して、タスクが完了としてマークされるのを確認してください。
 
-You have now learned how to build a dapp on Aptos from end to end. Congratulations! Tell your friends. :-)
+これでAptos上でのエンドツーエンドdappの構築方法を学びました。おめでとうございます！友達に教えてあげましょう。:-)

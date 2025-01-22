@@ -1,296 +1,255 @@
 ---
-title: "Staking"
+title: "ステーキング"
 ---
 
 import { Callout } from "nextra/components";
 import { ThemedImage } from '@components/index'
 
-# Staking
+# ステーキング
 
 <Callout type="info">
-We strongly recommend that you read the consensus section of [Aptos Blockchain Deep Dive](blockchain-deep-dive.mdx#consensus) before proceeding further.
+先に進む前に、[Aptosブロックチェーンの詳細](blockchain-deep-dive.mdx#consensus)のコンセンサスセクションをお読みいただくことを強くお勧めします。
 </Callout>
 
-In a distributed system like blockchain, executing a transaction is distinct from updating the state of the ledger and persisting the results in storage. An agreement, i.e., consensus, must be reached by a quorum of validators on the ordering of transactions and their execution results before these results are persisted in storage and the state of the ledger is updated.
+ブロックチェーンのような分散システムでは、トランザクションの実行は、台帳の状態を更新してその結果をストレージに永続化することとは異なります。これらの結果がストレージに永続化され、台帳の状態が更新される前に、トランザクションの順序とその実行結果について、バリデータの定足数による合意（コンセンサス）が必要です。
 
-Anyone can participate in the Aptos consensus process, if they stake sufficient utility coin, i.e., place their utility coin into escrow. To encourage validators to participate in the consensus process, each validator's vote weight is proportional to the amount of validator's stake. In exchange, the validator is rewarded proportionally to the amount staked. Hence, the performance of the blockchain is aligned with the validator's interest, i.e., rewards.
+十分な量のユーティリティコインをステーク（エスクローに預け入れ）すれば、誰でもAptosのコンセンサスプロセスに参加できます。バリデータのコンセンサスプロセスへの参加を促すため、各バリデータの投票の重みはバリデータのステーク量に比例します。その見返りとして、バリデータはステーク量に比例した報酬を受け取ります。したがって、ブロックチェーンのパフォーマンスはバリデータの利益（報酬）と一致します。
 
 <Callout type="info">
-Currently, slashing is not implemented.
+現在、スラッシングは実装されていません。
 </Callout>
 
-The current on-chain data can be found in [`staking_config::StakingConfig`](https://api.mainnet.aptoslabs.com/v1/accounts/0x1/resource/0x1::staking_config::StakingConfig). The configuration set is defined in [`staking_config.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/configs/staking_config.move).
+現在のオンチェーンデータは[`staking_config::StakingConfig`](https://api.mainnet.aptoslabs.com/v1/accounts/0x1/resource/0x1::staking_config::StakingConfig)で確認できます。設定セットは[`staking_config.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/configs/staking_config.move)で定義されています。
 
-The rest of this document presents how staking works on the Aptos blockchain. See [Supporting documentation](#supporting-documentation) at the bottom for related resources.
+このドキュメントの残りの部分では、Aptosブロックチェーンでのステーキングの仕組みについて説明します。関連リソースについては、下部の[サポート文書](#supporting-documentation)を参照してください。
 
-## Staking on the Aptos blockchain
+## Aptosブロックチェーンでのステーキング
 
-Below is a summary flow diagram of how staking on the Aptos blockchain works. The sections following the summary describe it in detail.
+以下は、Aptosブロックチェーンでのステーキングの仕組みを示すフロー図の概要です。概要に続くセクションで詳細を説明します。
 
 <ThemedImage
-  alt="Staking Flow"
+  alt="ステーキングフロー"
   sources={{
     light: '/docs/staking-light.svg',
     dark: '/docs/staking-dark.svg',
   }}
 />
 
-The Aptos staking module defines a capability that represents ownership.
+Aptosのステーキングモジュールは、所有権を表すケイパビリティを定義します。
 
 <Callout type="info">
-See the `OwnerCapability` defined in [stake.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/stake.move).
+[stake.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/stake.move)で定義されている`OwnerCapability`を参照してください。
 </Callout>
 
-The `OwnerCapability` resource can be used to control the stake pool. Three personas are supported:
+`OwnerCapability`リソースはステークプールを制御するために使用できます。3つのペルソナがサポートされています：
 
-- Owner
-- Operator
-- Voter
+- オーナー
+- オペレーター
+- 投票者
 
-Using this owner-operator-voter model, a custodian can assume the owner persona and stake on the Aptos blockchain and participate in the Aptos governance. This model allows delegations and staking services to be built as it separates the account that is in control of the funds from the other accounts (operator, voter), hence allows secure delegations of responsibilities.
+このオーナー・オペレーター・投票者モデルを使用することで、カストディアンはオーナーのペルソナを引き受け、Aptosブロックチェーンでステーキングを行い、Aptosのガバナンスに参加することができます。このモデルは、資金を管理するアカウントを他のアカウント（オペレーター、投票者）から分離するため、委任とステーキングサービスの構築を可能にし、責任の安全な委任を可能にします。
 
-This section describes how this works, using Bob and Alice in the example.
+このセクションでは、BobとAliceを例に使用して、その仕組みを説明します。
 
-### Owner
+### オーナー
 
-The owner is the owner of the funds. For example, Bob creates an account on the Aptos blockchain. Now Bob has the `OwnerCapability` resource. Bob can assign his account’s operator address to the account of Alice, a trusted node operator, to appoint Alice as a validator.
+オーナーは資金の所有者です。例えば、BobがAptosブロックチェーンでアカウントを作成します。これでBobは`OwnerCapability`リソースを持ちます。Bobは、信頼できるノードオペレーターであるAliceをバリデータとして任命するために、自分のアカウントのオペレーターアドレスをAliceのアカウントに割り当てることができます。
 
-As an owner:
+オーナーとして：
 
-- Bob owns the funds that will be used for staking.
-- Only Bob can add, unlock or withdraw funds.
-- Only Bob can extend the lockup period.
-- Bob can change the node operator Alice to some other node operator anytime Bob wishes to do so.
-- Bob can set the operator commission percentage.
-- The reward will be deposited into Bob's (owner's) account.
+- Bobはステーキングに使用される資金を所有します。
+- 資金の追加、ロック解除、引き出しができるのはBobだけです。
+- ロックアップ期間を延長できるのはBobだけです。
+- BobはノードオペレーターのAliceを、希望する他のノードオペレーターにいつでも変更できます。
+- Bobはオペレーターの手数料の割合を設定できます。
+- 報酬はBob（オーナー）のアカウントに入金されます。
 
-### Operator
+### オペレーター
 
-A node operator is assigned by the fund owner to run the validator node and receives commission as set by the owner. The two personas, the owner and the operator, can be two separate entities or the same. For example, Alice (operator) runs the validator node, operating at the behest of Bob, the fund owner.
+ノードオペレーターは、資金のオーナーによってバリデータノードを運営するために割り当てられ、オーナーが設定した手数料を受け取ります。オーナーとオペレーターの2つのペルソナは、別々の主体でも同じ主体でもかまいません。例えば、Alice（オペレーター）は、資金のオーナーであるBobの要請でバリデータノードを運営します。
 
-As an operator:
+オペレーターとして：
 
-- Alice has permissions only to join or leave the validator set.
-- As a validator, Alice will perform the validating function.
-- Alice has the permissions to change the consensus key and network addresses. The consensus key is used by Alice to participate in the validator consensus process, i.e., to vote and propose a block. Alice is allowed to change ("rotate") this key in case this key is compromised.
-- However, Alice cannot move funds (unless Alice is the owner, i.e., Alice has the `OwnerCapability` resource).
-- The operator commission is deducted from the staker (owner) rewards and deposited into the operator account.
+- Aliceはバリデータセットへの参加または離脱の権限のみを持ちます。
+- バリデータとして、Aliceはバリデーション機能を実行します。
+- Aliceはコンセンサスキーとネットワークアドレスを変更する権限を持ちます。コンセンサスキーは、Aliceがバリデータのコンセンサスプロセス（投票やブロックの提案）に参加するために使用されます。このキーが漏洩した場合に備えて、Aliceはこのキーを変更（「ローテーション」）することができます。
+- ただし、Alice（オーナー、つまり`OwnerCapability`リソースを持っている場合を除く）は資金を移動することはできません。
+- オペレーターの手数料はステーカー（オーナー）の報酬から差し引かれ、オペレーターのアカウントに入金されます。
 
-### Voter
+### 投票者
 
-An owner can designate a voter. This enables the voter to participate in governance. The voter will use the voter key to sign the governance votes in the transactions.
+オーナーは投票者を指定することができます。これにより、投票者はガバナンスに参加することができます。投票者は投票者キーを使用してトランザクションのガバナンス投票に署名します。
 
 <Callout type="info">
-This document describes staking. See [Governance](governance.mdx) for how to participate in the Aptos on-chain governance using the owner-voter model.
+このドキュメントではステーキングについて説明しています。オーナー・投票者モデルを使用してAptosのオンチェーンガバナンスに参加する方法については、[ガバナンス](governance.mdx)を参照してください。
 </Callout>
 
-## Validation on the Aptos blockchain
+## Aptosブロックチェーンでのバリデーション
 
-Throughout the duration of an epoch, the following flow of events occurs several times (thousands of times):
+エポック期間中、以下のイベントの流れが何度も（数千回）発生します：
 
-- A validator leader is selected by a deterministic formula based on the validator reputation determined by validator's performance (including whether the validator has voted in the past or not) and stake. **This leader selection is not done by voting.**
-- The selected leader sends a proposal containing the collected quorum votes of the previous proposal and the leader's proposed order of transactions for the new block.
-- All the validators from the validator set will vote on the leader's proposal for the new block. Once consensus is reached, the block can be finalized. Hence, the actual list of votes to achieve consensus is a subset of all the validators in the validator set. This leader validator is rewarded. **Rewards are given only to the leader validator, not to the voter validators.**
-- The above flow repeats with the selection of another validator leader and repeating the steps for the next new block. Rewards are given at the end of the epoch.
+- バリデータリーダーは、バリデータのパフォーマンス（過去の投票の有無を含む）とステークに基づいて決定される評価に基づく決定論的な式によって選出されます。**このリーダー選出は投票によって行われるものではありません。**
+- 選出されたリーダーは、前回の提案に対する定足数の投票と、新しいブロックに対するリーダーが提案する取引の順序を含む提案を送信します。
+- バリデータセットのすべてのバリデータが、新しいブロックに対するリーダーの提案に投票します。コンセンサスが得られると、ブロックを確定することができます。したがって、コンセンサスを達成するための実際の投票リストは、バリデータセット内のすべてのバリデータのサブセットです。このリーダーバリデータは報酬を受け取ります。**報酬は投票バリデータではなく、リーダーバリデータにのみ与えられます。**
+- 上記の流れは、別のバリデータリーダーの選出と次の新しいブロックのためのステップの繰り返しで続きます。報酬はエポックの終わりに支払われます。
 
-## Validator state and stake state
+## バリデータの状態とステークの状態
 
-States are defined for a validator and the stake.
+バリデータとステークに対して状態が定義されています。
 
-- **Validator state:** A validator can be in any one of these four states. Moreover, the validator can go from inactive (not tracked in the validator set anywhere) state to any one of the other three states:
-  - inactive
-  - pending_active.
-  - active.
-  - pending_inactive.
-- **Stake state:** A validator in pending_inactive or active state, can have their stake in either of these four states:
+- **バリデータの状態：** バリデータは以下の4つの状態のいずれかになります。また、バリデータは非アクティブ（バリデータセットのどこにも追跡されていない）状態から他の3つの状態のいずれかに移行できます：
+  - 非アクティブ
+  - アクティブ待ち
+  - アクティブ
+  - 非アクティブ待ち
+- **ステークの状態：** 非アクティブ待ちまたはアクティブ状態のバリデータは、以下の4つの状態のいずれかにステークを持つことができます：
 
-  - inactive.
-  - pending_active.
-  - active.
-  - pending_inactive.
+  - 非アクティブ
+  - アクティブ待ち
+  - アクティブ
+  - 非アクティブ待ち
 
-  These stake states are applicable for the existing validators in the validator set adding or removing their stake.
+  これらのステーク状態は、バリデータセット内の既存のバリデータがステークを追加または削除する場合に適用されます。
 
-### Validator states
+### バリデータの状態
 
 <ThemedImage
-  alt="Signed Transaction Flow"
+  alt="署名付きトランザクションフロー"
   sources={{
     light: '/docs/validator-state.svg',
     dark: '/docs/validator-state-dark.svg',
   }}
 />
 
-There are two edge cases to call out:
+注意すべき2つのエッジケースがあります：
 
-1. If a validator's stake drops below the required [minimum](#minimum-and-maximum-stake), that validator will be moved from active state directly to the inactive state during an epoch change. This happens only during an epoch change.
-2. Aptos governance can also directly remove validators from the active set. **Note that governance proposals will always trigger an epoch change.**
+1. バリデータのステークが必要な[最小額](#minimum-and-maximum-stake)を下回った場合、そのバリデータはエポック変更時にアクティブ状態から直接非アクティブ状態に移行します。これはエポック変更時にのみ発生します。
+2. Aptosガバナンスは、アクティブセットから直接バリデータを削除することもできます。**ガバナンス提案は常にエポック変更をトリガーすることに注意してください。**
 
-### Stake state
+### ステークの状態
 
-The state of stake has more granularity than that of the validator; additional stake can be added and a portion of stake removed from an active validator.
+ステークの状態は、バリデータの状態よりも細かい粒度を持ちます。アクティブなバリデータに追加のステークを追加したり、ステークの一部を削除したりすることができます。
 
 <ThemedImage
-  alt="Signed Transaction Flow"
+  alt="署名付きトランザクションフロー"
   sources={{
     light: '/docs/stake-state.svg',
     dark: '/docs/stake-state-dark.svg',
   }}
 />
 
-### Validator rules
+### バリデータのルール
 
-The below rules is applicable during the changes of state:
+状態の変更時には以下のルールが適用されます：
 
-- Voting power can change (increase or decrease) only on epoch boundary.
-- A validator’s consensus key and the validator and validator fullnode network addresses can change only on epoch boundary.
-- Pending inactive stake cannot be moved into inactive (and thus withdrawable) until before lockup expires.
-- No validators in the active validator set can have their stake below the minimum required stake.
+- 投票力はエポックの境界でのみ変更（増加または減少）できます。
+- バリデータのコンセンサスキーおよびバリデータとバリデータフルノードのネットワークアドレスは、エポックの境界でのみ変更できます。
+- 非アクティブ待ちのステークは、ロックアップが期限切れになるまで非アクティブ（つまり引き出し可能）に移行できません。
+- アクティブなバリデータセット内のバリデータは、必要な最小ステーク未満のステークを持つことはできません。
 
-## Validator flow
-
-<Callout type="info">
-See [Staking pool operations](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx) for the correct sequence of commands to run for the below flow.
-</Callout>
-
-1. Owner initializes the stake pool with `aptos stake create-staking-contract`.
-2. When the owner is ready to deposit the stake (or have funds assigned by a staking service in exchange for ownership capability), owner calls `aptos stake add-stake`.
-3. When the validator node is ready, the operator can call `aptos node join-validator-set` to join the active validator set. Changes will be effective in the next epoch.
-4. Validator validates (proposes blocks as a leader-validator) and gains rewards. The stake will automatically be locked up for a fixed duration (set by governance) and automatically renewed at expiration.
-5. At any point, if the operator wants to update the consensus key or validator network addresses, they can call `aptos node update-consensus-key` or `aptos node update-validator-network-addresses`. Similar to changes to stake, the changes to consensus key or validator network addresses are only effective in the next epoch.
-6. Validator can request to unlock their stake at any time. However, their stake will only become withdrawable when their current lockup expires. This can be at most as long as the fixed lockup duration.
-7. After exiting, the validator can either explicitly leave the validator set by calling `aptos node leave-validator-set` or if their stake drops below the min required, they would get removed at the end of the epoch.
-8. Validator can always rejoin the validator set by going through steps 2-3 again.
-9. An owner can always switch operators by calling `aptos stake set-operator`.
-10. An owner can always switch designated voter by calling `aptos stake set-delegated-voter`.
-
-## Joining the validator set
-
-Participating as a validator node on the Aptos network works like this:
-
-1. Operator runs a validator node and configures the on-chain validator network addresses and rotates the consensus key.
-2. Owner deposits her Aptos coins funds as stake, or have funds assigned by a staking service. The stake must be at least the minimum amount required.
-3. **The validator node cannot sync until the stake pool becomes active.**
-4. Operator validates and gains rewards.
-5. The staked pool is automatically be locked up for a fixed duration (set by the Aptos governance) and will be automatically renewed at expiration. You cannot withdraw any of your staked amount until your lockup period expires. See [stake.move#L728](https://github.com/aptos-labs/aptos-core/blob/00a234cc233b01f1a7e1680f81b72214a7af91a9/aptos-move/framework/aptos-framework/sources/stake.move#L728).
-6. Operator must wait until the new epoch starts before their validator becomes active.
+## バリデータのフロー
 
 <Callout type="info">
-For step-by-step instructions on how to join the validator set, see: [Joining Validator Set](../nodes/validator-node/connect-nodes/connect-to-aptos-network.mdx#join-the-validator-set).
+以下のフローに対する正しいコマンドの順序については、[ステーキングプールの操作](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx)を参照してください。
 </Callout>
 
-### Minimum and maximum stake
+1. オーナーは`aptos stake create-staking-contract`でステークプールを初期化します。
+2. オーナーがステークを預け入れる準備ができた（または所有権能力と引き換えにステーキングサービスから資金を割り当てられた）場合、オーナーは`aptos stake add-stake`を呼び出します。
+3. バリデータノードの準備ができたら、オペレーターは`aptos node join-validator-set`を呼び出してアクティブなバリデータセットに参加できます。変更は次のエポックで有効になります。
+4. バリデータはバリデーション（リーダーバリデータとしてブロックを提案）を行い、報酬を得ます。ステークは自動的に固定期間（ガバナンスによって設定）ロックアップされ、期限切れ時に自動的に更新されます。
+5. オペレーターは任意の時点で、コンセンサスキーまたはバリデータネットワークアドレスを更新したい場合、`aptos node update-consensus-key`または`aptos node update-validator-network-addresses`を呼び出すことができます。ステークの変更と同様に、コンセンサスキーまたはバリデータネットワークアドレスの変更は次のエポックでのみ有効になります。
+6. バリデータはいつでもステークのロック解除を要求できます。ただし、現在のロックアップが期限切れになるまで、ステークは引き出し可能になりません。これは最大でも固定ロックアップ期間と同じ長さです。
+7. 退出後、バリデータは`aptos node leave-validator-set`を呼び出してバリデータセットを明示的に離脱するか、ステークが最小必要額を下回った場合、エポック終了時に削除されます。
+8. バリデータは、ステップ2-3を再度実行することで、いつでもバリデータセットに再参加できます。
+9. オーナーは`aptos stake set-operator`を呼び出すことで、いつでもオペレーターを切り替えることができます。
+10. オーナーは`aptos stake set-delegated-voter`を呼び出すことで、いつでも指定された投票者を切り替えることができます。
 
-You must stake the required minimum amount to join the validator set. Moreover, you can only stake up to the maximum stake amount. The current required minimum for staking is 1M APT tokens and the maximum is 50M APT tokens.
+## バリデータセットへの参加
 
-If at any time after joining the validator set, your current staked amount exceeds the maximum allowed stake (for example as the rewards are added to your staked amount), then your voting power and the rewards will be calculated only using the maximum allowed stake amount, and not your current staked amount.
+Aptosネットワークでバリデータノードとして参加する方法は以下の通りです：
 
-The owner can withdraw part of the stake and leave their balance below the required minimum. In such case, their stake pool will be removed from the validator set when the next epoch starts.
-
-### Automatic lockup duration
-
-When you join the validator set, your stake will automatically be locked up for a fixed duration that is set by the Aptos governance.
-
-### Automatic lockup renewal
-
-When your lockup period expires, it will be automatically renewed, so that you can continue to validate and receive the rewards.
-
-### Unlocking your stake
-
-You can request to unlock your stake at any time. However, your stake will only become withdrawable when your current lockup expires. This can be at most as long as the fixed lockup duration. You will continue earning rewards on your stake until it becomes withdrawable.
-
-The principal amount is updated when any of the following actions occur:
-
-1. Operator [requests commission unlock](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#requesting-commission)
-2. Staker (owner) withdraws funds
-3. Staker (owner) switches operators
-
-When the staker unlocks stake, this also triggers a commission unlock. The full commission amount for any staking rewards earned is unlocked. This is not proportional to the unlock stake amount. Commission is distributed to the operator after the lockup ends when `request commission` is called a second time or when staker withdraws (distributes) the unlocked stake.
-
-### Resetting the lockup
-
-When the lockup period expires, it is automatically renewed by the network. However, the owner can explicitly reset the lockup.
+1. オペレーターはバリデータノードを実行し、オンチェーンのバリデータネットワークアドレスを設定し、コンセンサスキーをローテーションします。
+2. オーナーは自身のAptosコインをステークとして預け入れるか、ステーキングサービスから資金を割り当ててもらいます。ステークは必要な最小額以上である必要があります。
+3. **ステークプールがアクティブになるまで、バリデータノードは同期できません。**
+4. オペレーターはバリデーションを行い、報酬を得ます。
+5. ステークプールは自動的に固定期間（Aptosガバナンスによって設定）ロックアップされ、期限切れ時に自動的に更新されます。ロックアップ期間が終了するまで、ステーク額を引き出すことはできません。[stake.move#L728](https://github.com/aptos-labs/aptos-core/blob/00a234cc233b01f1a7e1680f81b72214a7af91a9/aptos-move/framework/aptos-framework/sources/stake.move#L728)を参照してください。
+6. オペレーターは、バリデータがアクティブになる前に新しいエポックが開始するのを待つ必要があります。
 
 <Callout type="info">
-The lockup duration is decided by the Aptos governance, i.e., by the covenants that the Aptos community members vote on, and not by any special entity like the Aptos Labs.
+バリデータセットへの参加方法の詳細な手順については、[バリデータセットへの参加](../nodes/validator-node/connect-nodes/connect-to-aptos-network.mdx#join-the-validator-set)を参照してください。
 </Callout>
 
-## Epoch
+### 最小および最大ステーク
 
-An epoch in the Aptos blockchain is defined as a duration of time, in seconds, during which a number of blocks are voted on by the validators, the validator set is updated, and the rewards are distributed to the validators.
+バリデータセットに参加するには、必要な最小額をステークする必要があります。また、最大ステーク額までしかステークできません。現在の必要最小ステーク額は100万APTトークンで、最大は5,000万APTトークンです。
+
+バリデータセットに参加した後、現在のステーク額が許可された最大ステーク額を超えた場合（例えば、報酬がステーク額に追加された場合）、投票力と報酬は現在のステーク額ではなく、許可された最大ステーク額のみを使用して計算されます。
+
+オーナーはステークの一部を引き出して、残高を必要最小額未満にすることができます。その場合、次のエポックが開始するとステークプールはバリデータセットから削除されます。
+
+### 自動ロックアップ期間
+
+バリデータセットに参加すると、ステークは自動的にAptosガバナンスによって設定された固定期間ロックアップされます。
+
+### 自動ロックアップ更新
+
+ロックアップ期間が終了すると、バリデーションを継続し報酬を受け取れるように自動的に更新されます。
+
+### ステークのロック解除
+
+いつでもステークのロック解除を要求できます。ただし、現在のロックアップが期限切れになるまで、ステークは引き出し可能になりません。これは最大でも固定ロックアップ期間と同じ長さです。引き出し可能になるまでの間、ステークに対する報酬は継続して獲得できます。
+
+元本は以下のいずれかのアクションが発生した時に更新されます：
+
+1. オペレーターが[手数料のロック解除を要求](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx#requesting-commission)
+2. ステーカー（オーナー）が資金を引き出す
+3. ステーカー（オーナー）がオペレーターを切り替える
+
+ステーカーがステークをロック解除すると、手数料のロック解除もトリガーされます。獲得したステーキング報酬に対する手数料の全額がロック解除されます。これはロック解除されたステーク額に比例するものではありません。手数料は、ロックアップ終了後に`request commission`が2回目に呼び出されるか、ステーカーがロック解除されたステークを引き出す（配布する）時にオペレーターに配布されます。
+
+### ロックアップのリセット
+
+ロックアップ期間が終了すると、ネットワークによって自動的に更新されます。ただし、オーナーは明示的にロックアップをリセットすることができます。
 
 <Callout type="info">
-The Aptos mainnet epoch is set as 7200 seconds (two hours).
+ロックアップ期間は、Aptos Labsのような特別な主体ではなく、Aptosコミュニティメンバーが投票する規約、つまりAptosガバナンスによって決定されます。
 </Callout>
 
-### Triggers at the epoch start
+## エポック
+
+Aptosブロックチェーンにおけるエポックは、バリデータによって一定数のブロックが投票され、バリデータセットが更新され、バリデータに報酬が配布される、秒単位で定義された期間です。
 
 <Callout type="info">
-See the [Triggers at epoch boundary section of `stake.move`](https://github.com/aptos-labs/aptos-core/blob/256618470f2ad7d89757263fbdbae38ac7085317/aptos-move/framework/aptos-framework/sources/stake.move#L1036) for the full code.
+Aptosメインネットのエポックは7200秒（2時間）に設定されています。
 </Callout>
 
-At the start of each epoch, the following key events are triggered:
-
-- Update the validator set by adding the pending active validators to the active validators set and by removing the pending inactive validators from the active validators set.
-- Move any pending active stake to active stake, and any pending inactive stake to inactive stake.
-- The staking pool's voting power in this new epoch is updated to the total active stake.
-- Automatically renew a validator's lockup for the validators who will still be in the validator set in the next epoch.
-- The voting power of each validator in the validator set is updated to be the corresponding staking pool's voting power.
-- Rewards are distributed to the validators that participated in the previous epoch.
-
-## Rewards
-
-Rewards for staking are calculated by using:
-
-1. The `rewards_rate`, an annual percentage yield (APY), i.e., rewards accrue as a compound interest on your current staked amount.
-2. Your staked amount.
-3. Your proposer performance in the Aptos governance.
+### エポック開始時のトリガー
 
 <Callout type="info">
-The `rewards_rate` is set by the Aptos governance. Also see [Validation on the Aptos blockchain](#validation-on-the-aptos-blockchain).
+完全なコードについては、[`stake.move`のエポック境界でのトリガーセクション](https://github.com/aptos-labs/aptos-core/blob/256618470f2ad7d89757263fbdbae38ac7085317/aptos-move/framework/aptos-framework/sources/stake.move#L1036)を参照してください。
 </Callout>
 
-### Rewards formula
+各エポックの開始時に、以下の主要なイベントがトリガーされます：
 
-See below the formula used to calculate rewards to the validator:
+- アクティブ待ちのバリデータをアクティブなバリデータセットに追加し、非アクティブ待ちのバリデータをアクティブなバリデータセットから削除することで、バリデータセットを更新します。
+- アクティブ待ちのステークをアクティブなステークに、非アクティブ待ちのステークを非アクティブなステークに移行します。
+- この新しいエポックでのステーキングプールの投票力は、アクティブなステークの合計に更新されます。
+- 次のエポックでもバリデータセットに残るバリデータのロックアップを自動的に更新します。
+- バリデータセット内の各バリデータの投票力は、対応するステーキングプールの投票力に更新されます。
+- 前のエポックに参加したバリデータに報酬が配布されます。
 
-```text filename="Staking Rewards Formula"
-Reward = staked_amount * rewards_rate per epoch * (Number of successful proposals by the validator / Total number of proposals made by the validator)
-```
+## 報酬
 
-### Rewards paid every epoch
+ステーキングの報酬は以下を使用して計算されます：
 
-Rewards are paid every epoch. Any reward you (i.e., validator) earned at the end of current epoch is added to your staked amount. The reward at the end of the next epoch is calculated based on your increased staked amount (i.e., original staked amount plus the added reward), and so on.
-
-### Rewards based on the proposer performance
-
-The validator rewards calculation uses the validator's proposer performance. Once you are in the validator set, you can propose in every epoch. The more successfully you propose, i.e., your proposals pass, the more rewards you will receive.
-
-Note that rewards are given only to the **leader-validators**, i.e., validators who propose the new block, and not to the **voter-validators** who vote on the leader's proposal for the new block. See [Validation on the Aptos blockchain](#validation-on-the-aptos-blockchain).
+1. 年率利回り（APY）である`rewards_rate`。つまり、報酬は現在のステーク額に対して複利として発生します。
+2. ステーク額
+3. Aptosガバナンスにおけるプロポーザーとしてのパフォーマンス
 
 <Callout type="info">
-All the validator rewards are also subject to lockup period as they are added to the original staked amount.
+`rewards_rate`はAptosガバナンスによって設定されます。また、[Aptosブロックチェーンでのバリデーション](#validation-on-the-aptos-blockchain)も参照してください。
 </Callout>
 
-## Leaving the validator set
+### 報酬の計算式
 
-<Callout type="info">
-See the Aptos Stake module in the Move language at [stake.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/stake.move).
-</Callout>
-
-- At any time you can call the following sequence of functions to leave the validator set:
-  - Call `Stake::unlock` to unlock your stake amount, and
-  - Either call `Stake::withdraw` to withdraw your staked amount at the next epoch, or call `Stake::leave_validator_set`.
-
-## Rejoining the validator set
-
-When you leave a validator set, you can rejoin by depositing the minimum required stake amount.
-
-## Supporting documentation
-
-- [Current on-chain data](https://api.mainnet.aptoslabs.com/v1/accounts/0x1/resource/0x1::staking_config::StakingConfig)
-- [Staking Pool Operations](../nodes/validator-node/connect-nodes/staking-pool-operations.mdx)
-- [Delegation Pool Operations](../nodes/validator-node/connect-nodes/delegation-pool-operations.mdx)
-- [Configuration file `staking_config.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/configs/staking_config.move)
-- [Contract file `staking_contract.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/staking_contract.move) covering requesting commissions
-- [All staking-related `.move files](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-framework/sources)
+以下はバリデータへの報酬を計算する式です：

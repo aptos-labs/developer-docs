@@ -1,25 +1,25 @@
 ---
-title: "Compiling (Move)"
+title: "コンパイル (Move)"
 ---
 
 import { Steps, Callout, FileTree } from "nextra/components";
 import { RemoteCodeblock, permalinkFetch } from '@components/index';
 
-# Compiling
+# コンパイル
 
 <Callout>
-Ensure that your [CLI](../cli) is up to date before compiling.
+コンパイルする前に、[CLI](../cli)が最新版であることを確認してください。
 </Callout>
 
 ## `aptos move compile`
 
-Once you have a package set up, you can compile your Move code by doing:
+パッケージのセットアップが完了したら、以下のコマンドでMoveコードをコンパイルできます：
 
 ```bash filename="Terminal"
 aptos move compile
 ```
 
-If run successfully, you should receive a Terminal output like so
+正常に実行されると、以下のようなターミナル出力が表示されます：
 
 ```bash filename="Terminal"
 {
@@ -30,16 +30,16 @@ If run successfully, you should receive a Terminal output like so
 ```
 
 <Callout>
-  You may need to add named addresses, especially for examples.  For example, with the Hello Blockchain Move example, you will need to add the `hello_blockchain` named address:
+  特に例を実行する場合、named addressesを追加する必要があるかもしれません。例えば、Hello Blockchain Moveの例では、`hello_blockchain` named addressを追加する必要があります：
 
   ```bash filename="Terminal"
   aptos move compile --named-addresses hello_blockchain=default
   ```
 </Callout>
 
-## Unpacking Build
+## ビルドの構造
 
-Compiled Move packages contain a folder structure that resembles the one below.
+コンパイルされたMoveパッケージは、以下のようなフォルダ構造を持ちます。
 
 <FileTree>
   <FileTree.Folder name="build" defaultOpen>
@@ -69,12 +69,12 @@ Compiled Move packages contain a folder structure that resembles the one below.
 
 ### `bytecode_modules`
 
-The bytecode modules folder contains the compiled Move bytecode for your module(s) (such as `module_name.mv`).
-To learn more about the bytecode and its security features, see [why move?](./why-move)
+bytecode_modulesフォルダには、モジュールのコンパイルされたMoveバイトコード（`module_name.mv`など）が含まれています。
+バイトコードとそのセキュリティ機能の詳細については、[なぜMove?](./why-move)をご覧ください。
 
 ### `source_maps`
 
-The source maps folder contains source maps (such as `module_name.mvsm`) which allow
-users to map the compiled bytecode back to the source code and relevant dependencies.
+source_mapsフォルダには、ソースマップ（`module_name.mvsm`など）が含まれており、
+コンパイルされたバイトコードをソースコードと関連する依存関係にマッピングすることができます。
 
 

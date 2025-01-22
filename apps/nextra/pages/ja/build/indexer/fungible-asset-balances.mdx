@@ -1,12 +1,12 @@
 import { GraphQLEditor } from 'components/index'
 import { Callout } from 'nextra/components'
 
-# Get Fungible Asset Balances
+# ファンジブルアセット残高の取得
 
-`GetFungibleAssetBalances` retrieves the current balances for various fungible asset types associated with a specified account address. This is crucial for platforms requiring real-time information on account asset holdings. This is backwards compatible with looking up `Coin`s. 
+`GetFungibleAssetBalances`は、指定されたアカウントアドレスに関連する様々なファンジブルアセットタイプの現在の残高を取得します。これは、アカウントの資産保有に関するリアルタイムの情報を必要とするプラットフォームにとって重要です。また、`Coin`情報の検索との後方互換性も維持されています。
 
 <Callout type="info">
-Try it yourself! Adjust the query variables below in the editor to fetch data for different addresses.
+自分で試してみましょう！エディターの下部で変数をカスタマイズして、異なるアドレスのデータを取得できます。
 </Callout>
 
 <GraphQLEditor
@@ -29,7 +29,7 @@ Try it yourself! Adjust the query variables below in the editor to fetch data fo
 }`}
 />
 
-#### Variables:
-- `$address`: **String** - The account address for which to fetch fungible asset balances. Example: `"0x0000000000000000000000000000000000000000000000000000000000000001"`.
-- `token_standard`: **String** - The token standard for the asset: `"v1"` is the previous token standard and `"v2"` is the new standard.
-- `$offset`: **Integer** (Optional) - The pagination offset to start fetching balances from. Default: `0`.
+#### 変数:
+- `$address`: **String** - ファンジブルアセット残高を照会したいアカウントアドレス。例: `"0x0000000000000000000000000000000000000000000000000000000000000001"`
+- `token_standard`: **String** - アセットのトークン規格: `"v1"`は以前のトークン規格で、`"v2"`は新しい規格です。
+- `$offset`: **整数** (オプション) - 残高の取得を開始するページネーションオフセット。デフォルト: `0`

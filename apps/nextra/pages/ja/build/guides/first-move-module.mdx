@@ -1,50 +1,46 @@
 import { Callout } from 'nextra/components';
 
-# Your First Move Module
+# 初めてのMoveモジュール
 
-This tutorial details how to compile, test, publish and interact with Move modules on the Aptos blockchain. The steps in summary are:
+このチュートリアルでは、Aptosブロックチェーン上でMoveモジュールをコンパイル、テスト、パブリッシュ、操作する方法について詳しく説明します。手順の概要は以下の通りです：
 
-1. Install the precompiled binary for the Aptos CLI.
-2. Create an account on the Aptos blockchain and fund it.
-3. Compile and test a Move module.
-4. Publish a Move module to the Aptos blockchain.
-5. Interact with a Move module.
+1. Aptos CLIのプリコンパイル済みバイナリをインストールする
+2. Aptosブロックチェーン上でアカウントを作成し、資金を入れる
+3. Moveモジュールをコンパイルしてテストする
+4. MoveモジュールをAptosブロックチェーンにパブリッシュする
+5. Moveモジュールを操作する
 
-## Step 1: Install the CLI
+## ステップ1：CLIのインストール
 
-[Install the precompiled binary for the Aptos CLI](../cli.mdx).
+[Aptos CLIのプリコンパイル済みバイナリをインストールします](../cli.mdx)。
 
 ---
 
-## Step 2: Create an account and fund it
+## ステップ2：アカウントの作成と資金の追加
 
-After installing the CLI binary, create and fund an account on the Aptos blockchain.
+CLIバイナリをインストールした後、Aptosブロックチェーン上でアカウントを作成し、資金を追加します。
 
-Start a new terminal and run the following command to initialize a new local account:
+新しいターミナルを起動し、以下のコマンドを実行して新しいローカルアカウントを初期化します：
 
 ```bash filename="Terminal"
 aptos init
 ```
-
-You will see output asking to choose a network:
+以下のようなネットワークを選択するメッセージが表示されます：
 
 ```bash filename="Terminal"
 Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
 ```
-
-Press **return** to accept the default devnet network or specify the network of your choosing:
+デフォルトのdevnetネットワークを使用する場合は**return**を押すか、任意のネットワークを指定してください：
 
 ```bash filename="Terminal"
 No network given, using devnet...
 ```
-
-See and respond to the prompt for your private key by accepting the default to create a new or by entering an existing key:
+新しい秘密鍵を生成するためにデフォルトを受け入れるか、既存の秘密鍵を入力するかのプロンプトが表示されます：
 
 ```bash filename="Terminal"
 Enter your private key as a hex literal (0x...) [Current: None | No input: Generate new key (or keep one if present)]
 ```
-
-Assuming you elected to create a new, you will see:
+新しい鍵を生成することを選択した場合、以下のように表示されます：
 
 ```bash filename="Terminal"
 No key given, generating key...
@@ -57,16 +53,14 @@ Aptos CLI is now set up for account a345dbfb0c94416589721360f207dcc92ecfe4f06d8d
   "Result": "Success"
 }
 ```
+上記の出力に表示されているアカウントアドレス`a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a`は、プロファイル`default`として別名が付けられた新しいアカウントです。このアカウントアドレスはランダムに生成されるため、あなたの場合は異なるものになります。以降、このドキュメントでは`default`または`0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a`を互換的に使用します。もちろん、必要に応じて自分のアドレスに置き換えてください。
 
-The account address in the above output `a345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a` is your new account and is aliased as the profile `default`. This account address will be different for you as it is generated randomly. From now on, either `default` or `0xa345dbfb0c94416589721360f207dcc92ecfe4f06d8ddc1c286f569d59721e5a` are used interchangeably in this document. Of course, substitute your own address as needed.
-
-Now fund this account by running this command:
+次のコマンドを実行して、このアカウントに資金を追加します：
 
 ```bash filename="Terminal"
 aptos account fund-with-faucet --account default
 ```
-
-You will see output resembling:
+以下のような出力が表示されます：
 
 ```bash filename="Terminal"
 {
@@ -75,22 +69,21 @@ You will see output resembling:
 ```
 
 ---
+## Step 3: モジュールのコンパイルとテスト
 
-## Step 3: Compile and test the module
-
-Several example Move modules are available in the [aptos-core/aptos-move/move-examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples) directory for your use. Open a terminal and change directories into the [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) directory:
+[aptos-core/aptos-move/move-examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples)ディレクトリには、使用可能な複数のMoveモジュールのサンプルがあります。ターミナルを開き、[`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)ディレクトリに移動します：
 
 ```bash filename="Terminal"
 cd aptos-core/aptos-move/move-examples/hello_blockchain
 ```
 
-Run the below command to compile the `hello_blockchain` module:
+以下のコマンドを実行して`hello_blockchain`モジュールをコンパイルします：
 
 ```bash filename="Terminal"
 aptos move compile --named-addresses hello_blockchain=default
 ```
 
-You will see output resembling:
+以下のような出力が表示されます：
 
 ```bash filename="Terminal"
 {
@@ -100,15 +93,15 @@ You will see output resembling:
 }
 ```
 
-The `compile` command must contain `--named-addresses` as above because the [`Move.toml`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/hello_blockchain/Move.toml) file leaves this as undefined (see below).
+`compile`コマンドには上記のように`--named-addresses`を含める必要があります。これは[`Move.toml`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/hello_blockchain/Move.toml)ファイルでこれが未定義のままになっているためです（以下参照）。
 
-To test the module run:
+モジュールをテストするには、以下のコマンドを実行します：
 
 ```bash filename="Terminal"
 aptos move test --named-addresses hello_blockchain=default
 ```
 
-And receive output like:
+以下のような出力が表示されます：
 
 ```bash filename="Terminal"
 INCLUDING DEPENDENCY AptosFramework
@@ -125,7 +118,7 @@ Test result: OK. Total tests: 2; passed: 2; failed: 0
 ```
 
 <Callout type={"info"}>
-To prepare the module for the account created in the previous step, we specify that the named address `hello_blockchain` is set to our account address, using the `default` profile alias.
+前のステップで作成したアカウントのためにモジュールを準備するには、`default`プロファイルエイリアスを使用して、名前付きアドレス`hello_blockchain`を自分のアカウントアドレスに設定します。
 
 ```toml filename="Move.toml"
 [addresses]
@@ -135,15 +128,15 @@ hello_blockchain = "_"
 
 ---
 
-## Step 4: Publish the Move module
+## ステップ4: Moveモジュールのパブリッシュ
 
-After the code is compiled and tested, we can publish the module to the account created for this tutorial with the command:
+コードのコンパイルとテストが完了したら、このチュートリアル用に作成したアカウントにモジュールをパブリッシュできます。以下のコマンドを使用します：
 
 ```bash filename="Terminal"
 aptos move publish --named-addresses hello_blockchain=default
 ```
 
-You will see the output similar to:
+以下のような出力が表示されます：
 
 ```bash filename="Terminal"
 package size 1631 bytes
@@ -163,13 +156,13 @@ package size 1631 bytes
 }
 ```
 
-At this point, the module is now stored on the account in the Aptos blockchain.
+この時点で、モジュールはAptosブロックチェーン上のアカウントに保存されました。
 
 ---
 
-## Step 5: Interact with the Move module
+## ステップ5: Moveモジュールとの対話
 
-Move modules expose access points, known as _entry functions_. These entry functions can be called via transactions. The Aptos CLI allows for seamless access to these entry functions. The example Move module `hello_blockchain` exposes a `set_message` entry function that takes in a `string`. This can be called via the CLI:
+Moveモジュールは、_エントリー関数_として知られるアクセスポイントを公開します。これらのエントリー関数はトランザクションを通じて呼び出すことができます。Aptos CLIを使用すると、これらのエントリー関数にシームレスにアクセスできます。サンプルのMoveモジュール`hello_blockchain`は、`string`を受け取る`set_message`エントリー関数を公開しています。これはCLIを通じて呼び出すことができます：
 
 ```bash filename="Terminal"
 aptos move run \
@@ -177,7 +170,7 @@ aptos move run \
   --args 'string:hello, blockchain'
 ```
 
-Upon success, the CLI will print out the following:
+成功すると、CLIは以下のように出力します：
 
 ```bash filename="Terminal"
 {
@@ -196,7 +189,7 @@ Upon success, the CLI will print out the following:
 }
 ```
 
-The `set_message` function modifies the `hello_blockchain` `MessageHolder` resource. A resource is a data structure that is stored in [global storage](../smart-contracts/book/structs-and-resources.mdx#storing-resources-in-global-storage). The resource can be read by querying the following REST API:
+`set_message`関数は`hello_blockchain`の`MessageHolder`リソースを変更します。リソースは[グローバルストレージ](../smart-contracts/book/structs-and-resources.mdx#storing-resources-in-global-storage)に保存されるデータ構造です。このリソースは以下のREST APIを使用してクエリすることで読み取ることができます:
 
 ```bash filename="Terminal"
 
@@ -214,16 +207,16 @@ After the first execution, this should contain:
 }
 ```
 
-Notice that the `message` field contains `hello, blockchain`.
+`message`フィールドに`hello, blockchain`が含まれていることに注目してください。
 
-Each successful call to `set_message` after the first call results in the `MessageChange` event being emitted. `MessageChange` is a [Module Event](../../network/blockchain/events.mdx#module-events). Module Events for a given account can be accessed via the [GraphQL API](../indexer.mdx).
+最初の呼び出し以降、`set_message`の呼び出しが成功するたびに`MessageChange`イベントが発行されます。`MessageChange`は[モジュールイベント](../../network/blockchain/events.mdx#module-events)です。特定のアカウントのモジュールイベントは[GraphQL API](../indexer.mdx)を通じてアクセスできます。
 
 <Callout type="info">
-Other accounts can reuse the published module by calling the exact same function as in this example. It is left as an exercise to the reader.
+他のアカウントも、この例と同じ関数を呼び出すことで公開されたモジュールを再利用できます。これは読者の演習として残しておきます。
 </Callout>
 
-## Supporting documentation
+## 関連ドキュメント
 
-- [Account basics](../../network/blockchain/accounts.mdx)
+- [アカウントの基本](../../network/blockchain/accounts.mdx)
 - [TypeScript SDK](../sdks/ts-sdk.mdx)
-- [REST API specification](../../network/nodes/aptos-api-spec.mdx)
+- [REST API仕様](../../network/nodes/aptos-api-spec.mdx)

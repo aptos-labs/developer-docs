@@ -1,46 +1,46 @@
 ---
-title: "Custom Data Model"
+title: "カスタムデータモデル"
 ---
 import { Callout } from 'nextra/components'
 
-# Custom Data Model
+# カスタムデータモデル
 
 <Callout type="warning">
-This is documentation for the legacy indexer. To learn how to write a custom processor with the latest indexer stack, see [Custom Processors](../custom-processors.mdx).
+これはレガシーインデクサーのドキュメントです。最新のインデクサースタックでカスタムプロセッサーを作成する方法については、[カスタムプロセッサー](../custom-processors.mdx)をご覧ください。
 </Callout>
 
-## Define your own data model
+## 独自のデータモデルを定義する
 
-Use this method if you want to develop your custom indexer for the Aptos ledger data.
+Aptosレジャーデータ用のカスタムインデクサーを開発したい場合は、この方法を使用します。
 
-<Callout type="info"> 
-When should you use the custom indexer?
+<Callout type="info">
+カスタムインデクサーを使用するのはいつですか？
 
-Currently Aptos-provided indexing service (see above) supports the following core Move modules:
+現在、Aptosが提供するインデックスサービス（上記参照）は、以下のコアMoveモジュールをサポートしています：
 
-- `0x1::coin`.
-- `0x3::token`.
-- `0x3::token_transfers`.
+- `0x1::coin`
+- `0x3::token`
+- `0x3::token_transfers`
 
-If you need an indexed database for any other Move modules and contracts, then you should develop your custom indexer.
+他のMoveモジュールやコントラクトのインデックス付きデータベースが必要な場合は、カスタムインデクサーを開発する必要があります。
 </Callout>
 
-Creating a custom indexer involves the following steps. Refer to the indexing block diagram at the start of this document.
+カスタムインデクサーの作成には以下の手順が含まれます。このドキュメントの冒頭にあるインデックス作成のブロック図を参照してください。
 
-1. Define new table schemas, using an ORM like [Diesel](https://diesel.rs/). In this document Diesel is used to describe the custom indexing steps ("Business logic" and the data queries in the diagram).
-2. Create new data models based on the new tables ("Business logic" in the diagram).
-3. Create a new transaction processor, or optionally add to an existing processor. In the diagram this step corresponds to processing the ledger database according to the new business logic and writing to the indexed database.
-4. Integrate the new processor. Optional if you are reusing an existing processor.
+1. [Diesel](https://diesel.rs/)などのORMを使用して、新しいテーブルスキーマを定義します。このドキュメントではDieselを使用してカスタムインデックス作成手順（図の「ビジネスロジック」とデータクエリ）を説明します。
+2. 新しいテーブルに基づいて新しいデータモデルを作成します（図の「ビジネスロジック」）。
+3. 新しいトランザクションプロセッサーを作成するか、オプションで既存のプロセッサーに追加します。図では、この手順は新しいビジネスロジックに従ってレジャーデータベースを処理し、インデックス付きデータベースに書き込むことに対応します。
+4. 新しいプロセッサーを統合します。既存のプロセッサーを再利用する場合はオプションです。
 
-In the below detailed description, an example of indexing and querying for the coin balances is used. You can see this in the [`coin_processor.rs`](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/coin_processor.rs).
+以下の詳細な説明では、コイン残高のインデックス作成とクエリの例を使用します。これは[`coin_processor.rs`](https://github.com/aptos-labs/aptos-core/blob/main/crates/indexer/src/processors/coin_processor.rs)で確認できます。
 
-### 1. Define new table schemas
+### 1. 新しいテーブルスキーマを定義する
 
-In this example we use [PostgreSQL](https://www.postgresql.org/) and [Diesel](https://diesel.rs/) as the ORM. To make sure that we make backward-compatible changes without having to reset the database at every upgrade, we use [Diesel migrations](https://docs.rs/diesel_migrations/latest/diesel_migrations/) to manage the schema. This is why it is very important to start with generating a new Diesel migration before doing anything else.
+この例では、ORMとして[PostgreSQL](https://www.postgresql.org/)と[Diesel](https://diesel.rs/)を使用します。アップグレードのたびにデータベースをリセットすることなく、後方互換性のある変更を確実に行うために、[Diesel migrations](https://docs.rs/diesel_migrations/latest/diesel_migrations/)を使用してスキーマを管理します。そのため、他の作業を始める前に新しいDieselマイグレーションを生成することが非常に重要です。
 
-Make sure you clone the Aptos-core repo by running `git clone https://github.com/aptos-labs/aptos-core.git` and then `cd` into `aptos-core/tree/main/crates/indexer` directory. Then proceed as below.
+`git clone https://github.com/aptos-labs/aptos-core.git`を実行してAptos-coreリポジトリをクローンし、`aptos-core/tree/main/crates/indexer`ディレクトリに`cd`で移動してください。その後、以下の手順に進みます。
 
-a. The first step is to create a new Diesel migration. This will generate a new folder under [migrations](https://github.com/aptos-labs/aptos-core/tree/main/crates/indexer/migrations) with `up.sql` and `down.sql`
+a. 最初のステップは、新しいDieselマイグレーションを作成することです。これにより、[migrations](https://github.com/aptos-labs/aptos-core/tree/main/crates/indexer/migrations)の下に`up.sql`と`down.sql`を含む新しいフォルダが生成されます。
 
 ```bash filename="Terminal"
 DATABASE_URL=postgres://postgres@localhost:5432/postgres diesel migration generate add_coin_tables

@@ -1,23 +1,23 @@
 ---
-title: "Move Security Guidelines"
+title: "Moveセキュリティガイドライン"
 ---
 
-# Move Security Guidelines
+# Moveセキュリティガイドライン
 
-The Move language is designed with security and inherently offers several features including a type system and a linear logic. Despite this, its novelty and the intricacies of some business logic mean that developers might not always be familiar with Move's secure coding patterns, potentially leading to bugs.
+Move言語は、型システムと線形論理を含む複数の機能を備えたセキュリティを考慮して設計されています。しかし、その新規性とビジネスロジックの複雑さにより、開発者がMoveの安全なコーディングパターンに精通していない場合があり、バグにつながる可能性があります。
 
-This guide addresses this gap by detailing common anti-patterns and their secure alternatives. It provides practical examples to illustrate how security issues can arise and recommends best practices for secure coding. This guide aims to sharpen developers' understanding of Move's security mechanisms and ensure the robust development of smart contracts.
+このガイドは、一般的なアンチパターンとその安全な代替案を詳しく説明することで、このギャップに対応します。セキュリティ上の問題がどのように発生するかを示す実践的な例を提供し、安全なコーディングのためのベストプラクティスを推奨します。このガイドは、開発者のMoveのセキュリティメカニズムに対する理解を深め、スマートコントラクトの堅牢な開発を確実にすることを目的としています。
 
-## Access Control
+## アクセス制御
 
-### Object Ownership Check
+### オブジェクト所有権チェック
 
-Every `Object<T>` can be accessed by anyone, which means any `Object<T>` can be passed to any function, even if the caller doesn't own it.
-It's important to verify that the `signer` is the rightful owner of the object.
+すべての`Object<T>`は誰でもアクセスできます。つまり、呼び出し元が所有していない場合でも、任意の`Object<T>`を任意の関数に渡すことができます。
+`signer`がオブジェクトの正当な所有者であることを確認することが重要です。
 
-#### Example Insecure Code
+#### 安全でないコード例
 
-In this module, a user must purchase a subscription before performing certain actions. The user invokes the registration function to acquire an `Object<Subscription>`, which they can later use to execute operations.
+このモジュールでは、ユーザーは特定のアクションを実行する前にサブスクリプションを購入する必要があります。ユーザーは登録関数を呼び出して`Object<Subscription>`を取得し、後でそれを使用して操作を実行することができます。
 
 ```move filename="object_example.move"
 module 0x42::example {
@@ -46,13 +46,11 @@ module 0x42::example {
         [...]
     }
 }
-```
+この安全でない例では、`execute_action_with_valid_subscription`は渡された`obj`をユーザーが所有しているかどうかを検証していません。その結果、誰でも他人のサブスクリプションを使用でき、支払い要件を回避することができます。
 
-In this insecure example, `execute_action_with_valid_subscription` does not verify if the user owns the `obj` passed to it. Consequently, anyone can use another person's subscription, bypassing the payment requirement.
+#### 安全なコード例
 
-#### Example Secure Code
-
-Ensure that the signer owns the object.
+signerがオブジェクトを所有していることを確認します。
 
 ```move filename="object_example.move"
 module 0x42::example {
@@ -85,15 +83,15 @@ module 0x42::example {
 }
 ```
 
-### Global Storage Access Control
+### グローバルストレージのアクセス制御
 
-Accepting a `&signer` is not always sufficient for access control purposes. Be sure to assert that the signer is the expected account, especially when performing sensitive operations.
+`&signer`を受け入れるだけでは、アクセス制御の目的には必ずしも十分ではありません。特に重要な操作を実行する際は、signerが期待されたアカウントであることを必ず確認してください。
 
-Users without proper authorization can execute privileged actions.
+適切な認可のないユーザーが特権的なアクションを実行する可能性があります。
 
-#### Example Insecure Code
+#### 安全でないコード例
 
-This code snippet allows any user invoking the `delete` function to remove an `Object`, without verifying that the caller has the necessary permissions.
+このコードスニペットでは、`delete`関数を呼び出す任意のユーザーが、呼び出し元に必要な権限があるかどうかを確認せずに`Object`を削除することができます。
 
 ```move
 module 0x42::example {
@@ -107,9 +105,9 @@ module 0x42::example {
 }
 ```
 
-#### Example Secure Code
+#### セキュアなコード例
 
-A better alternative is to use the global storage provided by Move, by directly borrowing data off of `signer::address_of(signer)`. This approach ensures robust access control, as it exclusively accesses data contained within the address of the signer of the transaction. This method minimizes the risk of access control errors, ensuring that only the data owned by the `signer` can be manipulated.
+より良い方法は、`signer::address_of(signer)`から直接データを借用することで、Moveが提供するグローバルストレージを使用することです。このアプローチは、トランザクションの署名者のアドレスに含まれるデータにのみアクセスするため、堅牢なアクセス制御を保証します。この方法はアクセス制御エラーのリスクを最小限に抑え、`signer`が所有するデータのみが操作できることを保証します。
 
 ```move
 module 0x42::example {
@@ -123,18 +121,18 @@ module 0x42::example {
 }
 ```
 
-### Function visibility
+### 関数の可視性
 
-Adhere to the principle of least privilege:
+最小権限の原則に従います：
 
-- Always start with private functions, change their visibility as it is needed by the business logic.
-- Utilize `entry` for functions intended for use solely from the Aptos CLI or SDK.
-- Utilize `friend` for functions that can only be accessible by specific modules.
-- Utilize the `#[view]` decorator with functions that read data from storage without altering state. #[view] functions can be invoked indirectly and in this case they might change the storage.
+- 常にプライベート関数から始め、ビジネスロジックに必要な場合にのみ可視性を変更します。
+- Aptos CLIまたはSDKからのみ使用することを意図した関数には`entry`を使用します。
+- 特定のモジュールからのみアクセス可能な関数には`friend`を使用します。
+- ストレージからデータを読み取り、状態を変更しない関数には`#[view]`デコレータを使用します。ただし、#[view]関数は間接的に呼び出される可能性があり、その場合はストレージを変更する可能性があります。
 
-Function visibility determines who can call a function. It's a way to enforce access control and is critical for smart contract security:
+関数の可視性は、誰が関数を呼び出せるかを決定します。これはアクセス制御を強制する方法であり、スマートコントラクトのセキュリティにとって重要です：
 
-- private functions are only callable within the module they are defined in. They're not accessible from other modules or from the CLI/SDK, which prevents unintended interactions with contract internals.
+- プライベート関数は、定義されているモジュール内でのみ呼び出し可能です。他のモジュールやCLI/SDKからはアクセスできないため、コントラクト内部との意図しない相互作用を防ぎます。
 
 ```move
 module 0x42::example {
@@ -142,7 +140,7 @@ module 0x42::example {
 }
 ```
 
-- `public(friend)` functions expand on this by allowing specified _friends_ modules to call the function, enabling controlled interaction between different contracts while still restricting general access.
+- `public(friend)`関数は、指定された_friends_モジュールに関数の呼び出しを許可することでこれを拡張し、一般的なアクセスを制限しながら異なるコントラクト間の制御された相互作用を可能にします。
 
 ```move
 module 0x42::example {
@@ -152,7 +150,7 @@ module 0x42::example {
 }
 ```
 
-- `public` functions are callable by any published module or script.
+- `public`関数は、公開されているモジュールやスクリプトから呼び出すことができます。
 
 ```move
 module 0x42::example {
@@ -160,7 +158,7 @@ module 0x42::example {
 }
 ```
 
-- `#[view]` decorated functions cannot alter storage; they only read data, providing a safe way to access information without risking state modification.
+- `#[view]`デコレータが付いた関数はストレージを変更できません。データの読み取りのみを行い、状態変更のリスクなく安全に情報にアクセスする方法を提供します。
 
 ```move
 module 0x42::example {
@@ -169,54 +167,52 @@ module 0x42::example {
 }
 ```
 
-- The `entry` modifier in Move is used to indicate entry points for transactions. Functions with the `entry` modifier serve as the starting point of execution when a transaction is submitted to the blockchain.
+- Moveの`entry`修飾子は、トランザクションのエントリーポイントを示すために使用されます。`entry`修飾子を持つ関数は、トランザクションがブロックチェーンに送信されたときの実行開始点として機能します。
 
 ```move
 module 0x42::example {
   entry fun f(){}
 }
 ```
+まとめると：
 
-To summarize:
+|                | モジュール自身 | 他のモジュール                      | Aptos CLI/SDK |
+| -------------- | ------------- | ---------------------------------- | ------------- |
+| private        | ✅            | ⛔                                 | ⛔            |
+| public(friend) | ✅            | ✅ friendの場合<br></br>⛔ それ以外 | ⛔            |
+| public         | ✅            | ✅                                 | ⛔            |
+| entry          | ✅            | ⛔                                 | ✅            |
 
-|                | Module itself | Other Modules                     | Aptos CLI/SDK |
-| -------------- | ------------- | --------------------------------- | ------------- |
-| private        | ✅            | ⛔                                | ⛔            |
-| public(friend) | ✅            | ✅ if friend<br></br>⛔ otherwise | ⛔            |
-| public         | ✅            | ✅                                | ⛔            |
-| entry          | ✅            | ⛔                                | ✅            |
+この階層化された可視性により、認可されたエンティティのみが特定の関数を実行できるようになり、コントラクトの整合性を損なうバグや攻撃のリスクを大幅に軽減します。
 
-This layered visibility ensures that only authorized entities can execute certain functions, greatly reducing the risk of bugs or attacks that compromise contract integrity.
-
-Note that it’s possible to combine `entry` with `public` or `public(friend)`
+なお、`entry`は`public`や`public(friend)`と組み合わせることが可能です。
 
 ```move
 module 0x42::example {
   public(friend) entry fun sample_function() { /* ... */ }
 }
 ```
+この場合、`sample_function`はAptos CLI/SDKとfriendとして宣言された任意のモジュールの両方から呼び出すことができます。
 
-In this case `sample_function` can be called by both the Aptos CLI/SDK by any module declared as a friend.
+#### 影響
 
-#### Impact
+この原則を守ることで、関数が過度に公開されることを防ぎ、ビジネスロジックに必要な範囲のみに関数アクセスを制限することができます。
 
-Adhering to this principle ensures that functions are not over-exposed, restricting the scope of function access to only what is necessary for the business logic.
+## 型とデータ構造
 
-## Types and Data Structures
+### ジェネリクス型チェック
 
-### Generics type check
+ジェネリクスは、異なる入力データ型に対して関数や構造体を定義するために使用できます。使用する際は、ジェネリック型が有効で期待通りのものであることを確認してください。ジェネリクスについての[詳細はこちら](book/generics.mdx)をご覧ください。
 
-Generics can be used to define functions and structs over different input data types. When using them, ensure that the generic types are valid and what’s expected. [Read more](book/generics.mdx) about generics.
+チェックされていないジェネリクスは、不正なアクションやトランザクションのアボートにつながり、プロトコルの整合性を損なう可能性があります。
 
-Unchecked generics can lead to unauthorized actions or transaction aborts, potentially compromising the integrity of the protocol.
+#### 安全でないコードの例
 
-#### Example Insecure Code
+以下のコードは、フラッシュローンの簡略版を示しています。
 
-The code below outlines a simplified version of a flash loan.
+`flash_loan<T>`関数では、ユーザーは指定された量のコイン型**`T`**を借りることができ、借入額とトランザクション終了前にプロトコルに返却されるべき手数料を記録した`Receipt`も一緒に受け取ります。
 
-In the `flash_loan<T>` function, a user can borrow a given amount of coins type **`T`** along with a `Receipt` that records the borrowed amount plus a fee that should be returned to the protocol before the end of the transaction.
-
-The `repay_flash_loan<T>` function accepts a `Receipt` and a `Coin<T>` as parameters. The function extracts the repayment amount from the `Receipt` and asserts that the value of the returned `Coin<T>` is greater than or equal to the amount specified in the `Receipt`, however there’s no check to ensure that the `Coin<T>` returned is the same as the `Coin<T>`that was initially loaned out, giving the ability to repay the loan with a coin of lesser value.
+`repay_flash_loan<T>`関数は、パラメータとして`Receipt`と`Coin<T>`を受け取ります。この関数は`Receipt`から返済額を取り出し、返却された`Coin<T>`の値が`Receipt`で指定された額以上であることを確認します。しかし、返却された`Coin<T>`が最初に貸し出された`Coin<T>`と同じであることを確認するチェックがないため、より価値の低いコインでローンを返済することが可能になってしまいます。
 
 ```move
 module 0x42::example {
@@ -241,9 +237,9 @@ module 0x42::example {
 }
 ```
 
-#### Example Secure Code
+#### 安全なコードの例
 
-The Aptos Framework sample below creates a key-value table consisting of two generic types `K` and `V` . Its related `add` functions accepts as parameters a `Table<K, V>` object, a `key`, and a `value` of types `K` and `V` . The `phantom` syntax ensures that the key and value types cannot be different than those in the table, preventing type mismatches. [Read more](book/generics.mdx#phantom-type-parameters) about `phantom` type parameters.
+以下のAptosフレームワークのサンプルは、2つのジェネリック型`K`と`V`からなるキーバリューテーブルを作成します。関連する`add`関数は、パラメータとして`Table<K, V>`オブジェクト、型`K`の`key`、型`V`の`value`を受け取ります。`phantom`構文により、キーと値の型がテーブルのものと異なることができないようになり、型の不一致を防ぎます。`phantom`型パラメータについての[詳細はこちら](book/generics.mdx#phantom-type-parameters)をご覧ください。
 
 ```move
 module 0x42::example {
@@ -257,7 +253,7 @@ module 0x42::example {
 }
 ```
 
-Given the by-design type checking provided by the Move language, we can refine the code of our flash loan protocol. The code below ensures that the coins passed to `repay_flash_loan` match the originally-loaned coins.
+Move言語によって提供される設計上の型チェックを活用することで、フラッシュローンプロトコルのコードを改良することができます。以下のコードでは、`repay_flash_loan`に渡されるコインが、最初に貸し出されたコインと一致することを保証しています。
 
 ```move
 module 0x42::example {
@@ -281,22 +277,22 @@ module 0x42::example {
 }
 ```
 
-### Resource management and Unbounded Execution
+### リソース管理と無制限実行
 
-Effective resource management and unbounded execution prevention are important for maintaining security and gas efficiency in protocol. It's essential to consider these aspects in contract design:
+プロトコルのセキュリティとガス効率を維持するためには、効果的なリソース管理と無制限実行の防止が重要です。コントラクト設計では以下の点を考慮することが不可欠です：
 
-1. Avoid iterating over a publicly accessible structure that allows for unlimited entries, where any number of users can contribute without constraints.
-2. Store user-specific assets, such as coins and NFTs, within individual user accounts.
-3. Keep module or package-related information within Objects, separate from user data.
-4. Instead of combining all user operations in a single shared global space, separating them by individual users.
+1. 制約なしに任意のユーザーが追加できる、無制限のエントリを許可する公開アクセス可能な構造に対する反復処理を避ける。
+2. コインやNFTなどのユーザー固有の資産は、個々のユーザーアカウント内に保存する。
+3. モジュールやパッケージに関連する情報は、ユーザーデータとは別にオブジェクト内に保持する。
+4. すべてのユーザー操作を単一の共有グローバル空間で組み合わせるのではなく、個々のユーザーごとに分離する。
 
-#### Impact
+#### 影響
 
-The negligence of these aspects allowing an attacker to deplete the gas and abort the transaction. This can block application functionalities.
+これらの側面を無視すると、攻撃者がガスを枯渇させてトランザクションを中断させることが可能になります。これによりアプリケーションの機能がブロックされる可能性があります。
 
-#### Example Insecure Code
+#### 安全でないコードの例
 
-The code below shows a loop iterating over every open order and could potentially be blocked by registering many orders:
+以下のコードは、すべてのオープンオーダーに対してループを実行しており、多数のオーダーを登録することでブロックされる可能性があります：
 
 ```move
 module 0x42::example {
@@ -313,14 +309,14 @@ module 0x42::example {
     };
     return option::none<Order>()
   }
-  //O(1) in time and gas operation.
+  //時間とガスの消費がO(1)の操作。
   public entry fun create_order(buyer: &signer) { /* ... */ }
 }
 ```
 
-#### Example Secure Code
+#### 安全なコードの例
 
-It's recommended to structure the order management system in a way that each user's orders are stored in their respective account rather than in a single global order store. This approach not only enhances security by isolating user data but also improves scalability by distributing the data load. Instead of using **`borrow_global_mut<OrderStore>(@admin)`** which accesses a global store, the orders should be accessed through the individual user's account.
+注文管理システムは、単一のグローバルな注文ストアではなく、各ユーザーの注文を各自のアカウントに保存する方式で構築することを推奨します。このアプローチは、ユーザーデータを分離することでセキュリティを向上させるだけでなく、データ負荷を分散させることでスケーラビリティも向上させます。グローバルストアにアクセスする **`borrow_global_mut<OrderStore>(@admin)`** を使用する代わりに、注文は個々のユーザーのアカウントを通じてアクセスする必要があります。
 
 ```move
 module 0x42::example {
@@ -335,25 +331,24 @@ module 0x42::example {
   }
 }
 ```
+また、実行される操作の特定のニーズに合わせて効率的なデータ構造を利用することをお勧めします。例えば、この文脈では **`SmartTable`** が特に効果的です。
 
-It is also advisable to utilize efficient data structures tailored to the specific needs of the operations being performed. For instance, a **`SmartTable`** can be particularly effective in this context.
+### Moveのアビリティ
 
-### Move Abilities
+Moveのアビリティは、言語内のデータ構造に対して可能なアクションを制御する一連の権限です。スマートコントラクト開発者は、セキュリティの脆弱性を防ぐため、これらの機能を必要な場所にのみ割り当て、その影響を理解して慎重に扱う必要があります。
 
-Move's abilities are a set of permissions that control the possible actions on data structures within the language. Smart contract developers must handle these capabilities with care, ensuring they're only assigned where necessary and understanding their implications to prevent security vulnerabilities.
-
-| Ability | Description                                                                                                            |
+| アビリティ | 説明                                                                                                            |
 | ------- | ---------------------------------------------------------------------------------------------------------------------- |
-| copy    | Permits the duplication of values, allowing them to be used multiple times within the contract.                        |
-| drop    | Allows values to be discarded from memory, which is necessary for controlling resources and preventing leaks.          |
-| store   | Enables data to be saved in the global storage, critical to persist data across transactions.                          |
-| key     | Grants data the ability to serve as a key in global storage operations, important for data retrieval and manipulation. |
+| copy    | 値の複製を許可し、コントラクト内で複数回使用することができます。                        |
+| drop    | メモリから値を破棄することを許可します。これはリソースを制御しリークを防ぐために必要です。          |
+| store   | データをグローバルストレージに保存できるようにします。トランザクション間でデータを永続化するために重要です。                          |
+| key     | データにグローバルストレージ操作のキーとして機能する能力を付与します。データの取得と操作に重要です。 |
 
-[Read more](book/abilities.mdx) about abilities.
+アビリティについての[詳細はこちら](book/abilities.mdx)をご覧ください。
 
-Incorrect usage of abilities can lead to security issues such as unauthorized copying of sensitive data (`copy`), resource leaks (`drop`), and global storage mishandling (`store`).
+アビリティの誤った使用は、機密データの不正なコピー(`copy`)、リソースリーク(`drop`)、グローバルストレージの誤った取り扱い(`store`)などのセキュリティ問題につながる可能性があります。
 
-#### Example Insecure Code
+#### 安全でないコードの例
 
 ```move
 module 0x42::example {
@@ -361,23 +356,22 @@ module 0x42::example {
   struct FlashLoan has drop { }
 }
 ```
+- `Token`に`copy`機能を付与すると、トークンを複製できるようになり、二重支払いやトークン供給のインフレーションが可能になり、通貨の価値が下がる可能性があります。
+- `FlashLoan`構造体に`drop`機能を許可すると、借り手が返済前にローンを破棄することで、ローンから逃れることができる可能性があります。
 
-- `copy` capability for a `Token` allows tokens to be replicated, potentially enabling double-spending and inflation of the token supply, which could devalue the currency.
-- Allowing the `drop` capability in a `FlashLoan` struct could permit borrowers to get out of their loan by destroying it before repayment.
-
-## Arithmetic Operations
+## 算術演算
 
 ---
 
-### Division Precision
+### 除算の精度
 
-Arithmetic operations that decrease precision by rounding down could lead protocols to underreport the outcome of these computations.
+切り捨てによって精度を低下させる算術演算は、プロトコルがこれらの計算結果を過小報告する可能性があります。
 
-Move includes six unsigned integer data types: `u8`, `u16`, `u32`, `u64`, `u128`, and `u256`. Division operations in Move truncate any fractional part, effectively rounding down to the nearest whole number, potentially causing protocols to underrepresent the result of such calculations.
+Moveには6つの符号なし整数データ型があります: `u8`、`u16`、`u32`、`u64`、`u128`、`u256`です。Moveの除算演算は小数部を切り捨て、事実上最も近い整数に切り下げられるため、プロトコルがこのような計算の結果を過小表現する可能性があります。
 
-Rounding errors in calculations can have wide-ranging impacts, potentially causing financial imbalances, data inaccuracies, and flawed decision-making processes. These errors can result in a loss of revenue, give undue benefits, or even pose safety risks, depending on the context. Accurate and precise computation is essential to maintain system reliability and user confidence.
+計算における丸め誤差は、財務上の不均衡、データの不正確さ、欠陥のある意思決定プロセスを引き起こす可能性があり、広範な影響を及ぼす可能性があります。これらのエラーは、状況に応じて収益の損失、不当な利益の付与、さらには安全性のリスクをもたらす可能性があります。システムの信頼性とユーザーの信頼を維持するためには、正確で精密な計算が不可欠です。
 
-#### Example Insecure Code
+#### 安全でないコードの例
 
 ```move
 module 0x42::example {
@@ -387,13 +381,13 @@ module 0x42::example {
 }
 ```
 
-If `size` is less than `10000 / PROTOCOL_FEE_BPS`, the fee will round down to 0, effectively enabling a user to interact with the protocol without incurring any fees.
+`size`が`10000 / PROTOCOL_FEE_BPS`より小さい場合、手数料は0に切り下げられ、ユーザーは実質的に手数料を支払うことなくプロトコルを利用できてしまいます。
 
-#### Example Secure Code
+#### 安全なコードの例
 
-The following examples outlines two distinct strategies to mitigate the issue in the code:
+以下の例では、このコードの問題を軽減するための2つの異なる戦略を示しています：
 
-- Set a minimum order size threshold that is greater than `10000 / PROTOCOL_FEE_BPS`, ensuring that the fee will never round down to zero.
+- 最小注文サイズのしきい値を`10000 / PROTOCOL_FEE_BPS`より大きく設定し、手数料が0に切り下げられることがないようにします。
 
 ```move
 module 0x42::example {
@@ -406,7 +400,7 @@ module 0x42::example {
 }
 ```
 
-- Check that fees are non-zero and handle the situation specifically, for example by set a minimum fee or rejecting the transaction.
+- 手数料が0でないことを確認し、最小手数料を設定するかトランザクションを拒否するなど、状況に応じて具体的に対処します。
 
 ```move
 module 0x42::example {
@@ -418,30 +412,30 @@ module 0x42::example {
 }
 ```
 
-### Integer Considerations
+### 整数に関する考慮事項
 
-In Move, the security around integer operations is designed to prevent overflow and underflow which can cause unexpected behavior or vulnerabilities. Specifically:
+Moveでは、オーバーフローやアンダーフローによって予期しない動作や脆弱性が発生するのを防ぐため、整数演算のセキュリティが設計されています。具体的には：
 
-- Additions (`+`) and multiplications (`*`) cause the program to abort if the result is too large for the integer type. An abort in this context means that the program will terminate immediately.
-- Subtractions (`-`) abort if the result is less than zero.
-- Division (`/`) abort if the divisor is zero.
-- Left Shift (`<<`), uniquely, does not abort in the event of an overflow. This means if the shifted bits exceed the storage capacity of the integer type, the program will not terminate, resulting in incorrect values or unpredictable behavior.
+- 加算（`+`）と乗算（`*`）は、結果が整数型の許容範囲を超える場合、プログラムをアボートさせます。この文脈でのアボートとは、プログラムが即座に終了することを意味します。
+- 減算（`-`）は、結果が0未満になる場合にアボートします。
+- 除算（`/`）は、除数が0の場合にアボートします。
+- 左シフト（`<<`）は、特殊なケースとして、オーバーフロー時にアボートしません。これは、シフトされたビットが整数型の格納容量を超えた場合、プログラムは終了せず、不正確な値や予測不可能な動作を引き起こす可能性があることを意味します。
 
-[Read more](book/integers.mdx#operations) about operations.
+演算について[詳しくはこちら](book/integers.mdx#operations)をご覧ください。
 
-Bad operations could unexpectedly alter the correct execution of the smart contract, either by causing an unwanted abort or by calculating inaccurate data.
+不適切な演算は、意図しないアボートを引き起こしたり、不正確なデータを計算したりすることで、スマートコントラクトの正しい実行を予期せず変更する可能性があります。
 
-## Aptos Objects
+## Aptos オブジェクト
 
 ---
 
-### ConstructorRef leak
+### ConstructorRef の漏洩
 
-When creating objects ensure to never expose the object’s `ConstructorRef` as it allows adding resources to an object. A `ConstructorRef` can also be used to generate other capabilities (or "Refs") that are used to alter or transfer the ownership the object. [Read more](object/creating-objects.mdx) about Objects capabilities.
+オブジェクトを作成する際は、オブジェクトの`ConstructorRef`を絶対に公開しないようにしてください。これはオブジェクトにリソースを追加することを許可してしまうためです。`ConstructorRef`は、オブジェクトの所有権を変更または移転するために使用される他の機能（「Refs」）を生成するためにも使用できます。オブジェクトの機能について[詳しくはこちら](object/creating-objects.mdx)をご覧ください。
 
-#### Example Vulnerable code
+#### 脆弱なコードの例
 
-For example, if a `mint` function returns the `ConstructorRef` for an NFT, it can be transformed to a `TransferRef` , stored in global storage, and can allow the original owner to transfer the NFT back after it’s being sold.
+例えば、`mint`関数がNFTの`ConstructorRef`を返す場合、それは`TransferRef`に変換され、グローバルストレージに保存され、売却後でも元の所有者がNFTを転送することを可能にしてしまう可能性があります。
 
 ```move
 module 0x42::example {
@@ -461,9 +455,9 @@ module 0x42::example {
 }
 ```
 
-#### Example Secure Code
+#### 安全なコードの例
 
-Don’t return `CostructorRef` in the `mint` function:
+`mint`関数で`ConstructorRef`を返さないようにしましょう：
 
 ```move
 module 0x42::example {
@@ -482,21 +476,21 @@ module 0x42::example {
 }
 ```
 
-### Object Accounts
+### オブジェクトアカウント
 
-In the Aptos Framework, multiple `key`-able resources can be stored at a single object account.
+Aptosフレームワークでは、複数の`key`可能なリソースを1つのオブジェクトアカウントに格納できます。
 
-However, objects should be isolated to different account, otherwise modifications to one object within an account can influence the entire collection.
+ただし、オブジェクトは異なるアカウントに分離する必要があります。そうしないと、アカウント内の1つのオブジェクトへの変更がコレクション全体に影響を与える可能性があります。
 
-For example, transferring one resource implies the transfer of all group members, since the transfer function operates on `ObjectCore`, which is essentially a general tag for all resources at the account.
+例えば、1つのリソースを転送すると、転送関数はアカウント内のすべてのリソースの一般的なタグである`ObjectCore`に対して動作するため、グループメンバー全体の転送が発生します。
 
-[Read more](objects.mdx) about Aptos Objects.
+Aptosオブジェクトについて[詳しくはこちら](objects.mdx)をご覧ください。
 
-#### Example Insecure Code
+#### 脆弱なコードの例
 
-The `mint_two` function lets `sender` create a `Monkey` for themselves and send a `Toad` to `recipient` .
+`mint_two`関数は、`sender`が自身のために`Monkey`を作成し、`Toad`を`recipient`に送信することを可能にします。
 
-As `Monkey` and `Toad` belong to the same object account the result is that both objects’ are now owned by the `recipient` .
+`Monkey`と`Toad`が同じオブジェクトアカウントに属しているため、結果として両方のオブジェクトが`recipient`によって所有されることになります。
 
 ```move
 module 0x42::example {
@@ -521,10 +515,9 @@ module 0x42::example {
   }
 }
 ```
+#### 安全なコードの例
 
-#### Example Secure Code
-
-In this example, objects should be stored at separate object accounts:
+この例では、オブジェクトは別々のオブジェクトアカウントに格納する必要があります：
 
 ```move
 module 0x42::example {
@@ -556,19 +549,19 @@ module 0x42::example {
 }
 ```
 
-## Business logic
+## ビジネスロジック
 
-### Front-running
+### フロントランニング
 
-Front-running involves executing transactions ahead of others by exploiting knowledge of future actions already made by others. This tactic gives front-runners an unfair advantage, as they can anticipate and benefit from the outcomes of these pending transactions.
+フロントランニングとは、他者が既に行った将来のアクションに関する知識を利用して、他者より先にトランザクションを実行することです。このような戦術は、保留中のトランザクションの結果を予測して利益を得ることができるため、フロントランナーに不当な優位性を与えます。
 
-Front-running can undermine the fairness and integrity of a decentralized application. It can lead to loss of funds, unfair advantages in games, manipulation of market prices, and a general loss of trust in the platform
+フロントランニングは、分散型アプリケーションの公平性と完全性を損なう可能性があります。資金の損失、ゲームでの不当な優位性、市場価格の操作、そしてプラットフォームへの信頼の全般的な喪失につながる可能性があります。
 
-#### Example Insecure Code
+#### 安全でないコードの例
 
-In a lottery scenario, users participate by selecting a number from 1 to 100. At a certain point, the game administrator invokes the function `set_winner_number` to set the winning number. Subsequently, in a separate transaction, the administrator reviews all player bets to determine the winner via `evaluate_bets_and_determine_winners`.
+宝くじのシナリオでは、ユーザーは1から100までの数字を選んで参加します。ある時点で、ゲーム管理者は`set_winner_number`関数を呼び出して当選番号を設定します。その後、別のトランザクションで、管理者は`evaluate_bets_and_determine_winners`を通じて全プレイヤーの賭けを確認して勝者を決定します。
 
-A front-runner observing the winning number set by `set_winner_number` could attempt to submit a late bet or modify an existing bet to match the winning number before `evaluate_bets_and_determine_winners` executes.
+`set_winner_number`によって設定された当選番号を観察したフロントランナーは、`evaluate_bets_and_determine_winners`が実行される前に、遅れて賭けを提出したり、既存の賭けを当選番号に合わせて修正したりする可能性があります。
 
 ```move
 module 0x42::example {
@@ -604,9 +597,9 @@ module 0x42::example {
 }
 ```
 
-#### Example Secure Code
+#### 安全なコードの例
 
-An effective strategy to avoid front-running could be implementing a `finalize_lottery` function that reveals the answer and concludes the game within a single transaction, and making the other functions private. This approach guarantees that as soon as the answer is disclosed, the system no longer accepts any new answers, thereby eliminating the chance for front-running.
+フロントランニングを回避するための効果的な戦略として、答えを公開してゲームを終了する`finalize_lottery`関数を1つのトランザクション内で実装し、他の関数をプライベートにすることが考えられます。このアプローチにより、答えが公開されるとすぐにシステムは新しい回答を受け付けなくなり、フロントランニングの可能性を排除することができます。
 
 ```move
 module 0x42::example {
@@ -621,29 +614,29 @@ module 0x42::example {
 }
 ```
 
-### Price Oracle Manipulation
+### プライスオラクルの操作
 
-In Defi applications, price oracles that utilize the liquidity ratio of tokens in a pair to determine prices for transactions can be vulnerable to manipulation. This susceptibility arises from the fact that the liquidity ratio can be influenced by market participants who hold a significant amount of tokens. When these participants strategically increase or decrease their token holdings, it can impact the liquidity ratio and consequently affect the prices determined by the price oracle, potentially draining the pool.
+Defiアプリケーションにおいて、ペアのトークンの流動性比率を使用して取引価格を決定するプライスオラクルは、操作に対して脆弱である可能性があります。この脆弱性は、大量のトークンを保有する市場参加者が流動性比率に影響を与えることができるという事実から生じます。これらの参加者が戦略的にトークン保有量を増減させると、流動性比率に影響を与え、その結果プライスオラクルによって決定される価格に影響を与え、プールを枯渇させる可能性があります。
 
-We recommend to use multiple oracles to determine prices.
+価格決定には複数のオラクルを使用することを推奨します。
 
-#### Secure Code Example
+#### 安全なコードの例
 
-Thala, for example, utilizes a tiered-oracle design. The system has a primary and a secondary oracle. Should one of the oracles fail, the other one serves as a backup based on a sophisticated switching logic. The system is designed with adversarial situations in mind, and strives to provide highly accurate price feeds with minimal governance interaction all the time.
+例えば、Thalaは階層型オラクル設計を採用しています。システムにはプライマリとセカンダリの2つのオラクルがあります。1つのオラクルが失敗した場合、もう1つのオラクルが高度な切り替えロジックに基づいてバックアップとして機能します。このシステムは敵対的な状況を想定して設計されており、ガバナンスの介入を最小限に抑えながら、常に高精度の価格フィードを提供することを目指しています。
 
-For more in-depth information, refer to [Thala's documentation](https://docs.thala.fi/thala-protocol-design/move-dollar-mod/oracles).
+詳細については、[Thalaのドキュメント](https://docs.thala.fi/thala-protocol-design/move-dollar-mod/oracles)を参照してください。
 
-### Token Identifier Collision
+### トークン識別子の衝突
 
-When dealing with tokens, ensure that the method for comparing token structs to establish a deterministic ordering does not lead to collisions. Concatenating the address, module, and struct names into a vector is insufficient, as it does not differentiate between similar names that should be treated as unique.
+トークンを扱う際は、決定論的な順序を確立するためのトークン構造体の比較方法が衝突を引き起こさないようにする必要があります。アドレス、モジュール、構造体名をベクターに連結するだけでは不十分です。これは、一意として扱われるべき類似の名前を区別できないためです。
 
-As a consequence, the protocol may erroneously reject legitimate swap pairs due to collisions in token struct comparisons. This oversight could compromise the integrity of swap operations, leading to a loss of funds.
+その結果、トークン構造体の比較における衝突により、プロトコルが正当なスワップペアを誤って拒否する可能性があります。この見落としはスワップ操作の整合性を損なう可能性があり、資金の損失につながる可能性があります。
 
-#### Example Insecure Code
+#### 安全でないコードの例
 
-The `get_pool_address` function creates a unique address for a liquidity pool associated with trading pairs of fungible assets. It generates and returns an address that serves as a distinct identifier for the liquidity pool of the specified two tokens.
+`get_pool_address`関数は、代替可能資産の取引ペアに関連する流動性プールの一意のアドレスを作成します。指定された2つのトークンの流動性プールの固有の識別子として機能するアドレスを生成して返します。
 
-However, users have the freedom to create an `Object<Metadata>` with any symbol they choose. This flexibility could lead to the creation of `Object<Metadata>` instances that mimic other existing instances. This issue might result in a seed collision, which in turn could cause a collision in the generation of the pool address.
+しかし、ユーザーは任意のシンボルで`Object<Metadata>`を作成する自由があります。この柔軟性により、他の既存のインスタンスを模倣する`Object<Metadata>`インスタンスが作成される可能性があります。この問題はシード値の衝突を引き起こし、その結果プールアドレスの生成において衝突が発生する可能性があります。
 
 ```move
 module 0x42::example {
@@ -658,9 +651,9 @@ module 0x42::example {
 }
 ```
 
-#### Example Secure Code
+#### 安全なコードの例
 
-`object::object_address` returns an unique identifier for each `Object<Metadata>`
+`object::object_address` は各 `Object<Metadata>` に対して一意の識別子を返します
 
 ```move
 module 0x42::example {
@@ -673,19 +666,19 @@ module 0x42::example {
 }
 ```
 
-## Operations
+## オペレーション
 
 ---
 
-### Pausing functionality
+### 機能の一時停止
 
-Protocols should have the ability to pause operations effectively. For immutable protocols, a built-in pause functionality is necessary. Upgradable protocols can achieve pausing either through smart contract functionality or via protocol upgrades. Teams should be equipped with automation for the quick and efficient execution of this process.
+プロトコルは効果的に操作を一時停止できる機能を持つべきです。不変のプロトコルの場合、組み込みの一時停止機能が必要です。アップグレード可能なプロトコルは、スマートコントラクトの機能またはプロトコルのアップグレードを通じて一時停止を実現できます。チームはこのプロセスを迅速かつ効率的に実行するための自動化を備えている必要があります。
 
-The absence of a pausing mechanism can lead to prolonged exposure to vulnerabilities, potentially resulting in significant losses. An efficient pausing functionality allows for prompt response to security threats, bugs, or other critical issues, minimizing the risk of exploitation and ensuring the safety of user assets and protocol integrity.
+一時停止メカニズムがないと、脆弱性への長期的な露出につながり、重大な損失を招く可能性があります。効率的な一時停止機能により、セキュリティ上の脅威、バグ、その他の重要な問題に迅速に対応でき、悪用のリスクを最小限に抑え、ユーザー資産とプロトコルの整合性を確保できます。
 
-#### Example Secure Code
+#### 安全なコードの例
 
-Example of how to integrate a pause functionality
+一時停止機能を統合する方法の例
 
 ```move
 module 0x42::example {
@@ -713,23 +706,23 @@ module 0x42::example {
 }
 ```
 
-### Smart contract publishing key management
+### スマートコントラクトの公開キー管理
 
-Using the same account for testnet and mainnet poses a security risk, as testnet private keys, often stored in less secure environments (ex. laptops), can be more easily exposed or leaked. An attacker that can obtain the private key for the testnet smart contract would be able to upgrade the mainnet one.
+テストネットとメインネットで同じアカウントを使用することはセキュリティリスクとなります。テストネットの秘密鍵は、セキュリティの低い環境（ラップトップなど）に保存されることが多く、露出や漏洩のリスクが高くなるためです。テストネットのスマートコントラクトの秘密鍵を入手した攻撃者は、メインネットのコントラクトもアップグレードできてしまいます。
 
-## Randomness
+## ランダム性
 
-For more information on randomness and why it is crucial for preventing the predictability of random numbers, please refer to this page: [Randomness Guide](https://aptos.dev/guides/randomness/).
+ランダム性と、ランダムな数値の予測可能性を防ぐことが重要である理由の詳細については、こちらのページを参照してください：[ランダム性ガイド](https://aptos.dev/guides/randomness/)。
 
 ---
 
-### Randomness - test-and-abort
+### ランダム性 - テストとアボート
 
-> At Aptos, We are always security-first. During compilation, we ensure that no randomness API is invoked from a public function. However, we still allow users to make this choice by adding the attribute `#[lint::allow_unsafe_randomness]` to the public function.
+> Aptosでは、常にセキュリティを第一に考えています。コンパイル時に、publicな関数からランダム性APIが呼び出されないことを確認しています。ただし、`#[lint::allow_unsafe_randomness]`属性をpublic関数に追加することで、ユーザーがこの選択をすることを許可しています。
 
-If a `public` function directly or indirectly invokes the randomness API, a malicious user can abuse the composability of this function and abort the transaction if the result is not as desired. This allows the user to keep trying until they achieve a beneficial outcome, undermining the randomness.
+`public`関数が直接的または間接的にランダム性APIを呼び出す場合、悪意のあるユーザーはこの関数のコンポーザビリティを悪用し、望ましくない結果の場合にトランザクションをアボートすることができます。これにより、ユーザーは望ましい結果が得られるまで何度も試行することができ、ランダム性が損なわれてしまいます。
 
-#### Example Vulnerable code
+#### 脆弱なコードの例
 
 ```move filename="randomness_example.move"
 module user::lottery {
@@ -747,7 +740,7 @@ module user::lottery {
 }
 ```
 
-In this example, the `play` function is `public`, allowing it to be composed with other modules. A malicious user can invoke this function and then check if they have won. If they have not won, they can abort the transaction and try again.
+この例では、`play`関数が`public`であるため、他のモジュールと組み合わせることができます。悪意のあるユーザーはこの関数を呼び出して、勝利したかどうかを確認できます。勝利していない場合は、トランザクションをアボートして再試行することができます。
 
 ```move filename="randomness_example.move"
 module attacker::exploit {
@@ -758,9 +751,9 @@ module attacker::exploit {
 }
 ```
 
-To resolve the possible issue, is sufficient to set the visibility of all functions that invoke the randomness API, either directly or indirectly, to `entry` rather than `public` or `public entry`.
+この問題を解決するには、ランダム性APIを直接的または間接的に呼び出すすべての関数の可視性を、`public`や`public entry`ではなく`entry`に設定するだけで十分です。
 
-#### Example Secure Code
+#### セキュアなコードの例
 
 ```move filename="randomness_example.move"
 module user::lottery {
@@ -778,23 +771,23 @@ module user::lottery {
 }
 ```
 
-### Randomness - undergasing
+### ランダム性 - アンダーガス
 
-When different code paths in a function consume different amounts of gas, an attacker can manipulate the gas limit to bias the outcome. Let's look at an example of how different paths can consume different amounts of gas.
+関数内の異なるコードパスが異なる量のガスを消費する場合、攻撃者はガス制限を操作して結果に偏りを与えることができます。異なるパスがどのように異なる量のガスを消費するかの例を見てみましょう。
 
-#### Example Vulnerable code
+#### 脆弱なコードの例
 
 ```move filename="randomness_example.move"
 module user::lottery {
 
-    //transfer 10 aptos from admin to user
+    //管理者からユーザーに10 aptosを送金
     fun win(user: &signer) {
         let admin_signer = &get_admin_signer();
         let aptos_metadata = get_aptos_metadata();
         primary_fungible_store::transfer(admin_signer, aptos_metadata, address_of(user),10);
     }
 
-    //transfer 10 aptos from user to admin, then 1 aptos from admin to fee_admin
+    //ユーザーから管理者に10 aptosを送金し、その後管理者から手数料管理者に1 aptosを送金
     fun lose(user: &signer) {
 
         //user to admin
@@ -818,15 +811,15 @@ module user::lottery {
 }
 ```
 
-In this lottery-example, `win` and `lose` consume different amounts of gas.
-The `lose` function consumes more gas than the `win` function. An attacker can set the max gas limit that is sufficient for `win` but not for `lose`. This forces the transaction to abort when the `lose` path is taken, ensuring that the user will never execute the `lose` path. Then, the user can call the function repeatedly until they win.
+このくじの例では、`win`と`lose`は異なる量のガスを消費します。
+`lose`関数は`win`関数よりも多くのガスを消費します。攻撃者は`win`には十分だが`lose`には不十分なガス制限を設定することができます。これにより`lose`パスが実行される際にトランザクションがアボートされ、ユーザーは`lose`パスを実行できなくなります。そして、ユーザーは勝つまで関数を繰り返し呼び出すことができます。
 
-#### Example Secure Code
+#### セキュアなコードの例
 
-There are different ways to secure the code:
+コードを安全にする方法はいくつかあります：
 
-1. Ensure better outcomes use more or the same gas as worse outcomes.
-2. Allow only admin addresses to invoke the randomness API.
-3. Ensure entry functions work regardless of random outcomes. This can be handled by committing the random result, then using the random result to provide the action in a different transaction. Avoid immediate actions based on randomness for consistent gas use.
+1. より良い結果が、より悪い結果と同じかそれ以上のガスを使用するようにする。
+2. 管理者アドレスのみがランダム性APIを呼び出せるようにする。
+3. エントリー関数がランダムな結果に関係なく動作するようにする。これはランダムな結果をコミットし、その結果を別のトランザクションでアクションを提供するために使用することで対応できます。一貫したガス使用のために、ランダム性に基づく即時のアクションは避けてください。
 
-> We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergasing attacks.
+> 将来的に、より複雑なコードがアンダーガス攻撃から安全になるように、より多くの機能を提供する予定です。

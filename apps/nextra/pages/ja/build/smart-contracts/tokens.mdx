@@ -1,136 +1,75 @@
 ---
-title: "Aptos Token Standard Overview"
+title: "Aptos トークン標準の概要"
 ---
 
-# Aptos Token Standards
+# Aptos トークン標準
 
-The [Aptos Digital Asset Standard](digital-asset.mdx) defines the
-canonical Non-fungible Token on Aptos. Aptos leverages composability to extend
-the digital asset standard with features like fungibility via
-the [Fungible Asset standard](fungible-asset.mdx). The concept of
-composability comes from the underlying data model for these constructs:
-the [Move object](objects.mdx) data model.
+[Aptos デジタルアセット標準](digital-asset.mdx)は、Aptos上の正規のNon-fungible Token(NFT)を定義します。Aptosは、[Fungible Asset標準](fungible-asset.mdx)を通じて、デジタルアセット標準を代替性などの機能で拡張するために、コンポーザビリティを活用しています。このコンポーザビリティの概念は、これらの構造の基礎となるデータモデル：[Moveオブジェクト](objects.mdx)データモデルから来ています。
 
-The rest of this document discusses how the Aptos token standards compare to the
-standards on Ethereum and Solana.
+このドキュメントの残りの部分では、AptosのトークンスタンダードがEthereumやSolanaの標準とどのように比較されるかについて説明します。
 
-## Data models
+## データモデル
 
-To understand tokens, we begin by comparing the data models across different
-blockchains.
+トークンを理解するために、まず異なるブロックチェーン間でのデータモデルを比較してみましょう。
 
 ### Ethereum
 
-Ethereum has two types of accounts:
+Ethereumには2種類のアカウントがあります：
 
-- Externally-owned accounts which store a balance of Ether.
-- Contract accounts which manage their underlying smart contracts and have an
-associated storage for persistent state, which can only be mutated by the
-associated contract.
+- イーサの残高を保存する外部所有アカウント
+- スマートコントラクトを管理し、永続的な状態のためのストレージを持つコントラクトアカウント。このストレージは関連するコントラクトによってのみ変更可能です。
 
-In order to create a new NFT collection, a creator must deploy their own
-contract to the blockchain, which in turn will create a collection and set of
-NFTs within its storage.
+新しいNFTコレクションを作成するために、クリエイターはブロックチェーンに自身のコントラクトをデプロイする必要があり、そのストレージ内にコレクションとNFTのセットを作成します。
 
 ### Solana
 
-Unlike Ethereum or Aptos where data and code co-exist, Solana stores data and
-programs in separate accounts. There are two types of accounts on the Solana
-blockchain:
+データとコードが共存するEthereumやAptosとは異なり、Solanaではデータとプログラムを別々のアカウントに保存します。Solanaブロックチェーンには2種類のアカウントがあります：
 
-- Executable accounts only store contract code
-- Non-executable accounts store data associated with and owned by executable
-accounts.
+- 実行可能アカウントはコントラクトコードのみを保存します
+- 実行不可能アカウントは、実行可能アカウントに関連付けられ、所有されるデータを保存します。
 
-In order to create a new NFT collection, a creator calls an existing deployed
-program to populate a new collection and set of NFTs.
+新しいNFTコレクションを作成するために、クリエイターは既にデプロイされているプログラムを呼び出して、新しいコレクションとNFTのセットを作成します。
 
 ### Aptos
 
-The [accounts](../../network/blockchain/accounts.mdx) in Aptos store both smart contracts
-and data. Unlike Ethereum, the associated data of a smart contract is
-distributed across the space of all accounts
-in [resources](../../network/blockchain/resources.mdx)
-within [accounts](../../network/blockchain/accounts.mdx)
-or [objects](objects.mdx). For example, a collection and an
-NFT within that collection are stored in distinct objects at different addresses
-with the smart contract defining them at another address. A smart contract
-developer could also store data associated with the NFT and collection at the
-same address as the smart contract or in other objects.
+Aptosの[アカウント](../../network/blockchain/accounts.mdx)は、スマートコントラクトとデータの両方を保存します。Ethereumとは異なり、スマートコントラクトに関連するデータは、[アカウント](../../network/blockchain/accounts.mdx)内の[リソース](../../network/blockchain/resources.mdx)または[オブジェクト](objects.mdx)内の全アカウントの空間に分散されています。例えば、コレクションとそのコレクション内のNFTは、スマートコントラクトを定義する別のアドレスで、異なるアドレスの個別のオブジェクトに保存されます。スマートコントラクト開発者は、NFTとコレクションに関連するデータをスマートコントラクトと同じアドレスや他のオブジェクトに保存することもできます。
 
-There are two means to create NFTs on Aptos:
+Aptosでは、NFTを作成する方法が2つあります：
 
-- The [no-code standard](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-22.md)
-allows creators to call into the contract to create new collections and tokens
-without deploying a new contract.
-- Custom NFT contracts allow creators to customize their NFTs by extending the
-object model that can manage all aspects of their collection.
+- [ノーコード標準](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-22.md)により、クリエイターは新しいコントラクトをデプロイすることなく、コントラクトを呼び出して新しいコレクションとトークンを作成できます。
+- カスタムNFTコントラクトにより、クリエイターはコレクションのすべての側面を管理できるオブジェクトモデルを拡張してNFTをカスタマイズできます。
 
-Aptos strikes a balance between the customizability offered by Ethereum with the
-simplicity of creating new collections like Solana.
+Aptosは、Ethereumが提供するカスタマイズ性と、Solanaのような新しいコレクション作成の簡便さのバランスを取っています。
 
-Like Ethereum, Aptos requires indexing to determine the set of all NFTs owned by
-an account, while Solana has no need.
+Ethereumと同様に、Aptosはアカウントが所有するすべてのNFTのセットを判断するためにインデックス作成が必要ですが、Solanaではその必要はありません。
 
-## Token standard comparison
+## トークン標準の比較
 
-The Fungible Token (FT) was initially introduced
-by [EIP-20](https://eips.ethereum.org/EIPS/eip-20), and Non-Fungible Token (NFT)
-was defined in [EIP-721](https://eips.ethereum.org/EIPS/eip-721).
-Later, [EIP-1155](https://eips.ethereum.org/EIPS/eip-1155) combined FT and NFT
-or even Semi-Fungible Token (SFT) into one standard.
+Fungible Token (FT)は最初に[EIP-20](https://eips.ethereum.org/EIPS/eip-20)で導入され、Non-Fungible Token (NFT)は[EIP-721](https://eips.ethereum.org/EIPS/eip-721)で定義されました。後に、[EIP-1155](https://eips.ethereum.org/EIPS/eip-1155)がFTとNFT、さらにはSemi-Fungible Token (SFT)を1つの標準に統合しました。
 
-The Ethereum token standards requires each token to deploy their own individual
-contract code to distinguish collection of tokens. Solana account model enables
-another pattern where code can be reused so that one generic program operates on
-various data. To create a new token, you could create an account that can mint
-tokens and more accounts that can receive them. The mint account itself uniquely
-determines the token type instead of contract account, and these are all passed
-as arguments to the one contract deployed to some executable account.
+Ethereumのトークン標準では、トークンのコレクションを区別するために、各トークンが独自の個別のコントラクトコードをデプロイする必要があります。Solanaのアカウントモデルは、1つの汎用プログラムが様々なデータを操作できるように、コードを再利用できる別のパターンを可能にします。新しいトークンを作成するには、トークンをミントできるアカウントと、それらを受け取ることができる複数のアカウントを作成できます。ミントアカウント自体がコントラクトアカウントの代わりにトークンタイプを一意に決定し、これらはすべて実行可能なアカウントにデプロイされた1つのコントラクトに引数として渡されます。
 
-The collection of Aptos token standards shares some similarities with Solana,
-especially how it covers FT, NFT and SFT into a common on-chain code. Instead of
-deploying a new smart contract for each new token, a creator calls a function in
-the contract with the necessary arguments. Depending on which function you call,
-the token contract will mint/transfer/burn/... tokens.
+AptosのトークンスタンダードのコレクションはSolanaといくつかの類似点を共有しており、特にFT、NFT、SFTを共通のオンチェーンコードでカバーする方法が似ています。各新しいトークンに新しいスマートコントラクトをデプロイする代わりに、クリエイターは必要な引数を持つコントラクト内の関数を呼び出します。呼び出す関数に応じて、トークンコントラクトはトークンのミント/転送/バーン/...を行います。
 
-### Token identification
+### トークンの識別
 
-Aptos identifies a token by its `Address` or `ObjectId`, a location within
-global storage. Collections are stored at a location determined by the address
-of the creator and the name of the collection.
+Aptosはトークンをグローバルストレージ内の場所である`Address`または`ObjectId`で識別します。コレクションは、クリエイターのアドレスとコレクション名によって決定される場所に保存されます。
 
-In Ethereum, contracts are deployed on accounts determined by the account that
-is deploying the contract. NFTs are then stored as indexes into data tables
-within the contract.
+Ethereumでは、コントラクトはコントラクトをデプロイするアカウントによって決定されるアカウントにデプロイされます。NFTはその後、コントラクト内のデータテーブルへのインデックスとして保存されます。
 
-In Solana, NFT data is stored under a mint account, independent of the program
-account.
+Solanaでは、NFTデータはプログラムアカウントとは独立して、ミントアカウントの下に保存されます。
 
-### Token metadata
+### トークンのメタデータ
 
-Aptos token has metadata in its `Token` resource with the data most commonly
-required by dapps to interact with tokens. Some examples include:
+Aptosトークンは、dappsがトークンと対話するために最も一般的に必要とされるデータを含む`Token`リソース内にメタデータを持っています。例えば：
 
-- `name`: The name of the token. It must be unique within a collection.
-- `description`: The description of the token.
-- `uri`: A URL pointer to off-chain for more information about the token. The
-asset could be media such as an image or video or more metadata in a JSON
-file.
-- `collection`: A pointer to the ObjectId of the collection.
+- `name`: トークンの名前。コレクション内で一意である必要があります。
+- `description`: トークンの説明。
+- `uri`: トークンに関する詳細情報のためのオフチェーンへのURLポインタ。アセットは画像や動画などのメディア、またはJSONファイル内のより多くのメタデータである可能性があります。
+- `collection`: コレクションのObjectIdへのポインタ。
 
-Additional fields can be stored in creator-defined resources or
-the `PropertyMap` resource that defines a generalizable key-value map.
+追加のフィールドは、クリエイター定義のリソースまたは汎用的なキーバリューマップを定義する`PropertyMap`リソースに保存できます。
 
-In Ethereum, only a small portion of such properties are defined as methods,
-such as `name()`, `symbol()`, `decimals()`, `totalSupply()` of ERC-20;
-or `name()` and `symbol()` and `tokenURI()` of the optional metadata extension
-for ERC-721; ERC-1155 also has a similar method `uri()` in its own optional
-metadata extension. Token metadata is not standardized so that dapps have to
-take special treatment case by case.
+Ethereumでは、そのようなプロパティの一部のみがメソッドとして定義されています。例えば、ERC-20の`name()`、`symbol()`、`decimals()`、`totalSupply()`や、ERC-721のオプションのメタデータ拡張の`name()`と`symbol()`と`tokenURI()`、ERC-1155も同様にそのオプションのメタデータ拡張で`uri()`メソッドを持っています。トークンメタデータは標準化されていないため、dappsはケースバイケースで特別な処理を行う必要があります。
 
-In Solana, the Token Metadata program offers a Metadata Account defining
-numerous metadata fields associated with a token as well, including `collection`
-which is defined in `TokenDataId` in Aptos. Solana, however, does not offer
-mutability for assets, unlike Aptos. Like Aptos, Token Metadata v1.1.0 offers
-an `attribute` container for customized properties.
+Solanaでは、Token Metadataプログラムも同様に、トークンに関連する多数のメタデータフィールドを定義するMetadata Accountを提供しており、Aptosの`TokenDataId`で定義されている`collection`も含まれています。ただし、SolanaはAptosとは異なり、アセットの可変性を提供していません。Aptosと同様に、Token Metadata v1.1.0はカスタマイズされたプロパティのための`attribute`コンテナを提供しています。

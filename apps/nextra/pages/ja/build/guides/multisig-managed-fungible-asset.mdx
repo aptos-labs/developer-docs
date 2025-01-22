@@ -1,82 +1,66 @@
 ---
-title: "Manage Fungible Assets with Multisig"
+title: "マルチシグによる代替可能資産の管理"
 ---
 
 import { Callout } from "nextra/components";
 
-# Manage Fungible Assets with Multisig
+# マルチシグによる代替可能資産の管理
 
-This tutorial introduces a practical use case that combines Aptos framework
-multisig account with fungible asset standard to enhance the security margin of
-the management of fungible assets. Make sure you have understood module
-publishing and Aptos framework multisig account before moving on to the
-tutorial. If not, it is highly recommended to try out the following tutorials
-first:
+このチュートリアルでは、Aptosフレームワークのマルチシグアカウントと代替可能資産標準を組み合わせた実践的なユースケースを紹介し、代替可能資産の管理におけるセキュリティを強化します。チュートリアルに進む前に、モジュールの公開とAptosフレームワークのマルチシグアカウントについて理解していることを確認してください。理解が不十分な場合は、以下のチュートリアルから始めることを強く推奨します：
 
-- [Your First Move Module](first-move-module.mdx)
+- [最初のMoveモジュール](first-move-module.mdx)
 
-## Step 1: Pick an SDK
+## ステップ1：SDKの選択
 
-This tutorial was created for the [TypeScript SDK](../sdks/ts-sdk.mdx).
+このチュートリアルは[TypeScript SDK](../sdks/ts-sdk.mdx)用に作成されています。
 
-Other developers are invited to add support for
-the [Python SDK](../sdks/python-sdk.mdx), [Rust SDK](../sdks/rust-sdk.mdx),
-[Go SDK](../sdks/go-sdk.mdx) and [Unity SDK](../sdks/unity-sdk.mdx)!
+他の開発者の方々は、[Python SDK](../sdks/python-sdk.mdx)、[Rust SDK](../sdks/rust-sdk.mdx)、[Go SDK](../sdks/go-sdk.mdx)、[Unity SDK](../sdks/unity-sdk.mdx)のサポートを追加することができます！
 
-## Step 2: Publish the module
+## ステップ2：モジュールの公開
 
-To create a fungible asset controlled by an Aptos framework multisig account
-with all the administrative operations (mint, transfer, burn, freeze/unfreeze),
-a well-designed smart contract based on fungible asset standard is a
-prerequisite. The Aptos team provides an example code in `aptos-core` repo.
+すべての管理操作（発行、転送、焼却、凍結/解凍）を備えたAptosフレームワークのマルチシグアカウントによって制御される代替可能資産を作成するには、代替可能資産標準に基づく適切に設計されたスマートコントラクトが前提条件となります。Aptosチームは`aptos-core`リポジトリにサンプルコードを提供しています。
 
-Clone the `aptos-core` repo:
+`aptos-core`リポジトリをクローンします：
 
 ```bash filename="Terminal"
 git clone git@github.com:aptos-labs/aptos-core.git ~/aptos-core
 ```
 
-Navigate to the `managed_fungible_asset` directory and then publish this package
-onto your `default` account using CLI:
+`managed_fungible_asset`ディレクトリに移動し、CLIを使用してこのパッケージを`default`アカウントに公開します：
 
 ```bash filename="Terminal"
 cd ~/aptos-core/aptos-move/move-examples/fungible_asset/managed_fungible_asset
 aptos move publish --named-addresses example_addr=default
 ```
 
-Navigate to the `multisig_managed_coin` directory and then publish this package
-onto your `default` account using CLI too:
+`multisig_managed_coin`ディレクトリに移動し、同様にCLIを使用してこのパッケージも`default`アカウントに公開します：
 
 ```bash filename="Terminal"
 cd ~/aptos-core/aptos-move/move-examples/fungible_asset/multisig_managed_coin
 aptos move publish --named-addresses example_addr=default
 ```
 
-For this tutorial, `multisig_managed_coin` need to call functions defined
-in `managed_fungible_asset` on the same address. So both modules have to be
-published.
+このチュートリアルでは、`multisig_managed_coin`が同じアドレス上の`managed_fungible_asset`で定義された関数を呼び出す必要があるため、両方のモジュールを公開する必要があります。
 
 <Callout type="info">
-  Do not forget to fund the account with faucet before publishing modules.
+  モジュールを公開する前に、faucetでアカウントに資金を提供することを忘れないでください。
 </Callout>
 
-## Step 3: Start The example
+## ステップ3：サンプルの実行
 
 ```bash filename="Terminal"
 cd ~/aptos-core/ecosystem/typescript/sdk/examples/typescript
 ```
 
-Run the `multisig_managed_coin` example:
+`multisig_managed_coin`サンプルを実行します：
 
 ```bash filename="Terminal"
 MODULE_ADDR=${DEFAULT_ACCOUNT_ADDRESS} pnpm run multisig_managed_coin
 ```
 
 <Callout type="info">
-  This example uses the Aptos devnet, which has historically been reset each
-  Thursday.
-  Make sure devnet is live when you try running the example! If you are running
-  localnet with faucet, you can run the following command instead:
+  このサンプルはAptos devnetを使用しており、これまで毎週木曜日にリセットされていました。
+  サンプルを実行する際は、devnetが稼働していることを確認してください！faucet付きのローカルネットを実行している場合は、代わりに以下のコマンドを実行できます：
 
   ```bash filename="Terminal"
   export APTOS_NODE_URL=http://0.0.0.0:8080
@@ -87,95 +71,76 @@ MODULE_ADDR=${DEFAULT_ACCOUNT_ADDRESS} pnpm run multisig_managed_coin
 
 </Callout>
 
-The example script should execute successfully without any errors. Then you are
-able to see what it did by searching the `owner1` and `owner2` addresses printed
-to the console on Aptos explorer.
+サンプルスクリプトはエラーなく正常に実行されるはずです。その後、コンソールに表示された`owner1`と`owner2`のアドレスをAptosエクスプローラーで検索することで、実行内容を確認できます。
 
-Let's follow the script to understand what it does:
+スクリプトの内容を順を追って理解しましょう：
 
-### Generate single signer accounts
+### シングルサイナーアカウントの生成
 
-First, we will generate three single signer accounts, owner1, owner2 and owner3
-who will co-own an Aptos framework multisig account.
+まず、Aptosフレームワークのマルチシグアカウントを共同所有する3つのシングルサイナーアカウント（owner1、owner2、owner3）を生成します。
 
 {/* TODO Code snippet
-typescript title=Generate 3 single signers"
+typescript title="3つのシングルサイナーを生成"
 /sdks/typescript/examples/typescript/multisig_managed_coin.ts
 section_1
 */}
 
-### Create an Aptos framework multisig account with a managed fungible asset
+### 管理された代替可能資産を持つAptosフレームワークマルチシグアカウントの作成
 
-Next, let owner1 call the `initialize()` function defined
-in `multisig_managed_coin.move`, which first create an Aptos framework multisig
-account owned by owner1 and add both owner2 and owner3 as owners. Also, it
-creates a fungible asset called "meme coin" with customized settings denoted in
-the argument list and make the multisig account the admin of the fungible asset.
-Also, each proposal needs at least 2 approvals to execute.
+次に、owner1が`multisig_managed_coin.move`で定義された`initialize()`関数を呼び出します。この関数は最初にowner1が所有するAptosフレームワークのマルチシグアカウントを作成し、owner2とowner3を所有者として追加します。また、引数リストで指定されたカスタム設定で「ミームコイン」という代替可能資産を作成し、マルチシグアカウントをその管理者とします。各提案の実行には少なくとも2つの承認が必要です。
 
 {/* TODO Code snippet
-typescript title=Query the multisig account and then call the initialize function"
+typescript title="マルチシグアカウントを照会し、initialize関数を呼び出す"
 /sdks/typescript/examples/typescript/multisig_managed_coin.ts
 section_2
 */}
 
-### Mint
+### 発行
 
-Then we mint 1000 and 2000 meme coin to owner2 and owner3, respectively. The
-proposed transaction is submitted by owner2 and gets an additional approval from
-owner3.
+次に、owner2に1000、owner3に2000のミームコインを発行します。提案されたトランザクションはowner2によって提出され、owner3から追加の承認を得ます。
 
 {/* TODO Code snippet
-typescript title="Mint 1000 to owner2 and 2000 to owner3"
+typescript title="owner2に1000、owner3に2000を発行"
 /sdks/typescript/examples/typescript/multisig_managed_coin.ts
 section_3
 */}
 
+### 凍結
 
-### Freeze
-
-After minting, the example shows how to freeze account owner1. The proposed
-transaction is again submitted by owner2 and approved by owner3 in addition.
+発行後、サンプルではowner1のアカウントを凍結する方法を示します。提案されたトランザクションは再びowner2によって提出され、さらにowner3によって承認されます。
 
 {/* TODO Code snippet
-typescript title=""Freeze owner1"
+typescript title="owner1を凍結"
 /sdks/typescript/examples/typescript/multisig_managed_coin.ts
 section_4
 */}
 
 <Callout type="info">
-  Unfreeze is similar that just replace the last argument of
-  `set_primary_stores_frozen_status` function to `false`.
+  解凍も同様で、`set_primary_stores_frozen_status`関数の最後の引数を`false`に変更するだけです。
 </Callout>
 
-### Force transfer
+### 強制転送
 
-When owner1 is frozen, normal transfer cannot withdraw from or deposit to that
-account. But as the admin of "meme coin", the multisig account has the
-capability to do that.
-Next, Owner2 proposed a transaction to force transfer 1000 meme coins from
-owner3 to owner1. This time, owner1 approves it.
+owner1が凍結されている場合、通常の転送ではそのアカウントからの引き出しや預け入れができません。しかし、「ミームコイン」の管理者として、マルチシグアカウントにはその能力があります。
+次に、owner2がowner3からowner1へ1000ミームコインを強制転送するトランザクションを提案します。今回はowner1が承認します。
 
 {/* TODO Code snippet
-typescript title=""Force transfer 1000 meme coins from owner3 to owner1"
+typescript title="owner3からowner1へ1000ミームコインを強制転送"
 /sdks/typescript/examples/typescript/multisig_managed_coin.ts
 section_5
 */}
 
-### Burn
+### 焼却
 
-Finally, all the three owners have 1000 meme coins. Let's burn all the coins!
-Owner2 makes the proposal and owner1 approves it.
+最後に、3人の所有者がそれぞれ1000ミームコインを持っています。すべてのコインを焼却しましょう！
+owner2が提案を行い、owner1が承認します。
 
 {/* TODO Code snippet
-typescript title="Burn 1000 meme coins from all the three owners' accounts"
+typescript title="3人の所有者のアカウントから1000ミームコインを焼却"
 /sdks/typescript/examples/typescript/multisig_managed_coin.ts
 section_6
 */}
 
-## Conclusion
+## 結論
 
-This tutorial shows an e2e flow of using Aptos framework multisig account to
-administrate fungible asset. Similarly, you can create your own module and
-leverage our powerful SDK to create the administration schema that fits your
-needs.
+このチュートリアルでは、Aptosフレームワークのマルチシグアカウントを使用して代替可能資産を管理するエンドツーエンドのフローを示しました。同様に、独自のモジュールを作成し、強力なSDKを活用して、ニーズに合った管理スキーマを作成することができます。

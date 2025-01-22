@@ -1,123 +1,123 @@
 ---
-title: "Transactions and States"
+title: "トランザクションと状態"
 ---
 
 import { Callout } from 'nextra/components'
 import { ThemedImage } from '@components/index'
 
-# Transaction and States
+# トランザクションと状態
 
-The Aptos blockchain stores three types of data:
+Aptosブロックチェーンは3種類のデータを保存します：
 
-- **Transactions**: Transactions represent an intended operation being performed by an account on the blockchain (e.g., transferring assets).
-- **States**: The (blockchain ledger) state represents the accumulation of the output of execution of transactions, the values stored within all [resources](resources.mdx).
-- [**Events**](events.mdx): Ancillary data published by the execution of a transaction.
-
-<Callout type="info">
-Only transactions can change the ledger state.
-</Callout>
-
-## Transactions
-
-Aptos transactions contain information such as the sender’s account address, authentication from the sender, the desired operation to be performed on the Aptos blockchain, and the amount of gas the sender is willing to pay to execute the transaction.
-
-### Transaction states
-
-A transaction may end in one of the following states:
-
-- Committed on the blockchain and executed. This is considered as a successful transaction.
-- Committed on the blockchain and aborted. The abort code indicates why the transaction failed to execute.
-- Discarded during transaction submission due to a validation check such as insufficient gas, invalid transaction format, or incorrect key.
-- Discarded after transaction submission but before attempted execution. This could be caused by timeouts or insufficient gas due to other transactions affecting the account.
-
-The sender’s account will be charged gas for any committed transactions.
-
-During transaction submission, the submitter is notified of successful submission or a reason for failing validations otherwise.
-
-A transaction that is successfully submitted but ultimately discarded may have no visible state in any accessible Aptos node or within the Aptos network. A user can attempt to resubmit the same transaction to re-validate the transaction. If the submitting node believes that this transaction is still valid, it will return an error stating that an identical transaction has been submitted.
-
-The submitter can try to increase the gas cost by a trivial amount to help make progress and adjust for whatever may have been causing the discarding of the transaction further downstream.
+- **トランザクション**：トランザクションは、アカウントがブロックチェーン上で実行しようとする操作（資産の移転など）を表します。
+- **状態**：（ブロックチェーン台帳の）状態は、トランザクションの実行結果の蓄積、すなわちすべての[リソース](resources.mdx)に格納された値を表します。
+- [**イベント**](events.mdx)：トランザクションの実行によって公開される補助的なデータです。
 
 <Callout type="info">
-See [Aptos Blockchain Deep Dive](blockchain-deep-dive.mdx) for a comprehensive description of the Aptos transaction lifecycle.
+台帳の状態を変更できるのはトランザクションのみです。
 </Callout>
 
-### Contents of a Transaction
+## トランザクション
 
-A signed transaction on the blockchain contains the following information:
+Aptosのトランザクションには、送信者のアカウントアドレス、送信者からの認証、Aptosブロックチェーン上で実行したい操作、トランザクションを実行するために送信者が支払う意思のあるガス量などの情報が含まれます。
 
-- **Signature**: The sender uses a digital signature to verify that they signed the transaction (i.e., authentication).
-- **Sender address**: The sender's [account address](accounts.mdx#account-address).
-- **Sender public key**: The public authentication key that corresponds to the private authentication key used to sign the transaction.
-- **Payload**: Indicates an action or set of actions Alice's behalf. In the case this is a Move function, it directly calls into Move bytecode on the chain. Alternatively, it may be Move bytecode peer-to-peer [transaction script](../glossary.mdx#transaction-script). It also contains a list of inputs to the function or script. For this example, it is a function call to transfer an amount of Aptos Coins from Alice account to Bob's account, where Alice's account is implied by sending the transaction and Bob's account and the amount are specified as transaction inputs.
-- [**Gas unit price**](../glossary.mdx#gas-unit-price): The amount the sender is willing to pay per unit of gas, to execute the transaction. This is represented in [Octas](../glossary.mdx#octa).
-- [**Maximum gas amount**](../glossary.mdx#maximum-gas-amount): The maximum gas amount in APT the sender is willing to pay for this transaction. Gas charges are equal to the base gas cost covered by computation and IO multiplied by the gas price. Gas costs also include storage with an APT-fixed priced storage model. This is represented as [Octas](../glossary.mdx#octa).
-- **Gas price** (in specified gas units): This is the amount the sender is willing to pay per unit of [gas](gas-txn-fee.mdx) to execute the transaction. [Gas](gas-txn-fee.mdx) is a way to pay for computation and storage. A gas unit is an abstract measurement of computation with no inherent real-world value.
-- **Maximum gas amount**: The [maximum gas amount](gas-txn-fee.mdx#specifying-gas-fees-within-a-transaction) is the maximum gas units the transaction is allowed to consume.
-- **Sequence number**: This is an unsigned integer that must be equal to the sender's account [sequence number](accounts.mdx#account-sequence-number) at the time of execution.
-- **Expiration time**: A timestamp after which the transaction ceases to be valid (i.e., expires).
+### トランザクションの状態
 
-### Types of transaction payloads
+トランザクションは以下のいずれかの状態で終了する可能性があります：
 
-Within a given transaction, the two most common types of payloads include:
+- ブロックチェーンにコミットされ実行された状態。これは成功したトランザクションとみなされます。
+- ブロックチェーンにコミットされたが中断された状態。中断コードは、トランザクションの実行が失敗した理由を示します。
+- ガス不足、無効なトランザクション形式、不正なキーなどの検証チェックにより、トランザクション送信時に破棄された状態。
+- トランザクション送信後、実行試行前に破棄された状態。これは、タイムアウトや他のトランザクションがアカウントに影響を与えたことによるガス不足が原因である可能性があります。
 
-- An entry point
-- [A script (payload)](../../build/smart-contracts/scripts.mdx)
+コミットされたトランザクションについては、送信者のアカウントにガス料金が請求されます。
 
-Currently, the SDKs [Python](../../build/sdks/python-sdk.mdx) and [Typescript](../../build/sdks/ts-sdk.mdx) support both. This guide points out many of those entry points, such as `coin::transfer` and `aptos_account::create_account`.
+トランザクション送信時、送信者は送信の成功または検証失敗の理由について通知されます。
 
-All operations on the Aptos blockchain should be available via entry point calls. While one could submit multiple transactions calling entry points in series, many such operations may benefit from being called atomically from a single transaction. A script payload transaction can call any entry point or public function defined within any module.
+正常に送信されたものの最終的に破棄されたトランザクションは、アクセス可能なAptosノードやAptosネットワーク内で状態が表示されない場合があります。ユーザーは同じトランザクションを再送信して、トランザクションを再検証することができます。送信ノードがこのトランザクションがまだ有効であると判断した場合、同一のトランザクションが送信されたことを示すエラーを返します。
+
+送信者は、ガスコストをわずかに増やすことで、下流でトランザクションが破棄される原因となっていた問題に対処し、進行を促すことができます。
 
 <Callout type="info">
-See the tutorial on [Your First Transaction](../../build/guides/first-transaction.mdx) for generating valid transactions.
+Aptosトランザクションのライフサイクルについての包括的な説明は、[Aptosブロックチェーンの詳細](blockchain-deep-dive.mdx)をご覧ください。
+</Callout>
+
+### トランザクションの内容
+
+ブロックチェーン上の署名付きトランザクションには、以下の情報が含まれます：
+
+- **署名**：送信者はデジタル署名を使用して、トランザクションに署名したことを証明します（認証）。
+- **送信者アドレス**：送信者の[アカウントアドレス](accounts.mdx#account-address)。
+- **送信者の公開鍵**：トランザクションの署名に使用された秘密認証鍵に対応する公開認証鍵。
+- **ペイロード**：Aliceの代わりに実行するアクションまたはアクションのセットを示します。Moveファンクションの場合、チェーン上のMoveバイトコードを直接呼び出します。あるいは、ピアツーピアの[トランザクションスクリプト](../glossary.mdx#transaction-script)であるMoveバイトコードの場合もあります。また、ファンクションまたはスクリプトへの入力のリストも含まれます。この例では、AliceのアカウントからBobのアカウントへAptos Coinの量を転送するファンクション呼び出しで、Aliceのアカウントはトランザクションの送信によって暗示され、Bobのアカウントと金額はトランザクションの入力として指定されます。
+- [**ガスユニット価格**](../glossary.mdx#gas-unit-price)：トランザクションを実行するためにガス1単位あたりに支払う意思のある金額。これは[オクタ](../glossary.mdx#octa)で表されます。
+- [**最大ガス量**](../glossary.mdx#maximum-gas-amount)：送信者がこのトランザクションに支払う意思のある最大ガス量（APT）。ガス料金は、計算とIOによってカバーされる基本ガスコストにガス価格を掛けたものです。ガスコストには、APT固定価格のストレージモデルによるストレージも含まれます。これは[オクタ](../glossary.mdx#octa)で表されます。
+- **ガス価格**（指定されたガス単位で）：トランザクションを実行するためにガス1単位あたりに支払う意思のある金額です。[ガス](gas-txn-fee.mdx)は計算とストレージの支払い方法です。ガス単位は、実世界の価値を持たない抽象的な計算の測定単位です。
+- **最大ガス量**：[最大ガス量](gas-txn-fee.mdx#specifying-gas-fees-within-a-transaction)は、トランザクションが消費を許可される最大ガス単位です。
+- **シーケンス番号**：実行時に送信者のアカウントの[シーケンス番号](accounts.mdx#account-sequence-number)と等しくなければならない符号なし整数です。
+- **有効期限**：トランザクションが無効になる（期限切れになる）タイムスタンプです。
+
+### トランザクションペイロードの種類
+
+与えられたトランザクション内で、最も一般的な2種類のペイロードには以下が含まれます：
+
+- エントリーポイント
+- [スクリプト（ペイロード）](../../build/smart-contracts/scripts.mdx)
+
+現在、SDK [Python](../../build/sdks/python-sdk.mdx)と[Typescript](../../build/sdks/ts-sdk.mdx)は両方をサポートしています。このガイドでは、`coin::transfer`や`aptos_account::create_account`など、多くのエントリーポイントを示しています。
+
+Aptosブロックチェーン上のすべての操作は、エントリーポイント呼び出しを介して利用可能であるべきです。エントリーポイントを呼び出す複数のトランザクションを連続して送信することもできますが、そのような操作の多くは単一のトランザクションから原子的に呼び出される方が有益かもしれません。スクリプトペイロードトランザクションは、任意のモジュール内で定義された任意のエントリーポイントまたはパブリック関数を呼び出すことができます。
+
+<Callout type="info">
+有効なトランザクションの生成については、[初めてのトランザクション](../../build/guides/first-transaction.mdx)のチュートリアルをご覧ください。
 </Callout>
 
 <Callout type="info">
-The Aptos REST API supports generating BCS-encoded transactions from JSON. This is useful for rapid prototyping, but be cautious using it in Mainnet as this places a lot of trust on the fullnode generating the transaction.
+Aptos REST APIは、JSONからBCSエンコードされたトランザクションを生成することをサポートしています。これは急速なプロトタイピングに便利ですが、トランザクションを生成するフルノードに多くの信頼を置くことになるため、メインネットでの使用には注意が必要です。
 </Callout>
 
-## States
+## 状態
 
-The Aptos blockchain's ledger state, or global state, represents the state of all accounts in the Aptos blockchain. Each validator node in the blockchain must know the latest version of the global state to execute any transaction.
+Aptosブロックチェーンの台帳状態、またはグローバル状態は、Aptosブロックチェーン内のすべてのアカウントの状態を表します。ブロックチェーン内の各バリデーターノードは、任意のトランザクションを実行するために、グローバル状態の最新バージョンを知っている必要があります。
 
-Anyone can submit a transaction to the Aptos blockchain to modify the ledger state. Upon execution of a transaction, a transaction output is generated. A transaction output contains zero or more operations to manipulate the ledger state called **write sets** emitting a vector of resulting events, the amount of gas consumed, and the executed transaction status.
+誰でもAptosブロックチェーンにトランザクションを送信して台帳状態を変更することができます。トランザクションの実行時に、トランザクション出力が生成されます。トランザクション出力には、**ライトセット**と呼ばれる台帳状態を操作するための0個以上の操作、結果として生成されるイベントのベクター、消費されたガス量、実行されたトランザクションのステータスが含まれます。
 
-### Proofs
+### 証明
 
-The Aptos blockchain uses proof to verify the authenticity and correctness of the blockchain data.
+Aptosブロックチェーンは、ブロックチェーンデータの信頼性と正確性を検証するために証明を使用します。
 
-Data within the Aptos blockchain is replicated across the network. Each validator and fullnode's [storage](validator-nodes.mdx#storage) is responsible for persisting the agreed upon blocks of transactions and their execution results to the database.
+Aptosブロックチェーン内のデータはネットワーク全体で複製されます。各バリデーターとフルノードの[ストレージ](validator-nodes.mdx#storage)は、合意された取引のブロックとその実行結果をデータベースに永続化する責任があります。
 
-The blockchain is represented as an ever-growing [Merkle tree](../glossary.mdx#merkle-trees), where each leaf appended to the tree represents a single transaction executed by the blockchain.
+ブロックチェーンは、常に成長する[マークルツリー](../glossary.mdx#merkle-trees)として表現され、ツリーに追加される各リーフは、ブロックチェーンによって実行された単一のトランザクションを表します。
 
-All operations executed by the blockchain and all account states can be verified cryptographically. These cryptographic proofs ensure that:
+ブロックチェーンによって実行されるすべての操作とすべてのアカウント状態は、暗号的に検証することができます。これらの暗号的な証明により、以下が保証されます：
 
-- The validator nodes agree on the state.
-- The client does not need to trust the entity from which it is receiving data. For example, if a client fetches the last **n** transactions from an account, a proof can attest that no transactions were added, omitted or modified in the response. The client may also query for the state of an account, ask whether a specific transaction was processed, and so on.
+- バリデーターノードが状態に合意している。
+- クライアントはデータを受け取るエンティティを信頼する必要がない。例えば、クライアントがアカウントから最後の**n**個のトランザクションを取得する場合、証明によってレスポンスにトランザクションが追加、省略、または変更されていないことを証明できます。クライアントはまた、アカウントの状態を照会したり、特定のトランザクションが処理されたかどうかを尋ねたりすることもできます。
 
-### Versioned database
+### バージョン管理されたデータベース
 
-The ledger state is versioned using an unsigned 64-bit integer corresponding to the number of transactions the system has executed. This versioned database allows the validator nodes to:
+台帳状態は、システムが実行したトランザクション数に対応する符号なし64ビット整数を使用してバージョン管理されています。このバージョン管理されたデータベースにより、バリデーターノードは以下のことができます：
 
-- Execute a transaction against the ledger state at the latest version.
-- Respond to client queries about ledger history at both current and previous versions.
+- 最新バージョンの台帳状態に対してトランザクションを実行する。
+- 現在および過去のバージョンの両方で、台帳履歴に関するクライアントのクエリに応答する。
 
-## Transactions change ledger state
+## トランザクションによる台帳状態の変更
 
 <ThemedImage
-  alt="Signed Transaction Flow"
+  alt="署名付きトランザクションのフロー"
   sources={{
     light: '/docs/transactions-and-state.svg',
     dark: '/docs/transactions-and-state-dark.svg',
   }}
 />
 
-The above figure shows how executing transaction T<sub>_i_</sub> changes the state of the Aptos blockchain from S<sub>_i-1_</sub> to S<sub>_i_</sub>.
+上の図は、トランザクションT<sub>_i_</sub>の実行によって、Aptosブロックチェーンの状態がS<sub>_i-1_</sub>からS<sub>_i_</sub>に変化する様子を示しています。
 
-In the figure:
+図の中で：
 
-- Accounts **A** and **B**: Represent Alice's and Bob's accounts on the Aptos blockchain.
-- **S<sub>_i-1_</sub>** : Represents the (_i-1_)-the state of the blockchain. In this state, Alice's account **A** has a balance of 110 APT (Aptos coins), and Bob's account **B** has a balance of 52 APT.
-- **T<sub>_i_</sub>** : This is the _i_-th transaction executed on the blockchain. In this example, it represents Alice sending 10 APT to Bob.
-- **Apply()**: This is a deterministic function that always returns the same final state for a specific initial state and a specific transaction. If the current state of the blockchain is **S<sub>_i-1_</sub>**, and transaction **T<sub>_i_</sub>** is executed on the state **S<sub>_i-1_</sub>**, then the new state of the blockchain is always **S<sub>_i_</sub>**. The Aptos blockchain uses the [Move language](../../build/smart-contracts/book/SUMMARY.mdx) to implement the deterministic execution function **Apply()**.
-- **S<sub>_i_</sub>** : This is the _i_-the state of the blockchain. When the transaction **T<sub>_i_</sub>** is applied to the blockchain, it generates the new state **S<sub>_i_</sub>** (an outcome of applying **Apply(S<sub>_i-1_</sub>, T<sub>_i_</sub>)** to **S<sub>_i-1_</sub>** and **T<sub>_i_</sub>**). This causes Alice’s account balance to be reduced by 10 to 100 APT and Bob’s account balance to be increased by 10 to 62 APT. The new state **S<sub>_i_</sub>** shows these updated balances.
+- アカウント**A**と**B**：AptosブロックチェーンにおけるAliceとBobのアカウントを表します。
+- **S<sub>_i-1_</sub>**：ブロックチェーンの(_i-1_)番目の状態を表します。この状態では、AliceのアカウントAの残高は110 APT（Aptosコイン）で、BobのアカウントBの残高は52 APTです。
+- **T<sub>_i_</sub>**：これはブロックチェーン上で実行された_i_番目のトランザクションです。この例では、AliceがBobに10 APTを送金することを表しています。
+- **Apply()**：これは、特定の初期状態と特定のトランザクションに対して常に同じ最終状態を返す決定論的な関数です。ブロックチェーンの現在の状態が**S<sub>_i-1_</sub>**で、トランザクション**T<sub>_i_</sub>**が状態**S<sub>_i-1_</sub>**に対して実行される場合、ブロックチェーンの新しい状態は常に**S<sub>_i_</sub>**になります。Aptosブロックチェーンは、決定論的な実行関数**Apply()**を実装するために[Move言語](../../build/smart-contracts/book/SUMMARY.mdx)を使用します。
+- **S<sub>_i_</sub>**：これはブロックチェーンの_i_番目の状態です。トランザクション**T<sub>_i_</sub>**がブロックチェーンに適用されると、新しい状態**S<sub>_i_</sub>**が生成されます（**Apply(S<sub>_i-1_</sub>, T<sub>_i_</sub>)**を**S<sub>_i-1_</sub>**と**T<sub>_i_</sub>**に適用した結果）。これにより、Aliceのアカウント残高が10減少して100 APTになり、Bobのアカウント残高が10増加して62 APTになります。新しい状態**S<sub>_i_</sub>**はこれらの更新された残高を示しています。

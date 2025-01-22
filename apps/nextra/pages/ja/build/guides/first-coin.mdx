@@ -1,31 +1,30 @@
-
 import { Callout, Tabs } from 'nextra/components';
 
-# Your First Coin
+# 初めてのコイン作成
 
-This tutorial introduces how you can compile, deploy, and mint your own coin (as defined [here](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)), named [MoonCoin](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/moon_coin).
+このチュートリアルでは、[ここ](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)で定義されているように、独自のコインをコンパイル、デプロイ、ミントする方法を紹介します。このコインは[MoonCoin](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/moon_coin)と呼ばれます。
 
-## Step 1: Pick an SDK
+## ステップ1: SDKの選択
 
-Install your preferred SDK from the below list:
+以下のリストから好みのSDKをインストールしてください：
 
 - [TypeScript SDK](../sdks/ts-sdk.mdx)
 - [Python SDK](../sdks/python-sdk.mdx)
 
 ---
 
-## Step 2: Install the CLI
+## ステップ2: CLIのインストール
 
-[Install the precompiled binary for the Aptos CLI](../cli.mdx).
+[Aptos CLIのプリコンパイル済みバイナリをインストール](../cli.mdx)してください。
 
 ---
 
-## Step 3: Run the example
+## ステップ3: サンプルの実行
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
 
-Clone the `aptos-ts-sdk` repo and build it:
+`aptos-ts-sdk`リポジトリをクローンしてビルドします：
 
 ```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-ts-sdk.git
@@ -34,25 +33,25 @@ pnpm install
 pnpm build
 ```
 
-Navigate to the TypeScript examples directory:
+TypeScriptのサンプルディレクトリに移動します：
 
 ```bash filename="Terminal"
 cd examples/typescript/
 ```
 
-Install the necessary dependencies:
+必要な依存関係をインストールします：
 
 ```bash filename="Terminal"
 pnpm install
 ```
 
-Run the TypeScript [`your_coin`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/your_coin.ts) example:
+TypeScriptの[`your_coin`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/your_coin.ts)サンプルを実行します：
 
 ```bash filename="Terminal"
 pnpm run your_coin
 ```
 
-The application will complete, printing:
+アプリケーションが完了すると、以下のように出力されます：
 
 ```bash filename="Terminal"
 Bob's initial MoonCoin balance: 0.
@@ -64,34 +63,34 @@ Bob's updated MoonCoin balance: 100.
   </Tabs.Tab>
   <Tabs.Tab>
 
-Clone the `aptos-core` repo:
+`aptos-core`リポジトリをクローンします：
 
 ```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-core
 ```
 
-Navigate to the Python SDK directory:
+Python SDKディレクトリに移動します：
 
 ```bash filename="Terminal"
 cd aptos-core/ecosystem/python/sdk
 ```
 
-Install the necessary dependencies:
+必要な依存関係をインストールします：
 
 ```bash filename="Terminal"
 curl -sSL https://install.python-poetry.org | python3
 poetry install
 ```
 
-Run the Python [`your_coin`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/your_coin.py) example:
+Pythonの[`your_coin`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/your_coin.py)サンプルを実行します：
 
 ```bash filename="Terminal"
 poetry run python -m examples.your_coin ~/aptos-core/aptos-move/move-examples/moon_coin
 ```
 
-### Step 3.1: Build the package
+### ステップ3.1: パッケージのビルド
 
-The example run will pause with the following output:
+サンプルの実行は以下の出力で一時停止します：
 
 ```bash filename="Terminal"
 === Addresses ===
@@ -101,30 +100,29 @@ Bob: 0xc8421fa4a99153f955e50f1de2a6acff2f3fd0bb33aa17ba1f5b32b699f6c825
 Update the package with Alice's address, compile, and press enter.
 ```
 
-At this point, open another terminal and change directories to the MoonCoin package's directory:
+この時点で、別のターミナルを開いてMoonCoinパッケージのディレクトリに移動します：
 
 ```bash filename="Terminal"
 cd ~/aptos-core/aptos-move/move-examples/moon_coin
 ```
 
-Next, build the package using the CLI:
+次に、CLIを使用してパッケージをビルドします：
 
 ```bash filename="Terminal"
 aptos move compile --named-addresses MoonCoin=0x5e603a89cf690d7134cf2f24fdb16ba90c4f5686333721c12e835fb6c76bc7ba --save-metadata
 ```
 
-The `--named-addresses` is a list of address mappings that must be translated in order for the package to be compiled to be stored in Alice's account. Notice how `MoonCoin` is set to Alice's address printed above. Also `--save-metadata` is required to publish the package.
+`--named-addresses`は、パッケージをコンパイルしてAliceのアカウントに格納するために変換する必要があるアドレスマッピングのリストです。`MoonCoin`が上記で出力されたAliceのアドレスに設定されていることに注意してください。また、パッケージを公開するには`--save-metadata`が必要です。
 
 ---
 
-### Step 3.2: Completing the example
+### ステップ3.2: サンプルの完了
 
-Returning to the previous prompt, press ENTER as the package is now ready to be published.
+パッケージの準備ができたので、前のプロンプトに戻ってENTERを押します。
 
-The application will complete, printing:
+アプリケーションが完了すると、以下のように出力されます：
 
 ```bash filename="Terminal"
-
 Publishing MoonCoin package.
 
 Bob registers the newly created coin so he can receive it from Alice.
@@ -138,24 +136,24 @@ Bob's updated MoonCoin balance: 100.
 
 ---
 
-## Step 4: MoonCoin in depth
+## ステップ4: MoonCoinの詳細
 
-### Step 4.1: Building and publishing the MoonCoin package
+### ステップ4.1: MoonCoinパッケージのビルドと公開
 
-Move contracts are effectively a set of Move modules known as a package. When deploying or upgrading a new package, the compiler must be invoked with `--save-metadata` to publish the package. In the case of MoonCoin, the following output files are critical:
+Moveコントラクトは、パッケージと呼ばれるMoveモジュールの集合です。新しいパッケージをデプロイまたはアップグレードする際、パッケージを公開するにはコンパイラを`--save-metadata`オプション付きで実行する必要があります。MoonCoinの場合、以下の出力ファイルが重要です：
 
-- `build/Examples/package-metadata.bcs`: Contains the metadata associated with the package.
-- `build/Examples/bytecode_modules/moon_coin.mv`: Contains the bytecode for the `moon_coin.move` module.
+- `build/Examples/package-metadata.bcs`：パッケージに関連するメタデータが含まれています。
+- `build/Examples/bytecode_modules/moon_coin.mv`：`moon_coin.move`モジュールのバイトコードが含まれています。
 
-These are read by the example and published to the Aptos blockchain:
+これらはサンプルによって読み取られ、Aptosブロックチェーンに公開されます：
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
 
-In the TypeScript example, we use `aptos move build-publish-payload` command to compile and build the module.
-That command builds the `build` folder that contains the `package-metadata.bcs` and the bytecode for the `moon_coin.mv` module. The command also builds a publication transaction payload and stores it in a JSON output file that we can later read from to get the `metadataBytes` and `byteCode` to publish the contract to chain with.
+TypeScriptのサンプルでは、`aptos move build-publish-payload`コマンドを使用してモジュールをコンパイルしビルドします。
+このコマンドは`build`フォルダを作成し、`package-metadata.bcs`と`moon_coin.mv`モジュールのバイトコードを含みます。また、パブリケーショントランザクションのペイロードを作成し、JSONファイルに保存します。後でこのファイルから`metadataBytes`と`byteCode`を読み取り、コントラクトをチェーンに公開できます。
 
-Compile the package:
+パッケージのコンパイル：
 
 ```ts filename="example.ts"
 export function compilePackage(
@@ -166,7 +164,7 @@ export function compilePackage(
   const addressArg = namedAddresses
     .map(({ name, address }) => `${name}=${address}`)
     .join(" ");
-  // Assume-yes automatically overwrites the previous compiled version, only do this if you are sure you want to overwrite the previous version.
+  // Assume-yesは自動的に前回コンパイルしたバージョンを上書きします。前のバージョンを上書きしても問題ない場合のみ使用してください。
   const compileCommand = `aptos move build-publish-payload --json-output-file ${outputFile} --package-dir ${packageDir} --named-addresses ${addressArg} --assume-yes`;
   execSync(compileCommand);
 }
@@ -176,13 +174,13 @@ compilePackage("move/moonCoin", "move/moonCoin/moonCoin.json", [
 ]);
 ```
 
-Publish the package to chain:
+パッケージをチェーンに公開：
 
 ```ts filename="example.ts"
 export function getPackageBytesToPublish(filePath: string) {
-  // current working directory - the root folder of this repo
+  // カレントワーキングディレクトリ - このリポジトリのルートフォルダ
   const cwd = process.cwd();
-  // target directory - current working directory + filePath (filePath JSON file is generated with the previous, compilePackage, CLI command)
+  // ターゲットディレクトリ - カレントワーキングディレクトリ + filePath（filePathのJSONファイルは前のcompilePackageコマンドで生成されます）
   const modulePath = path.join(cwd, filePath);
 
   const jsonData = JSON.parse(fs.readFileSync(modulePath, "utf8"));
@@ -197,7 +195,7 @@ const { metadataBytes, byteCode } = getPackageBytesToPublish(
   "move/moonCoin/moonCoin.json",
 );
 
-// Publish MoonCoin package to chain
+// MoonCoinパッケージをチェーンに公開
 const transaction = await aptos.publishPackageTransaction({
   account: alice.accountAddress,
   metadataBytes,
@@ -228,7 +226,7 @@ metadata_path = os.path.join(
 with open(metadata_path, "rb") as f:
     metadata = f.read()
 
-print("\nPublishing MoonCoin package.")
+print("\nMoonCoinパッケージを公開します。")
 package_publisher = PackagePublisher(rest_client)
 txn_hash = await package_publisher.publish_package(alice, metadata, [module])
 await rest_client.wait_for_transaction(txn_hash)
@@ -239,13 +237,13 @@ await rest_client.wait_for_transaction(txn_hash)
 
 ---
 
-### Step 4.2: Understanding the MoonCoin module
+### ステップ4.2: MoonCoinモジュールの理解
 
-The MoonCoin module defines the `MoonCoin` struct, or the distinct type of coin type. In addition, it contains a function called `init_module`. The `init_module` function is called when the module is published. In this case, MoonCoin initializes the `MoonCoin` coin type as a `ManagedCoin`, which is maintained by the owner of the account.
+MoonCoinモジュールは、`MoonCoin`構造体（コインタイプの区別）を定義します。さらに、`init_module`という関数を含んでいます。`init_module`関数はモジュールが公開されるときに呼び出されます。この場合、MoonCoinは`MoonCoin`コインタイプを`ManagedCoin`として初期化し、アカウントの所有者によって管理されます。
 
 <Callout type="info">
-ManagedCoin framework
-[`ManagedCoin`](https://github.com/aptos-labs/aptos-core/blob/f81ccb01f00227f9c0f36856fead4879f185a9f6/aptos-move/framework/aptos-framework/sources/managed_coin.move#L1) is a simple coin management framework for coins directly managed by users. It provides convenience wrappers around `mint` and `burn`.
+ManagedCoinフレームワーク
+[`ManagedCoin`](https://github.com/aptos-labs/aptos-core/blob/f81ccb01f00227f9c0f36856fead4879f185a9f6/aptos-move/framework/aptos-framework/sources/managed_coin.move#L1)は、ユーザーが直接管理するコインのためのシンプルなコイン管理フレームワークです。`mint`と`burn`の便利なラッパーを提供します。
 </Callout>
 
 ```move filename="moon_coin.mv"
@@ -266,26 +264,25 @@ module MoonCoin::moon_coin {
 
 ---
 
-### Step 4.3: Understanding coins
+### ステップ4.3: コインの理解
 
-Coins have several primitives:
+コインにはいくつかの基本機能があります：
 
-- **Minting**: Creating new coins.
-- **Burning**: Deleting coins.
-- **Freezing**: Preventing an account from storing coins in `CoinStore`.
-- **Registering**: Creating a `CoinStore` resource on an account for storing coins.
-- **Transferring**: Withdrawing and depositing coins into `CoinStore`.
+- **ミント**：新しいコインの作成
+- **バーン**：コインの削除
+- **凍結**：アカウントが`CoinStore`にコインを保存することを防止
+- **登録**：コインを保存するためのアカウントに`CoinStore`リソースを作成
+- **転送**：`CoinStore`へのコインの入出金
 
 <Callout type="info">
-
-The entity that creates a new coin gains the capabilities for minting, burning, and freezing.
+新しいコインを作成したエンティティは、ミント、バーン、凍結の機能を獲得します。
 </Callout>
 
 ---
 
-#### Step 4.3.1: Initializing a coin
+#### ステップ4.3.1: コインの初期化
 
-Once a coin type has been published to the Aptos blockchain, the entity that published that coin type can initialize it:
+コインタイプがAptosブロックチェーンに公開された後、そのコインタイプを公開したエンティティは以下のように初期化できます：
 
 ```move
 module 0x1::coin {
@@ -321,23 +318,23 @@ module 0x1::coin {
 }
 ```
 
-This ensures that this coin type has never been initialized before. Notice the check on lines 10 and 15 to ensure that the caller to `initialize` is the same one that actually published this module, and that there is no `CoinInfo` stored on their account. If both those conditions check, then a `CoinInfo` is stored and the caller obtains capabilities for burning, freezing, and minting.
+これにより、このコインタイプが以前に初期化されていないことが保証されます。10行目と15行目のチェックに注意してください。これらは`initialize`の呼び出し元が実際にこのモジュールを公開したのと同じであり、そのアカウントに`CoinInfo`が保存されていないことを確認します。両方の条件が確認されると、`CoinInfo`が保存され、呼び出し元はバーン、凍結、ミントの機能を取得します。
 
 <Callout type="info">
-MoonCoin calls this `initialize` function automatically upon package publishing.
+MoonCoinは、パッケージの公開時に自動的にこの`initialize`関数を呼び出します。
 </Callout>
 
 ---
 
-#### Step 4.3.2: Registering a coin
+#### ステップ4.3.2: コインの登録
 
-To use a coin, an entity must register a `CoinStore` for it on their account:
+コインを使用するには、エンティティはそのアカウントに`CoinStore`を登録する必要があります：
 
 ```move"
 public entry fun registerCoinType(account: &signer) {
 ```
 
-MoonCoin uses `ManagedCoin` that provides an entry function wrapper: `managed_coin::register`. Here is an example script for registration:
+MoonCoinは`ManagedCoin`を使用し、エントリー関数ラッパー`managed_coin::register`を提供します。以下は登録のためのサンプルスクリプトです：
 
 ```move
 script {
@@ -349,9 +346,9 @@ script {
 
 ---
 
-#### Step 4.3.3: Minting a coin
+#### ステップ4.3.3: コインのミント
 
-Minting coins requires the mint capability that was produced during initialization. the function `mint` (see below) takes in that capability and an amount, and returns back a `Coin<T>` struct containing that amount of coins. If the coin tracks supply, it will be updated.
+コインのミントには、初期化時に生成されたミント機能が必要です。`mint`関数（以下参照）は、その機能と金額を受け取り、その金額のコインを含む`Coin<T>`構造体を返します。コインが供給量を追跡している場合、それも更新されます。
 
 ```move
 module 0x1::coin {
@@ -374,25 +371,25 @@ module 0x1::coin {
 }
 ```
 
-`ManagedCoin` makes this easier by providing an entry function `managed_coin::mint`.
+`ManagedCoin`は、エントリー関数`managed_coin::mint`を提供することでこれを簡単にします。
 
 ---
 
-#### Step 4.3.4: Transferring a coin
+#### ステップ4.3.4: コインの転送
 
-Aptos provides several building blocks to support coin transfers:
+Aptosはコイン転送をサポートするためのいくつかの基本要素を提供します：
 
-- `coin::deposit<CoinType>`: Allows any entity to deposit a coin into an account that has already called `coin::register<CoinType>`.
-- `coin::withdraw<CoinType>`: Allows any entity to extract a coin amount from their account.
-- `aptos_account::transfer_coins<CoinType>`: Transfer coins of specific CoinType to a receiver.
+- `coin::deposit<CoinType>`：すでに`coin::register<CoinType>`を呼び出したアカウントにコインを入金することを任意のエンティティに許可します。
+- `coin::withdraw<CoinType>`：アカウントからコインを引き出すことを任意のエンティティに許可します。
+- `aptos_account::transfer_coins<CoinType>`：特定のCoinTypeのコインを受信者に転送します。
 
 <Callout type="info">
-There are two separate withdraw and deposit events instead of a single transfer event.
+単一の転送イベントの代わりに、2つの別々の引き出しと入金イベントがあります。
 </Callout>
 
-## Supporting documentation
+## 関連ドキュメント
 
 - [Aptos CLI](../cli.mdx)
 - [TypeScript SDK](../sdks/ts-sdk.mdx)
 - [Python SDK](../sdks/python-sdk.mdx)
-- [REST API specification](../../network/nodes/aptos-api-spec.mdx)
+- [REST API仕様](../../network/nodes/aptos-api-spec.mdx)

@@ -1,21 +1,21 @@
 ---
-title: "Randomness API"
+title: "ランダム性 API"
 ---
 import { Callout } from 'nextra/components'
 
-# Aptos Roll: A Randomness API
+# Aptos Roll: ランダム性 API
 
-## What does it do: a quick example
+## 機能の概要：簡単な例
 
-### How random numbers have been obtained, insecurely/awkwardly
+### これまでのランダム数の取得方法（安全でない/扱いにくい方法）
 
-Building a lottery system and pick a random winner from `n` participants is trivial, at least in the centralized world with a trusted server:
-the backend simply calls a random integer sampling function
-(`random.randint(0, n-1)` in python, or `Math.floor(Math.random() * n)` in JS).
+信頼できるサーバーを持つ中央集権的な世界では、`n`人の参加者からランダムに勝者を選ぶ宝くじシステムの構築は簡単です：
+バックエンドは単にランダムな整数をサンプリングする関数を呼び出すだけです
+（Pythonでは`random.randint(0, n-1)`、JavaScriptでは`Math.floor(Math.random() * n)`）。
 
-Unfortunately, without an equivalent of `random.randint()` in Aptos Move, building a dApp version of it was actually much harder.
+残念ながら、Aptos Moveには`random.randint()`に相当する機能がないため、dAppバージョンの構築はかなり難しいものでした。
 
-One may have written a contract where the random numbers are sampled insecurely (e.g., from the blockchain timestamp):
+ブロックチェーンのタイムスタンプなどから安全でない方法でランダム数をサンプリングするコントラクトを書いていた場合もあります：
 
 ```move
 module module_owner::lottery {
@@ -39,17 +39,16 @@ module module_owner::lottery {
 }
 ```
 
-The implementation above is insecure in multiple ways:
+上記の実装には複数のセキュリティ上の問題があります：
 
-- a malicious user may bias the result by picking the transaction submission time;
-- a malicious validator can bias the result easily by selecting which block the `decide_winner` transaction goes to.
+- 悪意のあるユーザーがトランザクション送信時間を選択することで結果を操作できる
+- 悪意のあるバリデーターが`decide_winner`トランザクションを含めるブロックを選択することで結果を簡単に操作できる
 
-Other dApps may have chosen to use an external secure randomness source
-(e.g., [drand](https://drand.love/)), which is typically a complicated flow:
+他のdAppでは、外部の安全なランダム性ソース（例：[drand](https://drand.love/)）を使用する選択をしていたかもしれません。これは通常、以下のような複雑なフローになります：
 
-1. The participants agree on using a future randomness seed promised by the randomness source to determine the winner.
-2. Once the randomness seed is revealed, the clients fetch it and derive the winner locally.
-3. One of the participants submits the seed and the winner on chain.
+1. 参加者は、ランダム性ソースが約束する将来のランダムシードを使用して勝者を決定することに合意する
+2. ランダムシードが公開されると、クライアントはそれを取得し、ローカルで勝者を導出する
+3. 参加者の1人がシードと勝者をチェーン上に送信する
 
 ```move
 module module_owner::lottery {
@@ -57,7 +56,7 @@ module module_owner::lottery {
 
     struct LotteryState {
         players: vector<address>,
-        /// public info about the "future randomness", tyipcally a VRF public key and an input.
+        /// "将来のランダム性"に関する公開情報、通常はVRF公開鍵と入力
         seed_verifier: vector<u8>,
         winner_idx: std::option::Option<u64>,
     }
@@ -85,9 +84,9 @@ module module_owner::lottery {
 }
 ```
 
-### Achieve simplicity + security with Aptos randomness API
+### Aptosランダム性APIで実現する簡潔性とセキュリティ
 
-Using Aptos randomness API, the implementation will look like this:
+Aptosランダム性APIを使用すると、実装は以下のようになります：
 
 ```move
 module module_owner::lottery {
@@ -112,35 +111,35 @@ module module_owner::lottery {
 }
 ```
 
-where:
+ここで：
 
-- `let winner_idx = aptos_framework::randomness::u64_range(0, n);` is the randomness API call that returns an u64 integer in range `[0, n)` uniformly at random.
-- `#[randomness]` is a required attribute to enable the API call at runtime.
+- `let winner_idx = aptos_framework::randomness::u64_range(0, n);`はランダム性APIの呼び出しで、範囲`[0, n)`内の整数を一様ランダムに返します
+- `#[randomness]`は実行時にAPIの呼び出しを有効にするために必要な属性です
 
 <Callout type="info">
-### Security Considerations
-Compiler helps with test and abort attacks, requiring functions using randomness to be private.  However, the randomness API currently does not prevent undergasing attacks.  The smart contract will need to be written in a certain way to avoid it.
+### セキュリティに関する考慮事項
+コンパイラはテストとアボート攻撃に対する保護を提供し、ランダム性を使用する関数をプライベートにすることを要求します。ただし、現在のランダム性APIはアンダーガス攻撃を防止しません。スマートコントラクトはこれを回避するように適切に記述する必要があります。
 </Callout>
 
-## How to use Aptos randomness API
+## Aptosランダム性APIの使用方法
 
-### Prerequisites
-Ensure you have the latest [aptos-cli](https://aptos.dev/en/build/cli) installed.
+### 前提条件
+最新の[aptos-cli](https://aptos.dev/en/build/cli)がインストールされていることを確認してください。
 
-### Keep undergasing attacks in mind
+### アンダーガス攻撃に注意
 
 <Callout type="warning">
-**The randomness API currently does not prevent undergasing attacks.** Carefully read the undergasing section to understand about undergasing attacks and how to prevent them. As a dApp developer, you will need to design applications using randomness with safety in mind.
+**現在のランダム性APIはアンダーガス攻撃を防止しません。** アンダーガス攻撃について理解し、それを防ぐ方法については、アンダーガスのセクションを注意深くお読みください。dApp開発者として、安全性を考慮してランダム性を使用するアプリケーションを設計する必要があります。
 </Callout>
 
-### Identify randomness-dependent entry functions and make them compliant
+### ランダム性に依存するエントリー関数の特定と準拠
 
-For safety (discussed with more details later), randomness API calls are only allowed from an entry function that is:
+安全性のため（後で詳しく説明します）、ランダム性APIの呼び出しは以下の条件を満たすエントリー関数からのみ許可されます：
 
-- private, and
-- annotated with `#[randomness]`.
+- プライベート関数であること
+- `#[randomness]`属性が付与されていること
 
-It's now a good time to think about what user actions need randomness API, write them down, and make sure they are private and have the right attribute, as shown in the example below.
+以下の例のように、ランダム性APIを必要とするユーザーアクションを考え、それらがプライベートで適切な属性を持っていることを確認することが重要です。
 
 ```move
 module module_owner::lottery {
@@ -153,17 +152,17 @@ module module_owner::lottery {
 }
 ```
 
-At runtime, when randomness API is called, the VM checks whether the outermost of the callstack is a private entry function with `#[randomness]` attribute.
-**If not, the entire transaction is aborted.**
+実行時に、ランダム性APIが呼び出されると、VMはコールスタックの最外部が`#[randomness]`属性を持つプライベートエントリー関数であるかどうかをチェックします。
+**そうでない場合、トランザクション全体がアボートされます。**
 
 <Callout type="info">
-  NOTE: It also means randomness API calls are supported only in entry function-based transactions.
-  (For example, using randomness API in a Move script is impossible.)
+  注意：これは、ランダム性APIの呼び出しがエントリー関数ベースのトランザクションでのみサポートされることを意味します。
+  （例えば、Moveスクリプトでのランダム性APIの使用は不可能です。）
 </Callout>
 
-### Call the API
+### APIの呼び出し
 
-The APIs are public functions under `0x1::randomness` and can be referenced directly, as demonstrated in the lottery example above.
+APIは`0x1::randomness`の下にある公開関数で、上記の宝くじの例で示したように直接参照できます。
 
 ```move
 module module_owner::lottery {
@@ -178,52 +177,52 @@ module module_owner::lottery {
 }
 ```
 
-The above example uses function `u64_range()` but many other basic types are also supported.
-Here's a quick overview of all the API, where `T` can be one of `u8, u16, u32, u64, u128, u256`.
+上記の例では関数`u64_range()`を使用していますが、他の多くの基本型もサポートされています。
+以下は、`T`が`u8, u16, u32, u64, u128, u256`のいずれかである場合のAPIの概要です。
 
 ```move
 module aptos_framework::randomness {
-    /// Generates an number uniformly at random.
+    /// 一様ランダムな数値を生成します
     fun u8_integer(): u8 {}
 
-    /// Generates an number uniformly at random.
+    /// 一様ランダムな数値を生成します
     fun u16_integer(): u16 {}
 
     // fun u32_integer(), fun u64_integer() ...
 
-    /// Generates a number `[min_incl, max_excl)` uniformly at random.
+    /// 範囲`[min_incl, max_excl)`内の数値を一様ランダムに生成します
     fun u8_range(min_incl: u8, max_excl: u8): u8 {}
 
-    /// Generates a number `[min_incl, max_excl)` uniformly at random.
+    /// 範囲`[min_incl, max_excl)`内の数値を一様ランダムに生成します
     fun u16_range(min_incl: u16, max_excl: u16): u16 {}
 
     // fun u32_range(), fun u64_range() ...
 
-    /// Generates a sequence of bytes uniformly at random
-    /// n is the number of bytes
-    /// If n is 0, returns the empty vector.
+    /// 一様ランダムなバイト列を生成します
+    /// nはバイト数です
+    /// nが0の場合、空のベクトルを返します
     fun bytes(n: u64): vector<u8> {}
 
-    /// Generate a permutation of `[0, 1, ..., n-1]` uniformly at random.
-    /// n is the number of bytes
-    /// If n is 0, returns the empty vector.
+    /// `[0, 1, ..., n-1]`の順列を一様ランダムに生成します
+    /// nはバイト数です
+    /// nが0の場合、空のベクトルを返します
     fun permutation(n: u64): vector<u64> {}
 }
 ```
 
-The full API function list and documentation can be found [here](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/randomness.md).
+完全なAPI関数リストとドキュメントは[こちら](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/randomness.md)で確認できます。
 
-## Security considerations
+## セキュリティに関する考慮事項
 
-Randomness API is powerful in many ways: it unlocks new dApp designs;
-but if used incorrectly, it may leave your dApps open to attacks!
-Below are some common mistakes you should avoid.
+ランダム性APIは多くの面で強力です：新しいdAppの設計を可能にしますが、
+誤って使用すると、dAppが攻撃に対して脆弱になる可能性があります！
+以下は避けるべき一般的な間違いです。
 
-### Randomness API calls in public functions
+### パブリック関数でのランダム性APIの呼び出し
 
-As your dApp gets more complicated, you may have multiple entry functions that need to share the same randomness-dependent logic, and want to pull the logic out as a separate helper function.
+dAppが複雑になるにつれて、同じランダム性依存のロジックを共有する必要がある複数のエントリー関数があり、そのロジックを別のヘルパー関数として切り出したい場合があります。
 
-While this is supported as shown below, extra care must be taken.
+これは以下のようにサポートされていますが、特別な注意が必要です。
 
 ```move
 module module_owner::lottery {
@@ -241,7 +240,7 @@ module module_owner::lottery {
         decide_winner_internal(lottery_state);
     }
 
-    // A private helper function
+    // プライベートヘルパー関数
     fun decide_winner_internal(lottery_state: &mut lottery_state) {
         let n = std::vector::length(&lottery_state.players);
         let winner_idx = aptos_framework::randomness::u64_range(0, n);
@@ -250,24 +249,25 @@ module module_owner::lottery {
 }
 ```
 
-If `decide_winner_internal()` were accidentally marked public,
-malicious players can deploy their own contract to:
+もし`decide_winner_internal()`が誤ってパブリックとしてマークされた場合、
+悪意のあるプレイヤーは以下のような独自のコントラクトをデプロイできます：
 
-1. call`decide_winner_internal()`;
-2. read the lottery result (assuming the `lottery` module has some getter functions for the result);
-3. abort if the result is not in their favor.
-   By repeatedly calling their own contract until a txn succeeds,
-   malicious users can bias the uniform distribution of the winner (dApp developer's initial design).
-   This is referred to as a [test-and-abort attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#test-and-abort-attacks).
+1. `decide_winner_internal()`を呼び出す
+2. 宝くじの結果を読み取る（`lottery`モジュールに結果を取得するゲッター関数があると仮定）
+3. 結果が自分に有利でない場合はアボートする
 
-The Aptos Move compiler has been updated to prevent this attack for your contract safety:
-a randomness-dependent public function is treated as a compile error.
-If you have finished the steps in the ["build Aptos CLI"](#build-aptos-cli-from-latest-source)) section,
-then your Aptos CLI are equipped with the updated compiler.
+トランザクションが成功するまで自分のコントラクトを繰り返し呼び出すことで、
+悪意のあるユーザーは勝者の一様分布（dApp開発者の当初の設計）を偏らせることができます。
+これは[テストとアボート攻撃](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#test-and-abort-attacks)と呼ばれます。
+
+コントラクトの安全性のために、Aptos Moveコンパイラはこの攻撃を防ぐように更新されました：
+ランダム性に依存するパブリック関数はコンパイルエラーとして扱われます。
+["Aptos CLIのビルド"](#build-aptos-cli-from-latest-source)セクションのステップを完了している場合、
+更新されたコンパイラを搭載したAptos CLIが使用可能です。
 
 ```move
 module module_owner::lottery {
-    // Compile error!
+    // コンパイルエラー！
     public fun decide_winner_internal(lottery_state: &mut lottery_state) {
         let n = std::vector::length(&lottery_state.players);
         let winner_idx = aptos_framework::randomness::u64_range(0, n);
@@ -276,11 +276,11 @@ module module_owner::lottery {
 }
 ```
 
-Not recommended, but if you intend to expose such a randomness-dependent function to the public, you can bypass the compiler check by annotating your function with `#[lint::allow_unsafe_randomness]`.
+推奨されませんが、そのようなランダム性依存の関数をパブリックに公開する意図がある場合、`#[lint::allow_unsafe_randomness]`属性を付与することでコンパイラチェックをバイパスできます。
 
 ```move
 module module_owner::lottery {
-    // Can compile, but use it at your own risk!
+    // コンパイルはできますが、自己責任で使用してください！
     #[lint::allow_unsafe_randomness]
     public fun decide_winner_internal(lottery_state: &mut lottery_state) {
         let n = std::vector::length(&lottery_state.players);
@@ -290,57 +290,57 @@ module module_owner::lottery {
 }
 ```
 
-### Undergasing attacks, and how to prevent
+### アンダーガス攻撃とその防止方法
 
-Imagine such a dApp. It defines a private entry function for a user to:
+以下のようなdAppを想像してください。ユーザーが以下を行うプライベートエントリー関数を定義します：
 
-1. toss a coin (gas cost: 9), then
-2. get a reward (gas cost: 10) if coin=1, or do some cleanup (gas cost: 100) otherwise.
+1. コインを投げる（ガスコスト：9）、そして
+2. コイン=1の場合は報酬を得る（ガスコスト：10）、それ以外の場合はクリーンアップを行う（ガスコスト：100）
 
-A malicious user can control its account balance, so it covers at most 108 gas units (or set transaction parameter `max_gas=108`),
-and the cleanup branch (total gas cost: 110) will always abort with an out-of-gas error.
-The user then repeatedly call the entry function until it gets the reward.
+悪意のあるユーザーはアカウント残高を制御できるため、最大108ガスユニットまでしかカバーせず（またはトランザクションパラメータ`max_gas=108`を設定し）、
+クリーンアップ分岐（総ガスコスト：110）は常にガス不足エラーでアボートします。
+ユーザーは報酬を得るまでエントリー関数を繰り返し呼び出します。
 
-Formally, this is referred to as an [undergasing attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#undergasing-attacks),
-where an attacker can control how much gas is left for the entry function to execute,
-and so can arbitrarily decide to abort paths that cost more gas,
-biasing the outcome (i.e. effectively changing the distribution of random numbers).
+正式には、これは[アンダーガス攻撃](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#undergasing-attacks)と呼ばれ、
+攻撃者がエントリー関数の実行に残されたガス量を制御でき、
+より多くのガスを必要とするパスを任意にアボートすることで、
+結果を偏らせることができます（つまり、実質的にランダム数の分布を変更できます）。
 
 <Callout type="Warning">
-  **WARNING: randomness API currently does not prevent undergasing attacks.**
-  As a dApp developer, you need to be very careful in your design to avoid this type of attack.
-  Here are some ideas of how to prevent undergasing attack generally.
+  **警告：現在のランダム性APIはアンダーガス攻撃を防止しません。**
+  dApp開発者として、この種の攻撃を避けるために設計に非常に注意を払う必要があります。
+  以下は、一般的にアンダーガス攻撃を防ぐためのいくつかのアイデアです。
 
-  - Make your entry function gas independent from the randomness outcome.
-  The simplest example is to not "act" on the randomness outcome, i.e. read it and store it for later. Note that calling any other functions  can have variable gas costs. For example, when calling randomness to decide which player should win, and then depositing the winnings to the winner might seem like a fixed gas cost. But, `0x1::coin::transfer` / `0x1::fungible_asset::transfer` can have a variable cost based on the user's on-chain state.
-  - If your dApp involves a trusted admin/admin group, only allow the trusted to execute randomness transaction (i.e. require an admin signer).
-  - Make the path that is most beneficial have the highest gas (as attacker can only abort paths with gas above a threshold he chooses.
-  NOTE: that this can be tricky to get right, and gas schedule can change, and is even harder to get right when there are more than 2 possible outcomes.
+  - エントリー関数のガスをランダム性の結果から独立させる。
+  最も単純な例は、ランダム性の結果に対して「アクション」を起こさない、つまり読み取って後で使用するために保存することです。他の関数を呼び出すと、変動するガスコストが発生する可能性があることに注意してください。例えば、どのプレイヤーが勝つかを決定するためにランダム性を呼び出し、その後勝者に賞金を送金する場合、固定のガスコストに見えるかもしれません。しかし、`0x1::coin::transfer` / `0x1::fungible_asset::transfer`は、ユーザーのオンチェーン状態に基づいて変動するコストを持つ可能性があります。
+  - dAppが信頼できる管理者/管理者グループを含む場合、信頼できる者のみがランダム性トランザクションを実行できるようにする（つまり、管理者の署名を要求する）。
+  - 最も有益なパスが最も高いガスを持つようにする（攻撃者は選択した閾値以上のガスを持つパスのみをアボートできるため）。
+  注意：これは正しく実装するのが難しく、ガススケジュールは変更される可能性があり、可能な結果が2つ以上ある場合はさらに正しく実装するのが難しくなります。
 
-  Note that everything that does not fall in above categories can be susceptible to undergasing attack in a subtle ways. Reach out if you need help.
+  上記のカテゴリーに該当しないものはすべて、微妙な方法でアンダーガス攻撃の影響を受ける可能性があることに注意してください。助けが必要な場合はお問い合わせください。
 
-  We will be providing more functionality in the future, to allow for more complex code to be able to be safe against undergasing attacks.
+  将来的に、より複雑なコードがアンダーガス攻撃から安全になるように、より多くの機能を提供する予定です。
 </Callout>
 
-### It's random, but not a secret
+### ランダムですが、秘密ではありません
 
-While the randomness API mimics the standard libraries you use to implement a private centralized server,
-keep in mind that **the seed is public, and so is your transaction execution**,
-and not every randomness-dependent logic in your private centralized server can be transferred on chain safely,
-**especially when it involves a secret that only the server should see**.
+ランダム性APIはプライベートな中央集権サーバーを実装するために使用する標準ライブラリを模倣していますが、
+**シードは公開されており、トランザクションの実行も公開されている**ことを忘れないでください。
+プライベートな中央集権サーバーのランダム性依存のロジックのすべてをオンチェーンに安全に移行できるわけではありません。
+**特に、サーバーのみが見るべき秘密が関係する場合**。
 
-For example, in your contract, DO NOT try to do the following.
+例えば、コントラクトで以下のようなことを試みないでください。
 
-- Use randomness API to generate an asymmetric key pair, discard the private key, then think the public key is safe.
-- Use randomness API to shuffle some opened cards, veil them, and think no one knows the permutation.
+- ランダム性APIを使用して非対称鍵ペアを生成し、秘密鍵を破棄して、公開鍵が安全だと考える。
+- ランダム性APIを使用して公開されたカードをシャッフルし、それらを隠して、誰も順列を知らないと考える。
 
-## Read more
+## もっと詳しく
 
-[Aptogotchi Random Mint](https://github.com/aptos-labs/aptogotchi-random-mint/tree/main) is an official demo dApp built to demonstrate the use of randomness API.
+[Aptogotchi Random Mint](https://github.com/aptos-labs/aptogotchi-random-mint/tree/main)は、ランダム性APIの使用を示す公式のデモdAppです。
 
-The full API function list and documentation can be found [here](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/randomness.md).
+完全なAPI関数リストとドキュメントは[こちら](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/randomness.md)で確認できます。
 
-You can also find the partial implementation of the API functions and example unit tests [here](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/randomness.move).
+APIの関数の部分的な実装とユニットテストの例は[こちら](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/randomness.move)で確認できます。
 
-See [AIP-41](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md) for the API design,
-and [AIP-79](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-79.md) if you are interested in system-level/cryptography details.
+APIの設計については[AIP-41](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md)を、
+システムレベル/暗号の詳細に興味がある場合は[AIP-79](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-79.md)を参照してください。

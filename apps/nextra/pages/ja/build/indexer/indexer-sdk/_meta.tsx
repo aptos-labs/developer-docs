@@ -1,8 +1,8 @@
 export default {
   quickstart: {
-    title: "Quickstart Guide",
+    title: "クイックスタートガイド",
   },
   documentation: {
-    title: "Documentation",
+    title: "ドキュメント",
   },
 };
