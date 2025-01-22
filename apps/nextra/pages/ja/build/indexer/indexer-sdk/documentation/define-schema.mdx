@@ -1,0 +1,26 @@
+---
+title: "Defining a Data Schema"
+---
+
+# Defining a Data Schema
+
+The first step with indexing is choosing a database and defining a schema for the data that you want to store. 
+
+## Schema Considerations
+When designing an indexer data schema, consider the following:
+- Customizability: A schema serves as an interface for your dApp to access data tailored to your specific contract or application. 
+Ensure your schema is customized to meet your dApp's unique requirements.
+- Query Optimization: A well-designed schema can enable more efficient data retrieval, supporting advanced operations such as aggregations, complex filtering, and table joins.
+- Enhanced Performance: Schema design can significantly improve your dApp's performance. 
+By using the indexer, a single indexer query can often replace multiple queries to the fullnode.
+
+## Aptos Core Processors
+All data exposed by the [Indexer API](../../aptos-hosted.mdx) is initially indexed using custom processors.
+Each core processor indexes a specific type of data.
+You can explore the [full list of processors](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/sdk-processor/src/processors) and the [complete indexer data schema](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/db/postgres/schema.rs).
+
+The Aptos core processors and the [Quickstart Guide](../quickstart.mdx) use [PostgreSQL](https://www.postgresql.org/) as the database and [Diesel](https://diesel.rs/) as the ORM.
+However, you are free to choose any database or ORM that fits your needs.
+Popular alternatives include [SeaORM](https://www.sea-ql.org/SeaORM/) and [SQLx](https://github.com/launchbadge/sqlx). 
+Setting up a database and using an ORM is beyond the scope of these tutorials. 
+If you need guidance, refer to the tutorials linked above for more information.

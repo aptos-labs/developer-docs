@@ -1,0 +1,66 @@
+# 署名者
+
+`signer`は、Moveの組み込みリソース型です。`signer`は特定の`address`を代表して行動する権限を持つ[ケーパビリティ](https://en.wikipedia.org/wiki/Object-capability_model)です。内部的な実装は以下のようなものと考えることができます：
+
+```move
+module 0x1::signer {
+  struct signer has drop { a: address }
+}
+```
+
+`signer`は、Unix [UID](https://en.wikipedia.org/wiki/User_identifier)に似ています。つまり、暗号署名やパスワードの確認など、Move外部のコードによって認証されたユーザーを表します。
+
+## `address`との比較
+
+Moveプログラムは、アドレスリテラルを使用して特別な権限なしに任意の`address`値を作成できます：
+
+```move
+script {
+  fun example() {
+    let a1 = @0x1;
+    let a2 = @0x2;
+    // ... 他のすべての可能なアドレスについても同様
+  }
+}
+```
+
+しかし、`signer`値は特別です。リテラルや命令で作成することはできず、Move VMによってのみ作成できます。VMは`signer`型のパラメータを持つスクリプトを実行する前に、自動的に`signer`値を作成してスクリプトに渡します：
+
+```move
+script {
+    use std::signer;
+    fun main(s: signer) {
+        assert!(signer::address_of(&s) == @0x42, 0);
+    }
+}
+```
+
+このスクリプトは、`0x42`以外のアドレスから送信された場合、コード`0`でアボートします。
+
+Moveスクリプトは、`signer`が他の引数の前にある限り、任意の数の`signer`を持つことができます。つまり、すべての`signer`引数は最初に来なければなりません：
+
+```move
+script {
+    use std::signer;
+    fun main(s1: signer, s2: signer, x: u64, y: u8) {
+        // ...
+    }
+}
+```
+
+これは、複数の当事者の権限で原子的に動作する_マルチ署名スクリプト_を実装する際に便利です。例えば、上記のスクリプトを拡張して、`s1`と`s2`の間で原子的な通貨交換を実行することができます。
+
+## `signer`演算子
+
+`std::signer`標準ライブラリモジュールは、`signer`値に対する2つのユーティリティ関数を提供します：
+
+| 関数                                      | 説明                                                      |
+| ----------------------------------------- | ---------------------------------------------------------- |
+| `signer::address_of(&signer): address`    | この`&signer`がラップしている`address`を返します。        |
+| `signer::borrow_address(&signer): &address` | この`&signer`がラップしている`address`への参照を返します。 |
+
+さらに、`move_to<T>(&signer, T)`[グローバルストレージ演算子](global-storage-operators.mdx)は、`&signer`引数を必要とし、リソース`T`を`signer.address`のアカウントに公開します。これにより、認証されたユーザーのみが自分の`address`の下にリソースを公開できることが保証されます。
+
+## 所有権
+
+単純なスカラー値とは異なり、`signer`値はコピー可能ではありません。つまり、明示的な[`copy`](variables.mdx#move-and-copy)命令や[参照の逆参照`*`](references.mdx#reading-and-writing-through-references)を通じてコピーすることはできません。

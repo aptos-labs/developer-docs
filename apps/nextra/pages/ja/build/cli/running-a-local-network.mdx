@@ -1,0 +1,190 @@
+import { Callout, Steps } from 'nextra/components'
+
+# Aptos CLIを使用したローカルネットワークの実行
+
+ローカルネットワークはコードのテストに役立ちます。これらはメインネットなどの本番環境のAptosネットワークには接続されていませんが、以下の3つの主な理由で有用です：
+
+1. **レート制限なし：** ノードAPI、Indexer API、フォーセットなどのホストされているサービスをレート制限なしで利用でき、テストを迅速に行えます。
+2. **再現性：** 特定のオンチェーンシナリオを設定し、いつでもネットワークを最初からリスタートして、クリーンな状態に戻すことができます。
+3. **高可用性：** Aptosのdevnetとtestnetネットワークは定期的にアップグレードされ、その間は利用できなくなることがあります。ローカル開発ネットワークは、インターネット接続がない場合でも常に利用可能です。
+<br/>
+
+# ローカルネットワークの起動
+
+<Steps>
+### [Aptos CLI](../cli.mdx)がインストールされていることを確認します。
+### [Docker](https://docs.docker.com/get-docker/)がインストールされていることを確認します。
+   1. これは、Indexer APIを実行して本番環境に近い環境を作成する場合にのみ必要です。Aptos SDKなど多くのダウンストリームツールがIndexer APIに依存しています。
+   2. 自動更新を受けるために、[Docker Desktop](https://www.docker.com/products/docker-desktop/)経由でインストールすることを推奨します。
+### Dockerを起動します。
+### 新しいターミナルで以下のコマンドを実行し、プライベートネットワークを起動します：
+
+```bash filename="Terminal"
+aptos node run-local-testnet --with-indexer-api
+```
+
+<Callout type="warning">
+注意：名前に「local-testnet」とありますが、これはAptosのテストネットとは無関係で、完全にあなたのマシンでローカルに実行されるネットワークです。
+</Callout>
+
+以下のような出力が表示されるはずです：
+
+```bash filename="Terminal"
+Readiness endpoint: http://0.0.0.0:8070/
+
+Indexer API is starting, please wait...
+Node API is starting, please wait...
+Transaction stream is starting, please wait...
+Postgres is starting, please wait...
+Faucet is starting, please wait...
+
+Completed generating configuration:
+        Log file: "/Users/dport/.aptos/testnet/validator.log"
+        Test dir: "/Users/dport/.aptos/testnet"
+        Aptos root key path: "/Users/dport/.aptos/testnet/mint.key"
+        Waypoint: 0:397412c0f96b10fa3daa24bfda962671c3c3ae484e2d67ed60534750e2311f3d
+        ChainId: 4
+        REST API endpoint: http://0.0.0.0:8080
+        Metrics endpoint: http://0.0.0.0:9101/metrics
+        Aptosnet fullnode network endpoint: /ip4/0.0.0.0/tcp/6181
+        Indexer gRPC node stream endpoint: 0.0.0.0:50051
+
+Aptos is running, press ctrl-c to exit
+
+Node API is ready. Endpoint: http://0.0.0.0:8080/
+Postgres is ready. Endpoint: postgres://postgres@127.0.0.1:5433/local_testnet
+Transaction stream is ready. Endpoint: http://0.0.0.0:50051/
+Indexer API is ready. Endpoint: http://127.0.0.1:8090/
+Faucet is ready. Endpoint: http://127.0.0.1:8081/
+
+Applying post startup steps...
+
+Setup is complete, you can now use the local testnet!
+```
+
+### ネットワークの起動を待ちます
+
+ターミナルに「Setup is complete, you can now use the local testnet!」と表示されたら、ローカルネットワークが実行中です。
+
+   <Callout type="warning">
+   エラーが発生した場合は、以下の一般的なエラーを参照してデバッグしてください。
+   </Callout>
+
+<details>
+<summary>ネットワーク起動時の一般的なエラー</summary>
+
+### アドレスが既に使用中
+
+```bash filename="Terminal"
+panicked at 'error binding to 0.0.0.0:8080: error creating server listener: Address already in use (os error 48)'
+```
+
+これは、ローカルネットワークが必要とするポートの1つが既に別のプロセスによって使用されていることを意味します。
+
+Unixシステムでは、以下の方法で解決できます：
+
+1. `lsof -i :8080`を実行して、プロセスの名前とPIDを特定します。
+2. PIDがわかったら、`kill <pid>`を実行してそのポートを解放します。
+
+### 開いているファイルが多すぎるエラー
+
+```bash filename="Terminal"
+panicked at crates/aptos/src/node/local_testnet/logging.rs:64:10:
+called \`Result::unwrap()\` on an \`Err\` value: Os { code: 24, kind: Uncategorized, message: \"Too many open files\" }
+```
+
+これは、システム上で開いているファイルが多すぎることを意味します。多くのUnixシステムでは、`.zshrc`に以下のような設定を追加することで、開けるファイルの最大数を増やすことができます：
+
+```bash filename="Terminal"
+ulimit -n 32768
+```
+
+### Dockerが利用できない
+
+```bash filename="Terminal"
+Unexpected error: Failed to apply pre-run steps for Postgres: Docker is not available, confirm it is installed and running. On Linux you may need to use sudo
+```
+
+これをデバッグするには、以下の対処法を試してください：
+
+1. `docker --version`を実行して、Dockerがインストールされていることを確認します。
+2. `docker info`を実行してDockerデーモンが実行中であることを確認します（「Cannot connect to the Docker daemon」というエラーが出る場合、Dockerは実行されていません）
+3. Dockerに接続するためのソケットがマシンのデフォルトの場所に存在することを確認します。例えば、Unixシステムでは`/var/run/docker.sock`が存在するはずです。
+   1. そのファイルが存在しない場合は、Docker Desktopを開き、`Settings -> Advanced -> Allow the default Docker socket to be used`を有効にします。
+   2. または、`docker context inspect | grep Host`を実行してDockerソケットの場所を見つけ、`sudo ln -s /Users/dport/.docker/run/docker.sock /var/run/docker.sock`を実行してデフォルトの場所にシンボリックリンクを作成します。
+</details>
+
+ステップ4の出力例からわかるように、ローカルネットワークが実行されると、以下のサービスにアクセスできます：
+
+- [Node API](../../network/nodes/aptos-api-spec.mdx)：これはノード上で直接実行されるREST APIです。トランザクションの送信などの基本的な書き込み機能と、アカウントリソースやMoveモジュール情報の読み取りなどの限定的な読み取り機能を提供します。
+- [Indexer API](../indexer/aptos-hosted.mdx)：これはインデックス化されたブロックチェーンデータへの豊富な読み取りアクセスを提供する[GraphQL](https://graphql.org/) APIです。デフォルトで[http://127.0.0.1:8090](http://127.0.0.1:8090/)のIndexer APIのURLをクリックすると、Hasura Consoleが開き、Indexer GraphQL APIへのクエリを実行できるWebUIが表示されます。
+- [Transaction Stream Service](../indexer/txn-stream.mdx)：これはIndexer APIとSDKが使用するトランザクションのgRPCストリームです。これは[Indexer SDK](../indexer/indexer-sdk.mdx)カスタムプロセッサを開発している場合にのみ関係します。
+- [Postgres](https://www.postgresql.org/)：これはIndexerプロセッサが書き込むデータベースです。Indexer APIはこのデータベースから読み取ります。
+- [Faucet](../apis/faucet-api.mdx)：これを使用してローカルネットワーク上のアカウントに資金を提供できます。
+
+これらのネットワークのサブコンポーネントのいずれかを実行したくない場合は、それらを無効にするためのフラグがあります。
+
+スクリプトを作成していて、すべてのサービスを含むローカルネットワークが起動するのを待ちたい場合は、`http://127.0.0.1:8070`にGETリクエストを送信できます。最初はHTTPコード[503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503)が返されます。[200](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/200)が返された場合、すべてのサービスが準備完了していることを意味します。
+
+ローカルネットワークの起動時に渡すことができる異なるフラグや、特定のサービスが実行されるポートの変更などの設定については、ヘルプコマンドを実行してください：
+
+```bash filename="Terminal"
+aptos node run-local-testnet --help
+```
+</Steps>
+
+## ローカルネットワークの使用
+
+ネットワークが実行されたら、他のネットワークと同じように使用できます。
+
+以下のようにローカルプロファイルを作成できます：
+
+```bash filename="Terminal"
+aptos init --profile <your-profile-name> --network local
+```
+
+その後、そのプロファイルを今後使用したいコマンドに使用できます。例えば、[`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)パッケージのようなMoveモジュールをローカルネットワークにパブリッシュしたい場合は、以下のように実行できます：
+
+```bash filename="Terminal"
+aptos move publish --profile <your-profile-name> --package-dir /opt/git/aptos-core/aptos-move/move-examples/hello_blockchain --named-addresses HelloBlockchain=local
+```
+
+### TypeScript SDKの設定
+
+TypeScript SDKでローカルネットワークを使用したい場合は、クライアントオブジェクト（`Aptos`）の初期化時にローカルネットワークのURLを使用できます：
+
+```tsx
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const network = Network.LOCAL;
+const config = new AptosConfig({ network });
+const client = new Aptos(config);
+```
+
+### ローカルネットワークのリセット
+
+開発中に、ローカルネットワークを初期状態に戻したい場合があります。例えば：
+
+- Moveモジュールに後方互換性のない変更を加え、名前を変更したり新しいアカウントを使用したりせずに再デプロイしたい場合。
+- [Indexer SDK](../indexer/indexer-sdk.mdx)カスタムプロセッサを構築していて、新しいネットワークを使用してインデックスを作成したい場合。
+- アカウント、オブジェクトなど、すべてのオンチェーン状態をクリアしたい場合。
+
+新しいローカルネットワークで始めるには、`--force-restart`フラグを使用します：
+
+```bash filename="Terminal"
+aptos node run-local-testnet --force-restart
+```
+
+誤って作業を削除しないように、チェーンを本当に再起動したいかどうかを確認するプロンプトが表示されます。
+
+```bash filename="Terminal"
+Are you sure you want to delete the existing chain? [yes/no]
+> yes
+```
+
+プロンプトを表示したくない場合は、`--assume-yes`も含めます：
+
+```bash filename="Terminal"
+aptos node run-local-testnet --force-restart --assume-yes
+```
+</details>

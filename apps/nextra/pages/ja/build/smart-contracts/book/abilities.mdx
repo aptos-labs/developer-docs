@@ -1,0 +1,150 @@
+# 能力（Abilities）
+
+Move言語の型システムには、値の使用方法を制御する4つの能力があります：`copy`、`drop`、`store`、`key`。
+
+## 能力の概要
+
+- `copy`: 値をコピーできる
+- `drop`: 値を破棄できる
+- `store`: 値をグローバルストレージに保存できる
+- `key`: 値をグローバルストレージのトップレベルに保存できる
+
+## プリミティブ型の能力
+
+プリミティブ型は以下の能力を持ちます：
+
+- `bool`、`u8`、`u64`、`u128`、`address`: `copy` + `drop` + `store`
+- `signer`: `drop`（コピー不可）
+- `vector<T>`: `T`の能力に依存
+
+## 構造体の能力
+
+構造体の能力は、`has`キーワードを使用して明示的に宣言する必要があります：
+
+```move
+struct Counter has copy, drop, store {
+    value: u64
+}
+
+struct Token has key, store {
+    balance: u64
+}
+```
+
+## 能力の継承
+
+構造体の能力は、そのフィールドの能力に依存します：
+
+```move
+struct A has copy, drop { value: u64 } // OK: u64はcopyとdropを持つ
+struct B has copy { value: signer }    // エラー: signerはcopyを持たない
+```
+
+## 能力の制約
+
+### copy能力
+
+`copy`能力を持つ型：
+- 値をコピーできる
+- `copy`演算子を使用できる
+
+```move
+let x = 10;        // u64はcopyを持つ
+let y = copy x;    // OK
+let z = x;         // OK: 暗黙的なコピー
+```
+
+### drop能力
+
+`drop`能力を持つ型：
+- スコープ終了時に値を破棄できる
+- 明示的に値を破棄できる
+
+```move
+struct NoDrop { value: u64 }  // drop能力なし
+
+fun example() {
+    let x = NoDrop { value: 0 };
+    // エラー: xはdrop能力を持たないため、
+    // スコープ終了時に破棄できない
+}
+```
+
+### store能力
+
+`store`能力を持つ型：
+- グローバルストレージ内の他の構造体のフィールドとして保存できる
+
+```move
+struct Item has store {
+    value: u64
+}
+
+struct Storage has key {
+    item: Item  // OK: Itemはstoreを持つ
+}
+```
+
+### key能力
+
+`key`能力を持つ型：
+- グローバルストレージのトップレベルに保存できる
+- `move_to`、`move_from`、`exists`などの操作に使用できる
+
+```move
+struct Counter has key {
+    value: u64
+}
+
+public fun create_counter(account: &signer) {
+    move_to(account, Counter { value: 0 });
+}
+```
+
+## ジェネリック型と能力
+
+ジェネリック型パラメータには、能力の制約を指定できます：
+
+```move
+struct Container<T: store> has store {
+    item: T
+}
+
+struct GenericCounter<T: copy + drop> has key {
+    value: T
+}
+```
+
+## 例：能力の組み合わせ
+
+以下は、異なる能力の組み合わせを示す例です：
+
+```move
+// コピー可能で破棄可能な値
+struct Point has copy, drop {
+    x: u64,
+    y: u64
+}
+
+// グローバルストレージに保存可能なリソース
+struct Balance has key, store {
+    amount: u64
+}
+
+// 一時的なデータ構造（コピーも破棄も不可）
+struct TemporaryData {
+    value: vector<u8>
+}
+
+// ジェネリックなコンテナ
+struct Box<T: store> has store {
+    value: T
+}
+```
+
+## ベストプラクティス
+
+- リソースには通常`key + store`を付与
+- 一時的なデータ構造には能力を制限
+- 値型には通常`copy + drop + store`を付与
+- ジェネリック型の制約は必要最小限に

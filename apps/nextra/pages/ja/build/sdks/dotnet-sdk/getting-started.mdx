@@ -1,0 +1,162 @@
+---
+title: "Quickstart"
+---
+
+import { Steps, Callout } from "nextra/components";
+import { Card, Cards } from "@components/index";
+
+<Callout type="warning" emoji="❗">
+  This SDK is currently in beta. Please report any issues you encounter by
+  creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# Getting Started
+
+If you have not already installed the Aptos .NET SDK, follow one of the guides below to get started.
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./godot-integration" className="flex flex-row gap-4">
+    <Card.Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Godot_icon.svg/2048px-Godot_icon.svg.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Godot Integration</Card.Title>
+      <Card.Description>
+        Integrate the Aptos .NET SDK with a Godot project.
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./unity-integration" className="flex flex-row gap-4">
+    <Card.Image src="https://cdn-icons-png.freepik.com/512/5969/5969346.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Unity SDK</Card.Title>
+      <Card.Description>
+        Integrate the Aptos .NET SDK with a Unity project.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>
+
+<Steps>
+
+### Set up your AptosClient
+
+Set up your Aptos client by adding the `Aptos` namespace and instantiating an `AptosClient`. You can use a predefined
+configuration from `Networks` or configuring your own.
+
+```csharp filename="Program.cs"  {1-1, 7-8}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Mainnet);
+        var client = new AptosClient(config);
+    }
+}
+```
+
+### Query the Blockchain
+
+Now that you have the client setup, you can query the blockchain!
+
+```csharp filename="Program.cs" {10-11}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Mainnet);
+        var client = new AptosClient(config);
+
+        var ledgerInfo = client.Block.GetLedgerInfo();
+        Console.WriteLine(ledgerInfo.BlockHeight);
+    }
+}
+```
+
+### Sign and Submit Transactions
+
+To interact with the blockchain, you will need to create a signer and build a transaction.
+
+```csharp filename="Program.cs" {10-11,13-21,23-24,26-27}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Mainnet);
+        var client = new AptosClient(config);
+
+        // 1. Create a signer
+        var signer = Account.Generate();
+
+        // 2. Build the transaction
+        var transaction = await client.Transaction.Build(
+            sender: account,
+            data: new GenerateEntryFunctionPayloadData(
+                function: "0x1::aptos_account::transfer_coins",
+                typeArguments: ["0x1::aptos_coin::AptosCoin"],
+                functionArguments: [account.Address, "100000"]
+            )
+        );
+
+        // 3. Sign and submit the transaction
+        var pendingTransaction = client.Transaction.SignAndSubmitTransaction(account, transaction);
+
+        // 4. (Optional) Wait for the transaction to be committed
+        var committedTransaction = await client.Transaction.WaitForTransaction(pendingTransaction);
+    }
+}
+```
+
+### Smart Contract View Functions
+
+Call view functions to query smart contracts.
+
+```csharp filename="Program.cs" {10-17,19-20}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var config = new AptosConfig(Aptos.Networks.Mainnet);
+        var client = new AptosClient(config);
+
+        // Call the view function by specifying the function name, arguments, and type arguments
+        var values = await client.Contract.View(
+            new GenerateViewFunctionPayloadData(
+                function: "0x1::coin::name",
+                functionArguments: [],
+                typeArguments: ["0x1::aptos_coin::AptosCoin"]
+            )
+        );
+
+        // Returns a list of return values: ["Aptos Coin"]
+        Console.WriteLine("APT Name: " + values[0]);
+    }
+}
+```
+
+</Steps>
+
+## Additional Resources
+
+<Cards className="xl:grid-cols-2">
+  <Card
+    href="https://aptos-labs.github.io/aptos-dotnet-sdk"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <Card.Image src="https://cdn-icons-png.flaticon.com/512/25/25231.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Full API Reference</Card.Title>
+      <Card.Description>
+        The full API reference for the Aptos .NET SDK.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>

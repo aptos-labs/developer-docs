@@ -1,0 +1,49 @@
+---
+title: "Move On Aptos コンパイラ (ベータ版)"
+---
+
+# Move On Aptos コンパイラ
+
+Move on Aptosコンパイラ（コードネーム「コンパイラv2」）は、Moveソースコードを Move バイトコードに変換する新しいツールです。MoveコンパイラとMoveプルーバーのアーキテクチャを統合し、Move言語のより迅速な革新を可能にします。また、Moveプログラムのためのより効率的なガス消費コードを生成するために活用できる、コード最適化を定義するための新しいツールも提供します。
+
+新しいコンパイラはMove 2（Move言語の最新リビジョン）をサポートしています。Move 2の新機能については、[ブック内のリリースページ](book/move-2.mdx)をご覧ください。Aptos CLI v6.0.0以降、この言語バージョンと新しいコンパイラがデフォルトとなっています。
+
+## コンパイラv2のリリース状態
+
+コンパイラv2が現在デフォルトとなっています。
+
+## バグ報奨金プログラム
+
+コンパイラで特定された固有のセマンティックバグに対して報奨金を授与しています。バグは、Moveユニットテストによって実証されるように、v1とv2コンパイラの実行結果の違いとして表面化する必要があります。コンパイラの動作の違いがすべてプログラムの対象となるわけではありません。報奨金プログラムの詳細については[こちらをご覧ください](https://hackenproof.com/programs/move-on-aptos-compiler)。動作の違いが報奨金の対象とならない場合でも、以下のリンクを使用して問題を報告することをお勧めします。
+
+## 問題の報告
+
+問題が発生した場合は、[このリンクを使用してGitHub issueを作成](https://github.com/aptos-labs/aptos-core/issues/new?title=[compiler-v2]%20%3CPLEASE%20NAME%20IT%3E&body=%3CPLEASE%20DESCRIBE%20IT%3E&labels=compiler-v2&projects=aptos-labs/16)してください。問題を再現できる小さなMoveコードを提供できる場合、デバッグと修正が容易になります。
+
+## コンパイラv2の使用
+
+最新バージョンのAptos CLIをインストールしていることを確認してください：
+
+```bash filename="Terminal"
+aptos update aptos # サポートされているOS上で
+brew upgrade aptos # MacOS上で
+```
+
+コンパイラv2とMove 2が現在デフォルトとなっており、使用方法を変更する必要はありません。例：
+
+```bash filename="Terminal"
+aptos move compile
+aptos move test
+aptos move prove
+```
+
+## コンパイラv1の使用
+
+コンパイラv1（旧コンパイラ）は、Move 2の機能をサポートしていないため、近々サポートが終了する予定であり、使用は推奨されません。ただし、Move 2の機能を使用しないプロジェクトで、サポート終了前にコンパイラv1を使用したい場合は、`--move-1`フラグを使用して実行できます（例：`aptos move compile --move-1`または`aptos move test --move-1`）。依存関係で`aptos-release-v1.25`バージョンのAptosフレームワークを指定する必要がある場合があります（これはMove 2の機能を使用しない最後のAptosフレームワークバージョンです）。以下のように設定します：
+
+```toml filename="Move.toml"
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-framework.git"
+rev = "aptos-release-v1.25"
+subdir = "aptos-framework"
+```

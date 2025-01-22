@@ -1,0 +1,78 @@
+---
+title: "データプロバイダー"
+---
+
+# データプロバイダー
+
+Aptosブロックチェーンのデータにアクセスする必要があるものの、リアルタイムである必要がない場合、
+SQLやUIを使用してデータにアクセスすることができます。
+
+## データエンドポイントの概要
+
+フルノードに直接アクセスすると、最新のデータを取得できます（アーカイブフルノードでない限り、履歴データは欠落します）。[REST API](../apis.mdx#aptos-fullnode)を使用します。
+
+この上に構築されたインデクサー層は、[GRPCトランザクションストリーム](../indexer/txn-stream/aptos-hosted-txn-stream)を提供します。
+
+このトランザクションストリームの上に、[GraphQL](../indexer/)を通じてクエリ可能な製品ロジックテーブルを構築しています。
+
+トランザクションを解析するロジックは[公開](https://github.com/aptos-labs/aptos-indexer-processors)されているため、一部のベンダーは同様の解析ロジックを実装してテーブルのサブセットを作成し、クエリ可能にしています。
+
+## SQLテーブル
+
+インデクサーは、異なるデータベーステーブルを作成する複数のプロセッサーを定義しています。
+
+### コアテーブル
+
+これらはノードAPIレスポンスから直接解析され、以下のようなテーブルに分割されています：
+
+- ブロック - バージョン、ブロック高、エポック、タイムスタンプ
+- トランザクション - バージョン、送信者、エントリー関数、ガス
+- 署名 - 署名タイプ、署名者、手数料支払い者アドレス
+- イベント - イベントのタイプとデータ
+
+データはテーブルアイテム、リソース、またはモジュールとして保存されます：
+
+- （書き込みセット）変更 - 変更インデックス、変更タイプ、リソースアドレス
+- テーブルアイテム - テーブルキー、テーブルハンドル、キー（内容とタイプ）、値（内容とタイプ）
+- （Move）リソース - リソースアドレス、リソースタイプ、データ
+- （Move）モジュール - デプロイされたモジュールのバイトコード
+
+## オフチェーンデータのベンダー
+
+ほとんどのデータベンダーはコアデータセットのみを提供しています。
+[ベンダーの一部](https://aptosfoundation.org/currents/aptos-on-chain-data-capabilities-with-dune-nansen-and-other-providers)を以下に示します。
+
+### Google BigQuery パブリックデータセット
+
+[Googleパブリックデータ](https://console.cloud.google.com/marketplace/product/bigquery-public-data/crypto-aptos-mainnet-us)を通じてデータを提供しています。
+
+![bq_sql](/screenshots/bq_sql.png)
+
+また、[上記のリソースを使用した](https://github.com/aptos-labs/explorer/tree/main/analytics)サンプル分析クエリも用意しています。
+
+### Dune
+
+こちらでダッシュボードを提供しています：https://dune.com/aptos/aptos-chain-metrics-overview
+
+### Flipside
+
+もう1つのダッシュボードベンダーで、コアテーブルの署名は`fact_transactions`にマージされています。
+また、いくつかの便利なテーブル（DeFi、NFT、価格）も提供しています。[テーブル一覧](https://flipsidecrypto.github.io/aptos-models/#!/overview)をご覧ください。
+
+### Sentio
+
+ガイドはこちら：https://docs.sentio.xyz/docs/aptos
+データはデータソース -> 外部プロジェクト -> sentio/aptos-overviewで確認できます。
+
+### Space and Time
+
+データはこちらで確認できます：https://app.spaceandtime.ai/data-sets?selectedChain=aptos
+コアテーブル以外にも、いくつかのテーブル（トークン、ステーキングなど）を提供しています。
+
+## その他のベンダー
+
+エンタープライズユースケースを対象としたパートナーも存在します：
+
+- [Token Terminal](https://tokenterminal.com/resources/articles/aptos-data-partnership)
+- [The Tie](https://www.thetie.io/insights/news/introducing-aptos-ecosystem-dashboard-and-on-chain-data/)
+- [Elliptic](https://www.elliptic.co/media-center/elliptic-partners-with-aptos-foundation-as-a-data-integration-provider-to-offer-compliance-screening-and-risk-services-for-aptos-network)

@@ -1,0 +1,125 @@
+---
+title: "Wallet Adapter Plugin for Browser Extension Wallet Builders"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Wallet Adapter Plugin for Browser Extension Wallets
+
+A wallet adapter plugin allows dapps to use your wallet. With the AIP-62 Wallet standard, dapps can simply update their version of `aptos-wallet-adapter` to connect to newly added Wallet plugins. 
+
+Implementing a wallet plugin for a browser extension wallet has two main steps:
+
+1. Implement a wallet adapter plugin for your browser extension.
+2. Update the `aptos-wallet-adapter` package to let dapps know about your wallet. 
+
+## 1. Implement the Wallet Adapter Plugin.
+
+You can use the [`wallet-standard`](https://github.com/aptos-labs/wallet-standard) repo’s example to implement an [AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md) compatible wallet adapter plugin that dapps can automatically recognize.
+
+<Callout type="info">
+For an example of how to implement the Wallet Adapter plugin (and how to register it), see the [Wallet Adapter Demo dapp](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example). Specifically, [`standardWallet.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/utils/standardWallet.ts) contains the plugin implementation, and [`page.tsx`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/app/page.tsx) has the `registerWallet` logic.
+</Callout>
+
+<Steps>
+### Copy the [`wallet-standard` example](https://github.com/aptos-labs/wallet-standard/blob/main/example/wallet.ts) into your browser extension codebase.
+### Follow the instructions in that example to make it use your wallet to execute the AIP-62 functions.
+
+<Callout type="info">
+The full list of required functions for AIP-62 compatible wallets can be found [here](https://github.com/aptos-labs/wallet-standard/blob/38defe159b8641ff1763c4db61827c78ab448dab/src/detect.ts#L16).
+</Callout>
+
+### Add a call to `registerWallet` with your plugin implementation so that it gets called on page load.
+
+This is what will notify dapps that your wallet is available.
+
+```tsx filename="Example.tsx"
+// Put this function with your "MyWallet" implementation so it gets called on page load.
+(function () {
+    if (typeof window === "undefined") return;
+    const myWallet = new MyWallet();
+    registerWallet(myWallet);
+})();
+```
+
+### Test your changes by going to the [Wallet Adapter Demo dapp](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example) and trying to connect your wallet.
+1. After your extension calls `registerWallet`, you should be able to click **“Connect a Wallet”** and see your wallet as an option.
+    1. You can then use the demo dapp features to verify your other wallet features work as expected.
+    2. **This simulates how a real dapp will interact with your browser extension.**
+2. You can also test your implementations by updating [`standardWallet.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/utils/standardWallet.ts) from `MyWallet` to your wallet’s implementation, then running the [Wallet Adapter Demo dapp](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example) locally.
+    1. See the Wallet Adapter Demo dapp [README.md](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example) for instructions on how to run the demo locally.
+    2. In the demo, `registerWallet` is called from [`page.tsx`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/app/page.tsx). *This is less realistic, as in practice your browser extension should be calling `registerWallet`.* 
+### Publish the new version of your browser extension.
+</Steps>
+
+## 2. Update [`wallet-adapter-core`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core) to know about your extension.
+
+In order for dapp users who are not already using your wallet to get the option to create an account with your wallet, you need to update [`wallet-adapter-core`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core) with your browser extension’s download link. 
+
+<Steps>
+### Fork the [`aptos-wallet-adapter`](https://github.com/aptos-labs/aptos-wallet-adapter) monorepo. ([Link to fork](https://github.com/aptos-labs/aptos-wallet-adapter/fork))
+### Open your fork in a local editor such as VSCode.
+### Create a new branch for your changes.
+
+```bash filename="Terminal"
+git checkout -b your-wallet
+```
+
+### Navigate to [`packages/wallet-adapter-core/src/AIP62StandardWallets`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core/src/AIP62StandardWallets).
+### Add your wallet’s details to [`registry.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/registry.ts) by following the `AptosStandardSupportedWallet` interface.
+
+```tsx filename="registry.ts"
+export interface AptosStandardSupportedWallet<Name extends string = string> {
+  // The name of your wallet cast to WalletName (Ex. "Petra" as WalletName<"Petra">)
+  name: WalletName<Name>;
+  // The link to your chrome extension or main website where new users can create an account with your wallet.
+  url: string;
+  // An icon for your wallet. Can be one of 4 data types. Be sure to follow the below format exactly (including the "," after base64).
+  icon: `data:image/${"svg+xml" | "webp" | "png" | "gif"};base64,${string}`;
+  // Copy this exactly
+  readyState: WalletReadyState.NotDetected;
+  // Copy this exactly
+  isAIP62Standard: true;
+}
+```
+
+For example:
+
+```tsx filename="Example.tsx"
+{
+  name: "Petra" as WalletName<"Petra">,
+  url: "https://chromewebstore.google.com/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci?hl=en",
+  icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAWbSURBVHgB7Z09c9NYFIaPlFSpUqQNK6rQhbSkWJghLZP9BesxfwAqytg1xe7+AY+3go5ACzObBkpwSqrVQkuRCiqkva8UZW1je22wpHPveZ8ZRU6wwwznueee+6FLJCuSdzrb7nZTNjaOJc9/ctdNiaJESPPkeeq+phLH5/L162k0HJ7JikTLvtEFPnFBf+D+0l/dt9tCNJK6xnjmZOg7GdJlPvC/AhQtPo5P3MsHQvwhiobLiLBQABf82y74z4Qt3ldSybKHToLTeW+I5/1B3u2euOD/JQy+zyRowEUs5zAzA1x+oCckJHrRYNCf/uE3AjD4QfONBBMC5PfvY2j3TEi4ZNmd8eHilQDFMK/s8xMhIXPhJLjuJLjAN/8VgRsbPWHwLbAtm5tXRWGRAS5b/99C7FBmgbTMAGXrJ5aIomJir8wA3S5afyLEEkUtEBezfQy+RYpFvdilgmMhNnGxRw2wL8QqScy1fMNE0T4yQCLEKkksxDQUwDj2BNjbK69pdndn/zxwNsUCCOyNGyJ374psbYkMBiLv30++59o1kW5X5NMnkdFI5OXL8nXghCsAAn10NL/Fz2NnpxQFFyR5/bq8BypDWAIg6AcHIoeH60nn4/K8e1deECIgwhAAQULQEXxIUAf43bju3ZvMDJ7jrwDT/XpToIvABeECqBf8EuB7+/W6CKBe0C/Auvv1uv
+
+C0XtArQBP9el14VC/oEqCtfr0uPKgX2hdAW79eF0rrhfYFQPCRKi1RyY4ZyZYF4GKQcSiAcSiAcSiAcSiAcSiAcSiAcSiAcSiAcSiAcSiAcSiAcSiAcShAm3z+LG1DAdqEAhjn40dpGwrQFtgIwgxgGAWtH1CAtsC2cQVQgLZQsk2cArSBoqeHKEAbKHpiiAI0DVq+kv4fUICmQetXMPyroABNgtb/5o1oggI0icJzBChAUyDwr16JNihAUzx+LBqhAE3w5InaU0MoQN08f64y9VdQgDrBkO/FC9EMBagLBB/P/yvHxlGxTYPh3tOn4gMUYN2g4FPc509DAdYFqvxZh1ArhwKsg6rSVzTHvywU4EeoqnyPTxKnAKuCVo4iD4s6ARwhTwGWoTrk8e3bIE4IH4cCVCDI1U6dL1/K73Eh4B727ctCASoQ6MBa9zJwJtA4FMA4FMA4FMA4FMA4FMA4FMA4FMA47Qtg4P/n1Uz7AgQ8zeoD7Qug5KQMq+joApgFWkNHEWhwEUYLFMA4OgRQdGCCNXQIUG28II2jZyKIWaAV9Aig7OgUK+gRAMH36ImaUNC1FoDt1swCjaJLAAQfT9mQxtC3GohugCOCxtC5HIyHLNkVNIJOATAv4Mnz9b6jd0MIhoWsB2pH944gPHmLkQGpDf1bwtAVUILa8GNPICRgd1AL/mwKRXfA0cHa8WtXMArDfp8bSdeIf9vCEfxHj8psQBF+GH/PB0A2wIzhrVsih4ciOztCVsfvAyKQAVAbYPr44EDk6Ehkd1fI8oRxQggKQ2QEXMgEe3ulELhvbQmZT3hHxFRn+1Tn/UAAZAWIUXUTHz4IKQn/jCBkB6Pn/ywDHw41DgUwDgRIhVgljSWKzoXYJM+dAFmWCrHKeewsOBViExd71AAjd10IsUYaDYdnsfty4Uz4U4g1zvClHAbm+e9CbJFlfdwKAVwWSJ0EfwixwrCIuYxPBOV5T1gLWCCtWj+4EqCoBbLsFyFhk2UPq9YPJqaCURW6W19IqPRdjCeG/dGsd+Xdbs/dToSERD8aDHrTP4zmvZsSBMXM4INo0afyTudY4vg39zIR4iNFXXfZtc9k4XJw0V9k2R1OFHkIhvVZdn1R8MHCDDDx+zqdxK0c9tz1szAjaKWc1XUTe+OV/iKWFmAcJ8NtJ8Kxe7kvkCGKEiHN45Zz3b/9yN3/uVzUGxXD+RX4F56985hsqA6SAAAAAElFTkSuQmCC",
+  readyState: WalletReadyState.NotDetected,
+  isAIP62Standard: true,
+}
+```
+
+### In `type.ts`, update the type `AvailableWallets` to include your wallet’s name.
+
+```tsx filename="type.ts"
+export type AvailableWallets = "Nightly" | "Petra" | "T wallet" | "Your Wallet's Name";
+```
+
+### Update the [README.md](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/README.md) at the top-level of the `aptos-wallet-adapter` to include your wallet in the list of AIP-62 compatible wallets.
+### Commit and push your changes to your fork.
+
+<Callout type="info">
+If you’ve pushed your changes to your fork, a green button should appear at the top of the [`aptos-wallet-adapter`](https://github.com/aptos-labs/aptos-wallet-adapter) repo asking if you would like to create a pull request.
+</Callout>
+
+### Follow [this guide](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/CONTRIBUTING.md#creating-a-pull-request) to open a pull request for the [`aptos-wallet-adapter`](https://github.com/aptos-labs/aptos-wallet-adapter) repo.
+
+</Steps>
+
+## Resources
+
+- Wallet Adapter Demo App
+    - [Live site](https://aptos-labs.github.io/aptos-wallet-adapter)
+    - [Source code](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example)
+    - See [`standardWallet.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/utils/standardWallet.ts) for an example implementation of an AIP-62 compatible wallet-adapter plugin.
+- [`wallet-standard`](https://github.com/aptos-labs/wallet-standard) source code.
+- [`wallet-adapter-core`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core) source code.
+- [AIP-62 standard](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md).

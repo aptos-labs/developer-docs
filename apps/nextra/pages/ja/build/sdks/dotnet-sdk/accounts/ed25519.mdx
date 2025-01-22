@@ -1,0 +1,69 @@
+---
+title: "Ed25519 Accounts"
+---
+
+import { Steps, Callout } from "nextra/components";
+import { Card, Cards } from "@components/index";
+
+<Callout type="warning" emoji="❗">
+  This SDK is currently in beta. Please report any issues you encounter by
+  creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# Ed25519 Accounts
+
+The Aptos .NET SDK provides a simple way to create and manage Ed25519 accounts. In this guide we
+will provide snippets of creating or importing existing accounts.
+
+## Creating Ed25519Accounts
+
+Ed25519Accounts are created to sign transactions and interact with the blockchain.
+
+### Using a Private Key
+
+To generate an account from a private key, you will need to create the `Ed25519PrivateKey` object and pass into into the
+`Ed25519Account` constructor. The private key can be given a `string` or `byte[]` representation.
+
+```csharp
+var privateKey = new Ed25519PrivateKey("0x1234...abcdef");
+var account = new Ed25519Account(privateKey);
+```
+
+### Using a Mneomonic Phrase
+
+To generate an account from a phrase, you can use `Ed25519Account.FromDerivationPath` and pass in the phrase and the derivation path.
+The derivation path that is typically used throughout the Aptos ecosystem is `m/44'/637'/0'/0'/0'`.
+
+```csharp
+var account = Ed25519Account.FromDerivationPath(
+    "m/44'/637'/0'/0'/0'",
+    "apple banana cat dog elephant fox ..."
+);
+```
+
+### Generating a Random Account
+
+To create a random account, you can use the `Account.Generate()` method.
+
+```csharp
+var account = Account.Generate();
+```
+
+## Additional Resources
+
+<Cards className="xl:grid-cols-2">
+  <Card
+    href="https://aptos-labs.github.io/aptos-dotnet-sdk/docs/Aptos.Ed25519Account.html"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <Card.Image src="https://cdn-icons-png.flaticon.com/512/25/25231.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Ed25519Account Reference</Card.Title>
+      <Card.Description>
+        The full API reference for the Ed25519Account class.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>

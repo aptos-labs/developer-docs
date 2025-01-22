@@ -1,0 +1,119 @@
+---
+title: "Object Code Deployment"
+---
+
+# Object Code Deployment
+
+This document goes through how you can deploy code to [Objects](objects.mdx). This is the recommended way to deploy code to the blockchain, as this reduces deployment complexity,
+and safely manages access control policies for the code owner. Note that in this context, code refers to [packages](book/packages.mdx).
+
+Deploying code to objects will guarantee the following:
+- Each deployment publishes to a new address.
+- Only the **owner of the code object** can upgrade and freeze the code.
+
+This means you can transfer the object to a new owner, and they will have full ownership of the code. You are granting them the rights to upgrade and freeze the code.
+There is no need to manage seeds, or deploy to a new address on each deployment. Object code deployment greatly simplifies the deployment process.
+
+## Instructions
+
+Below are the instructions on how to compile, deploy and upgrade code to objects.
+
+import { Steps } from 'nextra/components'
+
+<Steps>
+
+### Compile code
+
+Make sure `<named_address>` is left as a placeholder `_`. This is needed as the CLI command will override the address. `<named_address>` value represents the owner of the code, or the owner of the object to deploy the code to.
+Here is an example as `<named_address>` with the value `my_address`.
+
+```toml filename="Move.toml"
+[addresses]
+my_address = "_"
+```
+
+Compile your move code running the below command.
+- Replace `<named_address>` with the named address.
+- Replace `<your_address>` with the address of your account.
+
+```bash filename="Terminal"
+aptos move compile --named-addresses <named_address>=<your_address>
+```
+
+### Deploy code to an object
+
+Deploy the compiled code to an object via the command:
+- Replace `<named_address>` with the named address.
+
+```bash filename="Terminal"
+aptos move deploy-object --address-name <named_address>
+```
+
+**An example can be found below:**
+
+```bash filename="Terminal"
+aptos move deploy-object --address-name my_address
+```
+
+This will ask if you want to publish the code under the specified object address.
+
+**Example output:**
+
+```bash filename="Terminal"
+Do you want to publish this package at object address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab [yes/no] >
+```
+
+**Congrats, you have deployed your code to a new object with a unique address!**
+
+Take note of the object address as you will need it later for upgrades.
+
+### Transfer and upgrade code in an existing package
+
+First, you may want to transfer the object from the deployer account to an admin account. The admin account will have rights to upgrade the code. 
+
+Here's how you can do it via CLI, here your `deployer_account` should be the current owner of the object. 
+```bash
+aptos move run —-function-id 0x1::object::transfer --type-args 0x1::object::ObjectCore -—args address:<object_address> address:<new_owner_address> —-profile <deployer_account_profile>
+```
+
+Here's how you can do it via the typescript SDK:
+```typescript
+const transaction = await aptos.transaction.build.simple({
+  sender: deployerAccount.accountAddress,
+  data: {
+	  function: "0x1::object::transfer",
+      typeArguments: [`0x1::object::ObjectCore`],
+	  functionArguments: [object_address, new_owner_address],
+  },
+});
+```
+Now you can upgrade the code with the designated admin account, as shown below.
+
+If you wish to upgrade the code in the object deployed, run the following:
+- Replace `<named_address>` with the existing named address.
+- Replace `<code_object_addr>` with the address of the object hosting the code.
+
+Note: the value for the account name should now be the object address, as the package containing the module(s) is now deployed to that address.
+
+```bash filename="Terminal"
+aptos move upgrade-object --address-name <named_address> --object-address <code_object_addr>
+```
+
+Example of the command above:
+
+```bash filename="Terminal"
+aptos move upgrade-object --address-name my_address --object-address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab
+```
+
+This will ask if you want to upgrade the existing code deployed at the object address.
+
+**Example output:**
+
+```bash filename="Terminal"
+Do you want to upgrade the package 'MyPackage' at object address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab [yes/no]
+```
+
+**Congrats, you have upgraded your code in the existing object!**
+
+
+</Steps>

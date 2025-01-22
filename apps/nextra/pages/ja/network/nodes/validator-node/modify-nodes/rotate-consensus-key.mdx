@@ -1,0 +1,120 @@
+---
+title: "Rotate consensus key"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Rotate consensus key
+
+Consensus key rotation is an action taken by a node operator to change the identity of a validator they control.
+It happens typically when the corresponding private key is (potentially) lost/leaked,
+or every few months as a common security practice.
+
+Below is the step-by-step guide of performing a consensus key rotation with detailed examples.
+
+## New key generation
+
+Using the following [Aptos CLI](https://aptos.dev/en/build/cli) command to generate a new consensus identity.
+In this example, identity files are saved to directory `/new/key/root`.
+```bash filename="Terminal"
+aptos genesis generate-keys --output-dir /new/key/root
+```
+
+## Add new private key to node
+
+Edit the node config yaml as described below.
+```yaml
+# ...
+consensus:
+    # ...
+    safety_rules:
+        # ...
+        initial_safety_rules_config:
+            from_file:
+                # ...
+                identity_blob_path: /old/key/root/validator-identity.yaml
+                overriding_identity_paths:              # new!
+                - /new/key/root/validator-identity.yaml # new!
+```
+<Callout type="info">
+* Field `identity_blob_path` is required.
+* Field `overriding_identity_paths` is optional, and allows multiple identities to be specified for rotation purposes.
+* The node will choose the identity that matches the on-chain state.
+</Callout>
+
+Now restart the node.
+It should load the new key but continue using the old key for consensus.
+
+## Add new public key on chain
+
+Aptos CLI is needed again, and your operator account is assumed to have been set up as a CLI profile `profile1`.
+
+Find your pool address (denoted by `$POOL_ADDR`).
+
+In `/new/key/root/public-keys.yaml`,
+- find the public key of your new consensus identity  (denoted by `$NEW_PUBLIC_KEY`);
+- find the proof of possession of your new consensus identity (denoted by `$PROOF_OF_POSSESSION`).
+
+Run a transaction with aptos CLI to update the on-chain consensus public key for the next epoch.
+```bash
+aptos move run \
+    --profile profile1 \
+    --function-id 0x1::stake::rotate_consensus_key \
+    --args \
+        address:$POOL_ADDR \
+        hex:$NEW_PUBLIC_KEY \
+        hex:$PROOF_OF_POSSESSION
+```
+
+Here is a complete example.
+```bash
+aptos move run \
+    --profile profile1 \
+    --function-id 0x1::stake::rotate_consensus_key \
+    --args \
+        address:0x1eb42885d7d5232269229e56bb80d0959584e14485097ebf9ab619cf4fda5c02 \
+        hex:0xacb7859468ca85cf9935e64ebb2b9b3fa8187de42d541acebaf732365a0131eaa994098f9d0d7e6b8ddea8ef11e16c55 \
+        hex:0x8e27fd9300433191b1123217928a6f5190a6ec344ea8623555712a850029b34f5c4bab68df7568b48bcced408cde5174064284407ee760df5dbf12d1c6090589ea1a692997018aca740e91d2182e5715c7745565fe99361e279ccfcfa10ae1f7
+```
+
+## Wait for the next epoch
+
+The new key should become effective after the next epoch change (which happens every 2 hours).
+
+## (Advanced) Old key clean-up
+
+In the secure storage (typically a file named `secure_storage.json`),
+consensus identities are organized as follows.
+- Field `consensus` contains the default consensus identity.
+  - Typically created when you start the node for the first time.
+  - Must exist.
+- Field `consensus_X` contains additional consensus identities with `X` as its public key.
+  - Created because you once added it to `overriding_identity_paths` in node config yaml.
+
+
+**Currently, identities won't be deleted automatically from secure storage**,
+even if you delete the corresponding identity from the node config yaml.
+
+If you need to ensure the old key is completely gone, manually clean-up is needed.
+
+Here is an example of `secure_storage.json`.
+```js
+{
+    // ...
+    "consensus": {
+        "data": "GetResponse",
+        "last_update": 1731372563,
+        "value": "0x221f6fbfefa0a40b84c88fbb546a0884977dcc56719a96ed4e5d69b6a4ff58c8"
+    },
+    "consensus_acb7859468ca85cf9935e64ebb2b9b3fa8187de42d541acebaf732365a0131eaa994098f9d0d7e6b8ddea8ef11e16c55": {
+        "data": "GetResponse",
+        "last_update": 1731383387,
+        "value": "0x18d5098b3819d5fb0fc208b8bb0946b263f961f60716fc4d10d4b010fdb89a55"
+    },
+    // ...
+}
+```
+
+To delete private key `0x18d5...`, simply delete the entire field with key `consensus_acb7...`.
+
+To delete private key `0x221f...`, update the value `0x221f...` to something else (e.g. another private key).

@@ -1,0 +1,350 @@
+# 使用とエイリアス
+
+`use`構文は、他のモジュールのメンバーに対するエイリアスを作成するために使用できます。`use`は、モジュール全体、または特定の式ブロックスコープに対してエイリアスを作成するために使用できます。
+
+## 構文
+
+`use`にはいくつかの異なる構文のケースがあります。最も単純なものから始めると、他のモジュールへのエイリアスを作成するための以下の構文があります：
+
+```move
+use <address>::<module name>;
+use <address>::<module name> as <module alias name>;
+```
+
+例えば：
+
+```move
+script {
+  use std::vector;
+  use std::vector as V;
+}
+```
+
+`use std::vector;`は`std::vector`に対するエイリアス`vector`を導入します。これは、（この`use`がスコープ内にある場合）モジュール名`std::vector`を使用したい場所で、代わりに`vector`を使用できることを意味します。`use std::vector;`は`use std::vector as vector;`と同等です。
+
+同様に、`use std::vector as V;`を使用すると、`std::vector`の代わりに`V`を使用できます。
+
+```move
+module 0x42::example {
+  use std::vector;
+  use std::vector as V;
+
+  fun new_vecs(): (vector<u8>, vector<u8>, vector<u8>) {
+    let v1 = std::vector::empty();
+    let v2 = vector::empty();
+    let v3 = V::empty();
+    (v1, v2, v3)
+  }
+}
+```
+
+特定のモジュールメンバー（関数、構造体、定数など）をインポートしたい場合は、以下の構文を使用できます：
+
+```move
+use <address>::<module name>::<module member>;
+use <address>::<module name>::<module member> as <member alias>;
+```
+
+例えば：
+
+```move
+script {
+  use std::vector::empty;
+  use std::vector::empty as empty_vec;
+}
+```
+
+これにより、完全修飾なしで`std::vector::empty`関数を使用できるようになります。代わりに、それぞれ`empty`と`empty_vec`を使用できます。ここでも、`use std::vector::empty;`は`use std::vector::empty as empty;`と同等です。
+
+```move
+module 0x42::example {
+  use std::vector::empty;
+  use std::vector::empty as empty_vec;
+
+  fun new_vecs(): (vector<u8>, vector<u8>, vector<u8>) {
+    let v1 = std::vector::empty();
+    let v2 = empty();
+    let v3 = empty_vec();
+    (v1, v2, v3)
+  }
+}
+```
+
+複数のモジュールメンバーに対して一度にエイリアスを追加したい場合は、以下の構文を使用できます：
+
+```move
+use <address>::<module name>::{<module member>, <module member> as <member alias> ... };
+```
+
+例えば：
+
+```move
+module 0x42::example {
+  use std::vector::{push_back, length as len, pop_back};
+
+  fun swap_last_two<T>(v: &mut vector<T>) {
+    assert!(len(v) >= 2, 42);
+    let last = pop_back(v);
+    let second_to_last = pop_back(v);
+    push_back(v, last);
+    push_back(v, second_to_last)
+  }
+}
+```
+
+モジュールメンバーに加えてモジュール自体にエイリアスを追加する必要がある場合は、`Self`を使用して単一の`use`でそれを行うことができます。`Self`はモジュールを参照する一種のメンバーです。
+
+```move
+script {
+  use std::vector::{Self, empty};
+}
+```
+
+明確にするために、以下はすべて同等です：
+
+```move
+script {
+  use std::vector;
+  use std::vector as vector;
+  use std::vector::Self;
+  use std::vector::Self as vector;
+  use std::vector::{Self};
+  use std::vector::{Self as vector};
+}
+```
+
+必要に応じて、任意の項目に対して好きなだけエイリアスを持つことができます：
+
+```move
+module 0x42::example {
+  use std::vector::{
+    Self,
+    Self as V,
+    length,
+    length as len,
+  };
+
+  fun pop_twice<T>(v: &mut vector<T>): (T, T) {
+    // 上記の`use`で利用可能なすべてのオプション
+    assert!(vector::length(v) > 1, 42);
+    assert!(V::length(v) > 1, 42);
+    assert!(length(v) > 1, 42);
+    assert!(len(v) > 1, 42);
+
+    (vector::pop_back(v), vector::pop_back(v))
+  }
+}
+```
+
+## `module`内部での使用
+
+`module`内では、宣言の順序に関係なく、すべての`use`宣言が使用可能です。
+
+```move
+module 0x42::example {
+  use std::vector;
+
+  fun example(): vector<u8> {
+    let v = empty();
+    vector::push_back(&mut v, 0);
+    vector::push_back(&mut v, 10);
+    v
+  }
+
+  use std::vector::empty;
+}
+```
+
+モジュール内で`use`によって宣言されたエイリアスは、そのモジュール内で使用可能です。
+
+さらに、導入されたエイリアスは他のモジュールメンバーと競合してはいけません。詳細については[一意性](#uniqueness)を参照してください。
+
+## 式内での使用
+
+任意の式ブロックの先頭に`use`宣言を追加できます：
+
+```move
+module 0x42::example {
+
+  fun example(): vector<u8> {
+    use std::vector::{empty, push_back};
+
+    let v = empty();
+    push_back(&mut v, 0);
+    push_back(&mut v, 10);
+    v
+  }
+}
+```
+
+`let`と同様に、式ブロック内で`use`によって導入されたエイリアスは、そのブロックの終わりで削除されます。
+
+```move
+module 0x42::example {
+
+  fun example(): vector<u8> {
+    let result = {
+      use std::vector::{empty, push_back};
+      let v = empty();
+      push_back(&mut v, 0);
+      push_back(&mut v, 10);
+      v
+    };
+    result
+  }
+}
+```
+
+ブロックが終了した後にエイリアスを使用しようとするとエラーになります：
+
+```move
+module 0x42::example {
+  fun example(): vector<u8> {
+    let result = {
+      use std::vector::{empty, push_back};
+      let v = empty();
+      push_back(&mut v, 0);
+      push_back(&mut v, 10);
+      v
+    };
+    let v2 = empty(); // エラー!
+//           ^^^^^ 関数'empty'が未定義
+    result
+  }
+}
+```
+
+`use`はブロックの最初の項目でなければなりません。`use`が式や`let`の後に来る場合、構文解析エラーになります：
+
+```move
+script {
+  fun example() {
+    {
+      let x = 0;
+      use std::vector; // エラー!
+      let v = vector::empty();
+    }
+  }
+}
+```
+
+## 命名規則
+
+エイリアスは他のモジュールメンバーと同じ規則に従う必要があります。これは、構造体や定数へのエイリアスは`A`から`Z`で始まる必要があることを意味します：
+
+```move
+address 0x42 {
+  module data {
+    struct S {}
+    const FLAG: bool = false;
+    fun foo() {}
+  }
+  module example {
+    use 0x42::data::{
+      S as s, // エラー!
+      FLAG as fLAG, // エラー!
+      foo as FOO,  // 有効
+      foo as bar, // 有効
+    };
+  }
+}
+```
+
+## 一意性
+
+与えられたスコープ内で、`use`宣言によって導入されるすべてのエイリアスは一意でなければなりません。
+
+モジュールの場合、これは`use`によって導入されるエイリアスが重複してはいけないことを意味します：
+
+```move
+module 0x42::example {
+  use std::vector::{empty as foo, length as foo}; // エラー!
+  //                                        ^^^ 'foo'が重複しています
+
+  use std::vector::empty as bar;
+  use std::vector::length as bar; // エラー!
+  //                         ^^^ 'bar'が重複しています
+}
+```
+
+また、モジュールの他のメンバーと重複してはいけません：
+
+```move
+address 0x42 {
+  module data {
+    struct S {}
+  }
+  module example {
+    use 0x42::data::S;
+
+    struct S { value: u64 } // エラー!
+    //     ^ 上記のエイリアス'S'と競合します
+  }
+}
+```
+
+式ブロック内では、互いに重複してはいけませんが、外部スコープからの他のエイリアスや名前を[シャドウイング](#shadowing)することができます。
+
+## シャドウイング
+
+式ブロック内の`use`エイリアスは、外部スコープからの名前（モジュールメンバーやエイリアス）をシャドウイングすることができます。ローカル変数のシャドウイングと同様に、シャドウイングは式ブロックの終わりで終了します：
+
+```move
+module 0x42::example {
+
+  struct WrappedVector { vec: vector<u64> }
+
+  fun empty(): WrappedVector {
+    WrappedVector { vec: std::vector::empty() }
+  }
+
+  fun example1(): (WrappedVector, WrappedVector) {
+    let vec = {
+      use std::vector::{empty, push_back};
+      // 'empty'は今std::vector::emptyを参照します
+
+      let v = empty();
+      push_back(&mut v, 0);
+      push_back(&mut v, 1);
+      push_back(&mut v, 10);
+      v
+    };
+    // 'empty'は今Self::emptyを参照します
+
+    (empty(), WrappedVector { vec })
+  }
+
+  fun example2(): (WrappedVector, WrappedVector) {
+    use std::vector::{empty, push_back};
+    let w: WrappedVector = {
+      use 0x42::example::empty;
+      empty()
+    };
+    push_back(&mut w.vec, 0);
+    push_back(&mut w.vec, 1);
+    push_back(&mut w.vec, 10);
+
+    let vec = empty();
+    push_back(&mut vec, 0);
+    push_back(&mut vec, 1);
+    push_back(&mut vec, 10);
+
+    (w, WrappedVector { vec })
+  }
+}
+```
+
+## 未使用のUseまたはエイリアス
+
+未使用の`use`はエラーになります：
+
+```move
+module 0x42::example {
+  use std::vector::{empty, push_back}; // エラー!
+  //                       ^^^^^^^^^ エイリアス'push_back'が未使用です
+
+  fun example(): vector<u8> {
+    empty()
+  }
+}
+```

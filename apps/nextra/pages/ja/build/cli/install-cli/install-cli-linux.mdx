@@ -1,0 +1,69 @@
+import { Callout, Steps } from 'nextra/components'
+
+# LinuxでのAptos CLIのインストール
+
+Linuxの場合、Aptos CLIツールをインストールする最も簡単な方法はPythonスクリプトを使用することですが、それが動作しない場合は、プリコンパイル済みバイナリをダウンロードして手動でインストールすることもできます。プリコンパイル済みバイナリによるアプローチは、アップデートが非常に手動的になるため、一般的にはお勧めしません。
+
+<Callout type="warning">
+注意：ARMアーキテクチャを使用している場合は、こちらの手順に従ってインストールする必要があります：[特定バージョンのAptos CLIのインストール（上級者向け）](install-cli-specific-version.mdx)
+</Callout>
+
+# Pythonスクリプトを使用したインストール
+
+<Steps>
+### Python 3.6以上がインストールされていることを`python3 --version`を実行して確認します。
+
+   python3がインストールされていない場合は、[python.org](http://python.org)でインストール手順を確認できます。
+
+### ターミナルで、以下のコマンドのいずれかを使用します：
+
+   ```bash filename="Terminal"
+   curl -fsSL "https://aptos.dev/scripts/install_cli.py" | python3
+   ```
+
+   または、同等の`wget`コマンドを使用します：
+
+   ```bash filename="Terminal"
+   wget -qO- "https://aptos.dev/scripts/install_cli.py" | python3
+   ```
+
+   <Callout type="warning">
+   `Couldn't find distutils or packaging. We cannot check the current version of the CLI. We will install the latest version.`というエラーが表示される場合は、`pip3 install packaging`を実行してから、この手順を繰り返してください。
+   </Callout>
+
+### （オプション）Aptos CLIをPATHの通ったフォルダに追加するか、直接PATHに追加すると便利です。
+   - PATHにフォルダを追加する手順はシェルによって異なります。
+   - `echo $SHELL`を実行してマシンのデフォルトシェルを確認し、そのシェルでフォルダをPATHに追加する具体的な手順を検索してください。
+### 新しいターミナルを開いて`aptos help`を実行し、スクリプトがインストールされていることを確認します
+   - CLIで実行できるコマンドのリストが表示されるはずです。
+   - 今後、各コマンドの詳細な使い方を知るのに役立ちます。
+</Steps>
+
+<Callout type="info" emoji="ℹ️">
+Aptos CLIを最新バージョンに更新したい場合は、`aptos update`を実行できます。
+</Callout>
+
+# プリコンパイル済みバイナリを使用したインストール（代替方法）
+
+<Steps>
+### [Aptos CLIのリリースページ](https://github.com/aptos-labs/aptos-core/releases?q=cli&expanded=true)に移動します。
+### 最新リリースの"Assets"を展開してプリコンパイル済みバイナリを確認します。
+### Linux用のzipファイルをダウンロードします。
+   1. `aptos-cli-<バージョン>-Ubuntu-x86_64.zip`のような名前になっています。
+   2. お使いのコンピュータのアーキテクチャに合った正しいzipファイルを選んでください。
+   3. ダウンロード時に不審なファイルという警告が表示される可能性がありますが、無視して構いません。
+### ダウンロードしたファイルを解凍します。
+### 抽出したAptosバイナリファイルを任意のフォルダに移動します。
+### ターミナルを開き、任意のフォルダに移動します。
+### `chmod +x ~/aptos`を実行して`~/aptos`を実行可能にします。
+### `~/aptos help`を実行してインストールしたバージョンが動作することを確認します。
+   すべてのCLIコマンドの使用方法が表示されるはずです。これらは今後、特定のコマンドの使い方を理解する際に役立ちます。
+### （オプション）Aptos CLIをPATHの通ったフォルダに追加するか、直接PATHに追加すると便利です。
+   - PATHにフォルダを追加する手順はシェルによって異なります。
+   - `echo $SHELL`を実行してマシンのデフォルトシェルを確認し、そのシェルでフォルダをPATHに追加する具体的な手順を検索してください。
+
+</Steps>
+
+<Callout type="info" emoji="ℹ️">
+プリコンパイル済みバイナリを使用してインストールした場合、Aptos CLIを更新するには、既存のインストールを削除してから、インストール手順を再度実行します。
+</Callout>
