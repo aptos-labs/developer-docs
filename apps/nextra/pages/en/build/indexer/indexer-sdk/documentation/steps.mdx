@@ -1,6 +1,7 @@
 ---
 title: "Creating a Step"
 ---
+import { Callout } from 'nextra/components'
 
 # Creating a Step
 
@@ -21,10 +22,10 @@ To create a step with the SDK, follow these instructions:
     ```rust
     #[async_trait]
     impl Processable for MyExtractorStep {
-        // The Input is a batch of Transaction 
-        type Input = Transaction;
-        // The Output is a batch of MyData
-        type Output = MyData;
+        // The Input is a vec of Transaction 
+        type Input = Vec<Transaction>;
+        // The Output is a vec of MyData
+        type Output = Vec<MyData>;
 
         // Depending on the type of step this is, the RunType is either
         // - AsyncRunType
@@ -34,20 +35,27 @@ To create a step with the SDK, follow these instructions:
     	// Processes a batch of input items and returns a batch of output items.
         async fn process(
             &mut self,
-            input: TransactionContext<Transaction>,
-        ) -> Result<Option<TransactionContext<MyData>>, ProcessorError> {
+            input: TransactionContext<Vec<Transaction>>,
+        ) -> Result<Option<TransactionContext<Vec<MyData>>>, ProcessorError> {
             let transactions = input.data;
             let data = transactions.iter().map(|transaction| {
                 // Define the processing logic to extract MyData from a Transaction
             }).collect();
             
             Ok(Some(TransactionContext {
-            data,
-            metadata: input.metadata,
+                data,
+                metadata: input.metadata,
             }))
         }
     }
     ```
+
+    
+    <Callout type="info">
+        In most cases, you're going to be processing a list of inputs to a list of outputs.
+        To speed up the processing, we recommend using [`rayon`](https://docs.rs/rayon/latest/rayon/) to process sequential computations in parallel.
+        You can see an example of how we use [`rayon.par_iter`](https://docs.rs/rayon/latest/rayon/#basic-usage-and-the-rayon-prelude) to parallelize the processing [here](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/aptos-indexer-processor-example/src/processors/events/events_extractor.rs#L30).
+    </Callout>
 
     In the example code above, you'll notice that the input and output types are wrapped within a `TransactionContext`.
     `TransactionContext` contains relevant metadata about the batch of data being processed, such as the transaction versions and timestamp, and are used for metrics and logging. 
