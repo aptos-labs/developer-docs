@@ -1,0 +1,35 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# Get Fungible Asset Balances
+
+`GetFungibleAssetBalances` retrieves the current balances for various fungible asset types associated with a specified account address. This is crucial for platforms requiring real-time information on account asset holdings. This is backwards compatible with looking up `Coin`s. 
+
+<Callout type="info">
+Try it yourself! Adjust the query variables below in the editor to fetch data for different addresses.
+</Callout>
+
+<GraphQLEditor
+  query={`query GetFungibleAssetBalances($address: String, $offset: Int, $token_standard: String) {
+  current_fungible_asset_balances(
+    where: {owner_address: {_eq: $address}, token_standard:{ _eq: $token_standard}},
+    offset: $offset,
+    limit: 100,
+    order_by: {amount: desc}
+  ) {
+    asset_type
+    amount
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "token_standard": "v1",
+  "offset": 0
+}`}
+/>
+
+#### Variables:
+- `$address`: **String** - The account address for which to fetch fungible asset balances. Example: `"0x0000000000000000000000000000000000000000000000000000000000000001"`.
+- `token_standard`: **String** - The token standard for the asset: `"v1"` is the previous token standard and `"v2"` is the new standard.
+- `$offset`: **Integer** (Optional) - The pagination offset to start fetching balances from. Default: `0`.

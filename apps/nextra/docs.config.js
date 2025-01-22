@@ -60,7 +60,7 @@ export const en = {
   graphqlLogoAlt: "GraphQL Logo",
   sdkIllustrationAlt: "SDK Illustration",
   sdkLabel: "SDK Docs",
-  sdkDescription: "Build web applications quickly using Aptos’ TypeScript SDK.",
+  sdkDescription: "Build web applications quickly using Aptos' TypeScript SDK.",
   typescriptLogoAlt: "TypeScript Logo",
 
   // Developers Section
@@ -128,7 +128,7 @@ export const en = {
     "Aptin Finance drives secure, intuitive, and seamless financial interactions for Aptos users. Aligned with Aptos' vision, we aim to establish a nexus of Omni-chain DeFi opportunities for a diverse global community.'",
   testimonial2Author: "–Elvis Woo, CTO & Co-Founder, Aptin Finance",
   testimonial3Body:
-    "Cellana Finance chose to build on Aptos because of its rapid transaction speed, cost-effectiveness, and robust security. Moreover, Aptos’s instant finality (less than 1s) will be a significant strength in attracting a variety of financial applications from Web 2 in the future.",
+    "Cellana Finance chose to build on Aptos because of its rapid transaction speed, cost-effectiveness, and robust security. Moreover, Aptos's instant finality (less than 1s) will be a significant strength in attracting a variety of financial applications from Web 2 in the future.",
   testimonial3Author: "–Andy Hoang, CEO, Cellana",
 
   // Footer Section
@@ -274,9 +274,154 @@ export const zh = {
   testimonial3Author: "–Andy Hoang, CEO, Cellana",
 };
 
+export const ja = {
+  locale: "ja",
+  name: "日本語",
+  direction: "ltr",
+  title: "Aptos ドキュメント",
+  editText: "GitHub でこのページを編集 →",
+  feedbackText: "質問がありますか？フィードバックをお寄せください →",
+  footerLinkText: "https://vercel.com/?utm_source=swr",
+  footerLinkElement: undefined,
+  searchPlaceholderText: "ドキュメントを検索",
+  searchLoadingText: "読み込み中...",
+  searchEmptyText: "結果が見つかりません。",
+  searchErrorText: "検索インデックスの読み込みに失敗しました。",
+  lastUpdatedOn: "最終更新日",
+
+  ////////// Landing Page //////////
+
+  // Title Section
+
+  headline: "Aptos で Web3 の未来を構築",
+  subHeading: "最高クラスの Web3 開発者体験を構築するために必要なすべてのもの",
+  quickStartBtnLabel: "クイックスタート",
+  learnBtnLabel: "学習を始める",
+
+  // Move Section
+
+  moveSectionHeadline: "Move で安全で高性能なスマートコントラクトを作成",
+  moveExamplesHeadline: "これらの Move サンプルで始めましょう",
+  coinsExampleLabel: "コイン",
+  coinsExampleDescription: "シンプルで型安全な代替可能なアセット",
+  objectsExampleLabel: "オブジェクト",
+  objectsExampleDescription: "組み合わせ可能なリソースコンテナ",
+  fungibleAssetsExampleLabel: "代替可能なアセット",
+  fungibleAssetsExampleDescription:
+    "高度な表現力を持つ代替可能なデジタルアセット",
+
+  // Tooling Section
+  toolingSectionHeadline: "Aptos のツールで web3 開発がこれまで以上に簡単に",
+  indexerIllustrationAlt: "Indexer イラスト",
+  indexerLabel: "Indexer",
+  indexerDescription: "Aptos Indexer でチェーン上のデータを簡単にクエリ",
+  graphqlLogoAlt: "GraphQL ロゴ",
+  sdkIllustrationAlt: "SDK イラスト",
+  sdkLabel: "SDK ドキュメント",
+  sdkDescription: "Aptos の TypeScript SDK で Web アプリケーションを迅速に構築",
+  typescriptLogoAlt: "TypeScript ロゴ",
+
+  // Developers Section
+
+  developersSectionHeadline: "Aptos では、開発者が最優先",
+  developerDiscussionsLabel: "開発者ディスカッション",
+  developerDiscussionsDescription:
+    "どのタイムゾーンでも、緊急の質問にタイムリーな回答を得られます。",
+  developerDiscussionsLink: "参加する",
+  aptosLearnLabel: "Aptos Learn",
+  aptosLearnDescription:
+    "Aptos Learn でブロックチェーンをマスター。あらゆるレベルの開発者向けの包括的なチュートリアルとガイド。",
+  aptosLearnLink: "学ぶ",
+  grantsLabel: "助成金",
+  grantsDescription: "Aptos 財団からプロジェクトの助成金を申請。",
+  grantsLink: "申請する",
+
+  // Blockchain Section
+  blockchainSectionHeadline: "Aptos のブロックチェーン機能を発見",
+  performanceLabel: "パフォーマンス",
+  performanceDescription:
+    "高 TPS と低レイテンシーでブロックチェーンのパフォーマンスを再定義",
+  parallelExecutionLabel: "並列実行",
+  parallelExecutionDescription:
+    "Block-STM が Aptos で並列化と楽観的な並行性をどのようにサポートするかを学ぶ",
+  validatorsLabel: "バリデータとフルノード",
+  validatorsDescription:
+    "バリデータまたはフルノードの実行に必要な情報を詳しく学ぶ",
+  keylessLabel: "キーレス",
+  keylessDescription: "キーレスでシームレスなユーザー認証を体験",
+  passkeysLabel: "パスキー",
+  passkeysDescription: "生体認証でシームレスにオンボード",
+  randomnessLabel: "オンチェーンランダム性",
+  randomnessDescription: "ゲームなどで真の公平性を実現",
+  feePayerLabel: "手数料支払者",
+  feePayerDescription:
+    "他者が支払いを代行し、トランザクションをシームレスに実行",
+  multiSigLabel: "マルチシグ",
+  multiSigDescription:
+    "協調的な制御と比類のないセキュリティで、これまでにない方法で資産を保護",
+  gasLabel: "ガス",
+  gasDescription: "低ガス料金でよりスマートな取引を",
+  consensusLabel: "コンセンサス",
+  consensusDescription: "DAG ベースのコンセンサスについて詳しく学ぶ",
+  storageLabel: "ストレージ",
+  storageDescription:
+    "Aptos の Jellyfish Merkle Tree とカスタム RocksDB 設定について詳しく学ぶ",
+  networkingLabel: "ネットワーキング",
+  networkingDescription:
+    "Aptos ブロックチェーンのトポロジーとノード間の通信方法について学ぶ",
+  mempoolLabel: "メモリプール",
+  mempoolDescription:
+    "トランザクションが上流に送信される前にどのようにバッファリングされるかを学ぶ",
+  stateSyncLabel: "ステート同期",
+  stateSyncDescription: "下流のノードが最新の状態とどのように同期するかを学ぶ",
+
+  // Testimonials Section
+  testimonialsSectionHeadline: "エコシステムからの声",
+  testimonial1Body:
+    "Aptos での開発は革新的で、比類のないトランザクション速度と信頼性を提供しています。活気のあるコミュニティと Aptos エコシステムの全体的な方向性が気に入っています。",
+  testimonial1Author: "–Muhd Dahlan, CEO Zabava Labs",
+  testimonial2Body:
+    "Aptin Finance は Aptos ユーザーに安全で直感的でシームレスな金融インタラクションを提供します。Aptos のビジョンに沿って、多様なグローバルコミュニティのためのオムニチェーン DeFi の機会のネクサスを確立することを目指しています。",
+  testimonial2Author: "–Elvis Woo, CTO & Co-Founder, Aptin Finance",
+  testimonial3Body:
+    "Cellana Finance は、高速なトランザクション速度、コスト効率、堅牢なセキュリティを理由に Aptos での構築を選択しました。さらに、Aptos のインスタントファイナリティ（1秒未満）は、将来的に Web 2 からさまざまな金融アプリケーションを引き付ける重要な強みとなるでしょう。",
+  testimonial3Author: "–Andy Hoang, CEO, Cellana",
+
+  // Footer Section
+  aptosAlt: "Aptos 財団",
+  discordAlt: "Discord",
+  githubAlt: "Github",
+  linkedinAlt: "LinkedIn",
+  telegramAlt: "Telegram",
+  twitterAlt: "Twitter",
+  buildHeading: "構築",
+  discoverHeading: "発見",
+  connectHeading: "接続",
+  meetAptosHeading: "Aptos について",
+  documentationLink: "ドキュメント",
+  governanceLink: "ガバナンス",
+  networkNumbersLink: "ネットワーク数値",
+  validatorsLink: "バリデータ",
+  nodeOperationsLink: "ノード運用",
+  ecosystemHubLink: "エコシステムハブ",
+  grantsLink: "助成金",
+  pressLink: "プレス",
+  eventsLink: "イベント",
+  collectiveLink: "コレクティブ",
+  forumLink: "フォーラム",
+  aboutAptosLink: "概要",
+  netZeroPolicyLink: "ネットゼロポリシー",
+  whitePaperLink: "ホワイトペーパー",
+  brandLink: "ブランド",
+  careersLink: "採用情報",
+  privacyLink: "プライバシー",
+  termsLink: "利用規約",
+};
+
 export const i18nConfig = Object.freeze({
   en,
   zh,
+  ja,
 });
 
 export const docsConfig = Object.freeze({

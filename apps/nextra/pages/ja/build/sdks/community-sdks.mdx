@@ -1,0 +1,33 @@
+---
+title: "コミュニティSDK"
+---
+
+import { Card, Cards } from '@components/index'
+
+# コミュニティSDK
+
+以下はコミュニティによって構築されたAptosのSDKのリストです。これらはAptosチームによって完全に検証されていない可能性があり、まだ開発中の場合もあります。
+ただし、すべての開発者のためのリソースとして提供されています。
+
+## SDK
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./community-sdks/kotlin-sdk" className="flex flex-row gap-4">
+    <Card.Image className="object-contain" src="https://upload.wikimedia.org/wikipedia/commons/3/37/Kotlin_Icon_2021.svg" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Kotlin SDK</Card.Title>
+      <Card.Description>
+        KaptosによるAptos KotlinマルチプラットフォームSDK
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="./community-sdks/swift-sdk" classname="flex flex-row gap-4">
+    <Card.Image classname="object-contain" src="https://developer.apple.com/swift/images/swift-og.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>Swift SDK</Card.Title>
+      <Card.Description>
+        AlcoveによるAptos Swift SDK
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>

@@ -1,0 +1,72 @@
+import { Callout, Steps, FileTree } from 'nextra/components'
+
+# Next.js I18n
+
+Nextra supports
+[Next.js Internationalized Routing](https://nextjs.org/docs/advanced-features/i18n-routing)
+out of the box. These docs explain how to configure and use it.
+
+### `docs.config.js`
+
+To simplify the process of `i18n` (such as adding new languages in the future), 
+the Aptos `docs.config.js` has been configured to be a centralized place where
+such updates can be made, making it easier to update in the future.
+
+Each `docs.config.js` contains a constant called `i18nConfig` that provides the 
+correct translation for a variety of elements used within the docs.
+
+### File Structure
+
+Each i18n language should have a corresponding folder under `pages`.
+For example, english (`en`) should have an `en` folder under pages where all english
+docs content will live.
+
+### Example
+
+Below is an example with `en` (english) and `ru` (russian).
+
+<FileTree>
+  <FileTree.Folder name="pages" defaultOpen>
+    <FileTree.File name="_meta.ts" />
+    <FileTree.Folder name="api" />
+    <FileTree.Folder name="en" />
+    <FileTree.Folder name="ru" />
+    <FileTree.File name="_app.tsx" />
+  </FileTree.Folder>
+  <FileTree.File name="docs.config.js" active />
+</FileTree>
+
+```js filename="docs.config.js"
+export const i18nConfig = Object.freeze({
+  en: {
+    locale: 'en',
+    name: 'English',
+    direction: 'ltr',
+    title: 'React Hooks for Data Fetching',
+    editText: 'Edit this page on GitHub →',
+    feedbackText: 'Question? Give us feedback →',
+    footerLinkText: 'https://vercel.com/?utm_source=swr',
+    footerLinkElement: undefined,
+    searchPlaceholderText: 'Search documentation',
+    searchLoadingText: 'Loading...',
+    searchEmptyText: 'No results found.',
+    searchErrorText: 'Failed to load search index.',
+    lastUpdatedOn: 'Last updated on',
+  },
+  ru: {
+    locale: 'ru',
+    name: 'Русский',
+    direction: 'ltr',
+    title: 'React хуки для выборки данных',
+    editText: 'Редактировать на GitHub',
+    feedbackText: 'Вопрос? Ваш отзыв →',
+    footerLinkText: 'https://vercel.com/?utm_source=swr_ru',
+    footerLinkElement: undefined,
+    searchPlaceholderText: 'Искать документацию',
+    searchLoadingText: 'Загрузка...',
+    searchEmptyText: 'Ничего не найдено.',
+    searchErrorText: 'Не удалось загрузить поисковый индекс.',
+    lastUpdatedOn: 'Последнее обновление',
+  }
+})
+```

@@ -1,0 +1,31 @@
+---
+title: "Rust SDK"
+---
+
+# Rust SDK
+
+## インストール
+
+Aptosは[Aptos-core GitHub](https://github.com/aptos-labs/aptos-core/tree/main/sdk)リポジトリで公式の軽度にサポートされているRust SDKを提供しています。Rust SDKを使用するには、以下のように`Cargo.toml`にGitリポジトリから直接依存関係とパッチを追加してください：
+
+```toml filename="Cargo.toml"
+[dependencies]
+aptos-sdk = { git = "https://github.com/aptos-labs/aptos-core", branch = "devnet" }
+
+[patch.crates-io]
+merlin = { git = "https://github.com/aptos-labs/merlin" }
+x25519-dalek = { git = "https://github.com/aptos-labs/x25519-dalek", branch = "zeroize_v1" }
+```
+
+また、以下の内容で`.cargo/config.toml`ファイルを作成する必要があります：
+
+```toml filename=".cargo/config.toml"
+[build]
+rustflags = ["--cfg", "tokio_unstable"]
+```
+
+公式Rust SDKのソースコードは[aptos-core GitHubリポジトリ](https://github.com/aptos-labs/aptos-core/tree/main/sdk)で入手可能です。
+
+## Rust SDKの使用
+
+Rust SDKの使用例については、[開発者チュートリアル](../guides.mdx)をご覧ください。

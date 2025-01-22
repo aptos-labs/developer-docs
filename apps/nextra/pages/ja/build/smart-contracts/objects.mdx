@@ -1,0 +1,62 @@
+---
+title: "Building with Objects"
+---
+
+# Move Objects
+In Move, Objects group resources together so they can be treated as a single entity on chain.
+
+Objects have their own address and can own resources similar to an account. They are useful for representing more complicated data types on-chain as Objects can be used in entry functions directly, and can be transferred as complete packages instead of one resource at a time.
+
+Here's an example of creating an Object and transferring it:
+
+```move filename="Example.move"
+module my_addr::object_playground {
+  use std::signer;
+  use std::string::{Self, String};
+  use aptos_framework::object::{Self, ObjectCore};
+
+  struct MyStruct1 has key {
+    message: String,
+  }
+
+  struct MyStruct2 has key {
+    message: String,
+  }
+
+  entry fun create_and_transfer(caller: &signer, destination: address) {
+    // Create object
+    let caller_address = signer::address_of(caller);
+    let constructor_ref = object::create_object(caller_address);
+    let object_signer = object::generate_signer(&constructor_ref);
+
+    // Set up the object by creating 2 resources in it
+    move_to(&object_signer, MyStruct1 {
+      message: string::utf8(b"hello")
+    });
+    move_to(&object_signer, MyStruct2 {
+      message: string::utf8(b"world")
+    });
+
+    // Transfer to destination
+    let object = object::object_from_constructor_ref<ObjectCore>(
+      &constructor_ref
+    );
+    object::transfer(caller, object, destination);
+  }
+}
+```
+
+During construction, Objects can be configured to be transferrable and extensible.
+
+For example, you could use an Object to represent a soulbound NFT by making it only transferrable once, and have it own resources for an image link and metadata. Objects can also own other Objects, so you could implement your own NFT collection Object by transferring several of the soulbound NFTs to it.
+
+## Learn how to
+
+- [Create and configure a new Object.](object/creating-objects.mdx)
+- [Use Objects you created.](object/using-objects.mdx)
+
+## Examples with Object contracts
+
+- [Digital Asset Marketplace Example](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/marketplace)
+- [Digital Assets Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/token_objects)
+- [Fungible Asset Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset)

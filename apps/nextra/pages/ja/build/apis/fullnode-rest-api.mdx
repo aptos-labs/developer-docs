@@ -1,0 +1,101 @@
+---
+title: "フルノード REST API"
+---
+
+import { Callout } from 'nextra/components'
+import { Card, Cards } from '@components/index'
+
+# Aptos フルノード REST API
+
+このAPI - フルノードに組み込まれている - は、Aptosブロックチェーンの状態の読み取りとトランザクションの送信を、シンプルで低レイテンシーながら低レベルな方法で提供します。また、トランザクションのシミュレーションもサポートしています。
+より高度なクエリには、[インデクサー GraphQL API](../indexer.mdx)の使用をお勧めします。
+
+## フルノード REST API エクスプローラー
+
+<Cards>
+  <Card href="https://fullnode.mainnet.aptoslabs.com/v1/spec#/">
+    <Card.Title linkType="external">メインネット フルノード REST API</Card.Title>
+    <Card.Description>メインネット用のREST APIエクスプローラー</Card.Description>
+  </Card>
+  <Card href="https://fullnode.testnet.aptoslabs.com/v1/spec#/">
+    <Card.Title linkType="external">テストネット フルノード REST API</Card.Title>
+    <Card.Description>テストネット用のREST APIエクスプローラー</Card.Description>
+  </Card>
+  <Card href="https://fullnode.devnet.aptoslabs.com/v1/spec#/">
+    <Card.Title linkType="external">デブネット フルノード REST API</Card.Title>
+    <Card.Description>デブネット用のREST APIエクスプローラー</Card.Description>
+  </Card>
+</Cards>
+
+## レート制限について
+
+[Aptosインデクサー](../indexer/aptos-hosted.mdx)と同様に、Aptos REST APIには、Aptos提供のノードでトランザクションを送信するか、APIをクエリする場合、IPアドレスごとに5分間で5000リクエストのレート制限があります。
+（ノード運営者として、自身のノードでこれらの制限を引き上げることができます。）この制限は事前の通知なく変更される可能性があることにご注意ください。
+
+## 現在の状態と履歴の表示
+
+Aptosブロックチェーンへの統合のほとんどは、ブロックチェーンの現在の状態と履歴の包括的な概要から恩恵を受けます。Aptosは、トランザクション実行の結果である履歴トランザクション、状態、およびイベントを提供します。
+
+- 履歴トランザクションは、実行状態、出力、および関連するイベントへの紐付けを指定します。各トランザクションには、ブロックチェーン台帳の履歴におけるグローバルな順序を示す一意のバージョン番号が関連付けられています。
+- 状態は、特定のバージョンまでのすべてのトランザクション出力の表現です。言い換えれば、状態バージョンは
+
+<Callout type="info">
+通信しているフルノードが最新の状態であることを確認してください。フルノードは、関連するデータを取得するために、あなたのトランザクションを含むバージョンに到達している必要があります。フルノードが[バリデーターフルノード](../../network/blockchain/fullnodes.mdx)から状態を取得する際に遅延が発生する可能性があり、バリデーターフルノードは信頼の源である[バリデーターノード](../../network/blockchain/validator-nodes.mdx)に依存しています。
+</Callout>
+
+ノード上のストレージサービスは、ノードからデータを消去する2種類のプルーニングを採用しています：
+
+- 状態
+- イベント、トランザクション、およびその他すべて
+
+これらのいずれかを無効にすることは可能ですが、状態バージョンの保存は特に持続可能ではありません。
+
+イベントとトランザクションのプルーニングは、`storage_config.rs`で[`enable_ledger_pruner`](https://github.com/aptos-labs/aptos-core/blob/cf0bc2e4031a843cdc0c04e70b3f7cd92666afcf/config/src/config/storage_config.rs#L141)を`false`に設定することで無効にできます。これはメインネットではデフォルトの動作です。近い将来、Aptosはノードから直接クエリする必要性を軽減するインデクサーを提供する予定です。
+
+REST APIは、以下の方法でトランザクションとイベントのクエリを提供します：
+
+- [アカウントのトランザクション](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_account_transactions)
+- [バージョン別のトランザクション](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_version)
+- [イベントハンドル別のイベント](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)
+
+## View関数による状態の読み取り
+
+View関数は、APIから呼び出された場合にブロックチェーンの状態を変更しません。[View関数](https://github.com/aptos-labs/aptos-core/blob/main/api/src/view_function.rs)とその[入力](https://github.com/aptos-labs/aptos-core/blob/main/api/types/src/view.rs)を使用して、Moveを使用して潜在的に複雑なオンチェーン状態を読み取ることができます。例えば、オークションコントラクトで最高入札者を評価することができます。関連するファイルは以下の通りです：
+
+- 例として[`view_function.rs`](https://github.com/aptos-labs/aptos-core/blob/main/api/src/tests/view_function.rs)
+- 関連する[Move](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/aptos-move/framework/aptos-framework/sources/coin.move#L226)コード
+- [仕様](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/api/doc/spec.yaml#L8513)
+
+View関数は、副作用がなくアクセス可能な出力パスを持つという点を除いて、AptosシミュレーションAPIと同様に動作します。View関数は`/view`エンドポイントを介して呼び出すことができます。View関数の呼び出しには、モジュール名、関数名、入力タイプパラメータ、および値が必要です。
+
+関数は`#[view]`としてタグ付けされるために不変である必要はありませんが、関数が可変の場合でも、APIから呼び出された場合は状態の変更は発生しません。可変関数を`#[view]`としてタグ付けする場合は、実行時に悪意を持って呼び出されることを防ぐためにプライベートにすることを検討してください。
+
+View関数を使用するには、[Aptos CLI](../cli.mdx)を通じて[モジュールを公開](../cli/working-with-move-contracts.mdx)する必要があります。
+
+Aptos CLIでは、View関数のリクエストは以下のようになります：
+
+```bash filename="Terminal"
+aptos move view --function-id devnet::message::get_message --profile devnet --args address:devnet
+{
+  "Result": [
+    "View functions rock!"
+  ]
+}
+```
+
+TypeScript SDKでは、View関数のリクエストは以下のようになります：
+
+```ts filename="index.ts"
+import { Aptos } from "@aptos-labs/ts-sdk";
+
+const aptos = new Aptos();
+const [balance] = aptos.view<[string]>({
+  function: "0x1::coin::balance",
+  typeArguments: ["0x1::aptos_coin::AptosCoin"],
+  functionArguments: [alice.accountAddress]
+});
+
+expect(balance).toBe("100000000");
+```
+
+View関数は値のリストをベクターとして返します。デフォルトでは、結果はJSON形式で返されますが、オプションでBinary Canonical Serialization (BCS)エンコード形式で返すことも可能です。

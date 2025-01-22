@@ -1,0 +1,52 @@
+---
+title: "Bootstrap from a Snapshot"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Bootstrap from a Snapshot
+
+This document describes how to bootstrap an Aptos node quickly using a snapshot. This can be done on all node types,
+including validators, VFNs and PFNs.
+
+<Callout type="warning">
+**Indexer snapshots**<br />
+The snapshots provided by the community do not provide indexer support. If you are bootstrapping an indexer node,
+you will need to do so by using a [backup](./aptos-db-restore.mdx).
+</Callout>
+
+Although you can bootstrap a new node using [state sync](../configure/state-sync.mdx), this might not be the fastest approach after the network
+has been running for a while; it can either take too much time, or it won't be able to fetch all the required data since
+other nodes may have already pruned their ledger history. To avoid this, you can bootstrap your node using an
+existing snapshot, which is simply a copy of the storage data of an existing node.
+
+<Callout type="warning">
+**Mainnet snapshots**<br />
+It is not recommended to use snapshots for bootstrapping nodes in **mainnet**. This is because snapshots
+are not verified by the Aptos software. As a result, the snapshot may be invalid or contain incorrect data. To prevent
+security concerns, we recommend using snapshots only in test environments, e.g., **devnet** and **testnet**.
+
+If you must bootstrap a node using a **mainnet** snapshot, you should either generate the snapshot yourself
+or obtain it from a trusted source. You should also verify the snapshot's integrity and authenticity before using it
+(e.g., via cryptographic signatures and checksums).
+</Callout>
+
+## Find an existing snapshot
+
+There are a number of snapshots that can be downloaded from different Aptos community members. These include:
+
+- BWareLabs (Testnet and Mainnet): [BWareLabs Aptos Node Snapshots](https://bwarelabs.com/snapshots/aptos)
+- Polkachu (Mainnet): [Polkachu Aptos Node Snapshots](https://polkachu.com/aptos_snapshots/aptos)
+
+<Callout type="info">
+**Questions about snapshot data** <br />
+Depending on how the snapshot is constructed and compressed, the snapshot files may be different sizes. If you have any
+questions about the snapshot data, or run into any issues, please reach out to the Aptos community members directly
+via the [#node-support](https://discord.com/channels/945856774056083548/953421979136962560) channel in [Aptos Discord](https://discord.gg/aptosnetwork).
+</Callout>
+
+## Use a snapshot
+
+To use a snapshot, simply download and copy the files to the location of the storage database for your node.
+This location can be found and updated in the fullnode `yaml` configuration file under `data_dir`.
+See the example tutorial ([Run a PFN](../full-node/deployments.mdx)) for how to configure the data directory.

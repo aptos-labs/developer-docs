@@ -1,0 +1,46 @@
+---
+title: "Operator"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Operator
+
+If you are an operator participating in the Aptos network, then use this document to perform the operator tasks such as deploying a validator node and validator fullnode, registering the nodes on the Aptos community platform, and performing the validation.
+
+<Callout type="info">
+**Both validator node and validator fullnode are required for mainnet** <br />
+For participating in the Aptos mainnet, you must deploy both a validator node and a validator fullnode.
+</Callout>
+
+## Deploy the nodes and register
+
+<Steps>
+
+### Read the [Node Requirements](node-requirements.mdx)
+
+Make sure that your hardware, storage and network resources satisfy the node requirements.
+
+### Deploy the nodes
+
+Follow the detailed node installation steps provided in [**Running Validator Node**](deploy-nodes.mdx) 
+and deploy a validator node and a validator fullnode.
+
+</Steps>
+
+Note that your nodes will not be running correctly (not syncing, not participating in consensus), 
+until they're added to the validator set via [staking pool operations](connect-nodes/staking-pool-operations.mdx) (below).
+
+## Connect to Aptos network
+
+After deploying your nodes, [connect to the Aptos Network](connect-nodes/connect-to-aptos-network.mdx).
+
+## Set up staking and delegation pool operations
+
+After connecting your nodes to the Aptos network, establish [staking pool operations](connect-nodes/staking-pool-operations.mdx) to add your node to the validator set.
+
+Similarly, conduct [delegation pool operations](connect-nodes/delegation-pool-operations.mdx) for APT delegated to your validator. Your node will start syncing and participating in consensus.
+
+## Ensure your nodes are live
+
+After your nodes are deployed and configure, make sure they meet [node liveness criteria](verify-nodes/node-liveness-criteria.mdx).

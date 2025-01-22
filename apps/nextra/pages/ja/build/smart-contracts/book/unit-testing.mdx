@@ -1,0 +1,167 @@
+# ユニットテスト
+
+Move言語には、コードの正確性を確認するための組み込みのユニットテストフレームワークが用意されています。
+
+## テストの基本
+
+テストは、`#[test]`アノテーションを使用して定義します：
+
+```move
+#[test]
+fun test_addition() {
+    let result = 1 + 2;
+    assert!(result == 3, 0);
+}
+```
+
+## テストモジュール
+
+テストは通常、`#[test_only]`モジュール内に配置されます：
+
+```move
+#[test_only]
+module my_addr::counter_tests {
+    use my_addr::counter;
+    
+    #[test]
+    fun test_counter_creation() {
+        // テストコード
+    }
+}
+```
+
+## テスト専用コード
+
+テスト専用のコードには、`#[test_only]`アノテーションを使用します：
+
+```move
+#[test_only]
+const TEST_ADDR: address = @0x1;
+
+#[test_only]
+fun setup_test(): signer {
+    // テストのセットアップコード
+}
+```
+
+## 期待される失敗
+
+`#[expected_failure]`アノテーションを使用して、テストが失敗することを期待できます：
+
+```move
+#[test]
+#[expected_failure(abort_code = 1)]
+fun test_should_fail() {
+    assert!(false, 1);
+}
+```
+
+## テストヘルパー
+
+テストヘルパー関数を使用して、共通のセットアップコードを再利用できます：
+
+```move
+#[test_only]
+fun setup_counter(account: &signer) {
+    counter::create(account);
+}
+
+#[test]
+fun test_counter_increment() {
+    let account = create_test_account();
+    setup_counter(&account);
+    counter::increment(&account);
+    assert!(counter::get_value(signer::address_of(&account)) == 1, 0);
+}
+```
+
+## アサーション
+
+テストでは、以下のアサーションマクロを使用できます：
+
+```move
+#[test]
+fun test_assertions() {
+    assert!(true, 0);  // 条件が真であることを確認
+    assert!(1 + 1 == 2, 1);  // 等価性を確認
+    assert!(vector::length(&vector::empty<u8>()) == 0, 2);  // 長さを確認
+}
+```
+
+## 例：完全なテストモジュール
+
+以下は、カウンターモジュールのテストの完全な例です：
+
+```move
+#[test_only]
+module my_addr::counter_tests {
+    use std::signer;
+    use my_addr::counter;
+    
+    const ECOUNTER_NOT_FOUND: u64 = 1;
+    const EINVALID_VALUE: u64 = 2;
+    
+    #[test_only]
+    fun create_test_account(): signer {
+        // テストアカウントの作成
+        @my_addr
+    }
+    
+    #[test]
+    fun test_counter_creation() {
+        let account = create_test_account();
+        counter::create(&account);
+        assert!(counter::exists_at(signer::address_of(&account)), 0);
+    }
+    
+    #[test]
+    fun test_counter_increment() {
+        let account = create_test_account();
+        counter::create(&account);
+        
+        // 初期値は0
+        assert!(counter::get_value(signer::address_of(&account)) == 0, 0);
+        
+        // インクリメント
+        counter::increment(&account);
+        assert!(counter::get_value(signer::address_of(&account)) == 1, 1);
+    }
+    
+    #[test]
+    #[expected_failure(abort_code = ECOUNTER_NOT_FOUND)]
+    fun test_counter_not_found() {
+        let account = create_test_account();
+        counter::get_value(signer::address_of(&account));
+    }
+}
+```
+
+## テストの実行
+
+テストを実行するには、以下のコマンドを使用します：
+
+```bash
+aptos move test
+```
+
+特定のテストを実行するには：
+
+```bash
+aptos move test --filter test_counter_creation
+```
+
+## テストカバレッジ
+
+テストカバレッジを確認するには：
+
+```bash
+aptos move test --coverage
+```
+
+## ベストプラクティス
+
+- 各モジュールに対応するテストモジュールを作成する
+- エッジケースとエラーケースをテストする
+- テストヘルパー関数を使用してコードの重複を避ける
+- 意味のあるアサーションメッセージを使用する
+- テストカバレッジを定期的に確認する

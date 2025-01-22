@@ -1,0 +1,16 @@
+# フェデレーテッドキーレス
+
+## フェデレーテッドキーレス
+
+[AIP-96](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-96.md)：フェデレーテッドキーレスは、Aptos Keylessを拡張し、`0x1::jwks`でJWKコンセンサスを通じてホワイトリストに登録されているプロバイダー以外の、より多くのOpenID Connect（OIDC）プロバイダーをサポートしながら、その分散性を維持するものです。フェデレーテッドキーレスは、プロジェクトがサポートされているIAMプロバイダーをユーザー認証に使用している限り、Auth0やAWS Cognitoなどのアイデンティティ＆アクセス管理（IAM）プロバイダーを通じたユーザー認証のサポートを追加します。
+
+さらに詳しく説明すると、フェデレーテッドキーレスは以下を可能にします：
+    1. 認証方法の拡張
+        a. IAMでサポートされているすべての認証方法がdAppで利用可能になります。これには、メール/SMS OTPや、Discord、Naver、Xなどのソーシャルログイン統合のマーケットプレイスが含まれます。例として[こちら](https://marketplace.auth0.com/)でAuth0のマーケットプレイスをご覧ください。
+
+    2. 既存のアカウントシステムとの互換性
+        a. IAMはカスタム認証もサポートしているため、アプリケーションは独自のユーザー名/パスワードを持ち込むことができます（Cognito[ドキュメント](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html)、Auth0[ドキュメント](https://auth0.com/blog/Custom-Authentication-With-Auth0/)）。アプリケーションは、IAMですでに設定されている既存のアカウントシステムの使用を開始するか、既存のアカウントシステムをIAMに移行してKeyless互換のJWTを生成することができます。
+
+- [フェデレーテッドキーレスの重要な考慮事項](federated-keyless/key-considerations.mdx)
+- [フェデレーテッドキーレスの統合ガイド](federated-keyless/integration-guide.mdx)
+- [フェデレーテッドキーレスのよくある質問](federated-keyless/other.mdx)

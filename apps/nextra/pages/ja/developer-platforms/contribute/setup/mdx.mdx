@@ -1,0 +1,63 @@
+---
+title: "Writing MDX"
+searchable: false
+---
+
+# Writing MDX
+
+## Principles for Writing Great Documentation
+
+Lee Robinson -- VP of Product at Vercel -- summarizes some best practices for writing great documentation [on his post on Developer Experience](https://leerob.io/blog/developer-experience#documentation). Many of the tips below are inspired by his blog:
+
+**Optimize for skimming**: Let's face it, we all skim. Especially when reading developer documentation. My eyes jump directly to code blocks or diagrams / images, trying to find the solution to my given problem. 
+To help provide the best DX, distill your content into the core content you need. Whenever possible, use diagrams or images as replacements for text.
+[Excalidraw](https://excalidraw.com/) is popular among developers for technical diagrams.
+
+**Lead with code**: Developers want to write code. Give them code examples as starting blocks.
+
+**Solve the problem (aka: answer the question)**: Developers come to docs to learn the answer to a question, challenge, or problem they're trying to resolve. Give them the answer through multiple methods 
+(video, text, tutorials, guides, etc.), so they learn the solution in a way that works for them.
+
+**Not just the happy path**: The documentation is a reference guide for developers trying to get work done. Often, this means searching for an error and looking for a solution they can copy/paste. 
+It's important to document the workaround and hacks, too. I'd rather acknowledge a gap in the product and unblock the developer rather than leave them frustrated.
+
+**Progressively expose complexity**: Consider putting content that's helpful for experts but not critical for the happy path in collapsible “deep dive” sections. 
+Keep the first-time experience crisp while progressively informing developers about more complex features as they continue building with the product.
+
+
+## Frontmatter
+
+MDX documents support YAML [frontmatter](https://mdxjs.com/guides/frontmatter/) headers out of the box. This
+section will discuss the frontmatter attributes that Nextra supports.
+
+### `title`
+
+Sets the title of the markdown document and affects BOTH the title included in the SEO card as well as the
+title of the page (which can be found by hovering over the tab).
+
+```mdx filename="example.mdx"
+
+---
+title: Hi, World!
+---
+
+# Hi, World!
+
+```
+
+### `searchable`
+
+Will impact whether the document is indexed by Nextra during for flexsearch indices. If searchable is `false`,
+the document and its contents will not be indexed and therefore will not be searchable.
+
+By default, `searchable` is set to `true`
+
+```mdx filename="example.mdx"
+
+---
+searchable: true
+---
+
+# Hi, World!
+
+```

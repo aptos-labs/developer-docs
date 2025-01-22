@@ -1,0 +1,89 @@
+---
+title: "Examples"
+---
+
+import { Steps, Callout } from "nextra/components";
+import { Card, Cards } from "@components/index";
+
+<Callout type="warning" emoji="❗">
+  This SDK is currently in beta. Please report any issues you encounter by
+  creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# Examples
+
+The Aptos .NET SDK provides a number of examples to help you get started with the SDK. You can find the examples in the
+[aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk) repository.
+
+<br />
+
+<Card
+  href="https://github.com/aptos-labs/aptos-dotnet-sdk/tree/main/Aptos.Examples"
+  className="flex flex-row gap-4"
+>
+  <Card.Image src="https://cdn-icons-png.flaticon.com/512/25/25231.png" />
+  <div className="flex flex-col gap-2">
+    <Card.Title>Aptos .NET SDK Examples</Card.Title>
+    <Card.Description>Example applications for the .NET SDK.</Card.Description>
+  </div>
+</Card>
+
+<Steps>
+
+### Install .NET
+
+To run the examples, you will need to install the .NET SDK. You can download the .NET SDK from the
+[dotnet.microsoft.com](https://dotnet.microsoft.com/en-us/download) website.
+
+### Clone the Repository
+
+Clone the repository by running the following command:
+
+```bash
+git clone https://github.com/aptos-labs/aptos-dotnet-sdk.git
+```
+
+### Running the Examples
+
+You can run the examples by navigating to the `Aptos.Examples` directory and running the
+`dotnet run --framework net8.0` command.
+
+```bash
+cd Aptos.Examples
+dotnet run --framework net8.0
+```
+
+### Selecting an Example
+
+When running the examples, you will be prompted to select an example. You can select the example by
+entering the number of the example you want to run or navigating with the arrow keys.
+
+![examples-demonstration](https://i.imgur.com/YS140Zb.png)
+
+</Steps>
+
+## Additional Resources
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./getting-started" className="col-span-2 flex flex-row gap-4">
+    <div className="flex flex-col gap-2">
+      <Card.Title>Getting Started</Card.Title>
+      <Card.Description>
+        Begin developing using the Aptos .NET SDK.
+      </Card.Description>
+    </div>
+  </Card>
+  <Card
+    href="https://aptos-labs.github.io/aptos-dotnet-sdk/"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <div className="flex flex-col gap-2">
+      <Card.Title>Full API Reference</Card.Title>
+      <Card.Description>
+        The full API reference for the Aptos .NET SDK.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>
