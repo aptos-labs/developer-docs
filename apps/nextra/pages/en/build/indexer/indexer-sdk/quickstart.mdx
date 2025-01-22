@@ -33,12 +33,16 @@ You also need the following tools:
 - Rust 1.79: [Installation Guide](https://www.rust-lang.org/tools/install)
 - Cargo: [Installation Guide](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo)
 
-We use PostgreSQL as our database and Diesel as our ORM in this tutorial. You’re free to use whatever you want, but this tutorial is geared
+We use [PostgreSQL](https://www.postgresql.org/) as our database and [Diesel](https://diesel.rs/guides/getting-started) as our ORM in this tutorial. You’re free to use whatever you want, but this tutorial is geared
 towards PostgreSQL for the sake of simplicity. We use the following database configuration and tools:
 
-### PostgreSQL Installation
-[PostgreSQL](https://www.postgresql.org/download/)
+### PostgreSQL Installation (for macOS)
 1. `brew install libpq` ([this is a postgres C API library](https://formulae.brew.sh/formula/libpq)). Also perform all export commands post-installation
+```bash
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+export LDFLAGS="-L/opt/homebrew/opt/libpq/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/libpq/include"
+```
 2. `brew install postgres`
 3. `pg_ctl -D /opt/homebrew/var/postgres start` or `brew services start postgresql`
 4. `/opt/homebrew/bin/createuser -s postgres`
