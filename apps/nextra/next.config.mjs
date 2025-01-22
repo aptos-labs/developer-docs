@@ -436,6 +436,12 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/version-tracking",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/version-tracking",
+        permanent: true,
+      },
+      {
         source: "/indexer/indexer-sdk/documentation/run-processor",
         destination:
           "/en/build/indexer/indexer-sdk/documentation/run-processor",

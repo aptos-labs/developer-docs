@@ -15,4 +15,7 @@ export default {
   "connect-steps": {
     title: "Connecting Steps",
   },
+  "version-tracking": {
+    title: "Version Tracking",
+  },
 };
