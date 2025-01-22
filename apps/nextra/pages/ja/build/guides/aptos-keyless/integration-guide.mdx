@@ -1,14 +1,14 @@
 ---
-title: "Keyless Integration Guide"
+title: "キーレス統合ガイド"
 ---
 import { Callout, Steps } from "nextra/components";
 
-# Aptos Keyless Integration Guide
+# キーレス統合ガイド
 
 <Callout type="info">
   **Keyless Account Scoping**
 
-  Use of the **_Aptos Keyless Integration Guide_** will allow for the integration of keyless accounts directly into your application. This means that blockchain accounts are scoped to your application's domain (logging in with your Google account on dApp A and logging in with your Google account on dApp B will create separate accounts). Stay tuned for more to come on Aptos’ plan to allow Keyless accounts to be used portably across applications.
+  Use of the **_Aptos Keyless Integration Guide_** will allow for the integration of keyless accounts directly into your application. This means that blockchain accounts are scoped to your application's domain (logging in with your Google account on dApp A and logging in with your Google account on dApp B will create separate accounts). Stay tuned for more to come on Aptos' plan to allow Keyless accounts to be used portably across applications.
 
   To provide feedback, get support, or be a design partner as we enhance Aptos Keyless, join us here: https://t.me/+h5CN-W35yUFiYzkx
 </Callout>
@@ -19,7 +19,7 @@ At a high level, there are three steps to follow in order to integrate Keyless A
 2. **Install the Aptos TypeScript SDK.**
 3. **Integrate Keyless Account support in your application client**
    1. Set up the `"Sign In with [Idp]"` flow for your user.
-   2. Instantiate the user’s `KeylessAccount`
+   2. Instantiate the user's `KeylessAccount`
    3. Sign and submit transactions via the `KeylessAccount`.
 
 ## Example Implementaion
@@ -129,7 +129,7 @@ export const decodeEphemeralKeyPair = (encodedEkp: string): EphemeralKeyPair =>
         const nonce = ephemeralKeyPair.nonce
         ```
 
-    4. Construct the login URL for the user to authenticate with the IdP. Make sure the `openid` scope is set. Other scopes such as `email` and `profile` can be set based on your app’s needs.
+    4. Construct the login URL for the user to authenticate with the IdP. Make sure the `openid` scope is set. Other scopes such as `email` and `profile` can be set based on your app's needs.
 
         ```ts
         const loginUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=id_token&scope=openid+email+profile&nonce=${nonce}&redirect_uri=${redirectUri}&client_id=${clientId}`
@@ -173,7 +173,7 @@ export const decodeEphemeralKeyPair = (encodedEkp: string): EphemeralKeyPair =>
         }
         ```
 
-    4. Instantiate the user’s `KeylessAccount`
+    4. Instantiate the user's `KeylessAccount`
 
         Depending on the type of Keyless you are using, follow the instructions below:
 

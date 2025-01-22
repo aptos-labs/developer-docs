@@ -1,73 +1,216 @@
 ---
-title: "Federated Keyless Integration Guide"
+title: "フェデレーテッドキーレス統合ガイド"
 ---
 import { Callout, Steps } from "nextra/components";
 
-# Federated Keyless Integration Guide
+# フェデレーテッドキーレス統合ガイド
 
-<Steps>
-### Step 1. Setup your IAM provider
+このガイドでは、フェデレーテッドキーレスをdappに統合する方法を説明します。
 
-Set up your project with your IAM to match the account structure you are looking for.
+## 前提条件
 
-- [Getting Started with AWS Cognito](https://aws.amazon.com/cognito/getting-started/)
-- [Getting Started with Auth0](https://auth0.com/docs/get-started)
+- [Node.js](https://nodejs.org/en/)がインストールされていること
+- [Aptos CLI](https://aptos.dev/tools/aptos-cli/install-cli/)がインストールされていること
+- [Aptos Wallet Adapter](https://github.com/aptos-labs/aptos-wallet-adapter)を使用していること
 
-### Step 2. Register the JSON Web Key Set (JWKS) on-chain
+## 統合ステップ
 
-Federated Keyless accounts require the JWKS to be registered on-chain.
-
-To register the JWKS - call the `0x1::jwks::update_federated_jwk_set` entry function with an Aptos account that will store the JWKs that will be used to validate transactions signed by federated keyless accounts.
-
-<Callout type="warning">
-**Losing access to the JWK owner account compromises the Federated Keyless accounts created with it**
-
-The JWK owner account is the only account that can update the JWKS.  If you lose access to the JWK owner account, you will not be able to update the JWKS and the Federated Keyless accounts created with it will stop working in the case of a key rotation.  Users will be unable to validate their JWT tokens as they will be signed with the new key whos public key is not registered on the Aptos blockchain.
-</Callout>
-
-The JWK set can be found as follows -
-
-AWS Cognito - `https://cognito-idp.<region>.amazonaws.com/<userPoolId>/.well-known/jwks.json`
-Auth0 - `https://<yourDomain>/.well-known/jwks.json`
-
-The typescript SDK contains functionality to simplify the process given the issuer for your IAM provider setup (the `iss` claim value on your user’s JWT tokens) and an account to use to make the update.
-
-```tsx
-import {Aptos} from '@aptos-labs/ts-sdk'; // Requires version v1.29.1 or later
-
-const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET })); // Configure your network here
-const alice = // Derive your Aptos account here
-const jwkTxn = await aptos.updateFederatedKeylessJwkSetTransaction({ sender: alice, iss });
-await aptos.signAndSubmitTransaction({ signer: alice, transaction: jwkTxn });
-```
-
-You can use the interactive example provided by the SDK to easily register the JWKS for your IAM provider in devnet or testnet.  This will setup the JWK owner account with a Google Keyless account.
+### 1. 依存関係のインストール
 
 ```bash
-git clone https://github.com/aptos-labs/aptos-ts-sdk
-cd aptos-ts-sdk
-pnpm install && pnpm build
-cd examples/typescript
-pnpm install
-pnpm jwk_update
+npm install @aptos-labs/keyless-ts
 ```
 
-To setup the JWK owner account in mainnet, you will need create an account and use it to register the JWKS.
+### 2. OIDCプロバイダーの設定
 
-Save the address of the account you used to register the JWKS as you will need it for the next step.
+OIDCプロバイダーを設定する必要があります。詳細な手順については、[OIDCサポート](../oidc-support)を参照してください。
 
-To learn more about the `0x1::jwks::update_federated_jwk_set` entry function, see the [reference documentation](https://aptos.dev/en/build/smart-contracts/move-reference?page=aptos-framework%2Fdoc%2Fjwks.md#0x1_jwks_update_federated_jwk_set).
+### 3. フェデレーテッドキーレスプロバイダーの設定
 
-<Callout type="warning">
-**Handling key rotations**
+フェデレーテッドキーレスプロバイダーを設定するには、以下のコードを使用します：
 
-Whenever there is a key rotation of the JWKS, it is important to update the JWKS registered on chain promptly to avoid any loss of access to Federated Keyless accounts.  See [here](key-considerations.mdx) for more info.
-</Callout>
+```typescript
+import { FederatedKeylessProvider } from "@aptos-labs/keyless-ts";
 
-### Step 3. Follow the Aptos Keyless integration guide
+const federatedKeylessProvider = new FederatedKeylessProvider({
+  // 必須: OIDCプロバイダーの設定
+  oidcProvider: {
+    // 必須: OIDCプロバイダーの名前
+    name: "auth0",
+    // 必須: OIDCプロバイダーのクライアントID
+    clientId: "YOUR_CLIENT_ID",
+    // 必須: OIDCプロバイダーのリダイレクトURI
+    redirectUri: "YOUR_REDIRECT_URI",
+    // 必須: OIDCプロバイダーのドメイン
+    domain: "YOUR_DOMAIN",
+  },
+  // 必須: ガーディアンのURL
+  guardianUrl: "https://guardian.aptoslabs.com",
+  // 必須: プルーバーのURL
+  proverUrl: "https://prover.aptoslabs.com",
+  // オプション: ノードのURL（デフォルト: mainnet）
+  nodeUrl: "https://fullnode.mainnet.aptoslabs.com/v1",
+  // オプション: 一時的な鍵の有効期限（デフォルト: 1時間）
+  ephemeralKeyExpiration: 3600,
+  // オプション: 一時的な鍵の保存場所（デフォルト: localStorage）
+  ephemeralKeyStorage: "localStorage",
+});
+```
 
-Now that you have registered the JWKS, you can follow the Aptos Keyless integration guide starting from step 2.  Be sure to set the `jwkAddress` to the address of the account you used to register the JWKS when deriving the `KeylessAccount`.
+### 4. フェデレーテッドキーレスプロバイダーの初期化
 
-[Aptos Keyless Integration Guide - Step 2](../integration-guide.mdx#step-2-install-the-aptos-typescript-sdk)
+フェデレーテッドキーレスプロバイダーを初期化するには、以下のコードを使用します：
 
-</Steps>
+```typescript
+// フェデレーテッドキーレスプロバイダーを初期化
+await federatedKeylessProvider.init();
+```
+
+### 5. サインインの実装
+
+ユーザーがサインインできるようにするには、以下のコードを使用します：
+
+```typescript
+// ユーザーをサインインさせる
+await federatedKeylessProvider.signIn();
+```
+
+### 6. トランザクションの送信
+
+トランザクションを送信するには、以下のコードを使用します：
+
+```typescript
+// トランザクションペイロードを作成
+const payload = {
+  function: "0x1::coin::transfer",
+  type_arguments: ["0x1::aptos_coin::AptosCoin"],
+  arguments: [recipientAddress, amount],
+};
+
+// トランザクションを送信
+const response = await federatedKeylessProvider.signAndSubmitTransaction(payload);
+```
+
+### 7. サインアウトの実装
+
+ユーザーがサインアウトできるようにするには、以下のコードを使用します：
+
+```typescript
+// ユーザーをサインアウトさせる
+await federatedKeylessProvider.signOut();
+```
+
+## エラー処理
+
+フェデレーテッドキーレスプロバイダーは以下のエラーを投げる可能性があります：
+
+```typescript
+// エラーの種類
+export enum FederatedKeylessError {
+  // OIDCプロバイダーのエラー
+  OIDC_PROVIDER_ERROR = "OIDC_PROVIDER_ERROR",
+  // ガーディアンのエラー
+  GUARDIAN_ERROR = "GUARDIAN_ERROR",
+  // プルーバーのエラー
+  PROVER_ERROR = "PROVER_ERROR",
+  // ネットワークのエラー
+  NETWORK_ERROR = "NETWORK_ERROR",
+  // 一時的な鍵のエラー
+  EPHEMERAL_KEY_ERROR = "EPHEMERAL_KEY_ERROR",
+  // その他のエラー
+  OTHER_ERROR = "OTHER_ERROR",
+}
+```
+
+エラーを処理するには、以下のコードを使用します：
+
+```typescript
+try {
+  await federatedKeylessProvider.signIn();
+} catch (error) {
+  if (error instanceof FederatedKeylessError) {
+    switch (error.code) {
+      case FederatedKeylessError.OIDC_PROVIDER_ERROR:
+        // OIDCプロバイダーのエラーを処理
+        break;
+      case FederatedKeylessError.GUARDIAN_ERROR:
+        // ガーディアンのエラーを処理
+        break;
+      case FederatedKeylessError.PROVER_ERROR:
+        // プルーバーのエラーを処理
+        break;
+      case FederatedKeylessError.NETWORK_ERROR:
+        // ネットワークのエラーを処理
+        break;
+      case FederatedKeylessError.EPHEMERAL_KEY_ERROR:
+        // 一時的な鍵のエラーを処理
+        break;
+      default:
+        // その他のエラーを処理
+        break;
+    }
+  }
+}
+```
+
+## 完全な例
+
+以下は、フェデレーテッドキーレスプロバイダーを使用した完全な例です：
+
+```typescript
+import { FederatedKeylessProvider } from "@aptos-labs/keyless-ts";
+
+// フェデレーテッドキーレスプロバイダーを作成
+const federatedKeylessProvider = new FederatedKeylessProvider({
+  oidcProvider: {
+    name: "auth0",
+    clientId: "YOUR_CLIENT_ID",
+    redirectUri: "YOUR_REDIRECT_URI",
+    domain: "YOUR_DOMAIN",
+  },
+  guardianUrl: "https://guardian.aptoslabs.com",
+  proverUrl: "https://prover.aptoslabs.com",
+});
+
+// フェデレーテッドキーレスプロバイダーを初期化
+await federatedKeylessProvider.init();
+
+// サインインボタンのクリックハンドラー
+const handleSignIn = async () => {
+  try {
+    await federatedKeylessProvider.signIn();
+  } catch (error) {
+    console.error("サインインエラー:", error);
+  }
+};
+
+// トランザクション送信ボタンのクリックハンドラー
+const handleSendTransaction = async () => {
+  try {
+    const payload = {
+      function: "0x1::coin::transfer",
+      type_arguments: ["0x1::aptos_coin::AptosCoin"],
+      arguments: [recipientAddress, amount],
+    };
+    const response = await federatedKeylessProvider.signAndSubmitTransaction(payload);
+    console.log("トランザクション送信成功:", response);
+  } catch (error) {
+    console.error("トランザクション送信エラー:", error);
+  }
+};
+
+// サインアウトボタンのクリックハンドラー
+const handleSignOut = async () => {
+  try {
+    await federatedKeylessProvider.signOut();
+  } catch (error) {
+    console.error("サインアウトエラー:", error);
+  }
+};
+```
+
+## 次のステップ
+
+- [フェデレーテッドキーレスの仕組み](./how-federated-keyless-works)を理解する
+- [OIDCサポート](../oidc-support)の詳細を確認する
+- [フェデレーテッドキーレスの簡単な例](./simple-example)を試す

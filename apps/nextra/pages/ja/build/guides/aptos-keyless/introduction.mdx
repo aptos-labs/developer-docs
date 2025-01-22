@@ -1,25 +1,25 @@
 ---
-title: "Keyless Introduction"
+title: "キーレス入門"
 ---
 
-# Introduction
+# はじめに
 
-Keyless accounts represent a pivotal advancement within the Aptos ecosystem, revolutionizing the way users onboard and interact with decentralized applications (dApps). Aptos Keyless allows users to gain ownership of a **self-custodial** Aptos blockchain account from their existing OpenID Connect (OIDC) account(s) (e.g., Sign in with Google; Sign in with Apple), rather than from a traditional secret key or mnemonic. In a nutshell, with Aptos Keyless, a user’s blockchain account is their OIDC account. Over time, Keyless will evolve to support many IdPs who support the OIDC standard, but we will begin with support for the providers listed [here](oidc-support.mdx).
+キーレスアカウントは、Aptosエコシステム内での重要な進歩を表し、ユーザーがdApp（分散型アプリケーション）にオンボーディングし、相互作用する方法を革新します。Aptos Keylessを使用すると、ユーザーは従来の秘密鍵やニーモニックの代わりに、既存のOpenID Connect（OIDC）アカウント（例：Googleでサインイン、Appleでサインイン）から**自己管理型**のAptosブロックチェーンアカウントの所有権を得ることができます。簡単に言えば、Aptos Keylessでは、ユーザーのブロックチェーンアカウントがそのOIDCアカウントとなります。時間とともにKeylessは、OIDCスタンダードをサポートする多くのIdPをサポートするように進化しますが、まずは[こちら](oidc-support.mdx)にリストされているプロバイダーのサポートから始めます。
 
-At the core of the keyless accounts paradigm lies a deep understanding of user experience and security challenges prevalent in traditional blockchain systems. Managing private keys, the cornerstone of user identity and asset ownership, often proves cumbersome and error-prone for users, particularly those lacking technical expertise. Keyless accounts offer an elegant solution by obviating the need for users to grapple with the intricacies of private key management. Instead, users authenticate themselves through access to common social sign in options like Google, Apple, and many more. With this new system comes some important tradeoffs to understand on behalf of your users before implementing Keyless in your application. The following pages will expand on the benefits of Keyless accounts, how to integrate, the system architecture, and FAQs. For a more verbose and technical dive into Keyless accounts, please see [AIP-61-Keyless Accounts](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md).
+キーレスアカウントのパラダイムの中核には、従来のブロックチェーンシステムに存在するユーザー体験とセキュリティの課題に対する深い理解があります。ユーザーのアイデンティティと資産所有権の基礎となる秘密鍵の管理は、特に技術的な専門知識を持たないユーザーにとって、扱いにくく、エラーが発生しやすいことがよくあります。キーレスアカウントは、ユーザーが秘密鍵管理の複雑さに悩まされることなく、GoogleやAppleなどの一般的なソーシャルサインインオプションを通じて認証できるようにすることで、エレガントなソリューションを提供します。このような新しいシステムには、アプリケーションにKeylessを実装する前にユーザーに代わって理解すべき重要なトレードオフがあります。以下のページでは、キーレスアカウントの利点、統合方法、システムアーキテクチャ、よくある質問について説明します。キーレスアカウントについてより詳細な技術的な説明については、[AIP-61-Keyless Accounts](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md)をご覧ください。
 
-There are two ways to interact with Keyless accounts in the Aptos ecosystem. Developers are able to either 1) integrate the Aptos Keyless SDK directly into their dApp or 2) integrate a wallet, like Aptos Connect, that supports Keyless account creation. This documentation will focus on case #1 and more details on #2 can be found [here](https://aptosconnect.app/docs/). Please note that a direct integration of the Keyless SDK will result in user accounts being domain specific to your dApp whereas the use of a wallet integration will allow your users to carry their accounts to any application that supports that wallet.
+Aptosエコシステムでキーレスアカウントを利用する方法は2つあります。開発者は、1) Aptos Keyless SDKを直接dAppに統合するか、2) Aptos Connectのようなキーレスアカウントの作成をサポートするウォレットを統合することができます。このドキュメントではケース#1に焦点を当て、#2の詳細は[こちら](https://aptosconnect.app/docs/)で確認できます。Keyless SDKを直接統合すると、ユーザーアカウントがdAppのドメインに固有のものとなりますが、ウォレット統合を使用すると、ユーザーはそのウォレットをサポートするどのアプリケーションでもアカウントを使用できることに注意してください。
 
-Note: the Aptos Keyless SDK and Aptos Connect are representative examples of the aforementioned product experience, but developers in our ecosystem are building alternatives, like a Keyless Unity SDK and alternative wallet products with Keyless integration.
+注：Aptos Keyless SDKとAptos Connectは上記の製品体験の代表的な例ですが、KeylessのUnity SDKやKeyless統合を備えた代替ウォレット製品など、エコシステムの開発者が代替品を構築しています。
 
-## Aptos Keyless Benefits
+## Aptos Keylessの利点
 
-Keyless accounts are revolutionary to users for the following reasons:
+キーレスアカウントは、以下の理由でユーザーにとって革新的です：
 
-1. **Simplified login user experience**: "1-click" account creation via familiar Web2 logins like Sign In with Google.
-2. **Enhanced dApp user experience**: Ability to transact on the Aptos blockchain without needing to navigate away from the application experience to download a wallet.
-3. **Secure key management**: Requires no manual secret key management by the user. Users sign transactions with the JSON Web Token (JWT) token issued by OIDC providers. As such, blockchain account access is synonymous with access to one’s OIDC account
-4. **Improved account recovery**: Web2-like recovery flows are available to regain access to one’s blockchain account in case the user ever loses access to their OIDC account.
-5. **Seamless cross-device experiences**: Users log in with their OIDC account no matter what device they are on - no need to download wallet software on each device, import their keys and encrypt them with a password, which must be maintained.
+1. **簡素化されたログインユーザー体験**：Googleでサインインなどの馴染みのあるWeb2ログインを通じた「1クリック」でのアカウント作成。
+2. **向上したdAppユーザー体験**：ウォレットをダウンロードするためにアプリケーション体験から離れることなく、Aptosブロックチェーンでトランザクションを実行できる。
+3. **セキュアなキー管理**：ユーザーによる手動の秘密鍵管理が不要。ユーザーはOIDCプロバイダーが発行したJSON Web Token（JWT）トークンでトランザクションに署名。そのため、ブロックチェーンアカウントへのアクセスはOIDCアカウントへのアクセスと同義。
+4. **改善されたアカウントリカバリー**：ユーザーがOIDCアカウントへのアクセスを失った場合に、ブロックチェーンアカウントへのアクセスを取り戻すためのWeb2のようなリカバリーフローが利用可能。
+5. **シームレスなクロスデバイス体験**：ユーザーは使用するデバイスに関係なくOIDCアカウントでログイン - 各デバイスでウォレットソフトウェアをダウンロードし、キーをインポートしてパスワードで暗号化する必要がない。
 
-With these benefits, come some important structural components of Keyless accounts for developers to be aware of. You can see more on this in our FAQs.
+これらの利点とともに、開発者が認識しておくべきキーレスアカウントの重要な構造的コンポーネントがあります。詳細はFAQをご覧ください。

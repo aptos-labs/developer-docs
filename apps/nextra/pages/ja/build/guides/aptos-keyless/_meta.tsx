@@ -1,23 +1,23 @@
 export default {
   introduction: {
-    title: "Introduction",
+    title: "はじめに",
   },
   "oidc-support": {
-    title: "OIDC Support",
+    title: "OIDCサポート",
   },
   "integration-guide": {
-    title: "Integration Guide",
+    title: "統合ガイド",
   },
   "simple-example": {
-    title: "Simple Example",
+    title: "簡単な例",
   },
   "how-keyless-works": {
-    title: "How Keyless Works",
+    title: "キーレスの仕組み",
   },
   other: {
-    title: "Terminology and FAQ",
+    title: "用語集とよくある質問",
   },
   "federated-keyless": {
-    title: "Federated Keyless",
+    title: "フェデレーテッドキーレス",
   },
 };
