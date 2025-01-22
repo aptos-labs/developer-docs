@@ -1,0 +1,31 @@
+# 真偽値
+
+`bool`はMoveの真偽値`true`と`false`のためのプリミティブ型です。
+
+## リテラル
+
+`bool`のリテラルは`true`または`false`です。
+
+## 演算
+
+### 論理演算
+
+`bool`は3つの論理演算をサポートしています：
+
+| 構文                     | 説明                    | 同等の式                                                         |
+| ------------------------ | ----------------------- | --------------------------------------------------------------- |
+| `&&`                     | 短絡論理積（AND）      | `p && q`は`if (p) q else false`と同等                           |
+| <code>&vert;&vert;</code>| 短絡論理和（OR）       | <code>p &vert;&vert; q</code>は`if (p) true else q`と同等       |
+| `!`                      | 論理否定（NOT）        | `!p`は`if (p) false else true`と同等                            |
+
+### 制御フロー
+
+`bool`値はMoveのいくつかの制御フロー構文で使用されます：
+
+- [`if (bool) { ... }`](conditionals.mdx)
+- [`while (bool) { .. }`](loops.mdx)
+- [`assert!(bool, u64)`](abort-and-assert.mdx)
+
+## 所有権
+
+言語に組み込まれている他のスカラー値と同様に、真偽値は暗黙的にコピー可能です。つまり、[`copy`](variables.mdx#move-and-copy)のような明示的な命令なしでコピーできます。

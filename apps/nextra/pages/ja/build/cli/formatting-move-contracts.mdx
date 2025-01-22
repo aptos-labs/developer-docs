@@ -1,0 +1,43 @@
+# Moveコントラクトのフォーマット
+
+Moveコントラクトのフォーマットには、`aptos move format`コマンドを使用します。
+
+## 使用方法
+
+```bash
+aptos move format [OPTIONS] --package-dir <PACKAGE_DIR>
+```
+
+## オプション
+
+| オプション | 説明 |
+|-----------|-------------|
+| `--check` | フォーマットの問題を確認するだけで、修正は行いません |
+| `-h, --help` | ヘルプ情報を表示します |
+| `--package-dir <PACKAGE_DIR>` | Move パッケージのディレクトリを指定します |
+
+## 例
+
+### パッケージのフォーマット
+
+```bash
+aptos move format --package-dir hello_blockchain/
+```
+
+### フォーマットの問題を確認
+
+```bash
+aptos move format --check --package-dir hello_blockchain/
+```
+
+## 詳細
+
+`aptos move format`コマンドは、指定されたパッケージディレクトリ内のすべてのMoveソースファイルをフォーマットします。このコマンドは以下の処理を行います：
+
+- インデントの修正
+- 空白の正規化
+- 改行の正規化
+- コメントのフォーマット
+- その他のコードスタイルの修正
+
+`--check`オプションを使用すると、実際の変更を加えることなく、フォーマットの問題を確認することができます。これはCIパイプラインでコードスタイルを検証する際に特に便利です。

@@ -1,0 +1,55 @@
+---
+title: "Move - Web3言語とランタイム"
+---
+
+# Move - Web3言語とランタイム
+
+Aptosブロックチェーンは、コンセンサスプロトコルを実行するバリデータノードで構成されています。コンセンサスプロトコルは、トランザクションの順序とMove Virtual Machine (MoveVM)で実行された際の出力について合意します。各バリデータノードは、トランザクションと現在のブロックチェーン台帳の状態をVMへの入力として変換します。MoveMVはこの入力を処理して、変更セットまたはストレージデルタを出力として生成します。コンセンサスが出力に合意してコミットすると、それは公開されます。このガイドでは、Moveの主要な概念とそれらがAptosの開発にどのように適用されるかを紹介します。
+
+## Moveとは？
+
+Moveは、**希少性**と**アクセス制御**を重視するWeb3向けの安全でセキュアなプログラミング言語です。Move内のすべての資産は、_リソース_として表現または保存できます。構造体は誤って複製または削除できないため、**希少性**がデフォルトで強制されます。バイトコードレベルで明示的に_copy_として定義された構造体のみが複製でき、_drop_として定義された構造体のみが削除できます。
+
+**アクセス制御**は、アカウントの概念とモジュールのアクセス権限の両方から来ています。Moveのモジュールは、ライブラリまたは資産を作成、保存、転送できるプログラムのいずれかです。Moveは、パブリックなモジュール関数のみが他のモジュールからアクセスできることを保証します。構造体がパブリックなコンストラクタを持っていない限り、それを定義するモジュール内でのみ構築できます。同様に、構造体内のフィールドは、そのモジュール内またはパブリックなアクセサとセッターを介してのみアクセスおよび変更できます。さらに、_key_で定義された構造体は、それを定義するモジュール内でのみグローバルストレージに保存および読み取りができます。_store_を持つ構造体は、それを定義するモジュールの内外で、別の_store_または_key_構造体内に保存できます。
+
+Moveでは、トランザクションの送信者は_signer_として表現され、これは特定のアカウントの検証済み所有者です。signerはMoveで最高レベルの権限を持ち、アカウントにリソースを追加できる唯一のエンティティです。さらに、モジュール開発者は、リソースへのアクセスやアカウント内に保存された資産の変更に、signerの存在を要求することができます。
+
+## 他のVMとの比較
+
+|                             | Aptos / Move                                                 | Solana / SeaLevel                                           | EVM                                                        | Sui / Move                            |
+| --------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------- |
+| データストレージ            | グローバルアドレスまたは所有者のアカウント内に保存          | プログラムに関連付けられた所有者のアカウント内に保存        | スマートコントラクトに関連付けられたアカウント内に保存     | グローバルアドレスに保存              |
+| 並列化                      | Aptos内で実行時に並列化を推論可能                           | アクセスするすべてのデータの指定が必要                      | 現在は直列、本番環境では未実装                             | アクセスするすべてのデータの指定が必要 |
+| トランザクションの安全性    | シーケンス番号                                               | トランザクションの一意性                                    | nonce（シーケンス番号に類似）                              | トランザクションの一意性              |
+| 型安全性                    | モジュール構造体とジェネリクス                               | プログラム構造体                                            | コントラクト型                                             | モジュール構造体とジェネリクス        |
+| 関数呼び出し                | 静的ディスパッチ                                             | 静的ディスパッチ                                            | 動的ディスパッチ                                           | 静的ディスパッチ                      |
+| 認証されたストレージ        | [はい](../glossary.mdx#merkle-trees)                         | いいえ                                                      | はい                                                       | いいえ                                |
+| オブジェクトのグローバルアクセス性 | はい                                                   | 該当なし                                                    | 該当なし                                                   | いいえ、他のオブジェクトに配置可能    |
+
+## Aptos Moveの機能
+
+各MoveMVのデプロイメントは、アダプターレイヤーを通じてコアMoveMVに追加機能を拡張する機能を持っています。さらに、MoveMVは、コンピュータがオペレーティングシステムを持つのと同様に、標準的な操作をサポートするフレームワークを持っています。
+
+Aptos Moveアダプターの機能には以下が含まれます：
+
+- オンチェーン上の単一アドレスに保存された異種リソースのセットへのグローバルアクセスを提供する[Move Objects](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-10.md)
+- スケーラブルでプライバシーを保護するdappsを構築するための[暗号プリミティブ](../../build/smart-contracts/cryptography.mdx)
+- DAO（分散型自律組織）、共有アカウント、またはオンチェーン上の複雑なアプリケーションの構築に有用な、オンチェーン上のプログラム可能なアカウントを提供する[リソースアカウント](../../build/smart-contracts/resource-accounts.mdx)
+- アカウント内でスケーラブルにキー・バリューデータを保存するための[テーブル](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/table.move)
+- ユーザーからの入力なしでトランザクションの同時実行を可能にする[Block-STM](https://medium.com/aptoslabs/block-stm-how-we-execute-over-160k-transactions-per-second-on-the-aptos-blockchain-3b003657e4ba)による並列性
+- 単一のトランザクションで複数の異なる`signer`エンティティを送信できるマルチエージェントフレームワーク
+
+Aptosフレームワークには多くの便利なライブラリが付属しています：
+
+- [AIP-11](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-11.md)と[AIP-22](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-22.md)で定義された[Aptos Token Objects](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-token-objects/sources)標準で、軽量なスマートコントラクト開発またはまったく開発なしで相互運用可能なNFTを作成可能
+- 簡単なモジュールを公開することで型安全なコインを作成できる[Coin標準](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)
+- [AIP-21](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-21.md)で定義された、より良いプログラム性と制御でコインの概念を近代化する[Fungible asset標準](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move)
+- [ステーキング](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/staking_contract.move)と[委任](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/delegation_pool.move)フレームワーク
+- 与えられた型のアドレス、モジュール、構造体名を実行時に識別する[`type_of`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/type_info.move)サービス
+- 実際の現在のUnix時間にマッピングされる単調増加するクロックを提供する[タイムスタンプサービス](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/timestamp.move)
+
+これらは頻繁に更新されています。
+
+## その他のリソース
+
+開発者は[Move開発者ページ](move.mdx)から、Moveの旅を始めることができます。

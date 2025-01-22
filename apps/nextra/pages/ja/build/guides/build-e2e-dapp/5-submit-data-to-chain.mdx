@@ -1,0 +1,167 @@
+# チェーンへのデータ送信
+
+[Aptos上でのエンドツーエンドdappの構築](../build-e2e-dapp.mdx)チュートリアルの5番目のチャプターでは、チェーンにデータを送信します。
+
+接続されたアカウントがまだリストを作成していない場合に表示される**Add new list**ボタンができました。まだリストを作成する機能がないので、その機能を追加しましょう。
+
+1. まず、ウォレットアダプタープロバイダーには`signAndSubmitTransaction`関数があります。以下のように更新して取得しましょう：
+
+```tsx filename="App.tsx"
+const { account, signAndSubmitTransaction } = useWallet();
+```
+
+2. 新しいリストボタンに`onClick`イベントを追加します：
+
+```tsx filename="App.tsx"
+<Button
+  onClick={addNewList}
+  block
+  type="primary"
+  style={{ height: "40px", backgroundColor: "#3f67ff" }}
+>
+  Add new list
+</Button>
+```
+
+3. `@aptos-labs/wallet-adapter-react`からのインポート文を更新して、`InputTransactionData`タイプもインポートします：
+
+```tsx filename="App.tsx"
+import {
+  useWallet,
+  InputTransactionData,
+} from "@aptos-labs/wallet-adapter-react";
+```
+
+4. `addNewList`関数を追加します：
+
+```tsx filename="App.tsx"
+
+const addNewList = async () => {
+  if (!account) return [];
+
+   const transaction:InputTransactionData = {
+      data: {
+        function:`${moduleAddress}::todolist::create_list`,
+        functionArguments:[]
+      }
+    }
+  try {
+    // トランザクションに署名してチェーンに送信
+    const response = await signAndSubmitTransaction(transaction);
+    // トランザクションの完了を待つ
+    await aptos.waitForTransaction({transactionHash:response.hash});
+    setAccountHasList(true);
+  } catch (error: any) {
+    setAccountHasList(false);
+  }
+};
+```
+
+5. 新しい関数も`moduleAddress`を使用するので、`fetchList`関数のスコープからグローバルスコープに移動して、グローバルで使用できるようにしましょう。
+
+`fetchList`関数で以下の行を探します：
+
+```tsx filename="App.tsx"
+// 自分のアドレスに置き換えてください
+const moduleAddress =
+  "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
+```
+
+そしてメイン`App`関数の外側、`provider`定数の宣言の直下に移動します：
+
+```tsx filename="App.tsx"
+export const aptos = new Aptos();
+// moduleAddressをあなたのモジュールアカウントアドレスに変更してください
+export const moduleAddress =
+  "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
+```
+
+**`addNewList`関数のコードを見ていきましょう。**
+
+まず、ウォレットプロバイダーの`account`プロパティを使用して、アプリにアカウントが接続されていることを確認します。
+
+次に、チェーンに送信するトランザクションデータを構築します：
+
+```tsx filename="App.tsx"
+const transaction:InputTransactionData = {
+      data: {
+        function:`${moduleAddress}::todolist::create_list`,
+        functionArguments:[]
+      }
+    }
+```
+
+- `function` - モジュールアドレス、モジュール名、関数名から構築されます。
+- `functionArguments` - 関数が期待する引数で、この場合は引数がありません。
+
+次に、トランザクションペイロードを送信し、そのレスポンスを待ちます。`signAndSubmitTransaction`関数から返されるレスポンスにはトランザクションハッシュが含まれています。トランザクションがチェーン上で完全に実行されるまでに時間がかかる可能性があり、また正常に実行されたことを確認したいので、`waitForTransaction`を使用します。その後でのみ、ローカルの`accountHasList`ステートを`true`に設定できます。
+
+6. アプリをテストする前に、UIを少し調整して、トランザクションを待っている間に表示されるSpinnerコンポーネントを追加しましょう。
+   トランザクションが進行中かどうかを追跡するローカルステートを追加します：
+
+```tsx filename="App.tsx"
+const [transactionInProgress, setTransactionInProgress] =
+  useState<boolean>(false);
+```
+
+7. `addNewList`関数を更新してローカルステートを更新します：
+
+```tsx filename="App.tsx"
+const addNewList = async () => {
+  if (!account) return [];
+  setTransactionInProgress(true);
+  const transaction:InputTransactionData = {
+      data: {
+        function:`${moduleAddress}::todolist::create_list`,
+        functionArguments:[]
+      }
+    }
+  try {
+    // トランザクションに署名してチェーンに送信
+    const response = await signAndSubmitTransaction(transaction);
+    // トランザクションの完了を待つ
+    await aptos.waitForTransaction({transactionHash:response.hash});
+    setAccountHasList(true);
+  } catch (error: any) {
+    setAccountHasList(false);
+  } finally {
+    setTransactionInProgress(false);
+  }
+};
+```
+
+8. `antd`からのインポート文を更新して`Spin`もインポートします：
+
+```tsx filename="App.tsx"
+import { Layout, Row, Col, Button, Spin } from "antd";
+```
+
+9. UIを以下のように更新します：
+
+```tsx filename="App.tsx"
+return (
+  <>
+    ...
+    <Spin spinning={transactionInProgress}>
+      {!accountHasList && (
+        <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
+          <Col span={8} offset={8}>
+            <Button
+              onClick={addNewList}
+              block
+              type="primary"
+              style={{ height: "40px", backgroundColor: "#3f67ff" }}
+            >
+              Add new list
+            </Button>
+          </Col>
+        </Row>
+      )}
+    </Spin>
+  </>
+);
+```
+
+これでアプリに移動して、新しいリストを追加できます！
+
+アカウントがリストを作成した場合のユーザーインターフェースをまだ処理できるようにしていないので、次のチャプター6の[タスクの処理](6-handle-tasks.mdx)でそれを行います。

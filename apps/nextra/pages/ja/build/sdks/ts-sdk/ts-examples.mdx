@@ -1,0 +1,64 @@
+---
+title: "TypeScript SDKのサンプルコード"
+---
+
+import { Steps } from 'nextra/components';
+
+# TypeScript SDKのサンプルコード
+
+SDKの使用方法の基本概念を説明するサンプルコードについては、以下を参照してください：
+ - [データの取得](fetch-data-via-sdk.mdx)
+ - [トランザクションの構築、シミュレーション、送信](building-transactions.mdx)
+
+以下は、個々のユースケースに適したその他のリソースです。
+
+## コードスニペット
+
+SDKリポジトリの[`examples`フォルダ](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples)には、ニーズに合わせてカスタマイズできる数十のコードスニペットがあります。
+
+### サンプルの実行方法
+
+サンプルスクリプトを実行するには：
+<Steps>
+### [aptos-ts-sdkリポジトリ](https://github.com/aptos-labs/aptos-ts-sdk)をクローン
+
+```bash filename="Terminal"
+git clone https://github.com/aptos-labs/aptos-ts-sdk.git
+```
+
+### パッケージのトップレベルから、すべての依存関係をインストール
+
+```bash filename="Terminal"
+pnpm install
+```
+
+### パッケージをビルド
+
+```bash filename="Terminal"
+pnpm build
+```
+
+### 実行したいサンプルのフォルダに移動
+
+```bash filename="Terminal"
+cd examples/typescript
+```
+
+### ローカルの依存関係をインストール
+
+```bash filename="Terminal"
+pnpm install
+```
+
+### サンプルを実行
+
+```bash filename="Terminal"
+pnpm run simple_transfer
+```
+</Steps>
+
+## 参考になるリファレンスコード
+
+ - [SDKのエンドツーエンドテスト](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/tests/e2e) - SDKを使用する最も包括的なコードセットです。
+ - [SDKのソースコード](https://github.com/aptos-labs/aptos-ts-sdk/tree/main) - 各関数の動作を説明するインラインコメントが含まれています。
+ - [SDKのリファレンスドキュメント](https://aptos-labs.github.io/aptos-ts-sdk/) - 検索機能を備えたインラインドキュメントの別の表示方法です。

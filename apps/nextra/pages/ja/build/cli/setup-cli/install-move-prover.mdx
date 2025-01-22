@@ -1,0 +1,66 @@
+import { Callout } from 'nextra/components'
+
+# Move Proverのインストール
+
+[Move Prover](../../smart-contracts/prover.mdx)を使用したい場合は、[CLIバイナリをインストール](.)した後にMove Proverの依存関係をインストールする必要があります。
+依存関係のインストール方法は2つあります。
+
+## Aptos CLIを使用したインストール（推奨）
+
+1. [最新のAptos CLIバイナリをインストール](../install-cli/install-cli-mac.mdx)してください。
+
+2. `aptos update prover-dependencies`コマンドを実行します。
+
+<Callout type="info">
+  環境変数`BOOGIE_EXE`と`Z3_EXE`はインストール後に自動的に設定されます。これらの環境変数が
+  現在の環境で有効になっていることを確認してください。
+</Callout>
+
+## `aptos-core`を使用したインストール（非推奨）
+
+1. [ソースからAptosをビルドする](../../../network/nodes/building-from-source.mdx)の手順に従ってください。
+
+2. チェックアウトしたaptos-coreディレクトリで、追加のMoveツールをインストールします：
+   <details>
+   <summary>Linux / macOS</summary>
+
+   1. ターミナルセッションを開きます。
+   2. 開発環境セットアップスクリプトを実行します：`./scripts/dev_setup.sh -yp`
+   3. 現在のシェル環境を更新します：`source ~/.profile`
+
+   <Callout type="info" emoji="ℹ️">
+   `dev_setup.sh -p`は、インストールされたMove Proverツールをサポートするために`~/.profile`を環境変数で更新します。お使いのシェルに応じて、`.bash_profile`や`.zprofile`などの他のセットアップファイルの設定が必要な場合があります。
+   </Callout>
+
+   </details>
+   <details>
+   <summary>Windows</summary>
+
+   1. 管理者として PowerShellターミナルを開きます。
+   2. 開発環境セットアップスクリプトを実行します：`PowerShell -ExecutionPolicy Bypass -File ./scripts/windows_dev_setup.ps1 -y`
+
+   </details>
+
+
+インストール後、Move Proverを実行して[サンプル](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_prover)を検証できます：
+   ```bash filename="Terminal"
+   aptos move prove --package-dir aptos-move/move-examples/hello_prover/
+   ```
+
+## トラブルシューティング
+
+コマンドの実行時に以下のようなエラーが発生した場合は、Aptos CLIのバージョンを確認するか、複数のバージョンがインストールされている場合は正しい`aptos`ツールを使用しているか確認してください。
+
+```bash filename="Terminal
+error: unexpected token
+    ┌─ ~/.move/https___github_com_aptos-labs_aptos-core_git_main/aptos-move/framework/aptos-framework/sources/randomness.move:515:16
+    │
+515 │         for (i in 0..n) {
+    │             -  ^ Expected ')'
+    │             │
+    │             To match this '('
+
+{
+  "Error": "Move Prover failed: exiting with model building errors"
+}
+```

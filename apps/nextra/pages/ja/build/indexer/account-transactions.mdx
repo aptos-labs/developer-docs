@@ -1,0 +1,63 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# アカウントトランザクションデータの取得
+
+`AccountTransactionsData`は、指定されたアカウントアドレスに影響を与えるトランザクションの`transaction_version`を降順で取得します。`transaction_version`は、オンチェーン上の各トランザクションに付与される一意のIDで、1ずつ増加していきます。
+
+このクエリは、監査、追跡、または表示目的でトランザクションの履歴ログを必要とするアプリケーションにとって不可欠です。
+
+<Callout type="info">
+実験して結果を確認してみましょう！以下の変数でアドレス、制限、オフセットを変更してクエリをカスタマイズできます。
+</Callout>
+
+<GraphQLEditor
+  query={`query GetAccountTransactionsData($address: String, $limit: Int) {
+  account_transactions(
+    where: { account_address: { _eq: $address } }
+    order_by: {transaction_version: desc}
+    limit: $limit
+  ) {
+    transaction_version
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "limit": 10
+}`}
+/>
+
+#### 変数:
+- `$address`: **String** - トランザクションデータを照会するブロックチェーンアカウントアドレス。例: `"0x1abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"`
+- `$limit`: **整数** - 返すトランザクションバージョンの最大数を指定します。取得するデータ量を管理するのに役立ちます。例: `10`
+- `$offset`: **整数** - トランザクションバージョンの取得を開始するオフセット。結果のページネーションに便利です。例: `0`
+<br/>
+
+# 最近のトランザクションの取得
+上記のクエリの便利なバリエーションとして、特定の`transaction_version`以降に発生したトランザクションのみに結果を制限します。すべての結果は`$gt`より大きい`transaction_version`を持ちます。
+
+<GraphQLEditor
+  query={`query GetAccountTransactionsData($address: String, $limit: Int, $gt: bigint) {
+  account_transactions(
+    where: { account_address: { _eq: $address }, transaction_version: {_gt: $gt} }
+    order_by: {transaction_version: desc}
+    limit: $limit
+  ) {
+    transaction_version
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "limit": 10,
+  "gt": 599296148
+}`}
+/>
+
+#### 変数:
+- `$address`: **String** - トランザクションデータを照会するブロックチェーンアカウントアドレス。例: `"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"`
+- `$limit`: **整数** - 返すトランザクションバージョンの最大数を指定します。結果を管理可能なサイズに制限するのに役立ちます。例: `10`
+- `$gt`: **bigint** - このトランザクションバージョン番号より大きいトランザクションを取得します。トランザクションバージョンは、トランザクションごとに順次増加する番号です。
+トランザクションバージョン0は最初のトランザクション（ジェネシストランザクション）で、トランザクションバージョン100はブロックチェーン上の101番目のトランザクションを表します。
+例: `599296148`

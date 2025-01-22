@@ -1,0 +1,64 @@
+import { Callout, Steps } from 'nextra/components'
+
+# WindowsでのAptos CLIのインストール
+
+Windowsの場合、Aptos CLIツールをインストールする最も簡単な方法はPythonスクリプトを使用することです。それが動作しない場合は、プリコンパイル済みバイナリを使用して手動でインストールすることもできます。プリコンパイル済みバイナリによるアプローチは、アップデートが非常に手動的になるため、一般的にはお勧めしません。
+
+# Pythonスクリプトを使用したインストール
+<Steps>
+### Python 3.6以上がインストールされていることを`python3 --version`を実行して確認します
+
+   python3がインストールされていない場合は、[python.org](http://python.org)でインストール手順を確認できます。
+
+### PowerShellでインストールスクリプトを実行します：
+
+   ```powershell filename="Terminal"
+   Invoke-WebRequest -Uri "https://aptos.dev/scripts/install_cli.py" -OutFile "$env:TEMP\install_cli.py"; python "$env:TEMP\install_cli.py"
+   ```
+
+   <Callout type="warning">
+   `ModuleNotFoundError: No module named packaging`というエラーが表示される場合は、`pip3 install packaging`を実行して`packaging`をインストールしてから、この手順を繰り返してください。
+   </Callout>
+
+   ターミナルに「PATHを更新するために以下のコマンドを実行してください：」という指示が表示されるはずです。
+### ターミナルからPATHを更新するコマンドをコピーして実行します。
+
+   `setx PATH "%PATH%;C:\Users\<あなたのアカウント名>\.aptoscli\bin"`のような形式になっているはずです。
+
+### 新しいターミナルを開いて`aptos help`を実行し、スクリプトがインストールされていることを確認します。
+   - CLIで実行できるコマンドのリストが表示されるはずです。
+   - 今後、各コマンドの詳細な使い方を知るのに役立ちます。
+</Steps>
+
+<Callout type="info" emoji="ℹ️">
+スクリプトを使用してAptos CLIを最新バージョンに更新したい場合は、`aptos update`を実行できます。
+</Callout>
+
+# プリコンパイル済みバイナリを使用したインストール（代替方法）
+
+<Steps>
+### [Aptos CLIのリリースページ](https://github.com/aptos-labs/aptos-core/releases?q=cli&expanded=true)に移動します。
+### "Assets"を展開してプリコンパイル済みバイナリを確認します。
+### Windows用のzipファイルをダウンロードします。
+   - `aptos-cli-<バージョン>-Windows-x86_64.zip`のような名前になっています
+   - ダウンロード時に不審なファイルという警告が表示される可能性がありますが、無視して構いません。
+### ダウンロードしたファイルを解凍します。
+   - 今後`aptos`を呼び出したいフォルダにファイルを移動します。
+### 実行ファイルのパスを右クリックしてコピーします。
+   例：`C:\Users\<ユーザー名>\Downloads\aptos-cli-3.1.0-Windows-x86_64\aptos.exe`
+   <Callout type="info" emoji="ℹ️">
+   今後Aptos CLIの呼び出しを簡単にするために、このパスをPATH環境変数に追加することをお勧めします。
+   </Callout>
+### スタートメニューからPowerShellを開きます。
+### `help`コマンドを実行してインストールを確認します。
+   先ほどコピーしたパスを使用してAptos CLIを呼び出します。
+   例：`C:\Users\<ユーザー名>\Downloads\aptos-cli-3.1.0-Windows-x86_64\aptos.exe help`
+</Steps>
+
+<Callout type="info" emoji="ℹ️">
+プリコンパイル済みバイナリでインストールした場合、Aptos CLIを更新するには、既存のインストールを削除してから、インストール手順を再度実行します。
+</Callout>
+
+<Callout type="warning">
+上記のいずれの方法も動作しない場合は、こちらの手順に従ってCLIをソースからビルドする必要があります：[特定バージョンのAptos CLIのインストール（上級者向け）](install-cli-specific-version.mdx)
+</Callout>

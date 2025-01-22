@@ -1,0 +1,129 @@
+---
+title: "Wallet Adapter Plugin for SDK Wallet Builders"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Wallet Adapter Plugin for SDK Wallets
+
+A wallet adapter plugin allows dapps to use your wallet. With the AIP-62 Wallet standard, dapps can simply update their version of `aptos-wallet-adapter` to connect to newly added Wallet plugins. 
+
+Implementing a wallet plugin for an SDK wallet which can be imported via npm has three main steps:
+
+1. Implement a wallet adapter plugin for your SDK wallet.
+2. Publish your plugin on npm.
+3. Update the `aptos-wallet-adapter` package to let dapps know about your wallet. 
+
+## 1. Implement the Wallet Adapter Plugin.
+
+You can use the [`wallet-standard`](https://github.com/aptos-labs/wallet-standard) repo’s example to implement an [AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md) compatible wallet adapter plugin that dapps can automatically recognize.
+
+<Callout type="info">
+For an example of how to implement the Wallet Adapter plugin, see the [Wallet Adapter Demo dapp](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example). Specifically, [`standardWallet.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/utils/standardWallet.ts) contains the plugin implementation, and [`page.tsx`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/app/page.tsx) has the React components.
+</Callout>
+
+<Steps>
+
+### Create a new typescript repository.
+
+### Copy the [`wallet-standard` example](https://github.com/aptos-labs/wallet-standard/blob/main/example/wallet.ts) into that new repo.
+
+### Follow the instructions in that example to make it use your wallet to execute the AIP-62 functions.
+
+<Callout type="info">
+The full list of required functions for AIP-62 compatible wallets can be found [here](https://github.com/aptos-labs/wallet-standard/blob/38defe159b8641ff1763c4db61827c78ab448dab/src/detect.ts#L16).
+</Callout>
+</Steps>
+
+## Test your changes by:
+
+<Steps>
+### Clone the [`aptos-wallet-adapter`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main) repository.
+### Navigate to [`aptos-wallet-adapter/apps/nextjs-example/src/utils/standardWallet.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/utils/standardWallet.ts) in the example dapp.
+### Replace [`standardWallet.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/utils/standardWallet.ts) with your implementation of the AIP-62 standard.
+1. You will have to update the import in [`aptos-wallet-adapter/apps/nextjs-example/src/app/page.tsx`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/app/page.tsx) to use your Wallet instead of `MyWallet`.
+2. For local testing purposes, you can leave the `registerWallet` code, but SDK wallets do not need that once they have been added to the `aptos-wallet-standard` core package.
+### Run a local version of the dapp by following the instructions in the [README.md](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example).
+### Click “Connect a Wallet”
+You should see your wallet on the list of connections.
+### Connect to your wallet.
+  1. You can then use the demo dapp features to verify your other wallet features work as expected.
+  2. This simulates how a real dapp will interact with your wallet.
+</Steps>
+
+## 2. Once tested, publish a new npm package for your SDK wallet code by following [this guide](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages). (Ex. [AptosConnect](https://www.npmjs.com/package/@aptos-connect/wallet-adapter-plugin))
+
+## 3. Update [`wallet-adapter-core`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core) to know about your extension.
+
+In order for dapp users who are not already using your wallet to get the option to create an account with your wallet, you need to update [`wallet-adapter-core`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core) with your browser extension’s download link. 
+
+<Steps>
+
+### Fork the [`aptos-wallet-adapter`](https://github.com/aptos-labs/aptos-wallet-adapter) monorepo. ([Link to fork](https://github.com/aptos-labs/aptos-wallet-adapter/fork))
+
+### Open your fork in a local editor such as VSCode.
+
+### Create a new branch for your changes.
+
+```bash filename="Terminal"
+git checkout -b your-wallet
+```
+
+### Navigate to [`packages/wallet-adapter-core/src/AIP62StandardWallets`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core/src/AIP62StandardWallets).
+
+### Import your SDK wallet npm package.
+
+```bash filename="Terminal"
+pnpm i @yourpackage
+```
+
+### Import your wallet in [`sdkWallets.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/sdkWallets.ts).
+
+For example with AptosConnect:
+
+```tsx filename="Example.tsx"
+import { AptosConnectWallet } from "@aptos-connect/wallet-adapter-plugin";
+```
+
+### Add code to push an instance of your wallet to `sdkWallets` inside `getSDKWallets` (in `sdkWallets.ts`).
+
+```tsx filename="Example.tsx"
+sdkWallets.push(new YourWallet(dappConfig));
+```
+
+<Callout type="warning">
+Some wallets may have custom logic required to make sure the right wallet is connected when the user clicks to “sign in” with your Wallet. 
+
+Ex. T Wallet has different Wallet plugins for mainnet and devnet connections.
+</Callout>
+
+### In `type.ts`, update the type `AvailableWallets` to include your wallet’s name.
+
+```tsx filename="Example.tsx"
+export type AvailableWallets = "Nightly" | "Petra" | "T wallet" | "Your Wallet's Name";
+```
+
+### Update the [README.md](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/README.md) at the top-level of the `aptos-wallet-adapter` to include your wallet in the list of AIP-62 compatible wallets.
+
+### Commit and push your changes to your fork.
+
+<Callout type="info">
+If you have pushed your changes to your fork, a green button should appear at the top of the [`aptos-wallet-adapter`](https://github.com/aptos-labs/aptos-wallet-adapter) repo asking if you would like to create a pull request.
+</Callout>
+
+### Follow [this guide](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/CONTRIBUTING.md#creating-a-pull-request) to open a pull request for the [`aptos-wallet-adapter`](https://github.com/aptos-labs/aptos-wallet-adapter) repo.
+
+<Callout type="info">
+Once the changes are merged, dapps that update their `aptos-wallet-adapter` package versions will now be able to see your Wallet.
+</Callout>
+
+</Steps>
+
+## Resources
+- Wallet Adapter Demo App
+    - [Live site](https://aptos-labs.github.io/aptos-wallet-adapter)
+    - [Source code](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example)
+    - See [`standardWallet.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/src/utils/standardWallet.ts) for an example implementation of an AIP-62 compatible wallet-adapter plugin.
+- [`wallet-standard`](https://github.com/aptos-labs/wallet-standard) source code.
+- [`wallet-adapter-core`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core) source code.
+- [AIP-62 standard](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md).

@@ -1,0 +1,46 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# アカウントが所有するNFTの取得
+
+`GetAccountNfts`は、指定されたアカウントアドレスが所有するNFTのリストを取得します。このクエリは、コレクションの詳細、説明、一意の識別子など、各トークンに関する包括的な情報を提供します。ユーザーのNFTポートフォリオを表示したり、NFT市場の保有状況に関する洞察を提供したりする必要があるプラットフォームに最適です。
+
+<Callout type="info">
+自分で試してみましょう！エディターの下部で変数をカスタマイズできます。
+</Callout>
+
+<GraphQLEditor
+  query={`query GetAccountNfts($address: String) {
+  current_token_ownerships_v2(
+    where: {owner_address: {_eq: $address}, amount: {_gt: "0"}}
+  ) {
+    current_token_data {
+      collection_id
+      largest_property_version_v1
+      current_collection {
+        collection_id
+        collection_name
+        description
+        creator_address
+        uri
+        __typename
+      }
+      description
+      token_name
+      token_data_id
+      token_standard
+      token_uri
+      __typename
+    }
+    owner_address
+    amount
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0x8824ebb6e0d60656f6d4d5bbc408805d9ca6b984aad78b16f42b1dae545d6762"
+}`}
+/>
+
+#### 変数:
+- `$address`: **String** - NFTデータを照会したいAptosアカウントアドレス。例: `"0x8824ebb6e0d60656f6d4d5bbc408805d9ca6b984aad78b16f42b1dae545d6762"`

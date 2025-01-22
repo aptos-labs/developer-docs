@@ -1,0 +1,470 @@
+---
+title: "Wallet Adapter for Dapp Builders"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Wallet Adapter for Dapp Builders
+
+Aptos provides a React `Provider` and `Context` for connecting Aptos wallets to your dapp. This `Provider` allows you to specify which Wallets you want to allow connections to. Then you can use the `Provider` to look up account information and sign transactions / messages. 
+
+This provides a standard interface for using all Aptos wallets, and allows new wallets to easily be supported just by updating your React Wallet Adapter dependency version. 
+
+## Using the React `Provider` and `Context`
+
+<Steps>
+
+### Install `@aptos-labs/wallet-adapter-react`.
+
+```bash filename="Terminal"
+npm install @aptos-labs/wallet-adapter-react
+```
+
+### (Optional) Install the plugins for any “Legacy Standard Compatible” Wallets you want to support from [this list](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/README.md#supported-wallet-packages).
+
+<Callout type="info">
+The more modern [AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md) wallets do NOT require installing a package - they work by default!
+The legacy standard required installing plugins manually.
+</Callout>
+
+For wallets that have not updated to using the AIP-62 standard, their plugins must be installed and passed in to the `Provider` manually.
+
+For example:
+
+```bash filename="Terminal"
+npm i @okwallet/aptos-wallet-adapter
+```
+
+### In `App.tsx` or it’s equivalent, import the Aptos Wallet Adapter and any legacy Wallet plugins.
+
+```tsx filename="App.tsx"
+import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
+// Import any additional wallet plugins. Ex.
+import { OKXWallet } from "@okwallet/aptos-wallet-adapter";
+// ...
+```
+
+### Initialize the `AptosWalletAdapterProvider`.
+
+You can use any of the following optional fields.
+
+It is recommended to:
+
+1. Set `autoConnect` to `true`. 
+2. Include `plugins` for any wallets that are using the legacy standard.
+
+| Field | Description | Example |
+| --- | --- | --- |
+| `autoConnect` | A prop indicates whether the dapp should auto connect with the most recently connected wallet on page reload. | `true` |
+| `optInWallets` | Limit the list of supported AIP-62 wallets to just the ones with names in optedInWallets.  | `['Petra']` |
+| `dappConfig` | Specify an alternate network to work on. This prop only works for wallets which are NOT chrome extensions. If set, this object must include the name of the network the app is connected to. The object may include a aptosConnectDappId. | `{ network: 'mainnet',   aptosConnectDappId: undefined }` |
+| `onError` | A callback function to fire when the adapter throws an error. | `(error) => { console.log("error", error); }` |
+| `plugins` | Any legacy standard wallet, i.e., a wallet that is not AIP-62 standard compatible, should be installed in this array. Check https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/README.md#supported-wallet-packages for a list of legacy standard wallet plugins. | `[new LegacyWallet()]` |
+
+#### Full Example
+
+```tsx filename="App.tsx"
+import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
+import { BitgetWallet } from "@bitget-wallet/aptos-wallet-adapter";
+import { MartianWallet } from "@martianwallet/aptos-wallet-adapter";
+import { MSafeWalletAdapter } from "@msafe/aptos-wallet-adapter";
+import { OKXWallet } from "@okwallet/aptos-wallet-adapter";
+import { TrustWallet } from "@trustwallet/aptos-wallet-adapter";
+import { FewchaWallet } from "fewcha-plugin-wallet-adapter";
+import { PropsWithChildren } from "react";
+import { Network } from "@aptos-labs/ts-sdk";
+
+export const WalletProvider = ({ children }: PropsWithChildren) => {
+  const wallets = [
+    new BitgetWallet(),
+    new FewchaWallet(),
+    new MartianWallet(),
+    new MSafeWalletAdapter(),
+    new PontemWallet(),
+    new TrustWallet(),
+    new OKXWallet(),
+  ];
+
+  return (
+    <AptosWalletAdapterProvider
+      plugins={wallets}
+      autoConnect={true}
+      dappConfig={{ network: Network.MAINNET }}
+      onError={(error) => {
+    console.log("error", error);
+  }}
+    >
+      {children}
+    </AptosWalletAdapterProvider>
+  );
+};
+```
+
+### Import `useWallet` in files where you want to access data from the `Provider`. 
+
+```tsx filename="Example.tsx"
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+
+// Access fields / functions from the adapter
+const { account, connected, wallet, changeNetwork } = useWallet();
+```
+
+</Steps>
+
+# Choose a UI Package
+
+The [Wallet Adapter repository](https://github.com/aptos-labs/aptos-wallet-adapter) provides several UI packages to simplify allowing users to connect and select a wallet. 
+
+For UI components that work out of the box, but are less customizable, choose one of: 
+
+- [Ant Design](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-ant-design)
+- [MUI](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-mui-design) (Material UI)
+
+Otherwise, you should use the [shadcn/ui wallet selector](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/apps/nextjs-example/README.md#use-shadcnui-wallet-selector-for-your-own-app), as it has the most customization options. For more details on how to customize this wallet selector or build your own wallet selector, see [this guide](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-react/docs/BYO-wallet-selector.md).
+
+<Callout type="info">
+For an example that shows how these UI options work in practice, see the [live demo app](https://aptos-labs.github.io/aptos-wallet-adapter/) (you can find its reference code [here](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example)).
+</Callout>
+
+## `useWallet` Fields and Functions
+
+### Fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `connected` | `boolean` | Indicates if the wallet is currently connected. |
+| `isLoading` | `boolean` | Indicates if a wallet operation is currently loading. |
+| `account` | `{ address: string; publicKey: string \| string[]; minKeysRequired?: number; ansName?: string \| null; } \| null` | Current account info or null if no account is connected.  |
+| `network` | `{ name: Network; chainId?: string; url?: string; } \| null` | Current network info or null if no network is selected. |
+| `wallet` | `{ name: WalletName; icon: string; url: string; } \| null` | Current wallet info or null if no wallet is selected. Includes wallet name, icon, and URL. |
+| `wallets` | `ReadonlyArray<{ name: WalletName; url: string; icon: string; readyState: WalletReadyState.NotDetected; isAIP62Standard: true; }>` | List of available wallets, including standard supported ones, each with name, URL, icon, readiness state, and AIP62 standard compliance indication. |
+
+### Functions
+
+*See [`WalletCore.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/WalletCore.ts) in [`wallet-adapter-core`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core) for where these functions are implemented.*
+
+| Function | Signature | Description |
+| --- | --- | --- |
+| `connect` | `connect(walletName: WalletName): void` | Connects to the specified wallet by its name. |
+| `disconnect` | `disconnect(): void` | Disconnects the currently connected wallet. |
+| `signTransaction` | `signTransaction(transactionOrPayload: AnyRawTransaction \| Types.TransactionPayload, asFeePayer?: boolean, options?: InputGenerateTransactionOptions): Promise<AccountAuthenticator>` | Signs a transaction with optional parameters for fee payment. |
+| `submitTransaction` | `submitTransaction(transaction: InputSubmitTransactionData): Promise<PendingTransactionResponse>` | Submits a transaction with the provided transaction data. |
+| `signAndSubmitTransaction` | `signAndSubmitTransaction(transaction: InputTransactionData): Promise<any>` | Signs and submits a transaction with the given input data. |
+| `signMessage` | `signMessage(message: SignMessagePayload): Promise<SignMessageResponse>` | Signs a message and returns the signature and other response info. |
+| `signMessageAndVerify` | `signMessageAndVerify(message: SignMessagePayload): Promise<boolean>` | Signs a message and verifies the signer. |
+| `changeNetwork` | `changeNetwork(network: Network): Promise<AptosChangeNetworkOutput>` | Requests a change in the connected network. This is not supported by all wallets. |
+
+## Code Examples
+
+See the next.js example dapp for a demonstration of how these components are used in practice:
+
+- [Live site](https://aptos-labs.github.io/aptos-wallet-adapter/)
+- [Source code](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example)
+
+### `connect()` and `disconnect()`
+
+`connect()` establishes a connection between the dapp and a Wallet. You can then use `disconnect()` to 
+
+```tsx filename="WalletConnectDemo.tsx"
+import React from 'react';
+import { WalletName, useWallet } from '@aptos-labs/wallet-adapter-react';
+
+const WalletConnectDemo = () => {
+  const { connect, disconnect, account, connected } = useWallet();
+
+  const handleConnect = async () => {
+    try {
+      // Change below to the desired wallet name instead of "Petra"
+      await connect("Petra" as WalletName<"Petra">); 
+      console.log('Connected to wallet:', account);
+    } catch (error) {
+      console.error('Failed to connect to wallet:', error);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      await disconnect();
+      console.log('Disconnected from wallet');
+    } catch (error) {
+      console.error('Failed to disconnect from wallet:', error);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Aptos Wallet Connection</h1>
+      <div>
+        {connected ? (
+          <div>
+            <p>Connected to: {account?.address}</p>
+            <button onClick={handleDisconnect}>Disconnect</button>
+          </div>
+        ) : (
+          <button onClick={handleConnect}>Connect Wallet</button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default WalletConnectDemo;
+```
+
+### `signAndSubmitTransaction`
+
+If you would like to separate out these steps, you can use `signTransaction` and `submitTransaction` separately instead.
+
+```tsx filename="SignAndSubmitDemo.tsx"
+import React from 'react';
+import { useWallet } from '@aptos-labs/wallet-adapter-react'; 
+import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk';
+
+const config = new AptosConfig({ network: Network.MAINNET });
+const aptos = new Aptos(config);
+
+const SignAndSubmit = () => {
+  const { account, signAndSubmitTransaction } = useWallet();
+
+  const onSignAndSubmitTransaction = async () => {
+    if(account == null) {
+        throw new Error("Unable to find account to sign transaction")
+    }
+    const response = await signAndSubmitTransaction({
+      sender: account.address,
+      data: {
+        function: "0x1::aptos_account::transfer",
+        functionArguments: [account.address, 1],
+      },
+    });
+    // if you want to wait for transaction
+    try {
+      await aptos.waitForTransaction({ transactionHash: response.hash });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <button onClick={onSignAndSubmitTransaction}>
+      Sign and submit transaction
+    </button>
+  );
+};
+
+export default SignAndSubmit;
+```
+
+`signMessage` and `verifyMessage`
+
+You can also use the shorthand `signAndVerifyMessage` to create a message which can be verifiably from the connected wallet.
+
+```tsx filename="SignMessageDemo.tsx"
+import React, { useState } from 'react';
+import { useWallet } from '@aptos-labs/wallet-adapter-react';
+
+const SignMessageDemo = () => {
+  const { signMessage, signMessageAndVerify, connected, account } = useWallet();
+  const [message, setMessage] = useState<string>('');
+  const [nonce, setNonce] = useState<string>('');
+  const [signedMessage, setSignedMessage] = useState<any>(null);
+  const [verificationResult, setVerificationResult] = useState<boolean | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignMessage = async () => {
+    setError(null);
+    try {
+      const response = await signMessage({ message, nonce });
+      setSignedMessage(response);
+    } catch (err: any) {
+      setError(`Failed to sign message: ${err.message}`);
+    }
+  };
+
+  const handleVerifyMessage = async () => {
+    setError(null);
+    try {
+      const result = await signMessageAndVerify({ message, nonce });
+      setVerificationResult(result);
+    } catch (err: any) {
+      setError(`Failed to verify message: ${err.message}`);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Aptos Sign and Verify Message</h1>
+      <div>
+        {connected ? (
+          <div>
+            <p>Connected to: {account?.address}</p>
+            <div className="flex flex-col gap-4">
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Enter your message here"
+                className="border rounded p-2"
+              />
+              <input
+                type="text"
+                value={nonce}
+                onChange={(e) => setNonce(e.target.value)}
+                placeholder="Enter nonce (random string) here"
+                className="border rounded p-2 mt-2"
+              />
+              <button onClick={handleSignMessage} className="bg-blue-500 text-white rounded p-2 mt-2">
+                Sign Message
+              </button>
+              {signedMessage && (
+                <div>
+                  <h4>Signed Message</h4>
+                  <pre>{JSON.stringify(signedMessage, null, 2)}</pre>
+                  <button onClick={handleVerifyMessage} className="bg-green-500 text-white rounded p-2 mt-2">
+                    Verify Message
+                  </button>
+                </div>
+              )}
+              {verificationResult !== null && (
+                <div>
+                  <h4>Verification Result</h4>
+                  <p>{verificationResult ? 'Message is verified!' : 'Failed to verify message.'}</p>
+                </div>
+              )}
+              {error && (
+                <div className="text-red-600">
+                  <p>{error}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p>Please connect your wallet to sign and verify messages.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SignMessageDemo;
+```
+
+### `changeNetwork` (Not supported by all wallets)
+
+Some wallets only support mainnet, so they will not support `changeNetwork`. If you are relying on this feature, ensure that you implement error handling for if a wallet that does not support `changeNetwork`. [Nightly](https://chromewebstore.google.com/detail/nightly/fiikommddbeccaoicoejoniammnalkfa?hl=en) is an example of a wallet which **does** support `changeNetwork`. 
+
+```tsx filename="ChangeNetworkDemo.tsx"
+import React from 'react';
+import { useWallet } from '@aptos-labs/wallet-adapter-react';
+import { Network } from '@aptos-labs/ts-sdk';
+
+const ChangeNetworkDemo = () => {
+  const { network, changeNetwork, wallet } = useWallet();
+  const isNetworkChangeSupported = wallet?.name === "Nightly";
+
+  const isValidNetworkName = () => {
+    return network && Object.values<string>(Network).includes(network.name);
+  };
+
+  return (
+    <div>
+      <h4>Network Info</h4>
+      <div>
+        <div><strong>Network name</strong></div>
+        <div>
+          <span style={{ color: isValidNetworkName() ? 'green' : 'red' }}>
+            {network?.name ?? 'Not Present'}
+          </span>
+          {` (Expected: ${Object.values<string>(Network).join(', ')})`}
+        </div>
+        <div><strong>URL</strong></div>
+        <div>
+          {network?.url ? (
+            <a href={network.url} target="_blank" rel="noreferrer">
+              {network.url}
+            </a>
+          ) : (
+            'Not Present'
+          )}
+        </div>
+        <div><strong>Chain ID</strong></div>
+        <div>{network?.chainId ?? 'Not Present'}</div>
+      </div>
+      <div>
+        <h4>Change Network</h4>
+        <div>
+          <label>
+            <input
+              type="radio"
+              name="network"
+              value={Network.DEVNET}
+              checked={network?.name === Network.DEVNET}
+              onChange={() => changeNetwork(Network.DEVNET)}
+              disabled={!isNetworkChangeSupported}
+            />
+            Devnet
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="network"
+              value={Network.TESTNET}
+              checked={network?.name === Network.TESTNET}
+              onChange={() => changeNetwork(Network.TESTNET)}
+              disabled={!isNetworkChangeSupported}
+            />
+            Testnet
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="network"
+              value={Network.MAINNET}
+              checked={network?.name === Network.MAINNET}
+              onChange={() => changeNetwork(Network.MAINNET)}
+              disabled={!isNetworkChangeSupported}
+            />
+            Mainnet
+          </label>
+        </div>
+        {!isNetworkChangeSupported && (
+          <div>
+            * {wallet?.name ?? 'This wallet'} does not support network change requests
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ChangeNetworkDemo;
+```
+
+### `signAndSubmitBCSTransaction(payload)` (Not supported by all wallets)
+
+<Callout type="warning">
+This feature is not part of the AIP-62 standard, so it will not be supported by all Wallets. Verify with error handling before calling it.
+</Callout>
+
+This is similar to the `signAndSubmit` logic, but uses a BCS format for the transaction `data`. 
+
+```tsx filename="SignAndSubmitBCSTransactionDemo.tsx"
+const onSignAndSubmitBCSTransaction = async () => {
+  const response = await signAndSubmitTransaction({
+    sender: account.address,
+    data: {
+      function: "0x1::aptos_account::transfer",
+      functionArguments: [AccountAddress.from(account.address), new U64(1)],
+    },
+  });
+  // if you want to wait for transaction
+  try {
+    await aptos.waitForTransaction({ transactionHash: response.hash });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+<button onClick={onSignAndSubmitTransaction}>
+  Sign and submit BCS transaction
+</button>;
+```

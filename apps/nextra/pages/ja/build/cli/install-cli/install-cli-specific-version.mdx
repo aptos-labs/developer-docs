@@ -1,0 +1,31 @@
+import { Steps } from 'nextra/components'
+
+# 特定バージョンのAptos CLIのインストール（上級者向け）
+
+Aptos CLIの特定のバージョンが必要な場合は、Aptosのソースコードから直接ビルドすることができます。このインストール方法は、主にTestnet/Mainnetにまだ反映されていないDevnetの特定の機能と対話する場合に使用されます。また、既存のリリース/プリコンパイル済みバイナリがうまく動作しないアーキテクチャを使用している場合にも、これらの手順に従うことをお勧めします。
+
+この上級者向けの方法が必要ない場合は、[こちら](../../cli.mdx)で通常のインストール手順を確認できます。
+
+## macOS / Linuxでのインストール
+
+<Steps>
+### [ソースからAptosをビルドする](../../../network/nodes/building-from-source.mdx)の手順に従います。
+### [このページ](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo)の手順に従って`cargo`がインストールされていることを確認します。
+### CLIツールをビルドします：`cargo build --package aptos --profile cli`
+   バイナリは`target/cli/aptos`で利用可能になります。
+### （オプション）この実行ファイルをPATHの通った場所に移動します。
+### `target/cli/aptos help`を実行してインストールが成功したことを確認します。
+   これらのヘルプ指示は、特定のコマンドの詳細なガイドとしても役立ちます。
+</Steps>
+
+## Windowsでのインストール
+
+<Steps>
+### [こちら](../../../network/nodes/building-from-source.mdx)の手順に従ってソースからAptosをビルドします。
+### [このページ](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo)の手順に従って`cargo`がインストールされていることを確認します。
+### CLIツールをビルドします：`cargo build --package aptos --profile cli`
+   バイナリは`target\cli\aptos.exe`で利用可能になります。
+### （オプション）この実行ファイルをPATHの通った場所に移動します。
+### `target\cli\aptos.exe help`を実行してインストールが成功したことを確認します。
+   これらのヘルプ指示は、特定のコマンドの詳細なガイドとしても役立ちます。
+</Steps>

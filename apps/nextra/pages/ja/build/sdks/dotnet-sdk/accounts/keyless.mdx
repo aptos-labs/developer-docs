@@ -1,0 +1,106 @@
+---
+title: "Keyless Accounts"
+---
+
+import { Steps, Callout } from "nextra/components";
+import { Card, Cards } from "@components/index";
+
+<Callout type="warning" emoji="❗">
+  This SDK is currently in beta. Please report any issues you encounter by
+  creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# Keyless Accounts
+
+The Aptos .NET SDK provides an implementation of Keyless accounts to derive accounts from social provider logins. In this guide,
+we will provide snippets of creating accounts.
+
+## Creating KeylessAccounts
+
+KeylessAccounts are created to sign transactions and interact with the blockchain using social provider logins. To create a Keyless account,
+you will need to follow a few steps to obtain the necessary components of a Keyless account.
+
+<Callout type="info" emoji="ℹ️">
+  We plan on creating end-to-end guides on integrating Keyless with Unity and
+  Godot. They are currently in development.
+</Callout>
+
+<Steps>
+
+### Create a Ephemeral Key Pair
+
+The first step to creating a Keyless account is to create an ephemeral key pair. This is an ephemeral key used to sign transactions. It's important
+to store this key pair in a secure location in the application as it will be used to sign transactions.
+
+```csharp
+var ephemeralKeyPair = EphemeralKeyPair.Generate();
+```
+
+### Obtaining an OpenID Connect (OIDC) Identity Token
+
+To obtain an `id_token` (OIDC Identity Token), you will need to authenticate with a social provider. At the end of the authorization flow, the user should be redirected
+to your application with an `id_token`. You will need to store this `id_token` in a secure location in the application. **It's important that the `id_token` has a nonce field that matches the `nonce` field inside the `EphemeralKeyPair`.**
+
+**Example:**
+
+```csharp
+var nonce = ephemeralKeyPair.Nonce;
+var authorizationUrl = "https://accounts.google.com/o/oauth2/v2/auth&nonce=" + nonce;
+```
+
+### Deriving a Keyless Account
+
+Once the user has the following components, they should be able to derive a Keyless account.
+
+- `id_token`: Obtained from the authorization flow.
+- `EphemeralKeyPair`: Created in the previous steps.
+
+**It's important that the `nonce` field inside the `EphemeralKeyPair` matches the `nonce` field inside the `id_token` to ensure that the user can sign transactions.**
+
+```csharp
+var client = new AptosClient(Networks.Mainnet);
+var keylessAccount = await client.Keyless.DeriveAccount(idToken, ephemeralKeyPair);
+```
+
+### Sign and Submit transactions
+
+After deriving a Keyless account, you can sign and submit transactions using the `AptosClient`.
+
+```csharp
+// 1. Build the transaction
+var transaction = await client.Transaction.Build(
+    sender: keylessAccount,
+    data: new GenerateEntryFunctionPayloadData(
+        function: "0x1::aptos_account::transfer_coins",
+        typeArguments: ["0x1::aptos_coin::AptosCoin"],
+        functionArguments: [account.Address, "100000"]
+    )
+);
+
+// 2. Sign and submit the transaction
+var submittedTransaction = await client.Transaction.SignAndSubmitTransaction(keylessAccount, transaction);
+
+// 3. (Optional) Wait for the transaction to be committed
+var committedTransaction = await client.Transaction.WaitForTransaction(submittedTransaction.Hash);
+```
+
+</Steps>
+
+## Additional Resources
+
+<Cards className="xl:grid-cols-2">
+  <Card
+    href="https://aptos-labs.github.io/aptos-dotnet-sdk/docs/Aptos.KeylessAccount.html"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <Card.Image src="https://cdn-icons-png.flaticon.com/512/25/25231.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>KeylessAccount Reference</Card.Title>
+      <Card.Description>
+        The full API reference for the KeylessAccount class.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>

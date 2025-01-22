@@ -1,0 +1,130 @@
+import { Callout } from 'nextra/components'
+
+# パブリックネットワークの実行（上級者向け）
+
+<Callout type="warning">
+テスト用に独自のローカルネットワークを実行したい場合は、[こちら](running-a-local-network.mdx)で方法を学ぶことができます。
+</Callout>
+
+## ジェネシスセレモニー
+
+`aptos`ツールは、ジェネシスセレモニーとして知られるプロセスを通じて、新しいブロックチェーンの立ち上げをサポートします。ジェネシスセレモニーの出力は、ブロックチェーンをオンライン運用するための準備をするMoveインストラクションの出力です。入力は以下のものから構成されます：
+
+- バリデータのセットとその設定
+- フレームワークとして知られる初期のMoveモジュールセット
+- 他のネットワークと区別するための一意の`ChainId`（u8）
+- テストチェーンの場合、AptosCoinの発行を管理するアカウントも存在します
+
+## ジェネシスの生成
+
+- ジェネシスオーガナイザーが`Layout`を構築し、配布します。
+- ジェネシスオーガナイザーがAptosフレームワークのバイトコードを準備し、配布します。
+- 各参加者が自身の`ValidatorConfiguration`を生成し、配布します。
+- 各参加者が結果として得られた貢献から`genesis.blob`を生成します。
+- ジェネシスオーガナイザーが`genesis.blob`を実行して初期ウェイポイントを導出し、配布します。
+- 各参加者が`aptos-node`を開始します。`aptos-node`は起動時に、ジェネシスオーガナイザーが提供したウェイポイントを持つ`genesis.blob`を検証します。
+- ステークの定足数が利用可能になると、ブロックチェーンはコンセンサスを開始します。
+
+### aptos-coreの準備
+
+以下のセクションはAptosソースからのツールに依存しています。セットアップについては[ソースからのAptosのビルド](../../network/nodes/building-from-source.mdx)を参照してください。
+
+### `layout`ファイル
+
+layoutファイルには以下が含まれます：
+
+- `root_key`：AptosCoin管理用のEd25519公開鍵。
+- `users`：参加者のセット
+- `chain_id`：`ChainId`または、このデプロイメントを他のAptosネットワークと区別する一意の整数
+
+例：
+
+```yaml
+root_key: "0xca3579457555c80fc7bb39964eb298c414fd60f81a2f8eedb0244ec07a26e575"
+users:
+  - alice
+  - bob
+chain_id: 8
+```
+
+### Aptosフレームワークのビルド
+
+Aptos-coreリポジトリから、フレームワークをビルドしてパッケージ化します：
+
+```bash filename="Terminal"
+cargo run --package framework
+mkdir aptos-framework-release
+cp aptos-framework/releases/artifacts/current/build/**/bytecode_modules/* aptos-framework-release
+```
+
+フレームワークは`aptos-framework-release`ディレクトリに格納されます。
+
+### `ValidatorConfiguration`ファイル
+
+`ValidatorConfiguration`ファイルには以下が含まれます：
+
+- `account_address`：このバリデータを管理するアカウント。これは`ValidatorConfiguration`ファイル内で提供される`account_key`から導出される必要があります。
+- `consensus_key`：バリデータからのコンセンサスメッセージを認証するための公開鍵
+- `account_key`：このバリデータを管理するアカウントの公開鍵。これは`account_address`の導出に使用されます。
+- `network_key`：バリデータとフルノードのネットワーク認証と暗号化の両方に使用される公開鍵。
+- `validator_host`：バリデータが存在するネットワークアドレス。これには`host`と`port`フィールドが含まれます。`host`はDNS名またはIPアドレスである必要があります。現在はIPv4のみがサポートされています。
+- `full_node_host`：フルノードが存在するオプションのネットワークアドレス。これには`host`と`port`フィールドが含まれます。`host`はDNS名またはIPアドレスである必要があります。現在はIPv4のみがサポートされています。
+- `stake_amount`：このノードによってステークされているコインの数。これは`1`であることが期待され、異なる場合は設定が無効とみなされます。
+
+例：
+
+```yaml
+account_address: ccd49f3ea764365ac21e99f029ca63a9b0fbfab1c8d8d5482900e4fa32c5448a
+consensus_key: "0xa05b8f41057ac72f9ca99f5e3b1b787930f03ba5e448661f2a1fac98371775ee"
+account_key: "0x3d15ab64c8b14c9aab95287fd0eb894aad0b4bd929a5581bcc8225b5688f053b"
+network_key: "0x43ce1a4ac031b98bb1ee4a5cd72a4cca0fd72933d64b22cef4f1a61895c2e544"
+validator_host:
+  host: bobs_host
+  port: 6180
+full_node_host:
+  host: bobs_host
+  port: 6182
+stake_amount: 1
+```
+
+`aptos` CLIを使用してこれを生成するには：
+
+1. バリデータのキーを生成します：
+
+```bash filename="Terminal"
+cargo run --package aptos -- genesis generate-keys --output-dir bobs
+```
+
+2. `ValidatorConfiguration`を生成します：
+
+```bash filename="Terminal"
+cargo run --package aptos -- \\
+    genesis set-validator-configuration \\
+    --keys-dir bobs \\
+    --username bob \\
+    --validator-host bobs_host:6180 \\
+    --full-node-host bobs_host:6180 \\
+    --local-repository-dir .
+```
+
+3. 最後のコマンドは、`genesis.blob`生成のために他の参加者に配布される`bob.yaml`ファイルを生成します。
+
+### ジェネシスとウェイポイントの生成
+
+`genesis.blob`とウェイポイントは、`layout`ファイル、個々の`ValidatorConfiguration`ファイル、およびフレームワークリリースを取得した後に生成できます。前段階で提供された`ValidatorConfiguration`が`genesis.blob`生成用の配布物と同じであることを検証することが重要です。不一致がある場合は、すべての参加者に通知してください。
+
+`genesis.blob`とウェイポイントを生成するには：
+
+- `layout`ファイルをディレクトリ（例：`genesis`）に配置します。
+- すべての`ValidatorConfiguration`ファイルを`genesis`ディレクトリに配置します。
+- `ValidatorConfiguration`ファイルが`layout`ファイル内の`users`セットの下にリストされていることを確認します。
+- `genesis`ディレクトリ内に`framework`ディレクトリを作成し、フレームワークリリースの`.mv`ファイルを`framework`ディレクトリに配置します。
+- `aptos` CLIを使用してジェネシスとウェイポイントを生成します：
+
+```bash filename="Terminal"
+cargo run --package aptos -- genesis generate-genesis --local-repository-dir genesis
+```
+
+### `aptos-node`の起動
+
+`genesis.blob`とウェイポイントを生成したら、それらをバリデータとフルノードの設定ディレクトリに配置し、バリデータとフルノードを起動します。

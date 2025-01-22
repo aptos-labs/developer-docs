@@ -1,0 +1,89 @@
+---
+title: "イベント"
+---
+
+# イベント
+
+イベントはトランザクションの実行中に発行されます。各Moveモジュールは独自のイベントを定義し、モジュールの実行時にいつイベントを発行するかを選択できます。Aptos Moveは2種類のイベントをサポートしています：モジュールイベントとEventHandleイベントです。モジュールイベントは最新のイベントメカニズムで、フレームワークリリース1.7で導入されました。EventHandleイベントは非推奨で、オリジナルのフレームワークで導入されました。ブロックチェーンの仕組み上、EventHandleイベントはAptosから完全に削除されることはないでしょう。
+
+## モジュールイベント
+
+モジュールイベントは、構造体の型で識別されるグローバルなイベントストリームです。イベント構造体を定義するには、`drop`と`store`の機能を持つ通常のMove構造体に`#[event]`属性を追加します。例えば、
+
+```move
+/// 0xcafe::my_module_name
+/// コイン送金を表すモジュールイベント構造体の例です。
+#[event]
+struct TransferEvent has drop, store {
+    sender: address,
+    receiver: address,
+    amount: u64
+}
+```
+そして、イベントを作成して発行します：
+
+```move
+// イベントを定義します。
+let event = TransferEvent {
+    sender: 0xcafe,
+    receiver: 0xface,
+    amount: 100
+};
+// 定義したイベントを発行します。
+0x1::event::emit(event);
+```
+
+モジュールイベントの例は[こちら](https://explorer.aptoslabs.com/txn/682252266/events?network=testnet)で確認できます。インデックス0、1、2は、型`0x66c34778730acbb120cefa57a3d98fd21e0c8b3a51e9baee530088b2e444e94c::event::MyEvent`の3つのモジュールイベントです。API互換性のため、モジュールイベントには`Account Address`、`Creation Number`、`Sequence Number`のフィールドが含まれており、すべて0に設定されています。
+
+![モジュールイベントの例](/docs/module-event.png "モジュールイベントの例")
+
+## テストでのアクセス
+
+イベントは、各トランザクションごとにイベントアキュムレーターと呼ばれる別のマークルツリーに保存されます。これは一時的なものであり、ステートツリーとは独立しているため、本番環境でトランザクションを実行する際にMoveVMはイベントを読み取ることができません。ただしテストでは、Aptos Moveはテストとデバッグ目的で発行されたイベントを読み取るための2つのネイティブ関数をサポートしています：
+
+```move
+/// 型Tで発行されたすべてのモジュールイベントをベクターとして返します。
+# [test_only]
+public native fun emitted_events<T: drop + store>(): vector<T>;
+
+/// `msg`が発行された場合にtrueを返します。
+# [test_only]
+public fun was_event_emitted<T: drop + store>(msg: & T): bool
+```
+
+## APIアクセス
+
+[GraphQL API](../nodes/networks.mdx)を使用して、モジュールイベントとEventHandleイベントの両方を照会することができます。
+
+# EventHandleイベント（非推奨）
+
+レガシーの一部として、AptosはLibra/DiemのEventHandleから派生したイベントストリームを継承しています。各EventHandleはグローバルに一意の値であるGUIDと、イベントごとのシーケンス番号で識別され、リソース内に保存されます。ストリーム内の各イベントには、EventHandleのシーケンス番号から派生した一意のシーケンス番号があります。
+
+例えば、[コイン送金](../../build/guides/first-transaction.mdx)の際、送信者と受信者のアカウントはそれぞれ`SentEvent`と`ReceivedEvent`を発行します。このデータはレジャーに保存され、RESTインターフェースの[Get events by event handle](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)を介して照会できます。
+
+アカウント`0xc40f1c9b9fdc204cf77f68c9bb7029b0abbe8ad9e5561f7794964076a4fbdcfd`が別のアカウントにコインを送金したと仮定すると、RESTインターフェースに次のようなクエリを行うことができます：`https://api.devnet.aptoslabs.com/v1/accounts/c40f1c9b9fdc204cf77f68c9bb7029b0abbe8ad9e5561f7794964076a4fbdcfd/events/0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>/withdraw_events`。出力はそのアカウントに保存されているすべての`WithdrawEvent`となり、以下のようになります：
+
+```json
+[
+  {
+    "key": "0x0000000000000000caa60eb4a01756955ab9b2d1caca52ed",
+    "sequence_number": "0",
+    "type": "0x1::coin::WithdrawEvent",
+    "data": {
+      "amount": "1000"
+    }
+  }
+]
+```
+登録された各イベントには一意の`key`があります。キー`0x0000000000000000caa60eb4a01756955ab9b2d1caca52ed`は、アカウント`0xc40f1c9b9fdc204cf77f68c9bb7029b0abbe8ad9e5561f7794964076a4fbdcfd`に登録されているイベント`0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>/sent_events`にマッピングされます。このキーを使用して、イベントを直接クエリすることができます（例：`https://api.devnet.aptoslabs.com/v1/events/0x0000000000000000caa60eb4a01756955ab9b2d1caca52ed`）。
+
+これらはイベントストリームを表し、各エントリには`0`から始まる連続的に増加する`sequence_number`、`type`、`data`が含まれています。各イベントは何らかの`type`で定義される必要があります。特にジェネリクスを使用する場合、同じまたは類似の`type`で定義される複数のイベントが存在する可能性があります。イベントには関連する`data`があります。一般的な原則として、データを変更してイベントを発行したトランザクションの実行前後で、基礎となるリソースの変更を理解するために必要なすべてのデータを含める必要があります。
+
+[coin_transfer]: https://github.com/aptos-labs/aptos-core/blob/bdd0a7fe82cd6aab4b47250e5eb6298986777cf7/aptos-move/framework/aptos-framework/sources/coin.move#L412
+[get_events]: https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle
+
+## モジュールイベントへの移行
+
+モジュールイベントのリリースに伴い、EventHandleイベントは非推奨となりました。モジュールイベントへの移行をサポートするため、プロジェクトは現在EventHandleイベントを発行している場所でモジュールイベントを発行する必要があります。外部システムがモジュールイベントを十分に採用すれば、レガシーイベントの発行は不要になる可能性があります。
+
+なお、EventHandleイベントは削除できず、削除されることもないため、アップグレードできないプロジェクトは引き続きそれらを利用することができます。

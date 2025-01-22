@@ -1,0 +1,33 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# アドレスからAptosネーム名を取得
+
+`getNameFromAddress`は、指定されたアカウントに登録されているドメイン名を検索します。例えば、ユーザーはAptos Name Serviceで自分のアカウントを`love.apt`に関連付けて登録することができます。詳細については、https://www.aptosnames.com/ をご覧ください。
+
+<Callout type="warning">
+これは*アクティブな*名前のみを返します。名前の登録は更新されないと期限切れになる可能性があり、これが結果が空になる理由の1つかもしれません。
+</Callout>
+
+<Callout type="info">
+自分で試してみましょう！エディターの下部で変数をカスタマイズできます。
+</Callout>
+
+<GraphQLEditor
+  query={`query getNameFromAddress($registered_address: String) {
+  current_aptos_names(
+    where: {registered_address: {_eq: $registered_address}, is_active: {_eq: true}},
+    order_by: [{is_primary: desc}, {last_transaction_version: desc}, {expiration_timestamp: desc}],
+    limit: 1
+  ) {
+    domain
+    subdomain
+  }
+}`}
+  variables={`{
+  "registered_address": "0xca4349ce902a656570a4f344cc8f360fb13fd41b5fae77bcc9ee82252d67539e"
+}`}
+/>
+
+#### 変数:
+- `$registered_address`: **String** - 関連付けられたアクティブなドメイン名を検索したいアカウントアドレス。例: `"0xca4349ce902a656570a4f344cc8f360fb13fd41b5fae77bcc9ee82252d67539e"`

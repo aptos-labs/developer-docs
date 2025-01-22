@@ -1,0 +1,96 @@
+import { Callout } from 'nextra/components';
+
+# ウォレットサポートの追加
+
+[Aptos上でのエンドツーエンドdappの構築](../build-e2e-dapp.mdx)チュートリアルの3番目のチャプターでは、[Reactアプリ](2-set-up-react-app.mdx)にウォレットサポートを追加します。ブロックチェーンにトランザクションを送信するためにはウォレットが必要です。
+
+Aptosは[ウォレットアダプター](../../sdks/wallet-adapter.mdx)を提供しており、エコシステム内の多くのウォレットをサポートし、ウォレット接続ボタンとウォレット選択モーダルを使用するための共通インターフェースとUIパッケージを提供しています。
+
+1. ローカルサーバーが実行中の場合は停止します。
+2. `client`フォルダで以下を実行します：
+
+```bash filename="Terminal"
+npm i @aptos-labs/wallet-adapter-react
+```
+
+```bash filename="Terminal"
+npm i @aptos-labs/wallet-adapter-ant-design
+```
+
+これにより2つのパッケージがインストールされます：
+
+- ロジックを保持するアダプターReactプロバイダー
+- ウォレット接続UI用のパッケージ
+
+3. 次にアプリにウォレットを追加する必要があります。[アダプターがサポートするウォレット](https://github.com/aptos-labs/aptos-wallet-adapter#supported-wallet-packages)のリストがありますが、このチュートリアルをシンプルに保つため、1つのウォレットのみを使用します。
+   `client`フォルダで以下を実行します：
+
+```bash filename="Terminal"
+npm i petra-plugin-wallet-adapter
+```
+
+<Callout type="info">
+Petraウォレット拡張機能をまだインストールしていない場合：
+
+1. [Petra Walletをインストール](https://petra.app)してChrome拡張機能を開きます。
+2. ヘルプについては、petra.appの[ユーザーガイド](https://petra.app/docs/use)を参照してください。
+3. **Settings** > **Network**をクリックし、**devnet**を選択してDevnetネットワークに切り替えます。
+4. **Faucet**ボタンをクリックしてテストトークンを受け取れることを確認します。
+
+</Callout>
+
+4. `Index.tsx`ファイルを開きます。ファイルの先頭に以下を追加します：
+
+```tsx filename="Index.tsx"
+import { PetraWallet } from "petra-plugin-wallet-adapter";
+import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
+```
+
+5. 引き続き`Index.tsx`で、ウォレットの配列を保持する定数を追加します：
+
+```tsx filename="Index.tsx"
+...
+const wallets = [new PetraWallet()];
+...
+```
+
+6. `render`メソッド内で、コードを以下のように更新します：
+
+```tsx filename="Index.tsx"
+...
+<AptosWalletAdapterProvider plugins={wallets} autoConnect={true}>
+  <App />
+</AptosWalletAdapterProvider>
+...
+```
+
+これによりアプリがアダプタープロバイダーでラップされ、ウォレットで初期化されます。また、プロバイダーがウォレットを自動接続するように設定されます。
+
+7. `App.tsx`ファイルを開き、前のステップでインストールしたウォレット接続UIパッケージをインポートします。ファイルの先頭に以下を追加します：
+
+```tsx filename="App.tsx"
+import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
+```
+
+8. UIパッケージはスタイル`.css`ファイルを使用します。インポート文の最後にこれもインポートします。
+
+```tsx filename="App.tsx"
+...
+import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
+```
+
+9. `return`文で、`<h1>Connect Wallet</h1>`テキストを削除し、`WalletSelector`コンポーネントを追加します：
+
+```tsx filename="App.tsx"
+...
+<Col span={12} style={{ textAlign: "right", paddingRight: "200px" }}>
+  <WalletSelector />
+</Col>
+...
+```
+
+10. `npm start`でローカルサーバーを起動し、ブラウザでアプリを開きます。
+
+これで、機能するウォレット接続ボタンとウォレット選択モーダルが完成しました。自由に試してウォレットを接続してみてください。
+
+次のチャプター4で[チェーンからのデータ取得](4-fetch-data-from-chain.mdx)について学びます。

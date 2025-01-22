@@ -408,6 +408,12 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/define-schema",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/define-schema",
+        permanent: true,
+      },
+      {
         source: "/indexer/indexer-sdk/documentation/create-processor",
         destination:
           "/en/build/indexer/indexer-sdk/documentation/create-processor",
@@ -433,6 +439,12 @@ export default withBundleAnalyzer(
         source: "/indexer/indexer-sdk/documentation/version-tracking",
         destination:
           "/en/build/indexer/indexer-sdk/documentation/version-tracking",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/run-processor",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/run-processor",
         permanent: true,
       },
       {

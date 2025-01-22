@@ -1,0 +1,146 @@
+---
+title: "マルチシグによる代替可能資産の管理"
+---
+
+import { Callout } from "nextra/components";
+
+# マルチシグによる代替可能資産の管理
+
+このチュートリアルでは、Aptosフレームワークのマルチシグアカウントと代替可能資産標準を組み合わせた実践的なユースケースを紹介し、代替可能資産の管理におけるセキュリティを強化します。チュートリアルに進む前に、モジュールの公開とAptosフレームワークのマルチシグアカウントについて理解していることを確認してください。理解が不十分な場合は、以下のチュートリアルから始めることを強く推奨します：
+
+- [最初のMoveモジュール](first-move-module.mdx)
+
+## ステップ1：SDKの選択
+
+このチュートリアルは[TypeScript SDK](../sdks/ts-sdk.mdx)用に作成されています。
+
+他の開発者の方々は、[Python SDK](../sdks/python-sdk.mdx)、[Rust SDK](../sdks/rust-sdk.mdx)、[Go SDK](../sdks/go-sdk.mdx)、[Unity SDK](../sdks/unity-sdk.mdx)のサポートを追加することができます！
+
+## ステップ2：モジュールの公開
+
+すべての管理操作（発行、転送、焼却、凍結/解凍）を備えたAptosフレームワークのマルチシグアカウントによって制御される代替可能資産を作成するには、代替可能資産標準に基づく適切に設計されたスマートコントラクトが前提条件となります。Aptosチームは`aptos-core`リポジトリにサンプルコードを提供しています。
+
+`aptos-core`リポジトリをクローンします：
+
+```bash filename="Terminal"
+git clone git@github.com:aptos-labs/aptos-core.git ~/aptos-core
+```
+
+`managed_fungible_asset`ディレクトリに移動し、CLIを使用してこのパッケージを`default`アカウントに公開します：
+
+```bash filename="Terminal"
+cd ~/aptos-core/aptos-move/move-examples/fungible_asset/managed_fungible_asset
+aptos move publish --named-addresses example_addr=default
+```
+
+`multisig_managed_coin`ディレクトリに移動し、同様にCLIを使用してこのパッケージも`default`アカウントに公開します：
+
+```bash filename="Terminal"
+cd ~/aptos-core/aptos-move/move-examples/fungible_asset/multisig_managed_coin
+aptos move publish --named-addresses example_addr=default
+```
+
+このチュートリアルでは、`multisig_managed_coin`が同じアドレス上の`managed_fungible_asset`で定義された関数を呼び出す必要があるため、両方のモジュールを公開する必要があります。
+
+<Callout type="info">
+  モジュールを公開する前に、faucetでアカウントに資金を提供することを忘れないでください。
+</Callout>
+
+## ステップ3：サンプルの実行
+
+```bash filename="Terminal"
+cd ~/aptos-core/ecosystem/typescript/sdk/examples/typescript
+```
+
+`multisig_managed_coin`サンプルを実行します：
+
+```bash filename="Terminal"
+MODULE_ADDR=${DEFAULT_ACCOUNT_ADDRESS} pnpm run multisig_managed_coin
+```
+
+<Callout type="info">
+  このサンプルはAptos devnetを使用しており、これまで毎週木曜日にリセットされていました。
+  サンプルを実行する際は、devnetが稼働していることを確認してください！faucet付きのローカルネットを実行している場合は、代わりに以下のコマンドを実行できます：
+
+  ```bash filename="Terminal"
+  export APTOS_NODE_URL=http://0.0.0.0:8080
+  export APTOS_FAUCET_URL=http://0.0.0.0:8081
+  export MODULE_ADDR=${DEFAULT_ACCOUNT_ADDRESS}
+  pnpm run multisig_managed_coin
+  ```
+
+</Callout>
+
+サンプルスクリプトはエラーなく正常に実行されるはずです。その後、コンソールに表示された`owner1`と`owner2`のアドレスをAptosエクスプローラーで検索することで、実行内容を確認できます。
+
+スクリプトの内容を順を追って理解しましょう：
+
+### シングルサイナーアカウントの生成
+
+まず、Aptosフレームワークのマルチシグアカウントを共同所有する3つのシングルサイナーアカウント（owner1、owner2、owner3）を生成します。
+
+{/* TODO Code snippet
+typescript title="3つのシングルサイナーを生成"
+/sdks/typescript/examples/typescript/multisig_managed_coin.ts
+section_1
+*/}
+
+### 管理された代替可能資産を持つAptosフレームワークマルチシグアカウントの作成
+
+次に、owner1が`multisig_managed_coin.move`で定義された`initialize()`関数を呼び出します。この関数は最初にowner1が所有するAptosフレームワークのマルチシグアカウントを作成し、owner2とowner3を所有者として追加します。また、引数リストで指定されたカスタム設定で「ミームコイン」という代替可能資産を作成し、マルチシグアカウントをその管理者とします。各提案の実行には少なくとも2つの承認が必要です。
+
+{/* TODO Code snippet
+typescript title="マルチシグアカウントを照会し、initialize関数を呼び出す"
+/sdks/typescript/examples/typescript/multisig_managed_coin.ts
+section_2
+*/}
+
+### 発行
+
+次に、owner2に1000、owner3に2000のミームコインを発行します。提案されたトランザクションはowner2によって提出され、owner3から追加の承認を得ます。
+
+{/* TODO Code snippet
+typescript title="owner2に1000、owner3に2000を発行"
+/sdks/typescript/examples/typescript/multisig_managed_coin.ts
+section_3
+*/}
+
+### 凍結
+
+発行後、サンプルではowner1のアカウントを凍結する方法を示します。提案されたトランザクションは再びowner2によって提出され、さらにowner3によって承認されます。
+
+{/* TODO Code snippet
+typescript title="owner1を凍結"
+/sdks/typescript/examples/typescript/multisig_managed_coin.ts
+section_4
+*/}
+
+<Callout type="info">
+  解凍も同様で、`set_primary_stores_frozen_status`関数の最後の引数を`false`に変更するだけです。
+</Callout>
+
+### 強制転送
+
+owner1が凍結されている場合、通常の転送ではそのアカウントからの引き出しや預け入れができません。しかし、「ミームコイン」の管理者として、マルチシグアカウントにはその能力があります。
+次に、owner2がowner3からowner1へ1000ミームコインを強制転送するトランザクションを提案します。今回はowner1が承認します。
+
+{/* TODO Code snippet
+typescript title="owner3からowner1へ1000ミームコインを強制転送"
+/sdks/typescript/examples/typescript/multisig_managed_coin.ts
+section_5
+*/}
+
+### 焼却
+
+最後に、3人の所有者がそれぞれ1000ミームコインを持っています。すべてのコインを焼却しましょう！
+owner2が提案を行い、owner1が承認します。
+
+{/* TODO Code snippet
+typescript title="3人の所有者のアカウントから1000ミームコインを焼却"
+/sdks/typescript/examples/typescript/multisig_managed_coin.ts
+section_6
+*/}
+
+## 結論
+
+このチュートリアルでは、Aptosフレームワークのマルチシグアカウントを使用して代替可能資産を管理するエンドツーエンドのフローを示しました。同様に、独自のモジュールを作成し、強力なSDKを活用して、ニーズに合った管理スキーマを作成することができます。

@@ -1,0 +1,110 @@
+---
+title: "Godot Integration"
+---
+
+import { Steps, Callout } from "nextra/components";
+import { Card, Cards } from "@components/index";
+
+<Callout type="warning" emoji="❗">
+  This integration is currently in beta. Please report any issues you encounter
+  by creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# Integrating into Godot projects
+
+This guide will walk you through the process of integrating the Aptos .NET SDK. To install the Aptos SDK into your Godot project,
+you will need to add the Aptos SDK into your Godot project's `.csproj` file.
+
+<Steps>
+
+### Find the `.csproj`
+
+In the root of your Godot project, find the `.csproj` file. This file is used to
+configure your Godot project and is used by the Godot build system. You can find
+this file by clicking on `res://` in the Godot editor and selecting `Open in File Manager`.
+
+> If you can't find the `.csproj` file, you can create a `.cs` file and build the application one time and it should be generated.
+
+<br />
+
+<div className="border dark:border-white/30 w-fit rounded-md overflow-clip shadow-md max-w-lg">
+  ![Open in File Manager](https://i.imgur.com/evxv8mY.png)
+</div>
+
+### Add the `Aptos` NuGet package
+
+Add the following line to the `<ItemGroup>` section of the `.csproj` file. If it doesn't exist, create it the `<ItemGroup>` section.
+
+```xml filename=".csproj"
+<ItemGroup>
+  <PackageReference Include="Aptos" Version="0.0.2-beta" />
+</ItemGroup>
+```
+
+It should look something like this:
+
+```xml filename=".csproj" {10-14}
+<Project Sdk="Godot.NET.Sdk/4.3.0">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net7.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'ios' ">net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>AptosSDKExample</RootNamespace>
+  </PropertyGroup>
+
+  <!-- START: Add these lines -->
+  <ItemGroup>
+    <PackageReference Include="Aptos" Version="0.0.1-beta" />
+  </ItemGroup>
+  <!-- END -->
+
+</Project>
+```
+
+### Use the Aptos SDK
+
+Import the `Aptos` namespace in your C# script and use the SDK.
+
+```csharp filename="Example.cs" {3-3,9-9,12-16}
+using Godot;
+using System;
+using Aptos;
+
+public partial class Example : Node
+{
+	public override void _Ready()
+	{
+        PrintLedgerInfo();
+	}
+
+	async void PrintLedgerInfo() {
+        var client = new AptosClient(Networks.Mainnet);
+        var ledgerInfo = await client.Block.GetLedgerInfo();
+        GD.Print(ledgerInfo.BlockHeight);
+	}
+
+}
+```
+
+</Steps>
+
+## Next Steps
+
+You've successfully integrated the Aptos .NET SDK into your Godot project. Now
+you can start building your game and interacting with the Aptos blockchain. Below
+are some resources to help you get started.
+
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./getting-started" className="col-span-2 flex flex-row gap-4">
+    <div className="flex flex-col gap-2">
+      <Card.Title>Getting Started</Card.Title>
+      <Card.Description>
+        Begin developing using the Aptos .NET SDK.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>

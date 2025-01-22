@@ -1,0 +1,105 @@
+---
+title: "Multikey Accounts"
+---
+
+import { Steps, Callout } from "nextra/components";
+import { Card, Cards } from "@components/index";
+
+<Callout type="warning" emoji="❗">
+  This SDK is currently in beta. Please report any issues you encounter by
+  creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# Multikey Accounts
+
+The Aptos .NET SDK provides an implementation of Multikey accounts to create accounts from a combination of multiple key pairs. This is useful for
+Multisig accounts. In this guide, we will provide snippets of creating accounts.
+
+## Creating a MultiKeyAccount
+
+MultiKeyAccount's are created to sign transactions where the account is controlled by multiple private keys.
+
+### Create a MultiKeyAccount
+
+To create a MultiKey account, you will need the following components:
+
+- `PublicKeys`: The public keys of the accounts that control the MultiKey account.
+- `SignaturesRequired`: The minimum number of signers required to sign transactions.
+- `Signers`: The account signers that will be used to sign transactions. The number of signers should be equal to or greater than the `SignaturesRequired`.
+
+<Steps>
+
+### Create your Accounts
+
+Create your accounts, they can be different types of accounts.
+
+```csharp
+var account1 = Ed25519Account.Generate();
+var account2 = SingleKeyAccount.Generate(PublicKeyVariant.Secp256k1Ecdsa);
+```
+
+### Create a MultiKey Verifying Key
+
+Create a MultiKey verifying key using the `PublicKeys` and `SignaturesRequired`. In this example,
+we have two accounts controlling the MultiKey and we require 2 signers to sign transactions.
+
+```csharp
+var multiKey = new MultiKey(
+    publicKeys: [account1.PublicKey, account2.PublicKey],
+    signaturesRequired: 2,
+);
+```
+
+### Create the MultiKey Account
+
+Create the MultiKey account using the `PublicKeys`, `SignaturesRequired`, and `Signers`.
+
+```csharp
+var multikeyAccount = new MultiKeyAccount(
+    multiKey: multiKey,
+    signers: [account1, account2]
+);
+```
+
+### Sign and Submit transactions
+
+After creating a MultiKey account, you can sign and submit transactions using the `AptosClient`.
+
+```csharp
+// 1. Build the transaction
+var transaction = await client.Transaction.Build(
+    sender: multikeyAccount,
+    data: new GenerateEntryFunctionPayloadData(
+        function: "0x1::aptos_account::transfer_coins",
+        typeArguments: ["0x1::aptos_coin::AptosCoin"],
+        functionArguments: [account.Address, "100000"]
+    )
+);
+
+// 2. Sign and submit the transaction
+var submittedTransaction = await client.Transaction.SignAndSubmitTransaction(multikeyAccount, transaction);
+
+// 3. (Optional) Wait for the transaction to be committed
+var committedTransaction = await client.Transaction.WaitForTransaction(submittedTransaction.Hash);
+```
+
+</Steps>
+
+## Additional Resources
+
+<Cards className="xl:grid-cols-2">
+  <Card
+    href="https://aptos-labs.github.io/aptos-dotnet-sdk/docs/Aptos.MultiKeyAccount.html"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <Card.Image src="https://cdn-icons-png.flaticon.com/512/25/25231.png" />
+    <div className="flex flex-col gap-2">
+      <Card.Title>MultiKeyAccount Reference</Card.Title>
+      <Card.Description>
+        The full API reference for the MultiKeyAccount class.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>

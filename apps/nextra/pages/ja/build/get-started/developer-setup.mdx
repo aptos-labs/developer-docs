@@ -1,0 +1,189 @@
+---
+title: "開発者セットアップ"
+---
+
+import { Tabs, Steps } from 'nextra/components'
+import { Cards, Card } from '@components/index'
+
+# 開発者セットアップ
+
+開発タイプに応じた環境構築の簡単な方法をご紹介します。
+
+<Tabs items={['フロントエンド', 'スマートコントラクト', 'Create Aptos Dapp']}>
+  {/* フロントエンド */}
+  <Tabs.Tab>
+    <Steps>
+
+      ### フロントエンドプロジェクトの初期化
+
+      一般的な選択肢の例をご紹介します：
+
+      <Tabs items={['Next.js', 'Vite (TS)']}>
+        <Tabs.Tab>
+          ```bash filename="Terminal"
+          pnpx create-next-app@latest
+          ```
+        </Tabs.Tab>
+        <Tabs.Tab>
+          ```bash filename="Terminal"
+          pnpx create vite my-aptos-app --template react-ts
+          ```
+        </Tabs.Tab>
+      </Tabs>
+
+      ### `@aptos-labs/ts-sdk`のインストール
+
+      ```bash npm2yarn
+      npm i @aptos-labs/ts-sdk
+      ```
+
+      ### TS SDKのセットアップ
+
+      <Cards>
+        <Card href="../sdks/ts-sdk/quickstart">
+          <Card.Title>TS SDK クイックスタート</Card.Title>
+          <Card.Description>アカウントの設定、ネットワーク、フォーセットの使用方法、
+            トランザクションの送信/シミュレーションなどについて学びましょう</Card.Description>
+        </Card>
+      </Cards>
+
+      ### アプリを構築しましょう！
+
+      Aptosをフロントエンドで使用するための開発環境のセットアップが完了しました。
+      開発プロセスを効率化する他のツールもご確認ください
+
+      <Cards>
+        <Card href="../indexer">
+          <Card.Title>インデクサー</Card.Title>
+          <Card.Description>残高、トランザクション履歴、トークンデータなど、
+            オンチェーン状態を効率的にクエリできます</Card.Description>
+        </Card>
+        <Card
+          href="https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript">
+          <Card.Title linkType="external">TS SDKの使用例</Card.Title>
+          <Card.Description>TS SDKの使用方法を示す20以上の例</Card.Description>
+        </Card>
+        <Card href="https://developers.aptoslabs.com/">
+          <Card.Title linkType="external">APIゲートウェイ</Card.Title>
+          <Card.Description>フルノードAPI/インデクサーのレート制限に達しましたか？
+            ここでAPIキーを取得できます</Card.Description>
+        </Card>
+      </Cards>
+
+    </Steps>
+  </Tabs.Tab>
+
+  {/* スマートコントラクト */}
+  <Tabs.Tab>
+    <Steps>
+
+      ### CLIのインストール
+
+      <Cards>
+        <Card href="../cli">
+          <Card.Title>Aptos CLI</Card.Title>
+          <Card.Description>
+            Aptos CLIのインストール方法について
+          </Card.Description>
+        </Card>
+      </Cards>
+
+      ### エディタまたはIDEのセットアップ
+
+      Move開発を容易にするために、お好みのエディタに以下の拡張機能を追加してください
+
+      <Tabs items={['JetBrains IDE', 'VSCode']}>
+        <Tabs.Tab>
+          <Cards>
+            <Card
+              href="https://plugins.jetbrains.com/plugin/14721-move-language">
+              <Card.Title linkType="external">Move Language</Card.Title>
+              <Card.Description>CLion、Rust Rover、WebStorm、
+                IntelliJなどのJetBrains IDE用の言語サーバーと構文ハイライター</Card.Description>
+            </Card>
+          </Cards>
+        </Tabs.Tab>
+        <Tabs.Tab>
+          <Cards>
+            <Card
+              href="https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer">
+              <Card.Title linkType="external">Aptos Move Analyzer</Card.Title>
+              <Card.Description>VSCode用の言語サーバーと構文ハイライター</Card.Description>
+            </Card>
+          </Cards>
+        </Tabs.Tab>
+      </Tabs>
+
+      ### スマートコントラクトの作成
+
+      アプリケーションフォルダに移動し、以下のコマンドで新しいスマートコントラクトを初期化します：
+
+      ```sh filename="Terminal"
+      aptos move init --name my_todo_list
+      ```
+
+      ### スマートコントラクトのビルド、コンパイル、デプロイ！
+
+      Aptosでスマートコントラクトを使用するための開発環境のセットアップが完了しました。
+      詳細については、以下のDappチュートリアルのリンクをご覧ください
+
+      <Cards>
+        <Card
+          href="../guides/build-e2e-dapp/1-create-smart-contract#what-is-a-movetoml-file">
+          <Card.Title>スマートコントラクト作成ガイド</Card.Title>
+          <Card.Description>Moveでスマートコントラクトをセットアップする方法を
+            簡単なTodoリストで学ぶガイド</Card.Description>
+        </Card>
+      </Cards>
+
+    </Steps>
+  </Tabs.Tab>
+  {/* create-aptos-dapp */}
+  <Tabs.Tab>
+    <Steps>
+      ### `create-aptos-dapp`のインストール
+      以下のコマンドを実行して、テンプレートからdAppを数秒でインストールできます：
+      <Tabs items={["npx", "pnpx"]}>
+        { /* npx */ }
+        <Tabs.Tab>
+          ```bash filename="Terminal"
+          npx create-aptos-dapp@latest
+          ```
+        </Tabs.Tab>
+        { /* pnpx */ }
+        <Tabs.Tab>
+          ```bash filename="Terminal"
+          pnpx create-aptos-dapp@latest
+          ```
+        </Tabs.Tab>
+      </Tabs>
+
+      ### プロンプトに従って設定
+      CLIプロンプトに従って、新しいdAppの名前、[テンプレート](../create-aptos-dapp#templates)、ネットワークを選択してください。
+
+      ![cad](/docs/cad-video.gif)
+
+      ### 新しいdAppの構築とカスタマイズを始めましょう！
+      新しいプロジェクトに移動し、お好みのIDEで開いて開発を続けましょう！
+
+      次のステップについては、生成された`README.md`ファイルをご確認ください。
+
+      ### 関連情報
+      <Cards>
+        <Card href="../create-aptos-dapp">
+          <Card.Title>Create Aptos Dapp</Card.Title>
+          <Card.Description>ツールの詳細情報</Card.Description>
+        </Card>
+        <Card href="../create-aptos-dapp#templates">
+          <Card.Title>テンプレート</Card.Title>
+          <Card.Description>用意されているテンプレートを閲覧</Card.Description>
+        </Card>
+        <Card href="../create-aptos-dapp/faq">
+          <Card.Title>FAQ</Card.Title>
+          <Card.Description>よくある問題や質問への回答</Card.Description>
+        </Card>
+      </Cards>
+
+    </Steps>
+  </Tabs.Tab>
+</Tabs>

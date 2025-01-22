@@ -1,0 +1,78 @@
+# スポンサード取引
+
+[AIP-39](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-39.md)で概説されているように、スポンサード取引では、あるアカウントが別のアカウントの取引実行に関連する手数料を支払うことができ、実質的に手数料支払者を設定することができます。スポンサード取引により、アプリケーションがAptosブロックチェーンとのやり取りに関連するすべての手数料を負担することで、ユーザーをアプリケーションに導入するプロセスが簡素化されます。以下に2つの例を示します：
+
+- [MerkleTrade](https://merkle.trade/)は、Ethereumウォレットを持つユーザーに対して、Aptosウォレットを作成し、ユーザーがAptosのユーティリティトークンを取得する必要がないように、すべての取引手数料を負担することで、低コストの取引を提供しています。
+- [Graffio](https://medium.com/aptoslabs/graffio-web3s-overnight-sensation-81a6cf18b626)のようなコミュニティエンゲージメントアプリケーションは、ウォレットを持たないユーザーのために、共同描画アプリケーションをサポートするカストディアルアカウントの取引手数料を負担することを提供しました。
+
+## プロセスの概要
+
+スポンサード取引を送信するプロセスは以下の通りです：
+
+- 取引の送信者が`RawTransaction`で定義された操作を決定します。
+- 送信者が`RawTransactionWithData::MultiAgentWithFeePayer`構造を生成します
+  - フレームワーク1.8リリース以前では、手数料支払者のアドレスを含める必要がありました。
+  - フレームワーク1.8リリース以降では、オプションで`0x0`に設定できます。
+- （オプション）送信者が他の署名者からの署名を集約します。
+- 送信者は署名済みの取引を手数料支払者に転送して署名してもらい、ブロックチェーンに転送することができます。
+- 取引の実行時に、送信者アカウントのシーケンス番号が増加し、すべてのガス手数料がガス手数料支払者から差し引かれ、すべての払い戻しがガス手数料支払者に送られます。
+
+あるいは、手数料支払者が操作と関係するすべての署名者を知っている場合、手数料支払者が取引を生成して署名し、他の署名者に署名のために送り返すこともできます。
+
+## 技術的な詳細
+
+Aptosでは、スポンサード取引は他のユーザー取引と同じSignedTransactionを再利用します：
+
+```rust
+pub struct SignedTransaction {
+    /// The raw transaction
+    raw_txn: RawTransaction,
+
+    /// Public key and signature to authenticate
+    authenticator: TransactionAuthenticator,
+}
+```
+
+違いは`TransactionAuthenticator`にあり、これは取引の手数料支払者のアカウントからユーティリティ手数料を抽出する認証を保存します：
+
+```rust
+pub enum TransactionAuthenticator {
+...
+    /// Optional Multi-agent transaction with a fee payer.
+    FeePayer {
+        sender: AccountAuthenticator,
+        secondary_signer_addresses: Vec<AccountAddress>,
+        secondary_signers: Vec<AccountAuthenticator>,
+        fee_payer_address: AccountAddress,
+        fee_payer_signer: AccountAuthenticator,
+    },
+...
+}
+```
+
+アカウントのスポンサード取引を準備するには、まずアカウントがチェーン上に存在している必要があります。この要件は1.8フレームワークリリースで削除される予定です。
+
+1.8フレームワークリリース以降、アカウントはチェーン上に存在している必要はありません。ただし、アカウントの最初の取引では、アカウントが既に存在している場合でも、取引を実行し、アカウント作成に関連するコストをカバーするのに十分なガスが必要です。アカウントモデルの将来の改善により、この要件は削除される予定です。
+
+取引の署名時に、すべての当事者が以下に署名します：
+
+```rust
+pub enum RawTransactionWithData {
+...
+    MultiAgentWithFeePayer {
+        raw_txn: RawTransaction,
+        secondary_signer_addresses: Vec<AccountAddress>,
+        fee_payer_address: AccountAddress,
+    },
+}
+```
+
+フレームワークリリース1.8以前では、すべての署名者は署名前に実際の手数料支払者アドレスを知っている必要がありました。フレームワークリリース1.8以降、署名者はオプションでアドレスを`0x0`に設定でき、手数料支払者のみが自分のアドレスを設定して署名する必要があります。
+
+## SDKサポート
+
+以下はスポンサード取引のデモンストレーションです：
+
+- TypeScript SDKには[いくつかの例](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript-esm/sponsored_transactions)があります
+- Python SDKには[fee_payer_transfer_coin.py](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/fee_payer_transfer_coin.py)に例があります。
+- Rust SDKには[APIテスト](https://github.com/aptos-labs/aptos-core/blob/0a62e54e13bc5da604ceaf39efed5c012a292078/api/src/tests/transactions_test.rs#L255)にテストケースがあります。

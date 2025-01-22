@@ -1,0 +1,238 @@
+# 構造体とリソース
+
+Move言語では、構造体は関連するデータをグループ化するために使用されます。構造体は、通常の構造体とリソース構造体の2種類があります。
+
+## 構造体の定義
+
+構造体は以下の構文で定義されます：
+
+```move
+struct StructName {
+    // フィールド
+    field1: Type1,
+    field2: Type2,
+}
+```
+
+例えば：
+
+```move
+struct Color {
+    red: u8,
+    green: u8,
+    blue: u8,
+}
+
+struct Wallet {
+    balance: u64,
+    owner: address,
+}
+```
+
+## リソース
+
+リソースは、`has key`能力を持つ特別な構造体です。リソースは、グローバルストレージに保存でき、一度に1つのアドレスにのみ存在できます。
+
+```move
+struct CoinStore has key {
+    balance: u64,
+}
+```
+
+リソースは以下の特徴を持ちます：
+
+- コピーできない（`copy`能力がない）
+- 破棄できない（`drop`能力がない）
+- グローバルストレージに保存できる（`key`能力がある）
+
+## 能力
+
+構造体は以下の能力を持つことができます：
+
+- `copy`: 値をコピーできます
+- `drop`: 値を破棄できます
+- `store`: グローバルストレージに保存できます
+- `key`: グローバルストレージのキーとして使用できます
+
+```move
+struct RegularStruct has copy, drop, store {
+    x: u64,
+}
+
+struct ResourceStruct has key, store {
+    y: u64,
+}
+```
+
+## 構造体の作成と使用
+
+構造体は以下のように作成し、使用できます：
+
+```move
+fun create_color(): Color {
+    Color {
+        red: 255,
+        green: 128,
+        blue: 0,
+    }
+}
+
+fun use_color(c: Color): u8 {
+    c.red + c.green + c.blue
+}
+```
+
+## フィールドへのアクセス
+
+構造体のフィールドには、ドット表記でアクセスできます：
+
+```move
+fun modify_color(c: &mut Color) {
+    c.red = 0; // 可変参照を通じてフィールドを変更
+    let r = c.red; // フィールドの値を読み取り
+}
+```
+
+## パック解除
+
+構造体は、パターンマッチングを使用して分解できます：
+
+```move
+let Color { red, green, blue } = color;
+```
+
+## ジェネリック構造体
+
+構造体は型パラメータを持つことができます：
+
+```move
+struct Container<T> {
+    value: T,
+}
+
+fun create_container<T>(value: T): Container<T> {
+    Container { value }
+}
+```
+
+## リソースの操作
+
+リソースは、特別な関数を使用して操作します：
+
+```move
+// リソースを作成してグローバルストレージに移動
+fun create_coin_store(account: &signer) {
+    move_to(account, CoinStore { balance: 0 });
+}
+
+// リソースを取得
+fun get_balance(addr: address): u64 acquires CoinStore {
+    borrow_global<CoinStore>(addr).balance
+}
+
+// リソースを変更
+fun add_balance(addr: address, amount: u64) acquires CoinStore {
+    let store = borrow_global_mut<CoinStore>(addr);
+    store.balance = store.balance + amount;
+}
+```
+
+## 位置構造体
+
+_Move言語バージョン2.0以降_
+
+構造体は、名前付きフィールドの代わりに位置フィールドを持つことができます。位置フィールドは、フィールドの順序によって識別されます：
+
+```move
+struct Pair(u64, u8);
+```
+
+位置構造体の能力は、フィールドリストの後に宣言されます：
+
+```move
+struct Pair(u64, u8) has copy, drop;
+```
+
+位置構造体の値は以下のように作成および分解できます：
+
+```move
+fun example() {
+    let value = Pair(1, true);
+    let Pair(number, boolean) = value;
+    assert!(number == 1 && boolean == true);
+}
+```
+
+## 部分パターン
+
+_Move言語バージョン2.0以降_
+
+パターンは`..`表記を使用して、構造体の残りのフィールドをマッチングできます：
+
+```move
+struct Foo { x: u8, y: u16, z: u32 }
+struct Bar(u8, u16, u32);
+
+fun foo_get_y(self: &Foo): u16 {
+    let Foo { y, .. } = self;
+    y
+}
+
+fun bar_get_0(self: &Bar): u8 {
+    let Bar(x, ..) = self;
+    x
+}
+
+fun bar_get_2(self: &Bar): u32 {
+    let Bar(.., z) = self;
+    z
+}
+```
+
+## 例
+
+### 例1: コイン
+
+```move
+module 0x2::m {
+    struct Coin has store {
+        value: u64,
+    }
+
+    public fun mint(value: u64): Coin {
+        Coin { value }
+    }
+
+    public fun withdraw(coin: &mut Coin, amount: u64): Coin {
+        assert!(coin.value >= amount, 1000);
+        coin.value = coin.value - amount;
+        Coin { value: amount }
+    }
+
+    public fun deposit(coin: &mut Coin, other: Coin) {
+        let Coin { value } = other;
+        coin.value = coin.value + value;
+    }
+}
+```
+
+### 例2: ジオメトリ
+
+```move
+module 0x2::point {
+    struct Point has copy, drop, store {
+        x: u64,
+        y: u64,
+    }
+
+    public fun new(x: u64, y: u64): Point {
+        Point { x, y }
+    }
+
+    public fun dist_squared(p1: &Point, p2: &Point): u64 {
+        let dx = if (p1.x > p2.x) p1.x - p2.x else p2.x - p1.x;
+        let dy = if (p1.y > p2.y) p1.y - p2.y else p2.y - p1.y;
+        dx * dx + dy * dy
+    }
+}
+```

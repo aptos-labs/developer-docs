@@ -1,0 +1,825 @@
+---
+title: "Moveセキュリティガイドライン"
+---
+
+# Moveセキュリティガイドライン
+
+Move言語は、型システムと線形論理を含む複数の機能を備えたセキュリティを考慮して設計されています。しかし、その新規性とビジネスロジックの複雑さにより、開発者がMoveの安全なコーディングパターンに精通していない場合があり、バグにつながる可能性があります。
+
+このガイドは、一般的なアンチパターンとその安全な代替案を詳しく説明することで、このギャップに対応します。セキュリティ上の問題がどのように発生するかを示す実践的な例を提供し、安全なコーディングのためのベストプラクティスを推奨します。このガイドは、開発者のMoveのセキュリティメカニズムに対する理解を深め、スマートコントラクトの堅牢な開発を確実にすることを目的としています。
+
+## アクセス制御
+
+### オブジェクト所有権チェック
+
+すべての`Object<T>`は誰でもアクセスできます。つまり、呼び出し元が所有していない場合でも、任意の`Object<T>`を任意の関数に渡すことができます。
+`signer`がオブジェクトの正当な所有者であることを確認することが重要です。
+
+#### 安全でないコード例
+
+このモジュールでは、ユーザーは特定のアクションを実行する前にサブスクリプションを購入する必要があります。ユーザーは登録関数を呼び出して`Object<Subscription>`を取得し、後でそれを使用して操作を実行することができます。
+
+```move filename="object_example.move"
+module 0x42::example {
+
+    struct Subscription has key {
+        end_subscription: u64
+    }
+
+    entry fun registration(user: &signer, end_subscription: u64) {
+        let price = calculate_subscription_price(end_subscription);
+        payment(user,price);
+
+        let user_address = address_of(user);
+        let constructor_ref = object::create_object(user_address);
+        let subscription_signer = object::generate_signer(&constructor_ref);
+        move_to(&subscription_signer, Subscription { end_subscription });
+    }
+
+    entry fun execute_action_with_valid_subscription(
+        user: &signer, obj: Object<Subscription>
+    ) acquires Subscription {
+        let object_address = object::object_address(&obj);
+        let subscription = borrow_global<Subscription>(object_address);
+        assert!(subscription.end_subscription >= aptos_framework::timestamp::now_seconds(),1);
+        // Use the subscription
+        [...]
+    }
+}
+この安全でない例では、`execute_action_with_valid_subscription`は渡された`obj`をユーザーが所有しているかどうかを検証していません。その結果、誰でも他人のサブスクリプションを使用でき、支払い要件を回避することができます。
+
+#### 安全なコード例
+
+signerがオブジェクトを所有していることを確認します。
+
+```move filename="object_example.move"
+module 0x42::example {
+
+    struct Subscription has key {
+        end_subscription: u64
+    }
+
+    entry fun registration(user: &signer, end_subscription: u64) {
+        let price = calculate_subscription_price(end_subscription);
+        payment(user,price);
+
+        let user_address = address_of(user);
+        let constructor_ref = object::create_object(user_address);
+        let subscription_signer = object::generate_signer(&constructor_ref);
+        move_to(&subscription_signer, Subscription { end_subscription });
+    }
+
+    entry fun execute_action_with_valid_subscription(
+        user: &signer, obj: Object<Subscription>
+    ) acquires Subscription {
+        //ensure that the signer owns the object.
+        assert!(object::owner(&obj)==address_of(user),ENOT_OWNWER);
+        let object_address = object::object_address(&obj);
+        let subscription = borrow_global<Subscription>(object_address);
+        assert!(subscription.end_subscription >= aptos_framework::timestamp::now_seconds(),1);
+        // Use the subscription
+        [...]
+    }
+}
+```
+
+### グローバルストレージのアクセス制御
+
+`&signer`を受け入れるだけでは、アクセス制御の目的には必ずしも十分ではありません。特に重要な操作を実行する際は、signerが期待されたアカウントであることを必ず確認してください。
+
+適切な認可のないユーザーが特権的なアクションを実行する可能性があります。
+
+#### 安全でないコード例
+
+このコードスニペットでは、`delete`関数を呼び出す任意のユーザーが、呼び出し元に必要な権限があるかどうかを確認せずに`Object`を削除することができます。
+
+```move
+module 0x42::example {
+  struct Object has key{
+    data: vector<u8>
+  }
+
+  public fun delete(user: &signer, obj: Object) {
+    let Object { data } = obj;
+  }
+}
+```
+
+#### セキュアなコード例
+
+より良い方法は、`signer::address_of(signer)`から直接データを借用することで、Moveが提供するグローバルストレージを使用することです。このアプローチは、トランザクションの署名者のアドレスに含まれるデータにのみアクセスするため、堅牢なアクセス制御を保証します。この方法はアクセス制御エラーのリスクを最小限に抑え、`signer`が所有するデータのみが操作できることを保証します。
+
+```move
+module 0x42::example {
+  struct Object has key{
+    data: vector<u8>
+  }
+
+  public fun delete(user: &signer) {
+    let Object { data } = move_from<Object>(signer::address_of(user));
+  }
+}
+```
+
+### 関数の可視性
+
+最小権限の原則に従います：
+
+- 常にプライベート関数から始め、ビジネスロジックに必要な場合にのみ可視性を変更します。
+- Aptos CLIまたはSDKからのみ使用することを意図した関数には`entry`を使用します。
+- 特定のモジュールからのみアクセス可能な関数には`friend`を使用します。
+- ストレージからデータを読み取り、状態を変更しない関数には`#[view]`デコレータを使用します。ただし、#[view]関数は間接的に呼び出される可能性があり、その場合はストレージを変更する可能性があります。
+
+関数の可視性は、誰が関数を呼び出せるかを決定します。これはアクセス制御を強制する方法であり、スマートコントラクトのセキュリティにとって重要です：
+
+- プライベート関数は、定義されているモジュール内でのみ呼び出し可能です。他のモジュールやCLI/SDKからはアクセスできないため、コントラクト内部との意図しない相互作用を防ぎます。
+
+```move
+module 0x42::example {
+  fun sample_function() { /* ... */ }
+}
+```
+
+- `public(friend)`関数は、指定された_friends_モジュールに関数の呼び出しを許可することでこれを拡張し、一般的なアクセスを制限しながら異なるコントラクト間の制御された相互作用を可能にします。
+
+```move
+module 0x42::example {
+  friend package::mod;
+
+  public(friend) fun sample_function() { /* ... */ }
+}
+```
+
+- `public`関数は、公開されているモジュールやスクリプトから呼び出すことができます。
+
+```move
+module 0x42::example {
+  public fun sample_function() { /* ... */ }
+}
+```
+
+- `#[view]`デコレータが付いた関数はストレージを変更できません。データの読み取りのみを行い、状態変更のリスクなく安全に情報にアクセスする方法を提供します。
+
+```move
+module 0x42::example {
+  #[view]
+  public fun read_only() { /* ... */ }
+}
+```
+
+- Moveの`entry`修飾子は、トランザクションのエントリーポイントを示すために使用されます。`entry`修飾子を持つ関数は、トランザクションがブロックチェーンに送信されたときの実行開始点として機能します。
+
+```move
+module 0x42::example {
+  entry fun f(){}
+}
+```
+まとめると：
+
+|                | モジュール自身 | 他のモジュール                      | Aptos CLI/SDK |
+| -------------- | ------------- | ---------------------------------- | ------------- |
+| private        | ✅            | ⛔                                 | ⛔            |
+| public(friend) | ✅            | ✅ friendの場合<br></br>⛔ それ以外 | ⛔            |
+| public         | ✅            | ✅                                 | ⛔            |
+| entry          | ✅            | ⛔                                 | ✅            |
+
+この階層化された可視性により、認可されたエンティティのみが特定の関数を実行できるようになり、コントラクトの整合性を損なうバグや攻撃のリスクを大幅に軽減します。
+
+なお、`entry`は`public`や`public(friend)`と組み合わせることが可能です。
+
+```move
+module 0x42::example {
+  public(friend) entry fun sample_function() { /* ... */ }
+}
+```
+この場合、`sample_function`はAptos CLI/SDKとfriendとして宣言された任意のモジュールの両方から呼び出すことができます。
+
+#### 影響
+
+この原則を守ることで、関数が過度に公開されることを防ぎ、ビジネスロジックに必要な範囲のみに関数アクセスを制限することができます。
+
+## 型とデータ構造
+
+### ジェネリクス型チェック
+
+ジェネリクスは、異なる入力データ型に対して関数や構造体を定義するために使用できます。使用する際は、ジェネリック型が有効で期待通りのものであることを確認してください。ジェネリクスについての[詳細はこちら](book/generics.mdx)をご覧ください。
+
+チェックされていないジェネリクスは、不正なアクションやトランザクションのアボートにつながり、プロトコルの整合性を損なう可能性があります。
+
+#### 安全でないコードの例
+
+以下のコードは、フラッシュローンの簡略版を示しています。
+
+`flash_loan<T>`関数では、ユーザーは指定された量のコイン型**`T`**を借りることができ、借入額とトランザクション終了前にプロトコルに返却されるべき手数料を記録した`Receipt`も一緒に受け取ります。
+
+`repay_flash_loan<T>`関数は、パラメータとして`Receipt`と`Coin<T>`を受け取ります。この関数は`Receipt`から返済額を取り出し、返却された`Coin<T>`の値が`Receipt`で指定された額以上であることを確認します。しかし、返却された`Coin<T>`が最初に貸し出された`Coin<T>`と同じであることを確認するチェックがないため、より価値の低いコインでローンを返済することが可能になってしまいます。
+
+```move
+module 0x42::example {
+  struct Coin<T> {
+    amount: u64
+  }
+
+  struct Receipt {
+    amount: u64
+  }
+
+  public fun flash_loan<T>(user: &signer, amount: u64): (Coin<T>, Receipt) {
+    let (coin, fee) = withdraw(user, amount);
+    ( coin, Receipt {amount: amount + fee} )
+  }
+
+  public fun repay_flash_loan<T>(rec: Receipt, coins: Coin<T>) {
+    let Receipt{ amount } = rec;
+    assert!(coin::value<T>(&coin) >= rec.amount, 0);
+    deposit(coin);
+  }
+}
+```
+
+#### 安全なコードの例
+
+以下のAptosフレームワークのサンプルは、2つのジェネリック型`K`と`V`からなるキーバリューテーブルを作成します。関連する`add`関数は、パラメータとして`Table<K, V>`オブジェクト、型`K`の`key`、型`V`の`value`を受け取ります。`phantom`構文により、キーと値の型がテーブルのものと異なることができないようになり、型の不一致を防ぎます。`phantom`型パラメータについての[詳細はこちら](book/generics.mdx#phantom-type-parameters)をご覧ください。
+
+```move
+module 0x42::example {
+  struct Table<phantom K: copy + drop, phantom V> has store {
+    handle: address,
+  }
+
+  public fun add<K: copy + drop, V>(table: &mut Table<K, V>, key: K, val: V) {
+    add_box<K, V, Box<V>>(table, key, Box { val })
+  }
+}
+```
+
+Move言語によって提供される設計上の型チェックを活用することで、フラッシュローンプロトコルのコードを改良することができます。以下のコードでは、`repay_flash_loan`に渡されるコインが、最初に貸し出されたコインと一致することを保証しています。
+
+```move
+module 0x42::example {
+  struct Coin<T> {
+    amount: u64
+  }
+  struct Receipt<phantom T> {
+    amount: u64
+  }
+
+  public fun flash_loan<T>(_user: &signer, amount:u64): (Coin<T>, Receipt<T>) {
+    let (coin, fee) = withdraw(user, amount);
+    (coin,Receipt { amount: amount + fee})
+  }
+
+  public fun repay_flash_loan<T>(rec: Receipt<T>, coins: Coin<T>) {
+    let Receipt{ amount } = rec;
+    assert!(coin::value<T>(&coin) >= rec.amount, 0);
+    deposit(coin);
+  }
+}
+```
+
+### リソース管理と無制限実行
+
+プロトコルのセキュリティとガス効率を維持するためには、効果的なリソース管理と無制限実行の防止が重要です。コントラクト設計では以下の点を考慮することが不可欠です：
+
+1. 制約なしに任意のユーザーが追加できる、無制限のエントリを許可する公開アクセス可能な構造に対する反復処理を避ける。
+2. コインやNFTなどのユーザー固有の資産は、個々のユーザーアカウント内に保存する。
+3. モジュールやパッケージに関連する情報は、ユーザーデータとは別にオブジェクト内に保持する。
+4. すべてのユーザー操作を単一の共有グローバル空間で組み合わせるのではなく、個々のユーザーごとに分離する。
+
+#### 影響
+
+これらの側面を無視すると、攻撃者がガスを枯渇させてトランザクションを中断させることが可能になります。これによりアプリケーションの機能がブロックされる可能性があります。
+
+#### 安全でないコードの例
+
+以下のコードは、すべてのオープンオーダーに対してループを実行しており、多数のオーダーを登録することでブロックされる可能性があります：
+
+```move
+module 0x42::example {
+  public fun get_order_by_id(order_id: u64): Option<Order> acquires OrderStore {
+    let order_store = borrow_global_mut<OrderStore>(@admin);
+    let i = 0;
+    let len = vector::length(&order_store.orders);
+    while (i < len) {
+      let order = vector::borrow<Order>(&order_store.orders, i);
+      if (order.id == order_id) {
+        return option::some(*order)
+      };
+      i = i + 1;
+    };
+    return option::none<Order>()
+  }
+  //時間とガスの消費がO(1)の操作。
+  public entry fun create_order(buyer: &signer) { /* ... */ }
+}
+```
+
+#### 安全なコードの例
+
+注文管理システムは、単一のグローバルな注文ストアではなく、各ユーザーの注文を各自のアカウントに保存する方式で構築することを推奨します。このアプローチは、ユーザーデータを分離することでセキュリティを向上させるだけでなく、データ負荷を分散させることでスケーラビリティも向上させます。グローバルストアにアクセスする **`borrow_global_mut<OrderStore>(@admin)`** を使用する代わりに、注文は個々のユーザーのアカウントを通じてアクセスする必要があります。
+
+```move
+module 0x42::example {
+  public fun get_order_by_id(user: &signer, order_id: u64): Option<Order> acquires OrderStore {
+    let order_store = borrow_global_mut<OrderStore>(signer::address_of(user));
+    if (smart_table::contains(&order_store.orders, order_id)) {
+      let order = smart_table::borrow(&order_store.orders, order_id);
+      option::some(*order)
+    } else {
+      option::none<Order>()
+    }
+  }
+}
+```
+また、実行される操作の特定のニーズに合わせて効率的なデータ構造を利用することをお勧めします。例えば、この文脈では **`SmartTable`** が特に効果的です。
+
+### Moveのアビリティ
+
+Moveのアビリティは、言語内のデータ構造に対して可能なアクションを制御する一連の権限です。スマートコントラクト開発者は、セキュリティの脆弱性を防ぐため、これらの機能を必要な場所にのみ割り当て、その影響を理解して慎重に扱う必要があります。
+
+| アビリティ | 説明                                                                                                            |
+| ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| copy    | 値の複製を許可し、コントラクト内で複数回使用することができます。                        |
+| drop    | メモリから値を破棄することを許可します。これはリソースを制御しリークを防ぐために必要です。          |
+| store   | データをグローバルストレージに保存できるようにします。トランザクション間でデータを永続化するために重要です。                          |
+| key     | データにグローバルストレージ操作のキーとして機能する能力を付与します。データの取得と操作に重要です。 |
+
+アビリティについての[詳細はこちら](book/abilities.mdx)をご覧ください。
+
+アビリティの誤った使用は、機密データの不正なコピー(`copy`)、リソースリーク(`drop`)、グローバルストレージの誤った取り扱い(`store`)などのセキュリティ問題につながる可能性があります。
+
+#### 安全でないコードの例
+
+```move
+module 0x42::example {
+  struct Token has copy { }
+  struct FlashLoan has drop { }
+}
+```
+- `Token`に`copy`機能を付与すると、トークンを複製できるようになり、二重支払いやトークン供給のインフレーションが可能になり、通貨の価値が下がる可能性があります。
+- `FlashLoan`構造体に`drop`機能を許可すると、借り手が返済前にローンを破棄することで、ローンから逃れることができる可能性があります。
+
+## 算術演算
+
+---
+
+### 除算の精度
+
+切り捨てによって精度を低下させる算術演算は、プロトコルがこれらの計算結果を過小報告する可能性があります。
+
+Moveには6つの符号なし整数データ型があります: `u8`、`u16`、`u32`、`u64`、`u128`、`u256`です。Moveの除算演算は小数部を切り捨て、事実上最も近い整数に切り下げられるため、プロトコルがこのような計算の結果を過小表現する可能性があります。
+
+計算における丸め誤差は、財務上の不均衡、データの不正確さ、欠陥のある意思決定プロセスを引き起こす可能性があり、広範な影響を及ぼす可能性があります。これらのエラーは、状況に応じて収益の損失、不当な利益の付与、さらには安全性のリスクをもたらす可能性があります。システムの信頼性とユーザーの信頼を維持するためには、正確で精密な計算が不可欠です。
+
+#### 安全でないコードの例
+
+```move
+module 0x42::example {
+  public fun calculate_protocol_fees(size: u64): (u64) {
+    return size * PROTOCOL_FEE_BPS / 10000
+  }
+}
+```
+
+`size`が`10000 / PROTOCOL_FEE_BPS`より小さい場合、手数料は0に切り下げられ、ユーザーは実質的に手数料を支払うことなくプロトコルを利用できてしまいます。
+
+#### 安全なコードの例
+
+以下の例では、このコードの問題を軽減するための2つの異なる戦略を示しています：
+
+- 最小注文サイズのしきい値を`10000 / PROTOCOL_FEE_BPS`より大きく設定し、手数料が0に切り下げられることがないようにします。
+
+```move
+module 0x42::example {
+  const MIN_ORDER_SIZE: u64 = 10000 / PROTOCOL_FEE_BPS + 1;
+
+  public fun calculate_protocol_fees(size: u64): (u64) {
+    assert!(size >= MIN_ORDER_SIZE, 0);
+    return size * PROTOCOL_FEE_BPS / 10000
+  }
+}
+```
+
+- 手数料が0でないことを確認し、最小手数料を設定するかトランザクションを拒否するなど、状況に応じて具体的に対処します。
+
+```move
+module 0x42::example {
+  public fun calculate_protocol_fees(size: u64): (u64) {
+    let fee = size * PROTOCOL_FEE_BPS / 10000;
+    assert!(fee > 0, 0);
+    return fee;
+  }
+}
+```
+
+### 整数に関する考慮事項
+
+Moveでは、オーバーフローやアンダーフローによって予期しない動作や脆弱性が発生するのを防ぐため、整数演算のセキュリティが設計されています。具体的には：
+
+- 加算（`+`）と乗算（`*`）は、結果が整数型の許容範囲を超える場合、プログラムをアボートさせます。この文脈でのアボートとは、プログラムが即座に終了することを意味します。
+- 減算（`-`）は、結果が0未満になる場合にアボートします。
+- 除算（`/`）は、除数が0の場合にアボートします。
+- 左シフト（`<<`）は、特殊なケースとして、オーバーフロー時にアボートしません。これは、シフトされたビットが整数型の格納容量を超えた場合、プログラムは終了せず、不正確な値や予測不可能な動作を引き起こす可能性があることを意味します。
+
+演算について[詳しくはこちら](book/integers.mdx#operations)をご覧ください。
+
+不適切な演算は、意図しないアボートを引き起こしたり、不正確なデータを計算したりすることで、スマートコントラクトの正しい実行を予期せず変更する可能性があります。
+
+## Aptos オブジェクト
+
+---
+
+### ConstructorRef の漏洩
+
+オブジェクトを作成する際は、オブジェクトの`ConstructorRef`を絶対に公開しないようにしてください。これはオブジェクトにリソースを追加することを許可してしまうためです。`ConstructorRef`は、オブジェクトの所有権を変更または移転するために使用される他の機能（「Refs」）を生成するためにも使用できます。オブジェクトの機能について[詳しくはこちら](object/creating-objects.mdx)をご覧ください。
+
+#### 脆弱なコードの例
+
+例えば、`mint`関数がNFTの`ConstructorRef`を返す場合、それは`TransferRef`に変換され、グローバルストレージに保存され、売却後でも元の所有者がNFTを転送することを可能にしてしまう可能性があります。
+
+```move
+module 0x42::example {
+  use std::string::utf8;
+
+  public fun mint(creator: &signer): ConstructorRef {
+    let constructor_ref = token::create_named_token(
+        creator,
+        string::utf8(b"Collection Name"),
+        string::utf8(b"Collection Description"),
+        string::utf8(b"Token"),
+        option::none(),
+        string::utf8(b"https://mycollection/token.jpeg"),
+    );
+    constructor_ref
+  }
+}
+```
+
+#### 安全なコードの例
+
+`mint`関数で`ConstructorRef`を返さないようにしましょう：
+
+```move
+module 0x42::example {
+  use std::string::utf8;
+
+  public fun mint(creator: &signer) {
+    let constructor_ref = token::create_named_token(
+        creator,
+        string::utf8(b"Collection Name"),
+        string::utf8(b"Collection Description"),
+        string::utf8(b"Token"),
+        option::none(),
+        string::utf8(b"https://mycollection/token.jpeg"),
+    );
+  }
+}
+```
+
+### オブジェクトアカウント
+
+Aptosフレームワークでは、複数の`key`可能なリソースを1つのオブジェクトアカウントに格納できます。
+
+ただし、オブジェクトは異なるアカウントに分離する必要があります。そうしないと、アカウント内の1つのオブジェクトへの変更がコレクション全体に影響を与える可能性があります。
+
+例えば、1つのリソースを転送すると、転送関数はアカウント内のすべてのリソースの一般的なタグである`ObjectCore`に対して動作するため、グループメンバー全体の転送が発生します。
+
+Aptosオブジェクトについて[詳しくはこちら](objects.mdx)をご覧ください。
+
+#### 脆弱なコードの例
+
+`mint_two`関数は、`sender`が自身のために`Monkey`を作成し、`Toad`を`recipient`に送信することを可能にします。
+
+`Monkey`と`Toad`が同じオブジェクトアカウントに属しているため、結果として両方のオブジェクトが`recipient`によって所有されることになります。
+
+```move
+module 0x42::example {
+  #[resource_group(scope = global)]
+  struct ObjectGroup { }
+
+  #[resource_group_member(group = 0x42::example::ObjectGroup)]
+  struct Monkey has store, key { }
+
+  #[resource_group_member(group = 0x42::example::ObjectGroup)]
+  struct Toad has store, key { }
+
+  fun mint_two(sender: &signer, recipient: &signer) {
+    let constructor_ref = &object::create_object_from_account(sender);
+    let sender_object_signer = object::generate_signer(constructor_ref);
+    let sender_object_addr = object::address_from_constructor_ref(constructor_ref);
+
+    move_to(sender_object_signer, Monkey{});
+    move_to(sender_object_signer, Toad{});
+    let monkey_object: Object<Monkey> = object::address_to_object<Monkey>(sender_object_addr);
+    object::transfer<Monkey>(sender, monkey_object, signer::address_of(recipient));
+  }
+}
+```
+#### 安全なコードの例
+
+この例では、オブジェクトは別々のオブジェクトアカウントに格納する必要があります：
+
+```move
+module 0x42::example {
+  #[resource_group(scope = global)]
+  struct ObjectGroup { }
+
+  #[resource_group_member(group = 0x42::example::ObjectGroup)]
+  struct Monkey has store, key { }
+
+  #[resource_group_member(group = 0x42::example::ObjectGroup)]
+  struct Toad has store, key { }
+
+  fun mint_two(sender: &signer, recipient: &signer) {
+    let sender_address = signer::address_of(sender);
+
+    let constructor_ref_monkey = &object::create_object(sender_address);
+    let constructor_ref_toad = &object::create_object(sender_address);
+    let object_signer_monkey = object::generate_signer(&constructor_ref_monkey);
+    let object_signer_toad = object::generate_signer(&constructor_ref_toad);
+
+    move_to(object_signer_monkey, Monkey{});
+    move_to(object_signer_toad, Toad{});
+
+    let object_address_monkey = signer::address_of(&object_signer_monkey);
+
+    let monkey_object: Object<Monkey> = object::address_to_object<Monkey>(object_address_monkey);
+    object::transfer<Monkey>(sender, monkey_object, signer::address_of(recipient));
+  }
+}
+```
+
+## ビジネスロジック
+
+### フロントランニング
+
+フロントランニングとは、他者が既に行った将来のアクションに関する知識を利用して、他者より先にトランザクションを実行することです。このような戦術は、保留中のトランザクションの結果を予測して利益を得ることができるため、フロントランナーに不当な優位性を与えます。
+
+フロントランニングは、分散型アプリケーションの公平性と完全性を損なう可能性があります。資金の損失、ゲームでの不当な優位性、市場価格の操作、そしてプラットフォームへの信頼の全般的な喪失につながる可能性があります。
+
+#### 安全でないコードの例
+
+宝くじのシナリオでは、ユーザーは1から100までの数字を選んで参加します。ある時点で、ゲーム管理者は`set_winner_number`関数を呼び出して当選番号を設定します。その後、別のトランザクションで、管理者は`evaluate_bets_and_determine_winners`を通じて全プレイヤーの賭けを確認して勝者を決定します。
+
+`set_winner_number`によって設定された当選番号を観察したフロントランナーは、`evaluate_bets_and_determine_winners`が実行される前に、遅れて賭けを提出したり、既存の賭けを当選番号に合わせて修正したりする可能性があります。
+
+```move
+module 0x42::example {
+  struct LotteryInfo {
+    winning_number: u8,
+    is_winner_set: bool,
+  }
+
+  struct Bets { }
+
+  public fun set_winning_number(admin: &signer, winning_number: u8) {
+    assert!(signer::address_of(admin) == @admin, 0);
+    assert!(winning_number < 10,0);
+    let lottery_info = LotteryInfo { winning_number, is_winner_set: true };
+    move_to<LotteryInfo>(admin, lottery_info);
+  }
+
+  public fun evaluate_bets_and_determine_winners(admin: &signer) acquires LotteryInfo, Bets {
+    assert!(signer::address_of(admin) == @admin, 0);
+    let lottery_info = borrow_global<LotteryInfo>(admin);
+    assert(lottery_info.is_winner_set, 1);
+
+    let bets = borrow_global<Bets>(admin);
+    let winners: vector<address> = vector::empty();
+
+    let winning_bets_option = smart_table::borrow_with_default(&bets.bets, lottery_info.winning_number, &vector::empty());
+
+    vector::iter(winning_bets_option, |bet| {
+       vector::push_back(&mut winners, bet.player);
+    });
+    distribute_rewards(&winners);
+  }
+}
+```
+
+#### 安全なコードの例
+
+フロントランニングを回避するための効果的な戦略として、答えを公開してゲームを終了する`finalize_lottery`関数を1つのトランザクション内で実装し、他の関数をプライベートにすることが考えられます。このアプローチにより、答えが公開されるとすぐにシステムは新しい回答を受け付けなくなり、フロントランニングの可能性を排除することができます。
+
+```move
+module 0x42::example {
+  public fun finalize_lottery(admin: &signer, winning_number: u64) {
+    set_winner_number(admin, winning_number);
+    evaluate_bets_and_determine_winners(admin);
+  }
+
+  fun set_winning_number(admin: &signer, winning_number: u64) { }
+
+  fun evaluate_bets_and_determine_winners(admin: &signer) acquires LotteryInfo, Bets { }
+}
+```
+
+### プライスオラクルの操作
+
+Defiアプリケーションにおいて、ペアのトークンの流動性比率を使用して取引価格を決定するプライスオラクルは、操作に対して脆弱である可能性があります。この脆弱性は、大量のトークンを保有する市場参加者が流動性比率に影響を与えることができるという事実から生じます。これらの参加者が戦略的にトークン保有量を増減させると、流動性比率に影響を与え、その結果プライスオラクルによって決定される価格に影響を与え、プールを枯渇させる可能性があります。
+
+価格決定には複数のオラクルを使用することを推奨します。
+
+#### 安全なコードの例
+
+例えば、Thalaは階層型オラクル設計を採用しています。システムにはプライマリとセカンダリの2つのオラクルがあります。1つのオラクルが失敗した場合、もう1つのオラクルが高度な切り替えロジックに基づいてバックアップとして機能します。このシステムは敵対的な状況を想定して設計されており、ガバナンスの介入を最小限に抑えながら、常に高精度の価格フィードを提供することを目指しています。
+
+詳細については、[Thalaのドキュメント](https://docs.thala.fi/thala-protocol-design/move-dollar-mod/oracles)を参照してください。
+
+### トークン識別子の衝突
+
+トークンを扱う際は、決定論的な順序を確立するためのトークン構造体の比較方法が衝突を引き起こさないようにする必要があります。アドレス、モジュール、構造体名をベクターに連結するだけでは不十分です。これは、一意として扱われるべき類似の名前を区別できないためです。
+
+その結果、トークン構造体の比較における衝突により、プロトコルが正当なスワップペアを誤って拒否する可能性があります。この見落としはスワップ操作の整合性を損なう可能性があり、資金の損失につながる可能性があります。
+
+#### 安全でないコードの例
+
+`get_pool_address`関数は、代替可能資産の取引ペアに関連する流動性プールの一意のアドレスを作成します。指定された2つのトークンの流動性プールの固有の識別子として機能するアドレスを生成して返します。
+
+しかし、ユーザーは任意のシンボルで`Object<Metadata>`を作成する自由があります。この柔軟性により、他の既存のインスタンスを模倣する`Object<Metadata>`インスタンスが作成される可能性があります。この問題はシード値の衝突を引き起こし、その結果プールアドレスの生成において衝突が発生する可能性があります。
+
+```move
+module 0x42::example {
+  public fun get_pool_address(token_1: Object<Metadata>, token_2: Object<Metadata>): address {
+    let token_symbol = string::utf8(b"LP-");
+    string::append(&mut token_symbol, fungible_asset::symbol(token_1));
+    string::append_utf8(&mut token_symbol, b"-");
+    string::append(&mut token_symbol, fungible_asset::symbol(token_2));
+    let seed = *string::bytes(&token_symbol);
+    object::create_object_address(&@swap, seed)
+  }
+}
+```
+
+#### 安全なコードの例
+
+`object::object_address` は各 `Object<Metadata>` に対して一意の識別子を返します
+
+```move
+module 0x42::example {
+  public fun get_pool_address(token_1: Object<Metadata>, token_2: Object<Metadata>): address {
+    let seeds = vector[];
+    vector::append(&mut seeds, bcs::to_bytes(&object::object_address(&token_1)));
+    vector::append(&mut seeds, bcs::to_bytes(&object::object_address(&token_2)));
+    object::create_object_address(&@swap, seed)
+  }
+}
+```
+
+## オペレーション
+
+---
+
+### 機能の一時停止
+
+プロトコルは効果的に操作を一時停止できる機能を持つべきです。不変のプロトコルの場合、組み込みの一時停止機能が必要です。アップグレード可能なプロトコルは、スマートコントラクトの機能またはプロトコルのアップグレードを通じて一時停止を実現できます。チームはこのプロセスを迅速かつ効率的に実行するための自動化を備えている必要があります。
+
+一時停止メカニズムがないと、脆弱性への長期的な露出につながり、重大な損失を招く可能性があります。効率的な一時停止機能により、セキュリティ上の脅威、バグ、その他の重要な問題に迅速に対応でき、悪用のリスクを最小限に抑え、ユーザー資産とプロトコルの整合性を確保できます。
+
+#### 安全なコードの例
+
+一時停止機能を統合する方法の例
+
+```move
+module 0x42::example {
+  struct State {
+    is_paused: bool,
+  }
+
+  public entry fun pause_protocol(admin: &signer) {
+    assert!(signer::address_of(admin)==@protocol_address, ERR_NOT_ADMIN);
+    let state = borrow_global_mut<State>(@protocol_address);
+    state.is_paused = true;
+  }
+
+  public entry fun resume_protocol(admin: &signer) {
+    assert!(signer::address_of(admin)==@protocol_address, ERR_NOT_ADMIN);
+    let state = borrow_global_mut<State>(@protocol_address);
+    state.is_paused = false;
+  }
+
+  public fun main(user: &signer) {
+    let state = borrow_global<State>(@protocol_address);
+    assert!(!state.is_paused, 0);
+    // ...
+  }
+}
+```
+
+### スマートコントラクトの公開キー管理
+
+テストネットとメインネットで同じアカウントを使用することはセキュリティリスクとなります。テストネットの秘密鍵は、セキュリティの低い環境（ラップトップなど）に保存されることが多く、露出や漏洩のリスクが高くなるためです。テストネットのスマートコントラクトの秘密鍵を入手した攻撃者は、メインネットのコントラクトもアップグレードできてしまいます。
+
+## ランダム性
+
+ランダム性と、ランダムな数値の予測可能性を防ぐことが重要である理由の詳細については、こちらのページを参照してください：[ランダム性ガイド](https://aptos.dev/guides/randomness/)。
+
+---
+
+### ランダム性 - テストとアボート
+
+> Aptosでは、常にセキュリティを第一に考えています。コンパイル時に、publicな関数からランダム性APIが呼び出されないことを確認しています。ただし、`#[lint::allow_unsafe_randomness]`属性をpublic関数に追加することで、ユーザーがこの選択をすることを許可しています。
+
+`public`関数が直接的または間接的にランダム性APIを呼び出す場合、悪意のあるユーザーはこの関数のコンポーザビリティを悪用し、望ましくない結果の場合にトランザクションをアボートすることができます。これにより、ユーザーは望ましい結果が得られるまで何度も試行することができ、ランダム性が損なわれてしまいます。
+
+#### 脆弱なコードの例
+
+```move filename="randomness_example.move"
+module user::lottery {
+    fun mint_to_user(user: &signer) {
+        move_to(user, WIN {});
+    }
+
+    #[lint::allow_unsafe_randomness]
+    public entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            mint_to_user(user);
+        }
+    }
+}
+```
+
+この例では、`play`関数が`public`であるため、他のモジュールと組み合わせることができます。悪意のあるユーザーはこの関数を呼び出して、勝利したかどうかを確認できます。勝利していない場合は、トランザクションをアボートして再試行することができます。
+
+```move filename="randomness_example.move"
+module attacker::exploit {
+    entry fun exploit(attacker: &signer) {
+        @user::lottery::play(attacker);
+        assert!(exists<@user::lottery::WIN>(address_of(attacker)));
+    }
+}
+```
+
+この問題を解決するには、ランダム性APIを直接的または間接的に呼び出すすべての関数の可視性を、`public`や`public entry`ではなく`entry`に設定するだけで十分です。
+
+#### セキュアなコードの例
+
+```move filename="randomness_example.move"
+module user::lottery {
+    fun mint_to_user(user: &signer) {
+        move_to(user, WIN {});
+    }
+
+    #[lint::allow_unsafe_randomness]
+    entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            mint_to_user(user);
+        }
+    }
+}
+```
+
+### ランダム性 - アンダーガス
+
+関数内の異なるコードパスが異なる量のガスを消費する場合、攻撃者はガス制限を操作して結果に偏りを与えることができます。異なるパスがどのように異なる量のガスを消費するかの例を見てみましょう。
+
+#### 脆弱なコードの例
+
+```move filename="randomness_example.move"
+module user::lottery {
+
+    //管理者からユーザーに10 aptosを送金
+    fun win(user: &signer) {
+        let admin_signer = &get_admin_signer();
+        let aptos_metadata = get_aptos_metadata();
+        primary_fungible_store::transfer(admin_signer, aptos_metadata, address_of(user),10);
+    }
+
+    //ユーザーから管理者に10 aptosを送金し、その後管理者から手数料管理者に1 aptosを送金
+    fun lose(user: &signer) {
+
+        //user to admin
+        let aptos_metadata = get_aptos_metadata();
+        primary_fungible_store::transfer(user, aptos_metadata, @admin, 10);
+
+        //admin to fee_admin
+        let admin_signer = &get_admin_signer();
+        primary_fungible_store::transfer(admin_signer, aptos_metadata, @fee_admin, 1);
+    }
+
+    #[randomness]
+    entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            win(user);
+        } else {
+            lose(user);
+        }
+    }
+}
+```
+
+このくじの例では、`win`と`lose`は異なる量のガスを消費します。
+`lose`関数は`win`関数よりも多くのガスを消費します。攻撃者は`win`には十分だが`lose`には不十分なガス制限を設定することができます。これにより`lose`パスが実行される際にトランザクションがアボートされ、ユーザーは`lose`パスを実行できなくなります。そして、ユーザーは勝つまで関数を繰り返し呼び出すことができます。
+
+#### セキュアなコードの例
+
+コードを安全にする方法はいくつかあります：
+
+1. より良い結果が、より悪い結果と同じかそれ以上のガスを使用するようにする。
+2. 管理者アドレスのみがランダム性APIを呼び出せるようにする。
+3. エントリー関数がランダムな結果に関係なく動作するようにする。これはランダムな結果をコミットし、その結果を別のトランザクションでアクションを提供するために使用することで対応できます。一貫したガス使用のために、ランダム性に基づく即時のアクションは避けてください。
+
+> 将来的に、より複雑なコードがアンダーガス攻撃から安全になるように、より多くの機能を提供する予定です。

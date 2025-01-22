@@ -1,0 +1,53 @@
+---
+title: "Running Your Processor"
+---
+
+# Running Your Processor
+
+## Pre-requisites
+Please first read [Creating a Processor](./create-processor.mdx), [Creating a Step](./steps.mdx), and [Connecting Steps](./connect-steps.mdx), which will set up your processor and connect your processor steps.
+
+## How to setup your `config.yaml`
+To run a processor, you'll need to create a `config.yaml` file. 
+The format of the `config.yaml` file should follow the format you've defined in your `IndexerProcessorConfig`. 
+For example, if you're using the `IndexerProcessorConfig` from [`aptos-indexer-processor-example`](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/aptos-indexer-processor-example/src/config/indexer_processor_config.rs), a basic `config.yaml` would look like this: 
+
+```yaml
+health_check_port: 8085
+server_config:
+  processor_config:
+    type: "events_processor"
+  transaction_stream_config:
+    indexer_grpc_data_service_address: "https://grpc.mainnet.aptoslabs.com:443"
+    starting_version: 0
+    auth_token: "{AUTH_TOKEN}"
+    request_name_header: "events-processor"
+  db_config:
+    postgres_connection_string: postgresql://postgres:@localhost:5432/example
+```
+
+The `processor_config` field should match how `ProcessorConfig` is defined in the `IndexerProcessorConfig`, and the same applies for `db_config` and `DbConfig`.
+
+`TransactionStreamConfig` is a config provided by the `transaction-stream` crate. 
+It requires `indexer_grpc_data_service_address`, `auth_token`, and `request_name_header` to be set. 
+To get the `indexer_grpc_data_service_address` and `auth_token`, you can follow the guide [here](../../txn-stream/aptos-hosted-txn-stream.mdx).
+
+`TransactionStreamConfig` also supports more optional fields to modify the connection to [Transaction Stream](../../txn-stream.mdx), which you can learn more about [here](https://github.com/aptos-labs/aptos-indexer-processor-sdk/tree/main/aptos-indexer-processors-sdk/transaction-stream). 
+
+## Running your processor
+Once your `config.yaml` is setup, you can run your processor with:
+```bash
+cd /path/to/your/processor/crate
+cargo run --release -- -c config.yaml
+```
+
+In your terminal, you should start to see logs like this:
+```bash
+{"timestamp":"2025-01-13T21:23:21.785452Z","level":"INFO","message":"[Transaction Stream] Successfully connected to GRPC stream","stream_address":"https://grpc.mainnet.aptoslabs.com/","connection_id":"ec67ecc4-e041-4f17-a2e2-441e7ff21487","start_version":2186504987,"filename":"/Users/reneetso/.cargo/git/checkouts/aptos-indexer-processor-sdk-2f3940a333c8389d/e6867c5/aptos-indexer-processors-sdk/transaction-stream/src/transaction_stream.rs","line_number":349,"threadName":"tokio-runtime-worker","threadId":"ThreadId(4)"}
+{"timestamp":"2025-01-13T21:23:21.785664Z","level":"INFO","message":"Spawning polling task","step_name":"TransactionStreamStep","filename":"/Users/reneetso/.cargo/git/checkouts/aptos-indexer-processor-sdk-2f3940a333c8389d/e6867c5/aptos-indexer-processors-sdk/sdk/src/traits/pollable_async_step.rs","line_number":112,"threadName":"tokio-runtime-worker","threadId":"ThreadId(23)"}
+{"timestamp":"2025-01-13T21:23:21.785693Z","level":"INFO","message":"Spawning processing task","step_name":"TransactionStreamStep","filename":"/Users/reneetso/.cargo/git/checkouts/aptos-indexer-processor-sdk-2f3940a333c8389d/e6867c5/aptos-indexer-processors-sdk/sdk/src/traits/pollable_async_step.rs","line_number":204,"threadName":"tokio-runtime-worker","threadId":"ThreadId(23)"}
+{"timestamp":"2025-01-13T21:23:21.785710Z","level":"INFO","message":"Spawning processing task","step_name":"FungibleAssetExtractor","filename":"/Users/reneetso/.cargo/git/checkouts/aptos-indexer-processor-sdk-2f3940a333c8389d/e6867c5/aptos-indexer-processors-sdk/sdk/src/traits/async_step.rs","line_number":87,"threadName":"tokio-runtime-worker","threadId":"ThreadId(4)"}
+{"timestamp":"2025-01-13T21:23:21.785912Z","level":"INFO","message":"Spawning processing task","step_name":"FungibleAssetStorer","filename":"/Users/reneetso/.cargo/git/checkouts/aptos-indexer-processor-sdk-2f3940a333c8389d/e6867c5/aptos-indexer-processors-sdk/sdk/src/traits/async_step.rs","line_number":87,"threadName":"tokio-runtime-worker","threadId":"ThreadId(4)"}
+{"timestamp":"2025-01-13T21:23:21.785978Z","level":"INFO","message":"Spawning polling task","step_name":"VersionTrackerStep: ()","filename":"/Users/reneetso/.cargo/git/checkouts/aptos-indexer-processor-sdk-2f3940a333c8389d/e6867c5/aptos-indexer-processors-sdk/sdk/src/traits/pollable_async_step.rs","line_number":112,"threadName":"tokio-runtime-worker","threadId":"ThreadId(14)"}
+{"timestamp":"2025-01-13T21:23:21.786018Z","level":"INFO","message":"Spawning processing task","step_name":"VersionTrackerStep: ()","filename":"/Users/reneetso/.cargo/git/checkouts/aptos-indexer-processor-sdk-2f3940a333c8389d/e6867c5/aptos-indexer-processors-sdk/sdk/src/traits/pollable_async_step.rs","line_number":204,"threadName":"tokio-runtime-worker","threadId":"ThreadId(14)"}
+```
