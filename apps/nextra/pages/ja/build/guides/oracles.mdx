@@ -1,32 +1,32 @@
 ---
-Title: Use Oracles in Your Aptos Applications
+Title: Aptosアプリケーションでオラクルを使用する
 ---
 
 import { Callout } from "nextra/components";
 
-# Oracles  
-This reference guide presents various Oracles that you can utilize while building on Aptos. Oracles supply offchain data to the blockchain, enabling smart contracts to access a diverse range of information.
+# オラクル
+このリファレンスガイドでは、Aptos上で開発する際に利用できる様々なオラクルを紹介します。オラクルはブロックチェーンにオフチェーンデータを提供し、スマートコントラクトが多様な情報にアクセスすることを可能にします。
 
 ## Pyth Network
 
-The [Pyth Network](https://pyth.network/) is one of the largest first-party Oracle network, delivering real-time data across [a vast number of chains](https://docs.pyth.network/price-feeds/contract-addresses).
+[Pyth Network](https://pyth.network/)は、[多数のチェーン](https://docs.pyth.network/price-feeds/contract-addresses)にリアルタイムデータを提供する最大級のファーストパーティオラクルネットワークの1つです。
 
-The network comprises some of the world’s [largest exchanges, market makers, and financial services providers](https://pyth.network/publishers). These publish proprietary data on-chain for aggregation and distribution to smart contract applications. 
+このネットワークは、世界最大級の[取引所、マーケットメーカー、金融サービスプロバイダー](https://pyth.network/publishers)で構成されています。これらの機関は、独自のデータをオンチェーンで公開し、スマートコントラクトアプリケーション向けに集約・配信しています。
 
-## How to Use Pyth Real-Time Data in Aptos Contracts
+## Aptosコントラクトでのリアルタイムデータの使用方法
 
-This guide explains how to use real-time Pyth data in Aptos applications.
+このガイドでは、AptosアプリケーションでPythのリアルタイムデータを使用する方法を説明します。
 
-## Configuring the `Move.toml` file
+## `Move.toml`ファイルの設定
 
-Add the Pyth Contract to your project dependencies in the `Move.toml` file:
+`Move.toml`ファイルのプロジェクト依存関係にPythコントラクトを追加します：
 
 ```toml copy
 [dependencies]
 Pyth = { git = "https://github.com/pyth-network/pyth-crosschain.git", subdir = "target_chains/aptos/contracts", rev = "main" }
 ```
 
-The named addresses of `pyth`, `wormhole`, and `deployers` must be defined at compile time. These addresses are used to interact with the Pyth contract on Aptos.
+`pyth`、`wormhole`、`deployers`の名前付きアドレスはコンパイル時に定義する必要があります。これらのアドレスは、Aptos上のPythコントラクトと対話するために使用されます。
 
 ```toml copy
 [addresses]
@@ -35,11 +35,11 @@ deployer = "0xb31e712b26fd295357355f6845e77c888298636609e93bc9b05f0f604049f434"
 wormhole = "0x5bc11445584a763c1fa7ed39081f1b920954da14e04b32440cba863d03e19625"
 ```
 
-Consult [Aptos Contract Addresses](https://docs.pyth.network/price-feeds/contract-addresses/aptos) for the complete list of contract addresses on different Aptos networks.
+異なるAptosネットワーク上のコントラクトアドレスの完全なリストについては、[Aptosコントラクトアドレス](https://docs.pyth.network/price-feeds/contract-addresses/aptos)を参照してください。
 
-## Write Contract Code
+## コントラクトコードの作成
 
-The code snippet below provides an example module fetching the BTC/USD price from Pyth price feeds:
+以下のコードスニペットは、Pythプライスフィードからのビットコイン/米ドル価格を取得するモジュールの例を示しています：
 
 ```rust {21} copy
 module example::example {
@@ -48,51 +48,46 @@ module example::example {
     use pyth::price_identifier;
     use aptos_framework::coin;
 
-    // Add the pyth_price_update argument to any method on your contract that needs to read the Pyth price.
-    // See https://docs.pyth.network/price-feeds/fetch-price-updates for more information on how to fetch the pyth_price_update.
+    // Pythの価格を読み取る必要があるメソッドにpyth_price_update引数を追加します。
+    // pyth_price_updateの取得方法については、https://docs.pyth.network/price-feeds/fetch-price-updates を参照してください。
     public fun get_btc_usd_price(user: &signer, pyth_price_update: vector<vector<u8>>): Price {
 
-        // First update the Pyth price feeds
+        // まずPythプライスフィードを更新します
         let coins = coin::withdraw(user, pyth::get_update_fee(&pyth_price_update));
         pyth::update_price_feeds(pyth_price_update, coins);
 
-        // Read the current price from a price feed.
-        // Each price feed (e.g., BTC/USD) is identified by a price feed ID.
-        // The complete list of feed IDs is available at https://pyth.network/developers/price-feed-ids
-        // Note: Aptos uses the Pyth price feed ID without the `0x` prefix.
+        // プライスフィードから現在の価格を読み取ります。
+        // 各プライスフィード（例：BTC/USD）はプライスフィードIDで識別されます。
+        // フィードIDの完全なリストは https://pyth.network/developers/price-feed-ids で確認できます
+        // 注意：AptosではPythプライスフィードIDを`0x`プレフィックスなしで使用します。
         let btc_price_identifier = x"e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43";
         let btc_usd_price_id = price_identifier::from_byte_vec(btc_price_identifier);
         pyth::get_price(btc_usd_price_id)
     }
 }
-
 ```
 
 <Callout type="info" emoji="ℹ️">
-  The `pyth_price_update` argument contains verified prices from Pyth. Calling
-  `pyth::update_price_feeds` with this value updates the on-chain Pyth price and
-  ensures your application has recent price data. The pyth_price_update can be
-  fetched from Hermes; Consult [Fetch Price Updates](../fetch-price-updates) for
-  more information on how to fetch the `pyth_price_update`.
+  `pyth_price_update`引数にはPythからの検証済み価格が含まれています。この値で`pyth::update_price_feeds`を呼び出すと、オンチェーンのPyth価格が更新され、アプリケーションが最新の価格データを持っていることが保証されます。pyth_price_updateはHermesから取得できます。`pyth_price_update`の取得方法については、[価格更新の取得](../fetch-price-updates)を参照してください。
 </Callout>
 
-The code snippet above does the following things:
+上記のコードスニペットは以下の処理を行います：
 
-1. Call `pyth::get_update_fee` to get the fee required to update the Pyth price feeds.
-1. Call `pyth::update_price_feeds` and pass `pyth_price_update` to update the Pyth price feeds.
-1. Call `pyth::get_price` to read the current price, providing the [price feed ID](https://pyth.network/developers/price-feed-ids) you wish to read.
+1. `pyth::get_update_fee`を呼び出してPythプライスフィードの更新に必要な手数料を取得します。
+2. `pyth::update_price_feeds`を呼び出し、`pyth_price_update`を渡してPythプライスフィードを更新します。
+3. `pyth::get_price`を呼び出して現在の価格を読み取ります。その際、読み取りたい[プライスフィードID](https://pyth.network/developers/price-feed-ids)を指定します。
 
-## Additional Resources
+## 追加リソース
 
-You may find these additional resources helpful for developing your Aptos application.
+Aptosアプリケーションの開発に役立つ追加リソースをご紹介します。
 
-## Sponsored Feeds on Aptos
+## Aptos上のスポンサード価格フィード
 
-The price feeds listed in the table below are currently sponsored in **Aptos mainnet**.
+以下の表に記載されているプライスフィードは、現在**Aptosメインネット**でスポンサーされています。
 
-Update Parameters: **1 second heartbeat or 0.5% price deviation**
+更新パラメータ：**1秒のハートビートまたは0.5%の価格変動**
 
-| Name      | Price Feed Id                                                      |
+| 名前      | プライスフィードID                                                  |
 | --------- | ------------------------------------------------------------------ |
 | APT/USD   | `03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5` |
 | BTC/USD   | `e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43` |
@@ -114,14 +109,13 @@ Update Parameters: **1 second heartbeat or 0.5% price deviation**
 | USDM/USD  | `a6a0dfa49b6b3a93510658245618099f5e842514970f596cf64fad9e0d658193` |
 | STONE/USD | `4dcc2fb96fb89a802ef9712f6bd2246d3607cf95ca5540cb24490d37003f8c46` |
 
-For more details on sponsored feeds, check [here](https://docs.pyth.network/price-feeds/sponsored-feeds) 
+スポンサード価格フィードの詳細については、[こちら](https://docs.pyth.network/price-feeds/sponsored-feeds)をご確認ください。
 
+### APIリファレンス
 
-### API Reference
+[Aptos APIリファレンス](https://docs.pyth.network/price-feeds/api-reference/aptos)では、Pythコントラクトの完全なAPIを対話的に探索できます。
 
-The [Aptos API reference](https://docs.pyth.network/price-feeds/api-reference/aptos) lets you interactively explore the complete API of the Pyth contract.
+### サンプルアプリケーション
 
-### Example Applications
-
-- [Minimal on-chain contract](https://github.com/pyth-network/pyth-examples/blob/main/price_feeds/aptos/fetch_btc_price/sources/example.move), which updates and returns the BTC/USD price from Pyth price feeds.
-- [Mint NFT](https://github.com/pyth-network/pyth-examples/tree/main/price_feeds/aptos/mint_nft) that use Pyth price feeds to mint an NFT.
+- [最小限のオンチェーンコントラクト](https://github.com/pyth-network/pyth-examples/blob/main/price_feeds/aptos/fetch_btc_price/sources/example.move) - Pythプライスフィードからビットコイン/米ドル価格を更新して返します。
+- [NFTミント](https://github.com/pyth-network/pyth-examples/tree/main/price_feeds/aptos/mint_nft) - Pythプライスフィードを使用してNFTをミントします。

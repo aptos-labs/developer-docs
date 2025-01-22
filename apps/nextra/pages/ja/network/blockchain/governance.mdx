@@ -1,71 +1,71 @@
 ---
-title: "Governance"
+title: "ガバナンス"
 ---
 
 import { ThemedImage } from '@components/index'
 
-# Governance
+# ガバナンス
 
-The Aptos on-chain governance is a process by which the Aptos community members can create and vote on proposals that minimize the cost of blockchain upgrades. The following describes the scope of these proposals for the Aptos on-chain governance:
+Aptosのオンチェーンガバナンスは、Aptosコミュニティメンバーがブロックチェーンのアップグレードコストを最小限に抑えるための提案を作成し、投票できるプロセスです。以下は、Aptosオンチェーンガバナンスの提案の範囲について説明します：
 
-- Changes to the blockchain parameters, for example, the epoch duration, and the minimum required and maximum allowed validator stake.
-- Changes to the core blockchain code.
-- Upgrades to the Aptos Framework modules for fixing bugs or for adding or enhancing the Aptos blockchain functionality.
-- Deploying new framework modules (at the address `0x1` - `0xa`).
+- エポック期間や、必要最小限および許容最大のバリデータステーク量など、ブロックチェーンのパラメータの変更。
+- コアブロックチェーンコードの変更。
+- バグ修正やAptosブロックチェーンの機能追加・強化のための、Aptosフレームワークモジュールのアップグレード。
+- 新しいフレームワークモジュールのデプロイ（アドレス`0x1` - `0xa`）。
 
-## How a proposal becomes ready to be resolved
+## 提案が解決可能になるまでの流れ
 
-See below for a summary description of how a proposal comes to exist and when it becomes ready to be resolved:
+以下は、提案が作成され、解決可能になるまでの流れの概要です：
 
 <ThemedImage
-  alt="Proposal voting flow"
+  alt="提案投票フロー"
   sources={{
     light: '/docs/voting-resolution-flow.svg',
     dark: '/docs/voting-resolution-flow-dark.svg',
   }}
 />
 
-- The Aptos community can suggest an Aptos Improvement Proposal (AIP) in the [Aptos Foundation AIP GitHub](https://github.com/aptos-foundation/AIPs).
-- When appropriate, an on-chain proposal can be created for the AIP via the `aptos_governance` module.
-- Voters can then vote on this proposal on-chain via the `aptos_governance` module. If there is sufficient support for a proposal, then it can be resolved.
-- Governance requires a minimal number of votes to be cast by an expiration threshold. However, if sufficient votes, more than 50% of the total supply, are accumulated prior to that threshold, the proposal can be executed **without waiting for the full voting period**.
+- Aptosコミュニティは[Aptos Foundation AIP GitHub](https://github.com/aptos-foundation/AIPs)でAptos改善提案（AIP）を提案できます。
+- 適切な場合、`aptos_governance`モジュールを通じてAIPのオンチェーン提案を作成できます。
+- 投票者は`aptos_governance`モジュールを通じてこの提案にオンチェーンで投票できます。提案に十分な支持があれば、解決することができます。
+- ガバナンスでは、期限までに最小限の投票数が必要です。ただし、総供給量の50%以上の十分な投票が期限前に集まった場合、**投票期間全体を待たずに**提案を実行できます。
 
-## Who can propose
+## 提案できる人
 
-- To either propose or vote, you must stake, but you are not required to run a validator node. However, we recommend that you run validator with a stake as part of the validator set to gain rewards from your stake.
-- To create a proposal, the proposer's backing stake pool must have the minimum required proposer stake. The proposer's stake must be locked up for at least as long as the proposal's voting period. This is to avoid potential spam proposals.
-- Proposers can create a proposal by calling [`aptos_governance::create_proposal`](https://github.com/aptos-labs/aptos-core/blob/27a255ebc662817944435349afc4ec33ea317e64/aptos-move/framework/aptos-framework/sources/aptos_governance.move#L183).
+- 提案または投票するには、ステークが必要ですが、バリデータノードを実行する必要はありません。ただし、ステークから報酬を得るために、バリデータセットの一部としてステークを持つバリデータを実行することをお勧めします。
+- 提案を作成するには、提案者のバッキングステークプールが必要最小限の提案者ステークを持っている必要があります。提案者のステークは、提案の投票期間以上の期間ロックアップされている必要があります。これはスパム提案を防ぐためです。
+- 提案者は[`aptos_governance::create_proposal`](https://github.com/aptos-labs/aptos-core/blob/27a255ebc662817944435349afc4ec33ea317e64/aptos-move/framework/aptos-framework/sources/aptos_governance.move#L183)を呼び出して提案を作成できます。
 
-## Who can vote
+## 投票できる人
 
-- To vote, you must stake, though you are not required to run a validator node. Your voting power is derived from the backing stake pool.
-- Voting power is calculated based on the current epoch's active stake of the proposer or voter's backing stake pool. In addition, the stake pool's lockup must be at least as long as the proposal's duration.
-- Verify proposals before voting. Ensure each proposal is linked to its source code, and if there is a corresponding AIP, the AIP is in the title and description.
+- 投票するにはステークが必要ですが、バリデータノードを実行する必要はありません。投票権はバッキングステークプールから派生します。
+- 投票権は、提案者または投票者のバッキングステークプールの現在のエポックのアクティブステークに基づいて計算されます。また、ステークプールのロックアップは提案期間以上である必要があります。
+- 投票する前に提案を確認してください。各提案がソースコードにリンクされていること、対応するAIPがある場合はタイトルと説明にAIPが含まれていることを確認してください。
 
-If you are a [staking pool](staking.mdx) voter, follow the instructions for voting [here](../nodes/validator-node/connect-nodes/staking-pool-voter.mdx).
+[ステーキングプール](staking.mdx)の投票者の場合は、[こちら](../nodes/validator-node/connect-nodes/staking-pool-voter.mdx)の投票手順に従ってください。
 
-If you are a [delegated staker](delegated-staking.mdx), follow the instructions for voting [here](../nodes/validator-node/connect-nodes/staking-pool-voter.mdx#delegation-pool-voter).
+[委任ステーカー](delegated-staking.mdx)の場合は、[こちら](../nodes/validator-node/connect-nodes/staking-pool-voter.mdx#delegation-pool-voter)の投票手順に従ってください。
 
-## Who can resolve
+## 解決できる人
 
-- Anyone can resolve an on-chain proposal that has passed voting requirements by using the `aptos governance execute-proposal` command from Aptos CLI.
+- 投票要件を満たしたオンチェーン提案は、Aptos CLIの`aptos governance execute-proposal`コマンドを使用して誰でも解決できます。
 
-## Aptos Improvement Proposals (AIPs)
+## Aptos改善提案（AIP）
 
-AIPs are proposals created by the Aptos community or the Aptos Labs team to improve the operations and development of the Aptos chain.
-To submit an AIP, create an issue in [`Aptos Foundation's GitHub repository`](https://github.com/aptos-foundation/AIPs/issues) using the [template](https://github.com/aptos-foundation/AIPs/blob/main/TEMPLATE.md)
-To keep up with new AIPs, check the `#aip-announcements` channel on [Aptos' discord channel](https://discord.gg/aptosnetwork).
-To view and vote on on-chain proposals, go to [`Aptos' Governance website`](https://governance.aptosfoundation.org/).
+AIPは、Aptosコミュニティまたは Aptos Labsチームが作成する、Aptosチェーンの運用と開発を改善するための提案です。
+AIPを提出するには、[テンプレート](https://github.com/aptos-foundation/AIPs/blob/main/TEMPLATE.md)を使用して[`Aptos FoundationのGitHubリポジトリ`](https://github.com/aptos-foundation/AIPs/issues)で課題を作成してください。
+新しいAIPを追跡するには、[Aptosのdiscordチャンネル](https://discord.gg/aptosnetwork)の`#aip-announcements`チャンネルをチェックしてください。
+オンチェーン提案を表示して投票するには、[`Aptosのガバナンスウェブサイト`](https://governance.aptosfoundation.org/)にアクセスしてください。
 
-## Technical Implementation of Aptos Governance
+## Aptosガバナンスの技術的実装
 
-The majority of the governance logic is in [`aptos_governance.move and voting.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources).
-The `aptos_governance` module outlines how users can interact with Aptos Governance. It's the external-facing module of the Aptos on-chain governance process and contains logic and checks that are specific to Aptos Governance.
-The `voting` module is the Aptos governance standard that can be used by DAOs on the Aptos chain to create their own on-chain governance process.
+ガバナンスロジックの大部分は[`aptos_governance.moveとvoting.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources)にあります。
+`aptos_governance`モジュールは、ユーザーがAptosガバナンスとどのように相互作用できるかを概説しています。これはAptosオンチェーンガバナンスプロセスの外部向けモジュールで、Aptosガバナンスに特有のロジックとチェックが含まれています。
+`voting`モジュールは、AptosチェーンのDAOが独自のオンチェーンガバナンスプロセスを作成するために使用できるAptosガバナンス標準です。
 
-If you are thinking about creating a DAO on Aptos, you can refer to `aptos_governance`'s usage of the `voting` module as an example.
-In `aptos_governance`, we rely on the `voting` module to create, vote on, and resolve a proposal.
+AptosでのDAO作成を検討している場合は、`voting`モジュールの使用例として`aptos_governance`を参照できます。
+`aptos_governance`では、提案の作成、投票、解決に`voting`モジュールを使用しています。
 
-- `aptos_governance::create_proposal` calls `voting::create_proposal` to create a proposal on-chain, when an off-chain AIP acquires sufficient importance.
-- `aptos_governance::vote` calls `voting::vote` to record the vote on a proposal on-chain;
-- `aptos_governance::resolve` can be called by anyone. It calls `voting::resolve` to resolve the proposal on-chain.
+- `aptos_governance::create_proposal`は、オフチェーンのAIPが十分な重要性を獲得した時に、`voting::create_proposal`を呼び出してオンチェーンで提案を作成します。
+- `aptos_governance::vote`は`voting::vote`を呼び出して、提案への投票をオンチェーンで記録します。
+- `aptos_governance::resolve`は誰でも呼び出すことができます。これは`voting::resolve`を呼び出して提案をオンチェーンで解決します。

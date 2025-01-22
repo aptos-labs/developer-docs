@@ -1,48 +1,27 @@
-# Sponsored Transactions
+# スポンサード取引
 
-As outlined
-in [AIP-39](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-39.md),
-sponsored transactions allow one account to pay the fees associated with
-executing a transaction for another account, essentially setting up a fee payer.
-Sponsored transactions simplify the process for onboarding users into applications
-by allowing the application to cover all associated fees for interacting with the
-Aptos blockchain. Here are two examples:
+[AIP-39](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-39.md)で概説されているように、スポンサード取引では、あるアカウントが別のアカウントの取引実行に関連する手数料を支払うことができ、実質的に手数料支払者を設定することができます。スポンサード取引により、アプリケーションがAptosブロックチェーンとのやり取りに関連するすべての手数料を負担することで、ユーザーをアプリケーションに導入するプロセスが簡素化されます。以下に2つの例を示します：
 
-- [MerkleTrade](https://merkle.trade/) offers low cost trading to those with
-  Ethereum wallets by creating an Aptos wallet for users and covering all
-  transaction fees so that the user does not need to acquire utility tokens for
-  Aptos.
-- Community engagement applications
-  like [Graffio](https://medium.com/aptoslabs/graffio-web3s-overnight-sensation-81a6cf18b626)
-  offered to cover transaction fees for custodial accounts to support the
-  collaborative drawing application for those without wallets.
+- [MerkleTrade](https://merkle.trade/)は、Ethereumウォレットを持つユーザーに対して、Aptosウォレットを作成し、ユーザーがAptosのユーティリティトークンを取得する必要がないように、すべての取引手数料を負担することで、低コストの取引を提供しています。
+- [Graffio](https://medium.com/aptoslabs/graffio-web3s-overnight-sensation-81a6cf18b626)のようなコミュニティエンゲージメントアプリケーションは、ウォレットを持たないユーザーのために、共同描画アプリケーションをサポートするカストディアルアカウントの取引手数料を負担することを提供しました。
 
-## Process Overview
+## プロセスの概要
 
-The process for sending a sponsored transaction follows:
+スポンサード取引を送信するプロセスは以下の通りです：
 
-- The sender of the transaction determines upon an operation, as defined by
-  a `RawTransaction`.
-- The sender generates a `RawTransactionWithData::MultiAgentWithFeePayer`
-  structure
-  - Prior to the framework 1.8 release, this must contain the fee payer's
-    address.
-  - After framework release 1.8, this can optionally be set to `0x0`.
-- (Optionally) the sender aggregates signatures from other signers.
-- The sender can forward the signed transaction to the fee payer to sign and
-  forward it to the blockchain.
-- Upon execution of the transaction, the sequence number of the sender account
-  is incremented, all gas fees are deducted from the gas fee payer, and all
-  refunds are sent to the gas fee payer.
+- 取引の送信者が`RawTransaction`で定義された操作を決定します。
+- 送信者が`RawTransactionWithData::MultiAgentWithFeePayer`構造を生成します
+  - フレームワーク1.8リリース以前では、手数料支払者のアドレスを含める必要がありました。
+  - フレームワーク1.8リリース以降では、オプションで`0x0`に設定できます。
+- （オプション）送信者が他の署名者からの署名を集約します。
+- 送信者は署名済みの取引を手数料支払者に転送して署名してもらい、ブロックチェーンに転送することができます。
+- 取引の実行時に、送信者アカウントのシーケンス番号が増加し、すべてのガス手数料がガス手数料支払者から差し引かれ、すべての払い戻しがガス手数料支払者に送られます。
 
-Alternatively, if the fee payer knows the operation and all signers involved,
-the fee payer could generate and sign the transaction and send it back to the
-other signers to sign.
+あるいは、手数料支払者が操作と関係するすべての署名者を知っている場合、手数料支払者が取引を生成して署名し、他の署名者に署名のために送り返すこともできます。
 
-## Technical Details
+## 技術的な詳細
 
-In Aptos, a sponsored transaction reuses the same SignedTransaction as any other
-user transaction:
+Aptosでは、スポンサード取引は他のユーザー取引と同じSignedTransactionを再利用します：
 
 ```rust
 pub struct SignedTransaction {
@@ -54,9 +33,7 @@ pub struct SignedTransaction {
 }
 ```
 
-The difference is in the `TransactionAuthenticator`, which stores the
-authorization from the fee payer of the transaction to extract utility fees from
-their account:
+違いは`TransactionAuthenticator`にあり、これは取引の手数料支払者のアカウントからユーティリティ手数料を抽出する認証を保存します：
 
 ```rust
 pub enum TransactionAuthenticator {
@@ -73,17 +50,11 @@ pub enum TransactionAuthenticator {
 }
 ```
 
-To prepare a sponsored transaction for an account, the account must first exist
-on-chain. This is a requirement that is being removed with the 1.8 framework
-release.
+アカウントのスポンサード取引を準備するには、まずアカウントがチェーン上に存在している必要があります。この要件は1.8フレームワークリリースで削除される予定です。
 
-As of the 1.8 framework release, an account does not need to exist on-chain.
-However, the first transaction for an account requires enough gas to not only
-execute the transaction and cover the costs associated with account creation,
-even if an account already exists. Future improvements to the account model
-intend to eliminate this requirement.
+1.8フレームワークリリース以降、アカウントはチェーン上に存在している必要はありません。ただし、アカウントの最初の取引では、アカウントが既に存在している場合でも、取引を実行し、アカウント作成に関連するコストをカバーするのに十分なガスが必要です。アカウントモデルの将来の改善により、この要件は削除される予定です。
 
-During signing of the transaction, all parties sign the following:
+取引の署名時に、すべての当事者が以下に署名します：
 
 ```rust
 pub enum RawTransactionWithData {
@@ -96,18 +67,12 @@ pub enum RawTransactionWithData {
 }
 ```
 
-Prior to framework release 1.8, all signers were required to know the actual fee
-payer address prior to signing. As of framework release 1.8, signers can
-optionally set the address to `0x0` and only the fee payer must sign with their
-address set.
+フレームワークリリース1.8以前では、すべての署名者は署名前に実際の手数料支払者アドレスを知っている必要がありました。フレームワークリリース1.8以降、署名者はオプションでアドレスを`0x0`に設定でき、手数料支払者のみが自分のアドレスを設定して署名する必要があります。
 
-## SDK Support
+## SDKサポート
 
-These are demonstrations of sponsored transactions:
+以下はスポンサード取引のデモンストレーションです：
 
-- The TypeScript SDK
-  has [several examples](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript-esm/sponsored_transactions)
-- The Python SDK has an example
-  in [fee_payer_transfer_coin.py](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/fee_payer_transfer_coin.py).
-- The Rust SDK has a test case
-  in [the API tests](https://github.com/aptos-labs/aptos-core/blob/0a62e54e13bc5da604ceaf39efed5c012a292078/api/src/tests/transactions_test.rs#L255).
+- TypeScript SDKには[いくつかの例](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript-esm/sponsored_transactions)があります
+- Python SDKには[fee_payer_transfer_coin.py](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/fee_payer_transfer_coin.py)に例があります。
+- Rust SDKには[APIテスト](https://github.com/aptos-labs/aptos-core/blob/0a62e54e13bc5da604ceaf39efed5c012a292078/api/src/tests/transactions_test.rs#L255)にテストケースがあります。

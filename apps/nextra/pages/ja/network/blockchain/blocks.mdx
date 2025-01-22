@@ -1,21 +1,21 @@
 ---
-title: "Blocks"
+title: "ブロック"
 id: "blocks"
 ---
 
-# Blocks
+# ブロック
 
-Aptos is a per-transaction versioned database. When transactions are executed, the resulting state of each transaction is stored separately and thus allows for more granular data access. This is different from other blockchains where only the resulting state of a block (a group of transactions) is stored.
+Aptosはトランザクションごとにバージョン管理されたデータベースです。トランザクションが実行されると、各トランザクションの結果の状態が個別に保存され、より細かいデータアクセスが可能になります。これは、ブロック（トランザクションのグループ）の最終状態のみが保存される他のブロックチェーンとは異なります。
 
-Blocks are still a fundamental unit within Aptos. Transactions are batched and executed together in a block. In addition, the [proofs](txns-states.mdx#proofs) within storage are at the block-level granularity. The number of transactions within a block varies depending on network activity and a configurable maximum block size limit. As the blockchain becomes busier, blocks will likely contain more transactions.
+ブロックは依然としてAptos内の基本単位です。トランザクションはブロック内でバッチ処理され、一緒に実行されます。さらに、ストレージ内の[プルーフ](txns-states.mdx#proofs)はブロックレベルの粒度になっています。ブロック内のトランザクション数は、ネットワークアクティビティと設定可能な最大ブロックサイズ制限に応じて変化します。ブロックチェーンが混雑するにつれて、ブロックにはより多くのトランザクションが含まれる可能性があります。
 
-## System transactions
+## システムトランザクション
 
-Each Aptos block contains both user transactions and special system transactions to _mark_ the beginning and end of the transaction batch. Specifically, there are two system transactions:
+各Aptosブロックには、ユーザートランザクションと、トランザクションバッチの開始と終了を_マーク_する特別なシステムトランザクションの両方が含まれています。具体的には、2つのシステムトランザクションがあります：
 
-1. `BlockMetadataTransaction` - is inserted at the beginning of the block. A `BlockMetadata` transaction can also mark the end of an [epoch](#epochs) and trigger reward distribution to validators.
-2. `StateCheckpointTransaction` - is appended at the end of the block and is used as a checkpoint milestone.
+1. `BlockMetadataTransaction` - ブロックの先頭に挿入されます。`BlockMetadata`トランザクションは[エポック](#epochs)の終了をマークし、バリデータへの報酬配布をトリガーすることもできます。
+2. `StateCheckpointTransaction` - ブロックの最後に追加され、チェックポイントのマイルストーンとして使用されます。
 
-## Epochs
+## エポック
 
-In Aptos, epochs represent a longer period of time in order to safely synchronize major changes such as validator set additions/removals. An epoch is a fixed duration of time, currently defined as two hours on mainnet. The number of blocks in an epoch depends on how many blocks can execute within this period of time. It is only at the start of a new epoch that major changes such as a validator joining the validator set take effect among the validators.
+Aptosでは、バリデータセットの追加/削除などの大きな変更を安全に同期するために、エポックはより長い期間を表します。エポックは固定された期間で、現在メインネットでは2時間と定義されています。エポック内のブロック数は、この期間内に実行できるブロック数に依存します。バリデータセットにバリデータが参加するなどの大きな変更は、新しいエポックの開始時にのみバリデータ間で有効になります。

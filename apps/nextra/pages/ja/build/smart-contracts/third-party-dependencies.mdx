@@ -1,29 +1,28 @@
 ---
-title: "Third Party Dependencies"
+title: "サードパーティの依存関係"
 ---
 
 import { FileTree } from "nextra/components";
 import { Callout } from 'nextra/components'
 
 
-# Third Party Dependencies
+# サードパーティの依存関係
 
-Third party dependencies are external [modules](book/modules-and-scripts.mdx) that a controlled module interacts with. Typically, these external modules exist under different accounts.
+サードパーティの依存関係は、制御されたモジュールが相互作用する外部[モジュール](book/modules-and-scripts.mdx)です。通常、これらの外部モジュールは異なるアカウントの下に存在します。
 
+## マルチDEXルーターの例
 
-## Multi-DEX router example
+マルチDEXルーターは、サードパーティの依存関係を積極的に活用します。スワップルート内の異なるDEXとそれぞれの[エントリー](book/functions.mdx#entry-modifier)関数と相互作用するために複数のトランザクションを送信する代わりに、モジュール(または[スクリプト](book/modules-and-scripts.mdx#scripts))は、すべての独立したDEXの呼び出しを1つのアトミックなトランザクションにまとめることができます。マルチDEXルーターは、これを実現するために各サードパーティDEXモジュールに存在する関数を参照し呼び出します。
 
-A multi-DEX router actively utilizes third party dependencies. Instead of submitting multiple transactions to interact with different DEXs and their individual [entry](book/functions.mdx#entry-modifier) functions within a swap route, a module (or [script](book/modules-and-scripts.mdx#scripts)) can consolidate all independent DEX invocations into a single, atomic transaction. The multi-DEX router references and calls to functions present in each of the third party DEX modules to achieve this.
+## ソース
 
-## Sources
+サードパーティの依存関係は、その出所に基づいて信頼性と利用可能な情報の量が異なります。特に、いくつかのケースではドキュメントが存在せず、ロジックが潜在的にリファクタリングされている可能性があります。
 
-Third party dependencies will have varying amounts of reliability and available information based on where they’re sourced from. Specifically, documentation for a few instances will be non-existant, as well as logic potentially being refactored.
+[Gitリポジトリ](#git-repository)や[ローカルソースコード](#local-source-code)のように、オンチェーンにデプロイされたモジュールに対して検証されたソースコードが常に優先されるべきです。これらのいずれも利用できない場合、[デコンパイルされたコード](#decompiled-code)、[バイトコード](#bytecode)、[ABI](#abi)で作成されたコードなど、使用可能なコードに依存する他のオプションがあります。
 
-Source code that is verified against the on-chain deployed module, like the [Git Repository](#git-repository) and [Local Source Code](#local-source-code), should always be preferred. If neither of those are available, there are other options to depend on usable code, like [decompiled code](#decompiled-code), [bytecode](#bytecode), and [ABI](#abi)-crafted code.
+### Gitリポジトリ
 
-### Git Repository
-
-The default `Move.toml` includes `AptosFramework` as a git repository dependency:
+デフォルトの`Move.toml`には、Gitリポジトリの依存関係として`AptosFramework`が含まれています：
 
 ```toml filename="Move.toml"
   [dependencies.AptosFramework]
@@ -32,11 +31,11 @@ The default `Move.toml` includes `AptosFramework` as a git repository dependency
   subdir = "aptos-framework"
 ```
 
-When Aptos CLI commands are ran, updates to the dependency are automatically retrieved and compiled against.
+Aptos CLIコマンドを実行すると、依存関係の更新が自動的に取得され、コンパイルされます。
 
-### Local Source Code
+### ローカルソースコード
 
-Third party source code can be included in the `sources` directory. Essentially treating it the same as custom code.
+サードパーティのソースコードは`sources`ディレクトリに含めることができます。基本的にカスタムコードと同じように扱います。
 
 <FileTree>
   <FileTree.Folder name="third_party_dependency_project" defaultOpen>
@@ -49,18 +48,18 @@ Third party source code can be included in the `sources` directory. Essentially 
 </FileTree>
 
 <Callout type="warning" emoji="⚠️">
-    Any upgrades to the Third Party dependency will need to be retrieved, manually.
+    サードパーティの依存関係へのアップグレードは、手動で取得する必要があります。
 </Callout>
 
-### Decompiled code
+### デコンパイルされたコード
 
-Move code can be reconstructed by using the [Revela Compiler](https://aptoslabs.medium.com/move-revealed-the-revela-decompiler-b206eaf48b45#27ad) against a package’s bytecode:
+パッケージのバイトコードに対して[Revelaコンパイラ](https://aptoslabs.medium.com/move-revealed-the-revela-decompiler-b206eaf48b45#27ad)を使用してMoveコードを再構築できます：
 
 ```bash filename="Terminal"
 aptos move decompile --package-path ./bytecode_modules
 ```
 
-Corresponding `{ModuleName}.mv.move` files will be generated in `bytecode_modules`.
+対応する`{ModuleName}.mv.move`ファイルが`bytecode_modules`に生成されます。
 <FileTree>
   <FileTree.Folder name="third_party_dependency_project" defaultOpen>
     <FileTree.Folder name="byte_modules" defaultOpen>
@@ -71,7 +70,7 @@ Corresponding `{ModuleName}.mv.move` files will be generated in `bytecode_module
   </FileTree.Folder>
 </FileTree>
 
-Reference it as a local source file after changing the file type to `{ModuleName}.move` and placing it in the workspace’s `sources` directory.
+ファイルタイプを`{ModuleName}.move`に変更し、ワークスペースの`sources`ディレクトリに配置して、ローカルソースファイルとして参照します。
 <FileTree>
   <FileTree.Folder name="third_party_dependency_project" defaultOpen>
     <FileTree.Folder name="sources" defaultOpen>
@@ -82,30 +81,30 @@ Reference it as a local source file after changing the file type to `{ModuleName
 </FileTree>
 
 <Callout type="info" emoji="ℹ️">
-    Decompiled code will keep behaviors of on-chain execution, but will be refactored.
+    デコンパイルされたコードはオンチェーン実行の動作を維持しますが、リファクタリングされます。
 </Callout>
 
 
-### Bytecode
+### バイトコード
 
-The Aptos CLI allows for downloading a [package's](book/packages.mdx) bytecode.
+Aptos CLIを使用して[パッケージ](book/packages.mdx)のバイトコードをダウンロードできます。
 
 ```bash filename="Terminal"
 aptos move download --account {account_addr} --bytecode --package {package_name}
 ```
 
-Each bytecode dependency requires their own package, with a structure of:
-- `Move.toml` file, with the package address pre-defined.
-- `build/{ModuleName}/bytecode_modules` directory with the bytecode inside.
-- Empty sources directory.
+各バイトコード依存関係には、以下の構造を持つ独自のパッケージが必要です：
+- パッケージアドレスが事前定義された`Move.toml`ファイル
+- バイトコードを含む`build/{ModuleName}/bytecode_modules`ディレクトリ
+- 空の`sources`ディレクトリ
 
-The controlled module can then reference the dependency, upon it's inclusion in the controlled package's `Move.toml`.
+制御対象のモジュールは、制御パッケージの`Move.toml`に依存関係が含まれると、その依存関係を参照できるようになります。
 
 <details>
 
-<summary>Aptos Token example</summary>
+<summary>Aptos Tokenの例</summary>
 
-A controlled `invoking_code.move` module interacts with the external `aptos_token` module:
+制御された`invoking_code.move`モジュールは、外部の`aptos_token`モジュールと相互作用します：
 ```move filename="invoking_code.move"
 module invoker::invoking_code {
     use aptos_token_objects_addr::aptos_token;
@@ -116,7 +115,7 @@ module invoker::invoking_code {
 }
 ```
 
-The below command retrieves the necessary [AptosTokenObjects package](https://explorer.aptoslabs.com/account/0x4/modules/code/aptos_token/mint?network=mainnet) bytecode from the Mainnet.
+以下のコマンドは、必要な[AptosTokenObjectsパッケージ](https://explorer.aptoslabs.com/account/0x4/modules/code/aptos_token/mint?network=mainnet)のバイトコードをメインネットから取得します。
 
 ```bash filename="Terminal"
 aptos move download --account 0x4 \
@@ -141,7 +140,7 @@ aptos move download --account 0x4 \
 
 
 
-The created dependency package structure and contents for `aptos_token` is:
+`aptos_token`の依存関係パッケージの構造と内容は以下の通りです：
 <FileTree>
   <FileTree.Folder name="aptos_token_objects_addr" defaultOpen>
     <FileTree.Folder name="build" defaultOpen>
@@ -180,7 +179,7 @@ aptos_token_module_addr = "0x4"
 ```
 
 
-The dependency list from the controlled `invoking_code.move` module will include a local reference to the bytecode package, allowing for compilation.
+制御された`invoking_code.move`モジュールの依存関係リストには、コンパイルを可能にするバイトコードパッケージへのローカル参照が含まれます。
 ```toml filename="invoking_code/Move.toml"
 [package]
 name = "invoking_code"
@@ -193,21 +192,21 @@ aptos_token = { local = "../aptos_token_objects_addr" }
 
 ### ABI
 
-Move interface code can be manually crafted by reading a package's ABI. Notably, while the function header is required to be exact, the logic within is not.
+Moveインターフェースコードは、パッケージのABIを読むことで手動で作成できます。関数のヘッダーは正確である必要がありますが、内部のロジックはその必要はありません。
 
 <Callout type="info" emoji="ℹ️">
-    All available public and entry methods are defined with their name, arguments, return values, and more, within the ABI. Structs and resources will also be included.
+    利用可能なすべてのパブリックメソッドとエントリーメソッドは、その名前、引数、戻り値などとともにABI内で定義されています。構造体やリソースも含まれます。
 </Callout>
 
-Afterwards, the interface code is treated equivalent to local source code.
+その後、インターフェースコードはローカルのソースコードと同等に扱われます。
 
 
 
 
 <details>
-    <summary>Aptos Token example</summary>
+    <summary>Aptos Tokenの例</summary>
 
-    Below is a portion of the `AptosTokenObjects` ABI, gathered from the [Aptos Explorer](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000004/modules/code/aptos_token?network=mainnet#:~:text=1114-,ABI,-%7B):
+    以下は[Aptos Explorer](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000004/modules/code/aptos_token?network=mainnet#:~:text=1114-,ABI,-%7B)から取得した`AptosTokenObjects` ABIの一部です:
 
 
 
@@ -244,7 +243,7 @@ Afterwards, the interface code is treated equivalent to local source code.
     ```
 
 
-    An interface Move file can be handwritten and treated as a source file. Looking similar to:
+    インターフェースのMoveファイルは手動で記述でき、ソースファイルとして扱うことができます。以下のような形になります:
 
     ```move
     module 0x4::aptos_token {

@@ -1,86 +1,66 @@
 ---
-title: "PFN Requirements"
+title: "PFNの要件"
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# PFN Requirements
+# PFNの要件
 
-To ensure that your public fullnode (PFN) operates smoothly, it should meet the requirements specified in this document.
+パブリックフルノード（PFN）が円滑に動作することを確実にするために、このドキュメントで指定された要件を満たす必要があります。
 
-## Hardware requirements
+## ハードウェア要件
 
 <Callout type="warning">
-**Minimum hardware requirements**<br />
-Failing to meet the minimum hardware requirements mean that your PFN will experience degradation under
-load and general instability in production environments. It is not recommended to run a PFN without
-meeting the minimum hardware requirements.
+**最小ハードウェア要件**<br />
+最小ハードウェア要件を満たさない場合、PFNは負荷がかかると性能が低下し、本番環境で一般的な不安定性を経験することになります。最小ハードウェア要件を満たさずにPFNを実行することは推奨されません。
 </Callout>
 
-For running a production-grade PFN, we recommend that your hardware meet the same requirements as a
-validator or VFN. You can see the hardware requirements for these, here: [validator and VFN hardware requirements](../validator-node/node-requirements.mdx#hardware-requirements).
+本番環境グレードのPFNを実行するには、バリデータやVFNと同じハードウェア要件を満たすことを推奨します。これらの要件については、こちらを参照してください：[バリデータとVFNのハードウェア要件](../validator-node/node-requirements.mdx#hardware-requirements)。
 
 <Callout type="info">
-**Testing PFNs**<br />
-If you wish to run a PFN for development or testing only, lower hardware specs can be used.
-But, it should not be used in production.
+**PFNのテスト**<br />
+開発やテストのみを目的としてPFNを実行する場合は、より低いハードウェアスペックを使用できます。
+ただし、本番環境では使用しないでください。
 </Callout>
 
-## Network requirements and ports
+## ネットワーク要件とポート
 
-When you are running a PFN, you are required to open network ports on your nodes to allow other nodes (i.e., peers)
-to connect to you. There are different Aptos network types, and each network type uses a different port. However,
-the only network type that a PFN uses is the public network, where PFNs to connect to other PFNs and VFNs.
+PFNを実行する際は、他のノード（ピア）があなたに接続できるようにノード上でネットワークポートを開く必要があります。Aptosには異なるネットワークタイプがあり、各ネットワークタイプは異なるポートを使用します。ただし、PFNが使用するネットワークタイプはパブリックネットワークのみで、PFNは他のPFNやVFNに接続します。
 
-Your PFN can be configured so that the public network operates using a specific port on your node. You can configure
-the port settings using the node configuration YAML file. Here is an [example
-configuration file](https://github.com/aptos-labs/aptos-core/blob/main/config/src/config/test_data/public_full_node.yaml#L16) for a PFN
-that configures the public network to use port `6180`.
+PFNは、パブリックネットワークがノード上の特定のポートを使用するように設定できます。ノード設定YAMLファイルを使用してポート設定を構成できます。[設定ファイルの例](https://github.com/aptos-labs/aptos-core/blob/main/config/src/config/test_data/public_full_node.yaml#L16)では、パブリックネットワークがポート`6180`を使用するようにPFNを設定しています。
 
-### Port settings
+### ポート設定
 
-The recommendations described below assume the default port settings used by PFNs. If you have
-changed the default port settings in your configuration file, then you should adjust the recommendations accordingly.
+以下の推奨事項は、PFNが使用するデフォルトのポート設定を前提としています。設定ファイルでデフォルトのポート設定を変更した場合は、それに応じて推奨事項を調整する必要があります。
 
 <Callout type="warning"> 
-**Exposing ports**<br />
-Unless explicitly required, we recommend that you do not expose any other ports while operating a PFN. This is because
-exposing additional ports can increase the attack surface of your node and make it more vulnerable to adversaries.
+**ポートの公開**<br />
+明示的に必要な場合を除き、PFNの運用時に他のポートを公開しないことを推奨します。これは、追加のポートを公開することでノードの攻撃対象領域が増加し、攻撃者に対してより脆弱になる可能性があるためです。
 </Callout>
 
-#### Running a PFN:
+#### PFNの実行：
 
-Assuming default ports are used, the following should be configured for PFNs:
+デフォルトのポートを使用する場合、PFNには以下の設定が必要です：
 
-- Open the following TCP ports:
-  - `6182` – **Public network**: Open this port publicly to enable other PFNs to connect to your PFN.
-- Close the following TCP ports:
-  - `9101` – **Inspection service**: Close this port to prevent unauthorized metric inspection.
-  - `9102` – **Admin service**: Close this port to prevent unauthorized admin service interaction.
-  - `80/8080` - **REST API**: Close this port to prevent unauthorized REST API access.
+- 以下のTCPポートを開く：
+  - `6182` – **パブリックネットワーク**：他のPFNがあなたのPFNに接続できるように、このポートを公開します。
+- 以下のTCPポートを閉じる：
+  - `9101` – **検査サービス**：不正なメトリクス検査を防ぐため、このポートを閉じます。
+  - `9102` – **管理サービス**：不正な管理サービスの操作を防ぐため、このポートを閉じます。
+  - `80/8080` - **REST API**：不正なREST APIアクセスを防ぐため、このポートを閉じます。
 
 <Callout type="warning"> 
-**Exposing services**<br />
-The inspection service port (`9101`), admin service port (`9102`) and the REST API port (`80` or `8080`)
-are likely useful for your internal network, e.g., application development and debugging. However, the inspection service
-port and the admin service port should never be exposed publicly as they can be easily abused. Similarly, if you choose
-to expose the REST API endpoint publicly, you should deploy an additional authentication or rate-limiting mechanism to
-prevent abuse.
+**サービスの公開**<br />
+検査サービスポート（`9101`）、管理サービスポート（`9102`）、およびREST APIポート（`80`または`8080`）は、アプリケーション開発やデバッグなど、内部ネットワークで有用です。ただし、検査サービスポートと管理サービスポートは簡単に悪用される可能性があるため、決して公開してはいけません。同様に、REST APIエンドポイントを公開する場合は、悪用を防ぐために追加の認証やレート制限メカニズムを導入する必要があります。
 </Callout>
 
-## Storage requirements
+## ストレージ要件
 
-The amount of data stored by Aptos PFNs depends on the ledger history (length) of the blockchain and the number of
-on-chain states (e.g., accounts and resources). Both the ledger history and the number of
-on-chain states depend on several additional factors, including the age of the blockchain, the average transaction
-rate over time, and the configuration of the ledger database pruner. At the time of writing, we estimate
-that testnet and mainnet PFNs require several 100's of GB of storage.
+Aptos PFNが保存するデータ量は、ブロックチェーンの台帳履歴（長さ）とオンチェーン状態（アカウントやリソースなど）の数に依存します。台帳履歴とオンチェーン状態の数は、ブロックチェーンの年齢、時間経過に伴う平均トランザクションレート、台帳データベースプルーナーの設定など、いくつかの追加要因に依存します。執筆時点では、testnetとmainnetのPFNには数百GBのストレージが必要と推定されています。
 
-Note that because archival nodes store the entire history of the blockchain, the database size on archival nodes
-will continue to grow unbounded. As a result, we cannot provide a recommendation for archival node storage sizes.
+アーカイバルノードはブロックチェーンの全履歴を保存するため、アーカイバルノードのデータベースサイズは無制限に増加し続けることに注意してください。そのため、アーカイバルノードのストレージサイズに関する推奨事項は提供できません。
 
 <Callout type="info"> 
-**Devnet blockchain storage**<br />
-The Aptos devnet is currently reset on a weekly basis. If you are deploying a devnet PFN, this means that the storage
-will be reset (i.e., wiped) every week. See the `#devnet-release` channel on the [Aptos Discord](https://discord.gg/aptosnetwork).
+**Devnetブロックチェーンのストレージ**<br />
+Aptos devnetは現在、週単位でリセットされています。devnet PFNをデプロイする場合、これはストレージが毎週リセット（つまり消去）されることを意味します。[Aptos Discord](https://discord.gg/aptosnetwork)の`#devnet-release`チャンネルを参照してください。
 </Callout>

@@ -1,12 +1,12 @@
 ---
-title: "Aptos White Paper"
+title: "Aptos ホワイトペーパー"
 ---
 
 import { Card, Cards} from "@components/index";
 
-# The Aptos Blockchain: Safe, Scalable, and Upgradeable Web3 Infrastructure
+# Aptos ブロックチェーン：安全で、スケーラブルで、アップグレード可能なWeb3インフラストラクチャ
 
-## Full PDF Versions
+## PDFの完全版
 
 <Cards>
   <Card href="https://aptosfoundation.org/whitepaper/aptos-whitepaper_en.pdf">
@@ -14,7 +14,7 @@ import { Card, Cards} from "@components/index";
       🇺🇸 English (en-US) ↗
     </Card.Title>
     <Card.Description>
-      Original Aptos White Paper PDF in English
+      英語版 Aptos ホワイトペーパー PDF
     </Card.Description>
   </Card>
   <Card href="https://aptosfoundation.org/whitepaper/aptos-whitepaper_ko.pdf">
@@ -22,7 +22,7 @@ import { Card, Cards} from "@components/index";
       🇰🇷 한국어 Korean (ko-KR) ↗
     </Card.Title>
     <Card.Description>
-      Aptos White Paper PDF translated to Korean
+      韓国語に翻訳された Aptos ホワイトペーパー PDF
     </Card.Description>
   </Card>
   <Card href="https://aptosfoundation.org/whitepaper/aptos-whitepaper_ja.pdf">
@@ -30,7 +30,7 @@ import { Card, Cards} from "@components/index";
       🇯🇵 日本語 Japanese (ja-JP) ↗
     </Card.Title>
     <Card.Description>
-      Aptos White Paper PDF translated to Japanese
+      日本語に翻訳された Aptos ホワイトペーパー PDF
     </Card.Description>
   </Card>
   <Card href="https://aptosfoundation.org/whitepaper/aptos-whitepaper_es.pdf">
@@ -38,28 +38,26 @@ import { Card, Cards} from "@components/index";
       🇪🇸 Español Spanish (es-ES) ↗
     </Card.Title>
     <Card.Description>
-      Aptos White Paper PDF translated to Spanish
+      スペイン語に翻訳された Aptos ホワイトペーパー PDF
     </Card.Description>
   </Card>
 </Cards>
 
-## Abstract
+## 概要
 
-The rise of blockchains as a new Internet infrastructure has led to developers deploying tens of thousands of decentralized applications at rapidly growing rates.
-Unfortunately, blockchain usage is not yet ubiquitous due to frequent outages, high costs, low throughput limits, and numerous security concerns. To enable mass adoption in the web3 era, blockchain infrastructure needs to follow the path of cloud infrastructure as a trusted, scalable, cost-efficient, and continually improving platform for building widely-used applications.
+ブロックチェーンが新しいインターネットインフラとして台頭し、開発者は急速に増加する勢いで何万もの分散型アプリケーションをデプロイしています。
+しかし、頻繁な停止、高コスト、低いスループット制限、そして多くのセキュリティ上の懸念により、ブロックチェーンの使用はまだ普及していません。web3時代での大規模な採用を実現するために、ブロックチェーンインフラは、信頼性が高く、スケーラブルで、コスト効率が良く、継続的に改善されるプラットフォームとして、クラウドインフラの道を辿る必要があります。
 
-We present the Aptos blockchain, designed with scalability, safety, reliability, and upgradeability as key principles, to address these challenges. The Aptos blockchain has been developed over the past three years by over 350+ developers across the globe. It offers new and novel innovations in consensus, smart contract design, system security, performance, and decentralization. The combination of these technologies will provide a fundamental building block to bring web3 to the masses:
+私たちは、これらの課題に対処するため、スケーラビリティ、安全性、信頼性、およびアップグレード可能性を主要な原則として設計されたAptosブロックチェーンを提示します。Aptosブロックチェーンは、世界中の350人以上の開発者によって過去3年間にわたって開発されてきました。コンセンサス、スマートコントラクトの設計、システムセキュリティ、パフォーマンス、および分散化において、新しい革新的な技術を提供します。これらの技術の組み合わせにより、web3を大衆に提供するための基本的な構成要素が提供されます：
 
-- First, the Aptos blockchain natively integrates and internally uses the Move language for fast and secure transaction execution. The Move prover, a formal verifier for smart contracts written in the Move language, provides additional safeguards for contract invariants and behavior. This focus on security allows developers to better protect their software from malicious entities.
+- 第一に、Aptosブロックチェーンは、高速で安全なトランザクション実行のためにMove言語をネイティブに統合し、内部で使用します。Move言語で書かれたスマートコントラクトの形式検証ツールであるMove proverは、コントラクトの不変条件と動作に対する追加の保護を提供します。このセキュリティへの焦点により、開発者は悪意のある主体からソフトウェアをより良く保護することができます。
 
-- Second, the Aptos data model enables flexible key management and hybrid custodial options. This, alongside transaction transparency prior to signing and practical light client protocols, provides a safer and more trustworthy user experience.
+- 第二に、Aptosのデータモデルは、柔軟な鍵管理とハイブリッドカストディアルオプションを可能にします。これは、署名前のトランザクションの透明性と実用的なライトクライアントプロトコルと共に、より安全で信頼できるユーザー体験を提供します。
 
-- Third, to achieve high throughput and low latency, the Aptos blockchain leverages a pipelined and modular approach for the key stages of transaction processing. Specifically, transaction dissemination, block metadata ordering, parallel transaction execution, batch storage, and ledger certification all operate concurrently. This approach fully leverages all available physical resources, improves hardware efficiency, and enables highly parallel execution.
+- 第三に、高いスループットと低いレイテンシーを達成するために、Aptosブロックチェーンはトランザクション処理の主要段階においてパイプライン化されたモジュラーアプローチを採用しています。具体的には、トランザクションの配信、ブロックメタデータの順序付け、並列トランザクション実行、バッチストレージ、および台帳の認証がすべて同時に動作します。このアプローチは、利用可能な物理リソースを完全に活用し、ハードウェアの効率を向上させ、高度な並列実行を可能にします。
 
-- Fourth, unlike other parallel execution engines that break transaction atomicity by requiring upfront knowledge of the data to be read and written, the Aptos blockchain does not put such limitations on developers. It can efficiently support atomicity with arbitrarily complex transactions, enabling higher throughput and lower latency for real-world applications and simplifying development.
+- 第四に、読み書きされるデータの事前知識を必要とすることでトランザクションのアトミック性を破壊する他の並列実行エンジンとは異なり、Aptosブロックチェーンは開発者にそのような制限を課しません。任意に複雑なトランザクションでもアトミック性を効率的にサポートし、実世界のアプリケーションのより高いスループットと低いレイテンシーを実現し、開発を簡素化します。
 
-- Fifth, the Aptos modular architecture design supports client flexibility and optimizes for frequent and instant upgrades. Moreover, to rapidly deploy new technology innovations and support new web3 use cases, the Aptos blockchain provides embedded on-chain change management protocols.
+- 第五に、Aptosのモジュラーアーキテクチャ設計は、クライアントの柔軟性をサポートし、頻繁で即時のアップグレードを最適化します。さらに、新しい技術革新を迅速にデプロイし、新しいweb3のユースケースをサポートするために、Aptosブロックチェーンはオンチェーンの変更管理プロトコルを組み込んでいます。
 
-- Finally, the Aptos blockchain is experimenting with future initiatives to scale beyond individual validator performance: its modular design and parallel execution engine support internal sharding of a validator and homogeneous state sharding provides the potential for horizontal throughput scalability without adding additional complexity for node operators.
-
-
+- 最後に、Aptosブロックチェーンは、個々のバリデータのパフォーマンスを超えてスケールするための将来のイニシアチブを実験しています：そのモジュラー設計と並列実行エンジンは、バリデータの内部シャーディングをサポートし、同種の状態シャーディングにより、ノード運用者に追加の複雑さを加えることなく、水平方向のスループットスケーラビリティの可能性を提供します。

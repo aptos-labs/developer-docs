@@ -1,85 +1,76 @@
 ---
-title: "Your First Fungible Asset"
+title: "初めてのファンジブルアセット"
 ---
 import { Callout, Steps } from 'nextra/components'
 
-# Your First Fungible Asset
+# 初めてのファンジブルアセット
 
-This tutorial will teach you how to create your own Fungible Asset (FA) named [FACoin](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset/fa_coin). The [Fungible Asset Standard](../smart-contracts/fungible-asset.mdx) provides built-in support for minting, transferring, burning, and tracking account balances, so is useful for representing fungible assets. We will use the [TypeScript SDK](../sdks/ts-sdk.mdx) to deploy the contract and test it once it is on-chain.
+このチュートリアルでは、[FACoin](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset/fa_coin)という独自のファンジブルアセット(FA)の作成方法を学びます。[ファンジブルアセット標準](../smart-contracts/fungible-asset.mdx)は、発行、転送、バーン、アカウント残高の追跡のための組み込みサポートを提供しており、ファンジブルアセットを表現するのに便利です。[TypeScript SDK](../sdks/ts-sdk.mdx)を使用してコントラクトをデプロイし、オンチェーンに展開された後にテストを行います。
 
-At a high level, the Fungible Asset Standard works through two main Objects:
+概要として、ファンジブルアセット標準は2つの主要なオブジェクトを通じて機能します：
 
-1. A `Metadata` Object to store information about the fungible asset.
-2. `FungibleStore`s for each account that has the fungible asset to track their current account balance.
+1. ファンジブルアセットに関する情報を保存する`Metadata`オブジェクト
+2. ファンジブルアセットを保有する各アカウントの現在の残高を追跡する`FungibleStore`
 
-Sending a fungible asset to someone will cause them to receive a `FungibleStore` and update the balances in both accounts accordingly. 
+ファンジブルアセットを誰かに送信すると、受信者は`FungibleStore`を受け取り、両方のアカウントの残高が適切に更新されます。
 
-## Seeing Fungible Assets In Action
+## ファンジブルアセットの動作確認
 
-Here we will modify, deploy, and test the example [FACoin](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/move/facoin/sources/fa_coin.move) contract to see how the Fungible Asset Standard works. If you are writing your own fungible asset contract, you may also want to reference the Stablecoin example contract [here](https://learn.aptoslabs.com/en/code-examples/stablecoin).
+ここでは、ファンジブルアセット標準の仕組みを理解するために、サンプルの[FACoin](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/move/facoin/sources/fa_coin.move)コントラクトを変更、デプロイ、テストします。独自のファンジブルアセットコントラクトを作成する場合は、[こちら](https://learn.aptoslabs.com/en/code-examples/stablecoin)のステーブルコインのサンプルコントラクトも参考にすることをお勧めします。
 
 <Steps>
-### Install the [Aptos CLI](../../build/cli.mdx).
+### [Aptos CLI](../../build/cli.mdx)をインストールする
 
-This will be used by the deploy scripts to publish the `FACoin` contract onchain.
+これは`FACoin`コントラクトをオンチェーンにパブリッシュするためのデプロイスクリプトで使用されます。
 
-### Clone the TypeScript SDK repo.
+### TypeScript SDKリポジトリをクローンする
 
-This repo contains the Fungible Asset example code.
+このリポジトリにはファンジブルアセットのサンプルコードが含まれています。
 
 ```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-ts-sdk.git
 ```
-
-### Navigate to the top-level of the cloned repository.
+### クローンしたリポジトリのトップレベルディレクトリに移動する
 
 ```bash filename="Terminal"
 cd aptos-ts-sdk
-```
-
-### Install the SDKs dependencies.
+### SDKの依存関係をインストールする
 
 ```bash filename="Terminal"
 pnpm install
 ```
+### TypeScript SDKをビルドする
 
-### Build the TypeScript SDK.
-
-The example requires the local build of the TypeScript SDK.
+この例では、TypeScript SDKのローカルビルドが必要です。
 
 ```bash filename="Terminal"
 pnpm build
 ```
+### エディタで`fa_coin.move`を開く
 
-### Open `fa_coin.move` in an editor.
+`fa_coin.move`は`examples/typescript/move/facoin/sources/fa_coin.move`にあります。
 
-You can find `fa_coin.move` at `examples/typescript/move/facoin/sources/fa_coin.move`.
+これはコントラクトロジックの大部分を含むMoveファイルです。このコントラクトの動作例を示した後で、詳細な仕組みについて説明します。
 
-This is the Move file which contains the bulk of the contract logic. We will dive into the details of how this contract works after showing you an example of it in action.
+### `ASSET_NAME`を新しいファンジブルアセットの名前に変更する
 
-### Edit the `ASSET_NAME` to be the name of your new fungible asset.
+例: "Tutorial Token"。ここで設定した値は、デプロイされたコントラクトやテスト時に表示されます。
 
-Ex. “Tutorial Token”. The values you set here will show up in the deployed contract and when we are testing how things work.
-
-### Navigate to `examples/typescript`.
+### `examples/typescript`に移動する
 
 ```bash filename="Terminal"
 cd examples/typescript
 ```
-
-### Install the dependencies for the examples.
+### サンプルの依存関係をインストールする
 
 ```bash filename="Terminal"
 pnpm install
-```
-
-### Run `your_fungible_asset`.
+### `your_fungible_asset`を実行する
 
 ```bash filename="Terminal"
 pnpm run your_fungible_asset
 ```
-
-You should see an output demonstrating how the fungible assets are created and transferred that looks like this:
+ファンジブルアセットの作成と転送を示す以下のような出力が表示されるはずです:
 
 ```bash filename="Terminal"
 === Addresses ===
@@ -122,21 +113,21 @@ done.
 </Steps>
 
 <Callout type="info">
-If you change the name of the token in the `fa_coin.move` contract you will see the output update with that name.
+`fa_coin.move`コントラクトでトークンの名前を変更すると、その名前で出力が更新されます。
 </Callout>
 
-## Understanding the `fa_coin.move` Example Contract
+## `fa_coin.move` サンプルコントラクトの理解
 
-The full contract for FACoin.move can be found [here](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/move/facoin/sources/fa_coin.move).
+FACoin.moveの完全なコントラクトは[こちら](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/move/facoin/sources/fa_coin.move)で確認できます。
 
-Let’s go step by step through how this contract is written.
+このコントラクトがどのように書かれているのか、ステップバイステップで見ていきましょう。
 
 <Steps>
 ### Move.toml
 
-The Move.toml file allows Move to import dependencies, determine which addresses to use, and includes metadata about the contract.
+Move.tomlファイルは、Moveが依存関係をインポートし、使用するアドレスを決定し、コントラクトに関するメタデータを含めることを可能にします。
 
-Regardless of which features you add to your fungible asset, your Move.toml will likely have similar fields to this at a minimum. In this case, we have the primary contract address `FACoin` that needs specifying at deploy time (indicated by leaving the value as “_”). It also includes the GitHub dependency to import the Fungible Asset standard from “AptosFramework”.
+あなたのファンジブルアセットにどのような機能を追加するかに関係なく、Move.tomlには最低限これと同様のフィールドが含まれる可能性が高いでしょう。この場合、デプロイ時に指定する必要がある主要なコントラクトアドレス`FACoin`があります（値を"_"のままにすることで示されます）。また、"AptosFramework"からファンジブルアセット標準をインポートするためのGitHub依存関係も含まれています。
 
 ```toml filename="Move.toml"
 [package]
@@ -153,13 +144,13 @@ rev = "mainnet"
 subdir = "aptos-move/framework/aptos-framework"
 ```
 
-### Imports
+### インポート
 
-The FACoin module uses several important modules:
+FACoinモジュールは、いくつかの重要なモジュールを使用します：
 
-1. `fungible_asset` contains the logic for granting permission to mint, transfer, burn, and create your FungibleAsset.
-2. `object` allows for creating Aptos Objects.
-3. `primary_fungible_store` contains the logic to track account balances for the new Fungible Asset.
+1. `fungible_asset`は、FungibleAssetのミント、転送、バーン、作成の権限を付与するためのロジックを含みます。
+2. `object`は、Aptos Objectsを作成することを可能にします。
+3. `primary_fungible_store`は、新しいファンジブルアセットのアカウント残高を追跡するためのロジックを含みます。
 
 ```move filename="fa_coin.move"
 module FACoin::fa_coin {
@@ -173,14 +164,13 @@ module FACoin::fa_coin {
 		//...
 }
 ```
-
-These imports are defined in the `Move.toml` file as GitHub dependencies.
+これらのインポートは`Move.toml`ファイルでGitHub依存関係として定義されています。
 
 ### `init_module`
 
-This function is called when the module is initially published in order to set up the proper permissions and Objects. For FACoin, this is used to initialize the asset’s `MetaData` Object (which contains things like the asset’s name and symbol), as well as getting the relevant ref’s for how our fungible asset will be used.
+この関数は、モジュールが最初に公開されたときに、適切な権限とオブジェクトを設定するために呼び出されます。FACoinの場合、これはアセットの`MetaData`オブジェクト（アセットの名前やシンボルなどを含む）を初期化し、ファンジブルアセットがどのように使用されるかに関連するrefを取得するために使用されます。
 
-The `ManagedFungibleAsset` standard helps keep track of which permissions this Module is allowed to use.
+`ManagedFungibleAsset`標準は、このモジュールがどの権限を使用できるかを追跡するのに役立ちます。
 
 ```move filename="fa_coin.move"
 fun init_module(admin: &signer) {
@@ -206,9 +196,9 @@ fun init_module(admin: &signer) {
 }
 ```
 
-### View Functions
+### View関数
 
-When creating your own fungible asset, it can be helpful to add view functions for any data that is needed later on. In this case, we wanted to see the name of the asset in order to report which asset was being traded in our example scenario.
+独自のファンジブルアセットを作成する際、後で必要となるデータに対してview関数を追加すると便利です。この例では、どのアセットが取引されているかを報告するために、アセットの名前を確認する必要がありました。
 
 ```move filename="fa_coin.move"
 #[view]
@@ -224,9 +214,9 @@ public fun get_name(): string::String {
 }
 ```
 
-### Entry Functions
+### エントリー関数
 
-Every fungible asset has a similar interface (mint, transfer, burn, freeze, unfreeze, deposit, and withdraw). Here’s an example of a minimal mint function, which mints and transfers the funds to the proper recipient:
+すべてのファンジブルアセットは同様のインターフェース（mint、transfer、burn、freeze、unfreeze、deposit、withdraw）を持っています。以下は、資金を作成して適切な受取人に送金する最小限のmint関数の例です：
 
 ```move filename="fa_coin.move"
 public entry fun mint(admin: &signer, to: address, amount: u64) acquires ManagedFungibleAsset {
@@ -239,10 +229,10 @@ public entry fun mint(admin: &signer, to: address, amount: u64) acquires Managed
 ```
 </Steps>
 
-## Summary
+## まとめ
 
-If you want to build your own Fungible Asset, you can use [`fa_coin.move`](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript/move/facoin) as a starting point, or look to other code examples [here](https://learn.aptoslabs.com/en/code-examples).
+独自のファンジブルアセットを構築したい場合は、[`fa_coin.move`](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript/move/facoin)を出発点として使用するか、[こちら](https://learn.aptoslabs.com/en/code-examples)で他のコード例を参照することができます。
 
-Regardless, the Fungible Asset Standard will help you mint, transfer, burn, and keep track of balances automatically for whichever fungible assets you want to represent on-chain.
+いずれにせよ、ファンジブルアセット標準を使用することで、オンチェーン上で表現したいファンジブルアセットの発行、転送、バーン、残高の自動追跡を行うことができます。
 
-You can find the [Move reference for Fungible Assets](../smart-contracts/move-reference.mdx?branch=mainnet&page=aptos-framework%2Fdoc%2Ffungible_asset.md) for more details on the function signatures and implementation details.
+関数のシグネチャや実装の詳細については、[ファンジブルアセットのMoveリファレンス](../smart-contracts/move-reference.mdx?branch=mainnet&page=aptos-framework%2Fdoc%2Ffungible_asset.md)を参照してください。

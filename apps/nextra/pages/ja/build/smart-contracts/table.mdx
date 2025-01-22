@@ -4,50 +4,50 @@ title: "Table"
 
 # Table
 
-The `Table` provides a flexible and efficient way to manage large amounts of data in a table format. Each table item is represented as a separate global state item, allowing for scalable storage solutions.
+`Table`は、大量のデータをテーブル形式で管理するための柔軟で効率的な方法を提供します。各テーブル項目は個別のグローバル状態項目として表現され、スケーラブルなストレージソリューションを実現します。
 
-## Core Features of Table
+## Tableの主な機能
 
-### Structure
+### 構造
 
-The `Table` struct is designed to handle large-scale storage with efficiency:
+`Table`構造体は、大規模なストレージを効率的に処理するように設計されています：
 
-- `handle`: An address that uniquely identifies the table.
+- `handle`：テーブルを一意に識別するアドレス
 
-### Constants
+### 定数
 
-The following constants define various error codes used within the module (these are implied but not explicitly stated in the provided code):
+モジュール内で使用される各種エラーコードを定義する定数（これらは提供されたコードでは暗黙的に示されています）：
 
-- `ENOT_FOUND`: Key not found in the table.
-- `EALREADY_EXIST`: Key already exists in the table.
-- `EINVALID_ARGUMENT`: Invalid argument passed to a function.
+- `ENOT_FOUND`：テーブルにキーが見つからない
+- `EALREADY_EXIST`：キーが既にテーブルに存在する
+- `EINVALID_ARGUMENT`：関数に無効な引数が渡された
 
-### API Overview
+### API概要
 
-#### Creating Tables
+#### テーブルの作成
 
-- `new<K: copy + drop, V: store>(): Table<K, V>`: Creates a new table.
+- `new<K: copy + drop, V: store>(): Table<K, V>`：新しいテーブルを作成
 
-#### Managing Entries
+#### エントリの管理
 
-- `add<K: copy + drop, V>(table: &mut Table<K, V>, key: K, val: V)`: Adds a key-value pair to the table. Aborts if the key already exists.
-- `remove<K: copy + drop, V>(table: &mut Table<K, V>, key: K): V`: Removes and returns the value associated with a key. Aborts if the key is not found.
-- `upsert<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, value: V)`: Inserts or updates a key-value pair.
+- `add<K: copy + drop, V>(table: &mut Table<K, V>, key: K, val: V)`：テーブルにキーと値のペアを追加。キーが既に存在する場合は中断
+- `remove<K: copy + drop, V>(table: &mut Table<K, V>, key: K): V`：キーに関連付けられた値を削除して返す。キーが見つからない場合は中断
+- `upsert<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, value: V)`：キーと値のペアを挿入または更新
 
-#### Retrieving Entries
+#### エントリの取得
 
-- `borrow<K: copy + drop, V>(table: &Table<K, V>, key: K): &V`: Returns an immutable reference to the value associated with a key. Aborts if the key is not found.
-- `borrow_with_default<K: copy + drop, V>(table: &Table<K, V>, key: K, default: &V): &V`: Returns the value associated with a key or a default value if the key is not found.
-- `borrow_mut<K: copy + drop, V>(table: &mut Table<K, V>, key: K): &mut V`: Returns a mutable reference to the value associated with a key. Aborts if the key is not found.
-- `borrow_mut_with_default<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, default: V): &mut V`: Inserts a key-value pair if the key is not found, then returns a mutable reference to the value.
+- `borrow<K: copy + drop, V>(table: &Table<K, V>, key: K): &V`：キーに関連付けられた値への不変参照を返す。キーが見つからない場合は中断
+- `borrow_with_default<K: copy + drop, V>(table: &Table<K, V>, key: K, default: &V): &V`：キーに関連付けられた値、またはキーが見つからない場合はデフォルト値を返す
+- `borrow_mut<K: copy + drop, V>(table: &mut Table<K, V>, key: K): &mut V`：キーに関連付けられた値への可変参照を返す。キーが見つからない場合は中断
+- `borrow_mut_with_default<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, default: V): &mut V`：キーが見つからない場合はキーと値のペアを挿入し、値への可変参照を返す
 
-#### Utility Functions
+#### ユーティリティ関数
 
-- `contains<K: copy + drop, V>(table: &Table<K, V>, key: K): bool`: Checks if the table contains a key.
+- `contains<K: copy + drop, V>(table: &Table<K, V>, key: K): bool`：テーブルにキーが含まれているかどうかを確認
 
-## Example Usage
+## 使用例
 
-### Creating and Using a Table
+### テーブルの作成と使用
 
 ```move filename="table.move"
 module 0x42::table_usage {
@@ -70,12 +70,12 @@ module 0x42::table_usage {
         let contains_key = table::contains(&table, 2);
         assert!(contains_key, 0);
 
-        // Note: A table must be stored in a resource at the end of a function
+        // 注意：関数の最後でテーブルはリソースに格納される必要があります
     }
 }
 ```
 
-### Adding and Upserting Multiple Entries
+### 複数エントリの追加とアップサート
 
 ```move filename="table.move"
 module 0x42::table_usage {
@@ -93,12 +93,12 @@ module 0x42::table_usage {
         let value2 = table::borrow(&table, 2);
         assert!(*value2 == 300, 0);
 
-        // Note: A table must be stored in a resource at the end of a function
+        // 注意：関数の最後でテーブルはリソースに格納される必要があります
     }
 }
 ```
 
-### Borrowing Mutable References
+### 可変参照の借用
 
 ```move filename="table.move"
 module 0x42::table_usage {
@@ -114,17 +114,17 @@ module 0x42::table_usage {
         let value = table::borrow(&table, 1);
         assert!(*value == 200, 0);
 
-        // Note: A table must be stored in a resource at the end of a function
+        // 注意：関数の最後でテーブルはリソースに格納される必要があります
     }
 }
 ```
 
-## Source Code
+## ソースコード
 
 - [table.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/table.move)
 
-## Other Examples
+## その他の例
 
-- [Move Spiders Tables Tutorial](https://movespiders.com/courses/modules/datastructures/lessonId/4)
-- [Move Spiders Query Table via FullNode](https://movespiders.com/courses/modules/datastructures/lessonId/9)
-- [Move Spiders Query Table via View Function](https://movespiders.com/courses/modules/datastructures/lessonId/10)
+- [Move Spidersのテーブルチュートリアル](https://movespiders.com/courses/modules/datastructures/lessonId/4)
+- [Move SpidersのFullNodeを介したテーブルクエリ](https://movespiders.com/courses/modules/datastructures/lessonId/9)
+- [Move SpidersのView関数を介したテーブルクエリ](https://movespiders.com/courses/modules/datastructures/lessonId/10)

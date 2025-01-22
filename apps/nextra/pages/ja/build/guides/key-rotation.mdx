@@ -1,134 +1,81 @@
 ---
-title: "Account Key Rotation"
+title: "アカウントキーのローテーション"
 ---
 
 import { Callout, Steps } from "nextra/components";
 
-# Account Key Rotation
+# アカウントキーのローテーション
 
 <Callout type="warning">
-  Account key rotation is an advanced feature that should be used with caution.
-  Most users will never need to use this feature.
+  アカウントキーのローテーションは注意して使用する必要がある高度な機能です。
+  ほとんどのユーザーはこの機能を使用する必要はありません。
 </Callout>
 
-Aptos Move accounts have a public address, an authentication key, a public key,
-and a private key. The public address is permanent, always matching the
-account's initial authentication key, which is derived from the original private
-key.
+Aptos Moveアカウントには、パブリックアドレス、認証キー、パブリックキー、プライベートキーがあります。パブリックアドレスは永続的で、常にアカウントの初期認証キーと一致し、これは元のプライベートキーから派生します。
 
-The Aptos account model facilitates the unique ability to rotate an account's
-private key. Since an account's address is the _initial_ authentication key, the
-ability to sign for an account can be transferred to another private key without
-changing its public address.
+Aptosのアカウントモデルは、アカウントのプライベートキーをローテーションする独自の機能を提供します。アカウントのアドレスは_初期_認証キーであるため、パブリックアドレスを変更することなく、アカウントの署名能力を別のプライベートキーに移転することができます。
 
-In this guide, we show examples of how to rotate an account's authentication key
-using the CLI and few of the various Aptos SDKs.
+このガイドでは、CLIと複数のAptos SDKを使用してアカウントの認証キーをローテーションする方法の例を示します。
 
-Here are the installation links for the SDKs we will cover in this example:
+このサンプルで扱うSDKのインストールリンクは以下の通りです:
 
 - [Aptos CLI](../cli.mdx)
 - [Typescript SDK](../sdks/ts-sdk.mdx)
 - [Python SDK](../sdks/python-sdk.mdx)
 
 <Callout type="warning">
-Some of the following examples use private keys. Do not share your private
-keys with anyone.
+以下の例の一部ではプライベートキーを使用します。プライベートキーは誰とも共有しないでください。
 </Callout>
 
-## Proven and unproven key rotations
+## 証明済みおよび未証明のキーローテーション
 
-The onchain logic for key rotation is implemented through two Move APIs:
+キーローテーションのオンチェーンロジックは、2つのMove APIを通じて実装されています:
 
-1. [`account::rotate_authentication_key`], which executes a "proven" rotation.
-1. [`account::rotate_authentication_key_call`], which executes an "unproven"
-   rotation.
+1. "証明済み"ローテーションを実行する[`account::rotate_authentication_key`]
+1. "未証明"ローテーションを実行する[`account::rotate_authentication_key_call`]
 
-### Proven key rotations
+### 証明済みキーローテーション
 
-The [`account::rotate_authentication_key`] API requires a signed
-[`account::RotationProofChallenge`], which proves that the rotation operation is
-approved by the private key from both before _and_ after the operation. When the
-operation is successful, the [`account::OriginatingAddress`] table is updated
-with an entry that maps from the new authentication key to the corresponding
-account address.
+[`account::rotate_authentication_key`] APIは、署名された[`account::RotationProofChallenge`]を必要とします。これは、ローテーション操作が操作の前後_両方_のプライベートキーによって承認されていることを証明します。操作が成功すると、[`account::OriginatingAddress`]テーブルが更新され、新しい認証キーから対応するアカウントアドレスへのマッピングが追加されます。
 
-The [`account::OriginatingAddress`] table is a reverse lookup table that allows
-users to query an account address associated with a given authentication key,
-and only allows for one entry per authentication key. Hence the requirement of a
-signed [`account::RotationProofChallenge`] to ensure that a malicious actor does
-not rotate an account's authentication key to a key that is already in the
-table, as this attack would prevent lookup of the valid originating address that
-the holder of an authentication key had previously approved.
+[`account::OriginatingAddress`]テーブルは、与えられた認証キーに関連付けられたアカウントアドレスを照会できる逆引きテーブルで、認証キーごとに1つのエントリのみを許可します。そのため、署名された[`account::RotationProofChallenge`]が必要となります。これは、悪意のある行為者がアカウントの認証キーを既にテーブルに存在するキーにローテーションすることを防ぎます。このような攻撃は、認証キーの保持者が以前に承認した有効な発信元アドレスの検索を妨げることになるためです。
 
-Notably, the [`account::OriginatingAddress`] table is _only_ updated upon key
-rotation, not upon standard account generation. This means that with proven key
-rotations, a given private key can theoretically authenticate up to two accounts
-at the same time:
+注目すべき点として、[`account::OriginatingAddress`]テーブルは、標準的なアカウント生成時ではなく、キーローテーション時_のみ_更新されます。これは、証明済みキーローテーションでは、理論的に1つのプライベートキーで同時に最大2つのアカウントを認証できることを意味します:
 
-1. The account address derived from the private key during standard account
-   generation, assuming the account has not undergone any key rotations.
-1. A second arbitrary address, which has had its authentication key rotated to
-   the given private key.
+1. 標準的なアカウント生成時にプライベートキーから派生したアカウントアドレス(アカウントがキーローテーションを行っていない場合)
+1. 認証キーが当該プライベートキーにローテーションされた2つ目の任意のアドレス
 
-However, it is considered best practice to only authenticate _one_ account with
-a given private key at a time, because whenever the
-[`account::OriginatingAddress`] table is updated, the underlying logic first
-checks if the rotating account's initial authentication key is in the table, and
-if so, verifies that the rotating account's address is the one mapped to in the
-table.
+ただし、1つのプライベートキーで_1つ_のアカウントのみを認証することがベストプラクティスとされています。なぜなら、[`account::OriginatingAddress`]テーブルが更新されるたびに、基礎となるロジックはまず、ローテーションするアカウントの初期認証キーがテーブルに存在するかを確認し、存在する場合は、ローテーションするアカウントのアドレスがテーブルでマッピングされているものと一致することを検証するためです。
 
-This means that if an arbitrary account's authentication key is rotated to
-a given private key, the standard account whose address is originally derived
-from the private key will not be able to execute its first authentication key
-rotation while the associated authentication key is mapped to a second arbitrary
-account address in the [`account::OriginatingAddress`] table, because this
-operation would fail the check that the rotating account's address is the one
-mapped to in the table (since the table is only updated during rotation, not
-upon standard account generation).
+これは、任意のアカウントの認証キーが特定のプライベートキーにローテーションされた場合、そのプライベートキーから元々派生した標準アカウントは、関連する認証キーが[`account::OriginatingAddress`]テーブルで2つ目の任意のアカウントアドレスにマッピングされている間は、最初の認証キーローテーションを実行できないことを意味します。これは、ローテーションするアカウントのアドレスがテーブルでマッピングされているものと一致するかのチェックに失敗するためです(テーブルはローテーション時のみ更新され、標準的なアカウント生成時には更新されないため)。
 
-To prevent this issue and ensure best practices are followed, you can always run
-[`account::set_originating_address`] after generating a new account (see below
-CLI tutorial).
+この問題を防ぎ、ベストプラクティスに従うために、新しいアカウントを生成した後は常に[`account::set_originating_address`]を実行することができます(以下のCLIチュートリアルを参照)。
 
-### Unproven key rotations
+### 未証明のキーローテーション
 
-Unlike [`account::rotate_authentication_key`], the
-[`account::rotate_authentication_key_call`] does _not_ require a signed
-[`account::RotationProofChallenge`]. This means that the operation is not proven
-in the sense the the private key from _after_ the operation has approved the
-key rotation. Hence the [`account::OriginatingAddress`] table is _not_ updated
-for unproven key rotations, and there is thus no restriction on the number of
-accounts that can be authenticated with a given private key. Note that the
-`aptos` CLI does not currently support unproven key rotations.
+[`account::rotate_authentication_key`]とは異なり、[`account::rotate_authentication_key_call`]は署名された[`account::RotationProofChallenge`]を必要としません。これは、操作の_後_のプライベートキーがキーローテーションを承認したという意味での証明がないことを意味します。そのため、[`account::OriginatingAddress`]テーブルは未証明のキーローテーションでは_更新されず_、したがって1つのプライベートキーで認証できるアカウント数に制限はありません。なお、`aptos` CLIは現在、未証明のキーローテーションをサポートしていません。
 
 <Callout type="info" emoji="🧠">
-The [`account::rotate_authentication_key_call`] was introduced to support
-non-standard key algorithms, like passkeys, which cannot produce proofs of
-knowledge during rotation operations.
+[`account::rotate_authentication_key_call`]は、パスキーのような非標準のキーアルゴリズムをサポートするために導入されました。これらは、ローテーション操作中に知識の証明を生成できません。
 </Callout>
 
-While it is technically possible to authenticate as many accounts as you want
-with a given authentication key via unproven key rotations, it is not considered
-best practice because this approach does not ensure one-to-one mapping.
+未証明のキーローテーションを通じて、1つの認証キーで望むだけ多くのアカウントを認証することは技術的には可能ですが、このアプローチは1対1のマッピングを保証しないため、ベストプラクティスとは考えられていません。
 
-If you execute an unproven key rotation, it is suggested that you follow up with
-[`account::set_originating_address`] to ensure a one-to-one mapping from
-authentication key to account address for ease of originating address lookup
-(see below CLI tutorial).
+未証明のキーローテーションを実行する場合は、発信元アドレスの検索を容易にするために、認証キーからアカウントアドレスへの1対1のマッピングを確保するため、[`account::set_originating_address`]でフォローアップすることをお勧めします(以下のCLIチュートリアルを参照)。
 
-## Key rotation with the Aptos CLI
+## Aptos CLIを使用したキーローテーション
 
 <Steps>
 
-### Start a localnet
+### ローカルネットの起動
 
-Start a localnet:
+ローカルネットを起動します:
 
 ```sh filename="Terminal"
 aptos node run-localnet
 ```
 
-The localnet is ready when it prints out:
+ローカルネットは以下のように表示されたら準備完了です:
 
 ```sh filename="Terminal"
 Applying post startup steps...
@@ -137,8 +84,7 @@ Setup is complete, you can now use the localnet!
 ```
 
 <Callout type="info" emoji="🧠">
-If you are on a UNIX-like system, the following command can be used to start a
-fresh localnet as a background process:
+UNIXライクなシステムを使用している場合、以下のコマンドを使用してバックグラウンドプロセスとして新しいローカルネットを起動できます:
 
 ```sh filename="Terminal"
 mkdir -p localnet-data
@@ -148,8 +94,7 @@ aptos node run-localnet \
     --force-restart &
 export LOCALNET_PID=$!
 ```
-
-You can then stop the localnet at any point with the following command:
+その後、以下のコマンドでいつでもローカルネットを停止できます:
 
 ```sh filename="Terminal"
 kill $LOCALNET_PID
@@ -157,10 +102,9 @@ kill $LOCALNET_PID
 
 </Callout>
 
-### Generate a private key
+### プライベートキーの生成
 
-Create a private key corresponding to an authentication key, and thus initial
-account address, that starts with the vanity prefix `0xaaa`:
+認証キー(そして初期アカウントアドレス)に対応するプライベートキーを作成します。このアドレスは`0xaaa`というバニティプレフィックスで始まります:
 
 ```sh filename="Terminal"
 aptos key generate \
@@ -170,7 +114,7 @@ aptos key generate \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": {
@@ -181,14 +125,12 @@ aptos key generate \
 }
 ```
 </details>
+これにより、2つのファイルが生成されます:
 
-This will generate two files:
+1. `private-key-a`にプライベートキー
+1. `private-key-a.pub`にパブリックキー
 
-1. A private key at `private-key-a`.
-1. A public key at `private-key-a.pub`.
-
-Since there is not yet an account associated with the authentication key, the
-following command should fail with a corresponding messsage:
+認証キーに関連付けられたアカウントがまだ存在しないため、以下のコマンドは対応するメッセージとともに失敗するはずです:
 
 ```sh filename="Terminal"
 aptos account lookup-address \
@@ -197,7 +139,7 @@ aptos account lookup-address \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Error": "API error: API error Error(AccountNotFound): Account not found by Address(0xaaafb224eb00e4d0ef520ce02038ede850893622562a4189b7f6e5d94454ccd9) and Ledger version(1206)"
@@ -205,9 +147,9 @@ aptos account lookup-address \
 ```
 </details>
 
-### Initialize a profile
+### プロファイルの初期化
 
-Use the private key to initialize `test-profile-1` on the localnet:
+プライベートキーを使用してローカルネット上で`test-profile-1`を初期化します:
 
 ```sh filename="Terminal"
 aptos init \
@@ -218,7 +160,7 @@ aptos init \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 Configuring for profile test-profile-1
 Configuring for network Local
@@ -234,14 +176,14 @@ Aptos CLI is now set up for account 0xaaa5131b4d3fcef8d33ee465c4ee65727e36039f28
 ```
 </details>
 
-Note that you can always view the profile with:
+以下のコマンドでいつでもプロファイルを確認できます:
 
 ```sh filename="Terminal"
 aptos config show-profiles --profile test-profile-1
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": {
@@ -256,27 +198,24 @@ aptos config show-profiles --profile test-profile-1
 }
 ```
 </details>
-
-However, this will not show the private key, which is hidden by default. If you
-would like to show the private key:
+ただし、これはデフォルトで非表示になっているプライベートキーは表示されません。プライベートキーを表示したい場合は:
 
 ```sh filename="Terminal"
 aptos config show-private-key --profile test-profile-1
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": "0xcc3b0c38ad99e171263a7af930464313d1fb105d0d8e6a4b13f9b1140563a7dd"
 }
 ```
 </details>
+### アドレスの検索
 
-### Look up address
-
-Now that there is an onchain account associated with the authentication key,
-you can look up the account address using `aptos account lookup-address`:
+認証キーに関連付けられたオンチェーンアカウントができたので、
+`aptos account lookup-address`を使用してアカウントアドレスを検索できます:
 
 ```sh filename="Terminal"
 aptos account lookup-address \
@@ -285,22 +224,21 @@ aptos account lookup-address \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": "aaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b"
 }
 ```
 </details>
-
-Store this address in a shell variable:
+このアドレスをシェル変数に格納します：
 
 ```sh filename="Terminal"
 ADDRESS_A=aaa...
 ```
 
 <Callout type="info" emoji="🧠">
-If you are using a UNIX-like machine that has `jq`, you can easily store the account address via:
+`jq`がインストールされているUNIX系マシンを使用している場合、以下のようにアカウントアドレスを簡単に保存できます:
 
 ```sh filename="Terminal"
 export ADDRESS_A=$(
@@ -313,11 +251,9 @@ echo $ADDRESS_A
 ```
 </Callout>
 
-### Look up authentication key
+### 認証キーの検索
 
-Recall that the address of an account is identical to its authentication key
-when it is initially created, which means that the account address `aaa...` is
-identical to the account's authentication key:
+アカウントが最初に作成されたとき、アカウントのアドレスはその認証キーと同一であることを思い出してください。つまり、アカウントアドレス`aaa...`はアカウントの認証キーと同一です：
 
 ```sh filename="Terminal"
 aptos move view \
@@ -327,7 +263,7 @@ aptos move view \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": [
@@ -336,15 +272,11 @@ aptos move view \
 }
 ```
 </details>
-
-Hence, store the authentication key in a shell variable:
+したがって、認証キーをシェル変数に格納します：
 
 ```sh
 AUTH_KEY_A=$ADDRESS_A
-```
-
-Note, however, since the account has not yet had its authentication key rotated,
-there is no corresponding entry in the [`account::OriginatingAddress`] table:
+ただし、アカウントの認証キーがまだローテーションされていないため、[`account::OriginatingAddress`]テーブルには対応するエントリがありません：
 
 ```sh filename="Terminal"
 aptos move view \
@@ -354,7 +286,7 @@ aptos move view \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": [
@@ -365,11 +297,9 @@ aptos move view \
 }
 ```
 </details>
+### 発信元アドレスの設定
 
-### Set originating address
-
-To ensure an entry in the [`account::OriginatingAddress`] table for this new account,
-you can run [`account::set_originating_address`]:
+この新しいアカウントの[`account::OriginatingAddress`]テーブルにエントリを確実に作成するために、[`account::set_originating_address`]を実行できます：
 
 ```sh filename="Terminal"
 aptos move run \
@@ -379,7 +309,7 @@ aptos move run \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": {
@@ -397,7 +327,7 @@ aptos move run \
 ```
 </details>
 
-Then you should see an entry in the [`account::OriginatingAddress`] table:
+その後、[`account::OriginatingAddress`]テーブルにエントリが表示されるはずです：
 
 ```sh filename="Terminal"
 aptos move view \
@@ -405,9 +335,8 @@ aptos move view \
     --function-id 0x1::account::originating_address \
     --url http://localhost:8080
 ```
-
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": [
@@ -421,9 +350,9 @@ aptos move view \
 ```
 </details>
 
-### Rotate authentication key
+### 認証キーのローテーション
 
-Generate a new private key:
+新しいプライベートキーを生成します：
 
 ```sh filename="Terminal"
 aptos key generate \
@@ -433,7 +362,7 @@ aptos key generate \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": {
@@ -444,9 +373,7 @@ aptos key generate \
 }
 ```
 </details>
-
-Rotate the authentication key of the existing onchain account to the new
-private key:
+既存のオンチェーンアカウントの認証キーを新しいプライベートキーにローテーションします：
 
 ```sh filename="Terminal"
 aptos account rotate-key \
@@ -457,7 +384,7 @@ aptos account rotate-key \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": {
@@ -477,11 +404,8 @@ aptos account rotate-key \
 }
 ```
 </details>
-
-### Compare profiles
-
-Compare `test-profile-1` (which is now stale) with `test-profile-2` (which is
-current) noting that the public key has changed, but not the account address:
+### プロファイルの比較
+`test-profile-1`（現在は古い）と`test-profile-2`（現在の最新）を比較します。パブリックキーは変更されていますが、アカウントアドレスは変更されていないことに注目してください：
 
 ```sh filename="Terminal"
 aptos config show-profiles --profile test-profile-1
@@ -489,7 +413,7 @@ aptos config show-profiles --profile test-profile-2
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": {
@@ -515,8 +439,7 @@ aptos config show-profiles --profile test-profile-2
 }
 ```
 </details>
-
-Lookup the new authentication key:
+新しい認証キーを検索します:
 
 ```sh filename="Terminal"
 aptos move view \
@@ -526,7 +449,7 @@ aptos move view \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": [
@@ -535,15 +458,14 @@ aptos move view \
 }
 ```
 </details>
-
-Store the authentication key in a shell variable:
+認証キーをシェル変数に保存します:
 
 ```sh filename="Terminal"
 AUTH_KEY_B=bbb...
 ```
 
 <Callout type="info" emoji="🧠">
-If you are using a UNIX-like machine that has `jq`, you can easily store the authentication key via:
+`jq`がインストールされているUNIX系マシンを使用している場合、以下のように簡単に認証キーを保存できます:
 
 ```sh filename="Terminal"
 export AUTH_KEY_B=$(
@@ -556,10 +478,9 @@ export AUTH_KEY_B=$(
 echo $AUTH_KEY_B
 ```
 </Callout>
+### 発信元アドレスの確認
 
-### Look up originating addresses
-
-Check the originating address for the new authentication key:
+新しい認証キーの発信元アドレスを確認します:
 
 ```sh filename="Terminal"
 aptos move view \
@@ -569,7 +490,7 @@ aptos move view \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": [
@@ -582,8 +503,7 @@ aptos move view \
 }
 ```
 </details>
-
-Check the originating address for the old authentication key:
+古い認証キーの発信元アドレスを確認します:
 
 ```sh filename="Terminal"
 aptos move view \
@@ -591,9 +511,8 @@ aptos move view \
     --function-id 0x1::account::originating_address \
     --url http://localhost:8080
 ```
-
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": [
@@ -604,11 +523,9 @@ aptos move view \
 }
 ```
 </details>
+### 無効なローテーションの試行(同一キー)
 
-### Attempt invalid rotation (same key)
-
-Attempt an invalid rotation where the current authentication key is identical
-to the new authentication key:
+現在の認証キーと新しい認証キーが同一である無効なローテーションを試行します:
 
 ```sh filename="Terminal"
 aptos account rotate-key \
@@ -619,7 +536,7 @@ aptos account rotate-key \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Error": "Invalid arguments: New public key cannot be the same as the current public key"
@@ -627,9 +544,9 @@ aptos account rotate-key \
 ```
 </details>
 
-### Attempt invalid rotation (new key already mapped)
+### 無効なローテーションの試行(新しいキーが既にマッピングされている場合)
 
-Create another private key:
+別のプライベートキーを作成します:
 
 ```sh filename="Terminal"
 aptos key generate \
@@ -639,7 +556,7 @@ aptos key generate \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": {
@@ -651,7 +568,7 @@ aptos key generate \
 ```
 </details>
 
-Initialize a new profile:
+新しいプロファイルを初期化します:
 
 ```sh filename="Terminal"
 aptos init \
@@ -660,9 +577,8 @@ aptos init \
     --private-key-file private-key-c \
     --profile test-profile-3
 ```
-
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 Configuring for profile test-profile-3
 Configuring for network Local
@@ -677,8 +593,7 @@ Aptos CLI is now set up for account 0xccc79d46b2963cb87f2ff32c51eb6c6361e8aa108d
 }
 ```
 </details>
-
-Attempt an invalid rotation where the new authentication key is already mapped:
+新しい認証キーが既にマッピングされている無効なローテーションを試みます:
 
 ```sh filename="Terminal"
 aptos account rotate-key \
@@ -688,23 +603,19 @@ aptos account rotate-key \
     --profile test-profile-3 \
     --skip-saving-profile
 ```
-
-(`--max-gas` is specified here to skip local simulation, which does not print
-out as descriptive of an error as the actual transaction.)
+(ここでは`--max-gas`を指定して、実際のトランザクションほど詳細なエラーを出力しないローカルシミュレーションをスキップしています。)
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Error": "API error: Unknown error Transaction committed on chain, but failed execution: Move abort in 0x1::account: ENEW_AUTH_KEY_ALREADY_MAPPED(0x10015): The new authentication key already has an entry in the `OriginatingAddress` table"
 }
 ```
 </details>
+### 無効なローテーションの試行（無効な発信元アドレス）
 
-### Attempt invalid rotation (invalid originating address)
-
-Rotate the authentication key for account `0xaaa...` to use the authentication
-key for account `0xccc...`:
+アカウント`0xaaa...`の認証キーを、アカウント`0xccc...`の認証キーを使用するようにローテーションします:
 
 ```sh filename="Terminal"
 aptos account rotate-key \
@@ -715,7 +626,7 @@ aptos account rotate-key \
 ```
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Result": {
@@ -735,11 +646,7 @@ aptos account rotate-key \
 }
 ```
 </details>
-
-Then try to rotate the authentication key for account `0xccc...` for the first
-time, an operation that is blocked because an entry for the authentication key
-was established in the [`account::OriginatingAddress`] table during the last
-operation:
+次に、アカウント`0xccc...`の認証キーを初めてローテーションしようとしますが、前回の操作で[`account::OriginatingAddress`]テーブルに認証キーのエントリが確立されているため、この操作はブロックされます:
 
 ```sh filename="Terminal"
 aptos account rotate-key \
@@ -749,22 +656,19 @@ aptos account rotate-key \
     --profile test-profile-3 \
     --skip-saving-profile
 ```
-
-(`--max-gas` is specified here to skip local simulation, which does not print
-out as descriptive of an error as the actual transaction.)
+(ここでは`--max-gas`を指定して、実際のトランザクションほど詳細なエラーを出力しないローカルシミュレーションをスキップしています。)
 
 <details>
-<summary>Example output</summary>
+<summary>出力例</summary>
 ```sh filename="Terminal"
 {
   "Error": "API error: Unknown error Transaction committed on chain, but failed execution: Move abort in 0x1::account: EINVALID_ORIGINATING_ADDRESS(0x6000d): Abort the transaction if the expected originating address is different from the originating address on-chain"
 }
 ```
 </details>
+### クリーンアップ
 
-### Clean up
-
-Delete the test profiles:
+テストプロファイルを削除します:
 
 ```shell filename="Terminal"
 aptos config delete-profile --profile test-profile-1
@@ -773,10 +677,10 @@ aptos config delete-profile --profile test-profile-3
 aptos config delete-profile --profile test-profile-4
 ```
 
-Then you can stop the localnet and delete the private and public key files.
+その後、localnetを停止し、秘密鍵と公開鍵のファイルを削除できます。
 
 <Callout type="info" emoji="🧠">
-If you are using a UNIX-like machine:
+UNIX系のマシンを使用している場合:
 
 ```shell filename="Terminal"
 aptos config delete-profile --profile test-profile-1
@@ -789,35 +693,31 @@ rm -fr localnet-data
 ```
 </Callout>
 
-### Rotate keys for a Ledger
+### Ledgerでの鍵のローテーション
 
-You can also perform authentication key rotation with a private key that is
-securely stored on a Ledger hardware wallet. For more information, see the
-[Ledger authentication key rotation guide](../cli/trying-things-on-chain/ledger.mdx#authentication-key-rotation).
+Ledgerハードウェアウォレットに安全に保存された秘密鍵を使用して、認証鍵のローテーションを実行することもできます。詳細については、[Ledger認証鍵ローテーションガイド](../cli/trying-things-on-chain/ledger.mdx#authentication-key-rotation)を参照してください。
 
 </Steps>
 
-## TypeScript key rotation example
-    This program creates two accounts on devnet, Alice and Bob, funds them, then
-    rotates the Alice's authentication key to that of Bob's.
+## TypeScriptでの鍵のローテーション例
+    このプログラムは、devnet上にAliceとBobという2つのアカウントを作成し、資金を提供した後、
+    AliceのアカウントのAuthenticationキーをBobのものに変更します。
 
-    View the full example for this code
-    [here](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/examples/typescript-esm/rotate_key.ts).
+    このコードの完全な例は[こちら](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/examples/typescript-esm/rotate_key.ts)で確認できます。
 
-    The function to rotate is very simple:
+    ローテーションを実行する関数は非常にシンプルです:
 
     {/* TODO CODE EXAMPLE */}
 
-    Commands to run the example script:
+    サンプルスクリプトを実行するコマンド:
 
-    ### Navigate to the typescript SDK directory, install dependencies and run
-    rotate_key.ts
+    ### TypeScript SDKディレクトリに移動し、依存関係をインストールしてrotate_key.tsを実行
     ```bash filename="Terminal"
     cd ~/aptos-core/ecosystem/typescript/sdk/examples/typescript-esm
     pnpm install && pnpm rotate_key
     ```
 
-    ### rotate_key.ts output
+    ### rotate_key.tsの出力
     ```shell filename="Terminal"
     Account Address Auth Key Private Key Public Key
     ------------------------------------------------------------------------------------------------
@@ -830,27 +730,24 @@ securely stored on a Ledger hardware wallet. For more information, see the
     Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
     ```
 
-## Python key rotation example
-    This program creates two accounts on devnet, Alice and Bob, funds them, then
-    rotates the Alice's authentication key to that of Bob's.
+## Pythonでの鍵のローテーション例
+    このプログラムは、devnet上にAliceとBobという2つのアカウントを作成し、資金を提供した後、
+    AliceのアカウントのAuthenticationキーをBobのものに変更します。
 
-    View the full example for this code
-    [here](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/rotate_key.py).
+    このコードの完全な例は[こちら](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/rotate_key.py)で確認できます。
 
-    Here's the relevant code that rotates Alice's keys to Bob's:
+    以下がAliceの鍵をBobの鍵にローテーションする関連コードです:
 
     {/* TODO CODE EXAMPLE */}
 
-    Commands to run the example script:
-
-    ### Navigate to the python SDK directory, install dependencies and run
-    rotate_key.ts
+    サンプルスクリプトを実行するコマンド:
+    ### Python SDKディレクトリに移動し、依存関係をインストールしてrotate_key.tsを実行
     ```bash filename="Terminal"
     cd aptos-core/ecosystem/python/sdk
     poetry install && poetry run python -m examples.rotate-key
     ```
 
-    ### rotate_key.py output
+    ### rotate_key.pyの出力
     ```bash filename="Terminal"
     Account Address Auth Key Private Key Public Key
     ------------------------------------------------------------------------------------------------

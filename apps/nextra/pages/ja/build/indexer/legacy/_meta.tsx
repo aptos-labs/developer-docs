@@ -1,11 +1,11 @@
 export default {
   "indexer-fullnode": {
-    title: "Run an Indexer Fullnode",
+    title: "インデクサーフルノードを実行する",
   },
   "custom-data-model": {
-    title: "Custom Data Model",
+    title: "カスタムデータモデル",
   },
   migration: {
-    title: "Migrate to Transaction Stream Service",
+    title: "トランザクションストリームサービスへの移行",
   },
 };

@@ -1,69 +1,44 @@
 ---
-title: "Execution"
+title: "実行"
 ---
 
-# Execution
+# 実行
 
-On Aptos, execution refers to the process where validators run and apply smart contract transactions 
-from an ordered block. The execution output is then applied to the blockchain state.
+Aptosでは、実行とは、バリデータが順序付けられたブロックからスマートコントラクトトランザクションを実行し、適用するプロセスを指します。実行の出力はブロックチェーンの状態に適用されます。
 
-It is crucial for execution to be 
-[deterministic](https://en.wikipedia.org/wiki/Deterministic_algorithm), and all validators should 
-ideally agree on the same final state of the ledger. A majority of validators (more than 2/3 of the 
-validators) must agree on the final state of the ledger in order to come to a consensus. For more 
-detailed information on consensus properties, see the section on 
-[BFT](../glossary#byzantine-fault-tolerance-bft) and [consensus](../glossary#consensus).
+実行は[決定論的](https://en.wikipedia.org/wiki/Deterministic_algorithm)であることが重要で、すべてのバリデータは理想的には台帳の同じ最終状態に合意する必要があります。バリデータの過半数（バリデータの2/3以上）が台帳の最終状態に合意する必要があります。コンセンサスのプロパティの詳細については、[BFT](../glossary#byzantine-fault-tolerance-bft)と[コンセンサス](../glossary#consensus)のセクションをご覧ください。
 
-Efficient execution, particularly parallel execution, is key to scaling blockchain performance and 
-throughput. The impact of this can be felt in the block time. As of December 2024, Aptos blocks close within 250ms.
+効率的な実行、特に並列実行は、ブロックチェーンのパフォーマンスとスループットをスケールするための鍵となります。これはブロック時間に影響を与えます。2024年12月現在、Aptosのブロックは250ms以内にクローズします。
 
-## Why Parallel Execution?
+## なぜ並列実行なのか？
 
 ![](https://miro.medium.com/v2/resize:fit:4800/format:webp/0*qG0KRe1KzsP8Odth)
 
-The simplest approach for smart contract execution is to execute the transactions in a block 
-sequentially, one at a time. However, this does not scale well. Having a large number of sequential 
-transactions, especially with varying execution times, can cause the latency and throughput of the 
-blockchain to drop drastically.
+スマートコントラクトの実行における最もシンプルなアプローチは、ブロック内のトランザクションを1つずつ順番に実行することです。しかし、これはうまくスケールしません。実行時間が異なる多数の順次トランザクションがあると、ブロックチェーンのレイテンシーとスループットが大幅に低下する可能性があります。
 
-To solve this problem, blockchains began to adopt parallel execution, or the ability to process 
-multiple transactions in parallel. The challenge with parallel execution, however, is that certain 
-transactions may read or write the same resource, causing conflicts.
+この問題を解決するため、ブロックチェーンは並列実行、つまり複数のトランザクションを並行して処理する機能を採用し始めました。しかし、並列実行の課題は、特定のトランザクションが同じリソースを読み書きし、競合を引き起こす可能性があることです。
 
-### Static Parallelism
+### 静的並列性
 
-One approach to address the conflict issue in parallel execution is **static parallelism**, which 
-requires developers to specify the conflicts between transactions ahead of time. This, however, 
-brings a higher burden on the developer, and in many cases forces transactions that don't actually 
-conflict to be sequential.
+並列実行における競合の問題に対処する1つのアプローチは**静的並列性**で、開発者が事前にトランザクション間の競合を指定する必要があります。しかし、これは開発者の負担を増やし、多くの場合、実際には競合しないトランザクションを順次実行させることになります。
 
-### Dynamic Parallelism
+### 動的並列性
 
-**Dynamic parallelism** computes the execution ordering of transactions on-the-fly, dynamically 
-detecting dependencies and avoiding conflicts during execution. An additional property that is 
-important for dynamic parallelism on a blockchain is that the execution output is consistent with 
-executing transactions according to a preset order.
+**動的並列性**は、実行時にトランザクションの実行順序を計算し、依存関係を動的に検出し、実行中の競合を回避します。ブロックチェーンにおける動的並列性で重要な追加のプロパティは、実行出力が事前に設定された順序に従ってトランザクションを実行することと一致することです。
 
-By not requiring developers to specify the conflicts ahead of time, dynamic parallelism allows 
-developers to flexibly write applications without facing the design constraints of statically 
-declaring transaction dependencies.
+開発者が事前に競合を指定する必要がないため、動的並列性により、開発者はトランザクションの依存関係を静的に宣言するという設計上の制約に縛られることなく、柔軟にアプリケーションを作成できます。
 
 ## Block-STM
 
-Aptos uses a highly efficient, multi-threaded, in-memory parallel execution engine called Block-STM. 
-Block-STM leverages the preset order of transactions and combines Software Transactional Memory 
-techniques with a novel collaborative schedule.
+Aptosは、Block-STMと呼ばれる高効率なマルチスレッドのインメモリ並列実行エンジンを使用しています。Block-STMは、トランザクションの事前設定された順序を活用し、ソフトウェアトランザクショナルメモリ技術と新しい協調スケジュールを組み合わせています。
 
-Block-STM is the state-of-the-art dynamic parallelism execution engine developed by the Aptos Labs 
-team.
+Block-STMは、Aptos Labsチームによって開発された最先端の動的並列実行エンジンです。
 
-Since its release, [Polygon](https://polygon.technology/blog/innovating-the-main-chain-a-polygon-pos-study-in-parallelization), [Sei](https://forum.sei.io/t/optimistic-concurrency-control/28), 
-[Starknet](https://www.starknet.io/blog/parallel-execution-and-v0-13-2/), and other blockchains have 
-adopted it to achieve parallel execution on their respective chains.
+リリース以来、[Polygon](https://polygon.technology/blog/innovating-the-main-chain-a-polygon-pos-study-in-parallelization)、[Sei](https://forum.sei.io/t/optimistic-concurrency-control/28)、[Starknet](https://www.starknet.io/blog/parallel-execution-and-v0-13-2/)、その他のブロックチェーンがそれぞれのチェーンで並列実行を実現するためにこれを採用しています。
 
-To learn more, see:
-- [Block-STM blog post](https://medium.com/aptoslabs/block-stm-how-we-execute-over-160k-transactions-per-second-on-the-aptos-blockchain-3b003657e4ba)
-- [Block-STM paper](https://arxiv.org/pdf/2203.06871)
-- [a16z crypto research talk](https://www.youtube.com/watch?v=2SE5tqPzhyw)
-- [Stark Spaces | Block-STM and Starknet](https://www.youtube.com/watch?v=y1kXOi39RX0)
-- [Block-STM: Accelerating Smart-Contract Processing](https://blog.chain.link/block-stm/)
+詳細については、以下をご覧ください：
+- [Block-STMブログ記事](https://medium.com/aptoslabs/block-stm-how-we-execute-over-160k-transactions-per-second-on-the-aptos-blockchain-3b003657e4ba)
+- [Block-STM論文](https://arxiv.org/pdf/2203.06871)
+- [a16z cryptoリサーチトーク](https://www.youtube.com/watch?v=2SE5tqPzhyw)
+- [Stark Spaces | Block-STMとStarknet](https://www.youtube.com/watch?v=y1kXOi39RX0)
+- [Block-STM: スマートコントラクト処理の高速化](https://blog.chain.link/block-stm/)

@@ -1,23 +1,23 @@
 ---
-title: "Indexer Architecture"
+title: "インデクサーのアーキテクチャ"
 ---
 
 import { ThemedImage } from '@components/index'
 import { Callout } from 'nextra/components'
 
-# Indexer Architecture
+# インデクサーのアーキテクチャ
 
-The Aptos Indexer stores data from on-chain (via the Transaction Stream Service). It indexes basic data about transactions, fungible assets, tokens, collections, accounts, ANS (Aptos Name Service) names, and more. Apps can query that data via the Indexer API. 
+Aptos Indexerは、オンチェーンのデータ（Transaction Stream Serviceを介して）を保存します。トランザクション、ファンジブルアセット、トークン、コレクション、アカウント、ANS（Aptos Name Service）名などの基本的なデータをインデックス化します。アプリケーションはIndexer APIを介してそのデータをクエリできます。
 
-Aptos Labs hosts a free version of the Indexer API to help the community get access to data such as: 
+Aptos Labsは、コミュニティが以下のようなデータにアクセスできるよう、Indexer APIの無料版を提供しています：
 
-1. Historical data - Ex. [What transactions have impacted this account?](./account-transactions.mdx)
-2. Aggregate data - Ex. [How many delegators are in this staking pool?](./get-delegators.mdx)
-3. Specific info best searched via query - Ex. [What NFTs does an account own?](./get-nfts.mdx)
+1. 履歴データ - 例：[このアカウントに影響を与えたトランザクションは何か？](./account-transactions.mdx)
+2. 集計データ - 例：[このステーキングプールには何人の委任者がいるか？](./get-delegators.mdx)
+3. クエリで最適に検索できる特定の情報 - 例：[アカウントが所有するNFTは何か？](./get-nfts.mdx)
 
-### High Level Breakdown
+### 概要
 
-Here is how the Indexer creates that API at a high-level: 
+以下は、インデクサーがAPIを作成する高レベルの仕組みです：
 
 <center>
   <ThemedImage
@@ -28,21 +28,20 @@ Here is how the Indexer creates that API at a high-level:
     }}
   />
 </center>
+インデクサーは、[Transaction Stream Service](./txn-stream.mdx)と[Indexer SDK](./indexer-sdk.mdx)で書かれたカスタムプロセッサーを使用して、豊富なテーブルを持つデータベースを更新します。そして、Aptosアプリが統合されたデータにアクセスするためのAPIを公開します。
 
-The Indexer uses the [Transaction Stream Service](./txn-stream.mdx) and custom processors written with the [Indexer SDK](./indexer-sdk.mdx) to update a database with rich tables. Then it exposes an API for Aptos apps to access the consolidated data.
+Aptos提供のIndexer APIデータを超えた機能が必要な場合は、Indexer SDK (./indexer-sdk.mdx)を使用してカスタムプロセッサーを作成する必要があります。
 
-For situations where you need to go beyond the Aptos hosted Indexer API data, you will want to create a custom processor with the Indexer SDK (./indexer-sdk.mdx).
+カスタムプロセッサーを作成することで以下のようなメリットがあります：
+1. 異なる種類のデータにアクセスできる
+2. Aptos Labs提供のIndexer APIが保存する以上の追加情報を保存できる
+3. トランザクションの処理方法を変更できる
 
-Writing a custom processor can help you:
-1. Get access to different types of data.
-2. Store additional information beyond what the Aptos Labs hosted Indexer API is saving.
-3. Change how transactions are processed.
+独自のIndexer APIをサービスとして運用したい場合は、[独自のインデクサーのホスティング方法](./self-hosted.mdx)を参照してください。
 
-If you would like to operate your own Indexer API as a service, see how to [host your own Indexer](./self-hosted.mdx).
+## 詳細な概要
 
-## Detailed Overview
-
-You can use the below diagram for a much more in-depth diagram explaining how the Indexer code actually works behind the scenes.
+以下の図を使用して、インデクサーコードが実際にどのように動作しているかをより詳しく理解することができます。
 
 <div style={{textAlign:"center"}}>
   <div style={{marginBottom: 20}}>

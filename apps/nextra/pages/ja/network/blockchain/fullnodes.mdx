@@ -1,40 +1,40 @@
 ---
-title: "Fullnodes Overview"
+title: "フルノードの概要"
 ---
 
-# Fullnodes Overview
+# フルノードの概要
 
-An Aptos node is an entity of the Aptos ecosystem that tracks the [state](../glossary.mdx#state) of the Aptos blockchain. Clients interact with the blockchain via Aptos nodes. There are two types of nodes:
+Aptosノードは、Aptosブロックチェーンの[状態](../glossary.mdx#state)を追跡するAptosエコシステムのエンティティです。クライアントはAptosノードを介してブロックチェーンと対話します。ノードには2種類あります：
 
-- [Validator nodes](validator-nodes.mdx)
-- Fullnodes
+- [バリデータノード](validator-nodes.mdx)
+- フルノード
 
-Each Aptos node comprises several logical components:
+各Aptosノードは、以下の論理コンポーネントで構成されています：
 
-- [REST API service](../glossary.mdx#rest-api-service)
-- [Mempool](validator-nodes.mdx#mempool)
-- [Execution](validator-nodes.mdx#execution)
-- [Virtual Machine](validator-nodes.mdx#virtual-machine)
-- [Storage](validator-nodes.mdx#storage)
-- [State synchronizer](validator-nodes.mdx#state-synchronizer)
+- [REST APIサービス](../glossary.mdx#rest-api-service)
+- [メモリプール](validator-nodes.mdx#mempool)
+- [実行](validator-nodes.mdx#execution)
+- [仮想マシン](validator-nodes.mdx#virtual-machine)
+- [ストレージ](validator-nodes.mdx#storage)
+- [状態同期器](validator-nodes.mdx#state-synchronizer)
 
-The [Aptos-core](../glossary.mdx#aptos-core) software can be configured to run as a validator node or as a fullnode.
+[Aptos-core](../glossary.mdx#aptos-core)ソフトウェアは、バリデータノードまたはフルノードとして動作するように設定できます。
 
-## Overview
+## 概要
 
-Fullnodes can be run by anyone. Fullnodes verify blockchain history by either re-executing all transactions in the history of the Aptos blockchain or replaying each transaction's output. Fullnodes replicate the entire state of the blockchain by synchronizing with upstream participants, e.g., other fullnodes or validator nodes. To verify blockchain state, fullnodes receive the set of transactions and the [accumulator root hash](../glossary.mdx#accumulator-root-hash) of the ledger signed by the validators. In addition, fullnodes accept transactions submitted by Aptos clients and forward them directly (or indirectly) to validator nodes. While fullnodes and validators share the same code, fullnodes do not participate in consensus.
+フルノードは誰でも運用できます。フルノードは、Aptosブロックチェーンの履歴にあるすべてのトランザクションを再実行するか、各トランザクションの出力をリプレイすることで、ブロックチェーンの履歴を検証します。フルノードは、上流の参加者（他のフルノードやバリデータノードなど）と同期することで、ブロックチェーンの状態全体を複製します。ブロックチェーンの状態を検証するために、フルノードはトランザクションのセットとバリデータによって署名された台帳の[アキュムレータルートハッシュ](../glossary.mdx#accumulator-root-hash)を受け取ります。さらに、フルノードはAptosクライアントから送信されたトランザクションを受け付け、バリデータノードに直接（または間接的に）転送します。フルノードとバリデータは同じコードを共有していますが、フルノードはコンセンサスには参加しません。
 
-Depending on the fullnode upstream, a fullnode can be called as a validator fullnode, or a public fullnode:
+上流のノードに応じて、フルノードはバリデータフルノードまたはパブリックフルノードと呼ばれます：
 
-- **Validator fullnode** state sync from a validator node directly.
-- **Public fullnode** state sync from other fullnodes.
+- **バリデータフルノード**は、バリデータノードから直接状態を同期します。
+- **パブリックフルノード**は、他のフルノードから状態を同期します。
 
-There's no difference in their functionality, only whether their upstream node is a validator or another fullnode. Read more details about network topology [here](node-networks-sync.mdx)
+機能に違いはなく、上流のノードがバリデータか他のフルノードかの違いだけです。ネットワークトポロジーの詳細については[こちら](node-networks-sync.mdx)をご覧ください。
 
-Third-party blockchain explorers, wallets, exchanges, and dapps may run a local fullnode to:
+サードパーティのブロックチェーンエクスプローラー、ウォレット、取引所、dappsは、以下の目的でローカルフルノードを実行することができます：
 
-- Leverage the REST interface for blockchain interactions.
-- Get a consistent view of the Aptos ledger.
-- Avoid rate limitations on read traffic.
-- Run custom analytics on historical data.
-- Get notifications about particular on-chain events.
+- ブロックチェーンとの対話にRESTインターフェースを活用する。
+- Aptos台帳の一貫したビューを取得する。
+- 読み取りトラフィックのレート制限を回避する。
+- 履歴データのカスタム分析を実行する。
+- 特定のオンチェーンイベントに関する通知を取得する。

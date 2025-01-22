@@ -1,32 +1,32 @@
-# 2. Set up React App
+# Reactアプリのセットアップ
 
-This is the second chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx) where you have already [created a smart contract](1-create-smart-contract.mdx) and are now setting up a React app.
+これは[Aptos上でのエンドツーエンドdappの構築](../build-e2e-dapp.mdx)チュートリアルの2番目のチャプターです。[スマートコントラクトを作成](1-create-smart-contract.mdx)した後、Reactアプリをセットアップします。
 
-## Set up the app
+## アプリのセットアップ
 
-We will use the `react` library to build the client side with [Create React App](https://create-react-app.dev/docs/getting-started#creating-an-app).
+クライアントサイドの構築には`react`ライブラリを使用し、[Create React App](https://create-react-app.dev/docs/getting-started#creating-an-app)を利用します。
 
-For the UI, we will use [Ant Design](https://ant.design/). This is just a personal decision; you are welcome to use any different UI library/framework you wish.
+UIには[Ant Design](https://ant.design/)を使用します。これは個人的な選択であり、他のUIライブラリ/フレームワークを使用しても構いません。
 
-1. In the root folder of the `my-first-dapp` project, run:
+1. `my-first-dapp`プロジェクトのルートフォルダで以下を実行します：
 
 ```bash filename="Terminal"
 npx create-react-app client --template typescript
 ```
 
-That will create a new `client` folder in the current path:
+これにより、現在のパスに新しい`client`フォルダが作成されます：
 
-2. Your file structure should look something like:
+2. ファイル構造は以下のようになるはずです：
 
    ![client-folder](/docs/build-e2e-dapp-img-2.png)
 
-3. Run: `cd client`
-4. Run: `npm start`
+3. `cd client`を実行
+4. `npm start`を実行
 
-   At this point you should have your app running on [http://localhost:3000](http://localhost:3000), which displays the default React layout.
+   この時点で、アプリは[http://localhost:3000](http://localhost:3000)で実行され、デフォルトのReactレイアウトが表示されているはずです。
 
-5. In the `client/src` directory, find all the React app files. Let’s clean it up a bit.
-6. Open the `App.tsx` file and update its content to be:
+5. `client/src`ディレクトリにReactアプリのファイルがあります。少し整理しましょう。
+6. `App.tsx`ファイルを開き、内容を以下のように更新します：
 
 ```ts filename="App.tsx"
 function App() {
@@ -36,25 +36,25 @@ function App() {
 export default App;
 ```
 
-Once you save the changes, you should see that the app content has changed in the browser and displays `My app goes here`.
+変更を保存すると、ブラウザでアプリの内容が変更され、`My app goes here`が表示されるはずです。
 
-7. Open the `App.tsx` file and remove the `import './App.css';` and `import logo from './logo.svg';` lines. Since we remove the default imports on this file, we can remove some files in our project. Delete the files `App.css` and `logo.svg`.
-8. Open the `index.tsx` file and remove the `import './index.css';` line at the top of the file.
-   Now you can also delete the `src/index.css` file.
+7. `App.tsx`ファイルを開き、`import './App.css';`と`import logo from './logo.svg';`の行を削除します。このファイルからデフォルトのインポートを削除したので、プロジェクトからいくつかのファイルを削除できます。`App.css`と`logo.svg`ファイルを削除します。
+8. `index.tsx`ファイルを開き、ファイル上部の`import './index.css';`の行を削除します。
+   これで`src/index.css`ファイルも削除できます。
 
-## Our dapp UI
+## dappのUI
 
-First we will build the dapp UI layout. We have two UI states for the app:
+まず、dappのUIレイアウトを構築します。アプリには2つのUI状態があります：
 
-- When an account hasn't created a list yet (on the left).
-- When an account has created a list and can now add tasks to it (on the right).
+- アカウントがまだリストを作成していない場合（左側）
+- アカウントがリストを作成し、タスクを追加できる場合（右側）
   ![dapp-ui](/docs/build-e2e-dapp-img-3.png)
 
-We will use the [Ant Design](https://ant.design/) library for our UI:
+UIには[Ant Design](https://ant.design/)ライブラリを使用します：
 
-1. Stop the local server if running.
-2. On to the `client` directory and install our UI library package: `npm i antd@5.1.4`
-3. Update `App.tsx` with the initial state UI:
+1. ローカルサーバーが実行中の場合は停止します。
+2. `client`ディレクトリで、UIライブラリパッケージをインストールします：`npm i antd@5.1.4`
+3. `App.tsx`を初期状態のUIで更新します：
 
 ```ts filename="App.tsx"
 return (
@@ -73,12 +73,12 @@ return (
 );
 ```
 
-4. Don't forget to import the _components_ we just added:
+4. 追加したコンポーネントをインポートするのを忘れないでください：
 
 ```ts filename="App.tsx"
 import { Layout, Row, Col } from "antd";
 ```
 
-5. Run the local server with `npm start`, you should see the _header_ that matches our UI mockup.
+5. `npm start`でローカルサーバーを実行すると、UIモックアップに一致するヘッダーが表示されるはずです。
 
-It is now time to [add wallet support](3-add-wallet-support.mdx) in chapter 3.
+次のチャプター3で[ウォレットサポートを追加](3-add-wallet-support.mdx)する準備が整いました。

@@ -1,304 +1,306 @@
 ---
-title: "Computing Transaction Gas"
+title: "トランザクションガスの計算"
 id: "base-gas"
 ---
 
-# Computing Transaction Gas
+# トランザクションガスの計算
 
-Aptos transactions by default charge a base gas fee, regardless of market conditions.
-For each transaction, this "base gas" amount is based on three conditions:
+Aptosのトランザクションは、市場の状況に関係なく、デフォルトでベースガス料金が課金されます。
+各トランザクションのこの「ベースガス」量は、以下の3つの条件に基づいています：
 
-1. Instructions.
-2. Storage.
-3. Payload.
+1. 命令
+2. ストレージ
+3. ペイロード
 
-The more function calls, branching conditional statements, etc. that a transaction requires, the more instruction gas it will cost.
-Likewise, the more reads from and writes into global storage that a transaction requires, the more storage gas it will cost.
-Finally, the more bytes in a transaction payload, the more it will cost.
+トランザクションが必要とする関数呼び出し、条件分岐などが多いほど、命令ガスのコストが高くなります。
+同様に、トランザクションがグローバルストレージからの読み取りと書き込みを必要とする量が多いほど、ストレージガスのコストが高くなります。
+最後に、トランザクションペイロードのバイト数が多いほど、コストが高くなります。
 
-As explained in the [optimization principles](#optimization-principles) section, storage gas has by far the largest effect on base gas. For background on the Aptos gas model, see [The Making of the Aptos Gas Schedule](https://aptoslabs.medium.com/the-making-of-the-aptos-gas-schedule-508d5686a350).
+[最適化の原則](#optimization-principles)セクションで説明されているように、ストレージガスはベースガスに最も大きな影響を与えます。Aptosのガスモデルの背景については、[The Making of the Aptos Gas Schedule](https://aptoslabs.medium.com/the-making-of-the-aptos-gas-schedule-508d5686a350)をご覧ください。
 
-## Instruction gas
+## 命令ガス
 
-Basic instruction gas parameters are defined at [`instr.rs`] and include the following instruction types:
+基本的な命令ガスのパラメータは[`instr.rs`]で定義されており、以下の命令タイプが含まれます：
 
-### No-operation
+### 無操作
 
-| Parameter | Meaning        |
+| パラメータ | 意味 |
 | --------- | -------------- |
-| `nop`     | A no-operation |
+| `nop` | 無操作 |
 
-### Control flow
+### 制御フロー
 
-| Parameter  | Meaning                          |
+| パラメータ | 意味 |
 | ---------- | -------------------------------- |
-| `ret`      | Return                           |
-| `abort`    | Abort                            |
-| `br_true`  | Execute conditional true branch  |
-| `br_false` | Execute conditional false branch |
-| `branch`   | Branch                           |
+| `ret` | リターン |
+| `abort` | アボート |
+| `br_true` | 条件分岐trueの実行 |
+| `br_false` | 条件分岐falseの実行 |
+| `branch` | 分岐 |
 
-### Stack
+### スタック
 
-| Parameter           | Meaning                          |
+| パラメータ | 意味 |
 | ------------------- | -------------------------------- |
-| `pop`               | Pop from stack                   |
-| `ld_u8`             | Load a `u8`                      |
-| `ld_u16`            | Load a `u16`                     |
-| `ld_u32`            | Load a `u32`                     |
-| `ld_u64`            | Load a `u64`                     |
-| `ld_u128`           | Load a `u128`                    |
-| `ld_256`            | Load a `u256`                    |
-| `ld_true`           | Load a `true`                    |
-| `ld_false`          | Load a `false`                   |
-| `ld_const_base`     | Base cost to load a constant     |
-| `ld_const_per_byte` | Per-byte cost to load a constant |
+| `pop` | スタックからポップ |
+| `ld_u8` | `u8`のロード |
+| `ld_u16` | `u16`のロード |
+| `ld_u32` | `u32`のロード |
+| `ld_u64` | `u64`のロード |
+| `ld_u128` | `u128`のロード |
+| `ld_256` | `u256`のロード |
+| `ld_true` | `true`のロード |
+| `ld_false` | `false`のロード |
+| `ld_const_base` | 定数ロードの基本コスト |
+| `ld_const_per_byte` | 定数ロードのバイトあたりのコスト |
 
-### Local scope
+### ローカルスコープ
 
-| Parameter                   | Meaning                  |
+| パラメータ | 意味 |
 | --------------------------- | ------------------------ |
-| `imm_borrow_loc`            | Immutably borrow         |
-| `mut_borrow_loc`            | Mutably borrow           |
-| `imm_borrow_field`          | Immutably borrow a field |
-| `mut_borrow_field`          | Mutably borrow a field   |
-| `imm_borrow_field_generic`  |                          |
-| `mut_borrow_field_generic`  |                          |
-| `copy_loc_base`             | Base cost to copy        |
-| `copy_loc_per_abs_val_unit` |                          |
-| `move_loc_base`             | Move                     |
-| `st_loc_base`               |                          |
+| `imm_borrow_loc` | 不変借用 |
+| `mut_borrow_loc` | 可変借用 |
+| `imm_borrow_field` | フィールドの不変借用 |
+| `mut_borrow_field` | フィールドの可変借用 |
+| `imm_borrow_field_generic` | |
+| `mut_borrow_field_generic` | |
+| `copy_loc_base` | コピーの基本コスト |
+| `copy_loc_per_abs_val_unit` | |
+| `move_loc_base` | 移動 |
+| `st_loc_base` | |
 
-### Calling
+### 呼び出し
 
-| Parameter                 | Meaning                         |
+| パラメータ | 意味 |
 | ------------------------- | ------------------------------- |
-| `call_base`               | Base cost for a function call   |
-| `call_per_arg`            | Cost per function argument      |
-| `call_per_local`          | Cost per local argument         |
-| `call_generic_base`       |                                 |
-| `call_generic_per_ty_arg` | Cost per type argument          |
-| `call_generic_per_arg`    |                                 |
-| `call_generic_per_local`  | Cost generic per local argument |
+| `call_base` | 関数呼び出しの基本コスト |
+| `call_per_arg` | 関数引数あたりのコスト |
+| `call_per_local` | ローカル引数あたりのコスト |
+| `call_generic_base` | |
+| `call_generic_per_ty_arg` | 型引数あたりのコスト |
+| `call_generic_per_arg` | |
+| `call_generic_per_local` | ジェネリックのローカル引数あたりのコスト |
 
-### Structs
+### 構造体
 
-| Parameter                  | Meaning                              |
+| パラメータ | 意味 |
 | -------------------------- | ------------------------------------ |
-| `pack_base`                | Base cost to pack a `struct`         |
-| `pack_per_field`           | Cost to pack a `struct`, per field   |
-| `pack_generic_base`        |                                      |
-| `pack_generic_per_field`   |                                      |
-| `unpack_base`              | Base cost to unpack a `struct`       |
-| `unpack_per_field`         | Cost to unpack a `struct`, per field |
-| `unpack_generic_base`      |                                      |
-| `unpack_generic_per_field` |                                      |
+| `pack_base` | `struct`のパックの基本コスト |
+| `pack_per_field` | `struct`のフィールドあたりのパックコスト |
+| `pack_generic_base` | |
+| `pack_generic_per_field` | |
+| `unpack_base` | `struct`のアンパックの基本コスト |
+| `unpack_per_field` | `struct`のフィールドあたりのアンパックコスト |
+| `unpack_generic_base` | |
+| `unpack_generic_per_field` | |
 
-### References
+### 参照
 
-| Parameter                   | Meaning                            |
+| パラメータ | 意味 |
 | --------------------------- | ---------------------------------- |
-| `read_ref_base`             | Base cost to read from a reference |
-| `read_ref_per_abs_val_unit` |                                    |
-| `write_ref_base`            | Base cost to write to a reference  |
-| `freeze_ref`                | Freeze a reference                 |
+| `read_ref_base` | 参照からの読み取りの基本コスト |
+| `read_ref_per_abs_val_unit` | |
+| `write_ref_base` | 参照への書き込みの基本コスト |
+| `freeze_ref` | 参照のフリーズ |
 
-### Casting
+### キャスト
 
-| Parameter   | Meaning          |
+| パラメータ | 意味 |
 | ----------- | ---------------- |
-| `cast_u8`   | Cast to a `u8`   |
-| `cast_u16`  | Cast to a `u16`  |
-| `cast_u32`  | Cast to a `u32`  |
-| `cast_u64`  | Cast to a `u64`  |
-| `cast_u128` | Cast to a `u128` |
-| `cast_u256` | Cast to a `u256` |
+| `cast_u8` | `u8`へのキャスト |
+| `cast_u16` | `u16`へのキャスト |
+| `cast_u32` | `u32`へのキャスト |
+| `cast_u64` | `u64`へのキャスト |
+| `cast_u128` | `u128`へのキャスト |
+| `cast_u256` | `u256`へのキャスト |
 
-### Arithmetic
+### 算術演算
 
-| Parameter | Meaning  |
+| パラメータ | 意味 |
 | --------- | -------- |
-| `add`     | Add      |
-| `sub`     | Subtract |
-| `mul`     | Multiply |
-| `mod_`    | Modulo   |
-| `div`     | Divide   |
+| `add` | 加算 |
+| `sub` | 減算 |
+| `mul` | 乗算 |
+| `mod_` | 剰余 |
+| `div` | 除算 |
 
-### Bitwise
+### ビット演算
 
-| Parameter | Meaning                   |
+| パラメータ | 意味 |
 | --------- | ------------------------- |
-| `bit_or`  | `OR`: <code>&#124;</code> |
-| `bit_and` | `AND`: `&`                |
-| `xor`     | `XOR`: `^`                |
-| `shl`     | Shift left: `<<`          |
-| `shr`     | Shift right: `>>`         |
+| `bit_or` | `OR`: <code>&#124;</code> |
+| `bit_and` | `AND`: `&` |
+| `xor` | `XOR`: `^` |
+| `shl` | 左シフト: `<<` |
+| `shr` | 右シフト: `>>` |
 
-### Boolean
+### 論理演算
 
-| Parameter | Meaning                         |
+| パラメータ | 意味 |
 | --------- | ------------------------------- |
-| `or`      | `OR`: <code>&#124;&#124;</code> |
-| `and`     | `AND`: `&&`                     |
-| `not`     | `NOT`: `!`                      |
+| `or` | `OR`: <code>&#124;&#124;</code> |
+| `and` | `AND`: `&&` |
+| `not` | `NOT`: `!` |
 
-### Comparison
+### 比較
 
-| Parameter              | Meaning                        |
+| パラメータ | 意味 |
 | ---------------------- | ------------------------------ |
-| `lt`                   | Less than: `<`                 |
-| `gt`                   | Greater than: `>`              |
-| `le`                   | Less than or equal to: `<=`    |
-| `ge`                   | Greater than or equal to: `>=` |
-| `eq_base`              | Base equality cost: `==`       |
-| `eq_per_abs_val_unit`  |                                |
-| `neq_base`             | Base not equal cost: `!=`      |
-| `neq_per_abs_val_unit` |                                |
+| `lt` | 未満: `<` |
+| `gt` | より大きい: `>` |
+| `le` | 以下: `<=` |
+| `ge` | 以上: `>=` |
+| `eq_base` | 等価の基本コスト: `==` |
+| `eq_per_abs_val_unit` | |
+| `neq_base` | 不等価の基本コスト: `!=` |
+| `neq_per_abs_val_unit` | |
 
-### Global storage
+### グローバルストレージ
 
-| Parameter                        | Meaning                                               |
+| パラメータ | 意味 |
 | -------------------------------- | ----------------------------------------------------- |
-| `imm_borrow_global_base`         | Base cost to immutably borrow: `borrow_global<T>()`   |
-| `imm_borrow_global_generic_base` |                                                       |
-| `mut_borrow_global_base`         | Base cost to mutably borrow: `borrow_global_mut<T>()` |
-| `mut_borrow_global_generic_base` |                                                       |
-| `exists_base`                    | Base cost to check existence: `exists<T>()`           |
-| `exists_generic_base`            |                                                       |
-| `move_from_base`                 | Base cost to move from: `move_from<T>()`              |
-| `move_from_generic_base`         |                                                       |
-| `move_to_base`                   | Base cost to move to: `move_to<T>()`                  |
-| `move_to_generic_base`           |                                                       |
+| `imm_borrow_global_base` | 不変借用の基本コスト: `borrow_global<T>()` |
+| `imm_borrow_global_generic_base` | |
+| `mut_borrow_global_base` | 可変借用の基本コスト: `borrow_global_mut<T>()` |
+| `mut_borrow_global_generic_base` | |
+| `exists_base` | 存在チェックの基本コスト: `exists<T>()` |
+| `exists_generic_base` | |
+| `move_from_base` | 移動元の基本コスト: `move_from<T>()` |
+| `move_from_generic_base` | |
+| `move_to_base` | 移動先の基本コスト: `move_to<T>()` |
+| `move_to_generic_base` | |
 
-### Vectors
+### ベクター
 
-| Parameter                      | Meaning                                  |
+| パラメータ | 意味 |
 | ------------------------------ | ---------------------------------------- |
-| `vec_len_base`                 | Length of a vector                       |
-| `vec_imm_borrow_base`          | Immutably borrow an element              |
-| `vec_mut_borrow_base`          | Mutably borrow an element                |
-| `vec_push_back_base`           | Push back                                |
-| `vec_pop_back_base`            | Pop from the back                        |
-| `vec_swap_base`                | Swap elements                            |
-| `vec_pack_base`                | Base cost to pack a vector               |
-| `vec_pack_per_elem`            | Cost to pack a vector per element        |
-| `vec_unpack_base`              | Base cost to unpack a vector             |
-| `vec_unpack_per_expected_elem` | Base cost to unpack a vector per element |
+| `vec_len_base` | ベクターの長さ |
+| `vec_imm_borrow_base` | 要素の不変借用 |
+| `vec_mut_borrow_base` | 要素の可変借用 |
+| `vec_push_back_base` | 末尾への追加 |
+| `vec_pop_back_base` | 末尾からの削除 |
+| `vec_swap_base` | 要素の交換 |
+| `vec_pack_base` | ベクターのパックの基本コスト |
+| `vec_pack_per_elem` | 要素あたりのパックコスト |
+| `vec_unpack_base` | ベクターのアンパックの基本コスト |
+| `vec_unpack_per_expected_elem` | 要素あたりのアンパックコスト |
 
-Additional storage gas parameters are defined in [`table.rs`], [`move_stdlib.rs`], and other assorted source files in [`aptos-gas-schedule/src/`].
+追加のストレージガスパラメータは[`table.rs`]、[`move_stdlib.rs`]、および[`aptos-gas-schedule/src/`]の他のソースファイルで定義されています。
 
-## IO and Storage charges
+## IOとストレージの課金
 
-The following gas parameters are applied (i.e., charged) to represent the costs associated with transient storage device resources, including disk IOPS and bandwidth:
+以下のガスパラメータは、ディスクIOPSと帯域幅を含む一時的なストレージデバイスリソースに関連するコストを表すために適用（つまり課金）されます：
 
-In Move, one can read from the global state:
+Moveでは、グローバル状態から読み取ることができます：
 
-| Parameter                      | Meaning                                   |
+| パラメータ | 意味 |
 |--------------------------------|-------------------------------------------|
-| storage_io_per_state_slot_read | charged per item loaded from global state |
-| storage_io_per_state_byte_read | charged per byte loaded from global state |
+| storage_io_per_state_slot_read | グローバル状態からロードされた項目ごとに課金 |
+| storage_io_per_state_byte_read | グローバル状態からロードされたバイトごとに課金 |
 
-For a committed transaction, various things will be written to the ledger history. Notice that the ledger hisotry is subject to pruning and doesn't occupy permanent space on the disk, hence no storage fee charged for it.
+コミットされたトランザクションでは、台帳履歴に様々なものが書き込まれます。台帳履歴は削除の対象となり、ディスク上の永続的なスペースを占有しないため、ストレージ料金は課金されないことに注意してください。
 
-| Parameter                             | Meaning                                                                             |
-|---------------------------------------|-------------------------------------------------------------------------------------|
-| storage_io_per_state_slot_write       | charged per state write operation in the transaction output                         |
-| storage_io_per_state_byte_write       | charged per byte in all state write ops in the transaction output                   |
-| storage_io_per_event_byte_write       | charged per byte in all events in the transaction output                            |
-| storage_io_per_transaction_byte_write | charged per byte in the transaction itself which is also part of the ledger history |
+| パラメータ | 意味 |
+|---------------------------------------|--------------------
+--------------------------------------------|
+| storage_io_per_state_slot_write | トランザクション出力の状態書き込み操作ごとに課金 |
+| storage_io_per_state_byte_write | トランザクション出力のすべての状態書き込み操作のバイトごとに課金 |
+| storage_io_per_event_byte_write | トランザクション出力のすべてのイベントのバイトごとに課金 |
+| storage_io_per_transaction_byte_write | 台帳履歴の一部であるトランザクション自体のバイトごとに課金 |
 
-The following storage fee parameters are applied (i.e., charged in absolute APT values) to represent the disk space and structural costs associated with using the [Aptos authenticated data structure](../glossary.mdx#merkle-trees) for storing items on the blockchain.
+以下のストレージ料金パラメータは、[Aptos認証データ構造](../glossary.mdx#merkle-trees)を使用してブロックチェーン上にアイテムを保存することに関連するディスク容量と構造的コストを表すために適用（つまり絶対APT値で課金）されます。
 
-| Parameter                         | Meaning                                                                                                                                                                                                                                             |
+| パラメータ | 意味 |
 |-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| storage_fee_per_state_slot_create | allocating a state slot, by `move_to()`, `table::add()`, etc                                                                                                                                                                                        |
-| storage_fee_per_state_byte        | Notice this is charged every time the slot grows in size, not only at allocation time. (However, for simplicity, refunding is only at deletion time. See [AIP-65](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-65.md#specification)) |
-### Vectors
+| storage_fee_per_state_slot_create | `move_to()`、`table::add()`などによる状態スロットの割り当て |
+| storage_fee_per_state_byte | スロットのサイズが大きくなるたびに課金されることに注意してください（ただし、簡略化のため、返金は削除時のみです。[AIP-65](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-65.md#specification)を参照） |
 
-Byte-wise fees are similarly assessed on vectors, which consume $\sum_{i = 0}^{n - 1} e_i + b(n)$ bytes, where:
+### ベクター
 
-- $n$ is the number of elements in the vector
-- $e_i$ is the size of element $i$
-- $b(n)$ is a "base size" which is a function of $n$
+バイト単位の料金は、同様にベクターにも適用され、ベクターは $\sum_{i = 0}^{n - 1} e_i + b(n)$ バイトを消費します。ここで：
 
-See the [BCS sequence specification] for more information on vector base size (technically a `ULEB128`), which typically occupies just one byte in practice, such that a vector of 100 `u8` elements accounts for $100 + 1 = 101$ bytes.
-Hence, per the item-wise read methodology described above, reading the last element of such a vector is treated as a 101-byte read.
+- $n$ はベクター内の要素数
+- $e_i$ は要素 $i$ のサイズ
+- $b(n)$ は $n$ の関数である「基本サイズ」
 
-## Payload gas
+ベクターの基本サイズ（技術的には`ULEB128`）の詳細については、[BCS シーケンス仕様]を参照してください。実際には通常1バイトを占めるため、100個の`u8`要素を持つベクターは $100 + 1 = 101$ バイトを占めます。
+したがって、上記の項目単位の読み取り方法に従って、そのようなベクターの最後の要素を読み取ることは、101バイトの読み取りとして扱われます。
 
-Payload gas is defined in [`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs), which incorporates storage gas with several payload- and pricing-associated parameters:
+## ペイロードガス
 
-| Parameter                       | Meaning                                                                                |
+ペイロードガスは[`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs)で定義されており、ストレージガスといくつかのペイロードおよび価格に関連するパラメータを組み込んでいます：
+
+| パラメータ | 意味 |
 | ------------------------------- | -------------------------------------------------------------------------------------- |
-| `min_transaction_gas_units`     | Minimum internal gas units for a transaction, charged at the start of execution        |
-| `large_transaction_cutoff`      | Size, in bytes, above which transactions will be charged an additional amount per byte |
-| `intrinsic_gas_per_byte`        | Internal gas units charged per byte for payloads above `large_transaction_cutoff`      |
-| `maximum_number_of_gas_units`   | Upper limit on external gas units for a transaction                                    |
-| `min_price_per_gas_unit`        | Minimum gas price allowed for a transaction                                            |
-| `max_price_per_gas_unit`        | Maximum gas price allowed for a transaction                                            |
-| `max_transaction_size_in_bytes` | Maximum transaction payload size in bytes                                              |
-| `gas_unit_scaling_factor`       | Conversion factor between internal gas units and external gas units                    |
+| `min_transaction_gas_units` | トランザクションの最小内部ガスユニット（実行開始時に課金） |
+| `large_transaction_cutoff` | このサイズ（バイト単位）を超えるトランザクションには、バイトあたりの追加料金が課金されます |
+| `intrinsic_gas_per_byte` | `large_transaction_cutoff`を超えるペイロードに対してバイトあたりに課金される内部ガスユニット |
+| `maximum_number_of_gas_units` | トランザクションの外部ガスユニットの上限 |
+| `min_price_per_gas_unit` | トランザクションに許可される最小ガス価格 |
+| `max_price_per_gas_unit` | トランザクションに許可される最大ガス価格 |
+| `max_transaction_size_in_bytes` | トランザクションペイロードの最大サイズ（バイト単位） |
+| `gas_unit_scaling_factor` | 内部ガスユニットと外部ガスユニット間の変換係数 |
 
-Here, "internal gas units" are defined as constants in source files like [`instr.rs`] and [`storage_gas.move`], which are more granular than "external gas units" by a factor of `gas_unit_scaling_factor`:
-to convert from internal gas units to external gas units, divide by `gas_unit_scaling_factor`.
-Then, to convert from external gas units to [octas](../glossary.mdx#octa), multiply by the "gas price", which denotes the number of octas per unit of external gas.
+ここで、「内部ガスユニット」は[`instr.rs`]や[`storage_gas.move`]などのソースファイルで定義された定数で、`gas_unit_scaling_factor`の係数だけ「外部ガスユニット」よりも細かくなっています：
+内部ガスユニットから外部ガスユニットに変換するには、`gas_unit_scaling_factor`で除算します。
+その後、外部ガスユニットから[オクタ](../glossary.mdx#octa)に変換するには、「ガス価格」（外部ガス1単位あたりのオクタ数を示す）を掛けます。
 
-## Optimization principles
+## 最適化の原則
 
-### Unit and pricing constants
+### 単位と価格の定数
 
-As of the time of this writing, `min_price_per_gas_unit` in [`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs) is defined as [`aptos_global_constants`]`::GAS_UNIT_PRICE` (which is itself defined as 100), with other noteworthy [`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs) constants as follows:
+この文書の執筆時点で、[`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs)の`min_price_per_gas_unit`は[`aptos_global_constants`]`::GAS_UNIT_PRICE`（これ自体は100として定義されています）として定義されており、他の注目すべき[`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs)の定数は以下の通りです：
 
-| Constant                  | Value          |
+| 定数 | 値 |
 | ------------------------- | -------------- |
-| `min_price_per_gas_unit`  | 100            |
-| `max_price_per_gas_unit`  | 10,000,000,000 |
-| `gas_unit_scaling_factor` | 1,000,000      |
+| `min_price_per_gas_unit` | 100 |
+| `max_price_per_gas_unit` | 10,000,000,000 |
+| `gas_unit_scaling_factor` | 1,000,000 |
 
-See [Payload gas](#payload-gas) for the meaning of these constants.
+これらの定数の意味については、[ペイロードガス](#payload-gas)を参照してください。
 
-### Storage Fee
+### ストレージ料金
 
-When the network load is low, the gas unit price is expected to be low, making most aspects of the transaction cost more affordable. However, the storage fee is an exception, as it's priced in terms of absolute APT value. In most instances, the transaction fee is the predominant component of the overall transaction cost. This is especially true when a transaction allocates state slots, writes to sizable state items, emits numerous or large events, or when the transaction itself is a large one. All of these factors consume disk space on Aptos nodes and are charged accordingly.
+ネットワーク負荷が低い場合、ガスユニット価格は低くなると予想され、トランザクションコストのほとんどの側面がより手頃になります。ただし、ストレージ料金は例外で、絶対的なAPT値で価格が設定されます。ほとんどの場合、トランザクション手数料が全体のトランザクションコストの主要な要素となります。これは特に、トランザクションが状態スロットを割り当てる場合、大きな状態項目に書き込む場合、多数または大きなイベントを発生させる場合、またはトランザクション自体が大きい場合に当てはまります。これらはすべてAptosノードのディスク容量を消費し、それに応じて課金されます。
 
-On the other hand, the storage refund incentivizes releasing state slots by deleting state items. The state slot fee is fully refunded upon slot deallocation, while the excess state byte fee is non-refundable. This will soon change by differentiating between permanent bytes (those in the global state) and relative ephemeral bytes (those that traverse the ledger history).
+一方、ストレージの返金は、状態項目を削除することで状態スロットを解放することを奨励します。状態スロット料金は、スロットの割り当て解除時に完全に返金されますが、超過状態バイト料金は返金されません。これは、永続的なバイト（グローバル状態にあるもの）と比較的一時的なバイト（台帳履歴を通過するもの）を区別することで、まもなく変更される予定です。
 
-Some cost optimization strategies concerning the storage fee:
+ストレージ料金に関するいくつかのコスト最適化戦略：
 
-1. Minimize state item creation.
-2. Minimize event emissions.
-3. Avoid large state items, events, and transactions.
-4. Clean up state items that are no longer in use.
-5. If two fields are consistently updated together, group them into the same resource or resource group.
-6. If a struct is large and only a few fields are updated frequently, move those fields to a separate resource or resource group.
+1. 状態項目の作成を最小限に抑える。
+2. イベントの発生を最小限に抑える。
+3. 大きな状態項目、イベント、トランザクションを避ける。
+4. 使用されなくなった状態項目をクリーンアップする。
+5. 2つのフィールドが常に一緒に更新される場合、それらを同じリソースまたはリソースグループにグループ化する。
+6. 構造体が大きく、一部のフィールドのみが頻繁に更新される場合、それらのフィールドを別のリソースまたはリソースグループに移動する。
 
-### Instruction gas
+### 命令ガス
 
-As of the time of this writing, all instruction gas operations are multiplied by the `EXECUTION_GAS_MULTIPLIER` defined in [`meter.rs`], which is set to 20.
-Hence, the following representative operations assume gas costs as follows (divide internal gas by scaling factor, then multiply by minimum gas price):
+この文書の執筆時点で、すべての命令ガス操作は[`meter.rs`]で定義された`EXECUTION_GAS_MULTIPLIER`（20に設定）を掛けられます。
+したがって、以下の代表的な操作は、以下のようなガスコストを想定しています（内部ガスをスケーリング係数で除算し、最小ガス価格を掛ける）：
 
-| Operation                    | Minimum [Octas](../glossary.mdx#octa) |
+| 操作 | 最小[オクタ](../glossary.mdx#octa) |
 | ---------------------------- | ------------- |
-| Table add/borrow/remove box  | 240           |
-| Function call                | 200           |
-| Load constant                | 130           |
-| Globally borrow              | 100           |
-| Read/write reference         | 40            |
-| Load `u128` on stack         | 16            |
-| Table box operation per byte | 2             |
+| テーブルの追加/借用/ボックス削除 | 240 |
+| 関数呼び出し | 200 |
+| 定数のロード | 130 |
+| グローバルな借用 | 100 |
+| 参照の読み取り/書き込み | 40 |
+| スタックへの`u128`のロード | 16 |
+| テーブルボックス操作（バイトあたり） | 2 |
 
-(Note that per-byte table box operation instruction gas does not account for storage gas, which is assessed separately).
+（テーブルボックス操作のバイトあたりの命令ガスは、別途評価されるストレージガスを考慮していないことに注意してください）。
 
-For comparison, reading a 100-byte item costs $r_i + 100 * r_b = 3000 + 100 * 3 = 3300$ [octas](../glossary.mdx#octa) at minimum, some 16.5 times as much as a function call, and in general, instruction gas costs are largely dominated by storage gas costs.
+比較として、100バイトの項目を読み取るコストは $r_i + 100 * r_b = 3000 + 100 * 3 = 3300$ [オクタ](../glossary.mdx#octa)（最小）で、関数呼び出しの16.5倍であり、一般的に、命令ガスコストはストレージガスコストに大きく支配されます。
 
-Notably, however, there is still technically an incentive to reduce the number of function calls in a program, but engineering efforts are more effectively dedicated to writing modular, decomposed code that is geared toward reducing storage gas costs, rather than attempting to write repetitive code blocks with fewer nested functions (in nearly all cases).
+ただし、技術的にはプログラム内の関数呼び出しの数を減らすインセンティブはまだありますが、エンジニアリングの努力は、ネストされた関数の少ない反復的なコードブロックを書こうとするのではなく（ほとんどすべての場合）、ストレージガスコストを削減することを目的とした、モジュール化された分解されたコードを書くことに、より効果的に向けられます。
 
-In extreme cases it is possible for instruction gas to far outweigh storage gas, for example if a looping mathematical function takes 10,000 iterations to converge; but again this is an extreme case and for most applications storage gas has a larger impact on base gas than does instruction gas.
+極端な場合、例えば、ループする数学的関数が収束するのに10,000回の反復が必要な場合など、命令ガスがストレージガスを大きく上回る可能性がありますが、これも極端な場合であり、ほとんどのアプリケーションでは、ストレージガスが命令ガスよりもベースガスに大きな影響を与えます。
 
-### Payload gas
+### ペイロードガス
 
-As of the time of this writing, [`transaction/mod.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs) defines the minimum amount of internal gas per transaction as 1,500,000 internal units (15,000 [octas](../glossary.mdx#Octa) at minimum), an amount that increases by 2,000 internal gas units (20 octas minimum) per byte for payloads larger than 600 bytes, with the maximum number of bytes permitted in a transaction set at 65536.
-Hence, in practice, payload gas is unlikely to be a concern.
+この文書の執筆時点で、[`transaction/mod.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs)はトランザクションあたりの最小内部ガス量を1,500,000内部ユニット（最小15,000[オクタ](../glossary.mdx#Octa)）と定義しており、600バイトを超えるペイロードに対してはバイトあたり2,000内部ガスユニット（最小20オクタ）増加し、トランザクションで許可される最大バイト数は65536に設定されています。
+したがって、実際にはペイロードガスが問題になることは少ないでしょう。
 
 [#4540]: https://github.com/aptos-labs/aptos-core/pull/4540/files
 [`aptos-gas-schedule/src/`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src

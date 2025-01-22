@@ -1,25 +1,25 @@
 ---
-title: "Aptos Fungible Asset (FA) Standard"
+title: "Aptos ファンジブルアセット (FA) 標準"
 id: "fungible-asset"
 ---
 
 import { Callout } from "nextra/components";
 import { ThemedImage } from "@components/index";
 
-# Aptos Fungible Asset (FA) Standard
+# Aptos ファンジブルアセット (FA) 標準
 
-The Aptos Fungible Asset Standard (also known as “Fungible Asset” or “FA”) provides a standard, type-safe way to define fungible assets in the Move ecosystem. It is a modern replacement for the `coin` module that allows for seamless minting, transfer, and customization of fungible assets for any use case.
+Aptos ファンジブルアセット標準（「ファンジブルアセット」または「FA」としても知られる）は、Moveエコシステムでファンジブルアセットを定義するための標準的で型安全な方法を提供します。これは`coin`モジュールの最新の代替として、あらゆるユースケースに対応したファンジブルアセットのシームレスな発行、転送、カスタマイズを可能にします。
 
-This standard is important because it allows fungible assets on Aptos (such as Currencies and Real World Assets (RWAs)) to represent and transfer ownership in a consistent way dApps can recognize. This standard also allows for more extensive customization than the `coin` module did by leveraging [Move Objects](objects.mdx) to represent fungible asset data.
+この標準は、Aptos上のファンジブルアセット（通貨や実物資産（RWA）など）が、dAppsが認識できる一貫した方法で所有権を表現し転送できるようにするため重要です。また、この標準は[Moveオブジェクト](objects.mdx)を活用してファンジブルアセットデータを表現することで、`coin`モジュールよりも広範なカスタマイズを可能にします。
 
-The FA standard provides all the functionality you need to create, mint, transfer, and burn fungible assets (as well as automatically allowing recipients of the fungible asset to store and manage any fungible assets they receive).
+FA標準は、ファンジブルアセットの作成、発行、転送、バーンに必要なすべての機能を提供します（また、ファンジブルアセットの受け取り手が受け取ったファンジブルアセットを自動的に保存・管理できるようにします）。
 
-It does so by using two Move Objects:
+これは2つのMoveオブジェクトを使用して実現されます：
 
-1. `Object<Metadata>` - This represents details about the fungible asset itself, including information such as the `name`, `symbol`, and `decimals`.
-2. `Object<FungibleStore>` - This stores a count of fungible asset units owned by this account. Fungible assets are interchangeable with any other fungible asset that has the same metadata. An account *may* own more than one `FungibleStore` for a single Fungible Asset, but that is only for advanced use cases.
+1. `Object<Metadata>` - これはファンジブルアセット自体の詳細を表し、`name`、`symbol`、`decimals`などの情報が含まれます。
+2. `Object<FungibleStore>` - これはこのアカウントが所有するファンジブルアセットの単位数を保存します。ファンジブルアセットは、同じメタデータを持つ他のファンジブルアセットと互換性があります。アカウントは単一のファンジブルアセットに対して複数の`FungibleStore`を所有*できます*が、これは高度なユースケースのみです。
 
-The diagram below shows the relationship between these Objects. The `Metadata` Object is owned by the Fungible Asset creator, then referenced in FA holders' `FungibleStore`s to indicate which FA is being tracked:
+以下の図は、これらのオブジェクト間の関係を示しています。`Metadata`オブジェクトはファンジブルアセットの作成者が所有し、FAホルダーの`FungibleStore`で参照されて、どのFAが追跡されているかを示します：
 
 <ThemedImage
 alt="FA Object Relationship"
@@ -29,30 +29,30 @@ sources={{
   }}
 />
 
-[This implementation](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) is an improvement on the `coin` Standard because Move Objects are more customizable and extensible via smart contract. See the advanced guides on writing [Move Objects](objects.mdx) for more details.
-The FA standard also automatically handles tracking how much of a fungible asset an account owns, as opposed to requiring the recipient to register a `CoinStore` resource separate from the transfer.
+[この実装](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move)は、Moveオブジェクトがスマートコントラクトを通じてよりカスタマイズ可能で拡張可能であるため、`coin`標準の改良版です。詳細については、[Moveオブジェクト](objects.mdx)の作成に関する高度なガイドをご覧ください。
+また、FA標準は、受け取り手が転送とは別に`CoinStore`リソースを登録する必要がある代わりに、アカウントが所有するファンジブルアセットの量を自動的に追跡します。
 
-## Creating a new Fungible Asset (FA)
+## 新しいファンジブルアセット (FA) の作成
 
-At a high level, this is done by:
+大まかには、以下の手順で行います：
 
-1. Creating a non-deletable Object to own the newly created Fungible Asset `Metadata`.
-2. Generating `Ref`s to enable any desired permissions.
-3. Minting Fungible Assets and transferring them to any account you want to.
+1. 新しく作成したファンジブルアセットの`Metadata`を所有する削除不可能なオブジェクトを作成します。
+2. 必要な権限を有効にするための`Ref`を生成します。
+3. ファンジブルアセットを発行し、任意のアカウントに転送します。
 
-To start with, the Fungible Asset standard is implemented using Move Objects. Objects by default are transferable, can own multiple resources, and can be customized via smart contract. For full details on Objects and how they work, please read [this guide](objects.mdx).
+まず、ファンジブルアセット標準はMoveオブジェクトを使用して実装されています。オブジェクトはデフォルトで転送可能で、複数のリソースを所有でき、スマートコントラクトを通じてカスタマイズできます。オブジェクトとその動作の詳細については、[このガイド](objects.mdx)をお読みください。
 
-To create an FA, first you need to create a **non-deletable Object** since destroying the metadata for a Fungible Asset while there are active balances would not make sense. You can do that by either calling `object::create_named_object(caller_address, NAME)` or `object::create_sticky_object(caller_address)` to create the Object on-chain.
+FAを作成するには、まず**削除不可能なオブジェクト**を作成する必要があります。これは、アクティブな残高がある状態でファンジブルアセットのメタデータを破棄することは意味をなさないためです。`object::create_named_object(caller_address, NAME)`または`object::create_sticky_object(caller_address)`を呼び出してオンチェーンでオブジェクトを作成できます。
 
-When you call these functions, they will return a `ConstructorRef`. `Ref`s allow Objects to be customized immediately after they are created. You can use the `ConstructorRef` to generate other permissions that may be needed based on your use case.
+これらの関数を呼び出すと、`ConstructorRef`が返されます。`Ref`を使用すると、オブジェクトが作成された直後にカスタマイズできます。ユースケースに応じて必要な他の権限を生成するために`ConstructorRef`を使用できます。
 
 <Callout type="info">
-Note that the `ConstructorRef` cannot be stored and is destroyed by the end of the transaction used to create this Object, so any `Ref`s must be generated during Object creation.
+`ConstructorRef`は保存できず、このオブジェクトの作成に使用されたトランザクションの終了時に破棄されるため、`Ref`はオブジェクト作成時に生成する必要があることに注意してください。
 </Callout>
 
-One use for the `ConstructorRef` is to generate the FA `Metadata` Object. The standard provides a generator function called `primary_fungible_store::create_primary_store_enabled_fungible_asset` which will allow your fungible asset to be transferred to any account. This method makes it so the primary `FungibleStore` for recipients is automatically created or re-used so you don’t need to create or index the store directly.
+`ConstructorRef`の使用例の1つは、FA `Metadata`オブジェクトを生成することです。標準では`primary_fungible_store::create_primary_store_enabled_fungible_asset`という生成関数が提供されており、これによりファンジブルアセットを任意のアカウントに転送できます。このメソッドにより、受け取り手の主要な`FungibleStore`が自動的に作成または再利用されるため、ストアを直接作成またはインデックス化する必要がありません。
 
-This is what `create_primary_store_enabled_fungible_asset` looks like:
+`create_primary_store_enabled_fungible_asset`は以下のようになっています：
 
 ```move filename="example.move"
 public fun create_primary_store_enabled_fungible_asset(
@@ -70,20 +70,20 @@ public fun create_primary_store_enabled_fungible_asset(
 ```
 
 <Callout type="info">
-Alternatively, you can use `add_fungibility` which uses the same parameters, but requires recipients to keep track of their `FungibleStore` addresses to keep track of how many units of your FA they have.
+あるいは、同じパラメータを使用する`add_fungibility`を使用することもできますが、この場合、受け取り手は自身のFAの保有数を追跡するために`FungibleStore`アドレスを管理する必要があります。
 </Callout>
 
-Once you have created the Metadata, you can also use the `ConstructorRef` to generate additional `Ref`s. In addition to the usual [Object Refs](object/creating-objects.mdx), FAs define three additional permissions you can generate:
+Metadataを作成したら、`ConstructorRef`を使用して追加の`Ref`を生成することもできます。通常の[オブジェクトRef](object/creating-objects.mdx)に加えて、FAは以下の3つの追加権限を定義しています：
 
-1. `MintRef` offers the capability to mint new FA units.
-2. `TransferRef` offers the capability to freeze accounts from transferring this FA, or to bypass an existing freeze. (This can be important when trying to be compliant with some regulations).
-3. `BurnRef` offers the capability to burn or delete FA units.
+1. `MintRef`は新しいFAユニットをミントする機能を提供します。
+2. `TransferRef`はアカウントのFA転送を凍結したり、既存の凍結をバイパスしたりする機能を提供します（これは一部の規制に準拠する際に重要になる場合があります）。
+3. `BurnRef`はFAユニットを焼却または削除する機能を提供します。
 
 <Callout type="warning">
-Note: All `Ref`s must be generated when the Object is created as that is the only time you can generate an Object’s `ConstructorRef`.
+注意：すべての`Ref`は、オブジェクトの`ConstructorRef`を生成できるのはオブジェクト作成時のみであるため、オブジェクト作成時に生成する必要があります。
 </Callout>
 
-To generate an Object with all FA permissions, you could deploy a contract like this:
+すべてのFA権限を持つオブジェクトを生成するには、以下のようなコントラクトをデプロイできます：
 
 ```move filename="example.move"
 module my_addr::fungible_asset_example {
@@ -134,61 +134,61 @@ module my_addr::fungible_asset_example {
 ```
 
 <Callout type="info">
-For a full example of how to create your own Fungible Asset module, please see [fa_coin.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/fungible_asset/fa_coin/sources/FACoin.move).
-Alternatively, you can explore the collection of [FA example code here](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset).
+独自のファンジブルアセットモジュールを作成する完全な例については、[fa_coin.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/fungible_asset/fa_coin/sources/FACoin.move)をご覧ください。
+また、[FAのサンプルコード集はこちら](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset)で確認できます。
 </Callout>
 
-Now you can use the `MintRef` to mint via:
+これで`MintRef`を使用して以下のようにミントできます：
 
 ```move filename="example.move"
 public fun mint(ref: &MintRef, amount:u64): FungibleAsset
 ```
 
-Or burn FA units using the `BurnRef` like so:
+また、`BurnRef`を使用して以下のようにFAユニットをバーンできます：
 
 ```move filename="example.move"
 public fun burn(ref: &BurnRef, fa: FungibleAsset)
 ```
 
-At this point, you can mint, transfer, and burn Fungible Assets using the `Ref`s you generated. See the above example Move scripts for how to implement those entry functions.
+この時点で、生成した`Ref`を使用してファンジブルアセットのミント、転送、バーンが可能になります。これらのエントリー関数の実装方法については、上記のMoveスクリプトの例を参照してください。
 
-## Reference Docs
+## リファレンスドキュメント
 
-You can find the complete set of functions that the Fungible Asset Standard provides [here](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-framework/doc/fungible_asset.md). {/* TODO: Update the Move Reference link once we migrate that page */}
+ファンジブルアセット標準が提供する関数の完全なセットは[こちら](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-framework/doc/fungible_asset.md)で確認できます。{/* TODO: Move Referenceページの移行後にリンクを更新 */}
 
-The basic features owners of Fungible Assets can use include the following.
+ファンジブルアセットの所有者が使用できる基本的な機能は以下の通りです。
 
-### Withdraw
+### 引き出し
 
-An owner can withdraw FA from their primary store by calling:
+所有者は以下の関数を呼び出すことで、プライマリーストアからFAを引き出すことができます：
 
 ```move filename="withdraw"
 public fun primary_fungible_store::withdraw<T: key>(owner: &signer, metadata: Object<T>, amount:u64): FungibleAsset
 ```
-This function will emit a `WithdrawEvent`.
+この関数は`WithdrawEvent`を発行します。
 
-### Deposit
+### 預け入れ
 
-An owner can deposit FA to their primary store by calling:
+所有者は以下の関数を呼び出すことで、プライマリーストアにFAを預け入れることができます：
 
 ```move filename="deposit"
 public fun primary_fungible_store::deposit(owner: address, fa: FungibleAsset)
 ```
 
-This function will emit a `DepositEvent`.
+この関数は`DepositEvent`を発行します。
 
-### Transfer
-An owner can deposit FA from their primary store to that of another account by calling:
+### 転送
+所有者は以下の関数を呼び出すことで、プライマリーストアから他のアカウントのプライマリーストアにFAを転送できます：
 
 ```move filename="transfer"
 public entry fun primary_fungible_store::transfer<T: key>(sender: &signer, metadata: Object<T>, recipient: address, amount:u64)
 ```
 
-This will emit both `WithdrawEvent` and `DepositEvent` on the respective `FungibleStore`s.
+これにより、それぞれの`FungibleStore`で`WithdrawEvent`と`DepositEvent`が発行されます。
 
-### Check Balance
+### 残高の確認
 
-To check the balance of a primary store, call:
+プライマリーストアの残高を確認するには、以下の関数を呼び出します：
 
 ```move filename="check_balances"
 public fun primary_fungible_store::balance<T: key>(account: address, metadata: Object<T>): u64

@@ -1,21 +1,21 @@
 ---
-title: "Indexer"
+title: "インデクサー"
 ---
 
 import { IndexerBetaNotice, ThemedImage, Cards, Card, GraphQLEditor } from '@components/index';
 import { Tabs, Callout } from 'nextra/components'
 
-# Indexer
+# インデクサー
 
 <IndexerBetaNotice />
 
-The Aptos Indexer is an API you can use to get:
+Aptos インデクサーは以下のようなデータを取得できる API です：
 
-1. Aggregate data (ex. How many NFTs exist?)
-2. Historical data (ex. What transactions has this account submitted?)
-3. Data that is hard to get from the simpler [Aptos Node API](apis/fullnode-rest-api.mdx) (ex. What account owns a token named "ExampleToken"?).
+1. 集計データ（例：NFT の総数は？）
+2. 履歴データ（例：このアカウントが送信したトランザクションは？）
+3. より単純な [Aptos ノード API](apis/fullnode-rest-api.mdx) からは取得が難しいデータ（例：「ExampleToken」という名前のトークンを所有しているアカウントは？）
 
-For example, you can use the Indexer API to look up the fungible asset balances of any account like so:
+例えば、インデクサー API を使用して、任意のアカウントの代替可能資産（ファンジブルアセット）の残高を以下のように照会できます：
 
 <GraphQLEditor
   query={`query GetFungibleAssetBalances($address: String, $offset: Int) {
@@ -37,90 +37,90 @@ For example, you can use the Indexer API to look up the fungible asset balances 
 />
 
 <Callout type="info">
-The Indexer tracks every transaction that happens on-chain, then exposes that data through a GraphQL API.
+インデクサーはチェーン上で発生するすべてのトランザクションを追跡し、そのデータを GraphQL API を通じて公開します。
 </Callout>
 
-## Using the Indexer API
+## インデクサー API の使用
 
-Learn how to use the Indexer API, what each table represents, and how to add custom data to the Indexer.
+インデクサー API の使用方法、各テーブルの意味、およびインデクサーにカスタムデータを追加する方法について学びましょう。
 
 <Cards>
   <Card href="indexer/aptos-hosted">
-    <Card.Title>Accessing the API</Card.Title>
-    <Card.Description>Learn how to query the Indexer API.</Card.Description>
+    <Card.Title>API へのアクセス</Card.Title>
+    <Card.Description>インデクサー API へのクエリ方法を学びます。</Card.Description>
   </Card>
     <Card href="indexer/indexer-reference">
-    <Card.Title>Indexer Table Reference</Card.Title>
-    <Card.Description>Detailed reference for Indexer tables and their schemas.</Card.Description>
+    <Card.Title>インデクサーテーブルリファレンス</Card.Title>
+    <Card.Description>インデクサーテーブルとそのスキーマの詳細なリファレンス。</Card.Description>
   </Card>
   <Card href="indexer/architecture">
-    <Card.Title>Architecture</Card.Title>
-    <Card.Description>Detailed layout of the Indexer's architecture.</Card.Description>
+    <Card.Title>アーキテクチャ</Card.Title>
+    <Card.Description>インデクサーのアーキテクチャの詳細な説明。</Card.Description>
   </Card>
 </Cards>
 
-### Example Queries
+### クエリ例
 
-To help get you started, here are the most common queries the Indexer is used for.
+開始に役立つよう、インデクサーで最も一般的に使用されるクエリを紹介します。
 
 <Cards>
   <Card href="indexer/fungible-asset-balances">
-    <Card.Title>Get Fungible Asset Balances</Card.Title>
-    <Card.Description>Get all fungible assets an account currently owns.</Card.Description>
+    <Card.Title>代替可能資産の残高を取得</Card.Title>
+    <Card.Description>アカウントが現在所有するすべての代替可能資産を取得します。</Card.Description>
   </Card>
   <Card href="indexer/account-transactions">
-    <Card.Title>Get Account Transactions</Card.Title>
-    <Card.Description>Get all transactions impacting an account.</Card.Description>
+    <Card.Title>アカウントのトランザクションを取得</Card.Title>
+    <Card.Description>アカウントに影響を与えるすべてのトランザクションを取得します。</Card.Description>
   </Card>
   <Card href="indexer/ans-lookup">
-    <Card.Title>Get Aptos Name</Card.Title>
-    <Card.Description>Retrieve the Aptos name associated with an account (via the ANS).</Card.Description>
+    <Card.Title>Aptos 名を取得</Card.Title>
+    <Card.Description>アカウントに関連付けられた Aptos 名を取得します（ANS 経由）。</Card.Description>
   </Card>
   <Card href="indexer/fungible-asset-info">
-    <Card.Title>Get Fungible Asset Info</Card.Title>
-    <Card.Description>Get detailed information about a specific fungible asset.</Card.Description>
+    <Card.Title>代替可能資産の情報を取得</Card.Title>
+    <Card.Description>特定の代替可能資産に関する詳細情報を取得します。</Card.Description>
   </Card>
   <Card href="indexer/get-nft-collections">
-    <Card.Title>Get NFT Collections</Card.Title>
-    <Card.Description>Retrieve NFT collections owned by a specific account.</Card.Description>
+    <Card.Title>NFT コレクションを取得</Card.Title>
+    <Card.Description>特定のアカウントが所有する NFT コレクションを取得します。</Card.Description>
   </Card>
   <Card href="indexer/get-nfts">
-    <Card.Title>Get NFTs</Card.Title>
-    <Card.Description>Retrieve individual NFTs owned by a specific account.</Card.Description>
+    <Card.Title>NFT を取得</Card.Title>
+    <Card.Description>特定のアカウントが所有する個々の NFT を取得します。</Card.Description>
   </Card>
   <Card href="indexer/token-metadata">
-    <Card.Title>Get Token Metadata</Card.Title>
-    <Card.Description>Get metadata information for a specific token.</Card.Description>
+    <Card.Title>トークンメタデータを取得</Card.Title>
+    <Card.Description>特定のトークンのメタデータ情報を取得します。</Card.Description>
   </Card>
   <Card href="indexer/get-delegators">
-    <Card.Title>Count Delegators in Staking Pool</Card.Title>
-    <Card.Description>Retrieve the number of active delegators in a staking pool.</Card.Description>
+    <Card.Title>ステーキングプールの委任者数を取得</Card.Title>
+    <Card.Description>ステーキングプール内のアクティブな委任者数を取得します。</Card.Description>
   </Card>
 </Cards>
 
-## Customizing the Indexer (Advanced)
+## インデクサーのカスタマイズ（上級者向け）
 
-If the hosted Indexer API is not enough, you can customize and host your own versions of the Indexer.
+ホスト型インデクサー API が十分でない場合、独自のバージョンのインデクサーをカスタマイズしてホストすることができます。
 
 <Cards>
   <Card href="indexer/architecture">
-    <Card.Title>Architecture</Card.Title>
-    <Card.Description>Detailed layout of the Indexer's architecture.</Card.Description>
+    <Card.Title>アーキテクチャ</Card.Title>
+    <Card.Description>インデクサーのアーキテクチャの詳細な説明。</Card.Description>
   </Card>
   <Card href="indexer/indexer-sdk">
-    <Card.Title>Indexer SDK</Card.Title>
-    <Card.Description>Create a custom processor with the Indexer SDK</Card.Description>
+    <Card.Title>インデクサー SDK</Card.Title>
+    <Card.Description>インデクサー SDK でカスタムプロセッサを作成</Card.Description>
   </Card>
   <Card href="indexer/txn-stream">
-    <Card.Title>Transaction Streaming Service</Card.Title>
-    <Card.Description>GRPC transaction streaming service, consumed by the Indexer</Card.Description>
+    <Card.Title>トランザクションストリーミングサービス</Card.Title>
+    <Card.Description>インデクサーが使用する GRPC トランザクションストリーミングサービス</Card.Description>
   </Card>
   <Card href="indexer/self-hosted">
-    <Card.Title>Self-hosted Indexer API</Card.Title>
-    <Card.Description>Host your own Indexer API</Card.Description>
+    <Card.Title>セルフホスト型インデクサー API</Card.Title>
+    <Card.Description>独自のインデクサー API をホストする</Card.Description>
   </Card>
 </Cards>
 
-## Legacy Indexer
+## レガシーインデクサー
 
-Find information about the legacy indexer [here](indexer/legacy.mdx).
+レガシーインデクサーに関する情報は[こちら](indexer/legacy.mdx)をご覧ください。

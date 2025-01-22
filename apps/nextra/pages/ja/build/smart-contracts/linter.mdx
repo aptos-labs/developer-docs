@@ -1,118 +1,116 @@
 ---
-title: "Aptos Move Lint"
+title: "Aptos Move リンター"
 ---
 
-# Aptos Move Lint
+# Aptos Move リンター
 
-The "Aptos Move Lint" tool runs on a Move package to find and warn about common issues in Move programs, helping improve your Move code.
+「Aptos Move リンター」ツールは、Move プログラムの一般的な問題を見つけて警告し、Move コードの品質向上を支援するツールです。
 
-You can run it with the aptos CLI command: `aptos move lint`.
+aptos CLI コマンドで実行できます：`aptos move lint`
 
-This tool is currently in beta, so please try it out and submit [bugs and feedback](https://github.com/aptos-labs/aptos-core/issues/new?title=%5Blinter%5D%20%3CDescriptive%20Title%3E&body=%3CDetailed%20description%20of%20the%20issue%20or%20feature%20request%3E&labels=move-linter&projects=aptos-labs/16). Also, we are tracking ideas and prioritization requests for new lint rules [here](https://github.com/aptos-labs/aptos-core/issues/15221), we welcome your contributions.
+このツールは現在ベータ版です。ぜひ試していただき、[バグや感想](https://github.com/aptos-labs/aptos-core/issues/new?title=%5Blinter%5D%20%3CDescriptive%20Title%3E&body=%3CDetailed%20description%20of%20the%20issue%20or%20feature%20request%3E&labels=move-linter&projects=aptos-labs/16)をお寄せください。また、新しいリントルールのアイデアと優先順位付けの要望は[こちら](https://github.com/aptos-labs/aptos-core/issues/15221)で管理しています。皆様のご協力をお待ちしております。
 
-
-## Lint Checks
+## リントチェック
 ### `avoid_copy_on_identity_comparison`
 
-Checks for identity comparisons (`==` or `!=`) between copied values of type `vector` or `struct` (i.e., types for which copy can be expensive). It instead suggests to use reference-based identity comparison instead (i.e., use `&x == &y` instead of `x == y`, when the above mentioned conditions meet).
+`vector`や`struct`型（コピーが高コストになる可能性がある型）のコピーされた値間での同一性比較（`==`または`!=`）をチェックします。代わりに、参照ベースの同一性比較の使用を推奨します（上記の条件に該当する場合、`x == y`の代わりに`&x == &y`を使用）。
 
-[This recommendation](book/equality.mdx#avoid-extra-copies) is also given in the Move book. Due to automatic copy inference, it may not be obvious when a copy is being made while using `==` or `!=` on values with types that have the `copy` ability. This lint identifies cases where extra copies on vectors or structs could be skipped by using reference-based identity comparisons.
+この推奨事項は[Move ブックでも言及](book/equality.mdx#avoid-extra-copies)されています。自動コピー推論により、`copy`能力を持つ型の値に対して`==`や`!=`を使用する際に、コピーが行われているかどうかが分かりにくい場合があります。このリントは、参照ベースの同一性比較を使用することで、ベクターや構造体の不要なコピーを回避できるケースを特定します。
 
 ### `blocks_in_conditions`
 
-Checks for use of blocks in conditions (e.g., in `if`, `match`, and `while` conditions), which can make code hard to read. An example coding pattern caught by this lint is:
+条件文（`if`、`match`、`while`の条件など）でのブロックの使用をチェックします。これはコードの可読性を低下させる可能性があります。このリントが検出するコーディングパターンの例：
 
 ```move
-if ({let x = foo(); !x}) { // uses a block in condition
+if ({let x = foo(); !x}) { // 条件文でブロックを使用
   bar();
 }
 ```
 
-Such code can usually be rewritten to hoist the block out and above the condition, usually making it more readable.
+このようなコードは通常、ブロックを条件文の前に移動することで、より読みやすく書き直すことができます。
 
-It is a common Move pattern to provide inline specifications in conditions, especially loop invariants, which requires creating blocks in conditions. We exclude this pattern in the lint check to continue to allow for this specification pattern.
+Move では、特にループ不変式などのインライン仕様を条件文で提供することが一般的なパターンであり、これには条件文でのブロックの作成が必要です。このパターンは仕様記述のために必要なため、このリントチェックから除外されています。
 
-Note that an `assert!` is translated to a conditional abort, so blocks in `assert!` condition also are reported by this lint.
+なお、`assert!`は条件付きアボートに変換されるため、`assert!`の条件でのブロックもこのリントによって報告されます。
 
 ### `needless_bool`
 
-Checks for patterns of the form (where `x` is any arbitrary boolean expression):
+以下のようなパターンをチェックします（`x`は任意のブール式）：
 
-- `if (x) true else false`, which can be replaced with just `x`.
-- `if (x) false else true`, which can be replaced with just `!x`.
-- `if (x) { return true } else { return false }`, which can be replaced with just `return x`.
-- `if (x) { return false } else { return true }`, which can be replaced with just `return !x`.
-- `if (x) true else true` or `if (x) false else false`, which should be rewritten to remove the redundant branch.
+- `if (x) true else false` は単に `x` に置き換えられます。
+- `if (x) false else true` は単に `!x` に置き換えられます。
+- `if (x) { return true } else { return false }` は単に `return x` に置き換えられます。
+- `if (x) { return false } else { return true }` は単に `return !x` に置き換えられます。
+- `if (x) true else true` または `if (x) false else false` は、冗長な分岐を削除するように書き直す必要があります。
 
 ### `needless_deref_ref`
 
-Checks for patterns where references taken are immediately dereferenced, and suggests removing the pair of dereference-reference operators:
+参照を取得して直ちに参照解除するパターンをチェックし、参照解除-参照演算子のペアを削除することを提案します：
 
-- `*&x.f` can be simplified to `x.f`
-- `*&mut x.f` can be simplified to `x.f`
-- `*&mut x.f = 5;` can be simplified to `x.f = 5;`
+- `*&x.f` は `x.f` に簡略化できます
+- `*&mut x.f` は `x.f` に簡略化できます
+- `*&mut x.f = 5;` は `x.f = 5;` に簡略化できます
 
 ### `needless_mutable_reference`
 
-Checks for mutable references or borrows (currently: mutable reference parameters, mutable borrow of locals, `borrow_global_mut`) that are not used mutably, and suggests to use the immutable reference or borrow instead.
+可変的に使用されていない可変参照や借用（現在：可変参照パラメータ、ローカル変数の可変借用、`borrow_global_mut`）をチェックし、代わりに不変参照や借用を使用することを提案します。
 
-For example, in the function `foo` below, `&mut` can be replaced by `&` because the reference is not mutably used.
+例えば、以下の関数`foo`では、参照が可変的に使用されていないため、`&mut`を`&`に置き換えることができます。
 
 ```move
 fun foo(x: u64): u64 {
   let y = &mut x;
   *y
 }
-
 ```
 
 ### `needless_ref_deref`
 
-Checks for patterns where immutable reference are taken for a dereference, and suggests removing the pair of reference-dereference operators: `&*x` can be simplified to `x`.
+参照解除のために不変参照を取得するパターンをチェックし、参照-参照解除演算子のペアを削除することを提案します：`&*x`は`x`に簡略化できます。
 
 ### `needless_ref_in_field_access`
 
-Checks for patterns where there are needless references taken when accessing a field of a struct or an enum, and suggests removing the explicit reference taken:
+構造体や列挙型のフィールドにアクセスする際に不要な参照を取得するパターンをチェックし、明示的な参照取得を削除することを提案します：
 
-- `(&s).f` can be simplified to `s.f`
-- `(&mut s).f = 42;` can be simplified to `s.f = 42;`
+- `(&s).f` は `s.f` に簡略化できます
+- `(&mut s).f = 42;` は `s.f = 42;` に簡略化できます
 
 ### `simpler_numeric_expression`
 
-Checks for various patterns where a simpler numeric expression can be used instead. In all these cases, the code must already type check, and `x` can be any numeric expression.
+より単純な数値式を使用できるさまざまなパターンをチェックします。これらのケースでは、コードは既に型チェックを通過している必要があり、`x`は任意の数値式です。
 
-- `x & 0`, `x * 0`, `0 & x`, `0 * x`, `0 << x`, `0 >> x`, `x % 1` can all be replaced with just `0`.
-- `x | 0`, `x ^ 0`, `x >> 0`, `x << 0`, `x + 0`, `x - 0`, `x / 1`, `x * 1`, `0 | x`, `0 ^ x`, `0 + x`, `1 * x` can all be replaced with just `x`.
+- `x & 0`、`x * 0`、`0 & x`、`0 * x`、`0 << x`、`0 >> x`、`x % 1` はすべて単に `0` に置き換えられます。
+- `x | 0`、`x ^ 0`、`x >> 0`、`x << 0`、`x + 0`、`x - 0`、`x / 1`、`x * 1`、`0 | x`、`0 ^ x`、`0 + x`、`1 * x` はすべて単に `x` に置き換えられます。
 
 ### `unnecessary_boolean_identity_comparison`
 
-Checks for boolean identity comparisons of the form:
+以下の形式のブール値の同一性比較をチェックします：
 
-- `x == true`, `true == x`, which can be replaced with just `x`.
-- `x == false`, `false == x`, which can be replaced with just `!x`.
+- `x == true`、`true == x` は単に `x` に置き換えられます。
+- `x == false`、`false == x` は単に `!x` に置き換えられます。
 
-In all these cases, `x` can be any arbitrary boolean expression.
+これらのケースでは、`x`は任意のブール式です。
 
 ### `unnecessary_numerical_extreme_comparison`
 
-Checks if there are any numerical comparisons with extreme values (i.e., min and max value representable by that numeric type) that are unnecessary or can be made more precise and clear. Depending on the comparison, various recommendations are made.
+不要な、あるいはより正確で明確にできる、極値（その数値型で表現可能な最小値と最大値）との数値比較をチェックします。比較に応じて、さまざまな推奨事項が提示されます。
 
-Consider the following example expressions that are caught by the lint, and the corresponding recommendations made (in all these cases, `x` is a place holder for a numerical expression of type `u8`, `u16`, `u32`, `u64`, `u128`, or `u256`, and `MAX` is a place holder for the max value representable for that numeric type):
+リントによって検出される例と、それに対応する推奨事項を以下に示します（これらのケースでは、`x`は`u8`、`u16`、`u32`、`u64`、`u128`、または`u256`型の数値式のプレースホルダーで、`MAX`はその数値型で表現可能な最大値のプレースホルダーです）：
 
-- `x < 0`, `0 > x`, `x > MAX`, `MAX < x`, are always false, rewrite code to remove this comparison
-- `x >= 0`, `0 <= x`, `x <= MAX`, `MAX >= x`, are always true, rewrite code to remove this comparison
-- `x <= 0`, `0 >= x`, `x >= MAX`, `MAX <= x`, can all be simplified to use `==` instead
-- `x > 0`, `0 < x`, `x < MAX`, `MAX > x`, can all be clarified to use `!=` instead
+- `x < 0`、`0 > x`、`x > MAX`、`MAX < x` は常に偽となるため、この比較を削除するようにコードを書き直してください
+- `x >= 0`、`0 <= x`、`x <= MAX`、`MAX >= x` は常に真となるため、この比較を削除するようにコードを書き直してください
+- `x <= 0`、`0 >= x`、`x >= MAX`、`MAX <= x` はすべて代わりに `==` を使用して簡略化できます
+- `x > 0`、`0 < x`、`x < MAX`、`MAX > x` はすべて代わりに `!=` を使用してより明確にできます
 
 ### `while_true`
 
-Checks for `while (true) { .... }` patterns and suggests using the more explicit `loop { .... }` construct instead.
+`while (true) { .... }` パターンをチェックし、より明示的な `loop { .... }` 構文の使用を提案します。
 
-## Suppressing Lint Warnings
+## リント警告の抑制
 
-To suppress one or more lint checks named `check1`, `check2`, ... (and so on), you can add the attribute `#[lint::skip(check1, check2, ...)]` to a function or a module. The linter will then not perform the checks named `check1`, `check2`, ... (and so on) for that function or module.
+`check1`、`check2`、...（など）という名前の1つ以上のリントチェックを抑制するには、関数やモジュールに `#[lint::skip(check1, check2, ...)]` 属性を追加します。リンターは、その関数やモジュールに対して `check1`、`check2`、...（など）という名前のチェックを実行しません。
 
-For example, the function below would usually get a warning from the linter about a `needless_bool`, but due to the attribute on the function, the linter does not emit a warning.
+例えば、以下の関数は通常 `needless_bool` についてリンターから警告を受けますが、関数に付けられた属性により、リンターは警告を出しません。
 
 ```move
 #[lint::skip(needless_bool)]
