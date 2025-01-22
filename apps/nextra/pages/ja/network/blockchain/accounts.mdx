@@ -1,33 +1,33 @@
 ---
-title: "Accounts"
+title: "アカウント"
 id: "accounts"
 ---
 
 import { Callout } from 'nextra/components';
 
-# Accounts
+# アカウント
 
-An account on the Aptos blockchain represents access control over a set of assets including on-chain currency and NFTs. In Aptos, these assets are represented by a Move language primitive known as a **resource** that emphasizes both access control and scarcity.
+Aptosブロックチェーン上のアカウントは、オンチェーン通貨やNFTなどの一連の資産に対するアクセス制御を表します。Aptosでは、これらの資産はMoveの言語プリミティブである**リソース**として表現され、アクセス制御と希少性の両方が強調されています。
 
-Each account on the Aptos blockchain is identified by a 32-byte account address. You can employ the Aptos Name Service at [www.aptosnames.com](https://www.aptosnames.com/) to secure .apt domains for key accounts to make them memorable and unique.
+Aptosブロックチェーン上の各アカウントは、32バイトのアカウントアドレスによって識別されます。[www.aptosnames.com](https://www.aptosnames.com/)のAptos Name Serviceを利用して、主要なアカウントに記憶に残る固有の.aptドメインを確保することができます。
 
-Different from other blockchains where accounts and addresses are implicit, accounts on Aptos are explicit and need to be created before they can execute transactions. The account can be created explicitly or implicitly by transferring Aptos tokens (APT) there. See the [Creating an account](#creating-an-account) section for more details. In a way, this is similar to other chains where an address needs to be sent funds for gas before it can send transactions.
+他のブロックチェーンではアカウントとアドレスが暗黙的であるのに対し、Aptosのアカウントは明示的で、トランザクションを実行する前に作成する必要があります。アカウントは明示的に作成することも、Aptosトークン（APT）を送金することで暗黙的に作成することもできます。詳細は[アカウントの作成](#creating-an-account)セクションをご覧ください。これは、トランザクションを送信する前にガス代用の資金をアドレスに送る必要がある他のチェーンと似ています。
 
-Explicit accounts allow first-class features that are not available on other networks such as:
+明示的なアカウントにより、他のネットワークでは利用できない以下のような一級機能が可能になります：
 
-- Rotating authentication key. The account's authentication key can be changed to be controlled via a different private key. This is similar to changing passwords in the web2 world.
-- Native multisig support. Accounts on Aptos support k-of-n multisig using both Ed25519 and Secp256k1 ECDSA signature schemes when constructing the authentication key.
+- 認証キーのローテーション。アカウントの認証キーを変更して、異なる秘密鍵で制御することができます。これはweb2の世界でパスワードを変更するのと似ています。
+- ネイティブなマルチシグのサポート。Aptosのアカウントは、認証キーを構築する際にEd25519とSecp256k1 ECDSA署名スキームの両方を使用したk-of-nマルチシグをサポートしています。
 
-There are three types of accounts on Aptos:
+Aptosには3種類のアカウントがあります：
 
-- _Standard account_ - This is a typical account corresponding to an address with a corresponding pair of public/private keys.
-- [_Resource account_](../../build/smart-contracts/resource-accounts.mdx) - An autonomous account without a corresponding private key used by developers to store resources or publish modules on-chain.
-- [_Object_](../../build/smart-contracts/objects.mdx) - A complex set of resources stored within a single address representing a single entity.
+- _標準アカウント_ - 公開鍵/秘密鍵のペアを持つアドレスに対応する一般的なアカウントです。
+- [_リソースアカウント_](../../build/smart-contracts/resource-accounts.mdx) - 開発者がリソースを保存したりモジュールをオンチェーンに公開したりするために使用する、対応する秘密鍵を持たない自律的なアカウントです。
+- [_オブジェクト_](../../build/smart-contracts/objects.mdx) - 単一のエンティティを表す単一のアドレス内に保存された複雑なリソースのセットです。
 
 <Callout type="info">
-Account addresses are 32-bytes. They are usually shown as 64 hex characters, with each hex character a nibble.
-Sometimes the address is prefixed with a 0x. See the [Your First Transaction](../../build/guides/first-transaction.mdx) for an example
-of how an address appears, reproduced below:
+アカウントアドレスは32バイトです。通常、64の16進文字として表示され、各16進文字は4ビットを表します。
+アドレスの先頭に0xが付くこともあります。アドレスの表示例については、[初めてのトランザクション](../../build/guides/first-transaction.mdx)をご覧ください。
+以下に例を示します：
 </Callout>
 
 ```text
@@ -35,126 +35,121 @@ Alice: 0xeeff357ea5c1a4e7bc11b2b17ff2dc2dcca69750bfef1e1ebcaccf8c8018175b
 Bob: 0x19aadeca9388e009d136245b9a67423f3eee242b03142849eb4f81a4a409e59c
 ```
 
-## Account address
+## アカウントアドレス
 
-Currently, Aptos supports only a single, unified identifier for an account. Accounts on Aptos are universally represented as a 32-byte hex string. A hex string shorter than 32-bytes is also valid; in those scenarios, the hex string can be padded with leading zeroes, e.g., `0x1` => `0x0000000000000...01`. While Aptos standards indicate leading zeroes may be removed from an Address, most applications attempt to eschew that legacy behavior and only support the removal of 0s for special addresses ranging from `0x0` to `0xa`.
+現在、Aptosは単一の統一された識別子のみをアカウントに対してサポートしています。Aptosのアカウントは、32バイトの16進文字列として普遍的に表現されます。32バイトより短い16進文字列も有効です。その場合、16進文字列は先頭にゼロを付加することができます（例：`0x1` => `0x0000000000000...01`）。Aptosの標準では、アドレスの先頭のゼロを削除できることを示していますが、ほとんどのアプリケーションはこのレガシーな動作を避け、`0x0`から`0xa`の範囲の特別なアドレスに対してのみ0の削除をサポートしようとしています。
 
-## Creating an account
+## アカウントの作成
 
-When a user requests to create an account, for example by using the [Aptos SDK](../../build/sdks/ts-sdk/account.mdx), the following steps are executed:
+ユーザーがアカウントの作成を要求した場合（例えば[Aptos SDK](../../build/sdks/ts-sdk/account.mdx)を使用して）、以下のステップが実行されます：
 
-- Select the authentication scheme for managing the user's account, e.g., Ed25519 or Secp256k1 ECDSA.
-- Generate a new private key, public key pair.
-- Combine the public key with the public key's authentication scheme to generate a 32-byte authentication key and the account address.
+- ユーザーのアカウントを管理する認証スキームを選択します（例：Ed25519またはSecp256k1 ECDSA）。
+- 新しい秘密鍵と公開鍵のペアを生成します。
+- 公開鍵と公開鍵の認証スキームを組み合わせて、32バイトの認証キーとアカウントアドレスを生成します。
 
-The user should use the private key for signing the transactions associated with this account.
+ユーザーは、このアカウントに関連するトランザクションの署名に秘密鍵を使用する必要があります。
 
-## Account sequence number
+## アカウントのシーケンス番号
 
-The sequence number for an account indicates the number of transactions that have been submitted and committed on-chain from that account. Committed transactions either execute with the resulting state changes committed to the blockchain or abort wherein state changes are discarded and only the transaction is stored.
+アカウントのシーケンス番号は、そのアカウントからブロックチェーンに送信され、コミットされたトランザクションの数を示します。コミットされたトランザクションは、結果として生じる状態変更がブロックチェーンにコミットされて実行されるか、状態変更が破棄されてトランザクションのみが保存されるかのいずれかです。
 
-Every transaction submitted must contain a unique sequence number for the given sender's account. When the Aptos blockchain processes the transaction, it looks at the sequence number in the transaction and compares it with the sequence number in the on-chain account. The transaction is processed only if the sequence number is equal to or larger than the current sequence number. Transactions are only forwarded to other mempools or executed if there is a contiguous series of transactions from the current sequence number. Execution rejects out of order sequence numbers preventing replay attacks of older transactions and guarantees ordering of future transactions.
+送信されるすべてのトランザクションには、送信者のアカウントに対して一意のシーケンス番号が含まれている必要があります。Aptosブロックチェーンがトランザクションを処理する際、トランザクション内のシーケンス番号とオンチェーンアカウントのシーケンス番号を比較します。トランザクションは、シーケンス番号が現在のシーケンス番号以上の場合にのみ処理されます。トランザクションは、現在のシーケンス番号から連続したトランザクションのシリーズがある場合にのみ、他のメモリプールに転送されるか実行されます。実行時には順序外のシーケンス番号を拒否し、古いトランザクションのリプレイ攻撃を防ぎ、将来のトランザクションの順序を保証します。
 
-## Authentication key
+## 認証キー
 
-The initial account address is set to the authentication key derived during account creation. However, the authentication key may subsequently change, for example when you generate a new public-private key pair, public keys to rotate the keys. An account address never changes.
+初期アカウントアドレスは、アカウント作成時に導出された認証キーに設定されます。ただし、認証キーは後で変更される可能性があります（例：新しい公開鍵と秘密鍵のペア、キーをローテーションするための公開鍵を生成した場合）。アカウントアドレスは決して変更されません。
 
-The Aptos blockchain supports the following authentication schemes:
+Aptosブロックチェーンは以下の認証スキームをサポートしています：
 
 1. [Ed25519](https://ed25519.cr.yp.to/)
 2. [Secp256k1 ECDSA](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-49.md)
-3. [K-of-N multi-signatures](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-55.md)
-4. A dedicated, now legacy, MultiEd25519 scheme
+3. [K-of-N マルチシグネチャ](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-55.md)
+4. 専用の（現在はレガシーな）MultiEd25519スキーム
 
 <Callout type="info">
-The Aptos blockchain defaults to Ed25519 signature transactions.
+AptosブロックチェーンはデフォルトでEd25519署名トランザクションを使用します。
 </Callout>
 
-### Ed25519 authentication
+### Ed25519認証
 
-To generate an authentication key and the account address for an Ed25519 signature:
+Ed25519署名の認証キーとアカウントアドレスを生成するには：
 
-1. **Generate a key-pair**: Generate a fresh key-pair (`privkey_A`, `pubkey_A`). The Aptos blockchain uses the PureEdDSA scheme over the Ed25519 curve, as defined in RFC 8032.
-2. **Derive a 32-byte authentication key**: Derive a 32-byte authentication key from the `pubkey_A`:
+1. **キーペアの生成**: 新しいキーペア（`privkey_A`、`pubkey_A`）を生成します。AptosブロックチェーンはRFC 8032で定義されているEd25519曲線上のPureEdDSAスキームを使用します。
+2. **32バイトの認証キーの導出**: `pubkey_A`から32バイトの認証キーを導出します：
    ```text
    auth_key = sha3-256(pubkey_A | 0x00)
    ```
-   where `|` denotes concatenation. The `0x00` is the 1-byte single-signature scheme identifier.
-3. Use this initial authentication key as the permanent account address.
+   ここで`|`は連結を表します。`0x00`は1バイトの単一署名スキーム識別子です。
+3. この初期認証キーを永続的なアカウントアドレスとして使用します。
 
-### MultiEd25519 authentication
+### MultiEd25519認証
 
-With K-of-N multisig authentication, there are a total of N signers for the account, and at least K of those N signatures
-must be used to authenticate a transaction.
+K-of-N マルチシグ認証では、アカウントに対してN人の署名者が存在し、トランザクションを認証するためにはそのN人のうち少なくともK人の署名が必要です。
 
-To generate a K-of-N multisig account's authentication key and the account address:
+K-of-N マルチシグアカウントの認証キーとアカウントアドレスを生成するには：
 
-1. **Generate key-pairs**: Generate `N` ed25519 public keys `p_1`, ..., `p_n`.
-2. Decide on the value of `K`, the threshold number of signatures needed for authenticating the transaction.
-3. **Derive a 32-byte authentication key**: Compute the authentication key as described below:
+1. **キーペアの生成**: `N`個のed25519公開鍵`p_1`、...、`p_n`を生成します。
+2. トランザクションの認証に必要な署名数のしきい値`K`を決定します。
+3. **32バイトの認証キーの導出**: 以下のように認証キーを計算します：
    ```text
    auth_key = sha3-256(p_1 | . . . | p_n | K | 0x01)
    ```
-   The `0x01` is the 1-byte multisig scheme identifier.
-4. Use this initial authentication key as the permanent account address.
+   `0x01`は1バイトのマルチシグスキーム識別子です。
+4. この初期認証キーを永続的なアカウントアドレスとして使用します。
 
-### Generalized authentication
+### 一般化された認証
 
-Generalized authentication supports both Ed25519 and Secp256k1 ECDSA. Like the
-previous authentication schemes, these schemes contain a scheme value, `0x02`
-and `0x03` for single and multikey respectively, but also each key contains a
-prefix value to indicate its key type:
+一般化された認証は、Ed25519とSecp256k1 ECDSAの両方をサポートします。前述の認証スキームと同様に、これらのスキームにはスキーム値（単一キーの場合は`0x02`、マルチキーの場合は`0x03`）が含まれますが、各キーにはそのキータイプを示すプレフィックス値も含まれます：
 
-| Key type                          | Prefix byte |
+| キータイプ                         | プレフィックスバイト |
 |-----------------------------------|-------------|
-| Ed25519 generalized scheme        | `0x00`      |
-| Secp256k1Ecdsa generalized scheme | `0x01`      |
-| Secp256r1Ecdsa WebAuthn scheme    | `0x02`      |
-| Keyless                           | `0x03`      |
+| Ed25519一般化スキーム              | `0x00`      |
+| Secp256k1Ecdsa一般化スキーム       | `0x01`      |
+| Secp256r1Ecdsa WebAuthnスキーム    | `0x02`      |
+| キーレス                           | `0x03`      |
 
-For a single key Secp256k1 ECDSA account, using public key `pubkey`, the authentication key would be derived as follows:
+単一キーのSecp256k1 ECDSAアカウントの場合、公開鍵`pubkey`を使用して、認証キーは以下のように導出されます：
 
 ```text
 auth_key = sha3-256(0x01 | pubkey | 0x02)
 ```
 
-Where
+ここで、
 
-- the first entry, `0x01`, represents the use of a Secp256k1 ECDSA key;
-- the last entry, `0x02`, represents the authentication scheme.
+- 最初のエントリ `0x01` は、Secp256k1 ECDSAキーの使用を表します。
+- 最後のエントリ `0x02` は、認証スキームを表します。
 
-For a 1-of-2 multi-key account containing, a single Secp256k1 ECDSA public key, `pubkey_0`,
-and a single Ed25519 public key, `pubkey_1`, where one signature suffices, the
-authentication key would be derived as follows:
+1つのSecp256k1 ECDSA公開鍵 `pubkey_0` と1つのEd25519公開鍵 `pubkey_1` を含む1-of-2マルチキーアカウントで、
+1つの署名で十分な場合、認証キーは以下のように導出されます：
 
 ```text
 auth_key = sha3-256(0x02 | 0x01 | pubkey_0 | 0x00 | pubkey_1 | 0x01 | 0x03)
 ```
 
-Where
+ここで、
 
-- the first entry, `0x02`, represents the total number of keys as a single byte;
-- the second to last entry, `0x01`, represents the required number of signatures as a single byte;
-- the last entry, `0x03`, represents the authentication scheme.
+- 最初のエントリ `0x02` は、キーの総数を1バイトで表します。
+- 最後から2番目のエントリ `0x01` は、必要な署名数を1バイトで表します。
+- 最後のエントリ `0x03` は、認証スキームを表します。
 
-## Rotating the keys
+## キーのローテーション
 
-An Account on Aptos has the ability to rotate keys so that potentially compromised keys cannot be used to access the accounts. Keys can be rotated via the `account::rotate_authentication_key` function.
+Aptosのアカウントは、キーをローテーション（更新）する機能を持っています。これにより、漏洩した可能性のあるキーをアカウントへのアクセスに使用できないようにすることができます。キーは `account::rotate_authentication_key` 関数を使用してローテーションできます。
 
-Refreshing the keys is generally regarded as good hygiene in the security field. However, this presents a challenge for system integrators who are used to using a mnemonic to represent both a private key and its associated account. To simplify this for the system integrators, Aptos provides an on-chain mapping via aptos account lookup-address. The on-chain data maps an effective account address as defined by the current mnemonic to the actual account address.
+キーの更新はセキュリティ分野では一般的に良い習慣とされています。ただし、ニーモニックを使用して秘密鍵とそれに関連するアカウントの両方を表現することに慣れているシステム統合者にとっては、これは課題となります。これを簡素化するために、Aptosは `aptos account lookup-address` を介してオンチェーンマッピングを提供しています。このオンチェーンデータは、現在のニーモニックによって定義される有効なアカウントアドレスを実際のアカウントアドレスにマッピングします。
 
-For more information, see [`account.move`](https://github.com/aptos-labs/aptos-core/blob/a676c1494e246c31c5e96d3363d99e2422e30f49/aptos-move/framework/aptos-framework/sources/account.move#L274).
+詳細については、[`account.move`](https://github.com/aptos-labs/aptos-core/blob/a676c1494e246c31c5e96d3363d99e2422e30f49/aptos-move/framework/aptos-framework/sources/account.move#L274)をご覧ください。
 
-## State of an account
+## アカウントの状態
 
-The state of each account comprises both the code (Move modules) and the data (Move resources). An account may contain an arbitrary number of Move modules and Move resources:
+各アカウントの状態は、コード（Moveモジュール）とデータ（Moveリソース）の両方で構成されています。アカウントには任意の数のMoveモジュールとMoveリソースを含めることができます：
 
-- **Move modules**: Move modules contain code, for example, type and procedure declarations; but they do not contain data. A Move module encodes the rules for updating the Aptos blockchain's global state.
-- **Move resources**: Move resources contain data but no code. Every resource value has a type that is declared in a module published on the Aptos blockchain.
+- **Moveモジュール**: Moveモジュールにはコードが含まれています（例：型と手続きの宣言）が、データは含まれていません。Moveモジュールは、Aptosブロックチェーンのグローバル状態を更新するためのルールをエンコードします。
+- **Moveリソース**: Moveリソースにはデータが含まれていますが、コードは含まれていません。すべてのリソース値には、Aptosブロックチェーンに公開されているモジュールで宣言された型があります。
 
-## Access control with signers
+## signerによるアクセス制御
 
-The sender of a transaction is represented by a signer. When a function in a Move module takes `signer` as an argument, the Aptos Move VM translates the identity of the account that signed the transaction into a signer in a Move module entry point. See the below Move example code with `signer` in the `initialize` and `withdraw` functions. When a `signer` is not specified in a function, for example, the below `deposit` function, then no signer-based access controls will be provided for this function:
+トランザクションの送信者は、signerによって表されます。Moveモジュールの関数が `signer` を引数として取る場合、Aptos Move VMはトランザクションに署名したアカウントのIDを、Moveモジュールのエントリーポイントのsignerに変換します。以下のMoveコード例では、`initialize` と `withdraw` 関数で `signer` を使用しています。`deposit` 関数のように関数で `signer` が指定されていない場合、その関数にはsignerベースのアクセス制御は提供されません：
 
 ```move filename="coin.move" /account: &signer/
 module Test::Coin {

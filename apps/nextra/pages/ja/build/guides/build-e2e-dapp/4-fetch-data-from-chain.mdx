@@ -1,41 +1,41 @@
 import { Callout } from 'nextra/components';
 
-# 4. Fetch Data from Chain
+# チェーンからのデータ取得
 
-In the fourth chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx), you will be learning to fetch data from chain.
+[Aptos上でのエンドツーエンドdappの構築](../build-e2e-dapp.mdx)チュートリアルの4番目のチャプターでは、チェーンからデータを取得する方法を学びます。
 
-Our UI logic relies on whether the connected account has created a todo list. If the account has created a todo list, our app should display that list; if not, the app should display a button offering the option to create a new list.
+私たちのUIロジックは、接続されたアカウントがTodoリストを作成しているかどうかに依存します。アカウントがTodoリストを作成している場合、アプリはそのリストを表示する必要があります。作成していない場合、アプリは新しいリストを作成するオプションを提供するボタンを表示する必要があります。
 
-For that, we first need to check if the connected account has a `TodoList` resource. In our smart contract, whenever someone creates a todo list we create and assign a `TodoList` resource to their account.
+そのために、まず接続されたアカウントが`TodoList`リソースを持っているかどうかを確認する必要があります。私たちのスマートコントラクトでは、誰かがTodoリストを作成するたびに、`TodoList`リソースを作成してそのアカウントに割り当てています。
 
-To fetch data from chain, we can use the [Aptos TypeScript SDK](../../sdks/ts-sdk.mdx). The SDK provides classes and functions for us to easily interact and query the Aptos chain.
+チェーンからデータを取得するために、[Aptos TypeScript SDK](../../sdks/ts-sdk.mdx)を使用できます。SDKは、Aptosチェーンと簡単にやり取りし、クエリを実行するためのクラスと関数を提供します。
 
-To get started:
+始めましょう：
 
-1. Stop the local server if running.
-2. In the `client` directory, run: `npm i @aptos-labs/ts-sdk`
-3. In the `App.tsx` file, import the `Aptos` class like so:
+1. ローカルサーバーが実行中の場合は停止します。
+2. `client`ディレクトリで以下を実行します：`npm i @aptos-labs/ts-sdk`
+3. `App.tsx`ファイルで、`Aptos`クラスを以下のようにインポートします：
 
 ```tsx filename="App.tsx"
 import { Aptos } from "@aptos-labs/ts-sdk";
 ```
 
-The TypeScript SDK provides us with a `Aptos` class which is the main entry point into Aptos's API. By initializing `Aptos` we can query the Aptos chain.
+TypeScript SDKは`Aptos`クラスを提供しており、これがAptosのAPIへのメインエントリーポイントとなります。`Aptos`を初期化することで、Aptosチェーンにクエリを実行できます。
 
 <Callout type="info">
-Read more about the [`Aptos`](../../sdks/ts-sdk.mdx) class in the Aptos TypeScript SDK docs.
+[`Aptos`](../../sdks/ts-sdk.mdx)クラスについての詳細は、Aptos TypeScript SDKのドキュメントを参照してください。
 </Callout>
 
-1. In the `App.tsx` file, add:
+1. `App.tsx`ファイルに以下を追加します：
 
 ```tsx filename="App.tsx"
 const aptos = new Aptos();
 ```
 
-This will initialize a `Aptos` instance for us.
+これにより`Aptos`インスタンスが初期化されます。
 
 <Callout type="info">
-By default, `Aptos` will interact with the `devnet` network, to set up a [different network](../../../network/nodes/networks.mdx), we can use `AptosConfig` class.
+デフォルトでは、`Aptos`は`devnet`ネットワークと通信します。[異なるネットワーク](../../../network/nodes/networks.mdx)を設定するには、`AptosConfig`クラスを使用できます。
 
 ```tsx filename="App.tsx"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
@@ -46,15 +46,15 @@ const aptos = new Aptos(aptosConfig);
 
 </Callout>
 
-Our app displays different UIs based on a user resource (i.e if a user has a list ⇒ if a user has a `TodoList` resource). For that, we need to know the current account connected to our app.
+私たちのアプリは、ユーザーのリソース（つまり、ユーザーがリストを持っているか ⇒ ユーザーが`TodoList`リソースを持っているか）に基づいて異なるUIを表示します。そのために、アプリに接続されている現在のアカウントを知る必要があります。
 
-1. Import wallet from the wallet adapter React provider:
+1. ウォレットアダプターReactプロバイダーからウォレットをインポートします：
 
 ```tsx filename="App.tsx"
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 ```
 
-2. Extract the account object from the wallet adapter:
+2. ウォレットアダプターからアカウントオブジェクトを取得します：
 
 ```tsx filename="App.tsx"
 function App (
@@ -63,11 +63,11 @@ function App (
 )
 ```
 
-The `account` object is `null` if there is no account connected; when an account is connected, the `account` object holds the account information, including the account address.
+`account`オブジェクトは、アカウントが接続されていない場合は`null`です。アカウントが接続されている場合、`account`オブジェクトにはアカウントアドレスを含むアカウント情報が含まれています。
 
-3. Next, we want to fetch the account’s TodoList resource.
-   Begin by importing `useEffect` by using `jsx import useEffect from "react"; `
-   Let’s add a `useEffect` hook to our file that would call a function to fetch the resource whenever our account address changes:
+3. 次に、アカウントのTodoListリソースを取得したいと思います。
+   まず`useEffect`を`jsx import useEffect from "react";`を使用してインポートします。
+   アカウントアドレスが変更されるたびにリソースを取得する関数を呼び出す`useEffect`フックをファイルに追加しましょう：
 
 ```tsx filename="App.tsx"
 function App() {
@@ -79,7 +79,7 @@ function App() {
 }
 ```
 
-4. Before creating our `fetchList` function, let’s also create a local state to store whether the account has a list:
+4. `fetchList`関数を作成する前に、アカウントがリストを持っているかどうかを保存するローカルステートも作成しましょう：
 
 ```tsx filename="App.tsx"
 function App (
@@ -89,15 +89,14 @@ function App (
 )
 ```
 
-also import `useEffect` using
-`import { useState, useEffect } from "react"; `
+また、`useEffect`を`import { useState, useEffect } from "react";`を使用してインポートします。
 
-5. Our `useEffect` hook is calling a `fetchList` function; let’s create it:
+5. `useEffect`フックが呼び出す`fetchList`関数を作成しましょう：
 
 ```tsx filename="App.tsx"
 const fetchList = async () => {
   if (!account) return [];
-  // change this to be your module account address
+  // moduleAddressをあなたのモジュールアカウントアドレスに変更してください
   const moduleAddress = "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
   try {
     const todoListResource = await aptos.getAccountResource(
@@ -113,22 +112,22 @@ const fetchList = async () => {
 };
 ```
 
-The `moduleAddress` is the address we publish the module under, i.e the account address you have in your `Move.toml` file (`myaddr`).
+`moduleAddress`は、モジュールを公開したアドレス、つまり`Move.toml`ファイルにある`myaddr`のアカウントアドレスです。
 
-The `provider.getAccountResource()`expects an _account address_ that holds the resource we are looking for and a string representation of an on-chain _Move struct type_.
+`provider.getAccountResource()`は、探しているリソースを保持する_アカウントアドレス_とオンチェーンの_Move構造体タイプ_の文字列表現を期待します。
 
-- account address - is the current connected account (we are getting it from the wallet account object)
-- Move struct type string syntax:
-  - The account address who holds the move module = our profile account address (You might want to change the `moduleAddress` const to be your own account address)
-  - The module name the resource lives in = `todolist`
-  - The resource name = `TodoList`
+- アカウントアドレス - 現在接続されているアカウント（ウォレットのアカウントオブジェクトから取得）
+- Move構造体タイプの文字列構文：
+  - Moveモジュールを保持するアカウントアドレス = プロファイルアカウントアドレス（`moduleAddress`定数を自分のアカウントアドレスに変更する必要があります）
+  - リソースが存在するモジュール名 = `todolist`
+  - リソース名 = `TodoList`
 
-If the request succeeds and there is a resource for that account, we want to set our local state to `true`; otherwise, we would set it to `false`.
+リクエストが成功し、そのアカウントにリソースがある場合、ローカルステートを`true`に設定します。そうでない場合は`false`に設定します。
 
-6. Let’s update `import { Layout, Row, Col } from "antd"; ` to import Button:
-   `import { Layout, Row, Col, Button  } from "antd"; `
+6. `import { Layout, Row, Col } from "antd";`を更新してButtonをインポートします：
+   `import { Layout, Row, Col, Button  } from "antd";`
 
-7. Let’s update our UI based on the `accountHasList` state:
+7. `accountHasList`ステートに基づいてUIを更新しましょう：
 
 ```tsx filename="App.tsx"
 return (
@@ -160,8 +159,8 @@ return (
 );
 ```
 
-We now have an **Add new list** button that appears only if the account doesn’t have a list.
+これで、アカウントがリストを持っていない場合にのみ表示される**Add new list**ボタンができました。
 
-Start the local server with `npm start`. You should see the **Add new list** button.
+`npm start`でローカルサーバーを起動します。**Add new list**ボタンが表示されるはずです。
 
-Next, let’s understand how to create a new list by [submitting data to chain](5-submit-data-to-chain.mdx) in chapter 5.
+次に、チャプター5で[チェーンへのデータ送信](5-submit-data-to-chain.mdx)を理解しましょう。

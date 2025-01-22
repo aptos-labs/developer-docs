@@ -1,85 +1,85 @@
 export default {
   "---usage---": {
     type: "separator",
-    title: "Usage",
+    title: "使用方法",
   },
   "aptos-hosted": {
-    title: "Indexer API Access",
+    title: "Indexer APIアクセス",
   },
   "indexer-reference": {
-    title: "Indexer API Table Reference",
+    title: "Indexer APIテーブルリファレンス",
   },
   architecture: {
-    title: "Architecture",
+    title: "アーキテクチャ",
   },
   "---indexer-customizations---": {
     type: "separator",
-    title: "Indexer Customizations (Advanced)",
+    title: "Indexerカスタマイズ（上級）",
   },
   "indexer-sdk": {
     title: "Indexer SDK",
   },
   "txn-stream": {
-    title: "Transaction Stream Service",
+    title: "トランザクションストリームサービス",
   },
   "self-hosted": {
-    title: "Self-Hosted Indexer API",
+    title: "セルフホスト型Indexer API",
   },
   "---example-queries---": {
     type: "separator",
-    title: "Example Queries",
+    title: "クエリ例",
   },
   "fungible-asset-balances": {
-    title: "Get Fungible Asset Balances",
+    title: "代替性アセットの残高を取得",
     theme: {
       toc: false,
       layout: "full",
     },
   },
   "account-transactions": {
-    title: "Get Transactions Impacting an Account",
+    title: "アカウントに影響を与えるトランザクションを取得",
     theme: {
       toc: false,
       layout: "full",
     },
   },
   "ans-lookup": {
-    title: "Get Aptos Name",
+    title: "Aptos名を取得",
     theme: {
       toc: false,
       layout: "full",
     },
   },
   "fungible-asset-info": {
-    title: "Get Fungible Asset Info",
+    title: "代替性アセット情報を取得",
     theme: {
       toc: false,
       layout: "full",
     },
   },
   "get-nft-collections": {
-    title: "Get NFT Collections By Account",
+    title: "アカウント別NFTコレクションを取得",
     theme: {
       toc: false,
       layout: "full",
     },
   },
   "get-nfts": {
-    title: "Get NFTs By Account",
+    title: "アカウント別NFTを取得",
     theme: {
       toc: false,
       layout: "full",
     },
   },
   "token-metadata": {
-    title: "Get Token Metadata",
+    title: "トークンメタデータを取得",
     theme: {
       toc: false,
       layout: "full",
     },
   },
   "get-delegators": {
-    title: "Count Delegators in Staking Pool",
+    title: "ステーキングプール内のデリゲーター数をカウント",
     theme: {
       toc: false,
       layout: "full",
@@ -87,9 +87,9 @@ export default {
   },
   "---legacy---": {
     type: "separator",
-    title: "Legacy",
+    title: "レガシー",
   },
   legacy: {
-    title: "Legacy Indexer",
+    title: "レガシーIndexer",
   },
 };

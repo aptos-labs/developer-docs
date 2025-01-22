@@ -1,12 +1,12 @@
 import { GraphQLEditor } from '@components/index'
 import { Callout } from 'nextra/components'
 
-# Get Fungible Asset Info
+# ファンジブルアセット情報の取得
 
-By providing a list of fungible asset types, `GetFungibleAssetInfo` can fetch data such as the symbol, name, decimals, and the asset type itself. This is particularly useful for applications needing to display token details. This is backwards compatible with looking up `Coin` info.
+ファンジブルアセットタイプのリストを指定することで、`GetFungibleAssetInfo`はシンボル、名前、小数点以下の桁数、アセットタイプ自体などのデータを取得できます。これは、トークンの詳細を表示する必要があるアプリケーションに特に役立ちます。また、`Coin`情報の検索との後方互換性も維持されています。
 
 <Callout type="info">
-Try it yourself! You can customize the variables at the bottom of the editor.
+自分で試してみましょう！エディターの下部で変数をカスタマイズできます。
 </Callout>
 
 <GraphQLEditor
@@ -29,6 +29,6 @@ Try it yourself! You can customize the variables at the bottom of the editor.
 }`}
 />
 
-## Variables:
-- `$in`: **List of String** - This variable should contain a list of fungible asset types you want to query information for. Ex. `["0x1::aptos_coin::AptosCoin"]`
-- `$offset`: **Integer** (Optional) - This variable can be used to paginate through results, specifying how many records to skip before starting to return results.
+#### 変数:
+- `$in`: **文字列のリスト** - 情報を照会したいファンジブルアセットタイプのリストを含む変数。例: `["0x1::aptos_coin::AptosCoin"]`
+- `$offset`: **整数** (オプション) - 結果をページ分割するために使用できる変数で、結果の返却を開始する前にスキップするレコード数を指定します。

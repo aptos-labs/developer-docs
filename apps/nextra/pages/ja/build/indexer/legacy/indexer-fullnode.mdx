@@ -1,46 +1,46 @@
 ---
-title: "Run an Indexer Fullnode"
+title: "インデクサーフルノードの実行"
 ---
 import { Callout } from 'nextra/components'
 
-# Run an Aptos Indexer
+# Aptosインデクサーの実行
 
 <Callout type="warning"> 
-This is documentation for the legacy indexer. To learn how to run the underlying infrastructure for the latest indexer stack, see [Transaction Stream Service](../txn-stream.mdx).
+これはレガシーインデクサーのドキュメントです。最新のインデクサースタックの基盤となるインフラストラクチャの実行方法については、[トランザクションストリームサービス](../txn-stream.mdx)をご覧ください。
 </Callout>
 
 <Callout type="warning"> 
-The below installation steps are verified only on macOS with Apple Silicon. They might require minor tweaking when running on other builds.
+以下のインストール手順は、Apple Siliconを搭載したmacOSでのみ検証されています。他の環境で実行する場合は、若干の調整が必要になる可能性があります。
 </Callout>
 
-## Summary
+## 概要
 
-To run an indexer fullnode, these are the steps in summary:
+インデクサーフルノードを実行するには、以下の手順を実行します：
 
-1. Make sure that you have all the required tools and packages described below in this document.
-1. Follow the instructions to [set up a public fullnode](../../../network/nodes/full-node/verify-pfn.mdx) but do not start the fullnode yet.
-1. Edit the `fullnode.yaml` as described below in this document.
-1. Run the indexer fullnode per the instructions below.
+1. このドキュメントに記載されている必要なツールとパッケージがすべてインストールされていることを確認します。
+1. [パブリックフルノードのセットアップ](../../../network/nodes/full-node/verify-pfn.mdx)の手順に従いますが、まだフルノードは起動しないでください。
+1. このドキュメントの説明に従って`fullnode.yaml`を編集します。
+1. 以下の手順に従ってインデクサーフルノードを実行します。
 
-## Prerequisites
+## 前提条件
 
-Install the packages below. Note, you may have already installed many of these while [preparing your development environment](../../../network/nodes/building-from-source.mdx). You can confirm by running `which command-name` and ensuring the package appears in the output (although `libpq` will not be returned even when installed).
+以下のパッケージをインストールしてください。[開発環境の準備](../../../network/nodes/building-from-source.mdx)の際に、これらの多くをすでにインストールしている可能性があります。`which コマンド名`を実行し、出力にパッケージが表示されることを確認してください（ただし、`libpq`はインストールされていても表示されません）。
 
-> Important: If you are on macOS, you will need to [install Docker following the official guidance](https://docs.docker.com/desktop/install/mac-install/) rather than `brew`.
+> 重要：macOSを使用している場合は、`brew`ではなく[公式ガイダンスに従ってDockerをインストール](https://docs.docker.com/desktop/install/mac-install/)する必要があります。
 
-For an Aptos indexer fullnode, install these packages:
+Aptosインデクサーフルノードには、以下のパッケージをインストールしてください：
 
-- [`brew`](https://brew.sh/) - `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` Run the commands emitted in the output to add the command to your path and install any dependencies
-- [`cargo` Rust package manager](https://www.rust-lang.org/tools/install) - `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+- [`brew`](https://brew.sh/) - `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` 出力されたコマンドを実行してパスに追加し、依存関係をインストールします
+- [`cargo` Rustパッケージマネージャー](https://www.rust-lang.org/tools/install) - `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
 - [`docker`](https://docs.docker.com/get-docker/) - `brew install docker`
-- [libpq Postgres C API library containing the `pg_ctl` command](https://formulae.brew.sh/formula/libpq) - `brew install libpq`
-  Make sure to perform all export commands after the installation.
-- [`postgres` PostgreSQL server](https://www.postgresql.org/) - `brew install postgresql`
+- [`pg_ctl`コマンドを含むlibpq Postgres C APIライブラリ](https://formulae.brew.sh/formula/libpq) - `brew install libpq`
+  インストール後、すべてのexportコマンドを実行してください。
+- [`postgres` PostgreSQLサーバー](https://www.postgresql.org/) - `brew install postgresql`
 - [`diesel`](https://diesel.rs/) - `brew install diesel`
 
-## Set up the database
+## データベースのセットアップ
 
-1. Start the PostgreSQL server:
+1. PostgreSQLサーバーを起動します：
    `brew services start postgresql`
 1. Ensure you can run `psql postgres` and then exit the prompt by entering: `\q`
 1. Create a PostgreSQL user `postgres` with the `createuser` command (find it with `which`):

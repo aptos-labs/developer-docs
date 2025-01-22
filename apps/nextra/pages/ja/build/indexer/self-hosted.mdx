@@ -1,28 +1,28 @@
 ---
-title: "Self-Hosted Indexer API"
+title: "セルフホスト型インデクサー API"
 ---
 
-# Self-Hosted Indexer API
+# セルフホスト型インデクサー API
 
 import { Callout } from 'nextra/components'
 import { IndexerBetaNotice } from '@components/index';
 
 <IndexerBetaNotice />
 
-This guide will walk you through setting up a self-hosted Indexer API.
+このガイドでは、セルフホスト型インデクサー APIのセットアップ方法について説明します。
 
 <Callout type="warning">
-Currently this guide only explains how to run processor part of the Indexer API. By the end of this guide you will have a running processor that consumes transactions from the Transaction Stream Service, parses them, and stores them in the database. Unfortunately this guide does not explain how to attach an API to this system right now.
+現在このガイドでは、インデクサー APIのプロセッサー部分の実行方法のみを説明しています。このガイドの最後には、Transaction Stream Serviceからトランザクションを取得し、解析してデータベースに保存するプロセッサーが動作するようになります。残念ながら、現時点ではこのシステムにAPIを接続する方法については説明していません。
 </Callout>
 
-## Prerequisites
+## 前提条件
 
-- A running PostgreSQL instance is required, with a valid user and database. In this example we call the user `postgres` and the database `indexer`.
-- If you wish to use Docker, you must have Docker installed. [Installation Guide](https://docs.docker.com/get-docker/).
+- 有効なユーザーとデータベースを持つPostgreSQLインスタンスが必要です。この例では、ユーザーを`postgres`、データベースを`indexer`と呼びます。
+- Dockerを使用する場合は、Dockerがインストールされている必要があります。[インストールガイド](https://docs.docker.com/get-docker/)。
 
-## Configuration
+## 設定
 
-To run the service we need to define a config file. We will start with this template:
+サービスを実行するには、設定ファイルを定義する必要があります。以下のテンプレートから始めましょう：
 
 ```yaml filename="config.yaml"
 health_check_port: 8084
@@ -36,15 +36,15 @@ server_config:
   auth_token: AUTH_TOKEN
 ```
 
-From here you will likely want to change the values of some of these fields. Let's go through some of them.
+ここから、これらのフィールドの値のいくつかを変更する必要があるでしょう。それぞれについて見ていきましょう。
 
 ### `processor_name`
 
 <Callout type="info">
-A single instance of the service only runs a single processor. If you want to run multiple processors, you must run multiple instances of the service. In this case, it is up to you whether to use the same database or not.
+サービスの1つのインスタンスは1つのプロセッサーのみを実行します。複数のプロセッサーを実行したい場合は、サービスの複数のインスタンスを実行する必要があります。この場合、同じデータベースを使用するかどうかはあなた次第です。
 </Callout>
 
-This is the processor you want to run. You can see what processors are available [here](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/processors/mod.rs#L23). Some examples:
+これは実行したいプロセッサーです。利用可能なプロセッサーは[こちら](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/processors/mod.rs#L23)で確認できます。例えば：
 
 - `coin_processor`
 - `ans_processor`
@@ -52,23 +52,23 @@ This is the processor you want to run. You can see what processors are available
 
 ### `postgres_connection_string`
 
-This is the connection string to your PostgreSQL database. It should be in the format `postgresql://<username>:<password>@<host>:<port>/<database>`.
+これはPostgreSQLデータベースへの接続文字列です。`postgresql://<username>:<password>@<host>:<port>/<database>`の形式である必要があります。
 
 <Callout type="warning">
-If you're running this from a Docker Desktop environment (which you likely are if you're using MacOS or Windows) you must set `postgres_connection_string` to `postgresql://host.docker.internal:5432/indexer` instead. With Docker Desktop this is how the binary can reach the host network.
+Docker Desktop環境から実行している場合（MacOSやWindowsを使用している場合はおそらくそうでしょう）、`postgres_connection_string`を代わりに`postgresql://host.docker.internal:5432/indexer`に設定する必要があります。Docker Desktopでは、これがバイナリがホストネットワークにアクセスする方法です。
 </Callout>
 
 ### `indexer_grpc_data_service_address`
 
-This is the URL for the Transaction Stream Service. If you are using the Labs-Hosted instance you can find the URLs for each network at [this page](aptos-hosted.mdx). Make sure to select the correct URL for the network you want to index. If you are running this service locally the value should be `127.0.0.1:50051`.
+これはTransaction Stream ServiceのURLです。Labs-Hostedインスタンスを使用している場合、各ネットワークのURLは[このページ](aptos-hosted.mdx)で確認できます。インデックスを作成したいネットワークの正しいURLを選択してください。このサービスをローカルで実行している場合、値は`127.0.0.1:50051`にする必要があります。
 
 ### `auth_token`
 
-This is the auth token used to connect to the Transaction Stream Service. If you are using the Labs-Hosted instance you can use the API Gateway to get an API key. Learn more at [this page](aptos-hosted.mdx).
+これはTransaction Stream Serviceに接続するために使用される認証トークンです。Labs-Hostedインスタンスを使用している場合、API Gatewayを使用してAPIキーを取得できます。詳しくは[このページ](aptos-hosted.mdx)をご覧ください。
 
-## Run with source code
+## ソースコードでの実行
 
-Clone the repo:
+リポジトリをクローンします：
 
 ```bash filename="Terminal"
 # SSH
@@ -78,36 +78,36 @@ git clone git@github.com:aptos-labs/aptos-indexer-processors.git
 git clone https://github.com/aptos-labs/aptos-indexer-processors.git
 ```
 
-Navigate to the directory for the service:
+サービスのディレクトリに移動します：
 
 ```bash filename="Terminal"
 cd aptos-indexer-processors
 cd rust/processor
 ```
 
-Run the service:
+サービスを実行します：
 
 ```bash filename="Terminal"
 cargo run --release -- -c config.yaml
 ```
 
-## Run with Docker
+## Dockerでの実行
 
 {/* <!--
-This doesn't actually work this very moment because:
+これは現時点では実際には動作しません。理由は以下の通りです：
 
-1. We don't yet publish the image as indexer-processor-rust
-2. We don't tag it as latest.
+1. まだイメージをindexer-processor-rustとして公開していない
+2. latestタグを付けていない
 
-We'll do that soon though: https://aptos-org.slack.com/archives/C04PRP1K1FZ/p1692732083583659
+ただし、近々対応予定です: https://aptos-org.slack.com/archives/C04PRP1K1FZ/p1692732083583659
 --> */}
 
-To run the service with Docker, use the following command:
+サービスをDockerで実行するには、以下のコマンドを使用します：
 
 ```bash filename="Terminal"
 docker run -it --network host --mount type=bind,source=/tmp/config.yaml,target=/config.yaml aptoslabs/indexer-processor-rust -c /config.yaml
 ```
 
-This command binds the container to the host network and mounts the config file from the host into the container. This specific invocation assumes that your config file in the host is at `/tmp/config.yaml`.
+このコマンドはコンテナをホストネットワークにバインドし、ホストの設定ファイルをコンテナにマウントします。この特定の呼び出しでは、ホスト上の設定ファイルが `/tmp/config.yaml` にあることを前提としています。
 
-See the image on DockerHub here: https://hub.docker.com/r/aptoslabs/indexer-processor-rust/tags.
+DockerHubのイメージはこちらで確認できます: https://hub.docker.com/r/aptoslabs/indexer-processor-rust/tags

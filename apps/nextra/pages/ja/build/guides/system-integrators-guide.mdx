@@ -1,230 +1,142 @@
 ---
-title: "Application Integration Guide"
+title: "アプリケーション統合ガイド"
 ---
 
 import { Callout } from "nextra/components";
 
-# Application Integration Guide
+# アプリケーション統合ガイド
 
 <Callout type="info">
-  This guide is currently in progress of being replaced.  Please check out the [exchange integration guide](./exchanges.mdx)
-  for more up-to-date information.
+  このガイドは現在更新中です。より最新の情報については[取引所統合ガイド](./exchanges.mdx)をご確認ください。
 </Callout>
 
-If you provide blockchain services to your customers and wish to add the Aptos
-blockchain to your platform, then this guide is for you. This system integrators
-guide will walk you through all you need to integrate the Aptos blockchain into
-your platform.
+ブロックチェーンサービスを顧客に提供しており、Aptosブロックチェーンをプラットフォームに追加したい場合、このガイドが役立ちます。このシステム統合ガイドでは、Aptosブロックチェーンをプラットフォームに統合するために必要なすべてを説明します。
 
-## Overview
+## 概要
 
-This document will guide you through the following tasks to integrate with
-Aptos:
+このドキュメントでは、Aptosとの統合に必要な以下のタスクについて説明します:
 
-1. Prepare an environment for testing.
-2. Create an account on the blockchain.
-3. Exchange account identifiers with another entity on the blockchain, for
-example, to perform swaps.
-4. Create a transaction.
-5. Obtain a gas estimate and validate the transaction for correctness.
-6. Submit the transaction to the blockchain.
-7. Wait for the outcome of the transaction.
-8. Query historical transactions and interactions for a given account with a
-specific account, i.e., withdraws and deposits.
+1. テスト環境の準備
+2. ブロックチェーン上でのアカウント作成
+3. スワップなどを行うための他のエンティティとのアカウント識別子の交換
+4. トランザクションの作成
+5. ガス見積もりの取得とトランザクションの正確性の検証
+6. ブロックチェーンへのトランザクションの送信
+7. トランザクションの結果の待機
+8. 特定のアカウントの履歴トランザクションや、特定のアカウントとのやり取り(入出金など)の照会
 
-## Getting Started
+## はじめに
 
-In order to get started you'll need to select a network and pick your set of
-tools. There are also a handful of SDKs to help accelerate development.
+始めるにあたって、ネットワークを選択し、使用するツールセットを決める必要があります。開発を加速させるためのSDKも多数用意されています。
 
-### SDKs and tools
+### SDKとツール
 
-Aptos has multiple SDKs across many different languages and platforms, please
-check out [SDKs](../sdks.mdx) for more information.
+Aptosには様々な言語とプラットフォームに対応した複数のSDKがあります。詳しくは[SDKs](../sdks.mdx)をご覧ください。
 
-Almost all developers will benefit from exploring the CLI.
-[Using the CLI](../cli.mdx) demonstrates how the CLI can be used to create
-accounts, transfer coins, publish Move modules, and more.
+ほとんどの開発者にとって、CLIの利用は有益です。[CLIの使用](../cli.mdx)では、CLIを使用してアカウントの作成、コインの転送、Moveモジュールの公開などを行う方法を説明しています。
 
-## Accounts on Aptos
+## Aptosのアカウント
 
-An [account](../../network/blockchain/accounts.mdx) represents
-an entity on the Aptos blockchain that can send transactions. Each account is
-identified by a particular 32-byte account address and is a container for
-[Move modules and resources](../../network/blockchain/resources.mdx).
-On Aptos, accounts must be created on-chain prior to any blockchain operations
-involving that account. The Aptos framework supports implicitly creating
-accounts when transferring Aptos coin via [`aptos_account::transfer`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L18)
-or explicitly via [`aptos_account::create_account`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L13).
+[アカウント](../../network/blockchain/accounts.mdx)は、Aptosブロックチェーン上でトランザクションを送信できるエンティティを表します。各アカウントは32バイトのアカウントアドレスで識別され、[Moveモジュールとリソース](../../network/blockchain/resources.mdx)のコンテナとなります。
+Aptosでは、アカウントに関連するブロックチェーン操作を行う前に、アカウントをオンチェーンで作成する必要があります。Aptosフレームワークは、[`aptos_account::transfer`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L18)によるAptosコインの転送時に暗黙的にアカウントを作成するか、[`aptos_account::create_account`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L13)で明示的に作成することをサポートしています。
 
-At creation, an [Aptos account](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/account.move#L23) contains:
+作成時の[Aptosアカウント](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/account.move#L23)には以下が含まれます:
 
-- A [resource containing Aptos Coin](https://github.com/aptos-labs/aptos-core/blob/60751b5ed44984178c7163933da3d1b18ad80388/aptos-move/framework/aptos-framework/sources/coin.move#L50)
-and deposit and withdrawal of coins from that resource.
-- An authentication key associated with their current public, private key(s).
-- A strictly
-increasing [sequence number](../../network/blockchain/accounts.mdx)
-that represents the account's next transaction's sequence number to prevent
-replay attacks.
-- A strictly increasing number that represents the next distinct GUID creation
-number.
-- An [event handle](../../network/blockchain/events.mdx) for all new types of coins added to
-the account.
-- An event handle for all key rotations for the account.
+- [Aptos Coinを含むリソース](https://github.com/aptos-labs/aptos-core/blob/60751b5ed44984178c7163933da3d1b18ad80388/aptos-move/framework/aptos-framework/sources/coin.move#L50)とそのリソースからのコインの入出金機能
+- 現在の公開鍵・秘密鍵に関連付けられた認証キー
+- リプレイ攻撃を防ぐための、アカウントの次のトランザクションのシーケンス番号を表す[単調増加のシーケンス番号](../../network/blockchain/accounts.mdx)
+- 次の固有のGUID作成番号を表す単調増加の数値
+- アカウントに追加されたすべての新しいタイプのコインの[イベントハンドル](../../network/blockchain/events.mdx)
+- アカウントのすべてのキーローテーションのイベントハンドル
 
-Read more about [Accounts](../../network/blockchain/accounts.mdx)
-and [set one up](../cli/setup-cli.mdx).
+[アカウント](../../network/blockchain/accounts.mdx)についての詳細を読み、[セットアップ](../cli/setup-cli.mdx)を行ってください。
 
-## Transactions
+## トランザクション
 
-Aptos [transactions](../../network/blockchain/txns-states.mdx) are encoded
-in [Binary Canonical Serialization (BCS)](https://github.com/diem/bcs).
-Transactions contain information such as the sender’s account address,
-authentication from the sender, the desired operation to be performed on the
-Aptos blockchain, and the amount of gas the sender is willing to pay to execute
-the transaction.
+Aptos[トランザクション](../../network/blockchain/txns-states.mdx)は[Binary Canonical Serialization (BCS)](https://github.com/diem/bcs)でエンコードされます。トランザクションには、送信者のアカウントアドレス、送信者からの認証、Aptosブロックチェーン上で実行したい操作、トランザクションの実行に支払う意思のあるガス量などの情報が含まれます。
 
-Read more in [Transactions and States](../../network/blockchain/txns-states.mdx).
+詳しくは[トランザクションとステート](../../network/blockchain/txns-states.mdx)をご覧ください。
 
-### Generating transactions
+### トランザクションの生成
 
-Aptos supports two methods for constructing transactions:
+Aptosはトランザクションを構築する2つの方法をサポートしています:
 
-- Using the Aptos client libraries to generate native BCS transactions.
-- Constructing JSON-encoded objects and interacting with the REST API to
-generate native transactions.
+- Aptosクライアントライブラリを使用してネイティブBCSトランザクションを生成する
+- JSONエンコードされたオブジェクトを構築し、REST APIを使用してネイティブトランザクションを生成する
 
-The preferred approach is to directly generate native BCS transactions.
-Generating them via the REST API enables rapid development at the cost of
-trusting the fullnode to generate the transaction correctly.
+推奨されるアプローチは、ネイティブBCSトランザクションを直接生成することです。REST APIを介して生成する方法は、フルノードがトランザクションを正しく生成することを信頼する代わりに、迅速な開発を可能にします。
 
-#### BCS-encoded transactions
+#### BCSエンコードされたトランザクション
 
-BCS-encoded transactions can be submitted to the `/transactions` endpoint but
-must specify `Content-Type: application/x.aptos.signed_transaction+bcs` in the
-HTTP headers. This will return a transaction submission result that, if
-successful, contains a transaction hash in
-the `hash` [field](https://github.com/aptos-labs/aptos-core/blob/9b85d41ed8ef4a61a9cd64f9de511654fcc02024/ecosystem/python/sdk/aptos_sdk/client.py#L138).
+BCSエンコードされたトランザクションは`/transactions`エンドポイントに送信できますが、HTTPヘッダーで`Content-Type: application/x.aptos.signed_transaction+bcs`を指定する必要があります。これにより、成功した場合、`hash`[フィールド](https://github.com/aptos-labs/aptos-core/blob/9b85d41ed8ef4a61a9cd64f9de511654fcc02024/ecosystem/python/sdk/aptos_sdk/client.py#L138)にトランザクションハッシュを含むトランザクション送信結果が返されます。
 
-### Types of transactions
+### トランザクションの種類
 
-Within a given transaction, the target of execution can be one of two types:
+トランザクション内で、実行のターゲットは以下の2種類のいずれかになります:
 
-- An entry function
-- A Move script
+- エントリー関数
+- Moveスクリプト
 
-All official SDKs support the generation of transactions that target entry functions. This guide
-points out many of those entry functions, such as `aptos_account::transfer`
-and `aptos_account::create_account`.
+すべての公式SDKは、エントリー関数をターゲットとするトランザクションの生成をサポートしています。このガイドでは、`aptos_account::transfer`や`aptos_account::create_account`など、多くのエントリー関数を紹介しています。
 
-Most basic operations on the Aptos blockchain should be available via entry
-point calls. While one could submit multiple transactions calling entry points
-in series, such operations benefit from being called atomically from a single
-transaction. A script payload transaction can call any public (entry) function
-defined within any module. Here's an
-example [Move script](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/scripts/two_by_two_transfer)
-that uses a MultiAgent transaction to extract funds from two accounts and
-deposit them into two other accounts. This is
-a [Python example](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/transfer_two_by_two.py)
-that uses the bytecode generated by compiling that script.
+Aptosブロックチェーン上の基本的な操作のほとんどは、エントリーポイントの呼び出しで利用できるはずです。エントリーポイントを呼び出すトランザクションを連続して複数送信することもできますが、そのような操作は単一のトランザクションからアトミックに呼び出すことで恩恵を受けます。スクリプトペイロードトランザクションは、任意のモジュール内で定義された任意のパブリック(エントリー)関数を呼び出すことができます。これは、MultiAgentトランザクションを使用して2つのアカウントから資金を引き出し、他の2つのアカウントに預け入れる[Moveスクリプト](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/scripts/two_by_two_transfer)の例です。[Pythonの例](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/transfer_two_by_two.py)では、そのスクリプトをコンパイルして生成されたバイトコードを使用しています。
 
-### Status of a transaction
+### トランザクションのステータス
 
-Obtain transaction status by querying the
-API [`/transactions/by_hash/{hash}`](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_hash)
-with the hash returned during the submission of the transaction.
+トランザクションのステータスは、トランザクション送信時に返されたハッシュを使用してAPI [`/transactions/by_hash/{hash}`](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_hash)をクエリすることで取得できます。
 
-A reasonable strategy for submitting transactions is to limit their lifetime to
-30 to 60 seconds, and polling that API at regular intervals until success or
-several seconds after that time has elapsed. If there is no commitment on-chain,
-the transaction was likely discarded.
+トランザクションを送信する際の合理的な戦略は、有効期限を30〜60秒に制限し、成功するまで、またはその時間が経過してから数秒後まで、定期的にそのAPIをポーリングすることです。オンチェーンでコミットメントがない場合、トランザクションは破棄された可能性があります。
 
-All SDKs support this automatically for waiting for transactions.
+すべてのSDKは、トランザクションの待機を自動的にサポートしています。
 
-### Testing transactions or transaction pre-execution
+### トランザクションのテストまたはトランザクションの事前実行
 
-To facilitate evaluation of transactions as well as gas estimation, Aptos
-supports a simulation API that does not require and should not contain valid
-signatures on transactions.
+トランザクションの評価とガス見積もりを容易にするため、Aptosは有効な署名を必要とせず、含めるべきではないシミュレーションAPIをサポートしています。
 
-The simulation API is a synchronous API that executes a transaction and returns
-the output inclusive of gas usage. The simulation API can be accessed by
-submitting a transaction
-to [`/transactions/simulate`](https://api.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction).
+シミュレーションAPIは、トランザクションを実行し、ガス使用量を含む出力を返す同期APIです。シミュレーションAPIは、トランザクションを[`/transactions/simulate`](https://api.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction)に送信することでアクセスできます。
 
-Both
-the [Typescript SDK](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/transactionSubmission/simulate.ts)
-and [Python SDK](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simulate_transfer_coin.py)
-support the simulation API. Note the output and gas used may change based upon
-the state of the account. For gas estimations, we recommend that the maximum gas
-amount be larger than the amount quoted by this API.
+[Typescript SDK](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/src/api/transactionSubmission/simulate.ts)と[Python SDK](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simulate_transfer_coin.py)の両方がシミュレーションAPIをサポートしています。出力とガス使用量は、アカウントの状態に基づいて変更される可能性があることに注意してください。ガス見積もりについては、このAPIが見積もった量よりも大きい最大ガス量を設定することをお勧めします。
 
-## Viewing current and historical state
+## 現在の状態と履歴の表示
 
-Most integrations into the Aptos blockchain benefit from a holistic and
-comprehensive overview of the current and historical state of the blockchain.
-Aptos provides historical transactions, state, and events, all the result of
-transaction execution.
+Aptosブロックチェーンへの多くの統合は、ブロックチェーンの現在の状態と履歴の包括的な概要から恩恵を受けます。Aptosは、トランザクション実行の結果である履歴トランザクション、状態、イベントを提供します。
 
-- Historical transactions specify the execution status, output, and tie to
-related events. Each transaction has a unique version number associated with
-it that dictates its global sequential ordering in the history of the
-blockchain ledger.
-- The state is the representation of all transaction outputs up to a specific
-version. In other words, a state version is the accumulation of all
-transactions inclusive of that transaction version.
-- As transactions execute, they may emit events. [Events](../../network/blockchain/events.mdx)
-are hints about changes in on-chain data.
+- 履歴トランザクションは、実行ステータス、出力、関連するイベントへの紐付けを指定します。各トランザクションには、ブロックチェーン台帳の履歴におけるグローバルな順序を示す一意のバージョン番号が関連付けられています。
+- 状態は、特定のバージョンまでのすべてのトランザクション出力の表現です。言い換えれば、状態バージョンは、そのトランザクションバージョンを含むすべてのトランザクションの蓄積です。
+- トランザクションの実行時に、イベントが発行される場合があります。[イベント](../../network/blockchain/events.mdx)は、オンチェーンデータの変更に関するヒントです。
 
-The storage service on a node employs two forms of pruning that erase data from
-nodes:
+ノード上のストレージサービスは、ノードからデータを消去する2つの形式のプルーニングを採用しています:
 
-- state
-- events, transactions, and everything else
+- 状態
+- イベント、トランザクション、およびその他すべて
 
-While either of these may be disabled, storing the state versions is not
-particularly sustainable.
+これらのいずれかを無効にすることはできますが、状態バージョンを保存することは特に持続可能ではありません。
 
-Events and transactions pruning can be disabled via setting
-the [`enable_ledger_pruner`](https://github.com/aptos-labs/aptos-core/blob/cf0bc2e4031a843cdc0c04e70b3f7cd92666afcf/config/src/config/storage_config.rs#L141)
-to `false`. This is default behavior in Mainnet. In the near future, Aptos will
-provide indexers that mitigate the need to directly query from a node.
+イベントとトランザクションのプルーニングは、[`enable_ledger_pruner`](https://github.com/aptos-labs/aptos-core/blob/cf0bc2e4031a843cdc0c04e70b3f7cd92666afcf/config/src/config/storage_config.rs#L141)を`false`に設定することで無効にできます。これはメインネットではデフォルトの動作です。近い将来、Aptosはノードから直接クエリする必要性を軽減するインデクサーを提供する予定です。
 
-The REST API offers querying transactions and events in these ways:
+REST APIは、以下の方法でトランザクションとイベントのクエリを提供します:
 
-- [Transactions for an account](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_account_transactions)
-- [Transaction by version](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_version)
-- [Events by event handle](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)
+- [アカウントのトランザクション](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_account_transactions)
+- [バージョン別のトランザクション](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_version)
+- [イベントハンドル別のイベント](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)
 
-## Exchanging and tracking fungible assets
+## ファンジブルアセットの交換と追跡
 
-Aptos has a
-standard [Fungible Asset](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move).
-Different types of fungible asset (FA) can be represented in this standard
-through the use of distinct metadata object.
+Aptosには標準的な[ファンジブルアセット](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move)があります。異なる種類のファンジブルアセット(FA)は、個別のメタデータオブジェクトを使用してこの標準で表現できます。
 
-A user's FA is stored in `FungibleStore` objects owned by them. For each type of
-FA, every account has one primary store for that FA and
-optional multiple secondary stores. The difference between primary and secondary
-stores is the address of primary store
-is deterministic based on the addresses of user account and metadata object.
+ユーザーのFAは、そのユーザーが所有する`FungibleStore`オブジェクトに保存されます。各種類のFAについて、すべてのアカウントには1つのプライマリストアと、オプションで複数のセカンダリストアがあります。プライマリストアとセカンダリストアの違いは、プライマリストアのアドレスがユーザーアカウントとメタデータオブジェクトのアドレスに基づいて決定的に生成される点です。
 
-### Transferring FAs between users
+### ユーザー間でのFAの転送
 
-FAs, including APT, can be transferred between users' primary stores via
-the [`primary_fungible_store::transfer`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/primary_fungible_store.move#L142)
-function.
-For any `FungibleStore`
-s, [`fungible_asset::transfer`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move#L347)
-would be invoked with `FungibleStore` object addresses.
+APTを含むFAは、[`primary_fungible_store::transfer`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/primary_fungible_store.move#L142)関数を使用してユーザー間のプライマリストア間で転送できます。任意の`FungibleStore`については、`FungibleStore`オブジェクトのアドレスを指定して[`fungible_asset::transfer`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move#L347)が呼び出されます。
 
-### Current balance for Fungible Asset
+### ファンジブルアセットの現在の残高
 
-The current balance for an APT FA of FungibleStore is available at the account resources URL: `https://{rest_api_server}/accounts/{fungible_store_object_address}/resource/0x1::fungible_asset::FungibleStore`. The balance is stored as `balance`. The resource also contains a metadata object of the FA type and the frozen status. The address of the primary fungible store can be calculated as `sha3_256(32-byte account address | 32-byte metadata object address | 0xFC)`. The metadata object address of APT FA is `0xA`.
+FungibleStoreのAPT FAの現在の残高は、アカウントリソースのURL: `https://{rest_api_server}/accounts/{fungible_store_object_address}/resource/0x1::fungible_asset::FungibleStore`で確認できます。残高は`balance`として保存されています。このリソースには、FA種類のメタデータオブジェクトと凍結状態も含まれています。プライマリファンジブルストアのアドレスは`sha3_256(32バイトのアカウントアドレス | 32バイトのメタデータオブジェクトアドレス | 0xFC)`として計算できます。APT FAのメタデータオブジェクトアドレスは`0xA`です。
 
-Aptos users have the option to upgrade to concurrent fungible balance to allow parallelization of balance updates, improving the performance of a single account. When a user has upgraded a fungible store balance to support concurrent update, the fungible store object will have another resource `ConcurrentFungibleBalance` that contains the balance of the store, and the `balance` field of FungibleStore will be set to 0. The current balance for an APT FA of `ConcurrentFungibleBalance` (if exists) is available at the account resources URL: `https://{rest_api_server}/accounts/{fungible_store_object_address}/resource/0x1::fungible_asset::ConcurrentFungibleBalance`.
+Aptosユーザーは、残高の更新を並列化して単一アカウントのパフォーマンスを向上させるために、並行ファンジブル残高にアップグレードするオプションがあります。ユーザーが並行更新をサポートするようにファンジブルストア残高をアップグレードすると、ファンジブルストアオブジェクトにはストアの残高を含む`ConcurrentFungibleBalance`という別のリソースが追加され、FungibleStoreの`balance`フィールドは0に設定されます。APT FAの`ConcurrentFungibleBalance`（存在する場合）の現在の残高は、アカウントリソースのURL: `https://{rest_api_server}/accounts/{fungible_store_object_address}/resource/0x1::fungible_asset::ConcurrentFungibleBalance`で確認できます。
 
-Therefore, to get the total balance of a fungible asset, it is either the non-zero balance of `FungibleStore` or the `balance` field of `ConcurrentFungibleBalance` if it exists and the balance of `FungibleStore` is 0.
+したがって、ファンジブルアセットの総残高を取得するには、`FungibleStore`の0以外の残高、または`ConcurrentFungibleBalance`が存在し`FungibleStore`の残高が0の場合は`ConcurrentFungibleBalance`の`balance`フィールドのいずれかになります。
 
 ```json
 {
@@ -247,37 +159,23 @@ Therefore, to get the total balance of a fungible asset, it is either the non-ze
     }
 }
 ```
+## コインの交換と追跡
 
-## Exchanging and tracking coins
+Aptosには標準的な[コインタイプ](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)があります。異なる種類のコインは、`Coin<T>`の型パラメータまたはジェネリックを表す個別の構造体を使用してこの型で表現できます。
 
-Aptos has a standard
-[Coin type](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move).
-Different types of coins can be represented in this type through the use of
-distinct structs that represent the type parameter or generic for `Coin<T>`.
+コインはアカウント内のリソース`CoinStore<T>`に保存されます。アカウント作成時、各ユーザーは`CoinStore<0x1::aptos_coin::AptosCoin>`または略して`CoinStore<AptosCoin>`というリソースを持ちます。このリソース内にAptosコイン：`Coin<AptosCoin>`が格納されています。
 
-Coins are stored within an account under the resource `CoinStore<T>`. At account
-creation, each user has the resource `CoinStore<0x1::aptos_coin::AptosCoin>`
-or `CoinStore<AptosCoin>`, for short. Within this resource is the Aptos
-coin: `Coin<AptosCoin>`.
+### ユーザー間でのコインの転送
 
-### Transferring coins between users
-
-Coins, including APT, can be transferred between users via
-the [`aptos_account::transfer_coins`](https://github.com/aptos-labs/aptos-core/blob/d1610e1bb5214689a37a9cab59cf9254e8eb2be1/aptos-move/framework/aptos-framework/sources/aptos_account.move#L92)
-function for all coins
-and [`aptos_account::transfer`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L18)
-for Aptos coins.
+APTを含むコインは、すべてのコインについては[`aptos_account::transfer_coins`](https://github.com/aptos-labs/aptos-core/blob/d1610e1bb5214689a37a9cab59cf9254e8eb2be1/aptos-move/framework/aptos-framework/sources/aptos_account.move#L92)関数を、Aptosコインについては[`aptos_account::transfer`](https://github.com/aptos-labs/aptos-core/blob/88c9aab3982c246f8aa75eb2caf8c8ab1dcab491/aptos-move/framework/aptos-framework/sources/aptos_account.move#L18)関数を使用してユーザー間で転送できます。
 
 <Callout type="warning">
-  It is important to note that if an account has not registered a
-  `CoinStore<T />`
-  for a given `T`, then any transfer of type `T` to that account will fail.
+  重要な注意点として、アカウントが特定の`T`に対する`CoinStore<T />`を登録していない場合、そのアカウントへの型`T`の転送は失敗します。
 </Callout>
 
-### Current balance for a coin
+### コインの現在の残高
 
-To retrieve the balance of a coin, or a coin that was migrated to a fungible asset, you can use
-the `0x1::coin::balance<CoinType>(account address)` view function.  This will combine the coin and coin migrated to fungible asset balances.
+コインの残高、またはファンジブルアセットに移行されたコインの残高を取得するには、`0x1::coin::balance<CoinType>(account address)`ビュー関数を使用できます。これにより、コインとファンジブルアセットに移行されたコインの残高が合算されます。
 
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
@@ -296,19 +194,16 @@ const [balanceStr] = await aptos.view<[string]>({
 });
 const balance = parseInt(balanceStr, 10);
 ```
+### トランザクションのクエリ
 
-### Querying transactions
-
-In Aptos, each transaction is committed as a distinct version to the
-blockchain. This allows for the convenience of sharing committed transactions
-by their version number; to do so, query:
+Aptosでは、各トランザクションはブロックチェーン上の個別のバージョンとしてコミットされます。これにより、コミットされたトランザクションをバージョン番号で共有することが容易になります。クエリを実行するには以下のURLを使用します：
 `https://{rest_server_api}/transactions/by_version/{version}`
 
-Transactions submitted by an account can also be queried via the following URL
-where the `sequence_number` matches the sequence number of the transaction:
+アカウントから送信されたトランザクションは、以下のURLでクエリを実行することもできます。
+`sequence_number`はトランザクションのシーケンス番号と一致する必要があります：
 `https://{rest_server_api}/account/{address}/transactions?start={sequence_number}&limit=1`
 
-A transfer transaction would appear as follows:
+転送トランザクションは以下のように表示されます：
 
   ```json
   {
@@ -389,57 +284,36 @@ A transfer transaction would appear as follows:
   }
   ```
 
-Here is a breakdown of the information in a transaction:
+トランザクションに含まれる情報の内訳は以下の通りです：
 
-  - `version` indicates the globally unique identifier for this transaction, its
-ordered position in all the committed transactions on the blockchain
-  - `sender` is the account address of the entity that submitted the transaction
-  - `gas_used` is the units paid for executing the transaction
-  - `success` and `vm_status` indicate whether the transaction successfully
-executed and any reasons why it might not have
-  - `changes` include the final values for any state resources that have been
-modified during the execution of the transaction
-  - `events` contain all the events emitted during the transaction execution
-  - `timestamp` is the near real-time timestamp of the transaction's execution
+  - `version` は、このトランザクションのグローバルに一意な識別子で、ブロックチェーン上のコミットされた全トランザクションにおける順序位置を示します
+  - `sender` はトランザクションを送信したエンティティのアカウントアドレスです
+  - `gas_used` はトランザクションの実行に支払われたユニット数です
+  - `success` と `vm_status` は、トランザクションが正常に実行されたかどうかと、失敗した場合の理由を示します
+  - `changes` には、トランザクションの実行中に変更された状態リソースの最終値が含まれます
+  - `events` には、トランザクション実行中に発行された全てのイベントが含まれます
+  - `timestamp` は、トランザクション実行時のほぼリアルタイムのタイムスタンプです
 
-If `success` is false, then `vm_status` will contain an error code or message
-that resulted in the transaction failing to succeed. When `success` is
-false, `changes` will be limited to gas deducted from the account and the
-sequence number incrementing. There will be no `events`.
+`success` が false の場合、`vm_status` にはトランザクションが失敗した原因となるエラーコードまたはメッセージが含まれます。`success` が false の場合、`changes` はアカウントから差し引かれたガス代とシーケンス番号の増分に限定されます。`events` は存在しません。
 
-Each event in `events` is differentiated by a `key`. The `key` is derived from
-the `guid` in `changes`. Specifically, the `key` is a 40-byte hex string where
-the first eight bytes (or 16 characters) are the little-endian representation
-of the `creation_num` in the `guid` of the `changes` event, and the remaining
-characters are the account address.
+`events` の各イベントは `key` によって区別されます。`key` は `changes` の `guid` から派生します。具体的には、`key` は40バイトの16進文字列で、最初の8バイト（16文字）は `changes` イベントの `guid` における `creation_num` のリトルエンディアン表現で、残りの文字はアカウントアドレスです。
 
-As events do not dictate what emitted them, it is imperative to track the path
-in `changes` to determine the source of an event. In particular,
-each `CoinStore<T>` has both a `WithdrawEvent` and a `DepositEvent`, based
-upon the type of coin. In order to determine which coin type is used in a
-transaction, an indexer can compare the `guid::creation_num` in a `changes`
-event combined with the address to the `key` for events in `events`.
+イベントは何が発行したかを示さないため、イベントのソースを特定するには `changes` のパスを追跡することが不可欠です。特に、各 `CoinStore<T>` はコインの種類に応じて `WithdrawEvent` と `DepositEvent` の両方を持ちます。トランザクションで使用されているコインの種類を判断するために、インデクサーは `changes` イベントの `guid::creation_num` とアドレスを組み合わせて、`events` の `key` と比較することができます。
 
-Using the above example, `events[1].guid` is equivalent
-to `changes[0].data.data.deposit_events.guid`, which
-is
+上記の例では、`events[1].guid` は `changes[0].data.data.deposit_events.guid` と同等で、
+これは
   ```json
   {"addr": "0x5098df8e7969b58ab3bd2d440c6203f64c60a1fd5c08b9d4abe6ae4216246c3e", "creation_num": "2"}
   ```
-
 <Callout type="info">
-  The `key` field will be going away in favor of `guid`
+  `key`フィールドは`guid`に置き換えられる予定です
 </Callout>
 
-### Querying events
+### イベントのクエリ
 
-Aptos provides clear and canonical events for all withdraw and deposit of
-coins. This can be used in coordination with the associated transactions to
-present to a user the change of their account balance over time, when that
-happened, and what caused it. With some amount of additional parsing, metadata
-such as the transaction type and the other parties involved can also be shared.
+Aptosは、全てのコインの引き出しと預け入れに対して、明確で標準的なイベントを提供します。これは関連するトランザクションと組み合わせて使用することで、ユーザーのアカウント残高の変化、その発生時期、原因を表示することができます。さらに追加のパースを行うことで、トランザクションの種類や関係する他の当事者などのメタデータも共有することができます。
 
-Query events by handle
+ハンドルによるイベントのクエリ
 URL: `https://{rest_api_server}/accounts/{address}/events/0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>/withdraw_events`
   ```json
   [
@@ -461,24 +335,23 @@ URL: `https://{rest_api_server}/accounts/{address}/events/0x1::coin::CoinStore<0
   ]
   ```
 
-Gather more information from the transaction that generated the event by
-querying `https://{rest_server_api}/transactions/by_version/{version}`
-where `{version}` is the same value as the `{version}` in the event query.
+イベントを生成したトランザクションの詳細情報を取得するには、
+`https://{rest_server_api}/transactions/by_version/{version}`
+をクエリします。ここで`{version}`は、イベントクエリの`{version}`と同じ値です。
 
 <Callout type="info">
-  When tracking full movement of coins, normally events are
-  sufficient. `0x1::aptos_coin::AptosCoin`, however, requires
-  considering `gas_used` for each transaction sent from the given account
-  since it represents gas in Aptos. To reduce unnecessary overhead, extracting
-  gas fees due to transactions does not emit an event. All transactions for an
-  account can be retrieved from this API:
+  コインの移動を完全に追跡する場合、通常はイベントで十分です。
+  ただし、`0x1::aptos_coin::AptosCoin`の場合は、Aptosのガス代を表すため、
+  アカウントから送信された各トランザクションの`gas_used`を考慮する必要があります。
+  不要なオーバーヘッドを減らすため、トランザクションによるガス手数料の抽出は
+  イベントを発行しません。アカウントの全トランザクションは以下のAPIから取得できます：
   `https://{rest_server_api}/accounts/{address}/transactions`
 </Callout>
 
-### Tracking coin balance changes
+### コイン残高の変更の追跡
 
-Consider the transaction from the earlier section, but now with an arbitrary
-coin `0x1337::my_coin::MyCoin` and some gas parameters changed:
+先ほどのセクションのトランザクションを考えてみましょう。ただし、今回は任意のコイン
+`0x1337::my_coin::MyCoin`を使用し、いくつかのガスパラメータを変更しています：
 
   ```json
   {
@@ -562,66 +435,47 @@ coin `0x1337::my_coin::MyCoin` and some gas parameters changed:
   }
   ```
 
-There are three balance changes in this transaction:
+このトランザクションには3つの残高変更があります：
 
-  1. A withdrawal of `1000` of `0x1337::my_coin::MyCoin` from the transaction
-sending account `0x810026ca8291dd88b5b30a1d3ca2edd683d33d06c4a7f7c451d96f6d47bc5e8b`
-  2. A deposit of `1000` of `0x1337::my_coin::MyCoin` to receiving account `0x5098df8e7969b58ab3bd2d440c6203f64c60a1fd5c08b9d4abe6ae4216246c3e`
-  3. A gas fee `2200` of `0x1::aptos_coin::AptosCoin` from the sending account `0x810026ca8291dd88b5b30a1d3ca2edd683d33d06c4a7f7c451d96f6d47bc5e8b`
+  1. 送信アカウント `0x810026ca8291dd88b5b30a1d3ca2edd683d33d06c4a7f7c451d96f6d47bc5e8b` からの `0x1337::my_coin::MyCoin` の `1000` の引き出し
+  2. 受信アカウント `0x5098df8e7969b58ab3bd2d440c6203f64c60a1fd5c08b9d4abe6ae4216246c3e` への `0x1337::my_coin::MyCoin` の `1000` の入金
+  3. 送信アカウント `0x810026ca8291dd88b5b30a1d3ca2edd683d33d06c4a7f7c451d96f6d47bc5e8b` からの `0x1::aptos_coin::AptosCoin` の `2200` のガス料金
 
-To retrieve the withdrawal information:
+引き出し情報を取得するには：
 
-  1. Scan the `changes` for `0x1::coin::CoinStore<CoinType>`. Note the
-`CoinType`
-is a generic signifying which coin is stored in the store. In this example,
-the `CoinType` is `0x1337::my_coin::MyCoin`.
-  2. Retrieve the `guid` for `withdraw_events`. In this example, the `guid`
-contains `addr`
-`0x810026ca8291dd88b5b30a1d3ca2edd683d33d06c4a7f7c451d96f6d47bc5e8b`
-and `creation_num` `3`.
-  3. Scan for events with this `guid` and extract the event associated with it.
-In
-this example, it is the `0x1::coin::WithdrawEvent`.
-  4. Note the `amount` field will be the number of `CoinType` removed from the
-account in the `guid`. In this example, it is `1000`.
+  1. `0x1::coin::CoinStore<CoinType>` の `changes` をスキャンします。`CoinType` は、ストアに格納されているコインを示すジェネリックです。この例では、`CoinType` は `0x1337::my_coin::MyCoin` です。
+  2. `withdraw_events` の `guid` を取得します。この例では、`guid` には `addr` `0x810026ca8291dd88b5b30a1d3ca2edd683d33d06c4a7f7c451d96f6d47bc5e8b` と `creation_num` `3` が含まれています。
+  3. この `guid` を持つイベントをスキャンし、それに関連するイベントを抽出します。この例では、`0x1::coin::WithdrawEvent` です。
+  4. `amount` フィールドは、`guid` のアカウントから削除された `CoinType` の数になります。この例では、`1000` です。
 
-To retrieve the deposit information, it's the same as withdrawal except:
+入金情報を取得するには、引き出しと同じ手順で以下が異なります：
 
-  1. The `guid` used is under `deposit_events`
-  2. The `amount` will be a positive increase on the account's balance.
-  3. The event's name will be: `0x1::coin::DepositEvent`
+  1. `deposit_events` の下の `guid` を使用します
+  2. `amount` はアカウントの残高の正の増加になります
+  3. イベント名は `0x1::coin::DepositEvent` になります
 
-To retrieve the gas fee:
+ガス料金を取得するには：
 
-  1. The `gas_used` field must be multiplied times the `gas_unit_price`. In this
-example, `gas_used=20` and `gas_unit_price=110` so the total gas coins
-withdrawn is `2200`.
-  2. Gas is always: `0x1::aptos_coin::AptosCoin`
+  1. `gas_used` フィールドに `gas_unit_price` を掛ける必要があります。この例では、`gas_used=20` で `gas_unit_price=110` なので、総ガスコインの引き出しは `2200` です。
+  2. ガスは常に `0x1::aptos_coin::AptosCoin` です
 
-To retrieve information about the number of decimals of the coin:
+コインの小数点以下の桁数に関する情報を取得するには：
 
-  1. You can retrieve the number of decimals for a coin via
-its: `0x1::coin::CoinInfo<CoinType>`
-  2. This will be located at the address of the coin type. In this example, you
-would need to look up `0x1::coin::CoinInfo<0x1337::my_coin::MyCoin>` at  address `0x1337`.
+  1. コインの小数点以下の桁数は `0x1::coin::CoinInfo<CoinType>` を通じて取得できます
+  2. これはコインタイプのアドレスに配置されます。この例では、アドレス `0x1337` で `0x1::coin::CoinInfo<0x1337::my_coin::MyCoin>` を検索する必要があります。
 
 <Callout type="info">
-  If you always use the events in this manner, you won't miss any balance
-  changes
-  for an account.
-  By monitoring the events, you will find all balance changes in
-  the `0x1::coin::CoinStore`:
+  このような方法でイベントを常に使用すれば、アカウントの残高変更を見逃すことはありません。
+  イベントを監視することで、`0x1::coin::CoinStore` のすべての残高変更を見つけることができます：
 
-  1. Coin mints
-  2. Coin burns
-  3. Coin transfers
-  4. Staking coins
-  5. Withdrawing staked coins
-  6. Transfers not derived from `coin::transfer`
+  1. コインのミント
+  2. コインのバーン
+  3. コインの送金
+  4. コインのステーキング
+  5. ステーキングしたコインの引き出し
+  6. `coin::transfer` から派生しない送金
 
 </Callout>
 
-To create some sample data to explore,
-conduct ["Your first transaction"](../guides/first-transaction.mdx).
-To learn more about coin creation,
-make ["Your First Coin"](../guides/first-coin.mdx).
+サンプルデータを作成して探索するには、["最初のトランザクション"](../guides/first-transaction.mdx)を実行してください。
+コイン作成についてさらに学ぶには、["最初のコイン"](../guides/first-coin.mdx)を作成してください。

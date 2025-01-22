@@ -1,47 +1,47 @@
 ---
-title: "Hosted Transaction Stream Service"
+title: "ホステッド型トランザクションストリームサービス"
 ---
 
 import { IndexerBetaNotice } from '@components/index';
 
-# Hosted Transaction Stream Service
+# ホステッド型トランザクションストリームサービス
 
 <IndexerBetaNotice />
 
-If you are running your own instance of the [Indexer API](../../indexer.mdx), or an [Indexer SDK](../indexer-sdk.mdx) custom processor, you must have access to an instance of the Transaction Stream Service. This page contains information about how to use the Aptos Labs Hosted Transaction Stream Service.
+[インデクサー API](../../indexer.mdx)の独自インスタンスや[インデクサー SDK](../indexer-sdk.mdx)のカスタムプロセッサーを実行している場合、トランザクションストリームサービスのインスタンスにアクセスする必要があります。このページでは、Aptos Labsがホストするトランザクションストリームサービスの使用方法について説明します。
 
-## Endpoints
+## エンドポイント
 
-All endpoints are in GCP us-central1 unless otherwise specified.
+特に指定がない限り、すべてのエンドポイントはGCP us-central1にあります。
 
-- **Mainnet:** grpc.mainnet.aptoslabs.com:443
-- **Testnet:** grpc.testnet.aptoslabs.com:443
-- **Devnet:** grpc.devnet.aptoslabs.com:443
+- **メインネット:** grpc.mainnet.aptoslabs.com:443
+- **テストネット:** grpc.testnet.aptoslabs.com:443
+- **デブネット:** grpc.devnet.aptoslabs.com:443
 
 {/* <!--
-## Rate limits
-The following rate limit applies for the Aptos Labs hosted Transaction Stream Service:
+## レート制限
+Aptos Labsがホストするトランザクションストリームサービスには以下のレート制限が適用されます：
 
 - todo todo
 
-If you need a higher rate limit, consider running the Transaction Stream Service yourself. See the guide to self-hosting [here](../self-hosted.mdx).
+より高いレート制限が必要な場合は、トランザクションストリームサービスを自身でホストすることを検討してください。セルフホストのガイドは[こちら](../self-hosted.mdx)をご覧ください。
 --> */}
 
-## Authorization via API Key
+## APIキーによる認証
 
-In order to use the Labs-Hosted Transaction Stream Service you must have an API key. To get an API key, do the following:
+Labs-Hostedトランザクションストリームサービスを使用するには、APIキーが必要です。APIキーを取得するには、以下の手順に従ってください：
 
-1. Go to https://developers.aptoslabs.com.
-2. Sign in and select "API Keys" in the left sidebar.
-3. Create a new key. You will see the token value in the first table.
+1. https://developers.aptoslabs.com にアクセスします。
+2. サインインし、左サイドバーの「API Keys」を選択します。
+3. 新しいキーを作成します。最初のテーブルにトークン値が表示されます。
 
-You can provide the API key by setting the `Authorization` HTTP header ([MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)). For example, with curl:
+APIキーは`Authorization` HTTPヘッダーを設定することで提供できます（[MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)）。curlを使用した例：
 
 ```bash filename="Terminal"
 curl -H 'Authorization: Bearer aptoslabs_yj4donpaKy_Q6RBP4cdBmjA8T51hto1GcVX5ZS9S65dx'
 ```
 
-For more comprehensive information about how to use the Transaction Stream Service, see the docs for the downstream systems:
+トランザクションストリームサービスの使用方法についてより詳しい情報は、以下のダウンストリームシステムのドキュメントをご覧ください：
 
-- [Indexer API](../self-hosted.mdx)
-- [Indexer SDK](../indexer-sdk.mdx)
+- [インデクサー API](../self-hosted.mdx)
+- [インデクサー SDK](../indexer-sdk.mdx)

@@ -1,68 +1,68 @@
 ---
-title: "Validator Nodes Overview"
+title: "バリデーターノードの概要"
 ---
 
 import { Callout } from "nextra/components";
 
-# Validator Nodes Overview
+# バリデーターノードの概要
 
-An Aptos node is an entity of the Aptos ecosystem that tracks the state of the Aptos blockchain. Clients interact with the blockchain via Aptos nodes. There are two types of nodes:
+Aptosノードは、Aptosブロックチェーンの状態を追跡するAptosエコシステムのエンティティです。クライアントはAptosノードを介してブロックチェーンと対話します。ノードには2つのタイプがあります：
 
-- Validator nodes
-- [Fullnodes](fullnodes.mdx)
+- バリデーターノード
+- [フルノード](fullnodes.mdx)
 
-Each Aptos node comprises several logical components:
+各Aptosノードはいくつかの論理コンポーネントで構成されています：
 
-- [REST API service](../glossary.mdx#rest-api-service)
-- [Mempool](#mempool)
-- [Consensus (disabled in fullnodes)](#consensus)
-- [Execution](#execution)
-- [Virtual Machine](#virtual-machine-vm)
-- [Storage](#storage)
-- [State synchronizer](#state-synchronizer)
+- [REST APIサービス](../glossary.mdx#rest-api-service)
+- [メモリプール](#mempool)
+- [コンセンサス（フルノードでは無効）](#consensus)
+- [実行](#execution)
+- [仮想マシン](#virtual-machine-vm)
+- [ストレージ](#storage)
+- [ステート同期](#state-synchronizer)
 
-The [Aptos-core](../glossary.mdx#aptos-core) software can be configured to run as a validator node or as a fullnode.
+[Aptos-core](../glossary.mdx#aptos-core)ソフトウェアは、バリデーターノードまたはフルノードとして動作するように設定できます。
 
-## Overview
+## 概要
 
-When a transaction is submitted to the Aptos blockchain, validator nodes run a distributed [consensus protocol](../glossary.mdx#consensus-protocol), execute the transaction, and store the transaction and the execution results on the blockchain. Validator nodes decide which transactions will be added to the blockchain and in which order.
+トランザクションがAptosブロックチェーンに送信されると、バリデーターノードは分散[コンセンサスプロトコル](../glossary.mdx#consensus-protocol)を実行し、トランザクションを実行し、トランザクションとその実行結果をブロックチェーンに保存します。バリデーターノードは、どのトランザクションをブロックチェーンに追加し、どの順序で追加するかを決定します。
 
-The Aptos blockchain uses a Byzantine Fault Tolerance (BFT) consensus protocol for validator nodes to agree on the ledger of finalized transactions and their execution results. Validator nodes process these transactions and include them in their local copy of the blockchain database. This means that up-to-date validator nodes always maintain a copy of the current [state](../glossary.mdx#state) of the blockchain, locally.
+Aptosブロックチェーンは、ビザンチン障害耐性（BFT）コンセンサスプロトコルを使用して、バリデーターノードが確定したトランザクションの台帳とその実行結果について合意します。バリデーターノードはこれらのトランザクションを処理し、ローカルのブロックチェーンデータベースのコピーに含めます。これは、最新のバリデーターノードが常にブロックチェーンの現在の[状態](../glossary.mdx#state)のコピーをローカルに保持していることを意味します。
 
-Validator nodes communicate directly with other validator nodes over a private network. [Fullnodes](fullnodes.mdx) are an external validation and/or dissemination resource for the finalized transaction history. They receive transactions from peers and may re-execute them locally (the same way a validator executes transactions). Fullnodes store the results of re-executed transactions to local storage. In doing so, they can challenge any foul-play by validators and provide evidence if there is any attempt to re-write or modify the blockchain history. This helps to mitigate against validator corruption and/or collusion.
+バリデーターノードは、プライベートネットワークを介して他のバリデーターノードと直接通信します。[フルノード](fullnodes.mdx)は、確定したトランザクション履歴の外部検証および/または配信リソースです。フルノードはピアからトランザクションを受信し、ローカルで再実行することができます（バリデーターがトランザクションを実行するのと同じ方法で）。フルノードは再実行されたトランザクションの結果をローカルストレージに保存します。これにより、バリデーターによる不正行為に異議を唱え、ブロックチェーン履歴の書き換えや変更の試みがあった場合に証拠を提供することができます。これは、バリデーターの不正行為や共謀を軽減するのに役立ちます。
 
 <Callout type="info">
-The AptosBFT consensus protocol provides fault tolerance of up to one-third of malicious validator nodes.
+AptosBFTコンセンサスプロトコルは、最大で3分の1の悪意のあるバリデーターノードに対する障害耐性を提供します。
 </Callout>
 
-## Validator node components
+## バリデーターノードのコンポーネント
 
 ![](/docs/validator.svg)
 
-### Mempool
+### メモリプール
 
-Mempool is a component within each node that holds an in-memory buffer of transactions that have been submitted to the blockchain, but not yet agreed upon or executed. This buffer is replicated between validator nodes and fullnodes.
+メモリプールは、各ノード内のコンポーネントで、ブロックチェーンに送信されたが、まだ合意されていない、または実行されていないトランザクションのインメモリバッファを保持します。このバッファはバリデーターノードとフルノード間で複製されます。
 
-The JSON-RPC service of a fullnode sends transactions to a validator node's mempool. Mempool performs various checks on the transactions to ensure transaction validity and protect against DOS attacks. When a new transaction passes initial verification and is added to mempool, it is then distributed to the mempools of other validator nodes in the network.
+フルノードのJSON-RPCサービスは、トランザクションをバリデーターノードのメモリプールに送信します。メモリプールは、トランザクションの有効性を確認し、DOS攻撃から保護するためにさまざまなチェックを実行します。新しいトランザクションが初期検証に合格してメモリプールに追加されると、ネットワーク内の他のバリデーターノードのメモリプールに配信されます。
 
-When a validator node temporarily becomes a leader in the consensus protocol, consensus pulls the transactions from mempool and proposes a new transaction block. This block is broadcast to other validators and contains a total ordering over all transactions in the block. Each validator then executes the block and submits votes on whether to accept the new block proposal.
+バリデーターノードが一時的にコンセンサスプロトコルのリーダーになると、コンセンサスはメモリプールからトランザクションを取得し、新しいトランザクションブロックを提案します。このブロックは他のバリデーターにブロードキャストされ、ブロック内のすべてのトランザクションの完全な順序付けが含まれています。各バリデーターはブロックを実行し、新しいブロック提案を受け入れるかどうかについて投票を提出します。
 
-### Consensus
+### コンセンサス
 
-Consensus is the component that is responsible for ordering blocks of transactions and agreeing on the results of execution by participating in the consensus protocol with other validator nodes in the network.
+コンセンサスは、トランザクションブロックの順序付けを担当し、ネットワーク内の他のバリデーターノードとコンセンサスプロトコルに参加することで実行結果に合意するコンポーネントです。
 
-### Execution
+### 実行
 
-Execution is the component that coordinates the execution of a block of transactions and maintains a transient state. Consensus votes on this transient state. Execution maintains an in-memory representation of the execution results until consensus commits the block to the distributed database. Execution uses the virtual machine to execute transactions. Execution acts as the glue layer between the inputs of the system (represented by transactions), storage (providing a persistency layer), and the virtual machine (for execution).
+実行は、トランザクションブロックの実行を調整し、一時的な状態を維持するコンポーネントです。コンセンサスはこの一時的な状態に対して投票します。実行は、コンセンサスがブロックを分散データベースにコミットするまで、実行結果のインメモリ表現を維持します。実行は仮想マシンを使用してトランザクションを実行します。実行は、システムの入力（トランザクションで表される）、ストレージ（永続性レイヤーを提供）、および仮想マシン（実行用）の間の接着層として機能します。
 
-### Virtual machine (VM)
+### 仮想マシン（VM）
 
-The virtual machine (VM) is used to run the Move program within each transaction and determine execution results. A node's mempool uses the VM to perform verification checks on transactions, while execution uses the VM to execute transactions.
+仮想マシン（VM）は、各トランザクション内のMoveプログラムを実行し、実行結果を決定するために使用されます。ノードのメモリプールはVMを使用してトランザクションの検証チェックを実行し、実行はVMを使用してトランザクションを実行します。
 
-### Storage
+### ストレージ
 
-The storage component is used to persist agreed upon blocks of transactions and their execution results to the local database.
+ストレージコンポーネントは、合意されたトランザクションブロックとその実行結果をローカルデータベースに永続化するために使用されます。
 
-### State synchronizer
+### ステート同期
 
-Nodes use their state synchronizer component to "catch up" to the latest state of the blockchain and stay up-to-date.
+ノードはステート同期コンポーネントを使用して、ブロックチェーンの最新の状態に「追いつき」、最新の状態を維持します。

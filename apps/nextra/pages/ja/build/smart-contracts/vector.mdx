@@ -4,68 +4,67 @@ title: "Vector"
 
 # Vector
 
-The Vector in Move provides a flexible and dynamic array-like data structure that supports various operations such
-as indexing, adding, and removing elements. Vectors in Move are growable and support 0-based indexing.
+Moveにおけるベクトルは、インデックス付け、要素の追加、削除などの様々な操作をサポートする柔軟で動的な配列のようなデータ構造を提供します。Moveのベクトルは拡張可能で、0ベースのインデックスをサポートしています。
 
-## Core Features of Vector
+## Vectorの主な機能
 
-### Structure
+### 構造
 
-The `vector` module provides various native and Move functions to manage dynamic arrays:
+`vector`モジュールは、動的配列を管理するための様々なネイティブ関数とMove関数を提供します：
 
-- `empty`: Creates an empty vector.
-- `length`: Returns the length of the vector.
-- `borrow`: Returns an immutable reference to an element at a given index.
-- `push_back`: Adds an element to the end of the vector.
-- `borrow_mut`: Returns a mutable reference to an element at a given index.
-- `pop_back`: Removes and returns the last element of the vector.
-- `destroy_empty`: Destroys an empty vector.
-- `swap`: Swaps elements at two given indices.
+- `empty`：空のベクトルを作成
+- `length`：ベクトルの長さを返す
+- `borrow`：指定されたインデックスの要素への不変参照を返す
+- `push_back`：ベクトルの末尾に要素を追加
+- `borrow_mut`：指定されたインデックスの要素への可変参照を返す
+- `pop_back`：ベクトルの最後の要素を削除して返す
+- `destroy_empty`：空のベクトルを破棄
+- `swap`：指定された2つのインデックスの要素を交換
 
-### Constants
+### 定数
 
-The following constants define various error codes used within the module:
+モジュール内で使用される各種エラーコードを定義する定数：
 
 - `EINDEX_OUT_OF_BOUNDS`: 0x20000
 
-### API Overview
+### API概要
 
-#### Creating Vectors
+#### ベクトルの作成
 
-- `empty<Element>(): vector<Element>`: Creates an empty vector.
-- `singleton<Element>(e: Element): vector<Element>`: Creates a vector with a single element.
+- `empty<Element>(): vector<Element>`：空のベクトルを作成
+- `singleton<Element>(e: Element): vector<Element>`：単一要素のベクトルを作成
 
-#### Managing Elements
+#### 要素の管理
 
-- `push_back<Element>(v: &mut vector<Element>, e: Element)`: Adds an element to the end of the vector.
-- `pop_back<Element>(v: &mut vector<Element>): Element`: Removes and returns the last element from the vector.
-- `remove<Element>(v: &mut vector<Element>, i: u64): Element`: Removes an element at a specific index and shifts subsequent elements.
-- `swap_remove<Element>(v: &mut vector<Element>, i: u64): Element`: Swaps the element at the given index with the last element and removes it.
+- `push_back<Element>(v: &mut vector<Element>, e: Element)`：ベクトルの末尾に要素を追加
+- `pop_back<Element>(v: &mut vector<Element>): Element`：ベクトルの最後の要素を削除して返す
+- `remove<Element>(v: &mut vector<Element>, i: u64): Element`：特定のインデックスの要素を削除し、後続の要素をシフト
+- `swap_remove<Element>(v: &mut vector<Element>, i: u64): Element`：指定されたインデックスの要素を最後の要素と交換して削除
 
-#### Retrieving Elements
+#### 要素の取得
 
-- `borrow<Element>(v: &vector<Element>, i: u64): &Element`: Returns an immutable reference to an element at a given index.
-- `borrow_with_default<Element>(v: &vector<Element>, i: u64, default: &Element): &Element`: Returns a reference to an element or a default value if the index is out of bounds.
-- `borrow_mut<Element>(v: &mut vector<Element>, i: u64): &mut Element`: Returns a mutable reference to an element at a given index.
+- `borrow<Element>(v: &vector<Element>, i: u64): &Element`：指定されたインデックスの要素への不変参照を返す
+- `borrow_with_default<Element>(v: &vector<Element>, i: u64, default: &Element): &Element`：要素への参照を返す、またはインデックスが範囲外の場合はデフォルト値を返す
+- `borrow_mut<Element>(v: &mut vector<Element>, i: u64): &mut Element`：指定されたインデックスの要素への可変参照を返す
 
-#### Utility Functions
+#### ユーティリティ関数
 
-- `length<Element>(v: &vector<Element>): u64`: Returns the number of elements in the vector.
-- `is_empty<Element>(v: &vector<Element>): bool`: Checks if the vector is empty.
-- `contains<Element>(v: &vector<Element>, e: &Element): bool`: Checks if the vector contains a given element.
-- `index_of<Element>(v: &vector<Element>, e: &Element): (bool, u64)`: Returns the index of a given element if found.
-- `reverse<Element>(v: &mut vector<Element>)`: Reverses the order of elements in the vector.
-- `append<Element>(lhs: &mut vector<Element>, other: vector<Element>)`: Appends all elements of one vector to another.
-- `for_each<Element>(v: vector<Element>, f: |Element|)`: Applies a function to each element in the vector.
-- `for_each_ref<Element>(v: &vector<Element>, f: |&Element|)`: Applies a function to a reference of each element in the vector.
-- `for_each_mut<Element>(v: &mut vector<Element>, f: |&mut Element|)`: Applies a function to a mutable reference of each element in the vector.
-- `fold<Accumulator, Element>(v: vector<Element>, init: Accumulator, f: |Accumulator, Element|Accumulator): Accumulator`: Applies a function to accumulate a value over the elements of the vector.
-- `map<Element, NewElement>(v: vector<Element>, f: |Element|NewElement): vector<NewElement>`: Maps a function over the elements of the vector, producing a new vector.
-- `filter<Element: drop>(v: vector<Element>, p: |&Element|bool): vector<Element>`: Filters the vector using a predicate function.
+- `length<Element>(v: &vector<Element>): u64`：ベクトル内の要素数を返す
+- `is_empty<Element>(v: &vector<Element>): bool`：ベクトルが空かどうかを確認
+- `contains<Element>(v: &vector<Element>, e: &Element): bool`：ベクトルに指定された要素が含まれているかを確認
+- `index_of<Element>(v: &vector<Element>, e: &Element): (bool, u64)`：指定された要素のインデックスを返す（見つかった場合）
+- `reverse<Element>(v: &mut vector<Element>)`：ベクトル内の要素の順序を反転
+- `append<Element>(lhs: &mut vector<Element>, other: vector<Element>)`：あるベクトルの全要素を別のベクトルに追加
+- `for_each<Element>(v: vector<Element>, f: |Element|)`：ベクトルの各要素に関数を適用
+- `for_each_ref<Element>(v: &vector<Element>, f: |&Element|)`：ベクトルの各要素への参照に関数を適用
+- `for_each_mut<Element>(v: &mut vector<Element>, f: |&mut Element|)`：ベクトルの各要素への可変参照に関数を適用
+- `fold<Accumulator, Element>(v: vector<Element>, init: Accumulator, f: |Accumulator, Element|Accumulator): Accumulator`：ベクトルの要素に対して関数を適用して値を蓄積
+- `map<Element, NewElement>(v: vector<Element>, f: |Element|NewElement): vector<NewElement>`：ベクトルの要素に関数を適用して新しいベクトルを生成
+- `filter<Element: drop>(v: vector<Element>, p: |&Element|bool): vector<Element>`：述語関数を使用してベクトルをフィルタリング
 
-## Example Usage
+## 使用例
 
-### Creating and Using a Vector
+### ベクトルの作成と使用
 
 ```move filename="vector.move"
 module 0x42::vector_usage {
@@ -93,7 +92,7 @@ module 0x42::vector_usage {
 }
 ```
 
-### Appending Vectors
+### ベクトルの結合
 
 ```move filename="vector.move"
 module 0x42::vector_usage {
@@ -129,7 +128,7 @@ module 0x42::vector_usage {
 }
 ```
 
-### Removing Elements
+### 要素の削除
 
 ```move filename="vector.move"
 module 0x42::vector_usage {
@@ -157,7 +156,7 @@ module 0x42::vector_usage {
 }
 ```
 
-### Swapping Elements
+### 要素の交換
 
 ```move filename="vector.move"
 module 0x42::vector_usage {
@@ -181,12 +180,11 @@ module 0x42::vector_usage {
 }
 ```
 
-
-## Source Code
+## ソースコード
 
 - [vector.move](https://github.com/aptos-labs/aptos-core/blob/main/third_party/move/move-stdlib/sources/vector.move)
 
-## Other Examples
+## その他の例
 
-- [Move Spiders Vector Tutorial](https://movespiders.com/courses/modules/datastructures/lessonId/1)
-- [Move Spiders Vector Tutorial 2](https://movespiders.com/courses/modules/basics/lessonId/7)
+- [Move Spidersのベクターチュートリアル](https://movespiders.com/courses/modules/datastructures/lessonId/1)
+- [Move Spidersのベクターチュートリアル2](https://movespiders.com/courses/modules/basics/lessonId/7)

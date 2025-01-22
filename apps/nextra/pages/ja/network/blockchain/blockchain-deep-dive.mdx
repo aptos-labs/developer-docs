@@ -1,28 +1,28 @@
 ---
-title: "Aptos Blockchain Deep Dive"
+title: "Aptosブロックチェーンの詳細"
 ---
 
 import { Callout } from 'nextra/components';
 
-# Aptos Blockchain Deep Dive
+# Aptosブロックチェーンの詳細
 
-For a deeper understanding of the lifecycle of an Aptos transaction (from an operational perspective), we will follow a transaction on its journey, from being submitted to an Aptos fullnode, to being committed to the Aptos blockchain. We will then focus on the logical components of Aptos nodes and take a look at how the transaction interacts with these components.
+Aptosトランザクションのライフサイクルをより深く理解するため（運用の観点から）、トランザクションがAptosフルノードに送信されてからAptosブロックチェーンにコミットされるまでの旅を追跡します。その後、Aptosノードの論理コンポーネントに焦点を当て、トランザクションがこれらのコンポーネントとどのように相互作用するかを見ていきます。
 
-## Life of a Transaction
+## トランザクションのライフサイクル
 
-- Alice and Bob are two users who each have an [account](../glossary.mdx#account) on the Aptos blockchain.
-- Alice's account has 110 Aptos Coins.
-- Alice is sending 10 Aptos Coins to Bob.
-- The current [sequence number](../glossary.mdx#sequence-number) of Alice's account is 5 (which indicates that 5 transactions have already been sent from Alice's account).
-- There are a total of 100 validator nodes &mdash; V<sub>1</sub> to V<sub>100</sub> on the network.
-- An Aptos client submits Alice's transaction to a REST service on an Aptos Fullnode. The fullnode forwards this transaction to a validator fullnode which in turn forwards it to validator V<sub>1</sub>.
-- Validator V<sub>1</sub> is a proposer/leader for the current round.
+- AliceとBobはそれぞれAptosブロックチェーン上に[アカウント](../glossary.mdx#account)を持つ2人のユーザーです。
+- Aliceのアカウントには110 Aptosコインがあります。
+- AliceはBobに10 Aptosコインを送金しています。
+- Aliceのアカウントの現在の[シーケンス番号](../glossary.mdx#sequence-number)は5です（これはAliceのアカウントからすでに5つのトランザクションが送信されたことを示します）。
+- ネットワーク上には合計100のバリデータノード &mdash; V<sub>1</sub>からV<sub>100</sub>が存在します。
+- AptosクライアントはAliceのトランザクションをAptosフルノード上のRESTサービスに送信します。フルノードはこのトランザクションをバリデータフルノードに転送し、さらにバリデータV<sub>1</sub>に転送します。
+- バリデータV<sub>1</sub>は現在のラウンドのプロポーザー/リーダーです。
 
-### The Journey
+### トランザクションの旅
 
-In this section, we will describe the lifecycle of transaction T<sub>5</sub>, from when the client submits it to when it is committed to the Aptos blockchain.
+このセクションでは、トランザクションT<sub>5</sub>のライフサイクルについて、クライアントが送信してからAptosブロックチェーンにコミットされるまでを説明します。
 
-For the relevant steps, we've included a link to the corresponding inter-component interactions of the validator node. After you are familiar with all the steps in the lifecycle of the transaction, you may want to refer to the information on the corresponding inter-component interactions for each step.
+関連するステップについては、バリデータノードのコンポーネント間の相互作用へのリンクを含めています。トランザクションのライフサイクルのすべてのステップに慣れたら、各ステップに対応するコンポーネント間の相互作用に関する情報を参照することをお勧めします。
 
 ```mermaid
 graph LR
@@ -55,177 +55,114 @@ graph LR
 ```
 
 <Callout type="info">
-The arrows in all the visuals in this article originate on the component initiating an interaction/action and
-terminate on the component on which the action is being performed. The arrows do not represent data read,
-written, or returned.
+この記事のすべての図において、矢印は相互作用/アクションを開始するコンポーネントから始まり、アクションが実行されるコンポーネントで終わります。矢印は読み取られたデータ、書き込まれたデータ、または返されたデータを表すものではありません。
 </Callout>
 
-The lifecycle of a transaction has five stages:
+トランザクションのライフサイクルには5つの段階があります：
 
-- **Accepting**: [Accepting the transaction](#accepting-the-transaction)
-- **Sharing**: [Sharing the transaction with other validator nodes](#sharing-the-transaction-with-other-validator-nodes)
-- **Proposing**: [Proposing the block](#proposing-the-block)
-- **Executing and Consensus**: [Executing the block and reaching consensus](#executing-the-block-and-reaching-consensus)
-- **Committing**: [Committing the block](#committing-the-block)
+- **受け入れ**: [トランザクションの受け入れ](#accepting-the-transaction)
+- **共有**: [他のバリデータノードとのトランザクションの共有](#sharing-the-transaction-with-other-validator-nodes)
+- **提案**: [ブロックの提案](#proposing-the-block)
+- **実行とコンセンサス**: [ブロックの実行とコンセンサスの達成](#executing-the-block-and-reaching-consensus)
+- **コミット**: [ブロックのコミット](#committing-the-block)
 
-We've described what happens in each stage below, along with links to the corresponding Aptos node component interactions.
+各段階で何が起こるかを、対応するAptosノードコンポーネントの相互作用へのリンクとともに以下で説明します。
 
 <Callout type="warning">
-Transactions are validated upon entering a mempool and prior to execution by consensus.
-The client only learns of validation results returned during the initial submission via the REST service.
-Transactions may silently fail to execute, especially in the case where the account has run out of utility
-token or changed its authentication key in the midst of many transactions. While this happens infrequently,
-there are ongoing efforts to improve the visibility in this space.
+トランザクションはメモリプールに入る際とコンセンサスによる実行前に検証されます。
+クライアントは、RESTサービスを介した初期送信時に返される検証結果のみを知ることができます。
+トランザクションは、特にアカウントのユーティリティトークンが不足した場合や、多数のトランザクションの途中で認証キーが変更された場合など、静かに実行に失敗する可能性があります。
+これは稀にしか発生しませんが、この領域の可視性を向上させるための取り組みが進行中です。
 </Callout>
 
-### Client submits a transaction
+### クライアントがトランザクションを送信
 
-An Aptos **client constructs a raw transaction** (let's call it Traw<sub>5</sub>) to transfer 10 Aptos Coins from Alice’s account to Bob’s account. The Aptos client signs the transaction with Alice's private key. The signed transaction T<sub>5</sub> includes the following:
+Aptos**クライアントは生のトランザクション**（Traw<sub>5</sub>と呼びましょう）を構築して、AliceのアカウントからBobのアカウントに10 Aptosコインを送金します。Aptosクライアントは、Aliceの秘密鍵でトランザクションに署名します。署名されたトランザクションT<sub>5</sub>には以下が含まれます：
 
-- The raw transaction.
-- Alice's public key.
-- Alice's signature.
+- 生のトランザクション
+- Aliceの公開鍵
+- Aliceの署名
 
-The raw transaction includes the following fields:
+生のトランザクションには以下のフィールドが含まれます：
 
-| Fields                                                                               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Account address](../glossary.mdx#account-address)                          | Alice's account address                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Payload                                                                              | Indicates an action or set of actions Alice's behalf. In the case this is a Move function, it directly calls into Move bytecode on the chain. Alternatively, it may be Move bytecode peer-to-peer [transaction script](../glossary.mdx#transaction-script). It also contains a list of inputs to the function or script. For this example, it is a function call to transfer an amount of Aptos Coins from Alice account to Bob's account, where Alice's account is implied by sending the transaction and Bob's account and the amount are specified as transaction inputs. |
-| [Gas unit price](../glossary.mdx#gas-unit-price)                            | The amount the sender is willing to pay per unit of gas, to execute the transaction. This is represented in [Octas](../glossary.mdx#octa).                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| [Maximum gas amount](../glossary.mdx#maximum-gas-amount)                    | The maximum gas amount in APT Alice is willing to pay for this transaction. Gas charges are equal to the base gas cost covered by computation and IO multiplied by the gas price. Gas costs also include storage with an Apt-fixed priced storage model. This is represented in [Octas](../glossary.mdx#octa).                                                                                                                                                                                                                                |
-| [Expiration time](../glossary.mdx#expiration-time)                          | Expiration time of the transaction.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| [Sequence number](../glossary.mdx#sequence-number)                          | The sequence number (5, in this example) for an account indicates the number of transactions that have been submitted and committed on-chain from that account. In this case, 5 transactions have been submitted from Alice’s account, including Traw<sub>5</sub>. Note: a transaction with sequence number 5 can only be committed on-chain if the account sequence number is 5.                                                                                                                                                                                                     |
-| [Chain ID](https://github.com/aptos-labs/aptos-core/blob/main/types/src/chain_id.rs) | An identifier that distinguishes the Aptos networks (to prevent cross-network attacks).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| フィールド | 説明 |
+|------------|------|
+| [アカウントアドレス](../glossary.mdx#account-address) | Aliceのアカウントアドレス |
+| ペイロード | Aliceの代わりに実行するアクションまたはアクションのセットを示します。Moveファンクションの場合、チェーン上のMoveバイトコードを直接呼び出します。あるいは、P2Pの[トランザクションスクリプト](../glossary.mdx#transaction-script)のMoveバイトコードである場合もあります。また、ファンクションまたはスクリプトへの入力のリストも含まれます。この例では、AliceのアカウントからBobのアカウントへのAptosコインの送金ファンクション呼び出しで、Aliceのアカウントはトランザクションの送信者として暗示され、Bobのアカウントと金額はトランザクションの入力として指定されます。 |
+| [ガスユニット価格](../glossary.mdx#gas-unit-price) | トランザクションを実行するために、送信者がガス1単位あたりに支払う意思のある金額。これは[オクタ](../glossary.mdx#octa)で表されます。 |
+| [最大ガス量](../glossary.mdx#maximum-gas-amount) | このトランザクションに対してAliceが支払う意思のある最大ガス量（APT単位）。ガス料金は、計算とI/Oによってカバーされる基本ガスコストにガス価格を掛けたものです。ガスコストには、Apt固定価格のストレージモデルによるストレージも含まれます。これは[オクタ](../glossary.mdx#octa)で表されます。 |
+| [有効期限](../glossary.mdx#expiration-time) | トランザクションの有効期限 |
+| [シーケンス番号](../glossary.mdx#sequence-number) | アカウントのシーケンス番号（この例では5）は、そのアカウントからオンチェーンに送信されコミットされたトランザクションの数を示します。この場合、Traw<sub>5</sub>を含めて、Aliceのアカウントから5つのトランザクションが送信されています。注：シーケンス番号5のトランザクションは、アカウントのシーケンス番号が5の場合にのみオンチェーンにコミットできます。 |
+| [チェーンID](https://github.com/aptos-labs/aptos-core/blob/main/types/src/chain_id.rs) | Aptosネットワークを区別する識別子（クロスネットワーク攻撃を防ぐため） |
 
-### Accepting the transaction
+### トランザクションの受け入れ
 
-| Description                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Aptos Node Component Interactions                                                   |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| 1. **Client → REST service**: The client submits transaction T<sub>5</sub> to the REST service of an Aptos fullnode. The fullnode uses the REST service to forward the transaction to its own mempool, which then forwards the transaction to mempools running on other nodes in the network. The transaction will eventually be forwarded to a mempool running on a validator fullnode, which will send it to a validator node (V<sub>1</sub> in this case). | [1. REST Service](#1-client--rest-service)                                          |
-| 2. **REST service → Mempool**: The fullnode's mempool transmits transaction T<sub>5</sub> to validator V<sub>1</sub>'s mempool.                                                                                                                                                                                                                                                                                                                               | [2. REST Service](#2-rest-service--mempool), [1. Mempool](#1-rest-service--mempool) |
-| 3. **Mempool → Virtual Machine (VM)**: Mempool will use the virtual machine (VM) component to perform transaction validation, such as signature verification, account balance verification and replay resistance using the sequence number.                                                                                                                                                                                                                   | [4. Mempool](#4-mempool--vm), [3. Virtual Machine](#3-mempool--virtual-machine)     |
+| 説明 | Aptosノードコンポーネントの相互作用 |
+|------|--------------------------------------|
+| 1. **クライアント → RESTサービス**: クライアントはトランザクションT<sub>5</sub>をAptosフルノードのRESTサービスに送信します。フルノードはRESTサービスを使用してトランザクションを自身のメモリプールに転送し、さらにネットワーク上の他のノードのメモリプールに転送します。トランザクションは最終的にバリデータフルノード上で実行されているメモリプールに転送され、バリデータノード（この場合はV<sub>1</sub>）に送信されます。 | [1. RESTサービス](#1-client--rest-service) |
+| 2. **RESTサービス → メモリプール**: フルノードのメモリプールはトランザクションT<sub>5</sub>をバリデータV<sub>1</sub>のメモリプールに送信します。 | [2. RESTサービス](#2-rest-service--mempool), [1. メモリプール](#1-rest-service--mempool) |
+| 3. **メモリプール → 仮想マシン（VM）**: メモリプールは仮想マシン（VM）コンポーネントを使用して、署名の検証、アカウント残高の検証、シーケンス番号を使用したリプレイ耐性などのトランザクション検証を実行します。 | [4. メモリプール](#4-mempool--vm), [3. 仮想マシン](#3-mempool--virtual-machine) |
 
-### Sharing the transaction with other validator nodes
+### 他のバリデータノードとのトランザクションの共有
 
-| Description                                                                                                                                                                                                                                                         | Aptos Node Component Interactions               |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| 4. **Mempool**: The mempool will hold T<sub>5</sub> in an in-memory buffer. Mempool may already contain multiple transactions sent from Alice's address.                                                                                                            | [Mempool](#mempool)                             |
-| 5. **Mempool → Other Validators**: Using the shared-mempool protocol, V<sub>1</sub> will share the transactions (including T<sub>5</sub>) in its mempool with other validator nodes and place transactions received from them into its own (V<sub>1</sub>) mempool. | [2. Mempool](#2-mempool--other-validator-nodes) |
+| 説明 | Aptosノードコンポーネントの相互作用 |
+|------|--------------------------------------|
+| 4. **メモリプール**: メモリプールはT<sub>5</sub>をインメモリバッファに保持します。メモリプールには、すでにAliceのアドレスから送信された複数のトランザクションが含まれている可能性があります。 | [メモリプール](#mempool) |
+| 5. **メモリプール → 他のバリデータ**: 共有メモリプールプロトコルを使用して、V<sub>1</sub>は自身のメモリプール内のトランザクション（T<sub>5</sub>を含む）を他のバリデータノードと共有し、他のバリデータから受け取ったトランザクションを自身（V<sub>1</sub>）のメモリプールに配置します。 | [2. メモリプール](#2-mempool--other-validator-nodes) |
 
-### Proposing the block
+### ブロックの提案
 
-| Description                                                                                                                                                                                                                                                  | Aptos Node Component Interactions                                          |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| 6. **Consensus → Mempool**: &mdash; As validator V<sub>1</sub> is a proposer/leader for this transaction, it will pull a block of transactions from its mempool and replicate this block as a proposal to other validator nodes via its consensus component. | [1. Consensus](#1-consensus--mempool), [3. Mempool](#3-consensus--mempool) |
-| 7. **Consensus → Other Validators**: The consensus component of V<sub>1</sub> is responsible for coordinating agreement among all validators on the order of transactions in the proposed block.                                                             | [2. Consensus](#2-consensus--other-validators)                             |
+| 説明 | Aptosノードコンポーネントの相互作用 |
+|------|--------------------------------------|
+| 6. **コンセンサス → メモリプール**: バリデータV<sub>1</sub>がこのトランザクションのプロポーザー/リーダーであるため、メモリプールからトランザクションのブロックを取得し、このブロックをコンセンサスコンポーネントを介して他のバリデータノードに提案として複製します。 | [1. コンセンサス](#1-consensus--mempool), [3. メモリプール](#3-consensus--mempool) |
+| 7. **コンセンサス → 他のバリデータ**: V<sub>1</sub>のコンセンサスコンポーネントは、提案されたブロック内のトランザクションの順序について、すべてのバリデータ間の合意を調整する責任があります。 | [2. コンセンサス](#2-consensus--other-validators) |
 
-### Executing the block and reaching consensus
+### ブロックの実行とコンセンサスの達成
 
-| Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Aptos Node Component Interactions                                                                            |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| 8. **Consensus → Execution**: As part of reaching agreement, the block of transactions (containing T<sub>5</sub>) is shared with the execution component.                                                                                                                                                                                                                                                                                                                                                                                                                                                             | [3. Consensus](#3-consensus--execution-consensus--other-validators), [1. Execution](#1-consensus--execution) |
-| 9. **Execution → Virtual Machine**: The execution component manages the execution of transactions in the VM. Note that this execution happens speculatively before the transactions in the block have been agreed upon.                                                                                                                                                                                                                                                                                                                                                                                               | [2. Execution](#2-execution--vm), [3. Virtual Machine](#3-mempool--virtual-machine)                          |
-| 10. **Consensus → Execution**: After executing the transactions in the block, the execution component appends the transactions in the block (including T<sub>5</sub>) to the [Merkle accumulator](../glossary.mdx#merkle-accumulator) (of the ledger history). This is an in-memory/temporary version of the Merkle accumulator. The necessary part of the proposed/speculative result of executing these transactions is returned to the consensus component to agree on. The arrow from "consensus" to "execution" indicates that the request to execute transactions was made by the consensus component. | [3. Consensus](#3-consensus--execution-consensus--other-validators), [1. Execution](#1-consensus--execution) |
-| 11. **Consensus → Other Validators**: V<sub>1</sub> (the consensus leader) attempts to reach consensus on the proposed block's execution result with the other validator nodes participating in consensus.                                                                                                                                                                                                                                                                                                                                                                                                            | [3. Consensus](#3-consensus--execution-consensus--other-validators)                                          |
+| 説明 | Aptosノードコンポーネントの相互作用 |
+|------|--------------------------------------|
+| 8. **コンセンサス → 実行**: 合意に達する過程の一部として、トランザクションのブロック（T<sub>5</sub>を含む）は実行コンポーネントと共有されます。 | [3. コンセンサス](#3-consensus--execution-consensus--other-validators), [1. 実行](#1-consensus--execution) |
+| 9. **実行 → 仮想マシン**: 実行コンポーネントはVMでのトランザクションの実行を管理します。この実行は、ブロック内のトランザクションが合意される前に推測的に行われることに注意してください。 | [2. 実行](#2-execution--vm), [3. 仮想マシン](#3-mempool--virtual-machine) |
+| 10. **コンセンサス → 実行**: トランザクションの実行後、実行コンポーネントはブロック内のトランザクション（T<sub>5</sub>を含む）を[マークルアキュムレータ](../glossary.mdx#merkle-accumulator)（台帳履歴の）に追加します。これはマークルアキュムレータのインメモリ/一時的なバージョンです。提案された/推測的なこれらのトランザクションの実行結果の必要な部分がコンセンサスコンポーネントに返され、合意が得られます。「コンセンサス」から「実行」への矢印は、トランザクションを実行するリクエストがコンセンサスコンポーネントによって行われたことを示しています。 | [3. コンセンサス](#3-consensus--execution-consensus--other-validators), [1. 実行](#1-consensus--execution) |
+| 11. **コンセンサス → 他のバリデータ**: V<sub>1</sub>（コンセンサスリーダー）は、提案されたブロックの実行結果について、コンセンサスに参加している他のバリデータノードとの合意を得ようとします。 | [3. コンセンサス](#3-consensus--execution-consensus--other-validators) |
 
-### Committing the block
+### ブロックのコミット
 
-| Description                                                                                                                                                                                                                                                                                                                                                                                                                | Aptos Node Component Interactions                                                                                                                            |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 12. **Consensus → Execution**, **Execution → Storage**: If the proposed block's execution result is agreed upon and signed by a set of validators that have the quorum of votes, validator V<sub>1</sub>'s execution component reads the full result of the proposed block execution from the speculative execution cache and commits all the transactions in the proposed block to persistent storage with their results. | [4. Consensus](#4-consensus--execution), [3. Execution](#3-consensus--execution), [4. Execution](#4-execution--storage), [3. Storage](#3-execution--storage) |
+| 説明 | Aptosノードコンポーネントの相互作用 |
+|------|--------------------------------------|
+| 12. **コンセンサス → 実行**, **実行 → ストレージ**: 提案されたブロックの実行結果が合意され、クォーラムの投票を持つバリデータのセットによって署名された場合、バリデータV<sub>1</sub>の実行コンポーネントは推測的実行キャッシュから提案されたブロック実行の完全な結果を読み取り、提案されたブロック内のすべてのトランザクションをその結果とともに永続ストレージにコミットします。 | [4. コンセンサス](#4-consensus--execution), [3. 実行](#3-consensus--execution), [4. 実行](#4-execution--storage), [3. ストレージ](#3-execution--storage) |
 
-Alice's account will now have 100 Aptos Coins, and its sequence number will be 6. If T<sub>5</sub> is replayed by Bob, it will be rejected as the sequence number of Alice's account (6) is greater than the sequence number of the replayed transaction (5).
+これでAliceのアカウントには100 Aptosコインが残り、シーケンス番号は6になります。BobがT<sub>5</sub>をリプレイしようとしても、Aliceのアカウントのシーケンス番号（6）がリプレイされたトランザクションのシーケンス番号（5）より大きいため、拒否されます。
 
-## Aptos node component interactions
+## Aptosノードコンポーネントの相互作用
 
-In the [Life of a Transaction](#life-of-a-transaction) section, we described the typical lifecycle of a transaction (from transaction submission to transaction commit). Now let's look at the inter-component interactions of Aptos nodes as the blockchain processes transactions and responds to queries. This information will be most useful to those who:
+[トランザクションのライフサイクル](#life-of-a-transaction)セクションでは、トランザクションの典型的なライフサイクル（トランザクションの送信からコミットまで）について説明しました。次に、ブロックチェーンがトランザクションを処理しクエリに応答する際のAptosノードのコンポーネント間の相互作用を見ていきましょう。この情報は以下の人々に最も役立つでしょう：
 
-- Would like to get an idea of how the system works under the covers.
-- Are interested in eventually contributing to the Aptos blockchain.
+- システムがカバーの下でどのように動作するかについてのアイデアを得たい人
+- 最終的にAptosブロックチェーンに貢献することに興味がある人
 
-You can learn more about the different types of Aptos nodes here:
+異なるタイプのAptosノードについては、こちらで詳しく学ぶことができます：
 
-- [Validator nodes](validator-nodes.mdx)
-- [Fullnodes](fullnodes.mdx)
+- [バリデータノード](validator-nodes.mdx)
+- [フルノード](fullnodes.mdx)
 
-For our narrative, we will assume that a client submits a transaction T<sub>N</sub> to a validator V<sub>X</sub>. For each validator component, we will describe each of its inter-component interactions in subsections under the respective component's section. Note that subsections describing the inter-component interactions are not listed strictly in the order in which they are performed. Most of the interactions are relevant to the processing of a transaction, and some are relevant to clients querying the blockchain (queries for existing information on the blockchain).
+説明のため、クライアントがトランザクションT<sub>N</sub>をバリデータV<sub>X</sub>に送信すると仮定します。各バリデータコンポーネントについて、それぞれのコンポーネント間の相互作用を、対応するコンポーネントのセクションのサブセクションで説明します。コンポーネント間の相互作用を説明するサブセクションは、必ずしも実行される順序通りにリストされているわけではありません。ほとんどの相互作用はトランザクションの処理に関連し、一部はブロックチェーンへのクライアントのクエリ（ブロックチェーン上の既存の情報へのクエリ）に関連しています。
 
-The following are the core components of an Aptos node used in the lifecycle of a transaction:
+以下は、トランザクションのライフサイクルで使用されるAptosノードのコアコンポーネントです：
 
-**Fullnode**
+**フルノード**
 
-- [REST API Service](#rest-service)
+- [REST APIサービス](#rest-service)
 
-**Validator node**
+**バリデータノード**
 
-- [Mempool](#mempool)
-- [Consensus](#consensus)
-- [Execution](#execution)
-- [Virtual Machine](#virtual-machine-vm)
-- [Storage](#storage)
+- [メモリプール](#mempool)
+- [コンセンサス](#consensus)
+- [実行](#execution)
+- [仮想マシン](#virtual-machine-vm)
+- [ストレージ](#storage)
 
-## REST Service
-
-```mermaid
-graph LR
-    Client -->|1| REST_Service[REST Service]
-    REST_Service -->|2| Mempool
-    REST_Service -->|3| Storage
-```
-
-Any request made by a client goes to the REST Service of a fullnode first. Then, the submitted transaction is forwarded to the validator fullnode, which then sends it to the validator node V<sub>X</sub>.
-
-### 1. Client → REST Service
-
-A client submits a transaction to the REST service of an Aptos fullnode.
-
-### 2. REST Service → Mempool
-
-The REST service of the fullnode transfers the transaction to its mempool. After mempool does some initial checks, the REST Service will return a status to the client indicating whether the transaction was accepted or rejected. For example, out-of-date transactions will be rejected: mempool will accept the transaction T<sub>N</sub> only if the sequence number of T<sub>N</sub> is greater than or equal to the current sequence number of the sender's account.
-
-### 3. Mempool -> Mempool
-
-The mempool on the fullnode sends the transaction to the mempool of a validator fullnode, which then sends the transaction to validator node V<sub>X</sub>'s mempool. Note that the transaction will not be sent to the next mempool (or passed to consensus) until the sequence number matches the sequence number of the sender’s account. Furthermore, each mempool performs the same initial checks upon receiving a transaction, this may result in a transaction being discarded on its way to consensus. The current implementation of mempool does not provide any feedback if a transaction is discarded during this process.
-
-### 4. REST Service → Storage
-
-When a client performs a read query on the Aptos blockchain (for example, to get the balance of Alice's account), the REST service interacts with the storage component directly to obtain the requested information.
-
-## Virtual Machine (VM)
-
-```mermaid
-graph LR
-    Mempool -->|3| Virtual_Machine[Virtual Machine]
-    Virtual_Machine -->|2| Execution
-    Virtual_Machine -->|1| Storage
-```
-
-The Move VM verifies and executes transaction scripts written in Move bytecode.
-
-### 1. Virtual Machine → Storage
-
-When mempool requests the VM to validate a transaction via `VMValidator::validate_transaction()`, the VM loads the transaction sender's account from storage and performs verifications, some of which have been described in the list below.
-
-- Checks that the input signature on the signed transaction is correct (to reject incorrectly signed transactions).
-- Checks that the sender's account authentication key is the same as the hash of the public key (corresponding to the private key used to sign the transaction).
-- Verifies that the sequence number for the transaction is greater than or equal to the current sequence number for the sender's account. Completing this check prevents the replay of the same transaction against the sender's account.
-- Verifies that the program in the signed transaction is not malformed, as a malformed program cannot be executed by the VM.
-- Verifies that the sender's account balance contains at least the maximum gas amount multiplied by the gas price specified in the transaction, which ensures that the transaction can pay for the resources it uses.
-
-### 2. Execution → Virtual Machine
-
-The execution component utilizes the VM to execute a transaction via `ExecutorTask::execute_transaction()`.
-
-It is important to understand that executing a transaction is different from updating the state of the ledger and persisting the results in storage. A transaction T<sub>N</sub> is first executed as part of an attempt to reach agreement on blocks during consensus. If agreement is reached with the other validators on the ordering of transactions and their execution results, the results are persisted in storage and the state of the ledger is updated.
-
-### 3. Mempool → Virtual Machine
-
-When mempool receives a transaction from other validators via shared mempool or from the REST service, mempool invokes `VMValidator::validate_transaction()` on the VM to validate the transaction.
-
-For implementation details refer to the [Move Virtual Machine README](https://github.com/move-language/move/tree/main/language/move-vm).
-
-## Mempool
+## RESTサービス
 
 ```mermaid
 graph LR
@@ -242,29 +179,28 @@ graph LR
     Mempool -->|3| Consensus
     Mempool -->|4| Virtual_Machine
 ```
+メモリプールは、実行を「待機」しているトランザクションを保持する共有バッファです。新しいトランザクションがメモリプールに追加されると、メモリプールはこのトランザクションをシステム内の他のバリデーターノードと共有します。「共有メモリプール」でのネットワーク消費を削減するため、各バリデーターは自身のトランザクションを他のバリデーターに配信する責任があります。バリデーターが他のバリデーターのメモリプールからトランザクションを受信すると、そのトランザクションは受信側バリデーターのメモリプールに追加されます。
 
-Mempool is a shared buffer that holds the transactions that are "waiting" to be executed. When a new transaction is added to the mempool, the mempool shares this transaction with other validator nodes in the system. To reduce network consumption in the "shared mempool," each validator is responsible for delivering its own transactions to other validators. When a validator receives a transaction from the mempool of another validator, the transaction is added to the mempool of the recipient validator.
+### 1. RESTサービス → メモリプール
 
-### 1. REST Service → Mempool
+- クライアントからトランザクションを受信した後、RESTサービスはそのトランザクションを自身のメモリプールに送信し、それがバリデーターフルノードのメモリプールと共有されます。バリデーターフルノード上のメモリプールは、そのトランザクションをバリデーターのメモリプールと共有します。
+- バリデーターノードV<sub>X</sub>のメモリプールは、T<sub>N</sub>のシーケンス番号が送信者アカウントの現在のシーケンス番号以上である場合にのみ、送信者アカウントのトランザクションT<sub>N</sub>を受け入れます。
 
-- After receiving a transaction from the client, the REST service sends the transaction to its own mempool, which then shares the transaction with the mempool of a validator fullnode. The mempool on the validator fullnode then shares the transaction with the mempool of a validator.
-- The mempool for validator node V<sub>X</sub> accepts transaction T<sub>N</sub> for the sender's account only if the sequence number of T<sub>N</sub> is greater than or equal to the current sequence number of the sender's account.
+### 2. メモリプール → 他のバリデーターノード
 
-### 2. Mempool → Other validator nodes
+- バリデーターノードV<sub>X</sub>のメモリプールは、トランザクションT<sub>N</sub>を同じネットワーク上の他のバリデーターと共有します。
+- 他のバリデーターは、それぞれのメモリプール内のトランザクションをV<sub>X</sub>のメモリプールと共有します。
 
-- The mempool of validator node V<sub>X</sub> shares transaction T<sub>N</sub> with the other validators on the same network.
-- Other validators share the transactions in their respective mempools with V<sub>X</sub>’s mempool.
+### 3. コンセンサス → メモリプール
 
-### 3. Consensus → Mempool
+- トランザクションがバリデーターノードに転送され、そのバリデーターノードがリーダーになると、そのコンセンサスコンポーネントはメモリプールからトランザクションのブロックを取得し、提案されたブロックを他のバリデーターに複製します。これは、トランザクションの順序付けと提案されたブロック内のトランザクションの実行結果についてコンセンサスに到達するために行われます。
+- トランザクションT<sub>N</sub>が提案されたコンセンサスブロックに含まれていても、T<sub>N</sub>が最終的にAptosブロックチェーンの分散データベースに永続化されることは保証されないことに注意してください。
 
-- When the transaction is forwarded to a validator node and once the validator node becomes the leader, its consensus component will pull a block of transactions from its mempool and replicate the proposed block to other validators. It does this to arrive at a consensus on the ordering of transactions and the execution results of the transactions in the proposed block.
-- Note that just because a transaction T<sub>N</sub> was included in a proposed consensus block, it does not guarantee that T<sub>N </sub>will eventually be persisted in the distributed database of the Aptos blockchain.
+### 4. メモリプール → VM
 
-### 4. Mempool → VM
+メモリプールが他のバリデーターからトランザクションを受信すると、メモリプールはVM上で<code>VMValidator::validate_transaction()</code>を呼び出してトランザクションを検証します。
 
-When mempool receives a transaction from other validators, mempool invokes <code>VMValidator::validate_transaction()</code> on the VM to validate the transaction.
-
-## Consensus
+## コンセンサス
 
 ```mermaid
 graph TD
@@ -276,28 +212,27 @@ graph TD
 
     Other_Validators(Other Validators) <-->|2, 4| Consensus
 ```
+コンセンサスコンポーネントは、ネットワーク内の他のバリデーターと[コンセンサスプロトコル](../glossary.mdx#consensus-protocol)に参加することで、トランザクションブロックの順序付けと実行結果の合意に責任を持ちます。
 
-The consensus component is responsible for ordering blocks of transactions and agreeing on the results of execution by participating in the [consensus protocol](../glossary.mdx#consensus-protocol) with other validators in the network.
+### 1. コンセンサス → メモリプール
 
-### 1. Consensus → Mempool
+バリデーターV<sub>X</sub>がリーダー/プロポーザーの場合、V<sub>X</sub>のコンセンサスコンポーネントは`Mempool::get_batch()`を介してメモリプールからトランザクションのブロックを取得し、提案されたトランザクションブロックを形成します。
 
-When validator V<sub>X</sub> is a leader/proposer, the consensus component of V<sub>X</sub> pulls a block of transactions from its mempool via: `Mempool::get_batch()`, and forms a proposed block of transactions.
+### 2. コンセンサス → 他のバリデーター
 
-### 2. Consensus → Other Validators
+V<sub>X</sub>がプロポーザー/リーダーの場合、そのコンセンサスコンポーネントは提案されたトランザクションブロックを他のバリデーターに複製します。
 
-If V<sub>X</sub> is a proposer/leader, its consensus component replicates the proposed block of transactions to other validators.
+### 3. コンセンサス → 実行、コンセンサス → 他のバリデーター
 
-### 3. Consensus → Execution, Consensus → Other Validators
+- トランザクションブロックを実行するために、コンセンサスは実行コンポーネントと対話します。コンセンサスは`BlockExecutorTrait::execute_block()`を介してトランザクションブロックを実行します（[コンセンサス → 実行](#1-consensus--execution)を参照）
+- 提案されたブロック内のトランザクションを実行した後、実行コンポーネントはこれらのトランザクションの実行結果をコンセンサスコンポーネントに応答します。
+- コンセンサスコンポーネントは実行結果に署名し、この結果について他のバリデーターとの合意を試みます。
 
-- To execute a block of transactions, consensus interacts with the execution component. Consensus executes a block of transactions via `BlockExecutorTrait::execute_block()` (Refer to [Consensus → execution](#1-consensus--execution))
-- After executing the transactions in the proposed block, the execution component responds to the consensus component with the result of executing these transactions.
-- The consensus component signs the execution result and attempts to reach agreement on this result with other validators.
+### 4. コンセンサス → 実行
 
-### 4. Consensus → Execution
+十分な数のバリデーターが同じ実行結果に投票した場合、V<sub>X</sub>のコンセンサスコンポーネントは`BlockExecutorTrait::commit_blocks()`を介して実行コンポーネントに、このブロックがコミットの準備ができていることを通知します。
 
-If enough validators vote for the same execution result, the consensus component of V<sub>X</sub> informs execution via `BlockExecutorTrait::commit_blocks()` that this block is ready to be committed.
-
-## Execution
+## 実行
 
 ```mermaid
 graph TD
@@ -305,29 +240,28 @@ graph TD
     Execution -->|2| Virtual_Machine[Virtual Machine]
     Execution -->|4| Storage[Storage]
 ```
+実行コンポーネントは、トランザクションブロックの実行を調整し、コンセンサスによって投票できる一時的な状態を維持します。これらのトランザクションが成功した場合、ストレージにコミットされます。
 
-The execution component coordinates the execution of a block of transactions and maintains a transient state that can be voted upon by consensus. If these transactions are successful, they are committed to storage.
+### 1. コンセンサス → 実行
 
-### 1. Consensus → Execution
+- コンセンサスは`BlockExecutorTrait::execute_block()`を介して、トランザクションブロックの実行を要求します。
+- 実行は「スクラッチパッド」を維持し、これは[マークルアキュムレータ](../glossary.mdx#merkle-accumulator)の関連部分のインメモリコピーを保持します。この情報は、Aptosブロックチェーンの現在の状態のルートハッシュを計算するために使用されます。
+- 現在の状態のルートハッシュは、提案されたブロック内のトランザクションに関する情報と組み合わされ、アキュムレータの新しいルートハッシュを決定します。これは、データを永続化する前に行われ、バリデータの定足数による合意が得られるまで状態やトランザクションが保存されないことを保証します。
+- 実行は推測的なルートハッシュを計算し、その後V<sub>X</sub>のコンセンサスコンポーネントがこのルートハッシュに署名し、他のバリデータとこのルートハッシュについての合意を試みます。
 
-- Consensus requests execution to execute a block of transactions via: `BlockExecutorTrait::execute_block()`.
-- Execution maintains a "scratchpad," which holds in-memory copies of the relevant portions of the [Merkle accumulator](../glossary.mdx#merkle-accumulator). This information is used to calculate the root hash of the current state of the Aptos blockchain.
-- The root hash of the current state is combined with the information about the transactions in the proposed block to determine the new root hash of the accumulator. This is done prior to persisting any data, and to ensure that no state or transaction is stored until agreement is reached by a quorum of validators.
-- Execution computes the speculative root hash and then the consensus component of V<sub>X</sub> signs this root hash and attempts to reach agreement on this root hash with other validators.
+### 2. 実行 → VM
 
-### 2. Execution → VM
+コンセンサスが`BlockExecutorTrait::execute_block()`を介してトランザクションブロックの実行を要求すると、実行はVMを使用してトランザクションブロックの実行結果を決定します。
 
-When consensus requests execution to execute a block of transactions via `BlockExecutorTrait::execute_block()`, execution uses the VM to determine the results of executing the block of transactions.
+### 3. コンセンサス → 実行
 
-### 3. Consensus → Execution
+バリデータの定足数がブロック実行結果に同意した場合、各バリデータのコンセンサスコンポーネントは`BlockExecutorTrait::commit_blocks()`を介して実行コンポーネントに、このブロックがコミットの準備ができていることを通知します。実行コンポーネントへのこの呼び出しには、バリデータの合意の証明としてバリデータの署名が含まれます。
 
-If a quorum of validators agrees on the block execution results, the consensus component of each validator informs its execution component via `BlockExecutorTrait::commit_blocks()` that this block is ready to be committed. This call to the execution component will include the signatures of the validators to provide proof of their agreement.
+### 4. 実行 → ストレージ
 
-### 4. Execution → Storage
+実行は「スクラッチパッド」から値を取得し、`DbWriter::save_transactions()`を介してストレージに永続化のために送信します。その後、実行は「スクラッチパッド」から不要になった古い値（例えば、コミットできない並列ブロック）を削除します。
 
-Execution takes the values from its "scratchpad" and sends them to storage for persistence via `DbWriter::save_transactions()`. Execution then prunes the old values from the "scratchpad" that are no longer needed (for example, parallel blocks that cannot be committed).
-
-For implementation details refer to the [Execution README](https://github.com/aptos-labs/aptos-core/tree/main/execution).
+実装の詳細については、[実行のREADME](https://github.com/aptos-labs/aptos-core/tree/main/execution)を参照してください。
 
 ## Storage
 
@@ -337,31 +271,30 @@ graph TD
     Execution[Execution] -->|2, 3| Storage
     REST_Service[REST Service] -->|4| Storage
 ```
+ストレージコンポーネントは、合意されたトランザクションブロックとその実行結果をAptosブロックチェーンに永続化します。トランザクションブロック（トランザクションT<sub>N</sub>を含む）は、コンセンサスに参加しているバリデーターの定足数（2f+1）以上の間で合意が得られた場合にストレージを介して保存されます。合意には以下のすべてが含まれる必要があります：
 
-The storage component persists agreed upon blocks of transactions and their execution results to the Aptos blockchain. A block of transactions (which includes transaction T<sub>N</sub>) will be saved via storage when there is agreement between more than a quorum (2f+1) of the validators participating in consensus. Agreement must include all the following:
+- ブロックに含めるトランザクション
+- トランザクションの順序
+- ブロック内のトランザクションの実行結果
 
-- The transactions to include in the block
-- The order of the transactions
-- The execution results of the transactions in the block
+トランザクションがAptosブロックチェーンを表すデータ構造にどのように追加されるかについては、[マークルアキュムレータ](../glossary.mdx#merkle-accumulator)を参照してください。
 
-Refer to [Merkle accumulator](../glossary.mdx#merkle-accumulator) for information on how a transaction is appended to the data structure representing the Aptos blockchain.
+### 1. VM → ストレージ
 
-### 1. VM → Storage
+メモリプールが`VMValidator::validate_transaction()`を呼び出してトランザクションを検証する際、`VMValidator::validate_transaction()`は送信者のアカウントをストレージから読み込み、トランザクションに対して読み取り専用の妥当性チェックを実行します。
 
-When mempool invokes `VMValidator::validate_transaction()` to validate a transaction, `VMValidator::validate_transaction()` loads the sender's account from storage and performs read-only validity checks on the transaction.
+### 2. 実行 → ストレージ
 
-### 2. Execution → Storage
+コンセンサスコンポーネントが`BlockExecutorTrait::execute_block()`を呼び出すと、実行はストレージから現在の状態を読み取り、インメモリの「スクラッチパッド」データと組み合わせて実行結果を決定します。
 
-When the consensus component calls `BlockExecutorTrait::execute_block()`, execution reads the current state from storage combined with the in-memory "scratchpad" data to determine the execution results.
+### 3. 実行 → ストレージ
 
-### 3. Execution → Storage
+トランザクションブロックについてコンセンサスが得られると、実行は`DbWriter::save_transactions()`を介してストレージを呼び出し、トランザクションブロックを保存して永続的に記録します。これにより、このトランザクションブロックに同意したバリデーターノードの署名も保存されます。このブロックの「スクラッチパッド」内のインメモリデータが渡され、ストレージが更新されてトランザクションが永続化されます。ストレージが更新されると、これらのトランザクションによって変更された各アカウントのシーケンス番号が1つずつインクリメントされます。
 
-Once consensus is reached on a block of transactions, execution calls storage via `DbWriter::save_transactions()` to save the block of transactions and permanently record them. This will also store the signatures from the validator nodes that agreed on this block of transactions. The in-memory data in "scratchpad" for this block is passed to update storage and persist the transactions. When the storage is updated, every account that was modified by these transactions will have its sequence number incremented by one.
+注：Aptosブロックチェーン上のアカウントのシーケンス番号は、そのアカウントから発生したコミット済みトランザクションごとに1つずつインクリメントされます。
 
-Note: The sequence number of an account on the Aptos blockchain increments by one for each committed transaction originating from that account.
+### 4. RESTサービス → ストレージ
 
-### 4. REST Service → Storage
+ブロックチェーンから情報を読み取るクライアントのクエリについては、RESTサービスはストレージと直接やり取りして要求された情報を読み取ります。
 
-For client queries that read information from the blockchain, the REST service directly interacts with storage to read the requested information.
-
-For implementation details refer to the [Storage README](https://github.com/aptos-labs/aptos-core/tree/main/storage).
+実装の詳細については、[ストレージのREADME](https://github.com/aptos-labs/aptos-core/tree/main/storage)を参照してください。

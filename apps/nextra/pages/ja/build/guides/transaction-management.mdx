@@ -1,193 +1,108 @@
-# Transaction Management
+# トランザクション管理
 
-This guide explains how to build a transaction management harness that can scale
-on the Aptos blockchain.
+このガイドでは、Aptosブロックチェーン上でスケーラブルなトランザクション管理の仕組みを構築する方法について説明します。
 
-## Background
+## 背景
 
-In Aptos, transactions are mapped back to an account in terms of the entity that
-signs or authorizes that transaction and provides an account-based sequence
-number. When the Aptos network receives a new transaction, several rules are
-followed with respect to this:
+Aptosでは、トランザクションは、そのトランザクションに署名または承認し、アカウントベースのシーケンス番号を提供するエンティティとしてのアカウントに紐付けられます。Aptosネットワークが新しいトランザクションを受信すると、以下のルールに従って処理されます：
 
-- The transaction sent from an account must be authorized correctly by that
-  account.
-- The current time as defined by the most recent ledger update must be before
-  the expiration timestamp of the transaction.
-- The transaction's sequence number must be equal to or greater than the
-  sequence number on-chain for that account.
+- アカウントから送信されたトランザクションは、そのアカウントによって正しく承認される必要があります。
+- 最新の台帳更新によって定義された現在時刻は、トランザクションの有効期限タイムスタンプより前である必要があります。
+- トランザクションのシーケンス番号は、そのアカウントのチェーン上のシーケンス番号以上である必要があります。
 
-Once the initial node has accepted a transaction, the transaction makes its way
-through the system by an additional rule. If a transactions sequence number is
-higher than the current on-chain sequence number, it can only progress toward
-consensus if every node in the path has seen a transaction with the sequence
-number between the on-chain state and the current sequence number.
+初期ノードがトランザクションを受け入れた後、トランザクションは追加のルールに従ってシステム内を進みます。トランザクションのシーケンス番号が現在のチェーン上のシーケンス番号より高い場合、パス上のすべてのノードがチェーン上の状態と現在のシーケンス番号の間のシーケンス番号を持つトランザクションを確認している場合にのみ、コンセンサスに向けて進むことができます。
 
-Example:
+例：
 
-Alice owns an account whose current on-chain sequence number is 5.
+Aliceは、現在のチェーン上のシーケンス番号が5であるアカウントを所有しています。
 
-Alice submits a transaction to node Bob with sequence number 6.
+Aliceはシーケンス番号6のトランザクションをノードBobに送信します。
 
-Bob the node accepts the transaction but does not forward it, because Bob has
-not seen 5.
+Bobはトランザクションを受け入れますが、5を確認していないため転送しません。
 
-In order to make progress, Alice must either send Bob transaction number 5 or
-Bob must be notified from consensus that 5 was committed. In the latter, Alice
-submitted the transaction through another node.
+進行するためには、AliceがBobにトランザクション番号5を送信するか、Bobがコンセンサスから5がコミットされたことを通知される必要があります。後者の場合、Aliceは別のノードを通じてトランザクションを送信したことになります。
 
-Beyond this there are two remaining principles:
+これ以外にも、以下の2つの原則があります：
 
-- A single account can have at most 100 uncommitted transactions submitted to
-  the blockchain. Any more than that and the transactions will be rejected. This
-  can happen silently if Alice submits the first 100 to Bob the node and the
-  next 100 to Carol the node. If both those nodes share a common upstream, then
-  that upstream will accept Alice's 100 sent via Bob but silently reject Alice's
-  100 sent via Carol.
-- Submitting to distinct transactions to multiple nodes will result in slow
-  resolution as transactions will not make progress from the submitted node
-  until the submitted knows that all preceding transactions have been committed.
-  For example, if Alice sends the first 50 via Bob and the next 50 via Carol.
+- 単一のアカウントは、最大で100個のコミットされていないトランザクションをブロックチェーンに送信できます。それ以上のトランザクションは拒否されます。これは、Aliceが最初の100個をノードBobに、次の100個をノードCarolに送信した場合、暗黙的に発生する可能性があります。両方のノードが共通のアップストリームを共有している場合、そのアップストリームはBob経由のAliceの100個を受け入れますが、Carol経由のAliceの100個は暗黙的に拒否します。
+- 異なるトランザクションを複数のノードに送信すると、送信されたノードは先行するすべてのトランザクションがコミットされたことを知るまでトランザクションを進行させないため、解決が遅くなります。例えば、Aliceが最初の50個をBob経由で、次の50個をCarol経由で送信した場合です。
 
-## Building a Transaction Manager
+## トランザクションマネージャーの構築
 
-Now that we understand the nuances of transactions, let's dig into building a
-robust transaction manager. This consists of the following core components:
+トランザクションの詳細を理解したところで、堅牢なトランザクションマネージャーの構築について掘り下げましょう。これは以下の主要なコンポーネントで構成されています：
 
-- A sequence number generator that allocates and manages available sequence
-  numbers for a single account.
-- A transaction manager that receives payloads from an application or a user,
-  sequence numbers from the sequence number generator, and has access to the
-  account key to combine the three pieces together into a viable signed
-  transaction. It then also takes the responsibility for pushing the transaction
-  to the blockchain.
-- An on-chain worker, leader harness that lets multiple accounts share the
-  signer of a single shared account.
+- 単一のアカウントで利用可能なシーケンス番号を割り当て、管理するシーケンス番号ジェネレーター。
+- アプリケーションまたはユーザーからペイロードを受け取り、シーケンス番号ジェネレーターからシーケンス番号を受け取り、アカウントキーにアクセスして3つの要素を組み合わせて有効な署名付きトランザクションを作成するトランザクションマネージャー。その後、トランザクションをブロックチェーンにプッシュする責任も負います。
+- 複数のアカウントが単一の共有アカウントの署名者を共有できるようにするオンチェーンのワーカー、リーダーハーネス。
 
-Currently, this framework assumes that the network builds no substantial queue,
-that is a transaction that is submitted executes and commits with little to no
-delay. In order to address high demand, this work needs to be extended with the
-following components:
+現在、このフレームワークは、ネットワークが実質的なキューを構築しないこと、つまり送信されたトランザクションがほとんど遅延なく実行およびコミットされることを前提としています。高需要に対応するために、以下のコンポーネントで作業を拡張する必要があります：
 
-- Optimizing `base_gas_unit` price to ensure priority transactions can be
-  committed to the blockchain.
-- Further handling of transaction processing rates to ensure that the expiration
-  timer is properly set.
-- Handling of transaction failures to either be ignored or resubmitted based
-  upon desired outcome.
+- 優先トランザクションがブロックチェーンにコミットされることを保証するための`base_gas_unit`価格の最適化。
+- 有効期限タイマーが適切に設定されるようにするためのトランザクション処理レートのさらなる処理。
+- 望ましい結果に基づいて無視または再送信するトランザクション失敗の処理。
 
-Note, an account should be managed by a single instance of the transaction
-manager. Otherwise, each instance of the transaction manager will likely have
-stale in-memory state resulting in overlapping sequence numbers.
+注意：アカウントは、トランザクションマネージャーの単一のインスタンスによって管理される必要があります。そうでない場合、トランザクションマネージャーの各インスタンスは古いメモリ内状態を持つ可能性が高く、シーケンス番号が重複する結果となります。
 
-### Implementations
+### 実装
 
 - Python
-  - [Sequence number manager](https://github.com/aptos-labs/aptos-core/pull/7987)
-  - [Transaction manager](https://github.com/aptos-labs/aptos-core/pull/7987)
-- [Worker-leader smart contract](https://github.com/aptos-labs/aptos-core/pull/7986)
+  - [シーケンス番号マネージャー](https://github.com/aptos-labs/aptos-core/pull/7987)
+  - [トランザクションマネージャー](https://github.com/aptos-labs/aptos-core/pull/7987)
+- [ワーカー・リーダースマートコントラクト](https://github.com/aptos-labs/aptos-core/pull/7986)
 
-### Managing Sequence Numbers
+### シーケンス番号の管理
 
-Each transaction requires a distinct sequence number that is sequential to
-previously submitted transactions. This can be provided by the following
-process:
+各トランザクションには、以前に送信されたトランザクションと連続する個別のシーケンス番号が必要です。これは以下のプロセスで提供できます：
 
-1. At startup, query the blockchain for the account’s current sequence number.
-2. Support up to 100 transactions in flight at the same time, that is 100
-   sequence numbers can be allocated without confirming that any have been
-   committed.
-3. If there are 100 transactions in flight, determine the actual committed state
-   by querying the network. This will update the current sequence number.
-4. If there are less than 100 transactions in flight, return to step 2.
-5. Otherwise, sleep for .1 seconds and continue to re-evaluate the current
-   on-chain sequence number.
-6. All transactions should have an expiration time. If the expiration time has
-   passed, assume that there has been a failure and reset the sequence number.
-   The trivial case is to only monitor for failures when the maximum number of
-   transactions are in flight and to let other services manages this otherwise.
+1. 起動時に、アカウントの現在のシーケンス番号をブロックチェーンに問い合わせます。
+2. 同時に最大100個のトランザクションを処理中にできます。つまり、コミットが確認されていなくても100個のシーケンス番号を割り当てることができます。
+3. 100個のトランザクションが処理中の場合、ネットワークに問い合わせて実際のコミット状態を確認します。これにより現在のシーケンス番号が更新されます。
+4. 処理中のトランザクションが100個未満の場合、ステップ2に戻ります。
+5. それ以外の場合は、0.1秒スリープして現在のチェーン上のシーケンス番号を再評価し続けます。
+6. すべてのトランザクションには有効期限を設定する必要があります。有効期限が過ぎた場合、失敗があったと想定してシーケンス番号をリセットします。単純なケースは、最大数のトランザクションが処理中の場合にのみ失敗を監視し、それ以外の場合は他のサービスにこれを管理させることです。
 
-In parallel, monitor new transactions submitted. Once the earliest transaction
-expiration time has expired synchronize up to that transaction. Then repeat the
-process for the next transaction.
+並行して、新しく送信されたトランザクションを監視します。最も早いトランザクションの有効期限が切れたら、そのトランザクションまで同期します。その後、次のトランザクションに対してプロセスを繰り返します。
 
-If there is any failure, wait until all outstanding transactions have timed out
-and leave it to the application to decide how to proceed, e.g., replay failed
-transactions. The best method to waiting for outstanding transactions is to
-query the ledger timestamp and ensure it is at least elapsed the maximum timeout
-from the last transactions submit time. From there, validate with mempool that
-all transactions since the last known committed transaction are either committed
-or no longer exist within the mempool. This can be done by querying the REST API
-for transactions of a specific account, specifying the currently being evaluated
-sequence number and setting a limit to 1. Once these checks are complete, the
-local transaction number can be resynchronized.
+失敗が発生した場合は、未処理のトランザクションがすべてタイムアウトするまで待ち、失敗したトランザクションの再生など、アプリケーションが進め方を決定できるようにします。未処理のトランザクションを待つ最良の方法は、台帳のタイムスタンプを照会し、最後のトランザクション送信時刻から最大タイムアウトが経過していることを確認することです。そこから、最後の既知のコミットされたトランザクション以降のすべてのトランザクションがコミットされているか、もはやメンプールに存在しないことをメンプールで検証します。これは、特定のアカウントのトランザクションをREST APIで照会し、現在評価中のシーケンス番号を指定し、制限を1に設定することで実行できます。これらのチェックが完了したら、ローカルのトランザクション番号を再同期できます。
 
-These failure handling steps are critical for the following reasons:
+これらの失敗処理手順は、以下の理由で重要です：
 
-- Mempool does not immediate evict expired transactions.
-- A new transaction cannot overwrite an existing transaction, even if it is
-  expired.
-- Consensus, i.e., the ledger timestamp, dictates expirations, the local node
-  will only expire after it sees a committed timestamp after the transactions
-  expiration time and a garbage collection has happened.
+- メンプールは期限切れのトランザクションを即座に削除しません。
+- 新しいトランザクションは、期限切れであっても既存のトランザクションを上書きできません。
+- コンセンサス（つまり台帳のタイムスタンプ）が有効期限を決定し、ローカルノードはトランザクションの有効期限後にコミットされたタイムスタンプを確認し、ガベージコレクションが発生した後にのみ期限切れとなります。
 
-### Managing Transactions
+### トランザクションの管理
 
-Once a transaction has been submitted it goes through a variety of steps:
+トランザクションが送信されると、以下のような様々な段階を経ます：
 
-1. Submission to a REST endpoint.
-2. Pre-execution validation in the Mempool during submission.
-3. Transmission from Mempool to Mempool with pre-execution validation happening
-   on each upstream node.
-4. Inclusion in a consensus proposal.
-5. One more pre-execution validation.
-6. Execution and committing to storage.
+1. RESTエンドポイントへの送信。
+2. 送信時のメンプールでの実行前検証。
+3. メンプールからメンプールへの送信（各アップストリームノードで実行前検証が行われる）。
+4. コンセンサス提案への含有。
+5. もう1回の実行前検証。
+6. 実行とストレージへのコミット。
 
-There are many potential failure cases that must be considered:
+考慮すべき多くの潜在的な失敗ケースがあります：
 
-- Failure during transaction submission (1 and 2):
-  - Visibility: The application will receive an error either that the network is
-    unavailable or that the transaction failed pre-execution validation.
-  - If the error is related to availability or duplicate sequence numbers, wait
-    until access is available and the sequence number has re-synchronized.
-  - Pre-execution validation failures are currently out of scope, outside of
-    those related to duplicate sequence numbers, account issues are likely
-    related to an invalid key for the account or the account lacks sufficient
-    funds for gas.
-- Failure between submission and execution (3, 4, and 5):
-  - Visibility: Only known by waiting until the transaction has expired.
-  - These are the same as other pre-execution validation errors due to changes
-    to the account as earlier transactions execute. It is likely either
-    duplicate sequence numbers or the account lacks sufficient funds for gas.
-- Failure during execution (6):
-  - Visibility: These are committed to the blockchain.
-  - These errors occur as a result of on-chain state issues, these tend to be
-    application specific, such as an auction where a new bid might not actually
-    be higher than the current bid.
+- トランザクション送信時の失敗（1と2）：
+  - 可視性：アプリケーションは、ネットワークが利用できないか、トランザクションが実行前検証に失敗したというエラーを受け取ります。
+  - エラーが可用性または重複シーケンス番号に関連する場合は、アクセスが可能になり、シーケンス番号が再同期されるまで待ちます。
+  - 重複シーケンス番号に関連するもの以外の実行前検証の失敗は現在対象外です。アカウントの問題は、アカウントの無効なキーまたはガス代の不足に関連している可能性があります。
+- 送信と実行の間の失敗（3、4、5）：
+  - 可視性：トランザクションが期限切れになるまで待つことでのみ判明します。
+  - これらは、早期のトランザクションが実行される際のアカウントの変更による他の実行前検証エラーと同じです。重複シーケンス番号またはアカウントのガス代不足の可能性が高いです。
+- 実行時の失敗（6）：
+  - 可視性：これらはブロックチェーンにコミットされます。
+  - これらのエラーはオンチェーン状態の問題により発生します。これらは通常、新しい入札が現在の入札より高くない可能性があるオークションなど、アプリケーション固有のものです。
 
-### Workers and Identity
+### ワーカーとアイデンティティ
 
-Using the above framework, a single account can push upwards of 100 transactions
-from the start of a block to the end of a block. Assuming that all 100
-transactions are consumed within 1 block, it will take a bit of time for the
-next 100 slots to be available. This is due to the network delays as well as the
-multi-staged validator pipeline.
+上記のフレームワークを使用すると、単一のアカウントはブロックの開始から終了までに最大100個のトランザクションをプッシュできます。100個のトランザクションがすべて1ブロック内で消費されると仮定すると、次の100個のスロットが利用可能になるまでに少し時間がかかります。これは、ネットワークの遅延とバリデーターの多段階パイプラインによるものです。
 
-To fully leverage the blockchain for massive throughput, using a single user
-account is not enough. Instead, Aptos supports the concept of worker accounts
-that can share the responsibility of pushing work through a shared account, also
-known as a resource account.
+大規模なスループットのためにブロックチェーンを完全に活用するには、単一のユーザーアカウントでは不十分です。代わりに、Aptosはワーカーアカウントの概念をサポートしており、これにより共有アカウント（リソースアカウントとしても知られる）を通じて作業の責任を共有できます。
 
-In this model, each worker has access to the `SignerCap` of the shared account,
-which enables them to impersonate the shared account or generate the `signer`
-for the shared account. Upon gaining the `signer`, the transaction can execute
-the logic that is gated by the signer of the shared account.
+このモデルでは、各ワーカーは共有アカウントの`SignerCap`にアクセスでき、これにより共有アカウントを偽装したり、共有アカウントの`signer`を生成したりできます。`signer`を取得すると、トランザクションは共有アカウントの署名者によってゲートされているロジックを実行できます。
 
-Another model, if viable, is to decouple the `signer` altogether away from
-permissions and to make an application specific capability. Then this capability
-can be given to each worker that lets them operate on the shared infrastructure.
+可能な場合の別のモデルは、`signer`を権限から完全に切り離し、アプリケーション固有の機能を作成することです。その後、この機能を各ワーカーに与えることで、共有インフラストラクチャ上で操作できるようになります。
 
-Note that parallelization on the shared infrastructure can be limited if any
-transaction would have any read or write conflicts. This won’t prevent multiple
-transactions from executing within a block, but can impact maximum blockchain
-performance.
+トランザクションに読み取りまたは書き込みの競合がある場合、共有インフラストラクチャ上の並列化は制限される可能性があることに注意してください。これにより、ブロック内で複数のトランザクションが実行されることは妨げられませんが、ブロックチェーンの最大パフォーマンスに影響を与える可能性があります。

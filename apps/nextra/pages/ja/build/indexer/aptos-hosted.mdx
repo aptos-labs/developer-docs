@@ -1,65 +1,64 @@
 ---
-title: "Indexer API Access"
+title: "インデクサー API アクセス"
 ---
 
-# Indexer API Access
+# インデクサー API アクセス
 
 import { IndexerBetaNotice, Card, Cards } from '@components/index';
 import { Callout } from 'nextra/components';
 
 <IndexerBetaNotice />
 
-Aptos Labs hosts a public version of the Indexer GraphQL API that anyone can use to get basic historical and aggregate data about transactions, fungible assets, and tokens from on-chain. 
+Aptos Labsは、誰でもオンチェーンのトランザクション、ファンジブルアセット、トークンに関する基本的な履歴データや集計データを取得できるインデクサーGraphQL APIのパブリックバージョンを提供しています。
 
-You can explore it by hand by viewing the Hasura Explorer below for the network you are interested in.
+以下のHasuraエクスプローラーを使用して、興味のあるネットワークのデータを手動で探索できます。
 
-You can also access the API via the GraphQL endpoints below. For more information on the format of data in each field / table, please see the [table reference page](indexer-reference.mdx).
+また、以下のGraphQLエンドポイントを介してAPIにアクセスすることもできます。各フィールド/テーブルのデータ形式の詳細については、[テーブルリファレンスページ](indexer-reference.mdx)を参照してください。
 
-## SDK Access (Primary Method)
+## SDK アクセス（主要な方法）
 
-The primary way to use the Indexer is to access it through the [TypeScript SDK](../sdks/ts-sdk/fetch-data-via-sdk.mdx).
+インデクサーを使用する主な方法は、[TypeScript SDK](../sdks/ts-sdk/fetch-data-via-sdk.mdx)を通じてアクセスすることです。
 
-The TypeScript SDK will automatically handle rate limits, and can seamlessly allow for both [Fullnode REST API](../apis/fullnode-rest-api.mdx) access and Indexer access depending on what data is needed.
+TypeScript SDKは自動的にレート制限を処理し、必要なデータに応じて[フルノードREST API](../apis/fullnode-rest-api.mdx)アクセスとインデクサーアクセスの両方をシームレスに提供できます。
 
-## Hasura Explorer (Manual Queries)
+## Hasuraエクスプローラー（手動クエリ）
 
 <Callout type="info">
-For detailed reference material about the contents of these tables, see the [Indexer Table Reference page](./indexer-reference.mdx).
+これらのテーブルの内容に関する詳細なリファレンス資料については、[インデクサーテーブルリファレンスページ](./indexer-reference.mdx)を参照してください。
 </Callout>
 
-Choose a network to explore the free Aptos-Hosted Indexer API using the Hasura Explorer: 
+Hasuraエクスプローラーを使用して無料のAptos提供のインデクサーAPIを探索するネットワークを選択してください：
 
 <Cards>
   <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">
-    <Card.Title linkType="external">**Mainnet**</Card.Title>
-    <Card.Description>Hasura GraphQL Explorer for Aptos Mainnet</Card.Description>
+    <Card.Title linkType="external">**メインネット**</Card.Title>
+    <Card.Description>Aptosメインネット用のHasura GraphQLエクスプローラー</Card.Description>
   </Card>
   <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">
-    <Card.Title linkType="external">**Testnet**</Card.Title>
-    <Card.Description>Hasura GraphQL Explorer for Aptos Testnet</Card.Description>
+    <Card.Title linkType="external">**テストネット**</Card.Title>
+    <Card.Description>Aptosテストネット用のHasura GraphQLエクスプローラー</Card.Description>
   </Card>
   <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">
-    <Card.Title linkType="external">**Devnet**</Card.Title>
-    <Card.Description>Hasura GraphQL Explorer for Aptos Devnet</Card.Description>
+    <Card.Title linkType="external">**デブネット**</Card.Title>
+    <Card.Description>Aptosデブネット用のHasura GraphQLエクスプローラー</Card.Description>
   </Card>
 </Cards>
 
-## GraphQL API Endpoints (Direct Access)
+## GraphQL APIエンドポイント（直接アクセス）
 
-If you need to directly make GraphQL queries to the Aptos-Labs hosted Indexer API, then use the following endpoints:
+Aptos Labs提供のインデクサーAPIに直接GraphQLクエリを実行する必要がある場合は、以下のエンドポイントを使用してください：
 
-- **Mainnet:** `https://api.mainnet.aptoslabs.com/v1/graphql`
-- **Testnet:** `https://api.testnet.aptoslabs.com/v1/graphql`
-- **Devnet:** `https://api.devnet.aptoslabs.com/v1/graphql`
+- **メインネット:** `https://api.mainnet.aptoslabs.com/v1/graphql`
+- **テストネット:** `https://api.testnet.aptoslabs.com/v1/graphql`
+- **デブネット:** `https://api.devnet.aptoslabs.com/v1/graphql`
 
-### Rate limits
+### レート制限
 
-The following rate limit applies for the Aptos Labs hosted indexer API:
+Aptos Labs提供のインデクサーAPIには以下のレート制限が適用されます：
 
-- For a web application that calls this Aptos-provided indexer API directly from the client (for example, wallet or explorer), the rate limit is currently 5000 requests per five minutes by IP address. **Note that this limit can change with or without prior notice.**
+- クライアントから直接このAptos提供のインデクサーAPIを呼び出すWebアプリケーション（ウォレットやエクスプローラーなど）の場合、現在のレート制限はIPアドレスごとに5分間で5000リクエストです。**このレート制限は事前の通知なく変更される可能性があることにご注意ください。**
 
-If you need a higher rate limit, consider the following solutions:
+より高いレート制限が必要な場合は、以下の解決策を検討してください：
 
-1. Get an API Key from [API Gateway](https://developers.aptoslabs.com/).
-2. Run the Aptos Indexer API yourself. See the guide to self-hosting [here](self-hosted.mdx).
-
+1. [APIゲートウェイ](https://developers.aptoslabs.com/)からAPIキーを取得する。
+2. AptosインデクサーAPIを自身でホストする。[こちら](self-hosted.mdx)のガイドを参照してください。

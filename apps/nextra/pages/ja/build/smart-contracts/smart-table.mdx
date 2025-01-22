@@ -4,26 +4,26 @@ title: "Smart Table"
 
 # Smart Table
 
-The Smart Table is a scalable hash table implementation based on linear hashing.
-This data structure aims to optimize storage and performance by utilizing linear hashing, which splits one bucket at a time instead of doubling the number of buckets, thus avoiding unexpected gas costs.
-The Smart Table uses the SipHash function for faster hash computations while tolerating collisions.
+Smart Tableは線形ハッシュに基づくスケーラブルなハッシュテーブルの実装です。
+このデータ構造は、バケット数を2倍にする代わりに一度に1つのバケットを分割する線形ハッシュを利用することで、予期せぬガスコストを回避しながら、ストレージとパフォーマンスを最適化することを目的としています。
+Smart TableはSipHash関数を使用して、衝突を許容しながらより高速なハッシュ計算を実現します。
 
-## Core Features of SmartTable
+## Smart Tableの主な機能
 
-### Structure
+### 構造
 
-The `SmartTable` struct is designed to handle dynamic data efficiently:
+`SmartTable`構造体は動的なデータを効率的に処理するように設計されています：
 
-- `buckets`: A table with a length that stores vectors of entries.
-- `num_buckets`: The current number of buckets.
-- `level`: The number of bits representing `num_buckets`.
-- `size`: The total number of items in the table.
-- `split_load_threshold`: The load threshold percentage that triggers bucket splits.
-- `target_bucket_size`: The target size of each bucket, which is not strictly enforced.
+- `buckets`: エントリのベクターを格納するテーブル
+- `num_buckets`: 現在のバケット数
+- `level`: `num_buckets`を表すビット数
+- `size`: テーブル内の総アイテム数
+- `split_load_threshold`: バケット分割をトリガーする負荷閾値のパーセンテージ
+- `target_bucket_size`: 厳密には強制されない、各バケットの目標サイズ
 
-### Constants
+### 定数
 
-The following constants define various error codes used within the module:
+以下の定数はモジュール内で使用される各種エラーコードを定義します：
 
 - `ENOT_FOUND`: 1
 - `EZERO_CAPACITY`: 2
@@ -35,44 +35,44 @@ The following constants define various error codes used within the module:
 - `EINVALID_BUCKET_INDEX`: 8
 - `EINVALID_VECTOR_INDEX`: 9
 
-### API Overview
+### API概要
 
-#### Creating Tables
+#### テーブルの作成
 
-- `new<K: copy + drop + store, V: store>(): SmartTable<K, V>`: Creates an empty table with default configurations.
-- `new_with_config<K: copy + drop + store, V: store>(num_initial_buckets: u64, split_load_threshold: u8, target_bucket_size: u64): SmartTable<K, V>`: Creates an empty table with custom configurations.
+- `new<K: copy + drop + store, V: store>(): SmartTable<K, V>`: デフォルト設定で空のテーブルを作成
+- `new_with_config<K: copy + drop + store, V: store>(num_initial_buckets: u64, split_load_threshold: u8, target_bucket_size: u64): SmartTable<K, V>`: カスタム設定で空のテーブルを作成
 
-#### Destroying Tables
+#### テーブルの破棄
 
-- `destroy_empty<K, V>(table: SmartTable<K, V>)`: Destroys an empty table.
-- `destroy<K: drop, V: drop>(table: SmartTable<K, V>)`: Destroys a table and its elements.
-- `clear<K: drop, V: drop>(table: &mut SmartTable<K, V>)`: Clears all elements from the table.
+- `destroy_empty<K, V>(table: SmartTable<K, V>)`: 空のテーブルを破棄
+- `destroy<K: drop, V: drop>(table: SmartTable<K, V>)`: テーブルとその要素を破棄
+- `clear<K: drop, V: drop>(table: &mut SmartTable<K, V>)`: テーブルからすべての要素を削除
 
-#### Managing Entries
+#### エントリの管理
 
-- `add<K, V>(table: &mut SmartTable<K, V>, key: K, value: V)`: Adds a key-value pair to the table.
-- `add_all<K, V>(table: &mut SmartTable<K, V>, keys: vector<K>, values: vector<V>)`: Adds multiple key-value pairs to the table.
-- `remove<K: copy + drop, V>(table: &mut SmartTable<K, V>, key: K): V`: Removes and returns the value associated with a key.
-- `upsert<K: copy + drop, V: drop>(table: &mut SmartTable<K, V>, key: K, value: V)`: Inserts or updates a key-value pair.
+- `add<K, V>(table: &mut SmartTable<K, V>, key: K, value: V)`: キーと値のペアをテーブルに追加
+- `add_all<K, V>(table: &mut SmartTable<K, V>, keys: vector<K>, values: vector<V>)`: 複数のキーと値のペアをテーブルに追加
+- `remove<K: copy + drop, V>(table: &mut SmartTable<K, V>, key: K): V`: キーに関連付けられた値を削除して返す
+- `upsert<K: copy + drop, V: drop>(table: &mut SmartTable<K, V>, key: K, value: V)`: キーと値のペアを挿入または更新
 
-#### Retrieving Entries
+#### エントリの取得
 
-- `borrow<K: drop, V>(table: &SmartTable<K, V>, key: K): &V`: Returns an immutable reference to the value associated with a key.
-- `borrow_with_default<K: copy + drop, V>(table: &SmartTable<K, V>, key: K, default: &V): &V`: Returns the value associated with a key or a default value if the key is not found.
-- `borrow_mut<K: drop, V>(table: &mut SmartTable<K, V>, key: K): &mut V`: Returns a mutable reference to the value associated with a key.
-- `borrow_mut_with_default<K: copy + drop, V: drop>(table: &mut SmartTable<K, V>, key: K, default: V): &mut V`: Inserts a key-value pair if the key is not found, then returns a mutable reference to the value.
+- `borrow<K: drop, V>(table: &SmartTable<K, V>, key: K): &V`: キーに関連付けられた値への不変参照を返す
+- `borrow_with_default<K: copy + drop, V>(table: &SmartTable<K, V>, key: K, default: &V): &V`: キーに関連付けられた値、またはキーが見つからない場合はデフォルト値を返す
+- `borrow_mut<K: drop, V>(table: &mut SmartTable<K, V>, key: K): &mut V`: キーに関連付けられた値への可変参照を返す
+- `borrow_mut_with_default<K: copy + drop, V: drop>(table: &mut SmartTable<K, V>, key: K, default: V): &mut V`: キーが見つからない場合はキーと値のペアを挿入し、値への可変参照を返す
 
-#### Utility Functions
+#### ユーティリティ関数
 
-- `length<K, V>(table: &SmartTable<K, V>): u64`: Returns the number of entries in the table.
-- `load_factor<K, V>(table: &SmartTable<K, V>): u64`: Returns the load factor of the table.
-- `update_split_load_threshold<K, V>(table: &mut SmartTable<K, V>, split_load_threshold: u8)`: Updates the split load threshold.
-- `update_target_bucket_size<K, V>(table: &mut SmartTable<K, V>, target_bucket_size: u64)`: Updates the target bucket size.
-- `to_simple_map<K: store + copy + drop, V: store + copy>(table: &SmartTable<K, V>): SimpleMap<K, V>`: Converts the smart table to a simple map.
+- `length<K, V>(table: &SmartTable<K, V>): u64`: テーブル内のエントリ数を返す
+- `load_factor<K, V>(table: &SmartTable<K, V>): u64`: テーブルの負荷係数を返す
+- `update_split_load_threshold<K, V>(table: &mut SmartTable<K, V>, split_load_threshold: u8)`: 分割負荷閾値を更新
+- `update_target_bucket_size<K, V>(table: &mut SmartTable<K, V>, target_bucket_size: u64)`: 目標バケットサイズを更新
+- `to_simple_map<K: store + copy + drop, V: store + copy>(table: &SmartTable<K, V>): SimpleMap<K, V>`: スマートテーブルをシンプルマップに変換
 
-## Example Usage
+## 使用例
 
-### Creating and Using a SmartTable
+### SmartTableの作成と使用
 
 ```move filename="smart_table.move"
 module 0x42::smart_table_usage {
@@ -100,7 +100,7 @@ module 0x42::smart_table_usage {
 }
 ```
 
-### Adding Multiple Entries to a SmartTable
+### SmartTableに複数のエントリを追加
 
 ```move filename="smart_table.move"
 module 0x42::smart_table_usage {
@@ -130,7 +130,7 @@ module 0x42::smart_table_usage {
 }
 ```
 
-### Updating and Clearing Table
+### テーブルの更新とクリア
 
 ```move filename="smart_table.move"
 module 0x42::smart_table_usage {
@@ -154,8 +154,7 @@ module 0x42::smart_table_usage {
 }
 ```
 
-
-### Converting to Simple Map
+### シンプルマップへの変換
 
 ```move filename="smart_table.move"
 module 0x42::smart_table_usage {
@@ -182,12 +181,12 @@ module 0x42::smart_table_usage {
 }
 ```
 
-## Source Code
+## ソースコード
 
 - [smart_table.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/data_structures/smart_table.move)
 
-## Other Examples
+## その他の例
 
 - [Move Spiders Smart Table](https://movespiders.com/courses/modules/datastructures/lessonId/7)
-- [Move Spiders Querying Smart Table via FullNode APIs](https://movespiders.com/courses/modules/datastructures/lessonId/9)
-- [Move Spiders Querying Smart Table via View Function](https://movespiders.com/courses/modules/datastructures/lessonId/10)
+- [Move Spiders FullNode APIを使用したSmart Tableのクエリ](https://movespiders.com/courses/modules/datastructures/lessonId/9)
+- [Move Spiders View関数を使用したSmart Tableのクエリ](https://movespiders.com/courses/modules/datastructures/lessonId/10)

@@ -1,11 +1,11 @@
 export default {
   "aptos-hosted-txn-stream": {
-    title: "Aptos-Hosted Transaction Stream Service",
+    title: "Aptos提供のトランザクションストリームサービス",
   },
   "self-hosted": {
-    title: "Self-Hosted Transaction Stream Service",
+    title: "セルフホスト型トランザクションストリームサービス",
   },
   "local-development": {
-    title: "Running Locally",
+    title: "ローカルでの実行",
   },
 };

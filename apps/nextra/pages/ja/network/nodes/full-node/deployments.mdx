@@ -1,33 +1,28 @@
 ---
-title: "Deploy a PFN"
+title: "PFNのデプロイ"
 ---
 
 import { Callout, Steps } from 'nextra/components';
 
-# Deploy a PFN
+# PFNのデプロイ
 
-The following guides provide step-by-step instructions for deploying a PFN on the Aptos networks.
+以下のガイドでは、AptosネットワークにPFNをデプロイするためのステップバイステップの手順を説明します。
 
 <Callout type="info">
-**Do I have to run a PFN?**<br />
-If you do not wish to run a PFN, but still want to interact with the Aptos blockchain, you can use the REST API
-provided by the Aptos Labs' PFNs (see [Aptos APIs](../../../build/apis.mdx)). Note, however, that Aptos Labs-provided PFNs have rate
-limits, which can impede your development. If you want to avoid such rate limits, you can deploy your own PFN
-and synchronize with the Aptos blockchain directly.
+**PFNを実行する必要がありますか?**<br />
+PFNを実行したくないけれどもAptosブロックチェーンと対話したい場合は、Aptos LabsのPFNが提供するREST APIを使用できます（[Aptos APIs](../../../build/apis.mdx)を参照）。ただし、Aptos Labsが提供するPFNにはレート制限があり、開発の妨げになる可能性があることに注意してください。このようなレート制限を回避したい場合は、独自のPFNをデプロイしてAptosブロックチェーンと直接同期することができます。
 </Callout>
 
-Select the guide for the deployment method you prefer:
+お好みのデプロイ方法のガイドを選択してください：
 
 <Callout type="warning">
-**Choose a network**<br />
-These guides default to deploying a PFN in the Aptos mainnet network, but they can easily be used to do
-the same in other networks (e.g., devnet or testnet network). To do so, check out the desired network branch
-and use the `genesis.blob` and `waypoint.txt` node files for the respective branches:
-[mainnet](../configure/node-files-all-networks/node-files-mainnet.mdx),
-[devnet](../configure/node-files-all-networks/node-files-devnet.mdx), and
-[testnet](../configure/node-files-all-networks/node-files-testnet.mdx).
+**ネットワークを選択**<br />
+これらのガイドはデフォルトでAptosメインネットネットワークにPFNをデプロイしますが、他のネットワーク（例：devnetやtestnetネットワーク）でも同様に実行できます。そのためには、目的のネットワークブランチをチェックアウトし、それぞれのブランチの`genesis.blob`と`waypoint.txt`ノードファイルを使用してください：
+[メインネット](../configure/node-files-all-networks/node-files-mainnet.mdx)、
+[devnet](../configure/node-files-all-networks/node-files-devnet.mdx)、
+[testnet](../configure/node-files-all-networks/node-files-testnet.mdx)。
 </Callout>
 
-- ### [Using Source Code](deployments/using-source-code.mdx)
-- ### [Using Docker](deployments/using-docker.mdx)
-- ### [Using GCP](deployments/using-gcp.mdx)
+- ### [ソースコードを使用](deployments/using-source-code.mdx)
+- ### [Dockerを使用](deployments/using-docker.mdx)
+- ### [GCPを使用](deployments/using-gcp.mdx)

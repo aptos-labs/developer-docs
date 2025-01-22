@@ -1,16 +1,16 @@
-# 5. Submit Data to Chain
+# チェーンへのデータ送信
 
-In the fifth chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx), you will be submitting data to the chain.
+[Aptos上でのエンドツーエンドdappの構築](../build-e2e-dapp.mdx)チュートリアルの5番目のチャプターでは、チェーンにデータを送信します。
 
-So now we have an **Add new list** button that appears if the connected account hasn’t created a list yet. We still don't have a way for an account to create a list, so let’s add that functionality.
+接続されたアカウントがまだリストを作成していない場合に表示される**Add new list**ボタンができました。まだリストを作成する機能がないので、その機能を追加しましょう。
 
-1. First, our wallet adapter provider has a `signAndSubmitTransaction` function; let’s extract it by updating the following:
+1. まず、ウォレットアダプタープロバイダーには`signAndSubmitTransaction`関数があります。以下のように更新して取得しましょう：
 
 ```tsx filename="App.tsx"
 const { account, signAndSubmitTransaction } = useWallet();
 ```
 
-2. Add an `onClick` event to the new list button:
+2. 新しいリストボタンに`onClick`イベントを追加します：
 
 ```tsx filename="App.tsx"
 <Button
@@ -23,7 +23,7 @@ const { account, signAndSubmitTransaction } = useWallet();
 </Button>
 ```
 
-3. Update the import statement from `@aptos-labs/wallet-adapter-react` to also import the `InputTransactionData` type and
+3. `@aptos-labs/wallet-adapter-react`からのインポート文を更新して、`InputTransactionData`タイプもインポートします：
 
 ```tsx filename="App.tsx"
 import {
@@ -32,7 +32,7 @@ import {
 } from "@aptos-labs/wallet-adapter-react";
 ```
 
-4. Add the `addNewList` function:
+4. `addNewList`関数を追加します：
 
 ```tsx filename="App.tsx"
 
@@ -46,9 +46,9 @@ const addNewList = async () => {
       }
     }
   try {
-    // sign and submit transaction to chain
+    // トランザクションに署名してチェーンに送信
     const response = await signAndSubmitTransaction(transaction);
-    // wait for transaction
+    // トランザクションの完了を待つ
     await aptos.waitForTransaction({transactionHash:response.hash});
     setAccountHasList(true);
   } catch (error: any) {
@@ -57,30 +57,30 @@ const addNewList = async () => {
 };
 ```
 
-5. Since our new function also uses `moduleAddress`, let’s get it out of the `fetchList` function scope to the global scope so it can be used globally.
+5. 新しい関数も`moduleAddress`を使用するので、`fetchList`関数のスコープからグローバルスコープに移動して、グローバルで使用できるようにしましょう。
 
-In our `fetchList` function, find the line:
+`fetchList`関数で以下の行を探します：
 
 ```tsx filename="App.tsx"
-// replace with your own address
+// 自分のアドレスに置き換えてください
 const moduleAddress =
   "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
 ```
 
-And move it to outside of the main `App` function, right beneath our const `provider` declarations.
+そしてメイン`App`関数の外側、`provider`定数の宣言の直下に移動します：
 
 ```tsx filename="App.tsx"
 export const aptos = new Aptos();
-// change this to be your module account address
+// moduleAddressをあなたのモジュールアカウントアドレスに変更してください
 export const moduleAddress =
   "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
 ```
 
-**Let’s go over the `addNewList` function code.**
+**`addNewList`関数のコードを見ていきましょう。**
 
-First, we use the `account` property from our wallet provider to make sure there is an account connected to our app.
+まず、ウォレットプロバイダーの`account`プロパティを使用して、アプリにアカウントが接続されていることを確認します。
 
-Then we build our transaction data to be submitted to chain:
+次に、チェーンに送信するトランザクションデータを構築します：
 
 ```tsx filename="App.tsx"
 const transaction:InputTransactionData = {
@@ -91,20 +91,20 @@ const transaction:InputTransactionData = {
     }
 ```
 
-- `function`- is built from the module address, module name and the function name.
-- `functionArguments` - the arguments the function expects, in our case it doesn’t expect any arguments.
+- `function` - モジュールアドレス、モジュール名、関数名から構築されます。
+- `functionArguments` - 関数が期待する引数で、この場合は引数がありません。
 
-Next, we submit the transaction payload and wait for its response. The response returned from the `signAndSubmitTransaction` function holds the transaction hash. Since it can take a bit for the transaction to be fully executed on chain and we also want to make sure it is executed successfully, we `waitForTransaction`. And only then we can set our local `accountHasList` state to `true`.
+次に、トランザクションペイロードを送信し、そのレスポンスを待ちます。`signAndSubmitTransaction`関数から返されるレスポンスにはトランザクションハッシュが含まれています。トランザクションがチェーン上で完全に実行されるまでに時間がかかる可能性があり、また正常に実行されたことを確認したいので、`waitForTransaction`を使用します。その後でのみ、ローカルの`accountHasList`ステートを`true`に設定できます。
 
-6. Before testing our app, let’s tweak our UI a bit and add a Spinner component to show up while we are waiting for the transaction.
-   Add a local state to keep track whether a transaction is in progress:
+6. アプリをテストする前に、UIを少し調整して、トランザクションを待っている間に表示されるSpinnerコンポーネントを追加しましょう。
+   トランザクションが進行中かどうかを追跡するローカルステートを追加します：
 
 ```tsx filename="App.tsx"
 const [transactionInProgress, setTransactionInProgress] =
   useState<boolean>(false);
 ```
 
-7. Update our `addNewList` function to update the local state:
+7. `addNewList`関数を更新してローカルステートを更新します：
 
 ```tsx filename="App.tsx"
 const addNewList = async () => {
@@ -117,9 +117,9 @@ const addNewList = async () => {
       }
     }
   try {
-    // sign and submit transaction to chain
+    // トランザクションに署名してチェーンに送信
     const response = await signAndSubmitTransaction(transaction);
-    // wait for transaction
+    // トランザクションの完了を待つ
     await aptos.waitForTransaction({transactionHash:response.hash});
     setAccountHasList(true);
   } catch (error: any) {
@@ -130,13 +130,13 @@ const addNewList = async () => {
 };
 ```
 
-8. Update the important statement from `antd` to also import `Spin`
+8. `antd`からのインポート文を更新して`Spin`もインポートします：
 
 ```tsx filename="App.tsx"
 import { Layout, Row, Col, Button, Spin } from "antd";
 ```
 
-9. Update our UI with the following:
+9. UIを以下のように更新します：
 
 ```tsx filename="App.tsx"
 return (
@@ -162,6 +162,6 @@ return (
 );
 ```
 
-Now you can head over to our app, and add a new list!
+これでアプリに移動して、新しいリストを追加できます！
 
-Since you haven’t made the user interface able to handle cases where an account has created a list, you will do so next [handling tasks](6-handle-tasks.mdx) in chapter 6.
+アカウントがリストを作成した場合のユーザーインターフェースをまだ処理できるようにしていないので、次のチャプター6の[タスクの処理](6-handle-tasks.mdx)でそれを行います。

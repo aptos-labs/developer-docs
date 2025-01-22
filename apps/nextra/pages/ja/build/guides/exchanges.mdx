@@ -1,40 +1,39 @@
 ---
-title: "Exchange Integration Guide"
+title: "取引所統合ガイド"
 ---
 
 import { Callout } from "nextra/components";
 
-# Exchange Integration Guide
+# 取引所統合ガイド
 
-This describes how to integrate Aptos and Aptos assets into an exchange.  It provides
-generic information for tracking balances, transferring assets, and testing the integration.
+このガイドでは、AptosとAptosアセットを取引所に統合する方法について説明します。残高の追跡、アセットの転送、統合のテストに関する一般的な情報を提供します。
 
-## Overview
+## 概要
 
-This document will guide you through the following tasks to integrate with Aptos:
-* Infrastructure
-* Address standards
-* Asset standards
-* Retrieving balances
-* Tracking balance changes
-* Transferring assets
-* Testing the integration
+このドキュメントでは、Aptosとの統合に必要な以下のタスクについて説明します:
+* インフラストラクチャ
+* アドレス標準
+* アセット標準
+* 残高の取得
+* 残高変更の追跡
+* アセットの転送
+* 統合のテスト
 
-## Infrastructure
+## インフラストラクチャ
 
-It's suggested that you run your own [full node](../../network/nodes/full-node.mdx) to interact with the Aptos blockchain.
-This will allow you to query the blockchain for the latest state and submit transactions.
-You can also use the [Indexer](../indexer.mdx) to query for on-chain data efficiently.
+Aptosブロックチェーンと対話するために、独自の[フルノード](../../network/nodes/full-node.mdx)を実行することをお勧めします。
+これにより、ブロックチェーンの最新の状態を照会し、トランザクションを送信することができます。
+また、[Indexer](../indexer.mdx)を使用してオンチェーンデータを効率的に照会することもできます。
 
-## Address Standards
+## アドレス標準
 
-### Addresses
-A single address can be represented in three ways.  We recommend you show all leading zeros, and the `0x`. Here is an example of all three representations for the framework address `0x1`:
-* `0x00000000000000000000000000000001` - A full representation of 32-bytes in hex with a leading `0x`.  This is preferred.
-* `0x1` - The short representation of the address with a leading `0x`. This is kept around for compatibility, but preferred with all leading 0s.
-* `00000000000000000000000000000001` - A full representation of 32-bytes in hex without a leading `0x`. This is kept around for compatibility, but preferred with leading 0x.
+### アドレス
+1つのアドレスは3つの方法で表現できます。先頭のゼロと`0x`を表示することをお勧めします。フレームワークアドレス`0x1`の3つの表現例を以下に示します:
+* `0x00000000000000000000000000000001` - 先頭に`0x`が付いた32バイトの16進数の完全な表現。これが推奨されます。
+* `0x1` - 先頭に`0x`が付いた短い表現。互換性のために残されていますが、すべての先頭にゼロを付けることが推奨されます。
+* `00000000000000000000000000000001` - 先頭に`0x`がない32バイトの16進数の完全な表現。互換性のために残されていますが、先頭に0xを付けることが推奨されます。
 
-For example SDKs will handle this parsing automatically, and we suggest you use the SDKs directly to handle it for you.
+例えば、SDKはこの解析を自動的に処理するため、SDKを直接使用して処理することをお勧めします。
 
 ```ts filename="example.ts"
 import { AccountAddress } from "@aptos-labs/ts-sdk";
@@ -42,14 +41,11 @@ const address = AccountAddress.from("0x1");
 address.toStringLong(); // 0x00000000000000000000000000000001
 ```
 
-There is additionally, Aptos Name Service (ANS) for friendly .apt names.  For more information about addresses
-and Aptos Names, see our page on [Accounts](../../network/blockchain/accounts).
+さらに、フレンドリーな.apt名のためのAptos Name Service (ANS)があります。アドレスとAptos Namesの詳細については、[アカウント](../../network/blockchain/accounts)のページをご覧ください。
 
-## Account Standards
+## アカウント標準
 
-Accounts must exist prior to sending a transaction to the blockchain.  This is done by creating an account resource, which can
-be created by simply calling `0x1::aptos_account::transfer` with a zero amount to the account you want to create.  Optionally,
-`0x1::aptos_account::create_account` can be used to create an account with a zero balance.
+ブロックチェーンにトランザクションを送信する前に、アカウントが存在している必要があります。これは、作成したいアカウントに対して金額0で`0x1::aptos_account::transfer`を呼び出すことで、アカウントリソースを作成することで実現できます。オプションとして、残高0のアカウントを作成するために`0x1::aptos_account::create_account`を使用することもできます。
 
 ```ts filename="example.ts"
 import { Aptos, Ed25519Account, Ed25519PrivateKey } from "@aptos-labs/ts-sdk";
@@ -61,67 +57,67 @@ const pendingTransaction = await aptos.transaction.signAndSubmitTransaction({sig
 const committedTransaction = await aptos.waitForTransaction({transactionHash: pendingTransaction.hash});
 ```
 
-## Asset Standards
+## アセット標準
 
-Aptos provides two standards for fungible tokens, similar to ERC-20 tokens on Ethereum:
+Aptosには、EthereumのERC-20トークンに似た2つのファンジブルトークン標準があります:
 
-* An earlier [Coin standard](../smart-contracts/aptos-coin.mdx) used by assets on Aptos.
-* A newer [Fungible Asset Standard](../smart-contracts/fungible-asset.mdx) which is more featured.
+* Aptos上のアセットで使用される初期の[コイン標準](../smart-contracts/aptos-coin.mdx)
+* より機能が豊富な新しい[ファンジブルアセット標準](../smart-contracts/fungible-asset.mdx)
 
-Additionally, there is a migratory period for assets from Coin to Fungible Asset standards.
-We will call this from now on **migrated coins**. Migrated coins may have two forms, but either
-can be used interchangeably with Coin standards. This is important to note when querying balances, to
-use coin functions and not fungible asset functions. The FA standard can only deal with the FA form.
-
-<Callout type="info">
-APT, the native token of Aptos, is a migrated coin.  This means it can be used
-with both the Coin and Fungible Asset standards.
-</Callout>
-
-### Coin Standard (tl;dr)
-
-A **coin** has an associated contract that holds the on-chain struct that represents the coin.  The coin is
-represented as a struct name e.g. `0x1::aptos_coin::AptosCoin` for `APT`.
-
-All coins are stored in an account resource called `0x1::coin::CoinStore<CoinType>`.  Coins must be registered
-prior to using the `CoinStore`, but if using the proper functions e.g. `0x1::aptos_account::transfer`
-or `0x1::aptos_account::transfer_coins<CoinType>`, this will be done automatically.
-
-Coins can be *migrated* to a fungible asset.  In order to support a migrated asset,
-continue calling the coin functions as will be mentioned later.
-
-More info can be found at: [Coin Standard](../smart-contracts/aptos-coin.mdx)
-
-### Fungible Asset Standard (tl;dr)
-
-A **fungible asset** has an associated metadata address that holds the metadata for the fungible asset.  This is commonly called the
-fa metadata address.  The asset is represented as an address e.g. `0xA` for `APT`.
-
-All fungible assets are stored in an `object`, which is called a `fungible asset store`.
-
-For exchanges, the most important store is `primary_fungible_store`, which is the default store for fungible assets.
-This is directly connected to an owner. From this point on in this guide, we will
-only talk about supporting `primary_fungible_store` for fungible assets.
-
-More info can be found at: [Fungible Asset Standard](../smart-contracts/fungible-asset.mdx)
-
-## Retrieving Balances
-
-Retrieving current balances for assets are different for each standard.  Integration is considered complete when it can handle both.
-
-Balances are always returned in their subunits.  For example, `APT` is returned in `octas` (1e-8 APT).  So, when an API
-returns a balance of `100000000`, this is `1 APT`. If it returns `100`, this is `0.000001 APT`.
-
-### Coin (and migrated coins) Balances
+さらに、コインからファンジブルアセット標準への移行期間があります。
+これを今後は**移行済みコイン**と呼びます。移行済みコインには2つの形式がありますが、
+いずれもコイン標準と互換性があります。残高を照会する際には、これは重要な点で、
+ファンジブルアセット関数ではなくコイン関数を使用する必要があります。FAスタンダードはFA形式のみを扱えます。
 
 <Callout type="info">
-  Note: This includes APT and any other coin that was migrated to a fungible
-  asset.  If the asset is a migrated coin, use this over fungible asset balance.  The
-  fungible asset balance will not include the coin portion of the balance.
+APT(Aptosのネイティブトークン)は移行済みコインです。つまり、
+コイン標準とファンジブルアセット標準の両方で使用できます。
 </Callout>
 
-To retrieve the balance of a coin, or a coin that was migrated to a fungible asset, you can use
-the `0x1::coin::balance<CoinType>(account address)` view function.  This will combine the coin and coin migrated to fungible asset balances.
+### コイン標準 (要約)
+
+**コイン**には、コインを表すオンチェーン構造体を保持する関連コントラクトがあります。コインは
+構造体名で表されます。例えば、`APT`の場合は`0x1::aptos_coin::AptosCoin`です。
+
+すべてのコインは`0x1::coin::CoinStore<CoinType>`というアカウントリソースに保存されます。コインは
+`CoinStore`を使用する前に登録する必要がありますが、`0x1::aptos_account::transfer`や
+`0x1::aptos_account::transfer_coins<CoinType>`などの適切な関数を使用すれば、これは自動的に行われます。
+
+コインはファンジブルアセットに*移行*することができます。移行されたアセットをサポートするには、
+後述するコイン関数の呼び出しを継続してください。
+
+詳細は[コイン標準](../smart-contracts/aptos-coin.mdx)を参照してください。
+
+### ファンジブルアセット標準 (要約)
+
+**ファンジブルアセット**には、ファンジブルアセットのメタデータを保持する関連メタデータアドレスがあります。これは一般的に
+faメタデータアドレスと呼ばれます。アセットはアドレスで表されます。例えば、`APT`の場合は`0xA`です。
+
+すべてのファンジブルアセットは`fungible asset store`と呼ばれる`object`に保存されます。
+
+取引所にとって最も重要なストアは`primary_fungible_store`で、これはファンジブルアセットのデフォルトストアです。
+これは所有者に直接紐付けられています。このガイドでは、以降ファンジブルアセットについては
+`primary_fungible_store`のサポートについてのみ説明します。
+
+詳細は[ファンジブルアセット標準](../smart-contracts/fungible-asset.mdx)を参照してください。
+
+## 残高の取得
+
+アセットの現在の残高の取得は、各標準で異なります。両方を扱えるようになると統合が完了したと見なされます。
+
+残高は常にサブユニットで返されます。例えば、`APT`は`octas`(1e-8 APT)で返されます。つまり、APIが
+残高として`100000000`を返した場合、これは`1 APT`です。`100`を返した場合、これは`0.000001 APT`です。
+
+### コイン(および移行済みコイン)の残高
+
+<Callout type="info">
+  注意: これにはAPTやファンジブルアセットに移行された他のコインも含まれます。アセットが移行済みコインの場合は、
+  ファンジブルアセットの残高ではなくこちらを使用してください。ファンジブルアセットの残高には
+  コイン部分の残高が含まれません。
+</Callout>
+
+コインまたはファンジブルアセットに移行されたコインの残高を取得するには、
+`0x1::coin::balance<CoinType>(アカウントアドレス)`ビュー関数を使用できます。これによりコインとファンジブルアセットに移行されたコインの残高が合算されます。
 
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
@@ -141,7 +137,7 @@ const [balanceStr] = await aptos.view<[string]>({
 const balance = parseInt(balanceStr, 10);
 ```
 
-A specific ledger version (transaction height) can be provided to get the balance at that point in time.  The below example shows for ledger version `1,000,000`.
+特定の台帳バージョン(トランザクションの高さ)を指定して、その時点での残高を取得することができます。以下の例では台帳バージョン`1,000,000`の場合を示しています。
 
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
@@ -164,11 +160,11 @@ const [balanceStr] = await aptos.view<[string]>({
 const balance = parseInt(balanceStr, 10);
 ```
 
-### Fungible Asset Balances
+### ファンジブルアセットの残高
 
-To retrieve the balance of a fungible asset, you can use
-the `0x1::primary_fungible_store::balance<0x1::object::ObjectCore>(account address, fungible asset metadata address)` view function.
-Note, that this will not include the balance of coins if it's a migrated coin.
+ファンジブルアセットの残高を取得するには、
+`0x1::primary_fungible_store::balance<0x1::object::ObjectCore>(アカウントアドレス, ファンジブルアセットのメタデータアドレス)` ビュー関数を使用できます。
+注意: これは移行されたコインの場合、コインの残高は含まれません。
 
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
@@ -188,7 +184,7 @@ const [balanceStr] = await aptos.view<[string]>({
 const balance = parseInt(balanceStr, 10);
 ```
 
-A specific ledger version (transaction height) can be provided to get the balance at that point in time.  The below example shows for ledger version `1,000,000`.
+特定の台帳バージョン(トランザクションの高さ)を指定して、その時点での残高を取得することができます。以下の例では台帳バージョン`1,000,000`の場合を示しています。
 
 ```ts filename="example.ts"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
@@ -211,35 +207,30 @@ const [balanceStr] = await aptos.view<[string]>({
 const balance = parseInt(balanceStr, 10);
 ```
 
-## Tracking Balance Changes
+## 残高変更の追跡
 
-Balance changes can be queried in one of two ways:
-1. By watching for events that change the balance for each transaction.
-2. By querying the indexer for indexed balance change events.
+残高変更は2つの方法で照会できます:
+1. 各トランザクションの残高を変更するイベントを監視する。
+2. インデックス化された残高変更イベントについてインデクサーに照会する。
 
-In the past, it was able to use the `events` endpoint for an account to get the
-transactions that changed the balance.  This is still possible, but will be deprecated
-in the future, and is not recommended for new integrations.
+以前は、アカウントの`events`エンドポイントを使用して残高を変更したトランザクションを取得することができました。これは現在も可能ですが、将来的には非推奨となり、新規統合には推奨されません。
 
-### Coin Balance Changes
+### コイン残高の変更
 
-Coin balances are tracked as two items, write set changes, and events.  Write set
-changes are end state of the coin balance, and events are the events that are
-emitted when a coin is withdrawn or deposited.
+コインの残高は、書き込みセットの変更とイベントの2つの項目として追跡されます。書き込みセットの変更はコイン残高の最終状態であり、イベントはコインが引き出されたり預け入れられたりしたときに発行されるイベントです。
 
-Here is an [example of a coin transfer](https://explorer.aptoslabs.com/txn/1747361321?network=mainnet).
-The coin transfer can be tracked as an individual transaction
-[here](https://fullnode.mainnet.aptoslabs.com/v1/transactions/by_version/1747361321)
-from the REST API.
+[コイン送金の例](https://explorer.aptoslabs.com/txn/1747361321?network=mainnet)を見てみましょう。
+コインの送金は、REST APIから個別のトランザクションとして
+[ここ](https://fullnode.mainnet.aptoslabs.com/v1/transactions/by_version/1747361321)
+で追跡できます。
 
-We'll break it down into a few parts:
+いくつかのパートに分けて説明します:
 
-1. The general transaction details tell information about the transaction.  The
-most important thing here is the transaction version is `1747361321`.  This gives
-us total order of all transactions on the blockchain. Think of it like block
-height, but for transactions.
+1. トランザクションの一般的な詳細は、トランザクションに関する情報を示します。
+ここで最も重要なのは、トランザクションバージョンが`1747361321`であることです。これにより、
+ブロックチェーン上のすべてのトランザクションの全体的な順序が分かります。ブロックの高さのようなものですが、トランザクション用です。
 <details>
-  <summary>Transaction Details</summary>
+  <summary>トランザクションの詳細</summary>
   ```json
   {
     "version": "1747361321",
@@ -254,13 +245,13 @@ height, but for transactions.
   }
   ```
 </details>
-2. The Write set `changes` are the end state of the transaction.  It shows all
-resources that were modified by the transaction, and what it's final state was.
+2. Write set `changes`はトランザクションの最終状態を示します。トランザクションによって変更された
+すべてのリソースとその最終状態が表示されます。
 
-In this case, we only care about coin store changes.
+この場合、コインストアの変更のみに注目します。
 
 <details>
-<summary>Coin Store Changes</summary>
+<summary>コインストアの変更</summary>
 ```json
   "changes": [
   {
@@ -330,16 +321,12 @@ In this case, we only care about coin store changes.
 ```
 </details>
 
-3. Events are the events that were emitted by the transaction.  In this case, we
-only care about the `0x1::coin::deposit` and `0x1::coin::withdraw` events.
+3. イベントはトランザクションによって発行されたイベントです。この場合、`0x1::coin::deposit`と`0x1::coin::withdraw`イベントのみを扱います。
 
-The Coin deposit event is emitted when coins are deposited into an account. The
-account's balance will increase by that amount in the field `data.amoount`.  To
-determine the matching asset, you must match the `guid` in the `deposit_events`
-to the `guid` in the `changes` section for a `CoinStore`.
+コインのデポジットイベントは、コインがアカウントに預け入れられたときに発行されます。アカウントの残高は`data.amount`フィールドの金額分だけ増加します。対応するアセットを特定するには、`deposit_events`の`guid`と`CoinStore`の`changes`セクションの`guid`を照合する必要があります。
 
 <details>
-  <summary>Coin Deposit Event</summary>
+  <summary>コインのデポジットイベント</summary>
   ```json
   {
     "events": [{
@@ -357,13 +344,10 @@ to the `guid` in the `changes` section for a `CoinStore`.
   ```
 </details>
 
-The Coin withdraw event is emitted when coins are withdrawn from an account. The
-account's balance will decrease by that amount in the field `data.amount`.  To
-determine the matching asset, you must match the `guid` in the `deposit_events`
-to the `guid` in the `changes` section for a `CoinStore`.
+コインの引き出しイベントは、アカウントからコインが引き出されたときに発行されます。アカウントの残高は`data.amount`フィールドの金額分だけ減少します。対応するアセットを特定するには、`deposit_events`の`guid`と`CoinStore`の`changes`セクションの`guid`を照合する必要があります。
 
 <details>
-  <summary>Coin Withdraw Event</summary>
+  <summary>コイン引き出しイベント</summary>
   ```json
   {
     "events": [{
@@ -381,17 +365,16 @@ to the `guid` in the `changes` section for a `CoinStore`.
   ```
 </details>
 
-4. Gas usage only is tracked for APT.  There is no direct event for tracking gas,
-but it can be calculated from the transaction.  Using the `gas_used` field, and
-the `gas_unit_price` field, you can calculate the total gas used.  In this case,
-the `gas_used` is `999` and the `gas_unit_price` is `100`, so the total gas deducted
-from the sender(`0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0`)
-is `999 * 100 = 99900 subunits`  Remember that the subunits are used here. The
-value in the gas token `APT` is `0.00099900 APT`.
+4. ガス使用量はAPTでのみ追跡されます。ガスを追跡するための直接のイベントはありませんが、
+トランザクションから計算することができます。`gas_used`フィールドと`gas_unit_price`フィールドを使用して、
+使用された総ガス量を計算できます。この例では、`gas_used`が`999`で`gas_unit_price`が`100`なので、
+送信者(`0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0`)から差し引かれる
+総ガス量は`999 * 100 = 99900 サブユニット`となります。ここではサブユニットが使用されていることに
+注意してください。ガストークン`APT`での値は`0.00099900 APT`です。
 
 
 <details>
-  <summary>Gas Information</summary>
+  <summary>ガス情報</summary>
 ```json
  {
    "gas_used": "999",
@@ -403,13 +386,12 @@ value in the gas token `APT` is `0.00099900 APT`.
 </details>
 
 
-5. Overall, you need both the events and the changes to determine the amount transferred
-of the account.  The final balances will show in the changes alone.  If you watch
-all of these events, you will be able to handle all possible transactions.  Below
-is the full example of the transaction response.
+5. アカウントの送金額を判断するには、イベントと変更の両方が必要です。最終残高は変更のみに表示されます。
+これらのイベントをすべて監視することで、すべての可能なトランザクションを処理できます。
+以下はトランザクションレスポンスの完全な例です。
 
 <details>
-  <summary>Full Response</summary>
+  <summary>完全なレスポンス</summary>
   ```json
   {
     "version": "1747361321",
@@ -656,29 +638,27 @@ is the full example of the transaction response.
   ```
 </details>
 
+### ファンジブルアセットの残高変更
 
-### Fungible Asset Balance Changes
+ファンジブルアセットの場合、残高の変更は`primary_fungible_store`で追跡されます。
+プライマリファンジブルストアのアドレスは決定的で、常にストアの所有者によって追跡されます。
 
-For fungible assets, the balance changes are tracked in the `primary_fungible_store`.
-The primary fungible store address is deterministic, and will always be tracked by
-the owner of the store.
+例: https://api.mainnet.aptoslabs.com/v1/transactions/by_version/1750174030
 
-An example: https://api.mainnet.aptoslabs.com/v1/transactions/by_version/1750174030
+ファンジブルアセットを追跡する際には、いくつかのステップがあります:
 
-There are a few steps when tracking fungible assets:
+1. ファンジブルアセットには2種類のイベントがあります。`0x1::fungible_asset::Deposit`と`0x1::fungible_asset::Withdraw`です。
 
-1. There will be two types of events for fungible assets.  `0x1::fungible_asset::Deposit` and `0x1::fungible_asset::Withdraw`.
+`Withdraw`イベントはコインイベントと同様で、`data.amount`フィールドの金額分だけ残高が減少します。
+同様に、`Deposit`イベントでは`data.amount`フィールドの金額分だけ残高が増加します。
 
-`Withdraw` events are similar to the coin events, where the balance will decrease by the amount in the `data.amount` field.
-And similarly `Deposit` events will increase the balance by the amount in the `data.amount` field.
+注意: シーケンス番号とGUIDフィールドはモジュールイベントには適用されないため、省略しています。
 
-Note that, I've omitted the sequence number, and GUID fields, as they do not apply to module events.
-
-Each event has a `store` field, which in this case is `0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a`.
-This is the address of the `FungibleStore` for the asset, where the balance is stored.  Note this, for the next step.
+各イベントには`store`フィールドがあり、この例では`0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a`です。
+これはアセットの`FungibleStore`のアドレスで、残高が保存される場所です。次のステップのために、これを覚えておいてください。
 
 <details>
-  <summary>Fungible Asset Events</summary>
+  <summary>ファンジブルアセットのイベント</summary>
 ```json
 {
   "events": [
@@ -701,19 +681,17 @@ This is the address of the `FungibleStore` for the asset, where the balance is s
 ```
 </details>
 
-2. Next, we take a look at the `0x1::fungible_asset::FungibleStore` changes.  This
-will show the end state of the balance for the fungible asset.  The balance is in
-the `data.balance` field.  The `address` field will match the `store` field from
-the events.  The identifier of the fungible asset, is the `metadata` field.  It
-is the address of the `metadata` for the fungible asset.
+2. 次に、`0x1::fungible_asset::FungibleStore`の変更を見てみましょう。
+これはファンジブルアセットの残高の最終状態を示します。残高は`data.balance`フィールドにあります。
+`address`フィールドはイベントの`store`フィールドと一致します。ファンジブルアセットの識別子は
+`metadata`フィールドです。これはファンジブルアセットの`metadata`のアドレスです。
 
-Additionally, to figure out the actual owner of the assets, you will need to look
-at the owner of the store.  In this case, you will need the `0x1::object::ObjectCore`, where
-the `address` field matches the `store` field from the events.  The `owner` field
-will show the asset owner's address.
+さらに、アセットの実際の所有者を特定するには、ストアの所有者を確認する必要があります。
+この場合、`address`フィールドがイベントの`store`フィールドと一致する`0x1::object::ObjectCore`が必要です。
+`owner`フィールドにアセット所有者のアドレスが表示されます。
 
 <details>
-  <summary>Fungible Asset Changes</summary>
+  <summary>ファンジブルアセットの変更</summary>
 ```json
 {
   "changes":[
@@ -760,22 +738,21 @@ will show the asset owner's address.
 </details>
 
 
-### Coins migrated to Fungible Asset Balance Changes
+### ファンジブルアセットに移行されたコインの残高変更
 
-For coins migrated to fungible assets, it is just simply tracking of the two above.
-A coin migrated to a fungible asset will have both the coin store changes and the
-primary fungible asset store changes.  The amounts would need to be aggregated
-together, and otherwise, handled as a coin.
+ファンジブルアセットに移行されたコインについては、上記の2つを単純に追跡するだけです。
+ファンジブルアセットに移行されたコインは、コインストアの変更とプライマリファンジブルアセットストアの変更の両方を持ちます。
+金額は集計する必要があり、それ以外はコインとして扱われます。
 
-The Fungible asset metadata address is the hash of the coin type and 0xA
+ファンジブルアセットのメタデータアドレスは、コインタイプと0xAのハッシュです。
 
 ```
 address = sha3_256(0xA | coin_type | 0xFE)
 ```
 
-Here is an example of a migrated coin with APT: https://api.mainnet.aptoslabs.com/v1/transactions/by_version/1642580695
+以下はAPTの移行済みコインの例です: https://api.mainnet.aptoslabs.com/v1/transactions/by_version/1642580695
 <details>
-  <summary>Full response</summary>
+  <summary>完全なレスポンス</summary>
   ```json
   {
     "version": "1642580695",
@@ -1114,85 +1091,81 @@ Here is an example of a migrated coin with APT: https://api.mainnet.aptoslabs.co
   ```
 </details>
 
-## Transferring Assets
+## 資産の転送
 
-### Coin (or migrated coin) Transfers
+### コイン(または移行済みコイン)の転送
 
 <Callout type="info">
-  APT, the native token of Aptos, is a migrated coin.  Please use the `aptos_account::transfer` functions
-  to transfer APT tokens.
+  APTはAptosのネイティブトークンで、移行済みコインです。APTトークンの転送には`aptos_account::transfer`関数を使用してください。
 </Callout>
 
-We suggest you use `0x1::aptos_account::transfer_coins<CoinType>(receiver address, amount)` for transferring coins.  It will
-register the coin if it hasn't been registered yet, and create the associated account if it hasn't been created yet.
-This will continue to work with any coins that were migrated to a fungible asset, including APT.
+コインの転送には`0x1::aptos_account::transfer_coins<CoinType>(受信者アドレス, 金額)`の使用を推奨します。これにより、
+コインが未登録の場合は登録され、関連するアカウントが作成されていない場合は作成されます。
+これはAPTを含む、ファンジブルアセットに移行された全てのコインで引き続き機能します。
 
-Coins can be transferred in the following ways:
-* [`0x1::aptos_account::transfer_coins<CoinType>(receiver address, amount)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L108-L112) - Transfer a coin to another account.
-* [`0x1::aptos_account::batch_transfer_coins<CoinType>(receiver addresses, amounts)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L93-L106) - Transfer a coin to multiple accounts.
-* [`0x1::aptos_account::transfer(receiver address, amount)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L74-L91) - Transfer specifically APT to another account.
+コインは以下の方法で転送できます:
+* [`0x1::aptos_account::transfer_coins<CoinType>(受信者アドレス, 金額)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L108-L112) - コインを別のアカウントに転送します。
+* [`0x1::aptos_account::batch_transfer_coins<CoinType>(受信者アドレス配列, 金額配列)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L93-L106) - コインを複数のアカウントに転送します。
+* [`0x1::aptos_account::transfer(受信者アドレス, 金額)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L74-L91) - 特にAPTを別のアカウントに転送します。
 
 {/* TODO examples */}
 
-### Fungible Asset Transfers
+### ファンジブルアセットの転送
 
-We suggest you use `0x1::primary_fungible_store::transfer<0x1::object::ObjectCore>(receiver address, amount)` for transferring fungible assets.
-It will send the associated fungible asset, and create a primary store for the asset if it hasn't been created yet.
+ファンジブルアセットの転送には`0x1::primary_fungible_store::transfer<0x1::object::ObjectCore>(受信者アドレス, 金額)`の使用を推奨します。
+これにより関連するファンジブルアセットが送信され、アセット用のプライマリストアが作成されていない場合は作成されます。
 
 {/* TODO examples */}
 
 <Callout type="warning">
-  Note: This will not create an account for the user if it hasn't been created
-  yet. You will need to call
-  `0x1::aptos_account::create_account(account address)` to create the account
-  before the user can
-  submit transactions.
+  注意: これはユーザーのアカウントが作成されていない場合、アカウントを作成しません。
+  ユーザーがトランザクションを送信できるようにするには、
+  `0x1::aptos_account::create_account(アカウントアドレス)`を呼び出してアカウントを作成する必要があります。
 </Callout>
 
 { /* TODO Staking some other day */ }
 
-## Testing
+## テスト
 
-In order to check that everything is working correctly, we've provided these checks.
+すべてが正しく動作していることを確認するために、以下のチェックを提供しています。
 
-### Balance Checks
+### 残高チェック
 
-To test balance checks, you can check the balance for the account `0x5` for the asset `0x1::aptos_coin::AptosCoin`.
-The balance should show `0.002 APT`, where 0.001 APT is a coin, and 0.001 APT is a migrated coin (fungible asset).
+残高チェックをテストするには、アセット`0x1::aptos_coin::AptosCoin`のアカウント`0x5`の残高を確認できます。
+残高は`0.002 APT`を示すはずです。ここで0.001 APTはコインで、0.001 APTは移行済みコイン(ファンジブルアセット)です。
 
-If your balance is not correct, see [Coin and Migrated Coin Balances](#coin-and-migrated-coin-balances) for more information.
+残高が正しくない場合は、[コインと移行済みコインの残高](#coin-and-migrated-coin-balances)で詳細をご確認ください。
 
-### Balance Change / Transfer Checks
+### 残高変更/転送チェック
 
-#### Check Coin Transfer
+#### コイン転送のチェック
 
-To test a transfer, create a transaction to transfer 0.001 APT to another account.
-The transaction should be successful, and the balance should be updated, where
-the balance is 0.001 APT smaller and minus the gas cost associated.
+転送をテストするには、別のアカウントに0.001 APTを転送するトランザクションを作成します。
+トランザクションは成功し、残高は0.001 APT減少し、関連するガスコストも差し引かれるはずです。
 
-#### Check Fungible Asset Transfer
+#### ファンジブルアセット転送のチェック
 
-To test a transfer, you can fund an account with the fungible asset here https://test-token-faucet.vercel.app/
-and then transfer the fungible asset to another account.  The balance should be updated
-according to the change, and you should be able to track the mint on the website.
+転送をテストするには、https://test-token-faucet.vercel.app/ でアカウントにファンジブルアセットを入金し、
+そのファンジブルアセットを別のアカウントに転送できます。残高は変更に応じて更新され、
+ウェブサイトでミントを追跡できるはずです。
 
-## Stablecoin Addresses
+## ステーブルコインのアドレス
 
-| Token Name           | Token Symbol | Token Address                                                                                                                                                              | Source of Address                                                                                     |
+| トークン名           | トークンシンボル | トークンアドレス                                                                                                                                                              | アドレスの出典                                                                                     |
 |----------------------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
 | Tether USD           | USDt         | [0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b](https://explorer.aptoslabs.com/fungible_asset/0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b?network=mainnet) | [Aptos Foundation](https://aptosfoundation.org/currents/global-finance-moves-faster-on-aptos)       |
 | USDC                 | USDC         | [0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b](https://explorer.aptoslabs.com/fungible_asset/0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b?network=mainnet) | [Circle](https://developers.circle.com/stablecoins/usdc-on-main-networks)                |
 | Ondo US Dollar Yield | USDY         | [0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc::usdy::USDY](https://explorer.aptoslabs.com/coin/0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc::usdy::USDY?network=mainnet) | [Ondo Finance](https://ondo.finance/usdy)                                                           |
 
-## FAQ
+## よくある質問
 
-### What is the finality of a transaction?
+### トランザクションのファイナリティとは何ですか？
 
-Aptos uses a BFT consensus algorithm, so transactions are finalized immediately
-after committing to the blockchain.
+AptosはBFTコンセンサスアルゴリズムを使用しているため、トランザクションはブロックチェーンにコミットされた直後に
+ファイナライズされます。
 
-### What is the transaction fee on a transaction?
+### トランザクションの手数料はいくらですか？
 
-Transaction fees are variable, but for most cases here are fixed.  Check out
-[simulating transactions](../../network/blockchain/gas-txn-fee#estimating-gas-consumption-via-simulation)
-to get an idea of the fee.
+トランザクション手数料は変動しますが、ほとんどの場合は固定されています。手数料の概要については
+[トランザクションのシミュレーション](../../network/blockchain/gas-txn-fee#estimating-gas-consumption-via-simulation)
+をご確認ください。

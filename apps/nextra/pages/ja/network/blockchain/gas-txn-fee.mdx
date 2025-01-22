@@ -1,65 +1,64 @@
 ---
-title: "Gas and Storage Fees"
+title: "ガスとストレージ手数料"
 ---
 
 import { Callout } from 'nextra/components';
 
-# Gas and Storage Fees
+# ガスとストレージ手数料
 
-Any transaction execution on the Aptos blockchain requires a processing fee. As of today, this fee comprises two components:
+Aptosブロックチェーン上でのトランザクション実行には手数料が必要です。現在、この手数料は2つの要素で構成されています：
 
-1. Execution & IO costs
+1. 実行とIO費用
 
-- This covers your usage of transient computation resources, such as processing your transactions and propagating the validated record throughout the distributed network of the mainnet.
-- It is measured in Gas Units whose price may fluctuate according to the load of the network. This allows execution and IO costs to be low when the network is less busy.
-- This portion of gas is burned permanently upon the execution of a transaction.
+- トランザクションの処理やメインネットの分散ネットワーク全体での検証済みレコードの伝播など、一時的な計算リソースの使用をカバーします。
+- ネットワークの負荷に応じて価格が変動するガスユニットで測定されます。これにより、ネットワークの混雑が少ない時は実行とIOの費用を低く抑えることができます。
+- このガスの部分は、トランザクションの実行時に永久に焼却されます。
 
-2. Storage fees
+2. ストレージ手数料
 
-- This covers the cost to persistently store validated record in the distributed blockchain storage.
-- It is measured in fixed APT prices, so the permanent storage cost stays stable even as the gas unit price fluctuates with the network's transient load.
-- - The storage fee can be refunded when the allocated storage slot is deleted. Currently, the network is configured to refund the entirety of the storage fee paid over the lifetime of a state storage slot.
-- To keep system implementation simple, this portion of gas is burned and minted again upon refund.
-
-<Callout type="info">
-Conceptually, this fee can be thought of as quite similar to how we pay for our home electric or water utilities.
-</Callout>
-
-## Unit of gas
-
-Transactions can range from simple and inexpensive to complicated based upon what they do. In the Aptos blockchain, a **unit of gas** represents a basic unit of consumption for transient resources, such as doing computation or accessing the storage. The latter should not be conflated with the long-term storage aspect of such operations, as that is covered by the storage fees separately.
-
-See [How Base Gas Works](base-gas.mdx) for a detailed description of gas fee types and available optimizations.
+- 検証済みレコードを分散ブロックチェーンストレージに永続的に保存するコストをカバーします。
+- 固定APT価格で測定されるため、ガスユニット価格がネットワークの一時的な負荷によって変動しても、永続的なストレージコストは安定しています。
+- 割り当てられたストレージスロットが削除されると、ストレージ手数料は返金されます。現在、ネットワークは状態ストレージスロットの存続期間中に支払われたストレージ手数料の全額を返金するように設定されています。
+- システムの実装をシンプルに保つため、このガスの部分は焼却され、返金時に再度発行されます。
 
 <Callout type="info">
-👉 A **unit of gas** is a dimensionless number or a unit that is not associated with any one item such as a coin, expressed as an integer. The total gas units consumed by your transaction depend on the complexity of your transaction. The **gas price**, on the other hand, is expressed in terms of Aptos blockchain’s native coin [APT](../glossary.mdx#APT) and it's subunit [Octas](../glossary.mdx#octa). Also see [Transactions and States](txns-states.mdx) for how a transaction submitted to the Aptos blockchain looks like.
+概念的に、この手数料は家庭の電気料金や水道料金の支払い方と非常によく似ています。
 </Callout>
 
-## The Fee Statement
+## ガスの単位
 
-As of Aptos Framework release 1.7, the breakdown of fee charges and refunds is emitted as a module event represented by struct `0x1::transaction_fee::FeeStatement`.
+トランザクションは、その内容に応じてシンプルで安価なものから複雑なものまでさまざまです。Aptosブロックチェーンでは、**ガスユニット**は計算の実行やストレージへのアクセスなど、一時的なリソースの消費の基本単位を表します。後者は、そのような操作の長期的なストレージの側面と混同すべきではありません。これは別途ストレージ手数料でカバーされます。
+
+ガス手数料の種類と利用可能な最適化の詳細については、[ベースガスの仕組み](base-gas.mdx)をご覧ください。
+
+<Callout type="info">
+👉 **ガスユニット**は、コインなどの特定のアイテムに関連付けられていない無次元の数値または単位で、整数として表現されます。トランザクションで消費される総ガスユニットは、トランザクションの複雑さに依存します。一方、**ガス価格**はAptosブロックチェーンのネイティブコインである[APT](../glossary.mdx#APT)とその下位単位である[Octa](../glossary.mdx#octa)で表現されます。また、Aptosブロックチェーンに提出されるトランザクションの形式については[トランザクションと状態](txns-states.mdx)をご覧ください。
+</Callout>
+
+## 手数料明細
+
+Aptos Framework 1.7のリリース以降、手数料の請求と返金の内訳は、構造体`0x1::transaction_fee::FeeStatement`で表されるモジュールイベントとして発行されます。
 
 ```move filename="transaction_fee.move"
 #[event]
-/// Breakdown of fee charge and refund for a transaction.
-/// The structure is:
+#[event]
+/// トランザクションの手数料の請求と返金の内訳。
+/// 構造は以下の通り：
 ///
-/// - Net charge or refund (not in the statement)
-///    - total charge: total_charge_gas_units, matches `gas_used` in the on-chain `TransactionInfo`.
-///      This is the sum of the sub-items below. Notice that there's potential precision loss when
-///      the conversion between internal and external gas units and between native token and gas
-///      units, so it's possible that the numbers don't add up exactly. -- This number is the final
-///      charge, while the break down is merely informational.
-///        - gas charge for execution (CPU time): `execution_gas_units`
-///        - gas charge for IO (storage random access): `io_gas_units`
-///        - storage fee charge (storage space): `storage_fee_octas`, to be included in
-///          `total_charge_gas_unit`, this number is converted to gas units according to the user
-///          specified `gas_unit_price` on the transaction.
-///    - storage deletion refund: `storage_fee_refund_octas`, this is not included in `gas_used` or
-///      `total_charge_gas_units`, the net charge / refund is calculated by
-///      `total_charge_gas_units` * `gas_unit_price` - `storage_fee_refund_octas`.
+/// - 正味の請求または返金（ステートメントには含まれない）
+///    - 合計請求額：total_charge_gas_units、オンチェーンの`TransactionInfo`の`gas_used`と一致。
+///      これは以下のサブ項目の合計です。内部ガス単位と外部ガス単位の変換、およびネイティブトークンと
+///      ガス単位の変換で精度が失われる可能性があるため、数値が完全に一致しない場合があります。
+///      -- この数値が最終的な請求額であり、内訳は情報提供のみを目的としています。
+///        - 実行のガス請求（CPU時間）：`execution_gas_units`
+///        - IOのガス請求（ストレージランダムアクセス）：`io_gas_units`
+///        - ストレージ手数料の請求（ストレージ容量）：`storage_fee_octas`、
+///          `total_charge_gas_unit`に含まれ、この数値はトランザクションでユーザーが
+///          指定した`gas_unit_price`に従ってガス単位に変換されます。
+///    - ストレージ削除の返金：`storage_fee_refund_octas`、これは`gas_used`や
+///      `total_charge_gas_units`には含まれず、正味の請求/返金は
+///      `total_charge_gas_units` * `gas_unit_price` - `storage_fee_refund_octas`で計算されます。
 ///
-/// This is meant to be emitted as a module event.
 struct FeeStatement has drop, store {
     /// Total gas charge.
     total_charge_gas_units: u64,
@@ -74,124 +73,123 @@ struct FeeStatement has drop, store {
 }
 ```
 
-## Gas price and prioritizing transactions
+## ガス価格とトランザクションの優先順位付け
 
-In the Aptos network, the Aptos governance sets the absolute minimum gas unit price. However, the market determines how quickly a transaction with a particular gas unit price is processed. See [Ethereum Gas Tracker](https://etherscan.io/gastracker), for example, which shows the market price movements of Ethereum gas price.
+Aptosネットワークでは、Aptosガバナンスが絶対的な最低ガス単価を設定します。しかし、特定のガス単価のトランザクションがどれだけ早く処理されるかは市場が決定します。例えば、[Ethereum Gas Tracker](https://etherscan.io/gastracker)では、Ethereumのガス価格の市場価格の動きが表示されます。
 
-By specifying a higher gas unit price than the current market price, you can **increase** the priority level for your transaction on the blockchain by paying a larger processing fee. As part of consensus, when the leader selects transactions from its mempool to propose as part of the next block, it will prioritize selecting transactions with a higher gas unit price. Please note that higher gas fees only prioritize transaction selection for the next block.
+現在の市場価格よりも高いガス単価を指定することで、より大きな処理手数料を支払うことによってブロックチェーン上のトランザクションの優先度レベルを**上げる**ことができます。コンセンサスの一部として、リーダーが次のブロックの提案の一部としてメンプールからトランザクションを選択する際、より高いガス単価のトランザクションを優先的に選択します。ただし、より高いガス手数料は次のブロックのトランザクション選択のみを優先することに注意してください。
 
-However, within a block, the order of transaction execution is determined by the system. This order is based on [transaction shuffling](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-27.md), which makes parallel execution more efficient by considering conflict patterns. While in most cases this is unnecessary, if the network is under load this measure can ensure your transaction is processed more quickly. See the `gas_unit_price` entry under [Estimating the gas units via simulation](#estimating-gas-consumption-via-simulation) for details.
+ただし、ブロック内でのトランザクションの実行順序はシステムによって決定されます。この順序は、競合パターンを考慮して並列実行をより効率的にする[トランザクションシャッフリング](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-27.md)に基づいています。ほとんどの場合これは不要ですが、ネットワークが負荷状態にある場合、この対策によりトランザクションがより迅速に処理されることを保証できます。詳細については、[シミュレーションによるガス消費量の見積もり](#estimating-gas-consumption-via-simulation)の`gas_unit_price`エントリをご覧ください。
 
 <Callout type="warning">
-👉 If you are increasing gas unit price, but have in-flight (uncommitted) transactions for the same account, you should resubmit all of those transactions with the higher gas unit price. This is because transactions within the same account always have to respect sequence number, so effectively the higher gas unit price transaction will increase priority only after the in-flight transactions are included in a block.
+👉 ガス単価を上げる場合、同じアカウントの未確定（未コミット）トランザクションがある場合は、それらのトランザクションすべてをより高いガス単価で再送信する必要があります。これは、同じアカウント内のトランザクションは常にシーケンス番号を尊重する必要があるため、実質的にガス単価の高いトランザクションは、未確定のトランザクションがブロックに含まれた後でのみ優先度が上がるためです。
 </Callout>
 
-## Specifying gas fees within a transaction
+## トランザクション内でのガス手数料の指定
 
-When a transaction is submitted to the Aptos blockchain, the transaction must contain the following mandatory gas fields:
+トランザクションがAptosブロックチェーンに送信される際、トランザクションには以下の必須のガスフィールドが含まれている必要があります：
 
-- `max_gas_amount`: The maximum number of gas units that the transaction sender is willing to spend to execute the transaction. This determines the maximum computational and storage resources that can be consumed by the transaction.
-- `gas_price`: The price per gas unit the transaction sender is willing to pay. It is expressed in[Octas](../glossary.mdx#Octa).
+- `max_gas_amount`: トランザクション送信者がトランザクションの実行に支払う意思のある最大ガス単位数。これにより、トランザクションが消費できる計算リソースとストレージリソースの最大値が決定されます。
+- `gas_price`: トランザクション送信者が支払う意思のあるガス単位あたりの価格。[Octa](../glossary.mdx#Octa)で表されます。
 
-  During the transaction execution, the total gas amount, expressed as:
+  トランザクション実行中、以下の式で表される総ガス量：
 
   ```text
-  (total execution gas units consumed) + (total storage gas units consumed)
+  (消費された総実行ガス単位) + (消費された総ストレージガス単位)
   ```
+  は`max_gas_amount`を超えてはいけません。超えた場合、トランザクションの実行は中止されます。
 
-  must not exceed `max_gas_amount`, or else the transaction will abort the execution.
+クライアントに請求されるトランザクション手数料は、最大で`gas_price * max_gas_amount`となります。
 
-The transaction fee charged to the client will be at the most `gas_price * max_gas_amount`.
+## ガバナンスによって設定されるガスパラメータ
 
-## Gas parameters set by governance
-
-The following gas parameters are set by Aptos governance.
+以下のガスパラメータはAptosガバナンスによって設定されます。
 
 <Callout type="info">
-These on-chain gas parameters are published on the Aptos blockchain at `0x1::gas_schedule::GasScheduleV2`.
+これらのオンチェーンガスパラメータは、Aptosブロックチェーン上の`0x1::gas_schedule::GasScheduleV2`に公開されています。
 </Callout>
 
-- `txn.maximum_number_of_gas_units`: Maximum number of gas units that can be spent (this is the maximum allowed value for the `max_gas_amount` gas parameter in the transaction). This is to ensure that the dynamic pricing adjustments do not exceed how much you are willing to pay in total.
-- `txn.min_transaction_gas_units`: Minimum number of gas units that can be spent. The `max_gas_amount` value in the transaction must be set to greater than this parameter’s value.
+- `txn.maximum_number_of_gas_units`: 使用できるガス単位の最大数（これはトランザクションのガスパラメータ`max_gas_amount`に設定できる最大値です）。これは、動的な価格調整によって支払い意思のある総額を超えないようにするためです。
+- `txn.min_transaction_gas_units`: 使用できるガス単位の最小数。トランザクションの`max_gas_amount`値はこのパラメータの値より大きく設定する必要があります。
 
-There also exists some global per-category limits:
+また、カテゴリごとにいくつかのグローバルな制限も存在します：
 
-- `txn.max_execution_gas`: The maximum number of gas units a transaction can spend on execution.
-- `txn.max_io_gas`: The maximum number of gas units a transaction can spend on IO.
-- `txn.max_storage_fee`: The maximum amount of APT a transaction can spend on persistent storage.
-  These limits help decouple one category from another, allowing us to set `txn.maximum_number_of_gas_units` generously without having to worry about abuses.
+- `txn.max_execution_gas`: トランザクションが実行に使用できるガス単位の最大数。
+- `txn.max_io_gas`: トランザクションがIOに使用できるガス単位の最大数。
+- `txn.max_storage_fee`: トランザクションが永続ストレージに使用できるAPTの最大額。
+これらの制限により、カテゴリ間の分離が可能となり、乱用を心配することなく`txn.maximum_number_of_gas_units`を寛容に設定できます。
 
-## Calculating Storage Fees
+## ストレージ手数料の計算
 
-The storage fee for a transaction is charged according to the number of new slots allocated in the global state and the size increase in the existing slots.
+トランザクションのストレージ手数料は、グローバル状態で新しく割り当てられたスロットの数と、既存のスロットのサイズ増加に応じて課金されます。
 
-There are some nuances with regard to price changing and legacy slots which didn't pay for the size of the slot below a historical "free quota". Refer to [AIP-65](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-65.md#specification) for more details.
+価格変更や、過去の「無料枠」以下のスロットサイズに対して支払いがなかったレガシースロットに関しては、いくつかの微妙な点があります。詳細については[AIP-65](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-65.md#specification)を参照してください。
 
-It should also be noted that due to some backward compatibility reasons, the total storage fee of a transaction is currently presented to the client as part of the total `gas_used`. This means, this amount could vary based on the gas unit price even for the same transaction.
+また、後方互換性の理由により、トランザクションの総ストレージ手数料は現在、総`gas_used`の一部としてクライアントに提示されることに注意してください。つまり、同じトランザクションでもガス単価によってこの金額が変動する可能性があります。
 
-Here is an example. Suppose we have a transaction that costs `100` gas units in execution & IO, and `5000` [Octas](../glossary.mdx#Octa) in storage fees. The network will show that you have used
+例を示します。実行とIOで`100`ガス単位、ストレージ手数料で`5000` [Octa](../glossary.mdx#Octa)かかるトランザクションがあるとします。ネットワークは以下のように表示します：
 
-- `100 + 5000 / 100 = 150` gas units if the gas unit price is `100`, or
-- `100 + 5000 / 200 = 125` gas units if the unit price is `200`.
+- ガス単価が`100`の場合、`100 + 5000 / 100 = 150`ガス単位
+- ガス単価が`200`の場合、`100 + 5000 / 200 = 125`ガス単位
 
-We are aware of the confusion this might create, and plan to present these as separate items in the future. However, this will require some changes to the transaction output format and downstream clients, so please be patient while we work hard to make this happen.
+この混乱を招く可能性があることは認識しており、将来的にはこれらを別項目として表示する予定です。ただし、トランザクション出力形式とダウンストリームクライアントの変更が必要となるため、実現までしばらくお待ちください。
 
-## Calculating Storage Deletion Refund
+## ストレージ削除の返金の計算
 
-If a transaction deletes state items, a refund is issued to the transaction payer for the released storage slots. Currently, a full refund is issued -- that is, all storage fee paid for the slot and bytes of the item over the lifetime of it.
+トランザクションが状態項目を削除する場合、解放されたストレージスロットに対してトランザクション支払者に返金が発生します。現在は全額返金が行われます - つまり、スロットとアイテムのバイトに対してその存続期間中に支払われたすべてのストレージ手数料が返金されます。
 
-The refund amount is denominated in APT and is not converted to gas units or included in the total `gas_used`. Instead, this refund amount is specifically detailed in the `storage_fee_refund_octas` field of the [`FeeStatement`](#the-fee-statement). As a result, the transaction's net effect on the payer's APT balance is determined by `gas_used * gas_unit_price - storage_refund`. If the result is positive, there is a deduction from the account balance; if negative, there is a deposit.
+返金額はAPTで表示され、ガス単位には換算されず、総`gas_used`にも含まれません。代わりに、この返金額は[`FeeStatement`](#the-fee-statement)の`storage_fee_refund_octas`フィールドで具体的に詳述されます。その結果、トランザクションの支払者のAPT残高への正味の影響は`gas_used * gas_unit_price - storage_refund`で決定されます。結果が正の場合はアカウント残高から差し引かれ、負の場合は入金されます。
 
-## Examples
+## 例
 
-### Example 1: Account balance vs transaction fee
+### 例1：アカウント残高とトランザクション手数料
 
-**The sender’s account must have sufficient funds to pay for the transaction fee.**
+**送信者のアカウントには、トランザクション手数料を支払うのに十分な残高が必要です。**
 
-If, let's say, you transfer all the money out of your account so that you have no remaining balance to pay for the transaction fee. In such case the Aptos blockchain would let you know that the transaction will fail, and your transfer wouldn't succeed either.
+例えば、アカウントからすべての資金を送金して、トランザクション手数料を支払う残高がない場合。このような場合、Aptosブロックチェーンはトランザクションが失敗することを通知し、送金も成功しません。
 
-### Example 2: Transaction amounts vs transaction fee
+### 例2：トランザクション金額とトランザクション手数料
 
-**Transaction fee is independent of transfer amounts in the transaction.**
+**トランザクション手数料は、トランザクション内の送金額とは独立しています。**
 
-In a transaction, for example, transaction A, you are transferring 1000 coins from one account to another account. In a second transaction B, with the same gas field values of transaction A, you now transfer 100,000 coins from one account to another one account. Assuming that both the transactions A and B are sent roughly at the same time, then the gas costs for transactions A and B would be near-identical.
+例えば、トランザクションAでは1つのアカウントから別のアカウントに1000コインを送金します。トランザクションAと同じガスフィールド値を持つ2番目のトランザクションBでは、1つのアカウントから別のアカウントに100,000コインを送金します。トランザクションAとBがほぼ同時に送信されたと仮定すると、トランザクションAとBのガスコストはほぼ同じになります。
 
-## Estimating gas consumption via simulation
+## シミュレーションによるガス消費量の見積もり
 
-The gas used for a transaction can be estimated by simulating the transaction on chain as described here or locally via the gas profiling feature of the Aptos CLI. The results of the simulated transaction represent the **exact** amount that is needed at the **exact** state of the blockchain at the time of the simulation. These gas units used may change based on the state of the chain. For this reason, any amount coming out of the simulation is only an estimate, and when setting the max gas amount, it should include an appropriate amount of headroom based upon your comfort-level and historical behaviors. Setting the max gas amount too low will result in the transaction aborting and the account being charged for whatever gas was consumed.
+トランザクションのガス使用量は、ここで説明するようにチェーン上でトランザクションをシミュレーションするか、Aptos CLIのガスプロファイリング機能を使用してローカルで見積もることができます。シミュレートされたトランザクションの結果は、シミュレーション時のブロックチェーンの**正確な**状態で必要な**正確な**量を表します。これらのガス単位使用量は、チェーンの状態に基づいて変化する可能性があります。このため、シミュレーションから得られる量はあくまで見積もりであり、max gas amountを設定する際には、快適さと過去の動作に基づいて適切な余裕を含める必要があります。max gas amountを低く設定しすぎると、トランザクションが中止され、消費されたガス分がアカウントに請求されます。
 
-To simulate transactions on chain, used the [`SimulateTransaction`](https://api.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction) API. This API will run the exact transaction that you plan to run.
+チェーン上でトランザクションをシミュレートするには、[`SimulateTransaction`](https://api.devnet.aptoslabs.com/v1/spec#/operations/simulate_transaction) APIを使用します。このAPIは、実行予定のトランザクションと全く同じものを実行します。
 
-To simulate the transaction locally, use the gas profiler, which is integrated into the Aptos CLI.
-This will generate a web-based report to help you understand the precise gas usage of your transaction.
-See [Gas Profiling](../../build/cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx#gas-profiling) for more details.
+トランザクションをローカルでシミュレートするには、Aptos CLIに統合されているガスプロファイラーを使用します。
+これにより、トランザクションの正確なガス使用量を理解するためのウェブベースのレポートが生成されます。
+詳細については[ガスプロファイリング](../../build/cli/working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx#gas-profiling)を参照してください。
 
 <Callout type="info">
-Note that the `Signature` provided on the transaction must be all zeros. This is to prevent someone from using the valid signature.
+トランザクションで提供される`Signature`はすべてゼロでなければならないことに注意してください。これは、有効な署名が使用されるのを防ぐためです。
 </Callout>
 
-To simulate the transaction, there are two flags:
+トランザクションをシミュレートするには、2つのフラグがあります：
 
-1. `estimate_gas_unit_price`: This flag will estimate the gas unit price in the transaction using the same algorithm as the [`estimate_gas_price`](https://api.devnet.aptoslabs.com/v1/spec#/operations/estimate_gas_price) API.
-2. `estimate_max_gas_amount`: This flag will find the maximum possible gas you can use, and it will simulate the transaction to tell you the actual `gas_used`.
+1. `estimate_gas_unit_price`: このフラグは、[`estimate_gas_price`](https://api.devnet.aptoslabs.com/v1/spec#/operations/estimate_gas_price) APIと同じアルゴリズムを使用してトランザクションのガス単価を見積もります。
+2. `estimate_max_gas_amount`: このフラグは使用可能な最大のガスを見つけ、トランザクションをシミュレートして実際の`gas_used`を教えてくれます。
 
-### Simulation steps
+### シミュレーションのステップ
 
-The simulation steps for finding the correct amount of gas for a transaction are as follows:
+トランザクションの正しいガス量を見つけるためのシミュレーションステップは以下の通りです：
 
-1. Estimate the gas via simulation with both `estimate_gas_unit_price` and `estimate_max_gas_amount` set to `true`.
-2. Use the `gas_unit_price` in the returned transaction as your new transaction’s `gas_unit_price`.
-3. View the `gas_used * gas_unit_price` values in the returned transaction as the **lower bound** for the cost of the transaction.
-4. To calculate the upper bound of the cost, take the **minimum** of the `max_gas_amount` in the returned transaction, and the `gas_used * safety factor`. In the CLI a value of `1.5` is used for `safety factor`. Use this value as `max_gas_amount` for the transaction you want to submit. Note that the **upper bound** for the cost of the transaction is `max_gas_amount * gas_unit_price`, i.e., this is the most the sender of the transaction is charged.
-5. At this point you now have your `gas_unit_price` and `max_gas_amount` to submit your transaction as follows:
-   1. `gas_unit_price` from the returned simulated transaction.
-   2. `max_gas_amount` as the minimum of the `gas_used` \* `a safety factor` or the `max_gas_amount` from the transaction.
-6. If you feel the need to prioritize or deprioritize your transaction, adjust the `gas_unit_price` of the transaction. Increase the value for higher priority, and decrease the value for lower priority.
+1. `estimate_gas_unit_price`と`estimate_max_gas_amount`の両方を`true`に設定してシミュレーションでガスを見積もります。
+2. 返されたトランザクションの`gas_unit_price`を新しいトランザクションの`gas_unit_price`として使用します。
+3. 返されたトランザクションの`gas_used * gas_unit_price`の値をトランザクションコストの**下限**として見ます。
+4. コストの上限を計算するには、返されたトランザクションの`max_gas_amount`と`gas_used * 安全係数`の**最小値**を取ります。CLIでは`安全係数`として`1.5`が使用されています。この値を送信したいトランザクションの`max_gas_amount`として使用します。トランザクションのコストの**上限**は`max_gas_amount * gas_unit_price`、つまりトランザクションの送信者に請求される最大額であることに注意してください。
+5. この時点で、トランザクションを送信するための`gas_unit_price`と`max_gas_amount`が以下のように得られます：
+   1. シミュレートされたトランザクションから返された`gas_unit_price`。
+   2. `gas_used` * `安全係数`またはトランザクションからの`max_gas_amount`の最小値として`max_gas_amount`。
+6. トランザクションの優先順位を上げたり下げたりする必要がある場合は、トランザクションの`gas_unit_price`を調整します。優先順位を上げるには値を増やし、下げるには値を減らします。
 
 <Callout type="info">
-Prioritization is based upon buckets of `gas_unit_price`. The buckets are defined in [`mempool_config.rs`](https://github.com/aptos-labs/aptos-core/blob/30b385bf38d3dc8c4e8ee0ff045bc5d0d2f67a85/config/src/config/mempool_config.rs#L8). The current buckets are `[0, 150, 300, 500, 1000, 3000, 5000, 10000, 100000, 1000000]`. Therefore, a `gas_unit_price` of 150 and 299 would be prioritized nearly the same.
+優先順位付けは`gas_unit_price`のバケットに基づいています。バケットは[`mempool_config.rs`](https://github.com/aptos-labs/aptos-core/blob/30b385bf38d3dc8c4e8ee0ff045bc5d0d2f67a85/config/src/config/mempool_config.rs#L8)で定義されています。現在のバケットは`[0, 150, 300, 500, 1000, 3000, 5000, 10000, 100000, 1000000]`です。したがって、`gas_unit_price`が150と299の場合、優先順位はほぼ同じになります。
 </Callout>
 
 <Callout type="info">
-Note that the `safety factor` only takes into consideration changes related to execution and IO. Unexpected creation of storage slots may not be sufficiently covered.
+`安全係数`は実行とIOに関連する変更のみを考慮していることに注意してください。予期しないストレージスロットの作成は十分にカバーされない可能性があります。
 </Callout>
