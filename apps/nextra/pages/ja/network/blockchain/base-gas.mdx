@@ -1,0 +1,319 @@
+---
+title: "トランザクションガスの計算"
+id: "base-gas"
+---
+
+# トランザクションガスの計算
+
+Aptosのトランザクションは、市場の状況に関係なく、デフォルトでベースガス料金が課金されます。
+各トランザクションのこの「ベースガス」量は、以下の3つの条件に基づいています：
+
+1. 命令
+2. ストレージ
+3. ペイロード
+
+トランザクションが必要とする関数呼び出し、条件分岐などが多いほど、命令ガスのコストが高くなります。
+同様に、トランザクションがグローバルストレージからの読み取りと書き込みを必要とする量が多いほど、ストレージガスのコストが高くなります。
+最後に、トランザクションペイロードのバイト数が多いほど、コストが高くなります。
+
+[最適化の原則](#optimization-principles)セクションで説明されているように、ストレージガスはベースガスに最も大きな影響を与えます。Aptosのガスモデルの背景については、[The Making of the Aptos Gas Schedule](https://aptoslabs.medium.com/the-making-of-the-aptos-gas-schedule-508d5686a350)をご覧ください。
+
+## 命令ガス
+
+基本的な命令ガスのパラメータは[`instr.rs`]で定義されており、以下の命令タイプが含まれます：
+
+### 無操作
+
+| パラメータ | 意味 |
+| --------- | -------------- |
+| `nop` | 無操作 |
+
+### 制御フロー
+
+| パラメータ | 意味 |
+| ---------- | -------------------------------- |
+| `ret` | リターン |
+| `abort` | アボート |
+| `br_true` | 条件分岐trueの実行 |
+| `br_false` | 条件分岐falseの実行 |
+| `branch` | 分岐 |
+
+### スタック
+
+| パラメータ | 意味 |
+| ------------------- | -------------------------------- |
+| `pop` | スタックからポップ |
+| `ld_u8` | `u8`のロード |
+| `ld_u16` | `u16`のロード |
+| `ld_u32` | `u32`のロード |
+| `ld_u64` | `u64`のロード |
+| `ld_u128` | `u128`のロード |
+| `ld_256` | `u256`のロード |
+| `ld_true` | `true`のロード |
+| `ld_false` | `false`のロード |
+| `ld_const_base` | 定数ロードの基本コスト |
+| `ld_const_per_byte` | 定数ロードのバイトあたりのコスト |
+
+### ローカルスコープ
+
+| パラメータ | 意味 |
+| --------------------------- | ------------------------ |
+| `imm_borrow_loc` | 不変借用 |
+| `mut_borrow_loc` | 可変借用 |
+| `imm_borrow_field` | フィールドの不変借用 |
+| `mut_borrow_field` | フィールドの可変借用 |
+| `imm_borrow_field_generic` | |
+| `mut_borrow_field_generic` | |
+| `copy_loc_base` | コピーの基本コスト |
+| `copy_loc_per_abs_val_unit` | |
+| `move_loc_base` | 移動 |
+| `st_loc_base` | |
+
+### 呼び出し
+
+| パラメータ | 意味 |
+| ------------------------- | ------------------------------- |
+| `call_base` | 関数呼び出しの基本コスト |
+| `call_per_arg` | 関数引数あたりのコスト |
+| `call_per_local` | ローカル引数あたりのコスト |
+| `call_generic_base` | |
+| `call_generic_per_ty_arg` | 型引数あたりのコスト |
+| `call_generic_per_arg` | |
+| `call_generic_per_local` | ジェネリックのローカル引数あたりのコスト |
+
+### 構造体
+
+| パラメータ | 意味 |
+| -------------------------- | ------------------------------------ |
+| `pack_base` | `struct`のパックの基本コスト |
+| `pack_per_field` | `struct`のフィールドあたりのパックコスト |
+| `pack_generic_base` | |
+| `pack_generic_per_field` | |
+| `unpack_base` | `struct`のアンパックの基本コスト |
+| `unpack_per_field` | `struct`のフィールドあたりのアンパックコスト |
+| `unpack_generic_base` | |
+| `unpack_generic_per_field` | |
+
+### 参照
+
+| パラメータ | 意味 |
+| --------------------------- | ---------------------------------- |
+| `read_ref_base` | 参照からの読み取りの基本コスト |
+| `read_ref_per_abs_val_unit` | |
+| `write_ref_base` | 参照への書き込みの基本コスト |
+| `freeze_ref` | 参照のフリーズ |
+
+### キャスト
+
+| パラメータ | 意味 |
+| ----------- | ---------------- |
+| `cast_u8` | `u8`へのキャスト |
+| `cast_u16` | `u16`へのキャスト |
+| `cast_u32` | `u32`へのキャスト |
+| `cast_u64` | `u64`へのキャスト |
+| `cast_u128` | `u128`へのキャスト |
+| `cast_u256` | `u256`へのキャスト |
+
+### 算術演算
+
+| パラメータ | 意味 |
+| --------- | -------- |
+| `add` | 加算 |
+| `sub` | 減算 |
+| `mul` | 乗算 |
+| `mod_` | 剰余 |
+| `div` | 除算 |
+
+### ビット演算
+
+| パラメータ | 意味 |
+| --------- | ------------------------- |
+| `bit_or` | `OR`: <code>&#124;</code> |
+| `bit_and` | `AND`: `&` |
+| `xor` | `XOR`: `^` |
+| `shl` | 左シフト: `<<` |
+| `shr` | 右シフト: `>>` |
+
+### 論理演算
+
+| パラメータ | 意味 |
+| --------- | ------------------------------- |
+| `or` | `OR`: <code>&#124;&#124;</code> |
+| `and` | `AND`: `&&` |
+| `not` | `NOT`: `!` |
+
+### 比較
+
+| パラメータ | 意味 |
+| ---------------------- | ------------------------------ |
+| `lt` | 未満: `<` |
+| `gt` | より大きい: `>` |
+| `le` | 以下: `<=` |
+| `ge` | 以上: `>=` |
+| `eq_base` | 等価の基本コスト: `==` |
+| `eq_per_abs_val_unit` | |
+| `neq_base` | 不等価の基本コスト: `!=` |
+| `neq_per_abs_val_unit` | |
+
+### グローバルストレージ
+
+| パラメータ | 意味 |
+| -------------------------------- | ----------------------------------------------------- |
+| `imm_borrow_global_base` | 不変借用の基本コスト: `borrow_global<T>()` |
+| `imm_borrow_global_generic_base` | |
+| `mut_borrow_global_base` | 可変借用の基本コスト: `borrow_global_mut<T>()` |
+| `mut_borrow_global_generic_base` | |
+| `exists_base` | 存在チェックの基本コスト: `exists<T>()` |
+| `exists_generic_base` | |
+| `move_from_base` | 移動元の基本コスト: `move_from<T>()` |
+| `move_from_generic_base` | |
+| `move_to_base` | 移動先の基本コスト: `move_to<T>()` |
+| `move_to_generic_base` | |
+
+### ベクター
+
+| パラメータ | 意味 |
+| ------------------------------ | ---------------------------------------- |
+| `vec_len_base` | ベクターの長さ |
+| `vec_imm_borrow_base` | 要素の不変借用 |
+| `vec_mut_borrow_base` | 要素の可変借用 |
+| `vec_push_back_base` | 末尾への追加 |
+| `vec_pop_back_base` | 末尾からの削除 |
+| `vec_swap_base` | 要素の交換 |
+| `vec_pack_base` | ベクターのパックの基本コスト |
+| `vec_pack_per_elem` | 要素あたりのパックコスト |
+| `vec_unpack_base` | ベクターのアンパックの基本コスト |
+| `vec_unpack_per_expected_elem` | 要素あたりのアンパックコスト |
+
+追加のストレージガスパラメータは[`table.rs`]、[`move_stdlib.rs`]、および[`aptos-gas-schedule/src/`]の他のソースファイルで定義されています。
+
+## IOとストレージの課金
+
+以下のガスパラメータは、ディスクIOPSと帯域幅を含む一時的なストレージデバイスリソースに関連するコストを表すために適用（つまり課金）されます：
+
+Moveでは、グローバル状態から読み取ることができます：
+
+| パラメータ | 意味 |
+|--------------------------------|-------------------------------------------|
+| storage_io_per_state_slot_read | グローバル状態からロードされた項目ごとに課金 |
+| storage_io_per_state_byte_read | グローバル状態からロードされたバイトごとに課金 |
+
+コミットされたトランザクションでは、台帳履歴に様々なものが書き込まれます。台帳履歴は削除の対象となり、ディスク上の永続的なスペースを占有しないため、ストレージ料金は課金されないことに注意してください。
+
+| パラメータ | 意味 |
+|---------------------------------------|--------------------
+--------------------------------------------|
+| storage_io_per_state_slot_write | トランザクション出力の状態書き込み操作ごとに課金 |
+| storage_io_per_state_byte_write | トランザクション出力のすべての状態書き込み操作のバイトごとに課金 |
+| storage_io_per_event_byte_write | トランザクション出力のすべてのイベントのバイトごとに課金 |
+| storage_io_per_transaction_byte_write | 台帳履歴の一部であるトランザクション自体のバイトごとに課金 |
+
+以下のストレージ料金パラメータは、[Aptos認証データ構造](../glossary.mdx#merkle-trees)を使用してブロックチェーン上にアイテムを保存することに関連するディスク容量と構造的コストを表すために適用（つまり絶対APT値で課金）されます。
+
+| パラメータ | 意味 |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| storage_fee_per_state_slot_create | `move_to()`、`table::add()`などによる状態スロットの割り当て |
+| storage_fee_per_state_byte | スロットのサイズが大きくなるたびに課金されることに注意してください（ただし、簡略化のため、返金は削除時のみです。[AIP-65](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-65.md#specification)を参照） |
+
+### ベクター
+
+バイト単位の料金は、同様にベクターにも適用され、ベクターは $\sum_{i = 0}^{n - 1} e_i + b(n)$ バイトを消費します。ここで：
+
+- $n$ はベクター内の要素数
+- $e_i$ は要素 $i$ のサイズ
+- $b(n)$ は $n$ の関数である「基本サイズ」
+
+ベクターの基本サイズ（技術的には`ULEB128`）の詳細については、[BCS シーケンス仕様]を参照してください。実際には通常1バイトを占めるため、100個の`u8`要素を持つベクターは $100 + 1 = 101$ バイトを占めます。
+したがって、上記の項目単位の読み取り方法に従って、そのようなベクターの最後の要素を読み取ることは、101バイトの読み取りとして扱われます。
+
+## ペイロードガス
+
+ペイロードガスは[`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs)で定義されており、ストレージガスといくつかのペイロードおよび価格に関連するパラメータを組み込んでいます：
+
+| パラメータ | 意味 |
+| ------------------------------- | -------------------------------------------------------------------------------------- |
+| `min_transaction_gas_units` | トランザクションの最小内部ガスユニット（実行開始時に課金） |
+| `large_transaction_cutoff` | このサイズ（バイト単位）を超えるトランザクションには、バイトあたりの追加料金が課金されます |
+| `intrinsic_gas_per_byte` | `large_transaction_cutoff`を超えるペイロードに対してバイトあたりに課金される内部ガスユニット |
+| `maximum_number_of_gas_units` | トランザクションの外部ガスユニットの上限 |
+| `min_price_per_gas_unit` | トランザクションに許可される最小ガス価格 |
+| `max_price_per_gas_unit` | トランザクションに許可される最大ガス価格 |
+| `max_transaction_size_in_bytes` | トランザクションペイロードの最大サイズ（バイト単位） |
+| `gas_unit_scaling_factor` | 内部ガスユニットと外部ガスユニット間の変換係数 |
+
+ここで、「内部ガスユニット」は[`instr.rs`]や[`storage_gas.move`]などのソースファイルで定義された定数で、`gas_unit_scaling_factor`の係数だけ「外部ガスユニット」よりも細かくなっています：
+内部ガスユニットから外部ガスユニットに変換するには、`gas_unit_scaling_factor`で除算します。
+その後、外部ガスユニットから[オクタ](../glossary.mdx#octa)に変換するには、「ガス価格」（外部ガス1単位あたりのオクタ数を示す）を掛けます。
+
+## 最適化の原則
+
+### 単位と価格の定数
+
+この文書の執筆時点で、[`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs)の`min_price_per_gas_unit`は[`aptos_global_constants`]`::GAS_UNIT_PRICE`（これ自体は100として定義されています）として定義されており、他の注目すべき[`transaction.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs)の定数は以下の通りです：
+
+| 定数 | 値 |
+| ------------------------- | -------------- |
+| `min_price_per_gas_unit` | 100 |
+| `max_price_per_gas_unit` | 10,000,000,000 |
+| `gas_unit_scaling_factor` | 1,000,000 |
+
+これらの定数の意味については、[ペイロードガス](#payload-gas)を参照してください。
+
+### ストレージ料金
+
+ネットワーク負荷が低い場合、ガスユニット価格は低くなると予想され、トランザクションコストのほとんどの側面がより手頃になります。ただし、ストレージ料金は例外で、絶対的なAPT値で価格が設定されます。ほとんどの場合、トランザクション手数料が全体のトランザクションコストの主要な要素となります。これは特に、トランザクションが状態スロットを割り当てる場合、大きな状態項目に書き込む場合、多数または大きなイベントを発生させる場合、またはトランザクション自体が大きい場合に当てはまります。これらはすべてAptosノードのディスク容量を消費し、それに応じて課金されます。
+
+一方、ストレージの返金は、状態項目を削除することで状態スロットを解放することを奨励します。状態スロット料金は、スロットの割り当て解除時に完全に返金されますが、超過状態バイト料金は返金されません。これは、永続的なバイト（グローバル状態にあるもの）と比較的一時的なバイト（台帳履歴を通過するもの）を区別することで、まもなく変更される予定です。
+
+ストレージ料金に関するいくつかのコスト最適化戦略：
+
+1. 状態項目の作成を最小限に抑える。
+2. イベントの発生を最小限に抑える。
+3. 大きな状態項目、イベント、トランザクションを避ける。
+4. 使用されなくなった状態項目をクリーンアップする。
+5. 2つのフィールドが常に一緒に更新される場合、それらを同じリソースまたはリソースグループにグループ化する。
+6. 構造体が大きく、一部のフィールドのみが頻繁に更新される場合、それらのフィールドを別のリソースまたはリソースグループに移動する。
+
+### 命令ガス
+
+この文書の執筆時点で、すべての命令ガス操作は[`meter.rs`]で定義された`EXECUTION_GAS_MULTIPLIER`（20に設定）を掛けられます。
+したがって、以下の代表的な操作は、以下のようなガスコストを想定しています（内部ガスをスケーリング係数で除算し、最小ガス価格を掛ける）：
+
+| 操作 | 最小[オクタ](../glossary.mdx#octa) |
+| ---------------------------- | ------------- |
+| テーブルの追加/借用/ボックス削除 | 240 |
+| 関数呼び出し | 200 |
+| 定数のロード | 130 |
+| グローバルな借用 | 100 |
+| 参照の読み取り/書き込み | 40 |
+| スタックへの`u128`のロード | 16 |
+| テーブルボックス操作（バイトあたり） | 2 |
+
+（テーブルボックス操作のバイトあたりの命令ガスは、別途評価されるストレージガスを考慮していないことに注意してください）。
+
+比較として、100バイトの項目を読み取るコストは $r_i + 100 * r_b = 3000 + 100 * 3 = 3300$ [オクタ](../glossary.mdx#octa)（最小）で、関数呼び出しの16.5倍であり、一般的に、命令ガスコストはストレージガスコストに大きく支配されます。
+
+ただし、技術的にはプログラム内の関数呼び出しの数を減らすインセンティブはまだありますが、エンジニアリングの努力は、ネストされた関数の少ない反復的なコードブロックを書こうとするのではなく（ほとんどすべての場合）、ストレージガスコストを削減することを目的とした、モジュール化された分解されたコードを書くことに、より効果的に向けられます。
+
+極端な場合、例えば、ループする数学的関数が収束するのに10,000回の反復が必要な場合など、命令ガスがストレージガスを大きく上回る可能性がありますが、これも極端な場合であり、ほとんどのアプリケーションでは、ストレージガスが命令ガスよりもベースガスに大きな影響を与えます。
+
+### ペイロードガス
+
+この文書の執筆時点で、[`transaction/mod.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs)はトランザクションあたりの最小内部ガス量を1,500,000内部ユニット（最小15,000[オクタ](../glossary.mdx#Octa)）と定義しており、600バイトを超えるペイロードに対してはバイトあたり2,000内部ガスユニット（最小20オクタ）増加し、トランザクションで許可される最大バイト数は65536に設定されています。
+したがって、実際にはペイロードガスが問題になることは少ないでしょう。
+
+[#4540]: https://github.com/aptos-labs/aptos-core/pull/4540/files
+[`aptos-gas-schedule/src/`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src
+[`aptos_global_constants`]: https://github.com/aptos-labs/aptos-core/blob/main/config/global-constants/src/lib.rs
+[`base_8192_exponential_curve()`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/storage_gas.md#0x1_storage_gas_base_8192_exponential_curve
+[BCS sequence specification]: https://github.com/diem/bcs#fixed-and-variable-length-sequences
+[`meter.rs`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-meter/src/meter.rs
+[`initialize()`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/storage_gas.md#0x1_storage_gas_initialize
+[`instr.rs`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/instr.rs
+[`move_stdlib.rs`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/move_stdlib.rs
+[`on_reconfig()`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/storage_gas.md#@Specification_16_on_reconfig
+[`storage_gas.md`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/storage_gas.md
+[`storage_gas.move`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/storage_gas.move
+[`StorageGas`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/storage_gas.md#resource-storagegas
+[`table.rs`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/table.rs
+[`transaction.rs`]: https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs

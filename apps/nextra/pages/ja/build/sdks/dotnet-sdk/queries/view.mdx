@@ -1,0 +1,156 @@
+---
+title: "View Functions"
+---
+
+import { Steps, Callout } from "nextra/components";
+import { Card, Cards } from "@components/index";
+
+<Callout type="warning" emoji="❗">
+  This SDK is currently in beta. Please report any issues you encounter by
+  creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# View Functions
+
+View functions allow you to query smart contracts on the blockchain. They are defined in smart contracts as entry functions with the `view` modifier.
+In this guide, we will provide snippets of view functions and how they are typed and used.
+
+## Dynamically Typed View Functions
+
+When you don't care about the return type of a view function, you can use the `View` function without any type arguments.
+
+The Move function we will be calling:
+
+```Move
+public fun balance<CoinType>(owner: address): u64
+```
+
+And to call the view function, we will use the `View` function from the `ContractClient`.
+
+```csharp {9-16}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var client = new AptosClient(Networks.Mainnet);
+
+        // Call the view function by specifying the function name, arguments, and type arguments
+        var values = await client.Contract.View(
+            new GenerateViewFunctionPayloadData(
+                function: "0x1::coin::balance",
+                functionArguments: ["0x1"],
+                typeArguments: ["0x1::aptos_coin::AptosCoin"]
+            )
+        );
+
+        // Returns a list of return values: ["100"]
+        ulong balance = ulong.Parse(values[0]);
+    }
+}
+```
+
+## Simple Typed View Functions
+
+For view functions with common return types, you can type the return values by passing in a type argument.
+
+The Move function we will be calling:
+
+```Move
+public fun get_current_epoch_proposal_counts(validator_index: u64): (u64, u64)
+```
+
+And to call the view function, we will use the `View` function from the `ContractClient` with the type arguments.
+
+```csharp {9-16}
+using Aptos;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var client = new AptosClient(Networks.Mainnet);
+
+        // Call the view function by specifying the function name, arguments, and type arguments
+        var values = await client.Contract.View<List<ulong>>(
+            new GenerateViewFunctionPayloadData(
+                function: "0x1::stake::get_current_epoch_proposal_counts",
+                functionArguments: [(ulong)0],
+                typeArguments: []
+            )
+        );
+
+        // Returns a list of return values: ["100", "100"]
+        ulong successfulProposals = values[0];
+        ulong failedProposals = values[1];
+    }
+}
+```
+
+## Complex Typed View Functions
+
+For view functions with complex return types, you can leverage `Newtonson.Json` to deserialize the return values. By default,
+all types passed into the View function leverage `JsonConvert.DeserializeObject<T>()` from `Newtonson.Json` to deserialize
+the return values. You can override the deserialization behavior by creating a custom `JsonConverter`.
+
+The Move function we will be calling:
+
+```Move
+public fun supply<CoinType>(): Option<u128>
+```
+
+Create your own `JsonConverter` to deserialize the return values.
+
+```csharp {9-26}
+using Aptos;
+using Newtonsoft.Json;
+
+[JsonConverter(typeof(CoinSupplyConverter))]
+class CoinSupply(ulong value) {
+    public ulong Value;
+}
+
+class CoinSupplyConverter : JsonConverter<CoinSupply> {
+    public override CoinSupply ReadJson(JsonReader reader, Type objectType, CoinSupply existingValue, bool hasExistingValue, JsonSerializer serializer) {
+        // The return type of the view function is an Option<u128> -> [{ "vec": [] }] or [{ "vec": ["100"] }]
+        JArray array = JArray.Load(reader);
+        var option = array[0];
+
+        // If the Option is None
+        if (option["vec"].Count == 0) return null;
+
+        // If the Option is Some
+        ulong value = ulong.Parse(option["vec"][0]);
+        return new CoinSupply(value);
+    }
+}
+```
+
+And to call the view function, we will use the `View` function from the `ContractClient` with the type arguments.
+
+```csharp {10-17}
+using Aptos;
+using Newtonsoft.Json;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var client = new AptosClient(Networks.Mainnet);
+
+        // Call the view function by specifying the function name, arguments, and type arguments
+        CoinSupply coinSupply = await client.Contract.View<CoinSupply>(
+            new GenerateViewFunctionPayloadData(
+                function: "0x1::coin::supply",
+                functionArguments: [],
+                typeArguments: ["0x1::aptos_coin::AptosCoin"]
+            )
+        );
+
+        ulong coinSupply = coinSupply.Value;
+    }
+}
+```

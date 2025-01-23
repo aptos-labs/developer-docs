@@ -1,0 +1,47 @@
+# Aptos上でエンドツーエンドのDappを構築する
+
+新しいフレームワークやプログラミング言語を学ぶ一般的な方法は、シンプルなTodoリストを作ることです。このチュートリアルでは、スマートコントラクトの側面からフロントエンド側まで、そして最後にウォレットを使用して両者を連携させる、エンドツーエンドのTodoリストDappの構築方法を学びます。
+
+完成したコードは[my_first_dapp](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/my_first_dapp)で確認できます。
+
+## チャプター
+
+以下に説明する[前提条件](#prerequisites)と[セットアップ](#setup)を満たした後、このチュートリアルを以下の順序で進めていきます：
+
+1. [スマートコントラクトの作成](build-e2e-dapp/1-create-smart-contract.mdx)
+2. [Reactアプリのセットアップ](build-e2e-dapp/2-set-up-react-app.mdx)
+3. [ウォレットサポートの追加](build-e2e-dapp/3-add-wallet-support.mdx)
+4. [チェーンからのデータ取得](build-e2e-dapp/4-fetch-data-from-chain.mdx)
+5. [チェーンへのデータ送信](build-e2e-dapp/5-submit-data-to-chain.mdx)
+6. [タスクの処理](build-e2e-dapp/6-handle-tasks.mdx)
+
+## 前提条件
+
+以下が必要です：
+
+- [Aptos CLI](../cli.mdx)
+- [Aptos TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Aptos Wallet Adapter](../sdks/wallet-adapter.mdx)
+- [Create React App](https://create-react-app.dev/)
+- [node と npm](https://nodejs.org/en/)
+
+Reactに関する決定事項についていくつか説明しますが、Reactの動作について深く掘り下げることはしません。そのため、Reactについてある程度の経験があることを前提としています。
+
+## セットアップ
+
+このセクションでは、クライアント側のコード（React ベース）とMoveコード（スマートコントラクト）の両方のプロジェクトファイルを格納する`my-first-dapp`ディレクトリを作成します。
+
+1. ターミナルを開き、プロジェクトを作成したい目的のディレクトリに移動します（例：`Desktop`ディレクトリ）。
+2. `my-first-dapp`という新しいディレクトリを作成します：
+
+```bash filename="Terminal"
+mkdir my-first-dapp
+```
+
+3. そのディレクトリに移動します：
+
+```bash filename="Terminal"
+cd my-first-dapp
+```
+
+それでは[スマートコントラクトを作成](build-e2e-dapp/1-create-smart-contract.mdx)しましょう。

@@ -1,0 +1,116 @@
+---
+title: "ノードについて学ぶ"
+---
+
+import { Card, Cards } from '@components/index'
+
+# ノードについて学ぶ
+
+Aptosネットワークは、バリデータノード、バリデータフルノード(VFN)、パブリックフルノード(PFN)の3種類のノードで構成されています。コンセンサスに参加するには、バリデータノードを実行し、最小額のユーティリティコインをステークする必要があります。VFNとPFNはコンセンサスへの参加は必要ありませんが、ブロックチェーンデータの配布やインデックス作成、クエリ、RESTful APIサービス（[Aptos APIs](../build/apis.mdx)を参照）などのエコシステムサービスを可能にするために必要です。VFNはバリデータオペレーターのみが実行でき、PFNは誰でも実行できます。異なるタイプのノードについての詳細は、[ブロックチェーンの詳細](blockchain.mdx)セクションで学ぶことができます。
+
+このセクションでは、異なる環境でAptosノードをデプロイおよび運用する方法について、詳細な手順を説明します。また、ステーキングとコンセンサスおよびガバナンスに参加するために必要なすべてについても説明します。
+
+## クイックリンク
+
+### Aptosでのバリデーション
+
+Aptosでのバリデーション、ステーキング、ガバナンスの仕組みについて知っておくべきすべて。
+
+<Cards>
+  <Card href="./blockchain/staking#validation-on-the-aptos-blockchain">
+    <Card.Title>バリデーションの仕組み</Card.Title>
+    <Card.Description>バリデータリーダーが提案し、成功時に報酬を獲得します。</Card.Description>
+  </Card>
+  <Card href="./blockchain/staking#validator-state-and-stake-state">
+    <Card.Title>バリデータの状態</Card.Title>
+    <Card.Description>バリデータがバリデータセットに参加する方法を学びます。</Card.Description>
+  </Card>
+</Cards>
+
+### ステーキング
+
+<Cards>
+  <Card href="./blockchain/staking">
+    <Card.Title>Aptosでのステーキング</Card.Title>
+    <Card.Description>Aptosでのステーキングの仕組みについての包括的なガイド。</Card.Description>
+  </Card>
+  <Card href="./blockchain/governance">
+    <Card.Title>ガバナンス</Card.Title>
+    <Card.Description>誰が提案でき、誰が投票でき、AIPがどのように解決されるか。</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-operations">
+    <Card.Title>オーナー</Card.Title>
+    <Card.Description>ステーキングのために実行されるオーナー操作について説明します。</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-voter">
+    <Card.Title>投票者</Card.Title>
+    <Card.Description>ステーキングのために実行される投票者操作について説明します。</Card.Description>
+  </Card>
+</Cards>
+
+### バリデータとVFN
+
+ノードのデプロイ、ステーキング操作、コンセンサスへの参加に関する包括的なガイド。
+
+<Cards>
+  <Card href="./nodes/validator-node/node-requirements">
+    <Card.Title>ノード要件</Card.Title>
+    <Card.Description>必要な計算リソースとストレージリソースの詳細。他の作業の前にまずこれを読んでください。</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/deploy-nodes">
+    <Card.Title>バリデータノードの実行</Card.Title>
+    <Card.Description>クラウドまたはオンプレミス、Dockerまたはソースコードからのステップバイステップの手順があります。</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/verify-nodes/node-liveness-criteria">
+    <Card.Title>ノードの健全性</Card.Title>
+    <Card.Description>複数のオプションを使用してノードの健全性を確認できます。</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/connect-to-aptos-network">
+    <Card.Title>Aptosネットワークへの接続</Card.Title>
+    <Card.Description>ノードをAptosネットワークに接続するための手順。</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/connect-nodes/staking-pool-operations">
+    <Card.Title>ステーキングプール操作</Card.Title>
+    <Card.Description>ステーキングプール操作を実行する方法のステップバイステップガイド。</Card.Description>
+  </Card>
+  <Card href="./nodes/validator-node/modify-nodes/shutting-down-nodes">
+    <Card.Title>ノードのシャットダウン</Card.Title>
+    <Card.Description>まずバリデータセットを離れ、その後ノードをシャットダウンします。</Card.Description>
+  </Card>
+</Cards>
+
+### パブリックフルノード（PFN）
+
+Aptos PFNに関するすべての詳細な手順を説明するセクション。
+
+<Cards>
+  <Card href="./nodes/full-node/deployments">
+    <Card.Title>PFNのデプロイ</Card.Title>
+    <Card.Description>このセクションに従ってPFNをデプロイします。</Card.Description>
+  </Card>
+  <Card href="../build/indexer/legacy/indexer-fullnode">
+    <Card.Title>インデクサーPFN</Card.Title>
+    <Card.Description>AptosネットワークでインデクサーPFNを実行する方法について説明します。</Card.Description>
+  </Card>
+</Cards>
+
+### 一般的な操作
+
+<Cards>
+  <Card href="./nodes/localnet/local-development-network">
+    <Card.Title>ローカルネットで開発</Card.Title>
+    <Card.Description>開発用のローカルネットを実行します（バリデータノードを含む）。</Card.Description>
+  </Card>
+  <Card href="./nodes/full-node/modify/update-fullnode-with-new-releases">
+    <Card.Title>PFNのアップグレード</Card.Title>
+    <Card.Description>新しいリリースでノードをアップグレードします。</Card.Description>
+  </Card>
+  <Card href="./nodes/bootstrap-fullnode/bootstrap-fullnode">
+    <Card.Title>スナップショットからのブートストラップ</Card.Title>
+    <Card.Description>スナップショットを使用して新しいノードをブートストラップします。</Card.Description>
+  </Card>
+  <Card href="./nodes/bootstrap-fullnode/aptos-db-restore">
+    <Card.Title>バックアップからのブートストラップ</Card.Title>
+    <Card.Description>データ復元を使用して新しいノードをブートストラップします。</Card.Description>
+  </Card>
+</Cards>

@@ -1,0 +1,64 @@
+---
+title: "インデクサー API アクセス"
+---
+
+# インデクサー API アクセス
+
+import { IndexerBetaNotice, Card, Cards } from '@components/index';
+import { Callout } from 'nextra/components';
+
+<IndexerBetaNotice />
+
+Aptos Labsは、誰でもオンチェーンのトランザクション、ファンジブルアセット、トークンに関する基本的な履歴データや集計データを取得できるインデクサーGraphQL APIのパブリックバージョンを提供しています。
+
+以下のHasuraエクスプローラーを使用して、興味のあるネットワークのデータを手動で探索できます。
+
+また、以下のGraphQLエンドポイントを介してAPIにアクセスすることもできます。各フィールド/テーブルのデータ形式の詳細については、[テーブルリファレンスページ](indexer-reference.mdx)を参照してください。
+
+## SDK アクセス（主要な方法）
+
+インデクサーを使用する主な方法は、[TypeScript SDK](../sdks/ts-sdk/fetch-data-via-sdk.mdx)を通じてアクセスすることです。
+
+TypeScript SDKは自動的にレート制限を処理し、必要なデータに応じて[フルノードREST API](../apis/fullnode-rest-api.mdx)アクセスとインデクサーアクセスの両方をシームレスに提供できます。
+
+## Hasuraエクスプローラー（手動クエリ）
+
+<Callout type="info">
+これらのテーブルの内容に関する詳細なリファレンス資料については、[インデクサーテーブルリファレンスページ](./indexer-reference.mdx)を参照してください。
+</Callout>
+
+Hasuraエクスプローラーを使用して無料のAptos提供のインデクサーAPIを探索するネットワークを選択してください：
+
+<Cards>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql">
+    <Card.Title linkType="external">**メインネット**</Card.Title>
+    <Card.Description>Aptosメインネット用のHasura GraphQLエクスプローラー</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.testnet.aptoslabs.com/v1/graphql">
+    <Card.Title linkType="external">**テストネット**</Card.Title>
+    <Card.Description>Aptosテストネット用のHasura GraphQLエクスプローラー</Card.Description>
+  </Card>
+  <Card href="https://cloud.hasura.io/public/graphiql?endpoint=https://api.devnet.aptoslabs.com/v1/graphql">
+    <Card.Title linkType="external">**デブネット**</Card.Title>
+    <Card.Description>Aptosデブネット用のHasura GraphQLエクスプローラー</Card.Description>
+  </Card>
+</Cards>
+
+## GraphQL APIエンドポイント（直接アクセス）
+
+Aptos Labs提供のインデクサーAPIに直接GraphQLクエリを実行する必要がある場合は、以下のエンドポイントを使用してください：
+
+- **メインネット:** `https://api.mainnet.aptoslabs.com/v1/graphql`
+- **テストネット:** `https://api.testnet.aptoslabs.com/v1/graphql`
+- **デブネット:** `https://api.devnet.aptoslabs.com/v1/graphql`
+
+### レート制限
+
+Aptos Labs提供のインデクサーAPIには以下のレート制限が適用されます：
+
+- クライアントから直接このAptos提供のインデクサーAPIを呼び出すWebアプリケーション（ウォレットやエクスプローラーなど）の場合、現在のレート制限はIPアドレスごとに5分間で5000リクエストです。**このレート制限は事前の通知なく変更される可能性があることにご注意ください。**
+
+より高いレート制限が必要な場合は、以下の解決策を検討してください：
+
+1. [APIゲートウェイ](https://developers.aptoslabs.com/)からAPIキーを取得する。
+2. AptosインデクサーAPIを自身でホストする。[こちら](self-hosted.mdx)のガイドを参照してください。

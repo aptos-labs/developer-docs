@@ -1,0 +1,92 @@
+import { Callout } from "nextra/components";
+
+# Sponsored Transactions (Fee Payer)
+
+The Kotlin SDK provides support for sponsored transactions also known as fee
+payer transactions.
+
+The standard flow for sending a sponsored transaction is as follows:
+
+1. Determine upon **operation** by creating a **Transaction**
+2. The **sender signs** the transaction
+3. The **fee payer** signs the transaction
+4. **Submit** the transaction
+
+## Determine Upon Operation
+
+As we'd already seen in the previous section, you can build a transaction by yourself
+using the `buildTransaction.simple` method or use the pre-built transaction builders
+like `transferCoinTransaction`. However, in the case of sponsored transactions, you
+need to specify the optional `withFeePayer` parameter as `true` in all cases.
+
+```kotlin
+val txn = aptos.buildTransaction.simple(
+      sender = alice.accountAddress,
+      data =
+        entryFunctionData {
+          function = "0x1::coin::transfer"
+          typeArguments = typeArguments { +TypeTagStruct("0x1::aptos_coin::AptosCoin") }
+          functionArguments = functionArguments {
+            +bob.accountAddress
+            +U64(SEND_AMOUNT_UNITS.toULong())
+          }
+        },
+      withFeePayer = true,
+    )
+```
+
+OR
+
+```kotlin
+val txn = aptos.transferCoinTransaction(
+      sender = alice,
+      receiver = bob.accountAddress,
+      amount = SEND_AMOUNT_UNITS,
+      withFeePayer = true,
+    )
+```
+
+## Sign the Transaction
+
+Once you have built a transaction, you (the sender) can sign it using the `sign`
+method.
+
+```kotlin
+val aliceAuthenticator = aptos.sign(
+    sender = alice,
+    transaction = txn,
+)
+```
+
+## Sign the Transaction as Fee Payer
+
+To sign the transaction as a fee payer, you can use the `signAsFeePayer` method.
+
+```kotlin
+val signerAuthenticator = aptos.signAsFeePayer(
+    feePayer = sponsor,
+    transaction = txn,
+)
+```
+
+## Submit the Transaction
+
+Finally, you can submit the transaction to the network using the `submit` method.
+
+```kotlin
+val committedTxn = aptos.submitTransaction.simple(
+      transaction = txn,
+      senderAuthenticator = aliceAuthenticator,
+      feePayerAuthenticator = signerAuthenticator,
+    )
+```
+
+<Callout type="info" emoji="ℹ️">
+  You can collapse the fee payer signing and submitting steps into one by using the `signAndSubmitAsFeePayer` method.
+
+```kotlin
+  val committedTxn = aptos.signAndSubmitAsFeePayer(sponsor, aliceAuthenticator, txn)
+```
+</Callout>
+
+

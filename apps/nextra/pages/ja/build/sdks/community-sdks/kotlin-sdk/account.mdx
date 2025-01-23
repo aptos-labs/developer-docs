@@ -1,0 +1,81 @@
+---
+title: "Creating and Managing Accounts"
+---
+
+# Creating and Managing Accounts
+
+**Kaptos** provides a few ways to generate account credentials, both _legacy_ and
+`SingleKeyAccount`s. You can either generate a new account or derive
+an account from a private key.
+
+## Legacy Account
+
+**Kaptos** offers a straightforward method to generate a legacy account using the
+`Account` class. By invoking the static method `generate()`, you can create a new
+legacy account either by passing no arguments or by explicitly setting
+the `scheme` to `SigningSchemeInput.Ed25519` and the `legacy` property to `true` as
+shown below.
+### Generate a New Account
+
+To create a new legacy account, you can generate a new account credential using the
+`Account.generate()` method. This method will create a new account with a new
+key pair.
+
+```kotlin
+val account = Account.generate()
+```
+
+You can also use the `Ed25519Account` class that provides a **nullary** method,
+`generate()`, to create a new account:
+
+```kotlin
+val account = Ed25519Account.generate()
+```
+
+### Derive an Account from a Private Key
+
+If you have a private key, you can use it to create an `Account` object to manage
+those credentials.
+
+```kotlin
+val privateKey = Ed25519PrivateKey("myEd25519privatekeystring")
+
+val account = Account.fromPrivateKey(privateKey)
+```
+
+## Single Key Account
+
+The SDK offers two ways to generate a single key account: using either the
+`SingleKeyAccount` or the `Account` class. In both cases, you can create a
+new account by calling the static `generate()` method. You’ll need to specify
+the `scheme`, and for the `Account` class, you can optionally set the `legacy`
+property to `false`.
+
+```kotlin
+val secp256k1SKAccount = SingleKeyAccount.generate(SigningSchemeInput.Secp256k1)
+val ed25519SKAccount = SingleKeyAccount.generate(SigningSchemeInput.Ed25519)
+```
+
+Using the `Account` class, you can create a new single key account by setting
+the `scheme` to `SigningSchemeInput.Secp256k1` and optionally setting the
+`legacy` property to `false`. Alternatively, you can set the `scheme` to
+`SigningSchemeInput.Ed25519` and ensure the `legacy` property is also
+set to `false`.
+
+```kotlin
+val secp256k1SKAccount = Account.generate(scheme = SigningSchemeInput.Secp256k1)
+val ed25519SKAccount = Account.generate(scheme = SigningSchemeInput.Ed25519, legacy = false)
+```
+
+## On-chain Account Creation
+
+It is also worth noting that Account generation does not create the account
+on-chain. You must fund the account on-chain to use it for transactions.
+On test networks, you can fund an account programmatically by asking a
+"faucet" for test tokens. You can do this as shown below:
+
+```kotlin
+val fundedAccount = aptos.fundAccount(aliceAccount.accountAddress, FUNDING_AMOUNT)
+```
+
+This only works on devnet. On testnet you can mint at the [mint page](/network/faucet).

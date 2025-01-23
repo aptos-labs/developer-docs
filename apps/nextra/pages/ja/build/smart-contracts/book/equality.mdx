@@ -1,0 +1,176 @@
+# 等値性
+
+Moveは2つの等値演算子`==`と`!=`をサポートしています。
+
+## 演算子
+
+| 構文 | 演算 | 説明 |
+| ------ | --------- | --------------------------------------------------------------------------- |
+| `==` | 等しい | 2つのオペランドが同じ値を持つ場合は`true`を、そうでない場合は`false`を返します |
+| `!=` | 等しくない | 2つのオペランドが異なる値を持つ場合は`true`を、そうでない場合は`false`を返します |
+
+### 型付け
+
+等値（`==`）と不等値（`!=`）の両演算は、両方のオペランドが同じ型である場合にのみ機能します。
+
+```move
+script {
+  fun example() {
+    0 == 0; // `true`
+    1u128 == 2u128; // `false`
+    b"hello" != x"00"; // `true`
+  }
+}
+```
+
+等値性と不等値性はユーザー定義型でも機能します！
+
+```move
+module 0x42::example {
+    struct S has copy, drop { f: u64, s: vector<u8> }
+
+    fun always_true(): bool {
+        let s = S { f: 0, s: b"" };
+        // 括弧は必要ありませんが、この例では明確にするために追加しています
+        (copy s) == s
+    }
+
+    fun always_false(): bool {
+        let s = S { f: 0, s: b"" };
+        // 括弧は必要ありませんが、この例では明確にするために追加しています
+        (copy s) != s
+    }
+}
+```
+
+オペランドの型が異なる場合は、型チェックエラーが発生します
+
+```move
+script {
+  fun example() {
+    1u8 == 1u128; // エラー！
+    //     ^^^^^ 'u8'型の引数が期待されています
+    b"" != 0; // エラー！
+    //     ^ 'vector<u8>'型の引数が期待されています
+  }
+}
+```
+
+### 参照での型付け
+
+[参照](references.mdx)を比較する場合、参照の型（不変または可変）は問題になりません。これは、同じ基底型の不変参照`&`と可変参照`&mut`を比較できることを意味します。
+
+```move
+script {
+  fun example() {
+    let i = &0;
+    let m = &mut 1;
+
+    i == m; // `false`
+    m == i; // `false`
+    m == m; // `true`
+    i == i; // `true`
+  }
+}
+```
+
+上記は、必要に応じて各可変参照に明示的なフリーズを適用するのと同じです
+
+```move
+script {
+  fun example() {
+    let i = &0;
+    let m = &mut 1;
+
+    i == freeze(m); // `false`
+    freeze(m) == i; // `false`
+    m == m; // `true`
+    i == i; // `true`
+  }
+}
+```
+
+ただし、基底型は同じ型でなければなりません
+
+```move
+script {
+  fun example() {
+    let i = &0;
+    let s = &b"";
+
+    i == s; // エラー！
+    //   ^ '&u64'型の引数が期待されています
+  }
+}
+```
+
+## 制限事項
+
+`==`と`!=`は比較時に値を消費します。その結果、型システムは型が[`drop`](abilities.mdx)を持つことを強制します。[`drop`アビリティ](abilities.mdx)がない場合、所有権は関数の終わりまでに移転する必要があり、そのような値は宣言モジュール内でのみ明示的に破棄できることを思い出してください。これらが等値`==`または不等値`!=`で直接使用された場合、値は破棄され、[`drop`アビリティ](abilities.mdx)の安全性保証が破られてしまいます！
+
+```move
+module 0x42::example {
+  struct Coin has store { value: u64 }
+  fun invalid(c1: Coin, c2: Coin) {
+    c1 == c2 // エラー！
+//  ^^    ^^ これらのリソースが破棄されてしまいます！
+  }
+}
+```
+
+ただし、プログラマーは値を直接比較する代わりに、_常に_値を借用することができ、参照型は[`drop`アビリティ](abilities.mdx)を持っています。例えば：
+
+```move
+module 0x42::example {
+  struct Coin has store { value: u64 }
+  fun swap_if_equal(c1: Coin, c2: Coin): (Coin, Coin) {
+    let are_equal = &c1 == &c2; // 有効
+    if (are_equal) (c2, c1) else (c1, c2)
+  }
+}
+```
+
+## 不要なコピーを避ける
+
+プログラマーは[`drop`](abilities.mdx)を持つ任意の値を比較_できますが_、高価なコピーを避けるために参照で比較することが多いでしょう。
+
+```move
+script {
+  fun example() {
+    let v1: vector<u8> = function_that_returns_vector();
+    let v2: vector<u8> = function_that_returns_vector();
+    assert!(copy v1 == copy v2, 42);
+    //     ^^^^       ^^^^
+    use_two_vectors(v1, v2);
+
+    let s1: Foo = function_that_returns_large_struct();
+    let s2: Foo = function_that_returns_large_struct();
+    assert!(copy s1 == copy s2, 42);
+    //     ^^^^       ^^^^
+    use_two_foos(s1, s2);
+  }
+}
+```
+
+このコードは完全に受け入れ可能です（`Foo`が[`drop`](abilities.mdx)を持っていると仮定して）が、効率的ではありません。
+強調表示されたコピーを削除し、借用に置き換えることができます：
+
+```move
+script {
+  fun example() {
+    let v1: vector<u8> = function_that_returns_vector();
+    let v2: vector<u8> = function_that_returns_vector();
+    assert!(&v1 == &v2, 42);
+    //     ^      ^
+    use_two_vectors(v1, v2);
+
+    let s1: Foo = function_that_returns_large_struct();
+    let s2: Foo = function_that_returns_large_struct();
+    assert!(&s1 == &s2, 42);
+    //     ^      ^
+    use_two_foos(s1, s2);
+  }
+}
+```
+
+`==`自体の効率は同じままですが、`copy`が削除されたためプログラムはより効率的になります。

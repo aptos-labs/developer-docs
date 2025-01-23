@@ -1,0 +1,114 @@
+# 定数
+
+定数は、`module`や`script`内で共有される静的な値に名前を付ける方法です。
+
+定数の値はコンパイル時に決定される必要があります。定数の値はコンパイルされたモジュールまたはスクリプトに格納され、定数が使用されるたびに、その値の新しいコピーが作成されます。
+
+## 宣言
+
+定数の宣言は`const`キーワードで始まり、その後に名前、型、値が続きます。定数はスクリプトまたはモジュールのいずれかに存在できます。
+
+```text
+const <n>: <type> = <expression>;
+```
+
+例えば：
+
+```move
+script {
+  const MY_ERROR_CODE: u64 = 0;
+
+  fun main(input: u64) {
+    assert!(input > 0, MY_ERROR_CODE);
+  }
+}
+
+module 0x42::example {
+  const MY_ADDRESS: address = @0x42;
+
+  public fun permissioned(s: &signer) {
+    assert!(std::signer::address_of(s) == MY_ADDRESS, 0);
+  }
+}
+```
+
+## 命名規則
+
+定数は大文字`A`から`Z`で始まる必要があります。最初の文字の後は、アンダースコア`_`、小文字`a`から`z`、大文字`A`から`Z`、数字`0`から`9`を含めることができます。
+
+```move
+script {
+  const FLAG: bool = false;
+  const MY_ERROR_CODE: u64 = 0;
+  const ADDRESS_42: address = @0x42;
+}
+```
+
+定数には小文字`a`から`z`を使用できますが、[一般的なスタイルガイドライン](coding-conventions.mdx)では、単語間にアンダースコア`_`を入れた大文字`A`から`Z`のみを使用することを推奨しています。
+
+この`A`から`Z`で始まるという命名制限は、将来の言語機能のために設けられています。この制限は後に削除される可能性があります。
+
+## 可視性
+
+現在、`public`定数はサポートされていません。`const`値は宣言されたモジュール内でのみ使用できます。
+
+## 有効な式
+
+現在、定数は`bool`、`u8`、`u16`、`u32`、`u64`、`u128`、`u256`、`address`、`vector<u8>`のプリミティブ型に限定されています。他の`vector`値（"文字列"スタイルのリテラル以外）のサポートは後日追加される予定です。
+
+### 値
+
+一般的に、`const`には型に応じた単純な値またはリテラルが割り当てられます。例えば：
+
+```move
+script {
+  const MY_BOOL: bool = false;
+  const MY_ADDRESS: address = @0x70DD;
+  const BYTES: vector<u8> = b"hello world";
+  const HEX_BYTES: vector<u8> = x"DEADBEEF";
+}
+```
+
+### 複雑な式
+
+リテラルに加えて、コンパイラがコンパイル時に式を値に還元できる限り、定数はより複雑な式を含むことができます。
+
+現在、等価演算、すべてのブール演算、すべてのビット演算、およびすべての算術演算を使用できます。
+
+```move
+script {
+    // 算術演算
+    const CONST_U64: u64 = 0 + 1 + 2 + 3;
+    const CONST_U128: u128 = 1000 - 42;
+    
+    // ビット演算
+    const CONST_SHIFT: u8 = 1 << 2;
+    const CONST_AND: u128 = 0x11 & 0x10;
+    
+    // ブール演算
+    const CONST_OR: bool = true || false;
+    const CONST_AND_BOOL: bool = true && true;
+    
+    // 等価演算
+    const CONST_EQUAL: bool = 1 == 1;
+    const CONST_NOT_EQUAL: bool = 1 != 2;
+    
+    // 複合式
+    const CONST_COMPLEX: u64 = {
+        let x = 1 + 2;
+        let y = x * 3;
+        x + y
+    };
+}
+```
+
+## 制限事項
+
+定数式には以下の制限があります：
+
+- 関数呼び出しは許可されません
+- グローバル記憶域の操作は許可されません
+- ブロック内の最後の式のみが値を生成できます
+- 変数は定数式内でのみ使用できます
+
+これらの制限は、定数の値がコンパイル時に決定可能であることを保証するために設けられています。

@@ -1,0 +1,130 @@
+---
+title: "Table"
+---
+
+# Table
+
+`Table`は、大量のデータをテーブル形式で管理するための柔軟で効率的な方法を提供します。各テーブル項目は個別のグローバル状態項目として表現され、スケーラブルなストレージソリューションを実現します。
+
+## Tableの主な機能
+
+### 構造
+
+`Table`構造体は、大規模なストレージを効率的に処理するように設計されています：
+
+- `handle`：テーブルを一意に識別するアドレス
+
+### 定数
+
+モジュール内で使用される各種エラーコードを定義する定数（これらは提供されたコードでは暗黙的に示されています）：
+
+- `ENOT_FOUND`：テーブルにキーが見つからない
+- `EALREADY_EXIST`：キーが既にテーブルに存在する
+- `EINVALID_ARGUMENT`：関数に無効な引数が渡された
+
+### API概要
+
+#### テーブルの作成
+
+- `new<K: copy + drop, V: store>(): Table<K, V>`：新しいテーブルを作成
+
+#### エントリの管理
+
+- `add<K: copy + drop, V>(table: &mut Table<K, V>, key: K, val: V)`：テーブルにキーと値のペアを追加。キーが既に存在する場合は中断
+- `remove<K: copy + drop, V>(table: &mut Table<K, V>, key: K): V`：キーに関連付けられた値を削除して返す。キーが見つからない場合は中断
+- `upsert<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, value: V)`：キーと値のペアを挿入または更新
+
+#### エントリの取得
+
+- `borrow<K: copy + drop, V>(table: &Table<K, V>, key: K): &V`：キーに関連付けられた値への不変参照を返す。キーが見つからない場合は中断
+- `borrow_with_default<K: copy + drop, V>(table: &Table<K, V>, key: K, default: &V): &V`：キーに関連付けられた値、またはキーが見つからない場合はデフォルト値を返す
+- `borrow_mut<K: copy + drop, V>(table: &mut Table<K, V>, key: K): &mut V`：キーに関連付けられた値への可変参照を返す。キーが見つからない場合は中断
+- `borrow_mut_with_default<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, default: V): &mut V`：キーが見つからない場合はキーと値のペアを挿入し、値への可変参照を返す
+
+#### ユーティリティ関数
+
+- `contains<K: copy + drop, V>(table: &Table<K, V>, key: K): bool`：テーブルにキーが含まれているかどうかを確認
+
+## 使用例
+
+### テーブルの作成と使用
+
+```move filename="table.move"
+module 0x42::table_usage {
+    use aptos_std::table;
+
+    public entry fun main() {
+        let table = table::new<u64, u64>();
+        table::add(&mut table, 1, 100);
+        table::add(&mut table, 2, 200);
+
+        let value1 = table::borrow(&table, 1);
+        assert!(*value1 == 100, 0);
+
+        let value2 = table::borrow(&table, 2);
+        assert!(*value2 == 200, 0);
+
+        let removed_value = table::remove(&mut table, 1);
+        assert!(removed_value == 100, 0);
+
+        let contains_key = table::contains(&table, 2);
+        assert!(contains_key, 0);
+
+        // 注意：関数の最後でテーブルはリソースに格納される必要があります
+    }
+}
+```
+
+### 複数エントリの追加とアップサート
+
+```move filename="table.move"
+module 0x42::table_usage {
+    use aptos_std::table;
+
+    public fun add_and_upsert_entries() {
+        let table = table::new<u64, u64>();
+        table::add(&mut table, 1, 100);
+        table::upsert(&mut table, 1, 200);
+        table::upsert(&mut table, 2, 300);
+
+        let value1 = table::borrow(&table, 1);
+        assert!(*value1 == 200, 0);
+
+        let value2 = table::borrow(&table, 2);
+        assert!(*value2 == 300, 0);
+
+        // 注意：関数の最後でテーブルはリソースに格納される必要があります
+    }
+}
+```
+
+### 可変参照の借用
+
+```move filename="table.move"
+module 0x42::table_usage {
+    use aptos_std::table;
+
+    public fun borrow_mutable_references() {
+        let table = table::new<u64, u64>();
+        table::add(&mut table, 1, 100);
+
+        let value_mut = table::borrow_mut(&mut table, 1);
+        *value_mut = 200;
+
+        let value = table::borrow(&table, 1);
+        assert!(*value == 200, 0);
+
+        // 注意：関数の最後でテーブルはリソースに格納される必要があります
+    }
+}
+```
+
+## ソースコード
+
+- [table.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/table.move)
+
+## その他の例
+
+- [Move Spidersのテーブルチュートリアル](https://movespiders.com/courses/modules/datastructures/lessonId/4)
+- [Move SpidersのFullNodeを介したテーブルクエリ](https://movespiders.com/courses/modules/datastructures/lessonId/9)
+- [Move SpidersのView関数を介したテーブルクエリ](https://movespiders.com/courses/modules/datastructures/lessonId/10)

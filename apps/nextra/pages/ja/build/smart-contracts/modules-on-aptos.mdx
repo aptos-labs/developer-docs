@@ -1,0 +1,20 @@
+---
+title: "Aptos上のモジュール"
+---
+import { Callout } from "nextra/components";
+
+# Aptos上のモジュール
+
+Aptosでは、[パッケージ](book/packages.mdx)内の[モジュール](book/modules-and-scripts.mdx)を許可なしで公開することができ、適切な互換性ポリシーが設定されている場合は[アップグレード](book/package-upgrades.mdx)も可能です。
+
+モジュールには、Rustと同様に、複数の構造体と関数が含まれています。
+
+パッケージの公開時には、以下の制約が維持されます：
+
+- 構造体とパブリック関数のシグネチャは不変として公開されます。
+- モジュールが初めて公開される時のみ（アップグレード時ではなく）、VMは`init_module(account: &signer)`関数を検索して実行します。モジュールを公開しているアカウントの署名者が、コントラクトの`init_module`関数に渡されます。**この関数はプライベートでなければならず、値を返してはいけません。**
+
+<Callout type="info">
+`init_module`はオプションです
+これは、モジュールを初めて公開する際にデータを初期化する必要がある場合にのみ必要です。
+</Callout>

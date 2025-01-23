@@ -1,0 +1,62 @@
+---
+title: "オブジェクトを使った開発"
+---
+
+# Move オブジェクト
+Moveでは、オブジェクトはリソースをグループ化して、チェーン上で単一のエンティティとして扱えるようにします。
+
+オブジェクトは独自のアドレスを持ち、アカウントと同様にリソースを所有できます。オブジェクトはエントリー関数で直接使用でき、リソースを1つずつではなく完全なパッケージとして転送できるため、チェーン上のより複雑なデータ型を表現するのに便利です。
+
+以下はオブジェクトの作成と転送の例です：
+
+```move filename="Example.move"
+module my_addr::object_playground {
+  use std::signer;
+  use std::string::{Self, String};
+  use aptos_framework::object::{Self, ObjectCore};
+
+  struct MyStruct1 has key {
+    message: String,
+  }
+
+  struct MyStruct2 has key {
+    message: String,
+  }
+
+  entry fun create_and_transfer(caller: &signer, destination: address) {
+    // Create object
+    let caller_address = signer::address_of(caller);
+    let constructor_ref = object::create_object(caller_address);
+    let object_signer = object::generate_signer(&constructor_ref);
+
+    // Set up the object by creating 2 resources in it
+    move_to(&object_signer, MyStruct1 {
+      message: string::utf8(b"hello")
+    });
+    move_to(&object_signer, MyStruct2 {
+      message: string::utf8(b"world")
+    });
+
+    // Transfer to destination
+    let object = object::object_from_constructor_ref<ObjectCore>(
+      &constructor_ref
+    );
+    object::transfer(caller, object, destination);
+  }
+}
+```
+
+構築時に、オブジェクトは転送可能かつ拡張可能に設定できます。
+
+例えば、一度だけ転送可能なソウルバウンドNFTをオブジェクトで表現し、画像リンクやメタデータのリソースを所有させることができます。オブジェクトは他のオブジェクトも所有できるため、複数のソウルバウンドNFTを転送することで独自のNFTコレクションオブジェクトを実装することもできます。
+
+## 学習内容
+
+- [新しいオブジェクトの作成と設定](object/creating-objects.mdx)
+- [作成したオブジェクトの使用](object/using-objects.mdx)
+
+## オブジェクトを使用したコントラクトの例
+
+- [デジタルアセットマーケットプレイスの例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/marketplace)
+- [デジタルアセットの例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/token_objects)
+- [ファンジブルアセットの例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset)

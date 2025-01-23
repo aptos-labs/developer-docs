@@ -1,0 +1,429 @@
+---
+title: "Aptos デジタルアセット標準規格"
+---
+
+import { Callout } from 'nextra/components'
+import { ThemedImage, GraphQLEditor } from "@components/index";
+
+# Aptos デジタルアセット (DA) 標準規格
+
+デジタルアセット (DA) 標準規格は、Aptos向けの最新の非代替性トークン (NFT) 標準規格です。NFTはブロックチェーン上で一意のアセットを表現し、コレクション内に保存されます。これらのNFTは、後で転送、ソウルバウンド化、バーン、変更、またはスマートコントラクトを通じてカスタマイズできます。
+
+この標準規格は、レガシーの[Aptosトークン標準規格](aptos-token.mdx)に代わるものです。主な改善点は以下の通りです：
+
+| **改善点** | **説明** |
+|-----------------|-----------------|
+| **トークン拡張** | トークンはMove [オブジェクト](objects.mdx)を使用して実装されているため、簡単に拡張できます。 |
+| **直接NFT転送** | 受信者がオンチェーンで「オプトイン」することなく、NFTを直接転送できるようになりました。 |
+| **NFTの組み合わせ** | NFTは他のNFTを所有でき、簡単に組み合わせることができます。 |
+
+機能をカスタマイズまたは拡張する機能なしにNFTを簡単にミントしたい場合は、DA標準規格を実装した`aptos_token`モジュールを使用できます（使用方法については以下のセクションを参照してください）。
+
+<Callout type="info">
+すべてのデジタルアセットモジュールは予約アドレス`0x4`にデプロイされていることに注意してください。
+</Callout>
+
+## デジタルアセット標準規格の使用
+
+この標準規格は2つのオブジェクトで実装されています：
+
+1. `Collection` - 名前とグループのコンテキストを持つNFTのセット。
+2. `Token` - 一意のアセットを表すデジタルアセット。これらは通常NFTを表現するために使用され、アセットに関する詳細情報（画像、動画などへのリンク）を指すために`uri`リンクを使用します。
+
+<ThemedImage
+alt="デジタルアセットトークンとコレクションの関係"
+sources={{
+    light: '/docs/digital-asset-light.svg',
+    dark: '/docs/digital-asset-dark.svg',
+  }}
+/>
+
+すべての`Token`は親`Collection`への参照を持つ必要がありますが、親`Collection`は`Token`を所有**しません**。新しくミントされた`Token`は通常、作成者が所有します。そこから他のアカウントに転送できます。
+
+## コレクション
+
+| **フィールド** | **説明** |
+|-----------|-----------------|
+| **Description** | 2048文字未満のオプションの文字列（`MutatorRef`で変更可能）。 |
+| **Name** | `Collection`を識別するために必要な文字列。名前は各アカウント内で一意である必要があります。つまり、単一の作成者アカウントは同じ名前の`Collection`を複数作成できません。 |
+| **Royalty** | オプションの[`Royalty`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/royalty.md#0x4_royalty_Royalty)構造体で、販売価格の何%が`Collection`の作成者に支払われるかを示します。これは[Royaltyモジュール](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move)によって生成された`MutatorRef`で変更できます。RoyaltyモジュールはDA標準規格の拡張機能です。使用例は[`aptos_token.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)を参照してください。 |
+| **URI length** | `Collection`の関連コンテンツへのリンクを示す512文字未満のオプションの文字列（`MutatorRef`で変更可能）。 |
+
+### コレクションの作成
+
+コレクションを作成するには、保持できる`Token`の最大供給量に応じて2つの方法があります。
+
+#### 固定最大供給量
+
+固定供給量を持つ`Collection`を作成するには、以下のように`collection::create_fixed_collection`を使用できます：
+
+```move filename="example.move"
+use aptos_token_objects::collection;
+use std::option::{Self, Option};
+
+public entry fun create_collection(creator: &signer) {
+    let max_supply = 1000;
+    let royalty = option::none();
+
+    // 最大供給量はコレクション作成後に変更できません
+    collection::create_fixed_collection(
+        creator,
+        "My Collection Description",
+        max_supply,
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
+    );
+}
+```
+
+#### 無制限供給量
+
+無制限供給量の`Collection`を作成するには、`collection::create_unlimited_collection`を使用できます：
+
+```move filename="example.move"
+use std::option::{Self, Option};
+
+public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
+
+    collection::create_unlimited_collection(
+        creator,
+        "My Collection Description",
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
+    );
+}
+```
+
+<Callout type="warning">
+`Collection`の最大供給量は作成後に変更できません。
+</Callout>
+
+### コレクションのカスタマイズ
+
+各`Collection`は[Moveオブジェクト](objects.mdx)であるため、`Ref`と呼ばれる権限を生成することでカスタマイズできます。各`Ref`により、後でオブジェクトの特定の側面を変更できます。通常の[オブジェクトRef](object/creating-objects.mdx)に加えて、`Collection`は`get_mutator_ref`を呼び出すことで`MutatorRef`を取得できます：
+
+```move filename="example.move"
+use std::option::{Self, Option};
+
+public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
+    let collection_constructor_ref = &collection::create_unlimited_collection(
+        creator,
+        "My Collection Description",
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
+    );
+    let mutator_ref = collection::get_mutator_ref(collection_constructor_ref);
+    // mutator_refを安全な場所に保存
+}
+```
+
+<Callout type="warning">
+`Ref`はオブジェクトの作成時に生成する必要があります。他の`Ref`を生成するために使用される`ConstructorRef`は、オブジェクトを作成するトランザクションが完了するとすぐに期限切れになります。
+</Callout>
+
+スマートコントラクトを通じてリソースや機能を追加することで、`Collection`をさらにカスタマイズできます。例えば、`Token`をミントできるタイミングを制限するために、`Collection`は作成時刻を追跡できます：
+
+```move filename="example.move"
+use std::option::{Self, Option};
+
+struct MyCollectionMetadata has key {
+    creation_timestamp_secs: u64,
+}
+
+public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
+    // Constructor refは新しいオブジェクトを作成する際に返される非保存可能な構造体です。
+    // コレクションオブジェクトにリソースを追加するためのオブジェクトサイナーを生成できます。
+    let collection_constructor_ref = &collection::create_unlimited_collection(
+        creator,
+        "My Collection Description",
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
+    );
+    // Constructor refはコレクションオブジェクトにリソースを追加するためのサイナーと交換できます。
+    let collection_signer = &object::generate_signer(collection_constructor_ref);
+    move_to(collection_signer, MyCollectionMetadata { creation_timestamp_secs: timestamp::now_seconds() } })
+}
+```
+## トークン
+
+| **フィールド** | **説明** |
+|-----------|-----------------|
+| **Description** | 2048文字未満のオプションの文字列（`MutatorRef`で変更可能）。 |
+| **Name** | 各`Collection`内で一意である必要がある`Collection`を識別するための必須の文字列。つまり、単一の`Collection`アカウントは同じ名前の`Token`を複数持つことはできません。 |
+| **Royalty** | オプションの[`Royalty`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/royalty.md#0x4_royalty_Royalty)構造体で、販売価格の何%が`Collection`の作成者に支払われるかを示します。これは[Royaltyモジュール](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move)によって生成された`MutatorRef`で変更できます（DA標準規格の拡張機能です。使用例は[`aptos_token.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)を参照してください）。通常、ロイヤリティはコレクションに設定されますが、`Token`に設定することで、個々の`Token`にカスタムのロイヤリティ額を設定できます。 |
+| **URI length** | `Collection`の関連コンテンツへのリンクを示す512文字未満のオプションの文字列（`MutatorRef`で変更可能）。 |
+
+### トークンの作成
+
+`Token`を作成するには以下のような方法があります：
+
+1. 名前付きトークン。これらは`Token`の名前を使用して名前付きオブジェクトを生成します。トークンと`Collection`の名前がわかれば、トークンのアドレスを簡単に見つけることができますが、名前付きオブジェクトは削除できません。名前付きトークンを削除しようとしても、データのみが削除され、オブジェクト自体は削除されません。
+
+```move filename="example.move"
+use aptos_token_objects::token;
+use std::option::{Self, Option};
+
+public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
+    token::create_named_token(
+        creator,
+        "Collection Name",
+        "Description",
+        "Token Name",
+        royalty,
+        "https://mycollection.com/my-named-token.jpeg",
+    );
+}
+```
+
+<Callout type="info">
+名前付きトークンのアドレスは以下の方法で導出できます：
+1. 作成者アドレス、コレクション名、トークン名を連結します。
+2. その新しい文字列のsha256ハッシュを取得します。
+</Callout>
+
+2. 「名前なし」トークン。これらは名前のない*オブジェクト*（**削除可能**）を作成しますが、`Token`名は持ちます。オブジェクトのアドレスは決定的ではないため、アドレスを見つけるにはIndexerを使用する必要があります。
+
+```move filename="example.move"
+use aptos_token_objects::token;
+use std::option::{Self, Option};
+
+public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
+    token::create(
+        creator,
+        "Collection Name",
+        "Description",
+        "Token Name",
+        royalty,
+        "https://mycollection.com/my-named-token.jpeg",
+    );
+}
+```
+
+### Indexerを使用した名前なしトークンアドレスの検索
+
+[Aptos Indexer](../indexer/aptos-hosted.mdx)を使用して、最近作成した「名前なし」の`Token`のアドレスを以下のようなクエリで検索できます：
+
+1. アカウントアドレスと`Collection`の名前を使用して、コレクションIDを検索します。
+
+<GraphQLEditor
+  query={`query GetCollectionIdByName($creatorAddress: String!, $collectionName: String!) {
+  current_collections_v2(
+    where: {creator_address: {_eq: $creatorAddress}, collection_name: {_eq: $collectionName}}
+  ) {
+    collection_name
+    collection_id
+  }
+}`}
+  variables={`{
+  "creatorAddress": "0x8726af08ea897c35c8137601ce1789992dacdd0eb0b724531a4e7dea035d950f",
+  "collectionName": "Horse Emojis"
+}`}
+/>
+
+2. 次に、（上記の）`collection_id`とトークンの名前を使用して、`Token`のアドレス（`token_data_id`）を検索します：
+
+<GraphQLEditor
+  query={`query GetTokenID($collection_id: String!, $token_name: String!) {
+  current_token_datas_v2(
+    where: {collection_id: {_eq: $collection_id}, token_name: {_eq: $token_name}}
+  ) {
+    token_name
+    description
+    token_data_id
+  }
+}`}
+  variables={`{
+  "collection_id": "0x158dc6481aec80004d0f21a8994757e3c8203fc37b0f508be2a5364ad99e649e",
+  "token_name": "Horse Emojis #127"
+}`}
+/>
+
+<Callout type="info">
+一般的に、名前なしトークンを使用すると、後でオブジェクトを削除できるため最も柔軟性がありますが、名前付きトークンはアドレスの検索を簡単にします。
+</Callout>
+
+### トークンの使用
+
+#### トークンの転送
+
+`Token`の転送は[`object::transfer`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-framework/doc/object.md#0x1_object_transfer)を呼び出すことで実行できます。
+
+```move filename="example.move"
+public entry fun transfer<T: key>(owner: &signer, object: object::Object<T>, to: address)
+```
+
+#### トークンのバーン
+
+トークンをバーン/削除するには、`token::generate_burn_ref`で`BurnRef`を保存し、その後`token::burn`を呼び出す必要があります。
+
+```move filename="example.move"
+module 0x42::example {
+  use std::option;
+  use aptos_token_objects::token::{Self, BurnRef, Token};
+  use std::string::utf8;
+  use aptos_framework::object::{Self, Object};
+
+  struct CustomData has key, drop { 
+    burn_ref: BurnRef,
+  }
+
+  public entry fun mint_token(creator: &signer) {
+    let token_constructor_ref = &token::create(
+      creator,
+      utf8(b"My Collection"),
+      utf8(b"My named Token description"),
+      utf8(b"My named token"),
+      option::none(),
+      utf8(b"https://mycollection.com/my-named-token.jpeg"),
+    );
+
+    let token_signer = &object::generate_signer(token_constructor_ref);
+
+    let burn_ref = token::generate_burn_ref(token_constructor_ref);
+        
+    // Store the burn ref somewhere safe
+    move_to(token_signer, CustomData {
+      burn_ref,
+    });
+  }
+
+  public entry fun burn_token(token: Object<Token>) acquires CustomData {
+    let token_address = object::object_address(&token);
+    // Remove all custom data from the token object.
+    // Retrieve the burn ref from storage
+    let CustomData { burn_ref } = move_from<CustomData>(token_address);
+    // Burn the token
+    token::burn(burn_ref);
+  }
+}
+```
+
+<Callout type="warning">
+カスタムリソースがトークンに移動された場合、`token::burn`がトークンを削除する前に、それらを最初に削除する必要があります。削除できない名前付きトークンの場合、`token::burn`はトークンのコンテンツをすべて削除します。
+</Callout>
+
+#### 作成後のトークンの変更
+
+トークンの`URI`や`description`を変更するには、`MutatorRef`が必要です（これはトークン作成時に生成し、後で使用するために保存する必要があります）。
+
+```move filename="example.move"
+module 0x42::example {
+  use std::option;
+  use aptos_token_objects::token::{Self, MutatorRef, Token};
+  use std::string::utf8;
+  use aptos_framework::object::{Self, Object};
+
+  struct CustomData has key, drop { 
+    mutator_ref: MutatorRef,
+  }
+
+  public entry fun mint_token(creator: &signer) {
+    // Constructor refは新しいオブジェクトを作成する際に返される保存不可能な構造体です。
+    // トークンオブジェクトにリソースを追加するためにsignerと交換できます。
+    let token_constructor_ref = &token::create(
+      creator,
+      utf8(b"My Collection"),
+      utf8(b"My named Token description"),
+      utf8(b"My named Token"),
+      option::none(),
+      utf8(b"https://mycollection.com/my-named-token.jpeg"),
+    );
+
+    let token_signer = &object::generate_signer(token_constructor_ref);
+    
+    let mutator_ref = token::generate_mutator_ref(token_constructor_ref);
+    
+    // mutator refを安全な場所に保存
+    move_to(token_signer, CustomData {
+      mutator_ref,
+    });
+  }
+
+  public entry fun mutate_token(token: Object<Token>) acquires CustomData {
+    let token_address = object::object_address(&token);
+    // ストレージからmutator refを取得
+    let CustomData { mutator_ref } = move_from<CustomData>(token_address);
+    // トークンの説明を変更
+    token::set_description(&mutator_ref, utf8(b"This is my named Token description"));
+  }
+}
+```
+
+<Callout type="warning">
+ロイヤリティを変更するには、[Royaltyモジュール](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move)から*別の* `MutatorRef` を生成する必要があります。
+</Callout>
+
+#### トークンの拡張
+
+`Token`は追加のリソースを追加する（オブジェクトであるため）か、`Ref`を使用してオブジェクトを変更することで拡張できます。
+
+## Aptos Token
+
+NFTの動作に関する独自のロジックを書くことを避けたいNFTクリエイターは、[`aptos_token`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)モジュールを使用してNFTをミントできます。このモジュールは既に`0x4`にデプロイされており、以下のことができます：
+
+1. ロイヤリティ付きで転送可能な`Token`をミントする。
+2. ソウルバウンドな`Token`をミントする。
+3. NFTが持つリソースを管理する。
+
+使用可能なすべてのヘルパー関数については、`aptos_token`の[リファレンスドキュメント](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/aptos_token.md)を参照してください。
+
+<Callout type="warning">
+`aptos_token`モジュールを使用する主なデメリットは、トークンが拡張できないことです（`mint`関数が`ConstructorRef`を返さないため）。
+</Callout>
+
+### `aptos_token`でのミント
+
+`aptos_token`を使用して`Token`をミントする場合、DA標準規格を実装する任意のトークンと同じパラメータが必要です。さらに、`aptos_token`モジュールでは、特定のNFTに必要な他のプロパティのためのキー/値ペアのプロパティマップを指定できます。
+
+以下のように`aptos_token::mint`を呼び出して`Token`をミントできます：
+
+```move filename="example.move"
+public entry fun mint(
+    creator: &signer,
+    collection: String,
+    description: String,
+    name: String,
+    uri: String,
+    property_keys: vector<String>,
+    property_types: vector<String>,
+    property_values: vector<vector<u8>>,
+) acquires AptosCollection, AptosToken
+```
+
+#### ソウルバウンドトークン
+
+ソウルバウンドな`Token`をミントするには、代わりに[`aptos_token::mint_soul_bound`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/aptos_token.md#0x4_aptos_token_mint_soul_bound)を呼び出すことができます：
+
+```move filename="example.move"
+public entry fun mint_soul_bound(
+    creator: &signer,
+    collection: String,
+    description: String,
+    name: String,
+    uri: String,
+    property_keys: vector<String>,
+    property_types: vector<String>,
+    property_values: vector<vector<u8>>,
+    soul_bound_to: address,
+) acquires AptosCollection
+```
+
+<Callout type="warning">
+近い将来、新しいモジュール`TokenMinter`が`aptos_token`に代わってリリースされる予定です。この提案の状況は[こちら](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-72.md)で確認できます。
+</Callout>
+
+## 例と参考リンク
+
+- [デジタルアセットの例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/token_objects)
+- [デジタルアセットマーケットプレイスの例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/marketplace)
+- [ソースコード](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/token.move)
+- [`aptos_token`のソースコード](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)

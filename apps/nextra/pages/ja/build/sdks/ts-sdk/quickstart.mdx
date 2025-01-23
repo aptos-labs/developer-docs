@@ -1,0 +1,341 @@
+---
+title: "TypeScript SDK クイックスタート"
+---
+
+import { Callout, Steps, Tabs } from 'nextra/components'
+
+# TypeScript SDK クイックスタート
+
+<Callout type="info">
+完全なサンプルコードは、ページ下部の[完全なクイックスタートコード](#full-quickstart-code)で確認できます。
+</Callout>
+
+<Steps>
+
+### プロジェクトの初期化
+
+以下のコマンドで`quickstart.ts`を含むTypeScriptパッケージを初期化します。
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+    ```bash
+    npm init && npm add -D typescript @types/node ts-node && npx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pnpm init && pnpm add -D typescript @types/node ts-node && pnpx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    yarn init -y && yarn add -D typescript @types/node ts-node && npx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### 初期化のテスト
+
+パッケージが正しく初期化されたかテストするために、以下のコマンドを実行します：
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+    ```bash
+    npx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pnpx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    yarn ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### お好みのパッケージマネージャーを使用してTypeScript SDKをインストール：
+
+```bash npm2yarn
+npm i @aptos-labs/ts-sdk
+```
+
+### `Aptos`クライアントのセットアップ
+
+`Aptos`オブジェクトを使用して、Aptosネットワークへの接続が必要なすべての操作を処理できます。オブジェクトを作成すると同時に接続が確立されます。
+
+```ts filename="quickstart.ts"
+import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+// AptosConfigを使用して接続するネットワークを指定
+async function example() {
+  console.log(
+    "このサンプルでは2つのアカウント（AliceとBob）を作成し、資金を提供して、その間で送金を行います。",
+  );
+
+  // クライアントのセットアップ
+  const config = new AptosConfig({ network: Network.DEVNET });
+  const aptos = new Aptos(config);
+}
+
+example()
+```
+
+<Callout type="info">
+（上級者向け）特定のノードに接続する必要がある場合は、`AptosConfig`で`fullnode`URLを指定できます。例：`fullnode: http://localhost:8080/v1`
+</Callout>
+
+### オンチェーンデータの取得
+
+`Aptos`クライアントを使用して、ネットワーク自体やアカウント固有の情報など、さまざまなオンチェーンデータを取得できます。
+
+```ts filename="quickstart.ts"
+...
+const ledgerInfo = await aptos.getLedgerInfo();
+const modules = await aptos.getAccountModules({ accountAddress: "0x123" });
+const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
+...
+```
+
+### トランザクションの送信
+
+トランザクションを送信してレジャーの状態を変更できます。トランザクションを使用してAPTなどのトークンの送信、Moveモジュールのトリガー、NFTの取引などが可能です。トランザクションに関する詳細なチュートリアルは[こちら](building-transactions.mdx)で確認できます。
+
+まずは、APTを送金する基本的なトランザクションの送信方法を見てみましょう。
+
+#### 1. アカウントの作成
+
+新しいアカウントを作成するには、まず新しい認証情報を生成し、そのアカウントに資金を提供します。ローカルネット/デブネットでは、テスト用のAPTを多く持つ「フォーセット」にプログラムで要求することで、アカウントに資金を提供できます。
+
+```ts filename="quickstart.ts"
+...
+// 新しいアカウントのキーペアを生成
+const alice: Account = Account.generate();
+
+// オンチェーンでアカウントに資金を提供。資金提供によってアカウントがオンチェーンに作成されます。
+await aptos.fundAccount({
+  accountAddress: alice.accountAddress,
+  amount: 100000000,
+});
+
+// トークンの送信先となる2つ目のアカウントも作成
+const bob: Account = Account.generate();
+
+// オンチェーンでアカウントに資金を提供
+await aptos.fundAccount({
+  accountAddress: bob.accountAddress,
+  amount: 100000000,
+});
+...
+```
+
+#### 2. トランザクションの構築
+
+`aptos.transaction.build.simple({...})`を使用してトランザクションを構築できます。以下を指定する必要があります：
+
+1. `sender` - トランザクションを送信するアカウント。このアカウントがガス料金を支払います。
+2. `data` - Aptosが実行するトランザクションを識別するために必要な情報。
+    1. `function` - 呼び出すオンチェーンのスマートコントラクト。形式は`<account_address>::<move_module>::<function>`です。
+    2. `functionArguments` - 呼び出す関数に固有のパラメータ。関数に必要なパラメータは、[このような](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000001/modules/code/aptos_account?network=mainnet)エクスプローラーでアカウントとモジュールを検索することで確認できます。
+
+例：
+
+```ts filename="quickstart.ts"
+...
+const transaction = await aptos.transaction.build.simple({
+  sender: alice.accountAddress,
+  data: {
+    // Move エントリー関数
+    function: "0x1::aptos_account::transfer",
+    functionArguments: [bob.accountAddress, 100],
+  },
+});
+...
+```
+
+<Callout type="info">
+状況によっては、[`transferCoinTransaction`](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000001/modules/code/aptos_account?network=mainnet)のようなSDKの簡略化された関数を使用することもできます。
+</Callout>
+
+#### 3. 署名と送信
+
+署名は、トランザクションを実行するアカウントの所有権または管理権を証明します。これは、送信者がネットワークがトランザクションを実行するために必要なガス料金を支払う必要があるため重要です。
+
+署名後、ネットワークに送信してオンチェーンでの検証と実行を行うことができます。
+
+これら2つのステップを1つにまとめた`aptos.signAndSubmitTransaction`を使用できます：
+
+```ts filename="quickstart.ts"
+...
+// 署名と送信を同時に行います（これらは個別に行うこともできます）
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction,
+});
+...
+```
+
+#### 4. 完了を待つ
+
+`aptos.waitForTransaction`を実行することで、トランザクションが処理され適用された後にコードが実行されることを保証できます。
+
+これは、トランザクションが拒否されるなど、送信後に発生する可能性のあるエラーを取得するのにも役立ちます。
+
+```ts filename="quickstart.ts"
+...
+const executedTransaction = await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
+...
+```
+</Steps>
+
+## 完全なクイックスタートコード
+
+### クイックスタートの実行
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+    ```bash
+    npx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pnpx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    yarn ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+```ts filename="quickstart.ts"
+/**
+ * このサンプルでは、Aptosクライアントを使用してアカウントの作成、資金提供、アカウント間の送金を行う方法を示します。
+ */
+
+import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const APTOS_COIN = "0x1::aptos_coin::AptosCoin";
+const COIN_STORE = `0x1::coin::CoinStore<${APTOS_COIN}>`;
+const ALICE_INITIAL_BALANCE = 100_000_000;
+const BOB_INITIAL_BALANCE = 100;
+const TRANSFER_AMOUNT = 100;
+
+async function example() {
+  console.log(
+    "このサンプルでは2つのアカウント（AliceとBob）を作成し、資金を提供して、その間で送金を行います。",
+  );
+
+  // クライアントのセットアップ
+  const config = new AptosConfig({ network: Network.DEVNET });
+  const aptos = new Aptos(config);
+
+  // 2つのアカウントの認証情報を生成
+  // 各アカウントには秘密鍵、公開鍵、アドレスがあります
+  const alice = Account.generate();
+  const bob = Account.generate();
+
+  console.log("=== アドレス ===\n");
+  console.log(`Aliceのアドレス: ${alice.accountAddress}`);
+  console.log(`Bobのアドレス: ${bob.accountAddress}`);
+
+  // フォーセットを使用してアカウントに資金を提供
+  console.log("\n=== アカウントへの資金提供 ===\n");
+
+  await aptos.fundAccount({
+    accountAddress: alice.accountAddress,
+    amount: ALICE_INITIAL_BALANCE,
+  });
+
+  await aptos.fundAccount({
+    accountAddress: bob.accountAddress,
+    amount: BOB_INITIAL_BALANCE,
+  });
+  console.log("AliceとBobのアカウントに資金が提供されました！");
+
+  // 新しく資金提供されたアカウントの残高を確認
+  console.log("\n=== 残高 ===\n");
+  const aliceAccountBalance = await aptos.getAccountResource({
+    accountAddress: alice.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const aliceBalance = Number(aliceAccountBalance.coin.value);
+  console.log(`Aliceの残高: ${aliceBalance}`);
+
+  const bobAccountBalance = await aptos.getAccountResource({
+    accountAddress: bob.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const bobBalance = Number(bobAccountBalance.coin.value);
+  console.log(`Bobの残高: ${bobBalance}`);
+
+  // AliceのアカウントからBobのアカウントへトランザクションを送信
+  const txn = await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      // Aptosのすべてのトランザクションはスマートコントラクトを通じて実装されています。
+      function: "0x1::aptos_account::transfer",
+      functionArguments: [bob.accountAddress, 100],
+    },
+  });
+
+  console.log("\n=== 送金トランザクション ===\n");
+  // 署名と送信を同時に行う
+  const committedTxn = await aptos.signAndSubmitTransaction({
+    signer: alice,
+    transaction: txn,
+  });
+  // Aptosがトランザクションを検証して実行するのを待つ
+  const executedTransaction = await aptos.waitForTransaction({
+    transactionHash: committedTxn.hash,
+  });
+  console.log("トランザクションハッシュ:", executedTransaction.hash);
+
+  console.log("\n=== 送金後の残高 ===\n");
+  const newAliceAccountBalance = await aptos.getAccountResource({
+    accountAddress: alice.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const newAliceBalance = Number(newAliceAccountBalance.coin.value);
+  console.log(`Aliceの残高: ${newAliceBalance}`);
+
+  const newBobAccountBalance = await aptos.getAccountResource({
+    accountAddress: bob.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const newBobBalance = Number(newBobAccountBalance.coin.value);
+  console.log(`Bobの残高: ${newBobBalance}`);
+
+  // Bobは送金額を受け取っているはず
+  if (newBobBalance !== TRANSFER_AMOUNT + BOB_INITIAL_BALANCE)
+    throw new Error("送金後のBobの残高が正しくありません");
+
+  // Aliceはガス料金を引いた残りの金額を持っているはず
+  if (newAliceBalance >= ALICE_INITIAL_BALANCE - TRANSFER_AMOUNT)
+    throw new Error("送金後のAliceの残高が正しくありません");
+}
+
+example();
+```
+
+## まとめ
+
+以上で、以下の手順でトランザクションを通じてAPTを送金する方法を学びました：
+
+1. `Aptos`クライアントを使用してネットワークに接続。
+2. アカウントの作成。
+3. [`aptos.getAccountModules`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.13.1/classes/Aptos.html#getAccountModules)などのクライアントヘルパー関数を使用してオンチェーンからデータを取得。
+4. トランザクションに署名してネットワークに送信。
+5. Aptosがトランザクションを実行するのを待つ。
+
+これらすべての動作を確認するには、上記の完全な作業用コードスニペットをコピーして実行してください。
+
+<Callout type="info">
+今後の開発のために、特定の関数のシグネチャを調べるための[リファレンスドキュメント](https://aptos-labs.github.io/aptos-ts-sdk/)をブックマークしておくことをお勧めします。
+
+ほとんどのヘルパー関数は[`Aptos`クライアントオブジェクト](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.13.1/classes/Aptos.html)にリストされています。
+</Callout>

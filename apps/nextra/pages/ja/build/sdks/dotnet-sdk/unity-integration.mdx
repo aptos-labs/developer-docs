@@ -1,0 +1,96 @@
+---
+title: "Unity Integration"
+---
+
+import { Steps, Callout } from "nextra/components";
+import { Card, Cards } from "@components/index";
+
+<Callout type="warning" emoji="❗">
+  This integration is currently in beta. Please report any issues you encounter
+  by creating an issue in the
+  [aptos-labs/aptos-dotnet-sdk](https://github.com/aptos-labs/aptos-dotnet-sdk)
+  repository.
+</Callout>
+
+# Integrating into Unity projects
+
+This guide will walk you through the process of integrating the Aptos .NET SDK.
+
+<Steps>
+
+### Install the Aptos Unity SDK
+
+#### Option 1: Import via Unity Package Manager (UPM)
+
+1. Open Package Manager window (Window | Package Manager)
+2. Click + button on the upper-left of a window, and select _Add package from git URL..._
+3. Enter the following URL and click Add button
+
+```bash
+https://github.com/aptos-labs/unity-sdk.git?path=/Packages/com.aptoslabs.aptos-unity-sdk
+```
+
+#### Option 2: Import via `unitypackage`
+
+1. Go to the [`aptos-labs/unity-sdk Releases`](https://github.com/aptos-labs/unity-sdk/releases) and download the latest release.
+2. Drag and drop the `.unitypackage` file into your Unity project.
+
+### Use the Aptos SDK
+
+Import the `Aptos` namespace in your C# script and use the SDK.
+
+```csharp {2-2,8-8,11-15}
+using UnityEngine;
+using Aptos;
+
+class Example : MonoBehaviour
+{
+    public void Start()
+    {
+        PrintLedgerInfo();
+    }
+
+    async void PrintLedgerInfo() {
+        var client = new AptosUnityClient(Networks.Mainnet);
+        var ledgerInfo = await client.Block.GetLedgerInfo();
+        Debug.Log(ledgerInfo.BlockHeight);
+    }
+
+}
+```
+
+</Steps>
+
+## Next Steps
+
+You've successfully integrated the Aptos .NET SDK into your Unity project. Now
+you can start building your game and interacting with the Aptos blockchain. Below
+are some resources to help you get started.
+
+<Cards className="xl:grid-cols-2">
+  <Card href="./getting-started" className="flex flex-row gap-4">
+    <div className="flex flex-col gap-2">
+      <Card.Title>Getting Started</Card.Title>
+      <Card.Description>
+        Begin developing using the Aptos .NET SDK.
+      </Card.Description>
+    </div>
+  </Card>
+  <Card href="../unity-sdk" className="flex flex-row gap-4">
+    <div className="flex flex-col gap-2">
+      <Card.Title>Unity SDK</Card.Title>
+      <Card.Description>Overview of the Unity SDK.</Card.Description>
+    </div>
+  </Card>
+  <Card
+    href="https://github.com/aptos-labs/aptos-unity-starter"
+    className="col-span-2 flex flex-row gap-4"
+  >
+    <div className="flex flex-col gap-2">
+      <Card.Title>Aptos Wallet Starter</Card.Title>
+      <Card.Description>
+        Example Unity project with an integration of the Aptos Unity SDK.
+      </Card.Description>
+    </div>
+  </Card>
+</Cards>

@@ -1,0 +1,35 @@
+import { GraphQLEditor } from 'components/index'
+import { Callout } from 'nextra/components'
+
+# ファンジブルアセット残高の取得
+
+`GetFungibleAssetBalances`は、指定されたアカウントアドレスに関連する様々なファンジブルアセットタイプの現在の残高を取得します。これは、アカウントの資産保有に関するリアルタイムの情報を必要とするプラットフォームにとって重要です。また、`Coin`情報の検索との後方互換性も維持されています。
+
+<Callout type="info">
+自分で試してみましょう！エディターの下部で変数をカスタマイズして、異なるアドレスのデータを取得できます。
+</Callout>
+
+<GraphQLEditor
+  query={`query GetFungibleAssetBalances($address: String, $offset: Int, $token_standard: String) {
+  current_fungible_asset_balances(
+    where: {owner_address: {_eq: $address}, token_standard:{ _eq: $token_standard}},
+    offset: $offset,
+    limit: 100,
+    order_by: {amount: desc}
+  ) {
+    asset_type
+    amount
+    __typename
+  }
+}`}
+  variables={`{
+  "address": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "token_standard": "v1",
+  "offset": 0
+}`}
+/>
+
+#### 変数:
+- `$address`: **String** - ファンジブルアセット残高を照会したいアカウントアドレス。例: `"0x0000000000000000000000000000000000000000000000000000000000000001"`
+- `token_standard`: **String** - アセットのトークン規格: `"v1"`は以前のトークン規格で、`"v2"`は新しい規格です。
+- `$offset`: **整数** (オプション) - 残高の取得を開始するページネーションオフセット。デフォルト: `0`

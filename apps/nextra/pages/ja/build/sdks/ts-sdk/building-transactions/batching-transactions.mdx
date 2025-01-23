@@ -1,0 +1,85 @@
+---
+title: "トランザクションのバッチ処理"
+---
+
+# トランザクションのバッチ処理
+
+TypeScript SDKには、複数の独立したトランザクションをバッチとしてまとめて送信する機能が組み込まれています。これは、同じアカウントから複数のトランザクションを素早く実行する必要がある場合に便利なツールとなります。
+
+以下の例のように、`aptos.transaction.batch.forSingleAccount`を使用して実行できます。
+
+## TypeScriptの完全な例
+
+```ts filename="batch.ts"
+/**
+ * この例では、Aptos SDKを使用して複数のトランザクションをバッチで送信する方法を示します。
+ */
+
+import {
+    Account,
+    Aptos,
+    AptosConfig,
+    Network,
+    InputGenerateTransactionPayloadData,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+    console.log("この例では、複数のトランザクションをバッチで送信します。");
+
+    // クライアントとテストアカウントのセットアップ
+    const config = new AptosConfig({ network: Network.DEVNET });
+    const aptos = new Aptos(config);
+
+    let sender = Account.generate();
+
+    console.log("=== アドレス ===\n");
+    console.log(`送信者のアドレス: ${sender.accountAddress}`);
+
+    console.log("\n=== 送信者への資金提供 ===\n");
+    await aptos.fundAccount({
+        accountAddress: sender.accountAddress,
+        amount: 100_000_000,
+    });  
+    console.log("送信者アカウントに資金を提供しました！")
+
+    // APTを送信する複数の受信者を生成
+    const recipients = [Account.generate(), Account.generate(), Account.generate()];
+
+    // 各アカウントにAPTを送信するトランザクションを作成
+    const transactions: InputGenerateTransactionPayloadData[] = [];
+
+    for (let i = 0; i < recipients.length; i += 1) {
+        const transaction: InputGenerateTransactionPayloadData = {
+            function: "0x1::aptos_account::transfer",
+            functionArguments: [recipients[i].accountAddress, 10],
+        };
+        transactions.push(transaction);
+    }
+
+    // 可能な限り速くすべてのトランザクションに署名して送信（エラーが発生した場合は例外をスロー）
+    await aptos.transaction.batch.forSingleAccount({ sender: sender, data: transactions });
+};
+
+example();
+```
+
+## バッチ処理されたトランザクションのステータス確認
+
+バッチで送信されたトランザクションがチェーン上で実行されたタイミングを知るには、プロセスの実行中にイベントをリッスンする必要があります。
+
+```ts filename="transaction-worker-events.ts"
+export enum TransactionWorkerEventsEnum {
+  // トランザクションがチェーンに送信された後に発火
+  TransactionSent = "transactionSent",
+  // トランザクションのチェーンへの送信に失敗した場合に発火
+  TransactionSendFailed = "transactionSendFailed",
+  // 単一のトランザクションが正常に実行された場合に発火
+  TransactionExecuted = "transactionExecuted",
+  // 単一のトランザクションの実行が失敗した場合に発火
+  TransactionExecutionFailed = "transactionExecutionFailed",
+  // ワーカーが作業を完了した場合/キューが空になった場合に発火
+  ExecutionFinish = "executionFinish",
+}
+```
+
+これらのイベントのリッスン方法の例は[こちら](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/batch_funds.ts#L108)でご覧いただけます。

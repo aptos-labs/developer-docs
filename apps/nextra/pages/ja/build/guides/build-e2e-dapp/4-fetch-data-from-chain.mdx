@@ -1,0 +1,166 @@
+import { Callout } from 'nextra/components';
+
+# チェーンからのデータ取得
+
+[Aptos上でのエンドツーエンドdappの構築](../build-e2e-dapp.mdx)チュートリアルの4番目のチャプターでは、チェーンからデータを取得する方法を学びます。
+
+私たちのUIロジックは、接続されたアカウントがTodoリストを作成しているかどうかに依存します。アカウントがTodoリストを作成している場合、アプリはそのリストを表示する必要があります。作成していない場合、アプリは新しいリストを作成するオプションを提供するボタンを表示する必要があります。
+
+そのために、まず接続されたアカウントが`TodoList`リソースを持っているかどうかを確認する必要があります。私たちのスマートコントラクトでは、誰かがTodoリストを作成するたびに、`TodoList`リソースを作成してそのアカウントに割り当てています。
+
+チェーンからデータを取得するために、[Aptos TypeScript SDK](../../sdks/ts-sdk.mdx)を使用できます。SDKは、Aptosチェーンと簡単にやり取りし、クエリを実行するためのクラスと関数を提供します。
+
+始めましょう：
+
+1. ローカルサーバーが実行中の場合は停止します。
+2. `client`ディレクトリで以下を実行します：`npm i @aptos-labs/ts-sdk`
+3. `App.tsx`ファイルで、`Aptos`クラスを以下のようにインポートします：
+
+```tsx filename="App.tsx"
+import { Aptos } from "@aptos-labs/ts-sdk";
+```
+
+TypeScript SDKは`Aptos`クラスを提供しており、これがAptosのAPIへのメインエントリーポイントとなります。`Aptos`を初期化することで、Aptosチェーンにクエリを実行できます。
+
+<Callout type="info">
+[`Aptos`](../../sdks/ts-sdk.mdx)クラスについての詳細は、Aptos TypeScript SDKのドキュメントを参照してください。
+</Callout>
+
+1. `App.tsx`ファイルに以下を追加します：
+
+```tsx filename="App.tsx"
+const aptos = new Aptos();
+```
+
+これにより`Aptos`インスタンスが初期化されます。
+
+<Callout type="info">
+デフォルトでは、`Aptos`は`devnet`ネットワークと通信します。[異なるネットワーク](../../../network/nodes/networks.mdx)を設定するには、`AptosConfig`クラスを使用できます。
+
+```tsx filename="App.tsx"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const aptosConfig = new AptosConfig({ network: Network.MAINNET });
+const aptos = new Aptos(aptosConfig);
+```
+
+</Callout>
+
+私たちのアプリは、ユーザーのリソース（つまり、ユーザーがリストを持っているか ⇒ ユーザーが`TodoList`リソースを持っているか）に基づいて異なるUIを表示します。そのために、アプリに接続されている現在のアカウントを知る必要があります。
+
+1. ウォレットアダプターReactプロバイダーからウォレットをインポートします：
+
+```tsx filename="App.tsx"
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+```
+
+2. ウォレットアダプターからアカウントオブジェクトを取得します：
+
+```tsx filename="App.tsx"
+function App (
+	const { account } = useWallet();
+	...
+)
+```
+
+`account`オブジェクトは、アカウントが接続されていない場合は`null`です。アカウントが接続されている場合、`account`オブジェクトにはアカウントアドレスを含むアカウント情報が含まれています。
+
+3. 次に、アカウントのTodoListリソースを取得したいと思います。
+   まず`useEffect`を`jsx import useEffect from "react";`を使用してインポートします。
+   アカウントアドレスが変更されるたびにリソースを取得する関数を呼び出す`useEffect`フックをファイルに追加しましょう：
+
+```tsx filename="App.tsx"
+function App() {
+  ...
+  useEffect(() => {
+    fetchList();
+  }, [account?.address]);
+  ...
+}
+```
+
+4. `fetchList`関数を作成する前に、アカウントがリストを持っているかどうかを保存するローカルステートも作成しましょう：
+
+```tsx filename="App.tsx"
+function App (
+  ...
+  const [accountHasList, setAccountHasList] = useState<boolean>(false);
+  ...
+)
+```
+
+また、`useEffect`を`import { useState, useEffect } from "react";`を使用してインポートします。
+
+5. `useEffect`フックが呼び出す`fetchList`関数を作成しましょう：
+
+```tsx filename="App.tsx"
+const fetchList = async () => {
+  if (!account) return [];
+  // moduleAddressをあなたのモジュールアカウントアドレスに変更してください
+  const moduleAddress = "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
+  try {
+    const todoListResource = await aptos.getAccountResource(
+      {
+        accountAddress:account?.address,
+        resourceType:`${moduleAddress}::todolist::TodoList`
+      }
+    );
+    setAccountHasList(true);
+  } catch (e: any) {
+    setAccountHasList(false);
+  }
+};
+```
+
+`moduleAddress`は、モジュールを公開したアドレス、つまり`Move.toml`ファイルにある`myaddr`のアカウントアドレスです。
+
+`provider.getAccountResource()`は、探しているリソースを保持する_アカウントアドレス_とオンチェーンの_Move構造体タイプ_の文字列表現を期待します。
+
+- アカウントアドレス - 現在接続されているアカウント（ウォレットのアカウントオブジェクトから取得）
+- Move構造体タイプの文字列構文：
+  - Moveモジュールを保持するアカウントアドレス = プロファイルアカウントアドレス（`moduleAddress`定数を自分のアカウントアドレスに変更する必要があります）
+  - リソースが存在するモジュール名 = `todolist`
+  - リソース名 = `TodoList`
+
+リクエストが成功し、そのアカウントにリソースがある場合、ローカルステートを`true`に設定します。そうでない場合は`false`に設定します。
+
+6. `import { Layout, Row, Col } from "antd";`を更新してButtonをインポートします：
+   `import { Layout, Row, Col, Button  } from "antd";`
+
+7. `accountHasList`ステートに基づいてUIを更新しましょう：
+
+```tsx filename="App.tsx"
+return (
+  <>
+    <Layout>
+      <Row align="middle">
+        <Col span={10} offset={2}>
+          <h1>Our todolist</h1>
+        </Col>
+        <Col span={12} style={{ textAlign: "right", paddingRight: "200px" }}>
+          <WalletSelector />
+        </Col>
+      </Row>
+    </Layout>
+    {!accountHasList && (
+      <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
+        <Col span={8} offset={8}>
+          <Button
+            block
+            type="primary"
+            style={{ height: "40px", backgroundColor: "#3f67ff" }}
+          >
+            Add new list
+          </Button>
+        </Col>
+      </Row>
+    )}
+  </>
+);
+```
+
+これで、アカウントがリストを持っていない場合にのみ表示される**Add new list**ボタンができました。
+
+`npm start`でローカルサーバーを起動します。**Add new list**ボタンが表示されるはずです。
+
+次に、チャプター5で[チェーンへのデータ送信](5-submit-data-to-chain.mdx)を理解しましょう。

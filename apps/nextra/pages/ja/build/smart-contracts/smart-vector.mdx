@@ -1,0 +1,199 @@
+---
+title: "Smart Vector"
+---
+
+# Smart Vector
+
+Smart Vectorは`tables`に基づくスケーラブルなベクトル実装で、要素がバケットにグループ化されています。このデータ構造により、小規模ベクトルの柔軟性と大規模構造のスケーラビリティを組み合わせることで、大規模なデータセットを効率的に処理することができます。
+
+## `SmartVector`の主な機能
+
+### 構造
+
+`SmartVector`構造体は、効率的に動的データを処理するように設計されています：
+
+- `inline_vec`：要素を直接格納する小規模ベクトル
+- `big_vec`：スケーラブルな保存のためのオプショナルな大規模ベクトル
+- `inline_capacity`：`inline_vec`の容量を定義するオプショナルな値
+- `bucket_size`：`big_vec`のバケットサイズを定義するオプショナルな値
+
+### 定数
+
+モジュール内で使用される各種エラーコードを定義する定数：
+
+- `EINDEX_OUT_OF_BOUNDS`: 1
+- `EVECTOR_NOT_EMPTY`: 2
+- `EVECTOR_EMPTY`: 3
+- `EZERO_BUCKET_SIZE`: 4
+- `ESMART_VECTORS_LENGTH_MISMATCH`: 0x20005
+
+## API概要
+
+### ベクトルの作成
+
+- `new<T: store>(): SmartVector<T>`：空のベクトルを作成
+- `empty_with_config<T: store>(inline_capacity: u64, bucket_size: u64): SmartVector<T>`：カスタム容量とバケットサイズで空のベクトルを作成
+- `singleton<T: store>(element: T): SmartVector<T>`：単一要素のベクトルを作成
+
+### ベクトルの破棄
+
+- `destroy_empty<T>(v: SmartVector<T>)`：空のベクトルを破棄
+- `destroy<T: drop>(v: SmartVector<T>)`：ベクトルとその要素を破棄
+
+### 要素の管理
+
+- `push_back<T: store>(v: &mut SmartVector<T>, val: T)`：ベクトルの末尾に要素を追加
+- `pop_back<T>(v: &mut SmartVector<T>): T`：ベクトルの最後の要素を削除
+- `remove<T>(v: &mut SmartVector<T>, i: u64): T`：特定のインデックスの要素を削除
+- `swap_remove<T>(v: &mut SmartVector<T>, i: u64): T`：特定のインデックスの要素を最後の要素と交換して削除
+- `borrow<T>(v: &SmartVector<T>, i: u64): &T`：特定のインデックスの要素への不変参照を返す
+- `borrow_mut<T>(v: &mut SmartVector<T>, i: u64): &mut T`：特定のインデックスの要素への可変参照を返す
+
+### ユーティリティ関数
+
+- `length<T>(v: &SmartVector<T>): u64`：ベクトル内の要素数を返す
+- `is_empty<T>(v: &SmartVector<T>): bool`：ベクトルが空かどうかを確認
+- `clear<T: drop>(v: &mut SmartVector<T>)`：ベクトルからすべての要素を削除
+- `to_vector<T: store + copy>(v: &SmartVector<T>): vector<T>`：スマートベクトルをネイティブベクトルに変換
+
+## 使用例
+
+### SmartVectorの作成と使用
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public entry fun main() {
+        let v = smart_vector::new<u64>();
+        smart_vector::push_back(&mut v, 10);
+        smart_vector::push_back(&mut v, 20);
+        let length = smart_vector::length(&v);
+        assert!(length == 2, 0);
+        let first_elem = smart_vector::borrow(&v, 0);
+        assert!(*first_elem == 10, 0);
+        let second_elem = smart_vector::borrow(&v, 1);
+        assert!(*second_elem == 20, 0);
+        let last_elem = smart_vector::pop_back(&mut v);
+        assert!(last_elem == 20, 0);
+        smart_vector::destroy_empty(v);
+    }
+}
+```
+
+### ベクトルの結合
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public fun append_vectors() {
+        let v1 = smart_vector::new<u64>();
+        let v2 = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v1, 1);
+        smart_vector::push_back(&mut v1, 2);
+
+        smart_vector::push_back(&mut v2, 3);
+        smart_vector::push_back(&mut v2, 4);
+
+        smart_vector::append(&mut v1, v2);
+
+        let length = smart_vector::length(&v1);
+        assert!(length == 4, 0);
+
+        let first_elem = smart_vector::borrow(&v1, 0);
+        assert!(*first_elem == 1, 0);
+
+        let second_elem = smart_vector::borrow(&v1, 1);
+        assert!(*second_elem == 2, 0);
+
+        let third_elem = smart_vector::borrow(&v1, 2);
+        assert!(*third_elem == 3, 0);
+
+        let fourth_elem = smart_vector::borrow(&v1, 3);
+        assert!(*fourth_elem == 4, 0);
+    }
+}
+```
+
+### 要素の削除
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public fun remove_elements() {
+        let v = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v, 1);
+        smart_vector::push_back(&mut v, 2);
+        smart_vector::push_back(&mut v, 3);
+
+        let removed_elem = smart_vector::remove(&mut v, 1);
+        assert!(removed_elem == 2, 0);
+
+        let length = smart_vector::length(&v);
+        assert!(length == 2, 0);
+
+        let first_elem = smart_vector::borrow(&v, 0);
+        assert!(*first_elem == 1, 0);
+
+        let second_elem = smart_vector::borrow(&v, 1);
+        assert!(*second_elem == 3, 0);
+    }
+}
+```
+
+### ベクトルのクリア
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public fun clear_vector() {
+        let v = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v, 1);
+        smart_vector::push_back(&mut v, 2);
+        smart_vector::push_back(&mut v, 3);
+
+        smart_vector::clear(&mut v);
+        let length = smart_vector::length(&v);
+        assert!(length == 0, 0);
+    }
+}
+```
+
+### 要素の交換
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public fun swap_elements() {
+        let v = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v, 1);
+        smart_vector::push_back(&mut v, 2);
+        smart_vector::push_back(&mut v, 3);
+
+        smart_vector::swap(&mut v, 0, 2);
+
+        let first_elem = smart_vector::borrow(&v, 0);
+        assert!(*first_elem == 3, 0);
+
+        let third_elem = smart_vector::borrow(&v, 2);
+        assert!(*third_elem == 1, 0);
+    }
+}
+```
+
+## ソースコード
+
+- [smart_vector.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/data_structures/smart_vector.move)
+
+## その他の例
+
+- [move spidersのスマートベクターチュートリアル](https://movespiders.com/courses/modules/datastructures/lessonId/6)
+- [move spidersのスマートベクタークエリチュートリアル](https://movespiders.com/courses/modules/datastructures/lessonId/9)
