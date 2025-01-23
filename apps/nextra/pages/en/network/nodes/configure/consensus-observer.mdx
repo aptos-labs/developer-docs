@@ -1,0 +1,57 @@
+---
+title: "Consensus Observer"
+---
+
+import { Callout, Steps } from 'nextra/components';
+
+# Consensus Observer
+
+<Callout type="warning">
+**Public Fullnodes (PFNs)**<br />
+The configuration settings described in this document are for public fullnodes (PFNs) only.
+Consensus observer has already been enabled (by default) for validators and validator fullnodes (VFNs).
+It is not recommended to change the consensus observer configurations for validators and VFNs.
+</Callout>
+
+Consensus observer is a new data dissemination technique that reduces block synchronization time, and
+transaction latencies for Aptos fullnodes (i.e., VFNs and PFNs). It has been shown to reduce end-to-end
+transaction latencies in Mainnet by 10% to 50%, depending on the load (i.e., transactions per second).
+
+More information on consensus observer can be found in the AIP: [AIP-93: Consensus Observer](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-93.md).
+
+## Configure consensus observer
+
+<Callout type="warning" emoji="❗">
+**Minimum Hardware Requirements**<br />
+Consensus observer is not enabled on PFNs (by default) because it requires nodes to meet the
+[minimum hardware requirements](../full-node/pfn-requirements#hardware-requirements).
+If your node is under-provisioned and does not meet these requirements, enabling consensus observer
+will result in degraded performance because it requires more CPU than traditional state sync. Only
+enable consensus observer if your node meets the minimum hardware requirements.
+</Callout>
+
+### Enable consensus observer
+
+To enable consensus observer on your PFN, add the following to your node configuration file (e.g., `fullnode.yaml`):
+
+```yaml filename="fullnode.yaml"
+consensus:
+  enable_pre_commit: false
+
+consensus_observer:
+  observer_enabled: true
+  publisher_enabled: true
+```
+
+### Disable consensus observer
+
+To disable consensus observer on your PFN, add the following to your node configuration file (e.g., `fullnode.yaml`):
+
+```yaml filename="fullnode.yaml"
+consensus:
+  enable_pre_commit: true
+
+consensus_observer:
+  observer_enabled: false
+  publisher_enabled: false
+```
