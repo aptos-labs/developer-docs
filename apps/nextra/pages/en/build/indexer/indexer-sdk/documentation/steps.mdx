@@ -99,9 +99,10 @@ To create a step with the SDK, follow these instructions:
 
 ## Common steps
 
-The SDK provides several common steps that you can use in your processor. 
+The SDK implements [several common steps](https://github.com/aptos-labs/aptos-indexer-processor-sdk/tree/main/aptos-indexer-processors-sdk/sdk/src/common_steps) that you can use in your processors. 
 
 1. `TransactionStreamStep` provides a stream of Aptos transactions to the processor
 2. `TimedBufferStep` buffers a batch of items and periodically polls to release the items to the next step
-
-{/* <!-- Add the rest of the common SDK steps --> */}
+3. `VersionTrackerStep` tracks the progress of the processor and checkpoints the processor's progress. Read more about it [here](./version-tracking.mdx).
+4. `OrderByVersionStep` orders transaction contextx by their starting versions. It buffers ordered these contexts and releases them at every poll interval.
+5. `WriteRateLimitStep` limits the number of bytes writtento the database per second.
