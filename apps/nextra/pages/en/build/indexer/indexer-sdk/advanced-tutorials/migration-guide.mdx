@@ -4,7 +4,7 @@ title: "Migrate to Indexer SDK"
 
 # Migrate to Indexer SDK
 
-This guide contains instructions on how to migrate your custom processor (that's written in the [old way](https://github.com/aptos-labs/aptos-indexer-processors/blob/aptos-indexer-processors-v1.20.0/rust/processor/src/processors/events_processor.rs)) to Indexer SDK. 
+This guide contains instructions on how to migrate your legacy custom processor (that's written in the [old way](https://github.com/aptos-labs/aptos-indexer-processors/blob/aptos-indexer-processors-v1.20.0/rust/processor/src/processors/events_processor.rs)) to Indexer SDK. 
 
 ## 1. Clone the example repo
 We use example events processor in `aptos-indexer-processor-example` as a starting point for the migration.
@@ -13,8 +13,9 @@ git clone https://github.com/aptos-labs/aptos-indexer-processor-example.git
 ```
 
 ## 2. Migrate your processor config
-In the old way, you created a branch of `aptos-indexer-processors` and updated the processor config to add your custom processor. 
-This made it very difficult to upgrade your processor, so in the SDK, we've removed the dependency on `aptos-indexer-processors`.
+Previously, you would create a branch of `aptos-indexer-processors` and update the processor config to include your custom processor. 
+This legacy approach made it very difficult to upgrade your processor. 
+To address this, the SDK no longer depends on `aptos-indexer-processors`.
 As a result, you'll need to define your own `IndexerProcessorConfig` and `ProcessorConfig` structs. 
 
 The `IndexerProcessorConfig` defines the base configuration for all processors that you'll be running.
