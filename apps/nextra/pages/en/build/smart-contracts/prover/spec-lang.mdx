@@ -837,11 +837,11 @@ module 0x42::m {
 }
 ```
 
-Notice that type parameters are supported in global invariants. For example:
+Notice that type parameters are supported in global invariants. For example, the invariant above can be rewritten into the below one if `Counter` is generic:
 
 ```move
 module addr::M {
-    invariant<Y> forall addr: address where exists<R<Y>>(addr): exists<T<Y>>(addr);
+    invariant<T> forall a: addr where exists<Counter<T>>(a): global<Counter<T>>(a).value > 0;
 }
 ```
 
