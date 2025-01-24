@@ -5,4 +5,7 @@ export default {
   "txn-script": {
     title: "Generating Transactions with Move Scripts",
   },
+  "processor-test": {
+    title: "Testing Your Processor",
+  },
 };
