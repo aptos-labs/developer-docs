@@ -18,7 +18,8 @@ If you want to write tests for your processor, you will need to include this cra
 
 Depending on your use case, you can import the crates to your `Cargo.toml`.
 
-```yaml
+```toml
+[dependencies]
 aptos-indexer-processor-sdk = { git = "https://github.com/aptos-labs/aptos-indexer-processor-sdk.git", rev = "aptos-indexer-processor-sdk-v1.0.0" }
 aptos-indexer-processor-sdk-server-framework = { git = "https://github.com/aptos-labs/aptos-indexer-processor-sdk.git", rev = "aptos-indexer-processor-sdk-v1.0.0" }
 aptos-indexer-testing-framework = { git = "https://github.com/aptos-labs/aptos-indexer-processor-sdk.git", rev = "aptos-indexer-processor-sdk-v1.0.0" }
