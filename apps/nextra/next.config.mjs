@@ -436,6 +436,12 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/transaction-stream",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/transaction-stream",
+        permanent: true,
+      },
+      {
         source: "/indexer/indexer-sdk/documentation/version-tracking",
         destination:
           "/en/build/indexer/indexer-sdk/documentation/version-tracking",
