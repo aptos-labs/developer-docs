@@ -1,0 +1,40 @@
+---
+title: "Arcifying Step"
+---
+
+# Overview
+
+The `ArcifyStep` is a utility step in the processing pipeline that transforms owned data into reference-counted `Arc` instances. This is particularly useful when the data needs to be shared across multiple components or threads without unnecessary cloning.
+
+## Key Responsibilities
+
+1. **Convert to `Arc`**: Converts a vector of owned items into a vector of `Arc`-wrapped items.
+2. **Preserve Metadata**: Maintains the transaction context metadata during transformation.
+
+## How It Works
+
+- The `ArcifyStep` takes a `TransactionContext` containing a vector of owned items.
+- Each item in the vector is wrapped in an `Arc` to enable efficient sharing.
+- The metadata from the original context is preserved in the output.
+
+## Example Usage
+
+### Converting Data to `Arc`
+
+```rust
+let mut arcify_step = ArcifyStep::new();
+let input_context = TransactionContext {
+    data: vec![1, 2, 3],
+    metadata: TransactionMetadata {
+        start_version: 0,
+        end_version: 0,
+        start_transaction_timestamp: None,
+        end_transaction_timestamp: None,
+        total_size_in_bytes: 0,
+    },
+};
+
+let result = arcify_step.process(input_context).await.unwrap().unwrap();
+assert_eq!(*result.data[0], 1);
+```
+

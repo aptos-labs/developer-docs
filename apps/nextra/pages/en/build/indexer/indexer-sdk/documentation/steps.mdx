@@ -106,3 +106,4 @@ The SDK implements [several common steps](https://github.com/aptos-labs/aptos-in
 3. `VersionTrackerStep` tracks the progress of the processor and checkpoints the processor's progress. Read more about it [here](./version-tracking.mdx).
 4. `OrderByVersionStep` orders transaction contextx by their starting versions. It buffers ordered these contexts and releases them at every poll interval.
 5. `WriteRateLimitStep` limits the number of bytes written to the database per second.
+6. `ArcifyStep` converts transaction data to Arc Instances. Read more about it [here](./arcify-data.mdx).
