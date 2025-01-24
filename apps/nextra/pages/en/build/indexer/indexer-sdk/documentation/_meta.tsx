@@ -18,4 +18,7 @@ export default {
   "version-tracking": {
     title: "Version Tracking",
   },
+  "arcify-data": {
+    title: "Arcifying Data",
+  },
 };

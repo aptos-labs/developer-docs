@@ -442,6 +442,11 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/arcify-data",
+        destination: "/en/build/indexer/indexer-sdk/documentation/arcify-data",
+        permanent: true,
+      },
+      {
         source: "/indexer/indexer-sdk/documentation/run-processor",
         destination:
           "/en/build/indexer/indexer-sdk/documentation/run-processor",
