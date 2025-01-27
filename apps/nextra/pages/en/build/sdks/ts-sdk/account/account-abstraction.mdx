@@ -1,0 +1,292 @@
+---
+title: "Account Abstraction"
+---
+
+import { Steps, Callout } from "nextra/components";
+
+# Account Abstraction
+
+Account Abstraction (AA) on Aptos **enables custom transaction authentication logic through Move modules**, allowing accounts to define their own rules beyond native cryptographic schemes.
+
+## Core Concepts
+
+### `FunctionInfo`
+
+A struct defining the authentication function to be invoked.
+
+```move
+struct FunctionInfo has copy, drop, store {
+    module_address: address,
+    module_name: String,
+    function_name: String
+}
+```
+
+The authentication function is responsible for defining the authentication logic using Move. It should return a signer if authentication is successful, otherwise it aborts the transaction.
+The only accepted authentication function signature that can be added onto an account is the following:
+
+```move
+// The function can return a signer if authentication is successful, otherwise it aborts the transaction.
+public fun authenticate(account: signer, auth_data: AbstractionAuthData): signer;
+```
+
+**Example (Move)**
+
+```move
+module deployer::authenticator {
+    use aptos_framework::auth_data::{AbstractionAuthData};
+
+    public fun authenticate(account: signer, auth_data: AbstractionAuthData): signer {
+        // ... authentication logic ...
+        account
+    }
+}
+```
+
+**Example (Typescript)**
+
+```typescript
+const authenticationFunction = `${deployer}::authenticator:authenticate`;
+```
+
+### `AbstractionAuthData`
+
+An enum variant defining the authentication data to be passed to the authentication function. It contains:
+
+- `digest`: The sha256 hash of the signing message.
+- `authenticator`: Abstract bytes that will be passed to the authentication function that will be used to verify the transaction.
+
+```move
+enum AbstractionAuthData has copy, drop {
+    V1 { 
+        digest: vector<u8>,       // SHA3-256 hash of the signing message
+        authenticator: vector<u8> // Custom auth data (e.g., signatures)
+    },
+}
+```
+
+**Example (Move)**
+
+This example demonstrates a simple authentication logic that checks if the authenticator is equal to `"hello world"`.
+
+```move
+module deployer::hello_world_authenticator {
+    use aptos_framework::auth_data::{Self, AbstractionAuthData};
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer {
+        let authenticator = *auth_data::authenticator(&auth_data);
+        assert!(authenticator == b"hello world", 1);
+        account
+    }
+}
+```
+
+**Example (Typescript)**
+
+```typescript
+const abstractedAccount = new AbstractedAccount({
+  /**
+   * The result of the signer function will be available as the `authenticator` field in the `AbstractionAuthData` enum variant.
+   */
+  signer: () => new TextEncoder().encode("hello world"),
+  /**
+   * The authentication function to be invoked.
+   */
+  authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+});
+```
+
+## Step-by-Step Guide
+
+<Steps>
+
+### 1. Deploy Authentication Module
+
+In this example, we will deploy the `hello_world_authenticator` module. The `authenticate` function takes an `AbstractionAuthData` and returns a `signer` 
+if the authentication is successful, otherwise it aborts the transaction. The authentication logic will only allow transactions that have an authenticator equal to `"hello world"`.
+
+```move
+module deployer::hello_world_authenticator {
+    use aptos_framework::auth_data::{Self, AbstractionAuthData};
+    use std::bcs;
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer {
+        let authenticator = *auth_data::authenticator(&auth_data);
+        assert!(authenticator == b"hello world", 1);
+        account
+    }
+}
+```
+
+To deploy the module, you can use the following commands from the [Aptos CLI](/en/build/cli). We assume that you already have set up a workspace with `aptos init` and 
+declared the named addresses in your `Move.toml` file.
+
+```bash
+aptos move publish --named-addresses deployer=0x1234567890123456789012345678901234567890
+```
+
+### 2. Setup your Environment
+
+Once deployed, you can setup your environment. In this example, we will use Devnet and create an account named `alice` which will act as our user.
+
+```ts
+const DEPLOYER = "0x<hello_world_authenticator_deployer>"
+
+const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET }));
+
+const alice = Account.generate();
+
+const authenticationFunctionInfo = `${deployer}::hello_world_authenticator:authenticate`;
+```
+
+### 3. (Optional) Check if Account Abstraction is Enabled
+
+Before you ask them to enable account abstraction, you can check if the account has account abstraction enabled by calling the `isAccountAbstractionEnabled` function.
+This will return a boolean value indicating if the account has account abstraction enabled.
+
+```ts
+const accountAbstractionStatus = await aptos.account.isAccountAbstractionEnabled({
+    accountAddress: alice.accountAddress,
+    authenticationFunction,
+});
+
+console.log("Account Abstraction status: ", accountAbstractionStatus);
+```
+
+### 4. Enable the Authentication Function
+
+Assuming that the account does not have account abstraction enabled, you need to enable the authentication function for the account. This can be done by calling 
+the `enableAccountAbstractionTransaction` function. This creates a raw transaction that needs to be signed and submitted to the network. In this example, `alice` 
+will be the account that will be enabled.
+
+```ts
+const transaction = aptos.abstraction.enableAccountAbstractionTransaction({
+  accountAddress: alice.accountAddress,
+  authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+});
+
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  transaction,
+  signer: alice.signer,
+});
+
+await aptos.waitForTransaction({ hash: pendingTransaction.hash });
+
+console.log("Account Abstraction enabled for account: ", alice.accountAddress);
+```
+
+<details>
+<summary>
+  <b>Wallet Adapter Example</b>
+</summary>
+
+<Callout>
+  If you are using the wallet adapter, you can use the `signTransaction` function to sign the transaction before submitting it to the network.
+</Callout>
+
+```tsx
+export default function useEnableAbstraction() {
+  const { account, signTransaction } = useWallet();
+
+  return {
+    enableAbstraction: async () => {
+      if (!account) return;
+
+      // Note: The Aptos client must be defined somewhere in the application.
+      const transaction = aptos.abstraction.enableAccountAbstractionTransaction({
+        accountAddress: account.address,
+        authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+      });
+
+      const senderAuthenticator = await signTransaction(txn);
+
+      const pendingTxn = await aptos.transaction.submit.simple({
+        transaction: txn,
+        senderAuthenticator,
+      });
+
+      return await aptos.waitForTransaction({ hash: pendingTxn.hash });
+    }
+  }
+}
+```
+
+</details>
+
+### 5. Create an Abstracted Account
+
+Once the authentication function is enabled, you can create an abstracted account object for signing transactions. You must provide the authentication function that will be used to verify the transaction
+and a `signer` function that will be used to sign the transaction. The `signer` function is responsible for generating the authenticator that will be passed to the authentication function.
+
+```ts
+const abstractedAccount = new AbstractedAccount({
+  accountAddress: alice.accountAddress,
+  signer: () => new TextEncoder().encode("hello world"),
+  authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+});
+```
+
+### 6. Sign and Submit a Transaction using the Abstracted Account
+
+Once you have created the abstracted account, you can use it to sign transactions normally. It is important that the `sender` field in the transaction
+is the same as the abstracted account's address.
+
+```ts
+const coinTransferTransaction = new aptos.transaction.build.simple({
+  sender: abstractedAccount.accountAddress,
+  data: {
+    function: "0x1::coin::transfer",
+    typeArguments: ["0x1::aptos_coin::AptosCoin"],
+    functionArguments: [alice.accountAddress, 100],
+  },
+});
+
+const pendingCoinTransferTransaction = aptos.transaction.signAndSubmitTransaction({
+  transaction: coinTransferTransaction,
+  signer: abstractedAccount,
+});
+
+await aptos.waitForTransaction({ hash: pendingCoinTransferTransaction.hash });
+
+console.log("Coin transfer transaction submitted! ", pendingCoinTransferTransaction.hash);
+```
+
+### 7. Conclusion
+
+To verify that you have successfully sign and submitted the transaction using the abstracted account, you can use the explorer to check the transaction. If the 
+transaction signature contains a `function_info` and `auth_data` field, it means you succesfully used account abstraction!
+
+![Transaction Signature](https://i.imgur.com/HZylFnc.png)
+
+</Steps>
+
+## Management Operations
+
+If you want to disable account abstraction for an account, you can use the `disableAccountAbstractionTransaction`. If you do not specify an authentication function,
+the transaction will disable all authentication functions for the account.
+
+```ts
+const transaction = aptos.abstraction.disableAccountAbstractionTransaction({
+  accountAddress: alice.accountAddress,
+  /**
+   * The authentication function to be disabled. If left `undefined`, all authentication functions will be disabled.
+  */
+  authenticationFunction,
+});
+```
+
+## Application User Experience
+
+Applications that want to leverage account abstraction will want to provide a user experience that allows users to check if the account has account abstraction enabled, 
+and to enable it, if it is not enabled.
+
+
+Below is a diagram of the UX flow for enabling account abstraction.
+
+![Account Abstraction UX](https://i.imgur.com/1xcrFjG.png)
