@@ -1,104 +1,93 @@
----
-title: "通过 Aptos CLI 使用硬件钱包 Ledger"
----
+import { Callout, Steps } from 'nextra/components'
 
-import {Callout, Steps} from 'nextra/components'
+# 通过 Aptos CLI 使用硬件钱包
 
-# 通过 Aptos CLI 使用硬件钱包 Ledger
-
-使用像 Ledger 这样的硬件钱包是在 `mainnet` 上签署交易最安全的方式，因为您的私钥永远不会离开您的设备。
+使用硬件钱包(如 Ledger)是在 `mainnet` 上签署交易最安全的方式，因为你的私钥永远不会离开设备。
 
 <Callout type="warning">
-`Ledger Nano S` 的内存有限，可能无法在 Aptos 上签署太多的交易。如果您尝试签署的交易数量太大，超出了您的设备处理能力，您将收到错误 `Wrong raw transaction length`
+`Ledger Nano S` 的内存有限，可能无法在 Aptos 上签署许多交易。如果你试图签署的交易对你的设备来说太大，你会收到错误 `Wrong raw transaction length`。
 </Callout>
 
 ## 初始设置
 
-您需要对 Aptos CLI 和您的 Ledger 设备进行一些配置步骤，以签署交易。
+你需要为 Aptos CLI 和 Ledger 设备进行一些配置步骤才能签署交易。
 <Steps>
 
-### 确保您已经安装了 Aptos CLI
+### 确保已安装 Aptos CLI。
+   如果你还没有安装 Aptos CLI，可以按照[这些步骤](../../cli.mdx)进行安装。
 
-如果您尚未安装，可以按照[安装步骤](../../cli.mdx)进行安装。
+### 确保已完成 Ledger 设备的基本设置。
+   你可以在 [Ledger 网站](https://www.ledger.com/)上找到这些步骤。例如，这里是 [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true) 的设置说明。
+### 将 Ledger 设备插入计算机。
+### 按照[本指南](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true)在 Ledger 设备上安装 Aptos 应用程序。
+### 解锁 Ledger 设备并打开 Aptos 应用程序。
 
-### 请确认你已经按照指南完成了 Ledger 设备的初始配置
+   <Callout type="info" emoji="ℹ️">
+   每当你想使用 Ledger 签署时，都需要插入设备、解锁它并在运行任何 CLI 命令之前打开 Aptos 应用程序。
+   </Callout>
 
-您可以在 [Ledger 的网站](https://www.ledger.com/)上找到这些步骤。例如，这里是 [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true) 的设置说明。
+### 在 Aptos CLI 中创建新的 Ledger 配置文件
 
-### 将您的 Ledger 设备连接到电脑
+   ```bash filename="Terminal"
+   aptos init --profile <你的配置文件> --ledger
+   ```
 
-### 按照[这个指南](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true)在您的 Ledger 设备上安装 Aptos 应用程序。
+   然后按照终端提示操作，如下所示：
 
-### 解锁您的 Ledger 设备并打开 Aptos 应用程序
+   ```text filename="Terminal"
+   Configuring for profile <你的配置文件>
+   Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
 
-<Callout type="info" emoji="ℹ️">
-无论何时您想使用 Ledger 进行签名，都需要将其连接、解锁，并在运行任何 CLI 命令之前打开 Aptos 应用程序。
-</Callout>
+   No network given, using devnet...
+   Please choose an index from the following 5 ledger accounts, or choose an arbitrary index that you want to use:
+   [0] Derivation path: m/44'/637'/0'/0'/0' (Address: 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb)
+   [1] Derivation path: m/44'/637'/1'/0'/0' (Address: 21563230cf6d69ee72a51d21920430d844ee48235e708edbafbc69708075a86e)
+   [2] Derivation path: m/44'/637'/2'/0'/0' (Address: 667446181b3b980ef29f5145a7a2cc34d433fc3ee8c97fc044fd978435f2cb8d)
+   [3] Derivation path: m/44'/637'/3'/0'/0' (Address: 2dcf037a9f31d93e202c074229a1b69ea8ee4d2f2d63323476001c65b0ec4f31)
+   [4] Derivation path: m/44'/637'/4'/0'/0' (Address: 23c579a9bdde1a59f1c9d36d8d379aeefe7a5997b5b58bd5a5b0c12a4f170431)
 
-### 在 Aptos CLI 中创建一个新的 Ledger 配置文件
+   0
+   Account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb has been already found on-chain
 
-```bash filename="Terminal"
-aptos init --profile <your-profile> --ledger
-```
+   ---
+   Aptos CLI is now set up for account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb as profile <你的配置文件>!  Run `aptos --help` for more information about commands
+   {
+     "Result": "Success"
+   }
+   ```
 
-然后按照 Terminal 提示操作，如下所示：
+   在示例中，他们选择使用第一个 ledger 账户，在 `aptos init` 命令后输入 `0`。你可以选择任何你想要的账户。
 
-```bash filename="Terminal"
-Configuring for profile <your-profile>
-Choose network from [devnet, testnet, mainnet, local, custom | defaults to devnet]
+   **常见错误：**
 
-No network given, using devnet...
-Please choose an index from the following 5 ledger accounts, or choose an arbitrary index that you want to use:
-[0] Derivation path: m/44'/637'/0'/0'/0' (Address: 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb)
-[1] Derivation path: m/44'/637'/1'/0'/0' (Address: 21563230cf6d69ee72a51d21920430d844ee48235e708edbafbc69708075a86e)
-[2] Derivation path: m/44'/637'/2'/0'/0' (Address: 667446181b3b980ef29f5145a7a2cc34d433fc3ee8c97fc044fd978435f2cb8d)
-[3] Derivation path: m/44'/637'/3'/0'/0' (Address: 2dcf037a9f31d93e202c074229a1b69ea8ee4d2f2d63323476001c65b0ec4f31)
-[4] Derivation path: m/44'/637'/4'/0'/0' (Address: 23c579a9bdde1a59f1c9d36d8d379aeefe7a5997b5b58bd5a5b0c12a4f170431)
+   1. 如果你看到错误 `Device Not Found`，请确保解锁你的 Ledger 然后重试此步骤。
+   2. 如果你看到错误 `Aptos ledger app is not opened`，请确保在你的 Ledger 上打开 Aptos 应用程序，然后重试此步骤。
 
-0
-Account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb has been already found on-chain
-
----
-Aptos CLI is now set up for account 59836ba1dd0c845713bdab34346688d6f1dba290dbf677929f2fc20593ba0cfb as profile <your-profile>!  Run `aptos --help` for more information about commands
-{
-  "Result": "Success"
-}
-```
-
-在这个示例中，使用者选择通过在 `aptos init` 命令后输入 `0` 来选择 Ledger 设备上的第一个账户。你可以根据需要选取任意账户。
-
-**常见错误：**
-
-1.  如果您看到错误 `Device Not Found`，请确保解锁您的 Ledger，然后重试。
-2.  如果您看到错误 `Aptos ledger app is not opened`，请确保在您的 Ledger 上打开 Aptos 应用程序，然后重试。
-
-### 最后，您需要按照[这些步骤](https://medium.com/@DavidLehman24/how-to-enable-disable-blind-signing-on-ledger-wallet-99113a85cdad)在您的 Ledger 设备上启用盲签。
-
-1.  盲签名功能允许你确认那些无法通过人类可理解的语言进行核验的智能合约操作。
-2.  在进行交易时，如果某些数据信息过于庞大以致无法直接显示，这一功能是必不可少的，以确保交易能够执行而不受这种限制。
-
+### 最后，你需要按照[这些步骤](https://medium.com/@DavidLehman24/how-to-enable-disable-blind-signing-on-ledger-wallet-99113a85cdad)在 Ledger 设备上启用盲签名。
+   1. 盲签名允许你确认无法通过人类可读语言验证的智能合约交互。
+   2. 这是执行交易所必需的，因为某些有效负载太大而无法显示。
 </Steps>
 
-## 使用 Ledger 签署（Signing）交易
+## 使用 Ledger 签署
 
-完成初始设置后，您可以通过遵循以下步骤签署交易：
+完成初始设置后，你可以按照以下步骤签署交易：
 
-1. 插入您的 Ledger 设备。
+1. 插入你的 ledger。
 2. 解锁它。
 3. 打开 Aptos 应用程序。
 4. 运行需要签名的 Aptos CLI 命令。
 
 <Callout type="info" emoji="ℹ️">
-这个过程适用于任何需要签名的命令，无论是转移 coin、发布 Move 合约、与合约交互等。
+这个过程适用于任何需要签名的命令，无论是转移代币、发布 Move 合约还是与合约交互等。
 </Callout>
 
-例如，如果您想发布一个像 `[hello_blockchain](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)` 这样的 Move 包，您可以按照上述步骤，然后运行：
+例如，如果你想发布像 `[hello_blockchain](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)` 演示合约这样的 Move 包，你可以按照上述步骤然后运行：
 
 ```bash filename="Terminal"
-aptos move publish --profile <your-ledger-profile-name> --named-addresses hello_blockchain=<your-ledger-profile-name>
+aptos move publish --profile <你的-ledger-配置文件名称> --named-addresses hello_blockchain=<你的-ledger-配置文件名称>
 ```
 
-您应该会看到像这样的响应：
+你应该看到类似这样的响应：
 
 ```bash filename="Terminal"
 Compiling, may take a little while to download git dependencies...
@@ -124,9 +113,473 @@ yes
     "vm_status": "Executed successfully"
   }
 }
-
 ```
 
-在您批准发布此包后，系统会提示您在 Ledger 设备上签署交易。一旦签署，包将被发布到网络！
+在你批准发布此包后，系统会提示你在 Ledger 设备上签署交易。一旦签署，包就会发布到网络！
 
-你可能遇到的一个错误是 `Error: Wrong raw transaction length`。这表示交易大小或者数据包对你的设备来说过大，无法被签名。目前，Aptos Ledger 应用只支持 20kb 以下的交易量。由于 `Ledger Nano S` 设备的内存更小，这就是为什么它更有可能产生这个错误的原因。
+你可能遇到的一个错误是 `Error: Wrong raw transaction length`。这意味着交易或包的大小对你的设备来说太大而无法签署。目前 Aptos Ledger 应用程序只能支持小于 20kb 的交易。`Ledger Nano S` 设备的内存比这还少，这就是为什么它更容易产生这个错误。
+
+## 身份验证密钥轮换
+
+如果你有一个未使用硬件钱包保护的活跃账户，那么你可能希望轮换账户的身份验证密钥，使其对应于 Ledger 上持有的 [BIP44 账户索引] 私钥。
+
+或者，如果你有一个与 Ledger 硬件钱包关联的账户，你想从中发布一个大型包，你可能想暂时将账户的身份验证密钥轮换到热密钥以避免内存问题。
+
+本教程将指导你完成这两种情况。
+
+<Callout type="warning" emoji="❗">
+在开始本教程之前，请确保你已完成[密钥轮换指南](../../guides/key-rotation.mdx)。
+</Callout>
+
+<Steps>
+
+### 完成密钥轮换指南
+
+确认你已完成[密钥轮换指南](../../guides/key-rotation.mdx)。
+
+### 验证你的 Ledger 已准备就绪
+
+1. 连接并解锁你的 Ledger。
+1. 检查你的 Aptos 应用程序版本：`Aptos > About > Version`。
+1. 如果你没有 `0.6.9` 或更高版本，请使用 Ledger Live 更新它。
+1. 启用盲签名：`Aptos > Settings > Enable Blind Signing`。
+
+### 启动本地网络
+
+启动本地网络：
+
+```sh filename="Terminal"
+aptos node run-localnet
+```
+
+当它打印出以下内容时，本地网络就准备好了：
+
+```sh filename="Terminal"
+Applying post startup steps...
+
+Setup is complete, you can now use the localnet!
+```
+
+<Callout type="info" emoji="🧠">
+如果你是 MacOS 或 Linux 的高级用户，可以使用以下命令在后台进程中启动一个全新的本地网络：
+
+```sh filename="Terminal"
+mkdir -p localnet-data
+aptos node run-localnet \
+    --assume-yes \
+    --test-dir localnet-data \
+    --force-restart &
+export LOCALNET_PID=$!
+```
+
+然后你可以随时使用以下命令停止本地网络：
+
+```sh filename="Terminal"
+kill $LOCALNET_PID
+```
+</Callout>
+
+### 设置本地网络热钱包配置文件
+
+创建一个私钥，对应于以虚荣前缀 `0xaaa` 开头的身份验证密钥，从而得到初始账户地址：
+
+```sh filename="Terminal"
+aptos key generate \
+    --assume-yes \
+    --output-file private-key-a \
+    --vanity-prefix 0xaaa
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "PublicKey Path": "private-key-a.pub",
+    "PrivateKey Path": "private-key-a",
+    "Account Address:": "0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5"
+  }
+}
+```
+</details>
+
+使用私钥在本地网络上初始化 `hot-wallet-1` 配置文件：
+
+```sh filename="Terminal"
+aptos init \
+    --assume-yes \
+    --network local \
+    --private-key-file private-key-a \
+    --profile hot-wallet-1
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+Configuring for profile hot-wallet-1
+Configuring for network Local
+Using command line argument for private key
+Account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 doesn\'t exist, creating it and funding it with 100000000 Octas
+Account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 funded successfully
+
+---
+Aptos CLI is now set up for account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 as profile hot-wallet-1!  Run `aptos --help` for more information about commands
+{
+  "Result": "Success"
+}
+```
+</details>
+
+### 轮换热钱包密钥
+
+将热钱包的身份验证密钥轮换为使用你的 Ledger 上的 [BIP44 账户索引] 1000：
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --new-derivation-index 1000 \
+    --profile hot-wallet-1 \
+    --save-to-profile ledger-wallet-1000
+```
+
+<Callout type="info" emoji="🧠">
+作为最佳实践，此命令使用从大数字（1000）开始的 [BIP44 账户索引]，以表明该账户是由 Ledger 上的轮换身份验证密钥保护的，以确保它不会与任何其他现有账户冲突。
+
+这种做法有助于配置文件恢复，如下所示。
+</Callout>
+
+按照 CLI 提示的说明操作：
+
+```sh filename="Terminal"
+Approve rotation proof challenge signature on your Ledger device
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile ledger-wallet-1000",
+    "transaction": {
+      "transaction_hash": "0x1a6df99651ac170bda10cfb9898fa196321d80a928033791b9d2231f77738bb2",
+      "gas_used": 448,
+      "gas_unit_price": 100,
+      "sender": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "sequence_number": 0,
+      "success": true,
+      "timestamp_us": 1717986382369736,
+      "version": 186,
+      "vm_status": "Executed successfully"
+    }
+  }
+}
+```
+</details>
+
+比较 `hot-wallet-1` 和 `ledger-wallet-1000` 配置文件，注意它们有相同的 `account` 地址但不同的 `public_key` 值：
+
+```sh filename="Terminal"
+aptos config show-profiles --profile hot-wallet-1
+aptos config show-profiles --profile ledger-wallet-1000
+```
+</Steps>
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "hot-wallet-1": {
+      "has_private_key": true,
+      "public_key": "0xffb1240fd1267207cc3ed2e1b5386e090a9ca2c844d7f9e0077b3d7dd5d5e430",
+      "account": "aaa271bca468fb8518f73a732a484b29a1bc296ebcb23f15639d4865a5cebe87",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+{
+  "Result": {
+    "ledger-wallet-1000": {
+      "has_private_key": false,
+      "public_key": "0x20ba83f9b9fdab73b0ace8fda26ce24c98cf55060b72b69cfbd25add6a25d09b",
+      "account": "aaa271bca468fb8518f73a732a484b29a1bc296ebcb23f15639d4865a5cebe87",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+```
+</details>
+
+由于该账户不再由热私钥保护，请删除私钥和公钥文件。
+
+<Callout type="info" emoji="🧠">
+如果你使用的是类 UNIX 机器：
+
+```shell filename="Terminal"
+rm private-key-a
+rm private-key-b
+rm private-key-a.pub
+rm private-key-b.pub
+```
+</Callout>
+
+现在你已经成功轮换了热钱包的身份验证密钥，你也可以删除这些配置文件：
+
+```sh filename="Terminal"
+aptos config delete-profile --profile hot-wallet-1
+aptos config delete-profile --profile ledger-wallet-1000
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": "Deleted profile hot-wallet-1"
+}
+{
+  "Result": "Deleted profile ledger-wallet-1000"
+}
+```
+</details>
+
+### 恢复配置文件
+
+由于你知道你将热钱包的身份验证密钥轮换到了 Ledger，并且你使用了最佳实践的 [BIP44 账户索引] 偏移量 1000，你可以仅使用 [BIP44 账户索引] 轻松恢复配置文件：
+
+```sh filename="Terminal"
+aptos init \
+    --assume-yes \
+    --derivation-index 1000 \
+    --network local \
+    --profile ledger-wallet-1000-recovered
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+Configuring for profile ledger-wallet-1000-recovered
+Configuring for network Local
+Account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 has been already found onchain
+
+---
+Aptos CLI is now set up for account 0xaaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5 as profile ledger-wallet-1000-recovered!  Run `aptos --help` for more information about commands
+{
+  "Result": "Success"
+}
+```
+</details>
+
+注意此配置文件对应于指定的 `0xaaa...` 虚荣地址：
+
+```sh filename="Terminal"
+aptos config show-profiles --profile ledger-wallet-1000-recovered
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "ledger-wallet-1000-recovered": {
+      "has_private_key": false,
+      "public_key": "0x20ba83f9b9fdab73b0ace8fda26ce24c98cf55060b72b69cfbd25add6a25d09b",
+      "account": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+```
+</details>
+
+<Callout type="info" emoji="🧠">
+`aptos init` 命令首先检查 [`account::OriginatingAddress`] 表以确定与公钥关联的账户地址，因此只要你遵循[密钥轮换指南](../../guides/key-rotation.mdx)中的最佳实践，并且一次只使用一个私钥验证一个账户，你就可以仅基于 [BIP44 账户索引] 轻松恢复你的配置文件。
+</Callout>
+
+### 轮换到新的热私钥
+
+如果你有一个与 Ledger 硬件钱包关联的账户，你想用它来发布一个大型包，由于 Ledger 的内存限制，你将无法签署包发布交易。在这种情况下，你需要暂时轮换到热钱包。
+
+首先生成一个新的私钥：
+
+```sh filename="Terminal"
+aptos key generate \
+    --assume-yes \
+    --output-file private-key-b \
+    --vanity-prefix 0xbbb
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "PublicKey Path": "private-key-b.pub",
+    "PrivateKey Path": "private-key-b",
+    "Account Address:": "0xbbbede2b4f1d49eff0b156ab0756889a6f2bb68f215399d5015da9ac45921b47"
+  }
+}
+```
+</details>
+
+将与 Ledger 关联的账户的身份验证密钥轮换到新的私钥：
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --new-private-key-file private-key-b \
+    --profile ledger-wallet-1000-recovered \
+    --save-to-profile temporary-hot-wallet
+```
+
+按照 CLI 提示的说明操作：
+
+```sh filename="Terminal"
+Approve rotation proof challenge signature on your Ledger device
+```
+
+```sh filename="Terminal"
+Approve transaction on your Ledger device
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile temporary-hot-wallet",
+    "transaction": {
+      "transaction_hash": "0xe49782e92d8fd824fd6dce8f6ed42a11cf8ee84c201f3aa639c435e737c80eaa",
+      "gas_used": 449,
+      "gas_unit_price": 100,
+      "sender": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "sequence_number": 1,
+      "success": true,
+      "timestamp_us": 1717986617911082,
+      "version": 631,
+      "vm_status": "Executed successfully"
+    }
+  }
+}
+```
+</details>
+
+由于 CLI 配置文件 `ledger-wallet-1000-recovered` 现在已过时，请重命名它，以防你中断并忘记私钥已被轮换：
+
+```sh filename="Terminal"
+aptos config rename-profile \
+    --profile ledger-wallet-1000-recovered \
+    --new-profile-name ledger-wallet-1000-stale
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": "Renamed profile ledger-wallet-1000-recovered to ledger-wallet-1000-stale"
+}
+```
+</details>
+
+### 轮换回 Ledger
+
+一旦你用热密钥签署了大型包发布交易，你就可以将身份验证密钥轮换回对应于 Ledger 上索引 1000 的私钥：
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --new-derivation-index 1000 \
+    --profile temporary-hot-wallet \
+    --save-to-profile ledger-wallet-1000
+```
+
+按照 CLI 提示的说明操作：
+
+```sh filename="Terminal"
+Approve rotation proof challenge signature on your Ledger device
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile ledger-wallet-1000",
+    "transaction": {
+      "transaction_hash": "0x9503819d4ea13bcd9eafed25984807d86d22e8a9837565a7495b54d13890d103",
+      "gas_used": 449,
+      "gas_unit_price": 100,
+      "sender": "aaac71af5f2a4af4ec2639a15799bf9b945afb061c8bee102b636531c1b00eb5",
+      "sequence_number": 2,
+      "success": true,
+      "timestamp_us": 1717986672963544,
+      "version": 742,
+      "vm_status": "Executed successfully"
+    }
+  }
+}
+```
+</details>
+
+验证 `ledger-wallet-1000-stale` 和 `ledger-wallet-1000` 配置文件具有相同的 `account` 地址和 `public_key`：
+
+```sh filename="Terminal"
+aptos config show-profiles --profile ledger-wallet-1000-stale
+aptos config show-profiles --profile ledger-wallet-1000
+```
+
+删除你不再需要的 `temporary-hot-wallet` 和 `ledger-wallet-1000-stale` 配置文件。
+
+```sh filename="Terminal"
+aptos config delete-profile --profile temporary-hot-wallet
+aptos config delete-profile --profile ledger-wallet-1000-stale
+```
+
+<details>
+<summary>示例输出</summary>
+```sh filename="Terminal"
+{
+  "Result": "Deleted profile temporary-hot-wallet"
+}
+{
+  "Result": "Deleted profile ledger-wallet-1000-stale"
+}
+```
+</details>
+
+由于你不再需要临时私钥，也请删除它。
+
+<Callout type="info" emoji="🧠">
+如果你使用的是类 UNIX 机器：
+
+```shell filename="Terminal"
+rm private-key-*
+```
+</Callout>
+
+### 清理
+
+删除剩余的测试配置文件：
+
+```shell filename="Terminal"
+aptos config delete-profile --profile ledger-wallet-1000
+```
+
+然后停止本地网络。
+
+<Callout type="info" emoji="🧠">
+如果你使用的是类 UNIX 机器：
+
+```shell filename="Terminal"
+aptos config delete-profile --profile ledger-wallet-1000
+kill $LOCALNET_PID
+rm -fr localnet-data
+```
+</Callout>
+
+</Steps>
+
+[`account::OriginatingAddress`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L70
+[BIP44 账户索引]: https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki 

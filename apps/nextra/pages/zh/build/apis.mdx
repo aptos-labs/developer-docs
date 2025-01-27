@@ -4,72 +4,71 @@ title: "Aptos APIs"
 
 import { Cards, Card } from '@components/index'
 
-# Aptos API
+# Aptos APIs
 
-Aptos 区块链网络可以通过多种 API 进行访问，具体取决于您的使用场景。
+Aptos 区块链网络可以通过多个 API 访问,具体取决于您的使用场景。
 
-## Aptos Fullnode
+## Aptos 全节点
 
-此 API 嵌入在 Fullnodes 中，提供了一种简单、低延迟但低级别的方式来读取状态和提交交易到 Aptos 区块链。它还支持交易模拟。
+这个 API - 嵌入在全节点中 - 提供了一个简单、低延迟但低级别的方式来_读取_状态和_提交_交易到 Aptos 区块链。它还支持交易模拟。
 
 <Cards>
    <Card href="./apis/fullnode-rest-api-reference?network=mainnet">
-      <Card.Title>Aptos Fullnode REST API（主网）</Card.Title>
-      <Card.Description>Aptos Fullnode REST API 的主网 API playground</Card.Description>
+      <Card.Title>Aptos 全节点 REST API (主网)</Card.Title>
+      <Card.Description>Aptos 全节点 REST API 的主网 API 测试平台</Card.Description>
    </Card>
    <Card href="./apis/fullnode-rest-api-reference?network=testnet">
-      <Card.Title>Aptos Fullnode REST API（测试网）</Card.Title>
-      <Card.Description>Aptos Fullnode REST API 的测试网 API playground</Card.Description>
+      <Card.Title>Aptos 全节点 REST API (测试网)</Card.Title>
+      <Card.Description>Aptos 全节点 REST API 的测试网 API 测试平台</Card.Description>
    </Card>
    <Card href="./apis/fullnode-rest-api-reference?network=devnet">
-      <Card.Title>Aptos Fullnode REST API（开发网）</Card.Title>
-      <Card.Description>Aptos Fullnode REST API 的开发网 API playground</Card.Description>
+      <Card.Title>Aptos 全节点 REST API (开发网)</Card.Title>
+      <Card.Description>Aptos 全节点 REST API 的开发网 API 测试平台</Card.Description>
    </Card>
 </Cards>
 
-## Indexer
+## 索引器
 
 <Cards>
    <Card href="./indexer">
-      <Card.Title>Indexer GraphQL API</Card.Title>
+      <Card.Title>索引器 GraphQL API</Card.Title>
       <Card.Description>
-         GraphQL API 提供可传参数可定制的 GraphQL 接口，用于从 Aptos 区块链读取状态。
-         它非常适合与 NFTs、Aptos Objects 或自定义 Move 合约进行交互。
-         在这里了解更多关于 Indexer 支持的 GraphQL API。
+         这个 GraphQL API 提供了一个高级的、有主见的 GraphQL 接口来读取 Aptos 区块链的状态。
+         它非常适合与 NFT、Aptos Objects 或自定义 Move 合约进行交互。
+         在这里了解更多关于索引器驱动的 GraphQL API。
       </Card.Description>
    </Card>
    <Card href="./indexer/txn-stream">
-      <Card.Title>Transaction Stream API</Card.Title>
+      <Card.Title>交易流 API</Card.Title>
       <Card.Description>
          这个 GRPC API 将历史和实时交易数据流式传输到索引处理器。
-         它正在被 Aptos Core Indexing 使用，也可以支持自定义应用程序特定的索引处理器
-         进行实时区块链数据处理。在这里了解更多。
+         它被 Aptos Core Indexing 使用,也可以支持自定义的应用特定索引处理器
+         用于实时区块链数据处理。在这里了解更多。
       </Card.Description>
    </Card>
 </Cards>
 
-## Faucet (Only Devnet)
+## 水龙头 (仅测试网/开发网)
 
 <Cards>
    <Card href="./apis/faucet-api">
-      <Card.Title>Faucet API</Card.Title>
+      <Card.Title>水龙头 API</Card.Title>
       <Card.Description>
-         该 API 提供在开发网和测试网上接收测试代币的能力。其主要目的是在将应用程序和 Move 合约部署到主网之前进行开发和测试。
+         这个 API 提供了在开发网上接收测试代币的功能。它的主要目的是在将应用程序和 Move 合约
+         部署到主网之前进行开发和测试。在测试网上,您可以在[铸币页面](/network/faucet)进行铸币。
       </Card.Description>
    </Card>
 </Cards>
 
-
-上述 API 的代码在 [GitHub](https://github.com/aptos-labs/aptos-core) 上开源。因此，任何人都可以操作这些 API，全球有许多独立的运营商和开发者选择这样做。
-
-todo translate
-For testnet, you can mint APT at the [mint page](/network/faucet).
+上述每个 API 的代码都在 [GitHub](https://github.com/aptos-labs/aptos-core) 上开源。因此,
+任何人都可以运行这些 API,全球许多独立运营商和构建者都选择这样做。
 
 ### Aptos Labs 运营的 API 部署
 
-[Aptos Labs](https://aptoslabs.com) 代表 [Aptos Foundation](https://aptosfoundation.org/) 为每个 [Aptos Network](../network/nodes/networks.mdx) 运营这些 API 部署，并将其公开供大家使用。
+[Aptos Labs](https://aptoslabs.com) 代表 [Aptos Foundation](https://aptosfoundation.org/)
+为每个 [Aptos 网络](../network/nodes/networks.mdx) 运营这些 API 的部署,并使其可供公众使用。
 
-目前有两组 Aptos Labs API 部署：
+目前有 2 组 Aptos Labs API 部署:
 
 1. [具有匿名访问和基于 IP 的速率限制的 API](../network/nodes/networks.mdx)
-2. [[Beta] 通过 Aptos Labs Developer Portal 进行身份验证和基于开发者账户的速率限制的 API](apis/aptos-labs-developer-portal.mdx)
+2. [[测试版] 通过 Aptos Labs 开发者门户进行身份验证和基于开发者账户速率限制的 API](apis/aptos-labs-developer-portal.mdx)

@@ -1,78 +1,76 @@
----
-title: "设置 CLI 初始配置"
----
-
-import {Callout} from 'nextra/components'
+import { Callout } from 'nextra/components'
 
 # 设置 CLI 初始配置
 
-如果您使用 CLI 在链上尝试操作，您需要配置网络、水龙头和凭据，以便 CLI 使用。
+如果你使用 CLI 在链上尝试操作，你需要配置 CLI 要使用的网络、水龙头和凭证。
 
-这使得使用 CLI 更加方便和安全，因为您不会被迫重复复制地址或私钥。
+这使得使用 CLI 更容易和更安全，因为你不需要重复复制地址或私钥。
 
 <Callout type="warning">
-如果您仍然需要安装CLI，请按照[这些步骤](install-cli/install-cli-specific-version.mdx)。
+如果你还需要安装 CLI，请按照[这些步骤](install-cli/install-cli-specific-version.mdx)操作。
 </Callout>
 
-1. 运行 `aptos init` 并按照命令行中的指示操作。
-   <Callout type="info" emoji="ℹ️">
-   如果要使用默认设置，您可以不提供任何输入，只需按 "Enter"。例如：
-   </Callout>
+1. 运行 `aptos init` 并按照命令行中的说明操作。
+  <Callout type="info" emoji="ℹ️">
+  要使用默认设置，你可以不提供任何输入，只需按"Enter"。例如：
+  </Callout>
 
-   ```bash filename="Terminal"
-    aptos init
-    ```
+  ```bash filename="Terminal"
+  aptos init
+  ```
 
-    ```bash filename="Output"
-    Configuring for profile default
-    Enter your rest endpoint [Current: None | No input: https://api.devnet.aptoslabs.com]
+  ```bash filename="输出"
+  正在为配置文件 default 进行配置
+  输入你的 rest 端点 [当前：无 | 无输入：https://api.devnet.aptoslabs.com]
 
-    No rest url given, using https://api.devnet.aptoslabs.com...
-    Enter your faucet endpoint [Current: None | No input: https://faucet.devnet.aptoslabs.com]
+  未给出 rest url，使用 https://api.devnet.aptoslabs.com...
+  输入你的水龙头端点 [当前：无 | 无输入：https://faucet.devnet.aptoslabs.com]
 
-    No faucet url given, using https://faucet.devnet.aptoslabs.com...
-    Enter your private key as a hex literal (0x...) [Current: None | No input: Generate new key (or keep one if present)]
+  未给出水龙头 url，使用 https://faucet.devnet.aptoslabs.com...
+  输入你的私钥作为十六进制字面量 (0x...) [当前：无 | 无输入：生成新密钥（或保留现有密钥）]
 
-    No key given, generating key...
-    Account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696 doesn't exist, creating it and funding it with 10000 coins
-    Aptos is now set up for account 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696!  Run `aptos help` for more information about commands
+  未给出密钥，正在生成密钥...
+  账户 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696 不存在，正在创建并为其提供 10000 个代币
+  Aptos 现在已为账户 00f1f20ddd0b0dd2291b6e42c97274668c479bca70f07c6b6a80b99720779696 设置完成！运行 `aptos help` 获取有关命令的更多信息
 
-    {
-      "Result": "Success"
-    }
-    ```
+  {
+    "Result": "Success"
+  }
+  ```
 
-2. 稍后，如果您想更新这些设置，可以通过再次运行 `aptos init` 来完成。
-3. 这些额外的配置步骤不是必需的，主要是为了改善用户体验。若想根据您的需求继续使用命令行界面（CLI），请参照这里的[使用指南](../cli.mdx#%EF%B8%8F-using-the-aptos-cli)。
+2. 稍后，如果你想更新这些设置，可以再次运行 `aptos init`。
+3. 其余的配置步骤是可选的/提高生活质量的。要继续使用 CLI 进行你的特定用例，请按照[这里的使用指南](../cli.mdx#%EF%B8%8F-using-the-aptos-cli)操作。
 
 ## （可选）创建命名配置（配置文件）
 
-对于测试更复杂的情况，您通常希望在链上有多个账户。实现此目的的一种方法是创建一个我们称为配置文件的命名配置。
-在进行复杂场景测试时，你往往需要创建多个区块链账户。为此，你可以为此创建一个配置文件。
+对于测试更复杂的场景，你通常需要链上的多个账户。一种方法是创建我们称之为配置文件的命名配置。
 
-要创建一个配置文件，运行 `aptos init --profile <配置文件名称>`。您生成的配置将在调用 CLI 命令时用作参数的替代品。
+要创建配置文件，运行 `aptos init --profile <配置文件名称>`。你生成的配置可以在调用 CLI 命令时用作参数的替代。
 
 例如：
 
 ```bash filename="Terminal"
 aptos init --profile bob
-...
+```
+```bash filename="Terminal"
 aptos account fund-with-faucet --profile bob
+```
+```bash filename="输出"
 {
-  "Result": "Added 100000000 Octas to account 0x63169727b08fc137b8720e451f7a90584ccce04c301e151daeadc7b8191fdfad"
+  "Result": "为账户 0x63169727b08fc137b8720e451f7a90584ccce04c301e151daeadc7b8191fdfad 添加了 100000000 Octas"
 }
 ```
 
 ## （可选）设置 Shell 补全
 
-你可以启用 Shell 自动补全的特性，它能够提升你的使用体验。
+你可以启用的一个提高生活质量的功能是 shell 自动补全。
 
-1. 确定您正在使用哪个 shell（如果您不确定，可以运行 `echo $SHELL`）。
-2. 查找该 shell 的 shell 补全配置文件的位置（每个 shell 都不同）。支持补全的 shell 是 `[bash, zsh, fish, PowerShell, elvish]`。
-3. 结合您所使用的 Shell 环境及相应的补全输出文件来执行以下命令：
+1. 确定你使用的是哪个 shell（如果不确定，可以运行 `echo $SHELL`）。
+2. 查找该 shell 的 shell 补全配置文件的位置（每个 shell 都不同）。支持的 shell 有 `[bash, zsh, fish, PowerShell, elvish]`。
+3. 使用你的特定 shell 和使用你的 shell 的补全输出文件运行以下命令：
 
 ```bash filename="Terminal"
-aptos config generate-shell-completions --shell <YOUR_SHELL_HERE> --output-file <YOUR_SHELL_OUTPUT_DESTINATION>
+aptos config generate-shell-completions --shell <你的_SHELL> --output-file <你的_SHELL_的输出目标>
 ```
 
 [`oh my zsh`](https://ohmyz.sh/) 的示例命令：
@@ -83,17 +81,17 @@ aptos config generate-shell-completions --shell zsh --output-file ~/.oh-my-zsh/c
 
 ## （可选）全局配置
 
-默认情况下，CLI 会在每个工作区目录中的 `.aptos/config.yaml` 查找配置。如果您想为所有工作区使用共享配置，可以按照以下步骤操作：
+默认情况下，CLI 将在每个工作空间目录的 `.aptos/config.yaml` 中查找配置。如果你想为所有工作空间使用共享配置，可以按照以下步骤操作：
 
-1. 在您的主目录中创建一个名为 `.aptos` 的文件夹（因此路径为 `~/.aptos`）。
-2. 在 `.aptos` 内部创建一个名为 `global_config.yaml` 的 yaml 文件。
+1. 在你的主目录中创建一个名为 `.aptos` 的文件夹（所以它的路径是 `~/.aptos`）。
+2. 在 `.aptos` 中创建一个名为 `global_config.yaml` 的 yaml 文件。
 3. 运行命令：
 
 ```bash filename="Terminal"
 aptos config set-global-config --config-type global
 ```
 
-您应该看到：
+你应该看到：
 
 ```json
 {
@@ -101,4 +99,4 @@ aptos config set-global-config --config-type global
     "config_type": "Global"
   }
 }
-```
+``` 
