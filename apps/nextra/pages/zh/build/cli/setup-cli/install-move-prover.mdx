@@ -2,24 +2,37 @@
 title: "安装 Move Prover"
 ---
 
-import {Callout} from 'nextra/components'
+import { Callout } from 'nextra/components'
 
 # 安装 Move Prover
 
-如果你想使用 [Move Prover](../../smart-contracts/prover.mdx)，在[安装 CLI 二进制文件](.)之后，请安装 Move Prover 的依赖。
+如果您想使用 [Move Prover](../../smart-contracts/prover.mdx)，请在[安装 CLI 二进制文件](.)后安装 Move Prover 依赖项。
+安装 Prover 依赖项有两种方式。
+
+## 通过 Aptos CLI 安装（推荐）
+
+1. [安装最新的 Aptos CLI 二进制文件](../install-cli/install-cli-mac.mdx)。
+
+2. 执行命令 `aptos update prover-dependencies`。
+
+<Callout type="info">
+  安装后环境变量 `BOOGIE_EXE` 和 `Z3_EXE` 将自动设置。请确保它们在当前环境中生效。
+</Callout>
+
+## 通过 `aptos-core` 安装（不推荐）
 
 1. 参见[从源代码构建 Aptos](../../../network/nodes/building-from-source.mdx)
 
-2. 然后，切换到 aptos-core 目录中，安装其他的的 Move 工具：
+2. 然后，在检出的 aptos-core 目录中，安装额外的 Move 工具：
    <details>
    <summary>Linux / macOS</summary>
 
-   1. 打开一个终端会话。
-   2. 运行 dev_setup 脚本以准备您的环境：`./scripts/dev_setup.sh -yp`
-   3. 更新当前的 shell 环境：`source ~/.profile`
+   1. 打开终端会话。
+   2. 运行开发设置脚本来准备您的环境：`./scripts/dev_setup.sh -yp`
+   3. 更新您当前的 shell 环境：`source ~/.profile`
 
    <Callout type="info" emoji="ℹ️">
-   运行 `dev_setup.sh -p` 命令可以更新你的 `~/.profile` 文件，此操作将添加必要的环境变量以确保 Move Prover 工具能顺利运行。根据你所使用的命令行界面，你可能还需要对 `.bash_profile`、`.zprofile` 或其他相关配置文件进行设置。
+   `dev_setup.sh -p` 使用环境变量更新您的 `~./profile` 以支持已安装的 Move Prover 工具。您可能需要为您的 shell 设置 `.bash_profile` 或 `.zprofile` 或其他设置文件。
    </Callout>
 
    </details>
@@ -27,20 +40,21 @@ import {Callout} from 'nextra/components'
    <summary>Windows</summary>
 
    1. 以管理员身份打开 PowerShell 终端。
-   2. 运行开发设置脚本以准备您的环境：`PowerShell -ExecutionPolicy Bypass -File ./scripts/windows_dev_setup.ps1 -y`
+   2. 运行开发设置脚本来准备您的环境：`PowerShell -ExecutionPolicy Bypass -File ./scripts/windows_dev_setup.ps1 -y`
 
    </details>
 
-3. 现在，您可以运行 Move Prover 来证明一个[示例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_prover)：
+
+安装后，您可以运行 Move Prover 来验证一个[示例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_prover)：
    ```bash filename="Terminal"
    aptos move prove --package-dir aptos-move/move-examples/hello_prover/
    ```
 
 ## 故障排除
 
-当你在执行命令时碰到错误，像是没有明确展示的那种错误，请务必再次确认你的 Aptos CLI 的版本，或者检查你是否使用了正确的 `aptos` 工具，特别是在你电脑上安装了多个版本的情况下。
+如果在运行命令时遇到如下错误，请检查您的 Aptos CLI 版本或验证您使用的是正确的 `aptos` 工具，特别是如果您安装了多个版本。
 
-```bash filename="Terminal
+```bash filename="Terminal"
 error: unexpected token
     ┌─ ~/.move/https___github_com_aptos-labs_aptos-core_git_main/aptos-move/framework/aptos-framework/sources/randomness.move:515:16
     │

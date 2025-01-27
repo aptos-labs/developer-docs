@@ -1,20 +1,20 @@
 export default {
   "fullnode-rest-api-reference": {
-    title: "全節點 REST API 參考",
+    title: "全节点 REST API 参考",
     theme: {
       toc: false,
       layout: "full",
       sidebar: false,
     },
   },
-  "fullnode-rest-api": "全節點 REST API 教程",
+  "fullnode-rest-api": "全节点 REST API 指南",
   "indexer-graphql-api": {
-    title: "Indexer GraphQL API",
-    href: "/en/build/indexer",
+    title: "索引器 GraphQL API",
+    href: "/zh/build/indexer",
   },
-  "data-providers": "Data Providers",
+  "data-providers": "数据提供商",
   "faucet-api": {
-    title: "Faucet API",
+    title: "水龙头 API",
   },
-  "aptos-labs-developer-portal": "API Gateway",
+  "aptos-labs-developer-portal": "API 网关",
 };

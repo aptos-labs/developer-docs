@@ -9,6 +9,6 @@ export default {
     title: "Linux",
   },
   "install-cli-specific-version": {
-    title: "Install Specific Versions (Advanced)",
+    title: "安装特定版本 (高级)",
   },
 };

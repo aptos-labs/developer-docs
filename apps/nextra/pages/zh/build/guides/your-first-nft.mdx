@@ -1,0 +1,769 @@
+import { Callout, Tabs } from 'nextra/components';
+
+# 创建你的第一个 NFT
+
+本教程介绍如何在 Aptos 区块链上创建和转移非同质化资产。Aptos 的非同质化数字资产的无代码实现可以在 [aptos_token.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move) Move 模块中找到。
+
+## 第 1 步：选择 SDK
+
+从以下列表中安装你偏好的 SDK：
+
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+
+---
+
+## 第 2 步：运行示例
+
+<Tabs items={['TypeScript', 'Python']}>
+  <Tabs.Tab>
+
+克隆 `aptos-ts-sdk` 仓库并构建：
+
+```bash filename="Terminal"
+git clone https://github.com/aptos-labs/aptos-ts-sdk.git
+cd aptos-ts-sdk
+pnpm install
+pnpm build
+```
+
+导航到 TypeScript ESM 示例目录：
+
+```bash filename="Terminal"
+cd examples/typescript-esm
+```
+
+安装必要的依赖并构建：
+
+```bash filename="Terminal"
+pnpm install
+pnpm build
+```
+
+运行 TypeScript [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) 示例：
+
+```bash filename="Terminal"
+pnpm run simple_digital_asset
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+克隆 `aptos-python-sdk` 仓库：
+
+```bash filename="Terminal"
+git clone https://github.com/aptos-labs/aptos-python-sdk.git
+```
+
+安装必要的依赖：
+
+```bash filename="Terminal"
+curl -sSL https://install.python-poetry.org | python3
+poetry install
+```
+
+运行 Python [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simple_aptos_token.py) 示例：
+
+```bash filename="Terminal"
+poetry run python -m examples.simple_aptos_token
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 第 3 步：理解输出
+
+<Tabs items={["TypeScript", "Python"]}>
+<Tabs.Tab>
+
+执行 `simple_digital_asset` 示例后应该会出现以下输出（某些值会不同）：
+
+```bash filename="Terminal"
+=== Addresses ===
+
+Alice's address is: 0x770dbeb6101056eac5a19de9a73ad72fac512e0de909e7bcb13a9d9241d1d162
+
+=== Create the collection ===
+
+Alice's collection: {
+    "collection_id": "0x23ece6c35415f5c5a720dc4de2820cabece0a6f1768095db479f657ad2c05753",
+    "collection_name": "Example Collection",
+    "creator_address": "0x770dbeb6101056eac5a19de9a73ad72fac512e0de909e7bcb13a9d9241d1d162",
+    "current_supply": 0,
+    "description": "Example description.",
+    "last_transaction_timestamp": "2023-11-29T21:26:03.204874",
+    "last_transaction_version": 8001101,
+    "max_supply": 18446744073709552000,
+    "mutable_description": true,
+    "mutable_uri": true,
+    "table_handle_v1": null,
+    "token_standard": "v2",
+    "total_minted_v2": 0,
+    "uri": "aptos.dev"
+}
+
+=== Alice Mints the digital asset ===
+
+Alice's digital assets balance: 1
+Alice's digital asset: {
+    "token_standard": "v2",
+    "token_properties_mutated_v1": null,
+    "token_data_id": "0x9f4460e29a66b4e41cef1671767dc8a5e8c52a2291e36f84b8596e0d1205fd8c",
+    "table_type_v1": null,
+    "storage_id": "0x9f4460e29a66b4e41cef1671767dc8a5e8c52a2291e36f84b8596e0d1205fd8c",
+    "property_version_v1": 0,
+    "owner_address": "0x770dbeb6101056eac5a19de9a73ad72fac512e0de909e7bcb13a9d9241d1d162",
+    "last_transaction_version": 8001117,
+    "last_transaction_timestamp": "2023-11-29T21:26:04.521624",
+    "is_soulbound_v2": false,
+    "is_fungible_v2": false,
+    "amount": 1,
+    "current_token_data": {
+        "collection_id": "0x23ece6c35415f5c5a720dc4de2820cabece0a6f1768095db479f657ad2c05753",
+        "description": "Example asset description.",
+        "is_fungible_v2": false,
+        "largest_property_version_v1": null,
+        "last_transaction_timestamp": "2023-11-29T21:26:04.521624",
+        "last_transaction_version": 8001117,
+        "maximum": null,
+        "supply": 0,
+        "token_data_id": "0x9f4460e29a66b4e41cef1671767dc8a5e8c52a2291e36f84b8596e0d1205fd8c",
+        "token_name": "Example Asset",
+        "token_properties": {},
+        "token_standard": "v2",
+        "token_uri": "aptos.dev/asset",
+        "current_collection": {
+            "collection_id": "0x23ece6c35415f5c5a720dc4de2820cabece0a6f1768095db479f657ad2c05753",
+            "collection_name": "Example Collection",
+            "creator_address": "0x770dbeb6101056eac5a19de9a73ad72fac512e0de909e7bcb13a9d9241d1d162",
+            "current_supply": 1,
+            "description": "Example description.",
+            "last_transaction_timestamp": "2023-11-29T21:26:04.521624",
+            "last_transaction_version": 8001117,
+            "max_supply": 18446744073709552000,
+            "mutable_description": true,
+            "mutable_uri": true,
+            "table_handle_v1": null,
+            "token_standard": "v2",
+            "total_minted_v2": 1,
+            "uri": "aptos.dev"
+        }
+    }
+}
+
+=== Transfer the digital asset to Bob ===
+
+Alice's digital assets balance: 0
+Bob's digital assets balance: 1
+```
+
+<details>
+<summary>此示例演示了...</summary>
+* 初始化 Aptos 客户端。
+* 创建两个账户：Alice 和 Bob。
+* 为 Alice 和 Bob 的账户提供资金并创建账户。
+* 使用 Alice 的账户创建集合和代币。
+* Alice 向 Bob 发送代币。
+</details>
+
+</Tabs.Tab>
+  <Tabs.Tab>
+
+执行 `simple_aptos_token` 示例后应该会出现以下输出（某些值会不同）：
+
+```bash filename="Terminal"
+=== Addresses ===
+Alice: 0x391f8b07439768674023fb87ae5740e90fb8508600486d8ee9cc411b4365fe89
+Bob: 0xfbca055c91d12989dc6a2c1a5e41ae7ba69a35454b04c69f03094bbccd5210b4
+
+=== Initial Coin Balances ===
+Alice: 100000000
+Bob: 100000000
+
+=== Creating Collection and Token ===
+
+Collection data: {
+    "address": "0x38f5310a8f6f3baef9a54daea8a356d807438d3cfe1880df563fb116731b671c",
+    "creator": "0x391f8b07439768674023fb87ae5740e90fb8508600486d8ee9cc411b4365fe89",
+    "name": "Alice's",
+    "description": "Alice's simple collection",
+    "uri": "https://aptos.dev"
+}
+
+Token owner: Alice
+Token data: {
+    "address": "0x57710a3887eaa7062f96967ebf966a83818017b8f3a8a613a09894d8465e7624",
+    "owner": "0x391f8b07439768674023fb87ae5740e90fb8508600486d8ee9cc411b4365fe89",
+    "collection": "0x38f5310a8f6f3baef9a54daea8a356d807438d3cfe1880df563fb116731b671c",
+    "description": "Alice's simple token",
+    "name": "Alice's first token",
+    "uri": "https://aptos.dev/img/nyan.jpeg",
+    "index": "1"
+}
+
+=== Transferring the token to Bob ===
+Token owner: Bob
+
+=== Transferring the token back to Alice ===
+Token owner: Alice
+```
+
+<details>
+<summary>此示例演示了...</summary>
+* 初始化 REST 和水龙头客户端。
+* 创建两个账户：Alice 和 Bob。
+* 为 Alice 和 Bob 的账户提供资金并创建账户。
+* 使用 Alice 的账户创建集合和代币。
+* Alice 向 Bob 发送代币。
+* Bob 将代币发送回 Alice。
+</details>
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 第 4 步：深入了解 SDK
+
+<Tabs items={["TypeScript", "Python"]}>
+<Tabs.Tab>
+  <Callout type="info">
+  在按照以下步骤操作时，请参阅 [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) 获取完整代码。
+  </Callout>
+</Tabs.Tab>
+<Tabs.Tab>
+  <Callout type="info">
+  在按照以下步骤操作时，请参阅 [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simple_aptos_token.py) 获取完整代码。
+  </Callout>
+</Tabs.Tab>
+</Tabs>
+
+---
+
+### 第 4.1 步：初始化客户端
+
+<Tabs items={["TypeScript", "Python"]}>
+
+  <Tabs.Tab>
+
+在第一步中，`simple_digital_asset` 示例初始化 Aptos 客户端：
+
+```ts filename="example.ts"
+const APTOS_NETWORK: Network =
+  NetworkToNetworkName[process.env.APTOS_NETWORK] || Network.DEVNET;
+const config = new AptosConfig({ network: APTOS_NETWORK });
+const aptos = new Aptos(config);
+```
+
+<Callout type="info">
+默认情况下，Aptos 客户端指向 Aptos devnet 服务。但是可以通过 `network` 输入参数进行配置
+</Callout>
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+在第一步中，示例初始化 API 和水龙头客户端。
+
+- API 客户端与 REST API 交互。
+- 水龙头客户端与 devnet 水龙头服务交互，用于创建和提供账户资金。
+
+```python filename="example.py"
+rest_client = RestClient(NODE_URL)
+faucet_client = FaucetClient(FAUCET_URL, rest_client)
+```
+
+使用 API 客户端，我们可以创建一个 `TokenClient`，用于常见的代币操作，如创建集合和代币、转移代币、认领代币等。
+
+```python filename="example.py"
+token_client = AptosTokenClient(rest_client)
+```
+
+[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/common.py) 初始化这些值如下：
+
+```python filename="example.py"
+NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")
+FAUCET_URL = os.getenv(
+    "APTOS_FAUCET_URL",
+    "https://faucet.devnet.aptoslabs.com",
+)
+```
+
+<Callout type="info">
+
+默认情况下，两个服务的 URL 都指向 Aptos devnet 服务。但是可以通过以下环境变量进行配置：
+
+- `APTOS_NODE_URL`
+- `APTOS_FAUCET_URL`
+</Callout>
+  </Tabs.Tab>
+  </Tabs>
+
+---
+
+### 第 4.2 步：创建本地账户
+
+下一步是在本地创建两个账户。[账户](../../network/blockchain/accounts.mdx)由公共地址和用于验证账户所有权的公钥/私钥对组成。此步骤演示如何生成账户并将其密钥对和地址存储在变量中。
+
+<Tabs items={["TypeScript", "Python"]}>
+  <Tabs.Tab>
+
+```ts filename="example.ts"
+const alice = Account.generate();
+const bob = Account.generate();
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```python filename="example.py"
+alice = Account.generate()
+bob = Account.generate()
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+<Callout type="info">
+请注意，这只是生成本地密钥对。生成密钥对和公共地址后，账户仍然不存在于链上。
+</Callout>
+
+---
+
+### 第 4.3 步：创建区块链账户
+
+为了在链上实际实例化账户，必须以某种方式显式创建它。在 devnet 上，你可以通过水龙头 API 请求免费代币用于测试。此示例利用水龙头为 Alice 和 Bob 的账户提供资金，并无意中创建了这些账户：
+
+<Tabs items={["TypeScript", "Python"]}>
+  <Tabs.Tab>
+
+```ts filename="example.ts"
+await aptos.fundAccount({
+  accountAddress: alice.accountAddress,
+  amount: 100_000_000,
+});
+await aptos.faucet.fundAccount({
+  accountAddress: bob.accountAddress,
+  amount: 100_000_000,
+});
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```python filename="example.py"
+bob_fund = faucet_client.fund_account(alice.address(), 100_000_000)
+alice_fund = faucet_client.fund_account(bob.address(), 100_000_000)
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+### 第 4.4 步：创建集合
+
+现在开始创建数字非同质化资产的过程。首先，作为创建者，你必须创建一个集合来组织资产。一个集合可以包含零个、一个或多个不同的同质化或非同质化资产。集合只是一个容器，仅用于为创建者组织资产。
+
+<Tabs items={["TypeScript", "Python"]}>
+  <Tabs.Tab>
+
+你的应用程序将调用 `createCollectionTransaction` 然后调用 `signAndSubmitTransaction` 到链上：
+
+```ts filename="example.ts"
+const createCollectionTransaction = await aptos.createCollectionTransaction({
+  creator: alice,
+  description: collectionDescription,
+  name: collectionName,
+  uri: collectionURI,
+});
+
+const committedTxn = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: createCollectionTransaction,
+});
+```
+
+这是 `createCollectionTransaction` 的函数签名。它返回一个可以模拟或提交到链上的 `SingleSignerTransaction`：
+
+```ts filename="example.ts"
+export async function createCollectionTransaction(
+  args: {
+    creator: Account;
+    description: string;
+    name: string;
+    uri: string;
+    options?: InputGenerateTransactionOptions;
+  } & CreateCollectionOptions,
+): Promise<SingleSignerTransaction>;
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+你的应用程序将调用 `create_collection`：
+
+```python filename="example.py"
+txn_hash = await token_client.create_collection(
+    alice,
+    "Alice's simple collection",
+    1,
+    collection_name,
+    "https://aptos.dev",
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    True,
+    0,
+    1,
+)
+```
+
+这是 `create_collection` 的函数签名。它返回一个交易哈希：
+
+```python filename="example.py"
+async def create_collection(
+    self,
+    creator: Account,
+    description: str,
+    max_supply: int,
+    name: str,
+    uri: str,
+    mutable_description: bool,
+    mutable_royalty: bool,
+    mutable_uri: bool,
+    mutable_token_description: bool,
+    mutable_token_name: bool,
+    mutable_token_properties: bool,
+    mutable_token_uri: bool,
+    tokens_burnable_by_creator: bool,
+    tokens_freezable_by_creator: bool,
+    royalty_numerator: int,
+    royalty_denominator: int,
+) -> str:
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+### 第 4.5 步：创建代币
+
+要创建代币，创建者必须指定一个关联的集合。代币必须与一个集合关联，并且该集合必须有剩余的代币可以铸造。代币有许多属性，但辅助 API 只暴露创建静态内容所需的最小数量。
+
+<Tabs items={["TypeScript", "Python"]}>
+  <Tabs.Tab>
+
+你的应用程序将调用 `mintTokenTransaction`：
+
+```ts filename="example.ts"
+const mintTokenTransaction = await aptos.mintTokenTransaction({
+  creator: alice,
+  collection: collectionName,
+  description: tokenDescription,
+  name: tokenName,
+  uri: tokenURI,
+});
+
+const committedTxn = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: mintTokenTransaction,
+});
+```
+
+这是 `mintTokenTransaction` 的函数签名。它返回一个可以模拟或提交到链上的 `SingleSignerTransaction`：
+
+```ts filename="example.ts"
+async mintTokenTransaction(args: {
+    creator: Account;
+    collection: string;
+    description: string;
+    name: string;
+    uri: string;
+    options?: InputGenerateTransactionOptions;
+  }): Promise<SingleSignerTransaction>
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+你的应用程序将调用 `mint_token`：
+    {/* TODO: NEed to ensure image is still hosted */}
+```python filename="example.py"
+txn_hash = await token_client.mint_token(
+    alice,
+    collection_name,
+    "Alice's simple token",
+    token_name,
+    "https://aptos.dev/img/nyan.jpeg",
+    PropertyMap([]),
+)
+```
+
+这是 `mint_token` 的函数签名。它返回一个交易哈希：
+
+```python filename="example.py"
+async def mint_token(
+    self,
+    creator: Account,
+    collection: str,
+    description: str,
+    name: str,
+    uri: str,
+    properties: PropertyMap,
+) -> str:
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+### 第 4.6 步：读取代币和集合元数据
+
+集合和代币资产都是链上的[对象](../smart-contracts/objects.mdx)，具有唯一的地址。它们的元数据存储在对象地址中。SDK 提供了查询此数据的便捷包装器：
+
+<Tabs items={["TypeScript", "Python"]}>
+  <Tabs.Tab>
+
+要读取集合的元数据：
+
+```ts filename="example.ts"
+const alicesCollection = await aptos.getCollectionData({
+  creatorAddress: alice.accountAddress,
+  collectionName,
+  minimumLedgerVersion: BigInt(pendingTxn.version),
+});
+console.log(`Alice's collection: ${JSON.stringify(alicesCollection, null, 4)}`);
+```
+
+要读取已拥有代币的元数据：
+
+```ts filename="example.ts"
+const alicesDigitalAsset = await aptos.getOwnedDigitalAssets({
+  ownerAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(pendingTxn.version),
+});
+
+console.log(
+  `Alice's digital asset: ${JSON.stringify(alicesDigitalAsset[0], null, 4)}`,
+);
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+要读取集合的元数据：
+
+```python filename="example.py"
+async def get_collection_data(
+    token_client: AptosTokenClient, collection_addr: AccountAddress
+) -> dict[str, str]:
+    collection = (await token_client.read_object(collection_addr)).resources[Collection]
+    return {
+        "creator": str(collection.creator),
+        "name": str(collection.name),
+        "description": str(collection.description),
+        "uri": str(collection.uri),
+    }
+```
+
+要读取代币的元数据：
+
+```python filename="example.py"
+async def get_token_data(
+    token_client: AptosTokenClient, token_addr: AccountAddress
+) -> dict[str, str]:
+    token = (await token_client.read_object(token_addr)).resources[Token]
+    return {
+        "collection": str(token.collection),
+        "description": str(token.description),
+        "name": str(token.name),
+        "uri": str(token.uri),
+        "index": str(token.index),
+    }
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+### 第 4.7 步：读取对象的所有者
+
+从 `aptos_token.move` 合约创建的每个对象都是一个独特的资产。用户拥有的资产与用户的账户分开存储。要检查用户是否拥有对象，请检查对象的所有者：
+
+<Tabs items={["TypeScript", "Python"]}>
+  <Tabs.Tab>
+
+```ts filename="example.ts"
+const alicesDigitalAsset = await aptos.getOwnedDigitalAssets({
+  ownerAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(pendingTxn.version),
+});
+
+console.log(
+  `Alice's digital asset: ${JSON.stringify(alicesDigitalAsset[0], null, 4)}`,
+);
+```
+
+```ts filename="example.ts"
+export async function getOwnedDigitalAssets(args: {
+  aptosConfig: AptosConfig;
+  ownerAddress: AccountAddressInput;
+  options?: PaginationArgs & OrderByArg<GetTokenActivityResponse[0]>;
+}): Promise<GetOwnedTokensResponse> {
+  const { aptosConfig, ownerAddress, options } = args;
+
+  const whereCondition: CurrentTokenOwnershipsV2BoolExp = {
+    owner_address: { _eq: AccountAddress.from(ownerAddress).toStringLong() },
+    amount: { _gt: 0 },
+  };
+
+  const graphqlQuery = {
+    query: GetCurrentTokenOwnership,
+    variables: {
+      where_condition: whereCondition,
+      offset: options?.offset,
+      limit: options?.limit,
+      order_by: options?.orderBy,
+    },
+  };
+
+  const data = await queryIndexer<GetCurrentTokenOwnershipQuery>({
+    aptosConfig,
+    query: graphqlQuery,
+    originMethod: "getOwnedDigitalAssets",
+  });
+
+  return data.current_token_ownerships_v2;
+}
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```python filename="resources.py"
+obj_resources = await token_client.read_object(token_addr)
+owner = str(get_owner(obj_resources))
+print(f"\nToken owner: {owners[owner]}")
+```
+
+```python filename="resources.py"
+owners = {str(alice.address()): "Alice", str(bob.address()): "Bob"}
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+### 第 4.8 步：来回转移对象
+
+从 `aptos_token.move` 合约创建的每个对象都是一个独特的资产。用户拥有的资产与用户的账户分开存储。要检查用户是否拥有对象，请检查对象的所有者：
+
+<Tabs items={["TypeScript", "Python"]}>
+  <Tabs.Tab>
+
+```ts filename="example.ts"
+const alicesDigitalAsset = await aptos.getOwnedDigitalAssets({
+  ownerAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(pendingTxn.version),
+});
+
+console.log(
+  `Alice's digital asset: ${JSON.stringify(alicesDigitalAsset[0], null, 4)}`,
+);
+```
+
+```ts filename="example.ts"
+const transferTransaction = await aptos.transferDigitalAsset({
+  sender: alice,
+  digitalAssetAddress: alicesDigitalAsset[0].token_data_id,
+  recipient: bob.accountAddress,
+});
+const committedTxn = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: transferTransaction,
+});
+const pendingTxn = await aptos.waitForTransaction({
+  transactionHash: committedTxn.hash,
+});
+```
+
+```ts filename="example.ts"
+const alicesDigitalAssetsAfter = await aptos.getOwnedDigitalAssets({
+  ownerAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(pendingTxn.version),
+});
+console.log(
+  `Alice's digital assets balance: ${alicesDigitalAssetsAfter.length}`,
+);
+
+const bobDigitalAssetsAfter = await aptos.getOwnedDigitalAssets({
+  ownerAddress: bob.accountAddress,
+  minimumLedgerVersion: BigInt(pendingTxn.version),
+});
+console.log(`Bob's digital assets balance: ${bobDigitalAssetsAfter.length}`);
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```python filename="example.py"
+print("\n=== Transferring the token to Bob ===")
+txn_hash = await token_client.transfer_token(
+    alice,
+    token_addr,
+    bob.address(),
+)
+await rest_client.wait_for_transaction(txn_hash)
+```
+
+```python filename="example.py"
+async def transfer_token(
+    self, owner: Account, token: AccountAddress, to: AccountAddress
+) -> str:
+    return await self.client.transfer_object(owner, token, to)
+```
+
+```python filename="example.py"
+obj_resources = await token_client.read_object(token_addr)
+print(f"Token owner: {owners[str(get_owner(obj_resources))]}")
+```
+
+```python filename="example.py"
+print("\n=== Transferring the token back to Alice ===")
+txn_hash = await token_client.transfer_token(
+    bob,
+    token_addr,
+    alice.address(),
+)
+await rest_client.wait_for_transaction(txn_hash)
+```
+
+```python filename="example.py"
+obj_resources = await token_client.read_object(token_addr)
+print(f"Token owner: {owners[str(get_owner(obj_resources))]}\n")
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 支持文档
+
+- [账户基础知识](../../network/blockchain/accounts.mdx)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+- [REST API 规范](../../network/nodes/aptos-api-spec.mdx)
+
+</rewritten_file> 

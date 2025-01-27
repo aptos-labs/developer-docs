@@ -1,71 +1,64 @@
----
-title: "在 Windows 上安装 Aptos CLI"
----
-
-import {Callout, Steps} from 'nextra/components'
+import { Callout, Steps } from 'nextra/components'
 
 # 在 Windows 上安装 Aptos CLI
 
-对于 Windows，安装 Aptos CLI 工具的最简单方法是通过 Python 脚本。如果不起作用，您也可以通过预编译的二进制文件手动安装。通常不推荐使用预编译的二进制文件方法，因为更新时也需要手动。
+对于 Windows，安装 Aptos CLI 工具最简单的方法是通过 Python 脚本。如果这种方法不起作用，你也可以通过预编译二进制文件手动安装。不建议使用预编译二进制文件的方法，因为更新过程非常手动。
 
 # 通过 Python 脚本安装
-
 <Steps>
-### 通过运行 `python3 --version` 确保您安装了 Python 3.6 +
+### 通过运行 `python3 --version` 确保已安装 Python 3.6+
 
-如果未安装 python3，您可以在 [python.org](http://python.org) 上找到安装说明。
+   如果未安装 python3，你可以在 [python.org](http://python.org) 找到安装说明。
 
-### 在 PowerShell 中，运行安装脚本：
+### 在 PowerShell 中运行安装脚本：
 
-```powershell filename="Terminal"
-Invoke-WebRequest -Uri "https://aptos.dev/scripts/install_cli.py" -OutFile "$env:TEMP\install_cli.py"; python3 "$env:TEMP\install_cli.py"
-```
+   ```powershell filename="Terminal"
+   Invoke-WebRequest -Uri "https://aptos.dev/scripts/install_cli.py" -OutFile "$env:TEMP\install_cli.py"; python "$env:TEMP\install_cli.py"
+   ```
 
    <Callout type="warning">
-   如果您收到错误 `ModuleNotFoundError: No module named packaging` 您可以通过运行 `pip3 install packaging` 安装 `packaging` 然后重复此步骤。
+   如果你收到错误 `ModuleNotFoundError: No module named packaging`，你可以通过运行 `pip3 install packaging` 然后重复此步骤来安装 `packaging`。
    </Callout>
 
-您应该会在终端中看到指示 "Execute the following command to update your PATH:" 的说明。
+   你应该在终端中看到说明"Execute the following command to update your PATH:"。
+### 从终端复制并运行命令以更新你的 PATH。
 
-### 复制并运行命令以更新您的 PATH。
+   它应该类似于 `setx PATH "%PATH%;C:\Users\<your_account_name>\.aptoscli\bin"`。
 
-它应该看起来像这样 `setx PATH "%PATH%;C:\Users\<your_account_name>\.aptoscli\bin"`
-
-### 通过打开一个新的终端并运行 `aptos help` 来验证脚本是否安装。
-
-- 您应该看到您可以使用 CLI 运行的命令列表。
-- 将来，这是了解每个命令如何工作的有用的资源。
+### 通过打开新终端并运行 `aptos help` 来验证脚本是否已安装。
+   - 你应该看到可以使用 CLI 运行的命令列表。
+   - 将来，这是一个有用的资源，可以了解每个命令的具体工作方式。
 </Steps>
 
 <Callout type="info" emoji="ℹ️">
-如果您想通过脚本将 Aptos CLI 更新到最新版本，您可以运行 `aptos update`。
+如果你想通过脚本将 Aptos CLI 更新到最新版本，可以运行 `aptos update`。
 </Callout>
 
-# 通过预编译的二进制文件安装（备用方案）
+# 通过预编译二进制文件安装（备用方法）
 
 <Steps>
 ### 转到 [Aptos CLI 发布页面](https://github.com/aptos-labs/aptos-core/releases?q=cli&expanded=true)。
-### 展开 "Assets" 查看预编译的二进制文件。
+### 展开"Assets"以查看预编译二进制文件。
 ### 下载 Windows 的 zip 文件。
-   - 它的名字将类似于：`aptos-cli-<version>-Windows-x86_64.zip`
-   - 当下载时，您可能不得不忽略这是可疑文件的警告。
+   - 它的名称类似：`aptos-cli-<version>-Windows-x86_64.zip`
+   - 下载时你可能需要忽略这是可疑文件的警告。
 ### 解压下载的文件。
-   - 将文件移动到您将来想要调用 `aptos` 的文件夹中。
+   - 将文件移动到你将来想要调用 `aptos` 的任何文件夹中。
 ### 右键单击，然后复制可执行文件的路径。
    例如 `C:\Users\<username>\Downloads\aptos-cli-3.1.0-Windows-x86_64\aptos.exe`。
    <Callout type="info" emoji="ℹ️">
-   您可能想要将此路径添加到您的 PATH 环境变量中，以简化将来调用 Aptos CLI 的过程。
+   你可能想将此路径添加到 PATH 环境变量中，以简化将来调用 Aptos CLI。
    </Callout>
 ### 通过开始菜单打开 PowerShell。
-### 通过运行 `help` 命令来验证安装。
-   使用您之前复制的路径调用 Aptos CLI。
+### 通过运行 `help` 命令验证安装。
+   使用你之前复制的路径调用 Aptos CLI。
    例如 `C:\Users\<username>\Downloads\aptos-cli-3.1.0-Windows-x86_64\aptos.exe help`。
 </Steps>
 
 <Callout type="info" emoji="ℹ️">
-当使用预编译的二进制文件安装时，您可以通过删除当前已经安装的程序，然后再次遵循安装步骤来更新 Aptos CLI。
+使用预编译二进制文件安装时，你可以通过删除现有安装，然后再次按照安装步骤操作来更新 Aptos CLI。
 </Callout>
 
 <Callout type="warning">
-如果上述两种方法都不奏效，您将不得不通过遵循这些步骤从源代码构建 CLI：[安装特定版本的 Aptos CLI（高级）](install-cli-specific-version.mdx)
-</Callout>
+如果以上两种方法都不起作用，你将不得不按照这些步骤从源代码构建 CLI：[安装特定版本的 Aptos CLI (高级)](install-cli-specific-version.mdx)
+</Callout> 

@@ -1,21 +1,17 @@
----
-title: "尝试使用 Aptos CLI 在链上操作"
----
+# 使用 Aptos CLI 在链上尝试操作
 
-# 尝试使用 Aptos CLI 在链上操作
+CLI 是一个方便的工具，可以快速查找链上数据并从你的账户发送交易。
 
-CLI 可以作为一个便捷的工具，用于快速查询链上数据以及从您的账户发起交易。
-
-最直接设置并管理你所需交互账户的方法，是使用配置文件。你可以通过下面的命令在 CLI 中新增一个配置文件：
+指定要与之交互的账户最常见的方式是通过配置文件。你可以通过运行以下命令在 CLI 上创建新的配置文件：
 
 ```bash filename="Terminal"
-aptos init --profile <your-profile-name>
+aptos init --profile <你的配置文件名称>
 ```
 
-如果任何命令涉及到账户操作，你可以直接使用配置文件中的账户名作为参数。当命令默认选用主配置文件时，你通常还可以选择通过一个附加参数指定另一个配置文件中的账户。具体如何实现，可以通过执行 `aptos <your-command> --help` 来查看该命令支持的所有参数和用法。
+如果任何命令需要账户，你可以传入配置文件的名称。如果命令隐式使用默认配置文件，它通常会有一个可选参数来使用指定的配置文件，你可以通过运行 `aptos <你的命令> --help` 找到这个参数。
 
-有了这些，您可以使用 CLI 在链上执行三件主要的事情包括：
+有了这些，你可以使用 CLI 在链上执行的三个主要操作包括：
 
 1. [查找链上账户信息](trying-things-on-chain/looking-up-account-info.mdx)
-2. [创建测试账户并发送交易](trying-things-on-chain/create-test-accounts.mdx)
-3. [通过硬件钱包安全地在链上交互](trying-things-on-chain/ledger.mdx)
+2. [创建测试账户和发送交易](trying-things-on-chain/create-test-accounts.mdx)
+3. [通过硬件钱包安全地在链上交互](trying-things-on-chain/ledger.mdx) 

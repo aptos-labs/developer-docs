@@ -1,47 +1,43 @@
----
-title: "运行公共网络（高级）"
----
-
-import {Callout} from 'nextra/components'
+import { Callout } from 'nextra/components'
 
 # 运行公共网络（高级）
 
 <Callout type="warning">
-如果你只是想运行你自己的本地网络进行测试，你可以在这里学习如何[运行一个本地网络](running-a-local-network.mdx)。
+如果你只想运行自己的本地测试网络，可以在[这里](running-a-local-network.mdx)学习如何操作。
 </Callout>
 
-## 创世仪式（Genesis ceremonies）
+## 创世仪式
 
-`aptos` 工具通过一个特别的流程，即创世仪式，来启动新的区块链。这个过程的核心是执行一系列 move 指令，以便为区块链的在线部署做好准备。这个流程涉及到以下几个输入要素：
+`aptos` 工具支持通过所谓的创世仪式来引导新的区块链。创世仪式的输出是准备区块链进行在线运行的 move 指令的输出。输入包括：
 
-- 一系列验证者及其配置信息。
-- 称为框架的初始 Move 模块集。
-- 一个独特的 ChainId (u8)，用来识别不同的网络。
-- 在测试链中，有一个专门负责管理铸造 AptosCoin 的账户。
+- 一组验证者及其配置
+- 初始的 Move 模块集合，称为框架
+- 一个独特的 `ChainId`（u8），用于区分此网络与其他网络
+- 对于测试链，还存在一个管理 AptosCoin 铸造的账户
 
-## 开始生成创始区块
+## 生成创世
 
-- 创始组织者构建并分发一个 `Layout`。
-- 创始组织者准备并分发 Aptos 框架的字节码。
-- 各参与者生成自己的验证器配置（`ValidatorConfiguration`）并将其分发。
-- 各参与者基于收到的贡献创建一个 `genesis.blob` 文件。
-- 创始组织者运行 `genesis.blob`，以生成初始路标文件并将其分发。
-- 各参与者启动他们的 `aptos-node`。启动时，`aptos-node` 会验证创始组织者提供的含有路标文件的 `genesis.blob`。
-- 一旦拥有足够的权益（stack），区块链将开始达成共识。
+- 创世组织者构建一个 `Layout` 并分发它。
+- 创世组织者准备 Aptos 框架的字节码并分发它。
+- 每个参与者生成他们的 `ValidatorConfiguration` 并分发它。
+- 每个参与者从结果贡献中生成一个 `genesis.blob`。
+- 创世组织者执行 `genesis.blob` 以获得初始检查点并分发它。
+- 每个参与者启动他们的 `aptos-node`。`aptos-node` 在启动时验证创世组织者提供的带有检查点的 `genesis.blob`。
+- 当有足够的质押达到法定人数时，区块链将开始共识。
 
 ### 准备 aptos-core
 
-以下部分依赖于 Aptos 源代码中的工具。见[从源代码构建 Aptos](../../network/nodes/building-from-source.mdx)进行设置。
+以下部分依赖于 Aptos 源代码中的工具。请参阅[从源代码构建 Aptos](../../network/nodes/building-from-source.mdx)进行设置。
 
 ### `layout` 文件
 
 layout 文件包含：
 
-- `root_key`：用一个用于 AptosCoin 管理操作的 Ed25519 公钥。
-- `users`：参与者的集合
-- `chain_id`：为 `ChainId` 或一个唯一的整数，以区别于其他被部署的 Aptos 网络
+- `root_key`：用于 AptosCoin 管理的 Ed25519 公钥。
+- `users`：参与者集合
+- `chain_id`：`ChainId` 或一个独特的整数，用于区分此部署与其他 Aptos 网络
 
-一个例子：
+示例：
 
 ```yaml
 root_key: "0xca3579457555c80fc7bb39964eb298c414fd60f81a2f8eedb0244ec07a26e575"
@@ -53,7 +49,7 @@ chain_id: 8
 
 ### 构建 Aptos 框架
 
-从你的 Aptos-core 仓库，构建框架并打包它：
+从你的 Aptos-core 仓库，构建框架并打包：
 
 ```bash filename="Terminal"
 cargo run --package framework
@@ -67,15 +63,15 @@ cp aptos-framework/releases/artifacts/current/build/**/bytecode_modules/* aptos-
 
 `ValidatorConfiguration` 文件包含：
 
-- `account_address`：负责管理该验证者节点的账户地址，需要根据 `ValidatorConfiguration` 文件中给出的 `account_key` 来生成。
-- `consensus_key`：验证者节点发出的共识消息认证所用的公钥。
-- `account_key`：管理该验证者节点的账户公钥，用以生成账户地址 `account_address`。
-- `network_key`：认证验证者节点和全节点网络的公钥，并提供加密功能。
-- `validator_host`：验证节点的网络主机地址，包括 `host` 和 `port` 字段。`host` 可以是 DNS 名称或者 IP 地址，目前仅支持 IPv4 协议。
-- `full_node_host`：（可选）全节点的网络主机地址，含有 `host` 和 `port` 字段。`host` 可以是 DNS 名称或者 IP 地址，目前仅支持 IPv4 协议。
-- `stake_amount`：该节点质押的 Coin 数量。这个数量应该是 `1`，如果不符合，配置将被认定为无效。
+- `account_address`：管理此验证者的账户。这必须从 `ValidatorConfiguration` 文件中提供的 `account_key` 派生。
+- `consensus_key`：用于验证来自验证者的共识消息的公钥
+- `account_key`：管理此验证者的账户的公钥。这用于派生 `account_address`。
+- `network_key`：用于验证者和全节点网络认证和加密的公钥。
+- `validator_host`：验证者所在的网络地址。这包含一个 `host` 和 `port` 字段。`host` 应该是 DNS 名称或 IP 地址。目前只支持 IPv4。
+- `full_node_host`：全节点所在的可选网络地址。这包含一个 `host` 和 `port` 字段。`host` 应该是 DNS 名称或 IP 地址。目前只支持 IPv4。
+- `stake_amount`：此节点质押的代币数量。预期为 `1`，如果不同则配置将被视为无效。
 
-一个例子：
+示例：
 
 ```yaml
 account_address: ccd49f3ea764365ac21e99f029ca63a9b0fbfab1c8d8d5482900e4fa32c5448a
@@ -91,9 +87,9 @@ full_node_host:
 stake_amount: 1
 ```
 
-使用 `aptos` CLI 生成这个：
+要使用 `aptos` CLI 生成此文件：
 
-1. 生成你的验证者节点的密钥：
+1. 生成你的验证者密钥：
 
 ```bash filename="Terminal"
 cargo run --package aptos -- genesis generate-keys --output-dir bobs
@@ -102,28 +98,28 @@ cargo run --package aptos -- genesis generate-keys --output-dir bobs
 2. 生成你的 `ValidatorConfiguration`：
 
 ```bash filename="Terminal"
-cargo run --package aptos -- \
-    genesis set-validator-configuration \
-    --keys-dir bobs \
-    --username bob \
-    --validator-host bobs_host:6180 \
-    --full-node-host bobs_host:6180 \
+cargo run --package aptos -- \\
+    genesis set-validator-configuration \\
+    --keys-dir bobs \\
+    --username bob \\
+    --validator-host bobs_host:6180 \\
+    --full-node-host bobs_host:6180 \\
     --local-repository-dir .
 ```
 
-3. 最后一个命令将生成一个 `bob.yaml` 文件，这需要被分发给其他参与者用于 `genesis.blob` 生成。
+3. 最后一个命令将生成一个 `bob.yaml` 文件，应该分发给其他参与者用于生成 `genesis.blob`。
 
-### 生成创世区块和路标文件
+### 生成创世和检查点
 
-在获取到 `layout` 文件、各个 `ValidatorConfiguration` 配置文件以及框架版本之后，我们就可以开始生成 `genesis.blob` 以及相应的路标文件。务必就检查此前阶段提供的 `ValidatorConfiguration` 文件与生成 `genesis.blob` 时使用的版本是否一致。一旦出现不一致情况，必须及时通知所有的参与者。
+在获得 `layout` 文件、每个 `ValidatorConfiguration` 文件和框架发布后，可以生成 `genesis.blob` 和检查点。重要的是要验证在早期阶段提供的 `ValidatorConfiguration` 与用于生成 `genesis.blob` 的分发版本相同。如果有不匹配，请通知所有参与者。
 
-生成 `genesis.blob` 及路标需要遵循以下步骤：
+要生成 `genesis.blob` 和检查点：
 
-- 把 `layout` 文件放入一个特定的文件夹内，例如：`genesis`。
-- 把所有 `ValidatorConfiguration` 配置文件都放入 `genesis` 文件夹中。
-- 确保 `layout` 文件里的 `users` 列表中包含了所有 `ValidatorConfiguration` 文件。
-- 在 `genesis` 文件夹中创建一个名为 `framework` 的子文件夹，并把框架的发行版本 `.mv` 文件放入其中。
-- 运用 `aptos` 命令行工具来生成创世区块 `genesis.blob` 和路标文件。
+- 将 `layout` 文件放在一个目录中，例如 `genesis`。
+- 将所有 `ValidatorConfiguration` 文件放入 `genesis` 目录。
+- 确保 `ValidatorConfiguration` 文件在 `layout` 文件的 `users` 集合中列出。
+- 在 `genesis` 目录中创建一个 `framework` 目录，并将框架发布的 `.mv` 文件放入 `framework` 目录。
+- 使用 `aptos` CLI 生成创世和检查点：
 
 ```bash filename="Terminal"
 cargo run --package aptos -- genesis generate-genesis --local-repository-dir genesis
@@ -131,4 +127,4 @@ cargo run --package aptos -- genesis generate-genesis --local-repository-dir gen
 
 ### 启动 `aptos-node`
 
-生成 `genesis.blob` 和路标文件后，将它们放入你的验证者节点和全节点的配置目录，并启动你的验证者节点和验证者全节点。
+生成 `genesis.blob` 和检查点后，将它们放入你的验证者和全节点的配置目录中，然后启动你的验证者和全节点。
