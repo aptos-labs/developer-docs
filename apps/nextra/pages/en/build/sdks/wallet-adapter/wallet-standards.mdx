@@ -223,7 +223,7 @@ const removeUnregisterListener = on("unregister", function () {
 ```
 The dapp has an event listener now, so it sees new wallets immediately and doesn't need to poll or list them again. This also works if the dapp loads before any wallets (it will initialize, see no wallets, then see wallets as they load)
 
-A dapp makes a wallet request by calling the feature name that coresponds to the desired action. For example, to use the `connect` feature:
+A dapp makes a wallet request by calling the feature name that corresponds to the desired action. For example, to use the `connect` feature:
 
 ```typescript
 const onConnect = () => {

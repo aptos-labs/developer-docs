@@ -1,0 +1,37 @@
+---
+title: "Transaction Stream Step"
+---
+
+# Transaction Stream Step
+
+The `TransactionStreamStep` is a foundational component in the transaction processing pipeline. It establishes a gRPC connection with the `TransactionStream` service, fetches transactions in batches, and outputs them for further processing. This step also manages connection retries and reconnections in case of transient failures. Typically, this is the initial step in a processor, responsible for streaming transactions for downstream steps.
+
+## Key Responsibilities
+
+1. **Fetch Transactions**: Retrieves transaction batches from a gRPC service.
+2. **Manage Connections**: Handles gRPC reconnections to ensure a resilient stream.
+3. **Provide Metadata**: Attaches contextual information like versions and timestamps to the transactions.
+
+## Struct Definition
+
+The `TransactionStreamStep` struct is defined as follows:
+
+```rust
+pub struct TransactionStreamStep
+where
+    Self: Sized + Send + 'static,
+{
+    transaction_stream_config: TransactionStreamConfig,
+    pub transaction_stream: Mutex<TransactionStreamInternal>,
+}
+```
+
+## How It Works
+
+- The `TransactionStreamStep` connects to the gRPC `TransactionStream` service.
+- It continuously polls for new transactions using the `poll` method.
+- Each batch is wrapped in a `TransactionContext`, which includes metadata such as:
+  - Start and end versions.
+  - Timestamps of transactions.
+  - Batch size in bytes.
+- If the connection is interrupted, it attempts to reconnect seamlessly.
