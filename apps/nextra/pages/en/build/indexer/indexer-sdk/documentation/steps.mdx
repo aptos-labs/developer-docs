@@ -107,6 +107,6 @@ The SDK comes with a set of [common steps](https://github.com/aptos-labs/aptos-i
 
 1. `TransactionStreamStep` provides a stream of Aptos transactions to the processor. Read more about it [here](./steps/transaction-stream.mdx).
 2. `TimedBufferStep` buffers a batch of items and periodically polls to release the items to the next step
-3. `VersionTrackerStep` tracks the progress of the processor and checkpoints the processor's progress. Read more about it [here](../version-tracking.mdx).
+3. `VersionTrackerStep` tracks the progress of the processor and checkpoints the processor's progress. Read more about it [here](./version-tracking.mdx).
 4. `OrderByVersionStep` orders transaction contextx by their starting versions. It buffers ordered these contexts and releases them at every poll interval.
 5. `WriteRateLimitStep` limits the number of bytes written to the database per second.
