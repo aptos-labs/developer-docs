@@ -97,11 +97,15 @@ To create a step with the SDK, follow these instructions:
         }
         ```
 
-## Common steps
+## Parsing Transactions
+When building the extractor step, you'll need to define how you want to parse your data from transactions. 
+Read more about how to parse your data from transactions [here](./steps/parsing-txns.mdx).
 
-The SDK implements [several common steps](https://github.com/aptos-labs/aptos-indexer-processor-sdk/tree/main/aptos-indexer-processors-sdk/sdk/src/common_steps) that you can use in your processors. 
+## Common SDK steps
 
-1. `TransactionStreamStep` provides a stream of Aptos transactions to the processor. Read more about it [here](./transaction-stream.mdx).
+The SDK comes with a set of [common steps](https://github.com/aptos-labs/aptos-indexer-processor-sdk/tree/main/aptos-indexer-processors-sdk/sdk/src/common_steps) that you can use to build your processor.
+
+1. `TransactionStreamStep` provides a stream of Aptos transactions to the processor. Read more about it [here](./steps/transaction-stream.mdx).
 2. `TimedBufferStep` buffers a batch of items and periodically polls to release the items to the next step
 3. `VersionTrackerStep` tracks the progress of the processor and checkpoints the processor's progress. Read more about it [here](./version-tracking.mdx).
 4. `OrderByVersionStep` orders transaction contextx by their starting versions. It buffers ordered these contexts and releases them at every poll interval.

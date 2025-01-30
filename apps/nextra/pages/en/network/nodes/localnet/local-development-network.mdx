@@ -117,7 +117,7 @@ To debug this, try the below fixes:
 As you can see from the example output in step 4, once the local network is running, you have access to the following services:
 {/* TODO: replace API spec link */}
 - [Node API](../aptos-api-spec.mdx): This is a REST API that runs directly on the node. It enables core write functionality such as transaction submission and a limited set of read functionality, such as reading account resources or Move module information.
-- [Indexer API](../../../build/indexer/aptos-hosted.mdx): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
+- [Indexer API](../../../build/indexer/indexer-api.mdx): This is a [GraphQL](https://graphql.org/) API that provides rich read access to indexed blockchain data. If you click on the URL for the Indexer API above, by default [http://127.0.0.1:8090](http://127.0.0.1:8090/), it will open the Hasura Console, a web UI that will help you query the Indexer GraphQL API.
 - [Transaction Stream Service](../../../build/indexer/txn-stream.mdx): This is a gRPC stream of transactions used by the Indexer API. This is only relevant to you if you are developing an [Indexer SDK](../../../build/indexer/indexer-sdk.mdx) custom processor.
 - [Postgres](https://www.postgresql.org/): This is the database that the Indexer processors write to. The Indexer API reads from this database.
 - [Faucet](../../../build/apis/faucet-api.mdx): You can use this to fund accounts on your local network.
