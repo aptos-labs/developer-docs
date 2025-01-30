@@ -58,17 +58,13 @@ const config: DocsThemeConfig = {
     content: function useBanner() {
       return (
         <div>
-          🎉 Welcome! Translations are currently experimental. |
-          翻訳は現在実験的です。 | 翻译目前处于实验阶段。
-          <br />
+          🎉 Welcome to the new Aptos Docs!{" "}
           <a
             className="text-blue-400 dark:text-blue-400 hover:underline"
             target="_blank"
             href="https://github.com/aptos-labs/developer-docs/issues/new/choose"
           >
-            Click here to submit feedback! |
-            ここをクリックしてフィードバックを送信してください！ |
-            点击这里提交反馈！
+            Click here to submit an issue.
           </a>
         </div>
       );
