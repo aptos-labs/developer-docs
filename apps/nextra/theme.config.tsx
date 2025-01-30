@@ -62,9 +62,9 @@ const config: DocsThemeConfig = {
           <a
             className="text-blue-400 dark:text-blue-400 hover:underline"
             target="_blank"
-            href="https://forms.gle/h7CGG9UKA1zCRNgd6"
+            href="https://github.com/aptos-labs/developer-docs/issues/new/choose"
           >
-            Click here to submit feedback!
+            Click here to submit an issue.
           </a>
         </div>
       );
