@@ -8,7 +8,7 @@ import { Card, Cards } from '@components/index';
 
 # Indexer API Reference
 
-The Indexer API allows you to access rich data about tokens, accounts, transactions, and events on-chain using GraphQL queries. **You can access it [here](./aptos-hosted.mdx).**
+The Indexer API allows you to access rich data about tokens, accounts, transactions, and events on-chain using GraphQL queries. **You can access it [here](../indexer-api.mdx).**
 
 For common queries, check out the sidebar for examples to work from. When building your own, this reference guide should help you determine which tables are most relevant, and how to format your queries.
 
@@ -24,7 +24,7 @@ If you are looking up a table with the `_by_pk` suffix, search for the table nam
 # Indexer Table Reference
 
 <Callout type="info">
-Remember to use Ctrl + F to find the table you are interested in! When in doubt, you may also want to query the Hasura tables linked in the [Indexer API Access](./aptos-hosted.mdx) page to see examples of the data inside.
+Remember to use Ctrl + F to find the table you are interested in! When in doubt, you may also want to query the Hasura tables linked in the [Indexer API Access](../indexer-api.mdx) page to see examples of the data inside.
 </Callout>
 
 ## Raw Data
@@ -261,7 +261,7 @@ This tracks the activity of fungible assets. It includes v1 token data.
 | metadata                    | Object  |             | Use the [Hasura explorer](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) to see fields for `metadata` in this table.                                                        |
 | owner_address               | String  |             | This is an Aptos account address that owns the asset. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
 | storage_id                  | String  |             | Identifier for the storage used in the transaction. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
-| storage_refund_amount       | bigint  |             | Amount refunded for storage after the transaction. This is always in APT [octas](../../network/glossary.mdx#Octa). Ex. 50                                                                |
+| storage_refund_amount       | bigint  |             | Amount refunded for storage after the transaction. This is always in APT [octas](../../../network/glossary.mdx#Octa). Ex. 50                                                                |
 | token_standard              | String  |             | Aptos standard that the collection adheres to. Ex. "v1"                                                                                              |
 | transaction_timestamp       | String  |             | Timestamp when the transaction occurred. Ex. "2024-04-17T02:14:25.68771"                                                                             |
 | transaction_version         | bigint  |             | Blockchain version of the transaction. Ex. 2                                                                                                         |

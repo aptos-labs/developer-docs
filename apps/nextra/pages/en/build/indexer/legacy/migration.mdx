@@ -8,7 +8,7 @@ This guide contains information on how to migrate to using the Transaction Strea
 
 The old indexer stack requires running an archival fullnode with additional threads to process the transactions which is difficult and expensive to maintain. Adding more custom logic either requires a bulkier machine, or running several fullnodes that scale linearly.
 
-This new way of indexing uses the [Transaction Stream Service](../txn-stream.mdx). You can either use the [Labs-Hosted Transaction Stream Service](../aptos-hosted.mdx) or [run your own instance of Transaction Stream Service](../self-hosted.mdx).
+This new way of indexing uses the [Transaction Stream Service](../txn-stream.mdx). You can either use the [Labs-Hosted Transaction Stream Service](../txn-stream/aptos-hosted-txn-stream.mdx) or [run your own instance of Transaction Stream Service](../txn-stream/self-hosted.mdx).
 
 ## 1. Clone the repo
 
@@ -29,7 +29,7 @@ cd rust/processor
 
 ## 2. Migrate processors to Transaction Stream Service
 
-For each processor you're migrating, you'll need to create a config file using the template below. You can find more information about each field of the config file [here](../self-hosted.mdx#configuration).
+For each processor you're migrating, you'll need to create a config file using the template below. You can find more information about each field of the config file [here](../txn-stream/self-hosted#configuration).
 
 ```yaml filename="config.yaml"
 health_check_port: 8084
@@ -49,11 +49,11 @@ To connect the processor to the Transaction Stream Service, you need to set the 
 
 ### Option A: Connect to Labs-Hosted Transaction Stream Service
 
-The main benefit of using the Labs-Hosted Transaction Stream Service is that you no longer need to run an archival fullnode to get a stream of transactions. This service is rate-limited. Instructions to connect to Labs-Hosted Transaction Stream can be found [here](../aptos-hosted.mdx).
+The main benefit of using the Labs-Hosted Transaction Stream Service is that you no longer need to run an archival fullnode to get a stream of transactions. This service is rate-limited. Instructions to connect to Labs-Hosted Transaction Stream can be found [here](../txn-stream/aptos-hosted-txn-stream.mdx).
 
 ### Option B: Run a Self-Hosted Transaction Stream Service
 
-If you choose to, you can run a self-hosted instance of the Transaction Stream Service and connect your processors to it. Instructions to run a Self-Hosted Transaction Stream can be found [here](../self-hosted.mdx).
+If you choose to, you can run a self-hosted instance of the Transaction Stream Service and connect your processors to it. Instructions to run a Self-Hosted Transaction Stream can be found [here](../txn-stream/self-hosted.mdx).
 
 ## 3. (Optional) Migrate custom processors to Transaction Stream Service
 
@@ -111,7 +111,8 @@ cargo run --release -- -c config.yaml
 
 If you have multiple processors, you'll need to run a separate instance of the service for each of the processors.
 
-If you'd like to run the processor as a Docker image, the instructions are listed [here](../self-hosted.mdx#run-with-docker).
+{/* TODO: Add instructions for running with Docker */}
+If you'd like to run the processor as a Docker image, the instructions are listed here.
 
 ## FAQs
 
