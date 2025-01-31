@@ -1,0 +1,202 @@
+---
+title: "Wallet Integration Guide"
+---
+
+import { Callout } from "nextra/components";
+
+# Wallet Integration Guide
+
+This describes how to integrate Aptos and Aptos assets into a wallet.  It provides
+generic information for tracking balances, transferring assets, and testing the integration.
+
+# Wallet Creation
+
+## Supported Key types
+
+## Key Derivation
+
+## Private Keys Exporting
+
+## Wallet Importing
+
+## Hardware Support
+
+
+# Transactions
+
+## Simulating Transactions (optional - but highly recommended)
+
+## Gas Estimation
+
+## Signing Transactions
+
+## Submitting Transactions
+
+## Waiting on Transactions
+
+## Displaying Previous Transactions
+
+## Wallet Adapter (connecting to dapps)
+
+Follow these guides to integrate your wallet with Aptos dapps:
+* [As a browser extension wallet or a mobile wallet](../sdks/wallet-adapter/browser-extension-wallets)
+* [As an SDK wallet (e.g. an embeddable web or telegram wallet)](../sdks/wallet-adapter/mobile-wallets)
+
+# Assets
+
+Below are the different types of standards of assets on the Aptos blockchain, and
+how to handle them.
+
+## Fungible Tokens
+
+These are tokens that are interchangeable with each other.  They are often used
+for cryptocurrencies.
+
+### Coins
+
+#### Listing owned Coins
+
+Aptos provides in the [Aptos TypeScript SDK](../sdks/typescript-sdk) a function to
+[list all coins and fungible assets owned by an account](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.33.1/classes/Aptos.html#getCurrentFungibleAssetBalances).
+
+```ts
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+const aptos = new Aptos(new AptosConfig(Network.Devnet));
+
+await aptos.getCurrentFungibleAssetBalances({ownerAddress: "0x1"}); // List of tokens owned by 0x1
+```
+
+
+
+
+#### Displaying
+
+#### Transfers
+
+### Fungible Assets
+
+These are fungible assets that can be used interchangeably with each other.  They
+replace the coin standard and are used for currencies such as USDt and USDC.
+
+#### Listing owned Assets
+
+
+
+#### Displaying
+
+#### Transfers
+
+## Non-Fungible Tokens (NFTs or Digital Assets)
+
+These are tokens that are unique and not interchangeable with each other.  They are
+often used for digital collectibles, art, and other unique assets.
+
+### Digital Assets Standard
+
+The Digital Assets standard replaced the Legacy Token standard for new NFTs.  It
+is the standard for all new NFTs created on the Aptos blockchain.
+
+#### Listing owned Digital Assets
+
+Aptos provides in the [Aptos TypeScript SDK](../sdks/typescript-sdk) a function to list all NFTs combined
+between types.  This is useful for wallets to display all NFTs in a single list.
+
+```ts
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+const aptos = new Aptos(new AptosConfig(Network.Devnet));
+
+await aptos.getOwnedDigitalAssets({ownerAddress: "0x1"}); // List of tokens owned by 0x1
+```
+
+See more details on the [TypeScript docs](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.33.1/classes/Aptos.html#getOwnedDigitalAssets)
+
+#### Displaying Digital Assets
+
+The token URL is the primary way to display the digital asset in a wallet.  The URL can either be
+a URL pointing to a JSON file containing an `image` field, or a URL pointing to an image, mp4, or other media file.
+
+Note that the URL can be either an HTTP or an IPFS URL.  IPFS URLs are recommended for IPFS-hosted content, rather
+than using the HTTP gateway URL.
+
+Example [metadata JSON](https://ipfs.io/ipfs/bafybeieswhmk4eyd2t2bfj3dhetq2x4g46vlvvnsnjdziosm5y25hin5bq/847.json):
+
+```json
+{
+  "name": "Aptomingo #847",
+  "description": "1212 flamingos on the Aptos blockchain striving for a stronger and more educated ecosystem. The first of hopefully many interesting experiments conducted by B.FLY LABS.",
+  "image": "ipfs://bafybeidlvhvnnnl3zznatgio6gvd3xsss5uszc7fuwzsqn2ttzknosnxly/847.png",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Azure"
+    }
+  ]
+}
+```
+
+#### Transferring Digital Assets
+
+Digital Asset transfers are simple.  In order to transfer a digital asset, you need to know the address
+of the asset (also known as the `token_id`), and the address of the receiver.
+
+To transfer a digital, call `0x1::object::transfer` with the `token_id` and the receiver address.
+The TypeScript SDK provides a function to [transfer a digital asset](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.33.1/classes/Aptos.html#transferDigitalAssetTransaction)
+
+```ts
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+const aptos = new Aptos(new AptosConfig(Network.Devnet));
+const sender = Account.fromPrivateKey("private key");
+const rawTxn = await aptos.transferDigitalAssetTransactions({sender, digitalAssetAddress: "0x1213456", recipient: "0x111111111"}); // List of tokens owned by 0x1
+// ...
+```
+
+### Legacy Token Standard
+
+The Legacy Token standard only applies to NFTs created before the Digital Assets
+Standard was introduced.  It is rarely used on new collections, and likely will
+not apply much to your wallet.  However, it is still supported for backwards compatibility.
+
+Tokens are referred to by the tuple of:
+* `creator` - the address of the account that created the collection
+* `collection` - the name of the collection
+* `name` - the name of the token within the collection
+
+Tokens are uniquely named and cannot be duplicated within a collection.
+
+Additionally, there is a `property_version` field that keeps track of which version
+to transfer of the token.  You should always transfer the latest version of the token.
+
+For more information about the standard see: [Legacy Token Standard](../smart-contracts/standards/legacy-token).
+
+#### Listing owned Legacy Tokens
+
+See [Listing owned Digital Assets](#listing-owned-digital-assets) for how to list owned tokens.
+
+#### Displaying Legacy Tokens
+
+See [Displaying Digital Assets](#displaying-digital-assets) for how to display tokens.
+
+#### Transferring Legacy Tokens
+
+Transfers of Legacy Tokens are controlled, meaning that users must opt in for
+receiving tokens from other users.  This is a security feature to prevent spam.
+
+In order to opt in, call the [0x4::token::opt_in_direct_transfer](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move#L601-L607)
+entry function to opt in to receiving tokens from any sender.
+
+Then to send a token to a user who has opted in, call the [0x4::token::direct_transfer_script](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move#L588-L599)
+entry function to send to the receiver.
+
+##### Offering / Claiming Legacy Tokens
+
+If the receiver does not opt in, the sender can offer the token to the receiver.
+The receiver can then accept the token, which will opt them in to receiving the token.
+
+To offer, call the [0x4::token_transfers::offer_script](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token_transfers.move#L95-L106)
+entry function for the token.
+
+To claim, call the [0x4::token_transfers::claim_script](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token_transfers.move#L151-L161)
+entry function for the token.
+
+To cancel an offer, call [0x4::token_transfers::cancel_offer_script](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token_transfers.move#L198-L208)
+entry function for the token.
