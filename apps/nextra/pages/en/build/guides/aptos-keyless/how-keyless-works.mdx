@@ -7,9 +7,9 @@ import { YouTube } from "@components/index";
 
 Aptos Keyless enables a dApp to **derive** and **access** a blockchain account for a user who successfully signed in to the dApp via an OIDC provider (e.g., Google). Importantly, this blockchain account is **scoped to the dApp**. This means other dApps, who can similarly sign-in the same user, via the same OIDC provider, are not able to access this account and instead get their own account.
 
-_But how does this work?_
+_But how does this work?_ 
 
-<YouTube title="Keyless Presentation" id="sKqeGR4BoI0"/>
+![Keyless overview](/docs/aptos-keyless/keyless-overview.png "Keyless overview")
 
 ## Overview
 
@@ -88,3 +88,9 @@ The previous flow explained how a dApp can obtain a ZKP from the prover service.
 **Step 2**: The dApp sends the TXN, the ZKP $\pi$, the ephemeral public key $\mathsf{epk}$, and the ephemeral signature $\sigma_\mathsf{eph}$ to the blockchain validators.
 
 **Step 3**: To check the TXN is validly-signed, the validators perform several steps: (1) check that $\mathsf{epk}$ has not expired, (2) fetch the user’s address $\mathsf{addr}$ from the TXN, (3) verify the ZKP against $(\mathsf{addr}, \mathsf{epk}, \mathsf{GPK})$, and (4) verify the ephemeral signature $\sigma_\mathsf{eph}$ on the TXN against the $\mathsf{epk}$. If all these checks pass, they can safely execute the TXN.
+
+## Want more?
+
+The following 20-minute presentation quickly describes the key ideas behind how keyless works:
+
+<YouTube title="Keyless Presentation" id="sKqeGR4BoI0"/>
