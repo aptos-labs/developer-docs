@@ -17,9 +17,9 @@ You will need to do a few steps of configuration for the Aptos CLI and your Ledg
    You can install the Aptos CLI by following [these steps](../../cli.mdx) if you have not done so already.
 
 ### Ensure you have done the basic setup for your Ledger device.
-   You can find those steps on [Ledger’s website](https://www.ledger.com/). For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/hc/en-us/articles/360018784134-Set-up-your-Ledger-Nano-X?docs=true).
+   You can find those steps on [Ledger’s website](https://www.ledger.com/). For example, here are the set up instructions for the [Ledger Nano X](https://support.ledger.com/article/360018784134-zd).
 ### Plug your Ledger device into your computer.
-### Install the Aptos App on your Ledger device by following [this guide](https://support.ledger.com/hc/en-us/articles/7326502672285-Aptos-APT?docs=true).
+### Install the Aptos App on your Ledger device by following [this guide](https://support.ledger.com/article/7326502672285-zd).
 ### Unlock your Ledger device and open the Aptos app.
 
    <Callout type="info" emoji="ℹ️">
@@ -81,7 +81,7 @@ After doing the initial setup, you can sign transactions by following these step
 This process works for any command that requires a signature, whether that’s to transfer coins, publish a Move contract, interact with a contract, etc.
 </Callout>
 
-For example, if you wanted to publish a Move package like the `[hello_blockchain](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)` demo contract you could follow the above steps then run:
+For example, if you wanted to publish a Move package like the [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) demo contract you could follow the above steps then run:
 
 ```bash filename="Terminal"
 aptos move publish --profile <your-ledger-profile-name> --named-addresses hello_blockchain=<your-ledger-profile-name>
