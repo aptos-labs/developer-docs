@@ -151,7 +151,7 @@ Multisig balance: 40000000
 
 ## Step 6: Send coins from the multisig
 
-This transaction will send 100 [octas](../../network/glossary.mdx#Octa) from the multisig account to Chad's account.
+This transaction will send 100 [octas](../../network/glossary.mdx#octa) from the multisig account to Chad's account.
 Since it is a two-of-three multisig account, signatures are required from only two individual signers.
 
 ### Step 6.1: Gather individual signatures
@@ -261,7 +261,7 @@ Multisig balance: 39999300
 ```
 
 Note that even though Alice and Bob signed the transaction, their account balances have not changed.
-Chad, however, has received 100 [octas](../../network/glossary.mdx#Octa) from the multisig account, which assumed the gas costs of the transaction and thus has had more than 100 octas deducted.
+Chad, however, has received 100 [octas](../../network/glossary.mdx#octa) from the multisig account, which assumed the gas costs of the transaction and thus has had more than 100 octas deducted.
 
 ## Step 7: Create a vanity address multisig
 
@@ -343,7 +343,7 @@ cap_update_table: 0x965fd11d7afe14396e5af40b8ffb78e6eb6f7caa1f1b1d8c7b819fdd6045
 ### Step 7.3 Rotate the authentication key
 
 Now that the relevant signatures have been gathered, the authentication key rotation transaction can be submitted.
-After it executes, the rotated authentication key matches the address of the first multisig account (the one that sent [octas](../../network/glossary.mdx#Octa) to Chad):
+After it executes, the rotated authentication key matches the address of the first multisig account (the one that sent [octas](../../network/glossary.mdx#octa) to Chad):
 
 ```python filename="multisig.py"
 print("\n=== Submitting authentication key rotation transaction ===")
@@ -604,7 +604,7 @@ module upgrade_and_govern::transfer {
 }
 ```
 
-This module simply looks up the `GovernanceParameter` values, and treats them as the amount of [octas](../../network/glossary.mdx#Octa) to send to two recipients.
+This module simply looks up the `GovernanceParameter` values, and treats them as the amount of [octas](../../network/glossary.mdx#octa) to send to two recipients.
 
 Lastly, the manifest has been updated with the new version number `1.1.0`:
 
@@ -749,7 +749,7 @@ script {
 }
 ```
 
-This script calls the governance parameter setter using hard-coded values defined at the top of the script, then calls the [octa](../../network/glossary.mdx#Octa) transfer function.
+This script calls the governance parameter setter using hard-coded values defined at the top of the script, then calls the [octa](../../network/glossary.mdx#octa) transfer function.
 The script accepts as arguments the signature of the account hosting the package, as well as two target addresses for the transfer operation.
 
 Note that both functions in the script are `public entry fun` functions, which means that everything achieved in the script could be performed without a script.
