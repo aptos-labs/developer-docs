@@ -9,13 +9,13 @@ export default {
   steps: {
     title: "Creating a Step",
   },
-  "parsing-txns": {
-    title: "Parsing Transactions",
-  },
   "connect-steps": {
     title: "Connecting Steps",
   },
   "version-tracking": {
     title: "Version Tracking",
+  },
+  "run-processor": {
+    title: "Running a Processor",
   },
 };

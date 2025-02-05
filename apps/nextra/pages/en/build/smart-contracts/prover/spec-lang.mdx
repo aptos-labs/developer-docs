@@ -136,12 +136,6 @@ exists <binding>, ..., <binding> [ where <exp> ] : <exp>
 - The optional constraint `where <exp>` allows to restrict the quantified range. `forall x: T where p: q`
   is equivalent to `forall x: T : p ==> q` and `exists x: T where p: q` is equivalent to `exists x: T : p && q`.
 
-Notice that it is possible to quantify over types. For example:
-
-```move
-forall t: type, addr: address where exists<R<t>>(addr): exists<T<t>>(addr)
-```
-
 ## Choice operator
 
 The choice operator allows selecting a value that satisfies a predicate:
@@ -658,20 +652,6 @@ module 0x42::m {
 }
 ```
 
-If this is not wanted, and the `aborts_with` should be independent of `aborts_if`, one can use the
-property `[check]`:
-
-```move
-module 0x42::m {
-  spec get_one_off {
-    aborts_if !exists<Counter>(addr) with 3;
-    aborts_if global<Counter>(addr) == 0 with EXECUTION_FAILURE;
-
-    aborts_with [check] 3, EXECUTION_FAILURE;
-  }
-}
-```
-
 ## Requires condition
 
 The `requires` condition is a spec block member that postulates a pre-condition for a function. The
@@ -854,6 +834,14 @@ module 0x42::m {
     let new_value = counter.value - 1;   // Will not abort because counter.value > 0
     *counter.value = new_value;          // Fails verification since value can drop to zero
   }
+}
+```
+
+Notice that type parameters are supported in global invariants. For example, the invariant above can be rewritten into the below one if `Counter` is generic:
+
+```move
+module addr::M {
+    invariant<T> forall a: addr where exists<Counter<T>>(a): global<Counter<T>>(a).value > 0;
 }
 ```
 
