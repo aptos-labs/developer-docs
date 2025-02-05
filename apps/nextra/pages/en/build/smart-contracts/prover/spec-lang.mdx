@@ -807,7 +807,7 @@ below). In general, we consider mutation as an implicit unpack, and end of mutat
 The Move language semantics unambiguously identifies the point when mutation ends and starts. This
 follows from the borrow semantics of Move and includes mutation via an enclosing struct.
 (The mutation of an inner struct ends when the mutation of the root struct where mutation started
-ends.)
+ends).
 
 There is one exception to this rule. When a mutable reference to a struct declared in module M is
 passed into a _public_ function of M which does by itself _not_ return any other mutable reference (which could be borrowed from the input parameter), we treat this parameter as "packed". That means, on function entry, we will unpack it and on function exit we will pack again, enforcing the invariant. This reflects that in Move, struct data can be mutated only within the module that declares the struct; so for an outside caller of the public function, the mutable reference can actually not be mutated unless by calling public functions of module M again. It is a significant simplification of the verification problem to exploit this in the semantics.
