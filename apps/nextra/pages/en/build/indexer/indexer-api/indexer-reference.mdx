@@ -27,25 +27,59 @@ If you are looking up a table with the `_by_pk` suffix, search for the table nam
 Remember to use Ctrl + F to find the table you are interested in! When in doubt, you may also want to query the Hasura tables linked in the [Indexer API Access](../indexer-api.mdx) page to see examples of the data inside.
 </Callout>
 
+## Filtering (with `where` clauses)
+To ensure your queries filter data efficiently, check out the available indexes for each table.
+Some indexes are composite B-tree indexes, meaning they consist of multiple columns. 
+B-tree indexes are ordered and perform optimally when queries utilize a left-most prefix of the indexed columns.
+
+{/* Indexed columns are generated from https://docs.google.com/spreadsheets/d/1sQnMimoJnP5sVaLCCRK4H6AHXGCwsehAuBF9AD_0IyY/edit?gid=47194642#gid=47194642 */} 
+
 ## Raw Data
 
 ### `user_transactions`
 
 Transactions filtered to user_transactions (not system).
 
+| Index Name | Indexed Columns |
+|------------|----------------|
+| user_transactions_pkey | version |
+| user_transactions_sender_sequence_number_key | sender, sequence_number |
+| ut_epoch_index | epoch |
+| ut_insat_index | inserted_at |
+| ut_sender_seq_index | sender, sequence_number |
+
 ### `events`
 
 Events emitted by transaction.
 
+| Index Name | Indexed Columns |
+|------------|----------------|
+| ev_addr_type_index | account_address |
+| ev_insat_index | inserted_at |
+| ev_itype_index | indexed_type |
+| events_pkey | transaction_version, event_index |
+
 ### `block_metadata_transactions`
 
 A type of system transaction emitted once per block, useful for mapping to timestamp or epoch.
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| block_metadata_transactions_block_height_key | block_height |
+| block_metadata_transactions_pkey | version |
+| bmt_insat_index | inserted_at |
 
 ## General
 
 ### `account_transactions`
 
 _Has an aggregate view for summary data called `account_transactions_aggregate`_
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| account_transactions_pkey | account_address, transaction_version |
+| at_insat_index | inserted_at |
+| at_version_index | transaction_version DESC |
 
 This table maps accounts and transactions that interact with that account.
 
@@ -89,6 +123,15 @@ gives you latest version processed per “processor”
 
 _Has an aggregate view for summary data called `token_activities_v2_aggregate`_
 
+| Index Name | Indexed Columns |
+|------------|----------------|
+| ta2_from_type_index | from_address, type |
+| ta2_insat_index | inserted_at |
+| ta2_owner_type_index | event_account_address, type |
+| ta2_tid_index | token_data_id |
+| ta2_to_type_index | to_address, type |
+| token_activities_v2_pkey | transaction_version, event_index |
+
 This table tracks token activities and is especially useful for tracking NFT activity. This includes both v1 and v2 data.
 
 | Field                      | Type    | Primary Key | Description                                                                                                                              |
@@ -128,6 +171,13 @@ This table allows you to look up the cdn and uris for NFT images / content.
 | raw_animation_uri               | String |             | Original URI for animation before CDN optimization. Ex. "https://example.com/raw/animations/123" |
 | raw_image_uri                   | String |             | Original URI for image before CDN optimization. Ex. "https://example.com/raw/images/123"         |
 
+| Index Name | Indexed Columns |
+|------------|----------------|
+| nft_inserted_at | inserted_at |
+| nft_raw_animation_uri | raw_animation_uri |
+| nft_raw_image_uri | raw_image_uri |
+| parsed_asset_uris_pkey | asset_uri |
+
 ### `current_token_ownerships_v2`
 
 _Has an aggregate view for summary data called `current_token_ownerships_v2_aggregate`_
@@ -152,6 +202,13 @@ This table tracks who owns which NFTs. This includes both v1 and v2 tokens. Fung
 | token_data_id                | String  | Yes         | A unique identifier for the token data, typically a hash or a numeric ID. Ex. "0x3d911af2dc3e47848fbba17b8694cf526942be183b84f8393a6c048232fb976d" |
 | token_properties_mutated_v1  | Object  |             | Properties of the token that have been mutated from the original. Often in JSON or similar format. Example: { } |
 | token_standard               | String  |             | The standard used to generate this token. Ex. "v1" or "v2" |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| curr_to2_insat_index | inserted_at |
+| curr_to2_owner_index | owner_address |
+| curr_to2_wa_index | storage_id |
+| current_token_ownerships_v2_pkey | token_data_id, property_version_v1, owner_address, storage_id |
 
 ### `current_token_datas_v2`
 
@@ -179,6 +236,12 @@ This table tracks the metadata associated with each NFT (Ex. URI, supply, etc.).
 | token_standard                     | String  |             | Aptos standard that the collection adheres to. Ex. "v1"                                                                          |
 | token_uri                          | String  |             | URI linking to further information about the token. Ex. "https://example.com/tokens/987654321"                                   |
 
+| Index Name | Indexed Columns |
+|------------|----------------|
+| cur_td2_cid_name_index | collection_id, token_name |
+| cur_td2_insat_index | inserted_at |
+| current_token_datas_v2_pkey | token_data_id |
+
 ### `current_collections_v2`
 
 This table tracks the metadata associated with each NFT collection (Ex. collection_id, creator_address, etc.). This tracks both v1 and v2 tokens.
@@ -200,6 +263,12 @@ This table tracks the metadata associated with each NFT collection (Ex. collecti
 | token_standard             | String |             | Aptos standard that the collection adheres to. Ex. "v1"                                                                                |
 | total_minted_v2            | bigint |             | Total number of tokens minted in this collection under schema version 2. Ex. 800                                                       |
 | uri                        | String |             | This is a URI to  where the image live. This can also be JSON data. Ex. "https://example.com/collections/9876543210"                              |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| cur_col2_crea_cn_index | creator_address, collection_name |
+| cur_col2_insat_index | inserted_at |
+| current_collections_v2_pkey | collection_id |
 
 ### `current_collection_ownership_v2_view`
 
@@ -241,6 +310,12 @@ This tracks the metadata tied to each fungible asset (ex. decimals of precision)
 | symbol                            | String |             | The trading symbol of the asset. Ex. "DGOLD"                                                                                      |
 | token_standard                    | String |             | Standard that the asset adheres to. Ex. "v1"                                                                                      |
 
+| Index Name | Indexed Columns |
+|------------|----------------|
+| fam_creator_index | creator_address |
+| fam_insat_index | inserted_at |
+| fungible_asset_metadata_pkey | asset_type |
+
 ### `fungible_asset_activities`
 
 This tracks the activity of fungible assets. It includes v1 token data.
@@ -267,6 +342,15 @@ This tracks the activity of fungible assets. It includes v1 token data.
 | transaction_version         | bigint  |             | Blockchain version of the transaction. Ex. 2                                                                                                         |
 | type                        | String  |             | Type of the transaction, described by a Move entry function. Ex. "0x1::coin::WithdrawEvent"                                                          |
 
+| Index Name | Indexed Columns |
+|------------|----------------|
+| faa_at_index | asset_type |
+| faa_gfpa_index | gas_fee_payer_address |
+| faa_insat_idx | inserted_at |
+| faa_owner_type_index | owner_address, type |
+| faa_si_index | storage_id |
+| fungible_asset_activities_pkey | transaction_version, event_index |
+
 ### `current_fungible_asset_balances`
 
 _Has an aggregate view for summary data called `current_fungible_asset_balances_aggregate`_
@@ -285,6 +369,12 @@ This tracks the asset balances of each account on-chain. It includes v1 token da
 | owner_address              | String  |             | This is an Aptos account address that owns the asset. Addresses must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89"    |
 | storage_id                 | String  | Yes         | Identifier for the storage associated with this balance. IDs must be 66 characters long, and so may be 0 padded. Ex. "0xa815a9a09105973084bfc31530e7c8f002846787c2f0521e1e34dc144ad83b89" |
 | token_standard             | String  |             | Aptos standard that the collection adheres to. Ex. "v1"                                                                           |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| cufab_insat_index | inserted_at |
+| cufab_owner_at_index | owner_address, asset_type |
+| current_unified_fungible_asset_balances_pkey | storage_id |
 
 ## Aptos Naming Service (ANS)
 
@@ -323,6 +413,14 @@ This table maps tokens, standards, and addresses to human readable names.
 | subdomain                | String  | Yes         | Any subdomain part of the domain name. Ex. "sub.example"                                                                            |
 | token_name               | String  |             | The name of the token associated with this domain. Ex. "ExampleToken"                                                               |
 | token_standard           | String  | Yes         | Aptos standard that the collection adheres to. Ex. "v1"                                                                             |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| ans_v2_et_index | expiration_timestamp |
+| ans_v2_insat_index | inserted_at |
+| ans_v2_ra_index | registered_address |
+| ans_v2_tn_index | token_name, token_standard |
+| current_ans_lookup_v2_pkey | domain, subdomain, token_standard |
 
 <br/>
 # Deprecated Tables
