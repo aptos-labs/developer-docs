@@ -246,7 +246,7 @@ Once you have created the abstracted account, you can use it to sign transaction
 is the same as the abstracted account's address.
 
 ```ts
-const coinTransferTransaction = new aptos.transaction.build.simple({
+const coinTransferTransaction = await aptos.transaction.build.simple({
   sender: abstractedAccount.accountAddress,
   data: {
     function: "0x1::coin::transfer",
@@ -255,12 +255,12 @@ const coinTransferTransaction = new aptos.transaction.build.simple({
   },
 });
 
-const pendingCoinTransferTransaction = aptos.transaction.signAndSubmitTransaction({
+const pendingCoinTransferTransaction = await aptos.transaction.signAndSubmitTransaction({
   transaction: coinTransferTransaction,
   signer: abstractedAccount,
 });
 
-await aptos.waitForTransaction({ hash: pendingCoinTransferTransaction.hash });
+await aptos.waitForTransaction({ transactionHash: pendingCoinTransferTransaction.hash });
 
 console.log("Coin transfer transaction submitted! ", pendingCoinTransferTransaction.hash);
 ```
