@@ -260,7 +260,7 @@ const pendingCoinTransferTransaction = aptos.transaction.signAndSubmitTransactio
   signer: abstractedAccount,
 });
 
-await aptos.waitForTransaction({ hash: pendingCoinTransferTransaction.hash });
+await aptos.waitForTransaction({ transactionHash: pendingCoinTransferTransaction.hash });
 
 console.log("Coin transfer transaction submitted! ", pendingCoinTransferTransaction.hash);
 ```
