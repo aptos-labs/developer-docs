@@ -215,7 +215,7 @@ await aptos.signAndSubmitTransaction({
 
 ### 7. Revoking Permissions
 
-Dapps can revoke permissions by calling the `revokePermissions` function. This will remove the permissions for the given public key.
+Dapps can revoke permissions by calling the `revokePermissions` function. This will remove the permissions for the given public key. Each permission type has a `revoke` method that can be used to revoke the permission. Alternatively, you can pass a permission object you receive from `getPermissions` to revoke the permission.
 
 ```ts
 await aptos.signAndSubmitTransaction({
@@ -224,10 +224,7 @@ await aptos.signAndSubmitTransaction({
     delegationPublicKey: delegatedAccount.publicKey,
     primaryAccountAddress: alice.accountAddress,
     permissions: [
-      FungibleAssetPermission.from({
-        asset: AccountAddress.A,
-        amount: 150_000_000,
-      }),
+      FungibleAssetPermission.revoke({ asset: AccountAddress.A }),
     ],
   }),
 });
