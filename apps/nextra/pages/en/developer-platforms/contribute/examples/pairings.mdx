@@ -28,7 +28,7 @@ In fact, by the end of this post, [some of you might want to spend a year or two
 </Callout>
 
 <Callout type="warning">
-**Twitter correction:** The [original tweet announcing this blog post](https://twitter.com/alinush407/status/1612518576862408705) stated that _"**S**NARKs would not be possible without [pairings]"_, with the highlighted **S** meant to emphasize the "succinctness" of such SNARKs. However, [thanks to several folks on Twitter](#acknowledgements), I realized this is **not** exactly true and depends on what one means by "succinct." Specifically, "succinct" SNARKs, in the _polylogarithmic proof size_ sense defined by Gentry and Wichs[^GW10], exist from a plethora of assumptions, including discrete log[^BCCplus16] or random oracles[^Mica98]. Furthermore, "succinct" SNARKs, in the sense of $O(1)$ group elements proof size, exist from RSA assumptions too[^LM18]. What pairings do give us, currently, are SNARKs with the smallest, concrete proof sizes (i.e., in # of bytes).
+**Twitter correction:** The [original tweet announcing this blog post](https://x.com/alinush407/status/1612518576862408705) stated that _"**S**NARKs would not be possible without [pairings]"_, with the highlighted **S** meant to emphasize the "succinctness" of such SNARKs. However, [thanks to several folks on Twitter](#acknowledgements), I realized this is **not** exactly true and depends on what one means by "succinct." Specifically, "succinct" SNARKs, in the _polylogarithmic proof size_ sense defined by Gentry and Wichs[^GW10], exist from a plethora of assumptions, including discrete log[^BCCplus16] or random oracles[^Mica98]. Furthermore, "succinct" SNARKs, in the sense of $O(1)$ group elements proof size, exist from RSA assumptions too[^LM18]. What pairings do give us, currently, are SNARKs with the smallest, concrete proof sizes (i.e., in # of bytes).
 </Callout>
 
 ## Preliminaries
@@ -561,11 +561,11 @@ I would like to thank Dan Boneh for helping me clarify and contextualize the his
 
 Big thanks to:
 
- - [Lúcás Meier](https://twitter.com/cronokirby), [Pratyush Mishra](https://twitter.com/zkproofs), [Ariel Gabizon](https://twitter.com/rel_zeta_tech) and [Dario Fiore](https://twitter.com/dariofiore0) for their enlightening points on what "succinct" (S) stands for in **S**NARKs[^GW10] and for reminding me that SNARKs with $O(1)$ group elements proof size exist from RSA assumptions[^LM18].
- - [Sergey Vasilyev](https://twitter.com/swasilyev) for pointing out typos in the BLS12-381 elliptic curve definitions.
- - [@BlakeMScurr](https://twitter.com/BlakeMScurr) for pointing out an incorrect reference to Joux's work[^Joux00].
- - [Conrado Guovea](https://twitter.com/conradoplg) for pointing me to Victor Miller's account of how he developed his algorithm for evaluating the Weil pairing (discussed [here](#first-development-millers-algorithm)).
- - [Chris Peikert](https://twitter.com/ChrisPeikert) for pointing out that there are plenty-fast IBE schemes out there that do not rely on pairings[^DLP14e].
+ - [Lúcás Meier](https://x.com/cronokirby), [Pratyush Mishra](https://x.com/zkproofs), [Ariel Gabizon](https://x.com/rel_zeta_tech) and [Dario Fiore](https://x.com/dariofiore0) for their enlightening points on what "succinct" (S) stands for in **S**NARKs[^GW10] and for reminding me that SNARKs with $O(1)$ group elements proof size exist from RSA assumptions[^LM18].
+ - [Sergey Vasilyev](https://x.com/swasilyev) for pointing out typos in the BLS12-381 elliptic curve definitions.
+ - [@BlakeMScurr](https://x.com/BlakeMScurr) for pointing out an incorrect reference to Joux's work[^Joux00].
+ - [Conrado Guovea](https://x.com/conradoplg) for pointing me to Victor Miller's account of how he developed his algorithm for evaluating the Weil pairing (discussed [here](#first-development-millers-algorithm)).
+ - [Chris Peikert](https://x.com/ChrisPeikert) for pointing out that there are plenty-fast IBE schemes out there that do not rely on pairings[^DLP14e].
 
 **PS:** Twitter threads are a pain to search through, so if I missed acknowledging your contribution, please kindly let me know.
 
