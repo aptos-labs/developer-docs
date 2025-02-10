@@ -1,7 +1,7 @@
 
 
 <p align="center">
- <img width="100%" src="https://github.com/aptos-labs/aptos-core/raw/main/.assets/aptos_banner.png" alt="Aptos Developer Docs" width="250">
+ <img width="100%" src="https://github.com/aptos-labs/aptos-core/raw/main/.assets/aptos_banner.png" alt="Aptos Developer Docs">
 </p>
 
 <div align="center">
