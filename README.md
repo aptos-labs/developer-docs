@@ -21,13 +21,13 @@
 > Official **Aptos developer documentation**, providing everything you need to set up, develop, and test your projects.
 
 ## 📌 **Table of Contents**
-- [💻 Installation](#-installation)
-  - [⚙️ Requirements](#⚙️-requirements)
-- [📂 Clone the Repository](#-clone-the-repository)
-- [📦 Install Dependencies](#-install-dependencies)
-- [🚀 Develop on Nextra](#-develop-on-nextra)
-- [🐞 Debugging](#-debugging)
-- [🔄 Regenerating Contributors](#-regenerating-contributors)
+- [💻 Installation](#installation)
+  - [⚙️ Requirements](#requirements)
+- [📂 Clone the Repository](#clone-the-repository)
+- [📦 Install Dependencies](#install-dependencies)
+- [🚀 Develop on Nextra](#develop-on-nextra)
+- [🐞 Debugging](#debugging)
+- [🔄 Regenerating Contributors](#regenerating-contributors)
 
 > 📌 **For additional instructions**, see the `README.md` inside `apps/nextra/`.
 
