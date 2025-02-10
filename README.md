@@ -1,103 +1,164 @@
-# Developer Documentation
 
-- [Developer Documentation](#developer-documentation)
-  - [Installation](#installation)
-    - [Requirements](#requirements)
-  - [Clone the Developer docs repo](#clone-the-developer-docs-repo)
-  - [Install deps](#install-deps)
-  - [Develop on Nextra (New)](#develop-on-nextra-new)
-  - [Debugging](#debugging)
-  - [Regenerating contributors](#regenerating-contributors)
 
-> Visit the `README.md` under `apps/nextra` for more steps on building / developing in this repo
+<p align="center">
+ <img width="100%" src="https://github.com/aptos-labs/aptos-core/raw/main/.assets/aptos_banner.png" alt="Aptos Developer Docs" width="250">
+</p>
 
-We now use [lychee-broken-link-checker](https://github.com/marketplace/actions/lychee-broken-link-checker) to check for broken links in the GitHub Markdown. We use a corresponding link checker for pages on Aptos.dev.
+<div align="center">
+  
+[![Website](https://img.shields.io/badge/Website-Aptos.dev-0077b5?logo=internet-explorer&logoColor=white)](https://aptos.dev)
+[![Docs](https://img.shields.io/badge/Docs-4CAF50?logo=read-the-docs&logoColor=white)](https://aptos.dev/en/build/get-started)
+[![Discord](https://img.shields.io/badge/Join-Discord-5865F2?logo=discord&logoColor=white)](https://discord.com/invite/aptosnetwork)
+[![X (Twitter)](https://img.shields.io/badge/Follow-000000?logo=x&logoColor=white)](https://x.com/aptos)
+[![GitHub Issues](https://img.shields.io/github/issues/aptos-labs/developer-docs?color=yellow&logo=github)](https://github.com/aptos-labs/developer-docs/issues)
 
 With results visible at:
 [https://github.com/aptos-labs/developer-docs/actions/workflows/links.yml](https://github.com/aptos-labs/developer-docs/actions/workflows/links.yml)
+</div>
 
-## Installation
+---
 
-**IMPORTANT**: These installation steps apply to MacOS environment.
+# 📖 **Aptos Developer Documentation**
 
-### Requirements
+> Official **Aptos developer documentation**, providing everything you need to set up, develop, and test your projects.
 
-Before you proceed, make sure you install the following tools.
+## 📌 **Table of Contents**
+- [💻 Installation](#-installation)
+  - [⚙️ Requirements](#⚙️-requirements)
+- [📂 Clone the Repository](#-clone-the-repository)
+- [📦 Install Dependencies](#-install-dependencies)
+- [🚀 Develop on Nextra](#-develop-on-nextra)
+- [🐞 Debugging](#-debugging)
+- [🔄 Regenerating Contributors](#-regenerating-contributors)
 
-- Install [Node.js](https://nodejs.org/en/download/) by executing the below command on your Terminal:
+> 📌 **For additional instructions**, see the `README.md` inside `apps/nextra/`.
 
-```sh
-brew install node
-```
+Aptos uses [lychee-broken-link-checker](https://github.com/marketplace/actions/lychee-broken-link-checker) to verify broken links in Markdown files.  
 
-- Install the latest [pnpm](https://pnpm.io/installation) by executing the below command on your Terminal:
+Results can be viewed here:  
+🔗 [GitHub Actions: Link Checking](https://github.com/aptos-labs/developer-docs/actions/workflows/links.yml)
 
-```sh
-curl -fsSL https://get.pnpm.io/install.sh | sh - 
-```
+---
 
-## Clone the Developer docs repo
+## 💻 **Installation**
 
+### ⚙️ **Requirements**
+Before you proceed, ensure you have installed the following dependencies:
+
+- **Node.js**  
+  📌 Install via Homebrew:
+  ```sh
+  brew install node
+  ```
+
+- **pnpm (package manager)**  
+  📌 Install the latest version:
+  ```sh
+  curl -fsSL https://get.pnpm.io/install.sh | sh -
+  ```
+
+---
+
+## 📂 **Clone the Repository**
 ```sh
 git clone https://github.com/aptos-labs/developer-docs.git
 ```
 
-## Install deps
+---
 
-You may have to run the following command first if you are on macOS M1 Sonoma or newer:
-
+## 📦 **Install Dependencies**
+📌 If you are using **macOS M1 Sonoma or later**, first run:
 ```sh
 pnpm add node-gyp -g
 ```
 
-Then, run:
-
+📌 Then install all dependencies:
 ```sh
 pnpm install
 ```
 
-## Develop on Nextra (New)
+---
 
-> Note: PLEASE SEE `apps/nextra/README.md` for more details!
+## 🚀 **Develop on Nextra**
+> ⚠ **Important**: For more details, see `apps/nextra/README.md`.
 
-1. Setup environment
+### 1️⃣ **Set up the environment**
+📌 Ensure your `.env` is properly configured inside `apps/nextra/.env`.  
+Use `.env.example` as a template.
 
-Ensure you have configured your `.env` properly under `apps/nextra/.env`. There is a `.env.example` there that you can duplicate and rename to `.env` for simplicity.
+📌 Validate the setup:
+```sh
+pnpm prebuild
+```
 
-2. Build Nextra
-
+### 2️⃣ **Build Nextra**
 ```bash
 pnpm run build
 ```
+📌 This command builds `apps/nextra` and all dependent local packages.
 
-This will build `apps/nextra` and all local packages it depends on.
+### 3️⃣ **Navigate to the subdirectory**
+```sh
+cd apps/nextra
+```
 
-3. Run the development server
-
+### 4️⃣ **Run the local development server**
 ```sh
 pnpm run dev
 ```
+📌 Server will be available at:  
+🔗 **[http://localhost:3000](http://localhost:3000)**
 
-## Debugging
+---
 
-Fix formatting issues by running:
-
+## 🐞 **Debugging**
+📌 Fix formatting issues by running:
 ```sh
 pnpm fmt
 ```
 
-## Regenerating contributors
+---
 
-The `src/contributors.json` file (which powers the list of Authors at the bottom of doc pages) needs to be manually generated.
+## 🔄 **Regenerating Contributors**
+📌 The `src/contributors.json` file (which powers the author list at the bottom of doc pages) needs manual updates.
 
-In order to generate the contributor map, you must authenticate with GitHub. The best way to do that is using GitHub CLI [installation guide](https://github.com/cli/cli#installation). Once you have the GitHub CLI installed, you can run the following command to authenticate:
+### 1️⃣ **Authenticate with GitHub**
+📌 Install **GitHub CLI**:  
+🔗 [Installation Guide](https://github.com/cli/cli#installation)
 
+📌 Log into your GitHub account:
 ```sh
 gh auth login --scopes read:user,user:email
 ```
 
-Once that is done, you can generate the map with this command:
-
+### 2️⃣ **Generate the contributor list**
 ```sh
 pnpm contributors
 ```
+📌 The updated list will now appear in the documentation.
+
+---
+
+## 🔗 **Useful Links**
+[![Website](https://img.shields.io/badge/Website-Aptos.dev-0077b5?logo=internet-explorer&logoColor=white&style=for-the-badge)](https://aptos.dev)
+[![Docs](https://img.shields.io/badge/Docs-4CAF50?logo=read-the-docs&logoColor=white&style=for-the-badge)](https://aptos.dev/en/build/get-started)
+[![Discord](https://img.shields.io/badge/Join-Discord-5865F2?logo=discord&logoColor=white&style=for-the-badge)](https://discord.com/invite/aptosnetwork)
+[![X (Twitter)](https://img.shields.io/badge/Follow-000000?logo=x&logoColor=white&style=for-the-badge)](https://x.com/aptos)
+[![GitHub Discussions](https://img.shields.io/badge/GitHub-Discussions-181717?logo=github&logoColor=white&style=for-the-badge)](https://github.com/aptos-labs/developer-docs/discussions)
+
+
+---
+
+## 📜 **License**
+This project is licensed under the **Apache 2.0**.  
+See [`LICENSE`](LICENSE) for more details.
+
+---
+
+## 🤝 **Contributors**
+A huge thank you to everyone who has contributed to this project! 🙌  
+
+<a href="https://github.com/aptos-labs/developer-docs/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=aptos-labs/developer-docs" />
+</a>
+
