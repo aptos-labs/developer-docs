@@ -363,15 +363,6 @@ See [Gas and Storage Fees](blockchain/gas-txn-fee.mdx) for more information.
 - **Honesty** means a validator that faithfully executes the consensus protocol
   and is not Byzantine.
 
-### Jolteon
-
-- **Jolteon** is a recent proposal for a [BFT](#byzantine-fault-tolerance-bft)
-  consensus protocol.
-- AptosBFT, the Aptos network's consensus algorithm, is based on Jolteon.
-- It simplifies the reasoning about safety, and it addresses some performance
-  limitations of previous consensus protocols. In particular, it reduces latency
-  by 33% compared to HotStuff.
-
 ## I
 
 ### Indexer
@@ -381,6 +372,17 @@ See [Gas and Storage Fees](blockchain/gas-txn-fee.mdx) for more information.
   provide speedy access to the Aptos blockchain state.
 - At a high level, indexer gets data from a gRPC stream and runs processors to
   transform raw blockchain data and serve transformed data via GraphQL endpoint.
+
+## J
+
+### Jolteon
+
+- **Jolteon** is a recent proposal for a [BFT](#byzantine-fault-tolerance-bft)
+  consensus protocol.
+- AptosBFT, the Aptos network's consensus algorithm, is based on Jolteon.
+- It simplifies the reasoning about safety, and it addresses some performance
+  limitations of previous consensus protocols. In particular, it reduces latency
+  by 33% compared to HotStuff.
 
 ## L
 
