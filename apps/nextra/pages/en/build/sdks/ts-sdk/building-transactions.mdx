@@ -10,7 +10,7 @@ import { Callout, Steps } from 'nextra/components';
 Transactions allow you to change on-chain data or trigger events. Generally, transactions follow 5 steps from building to executing on chain: building, simulating, signing, submitting, and waiting.
 
 <Callout type="info">
-For these examples, `aptos` is an instance of the [`Aptos`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.12.2/classes/Aptos.html) client object.
+For these examples, `aptos` is an instance of the [`Aptos`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.35.0/classes/Aptos.html) client object.
 </Callout>
 
 <Steps>
@@ -51,7 +51,7 @@ The SDK provides sensible defaults for these values if they are not specified ex
 
 ### Simulate (Optional)
 
-Every transaction on the Aptos chain has a gas fee associated with how much work the network machines have to do when executing the transaction. In order to estimate the cost associated with that, you can simulate transactions before committing them. 
+Every transaction on the Aptos chain has a gas fee associated with how much work the network machines have to do when executing the transaction. In order to estimate the cost associated with that, you can simulate transactions before committing them.
 
 <Callout type="info">
 This simulation only requires the `publicKey` of an account since it will not impact the actual state of the ledger.
@@ -93,7 +93,7 @@ const committedTransaction = await aptos.transaction.submit.simple({
 
 ### Wait
 
-Finally, you can wait for the result of the transaction by using [`aptos.waitForTransaction`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.12.2/classes/Aptos.html#waitForTransaction) and specifying the hash of the transaction you just submitted like so:
+Finally, you can wait for the result of the transaction by using [`aptos.waitForTransaction`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.35.0/classes/Aptos.html#waitForTransaction) and specifying the hash of the transaction you just submitted like so:
 
 ```ts filename="build-a-transaction.ts"
 // 5. Wait
@@ -134,7 +134,7 @@ async function example() {
     await aptos.fundAccount({
         accountAddress: alice.accountAddress,
         amount: 100_000_000,
-    });  
+    });
     await aptos.fundAccount({
         accountAddress: bob.accountAddress,
         amount: 100,
