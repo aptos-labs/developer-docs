@@ -26,6 +26,9 @@ export default {
     type: "separator",
     title: "Aptos Standards",
   },
+  bcs: {
+    title: "Binary Canonical Serialization (BCS)",
+  },
   object: {
     title: "Object",
   },
