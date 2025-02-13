@@ -232,8 +232,9 @@ script {
 }
 ```
 
-Entry functions can take primitive types, String, and vector arguments but cannot take Structs (e.g. Option). They also
-must not have any return values.
+Entry functions can accept parameters that are: primitive types, reference to a `signer`, vectors (where the element type is itself acceptable),
+and certain standard library types such as `String`, `Object`, and `Option`.
+Entry functions must not have any return values.
 
 ### Name
 
