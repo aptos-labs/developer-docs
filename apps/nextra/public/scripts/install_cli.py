@@ -490,12 +490,14 @@ class Installer:
                 ["openssl", "version"],
                 universal_newlines=True,
             )
+            if not out or len(out.split()) < 2:
+                raise ValueError("Unexpected OpenSSL version format")
             openssl_version = out.split(" ")[1].rstrip().lstrip()
-        except Exception:
+        except (subprocess.SubprocessError, ValueError) as e:
             self._write(
                 colorize(
                     "warning",
-                    "Could not determine OpenSSL version, assuming older version (1.x.x)",
+                    f"Could not determine OpenSSL version ({str(e)}), assuming older version (1.x.x)",
                 )
             )
             openssl_version = "1.0.0"
