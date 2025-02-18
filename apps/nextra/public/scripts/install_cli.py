@@ -490,22 +490,17 @@ class Installer:
                 ["openssl", "version"],
                 universal_newlines=True,
             )
-            if not out or len(out.split()) < 2:
-                raise ValueError("Unexpected OpenSSL version format")
             openssl_version = out.split(" ")[1].rstrip().lstrip()
-        except (subprocess.SubprocessError, ValueError) as e:
+        except Exception:
             self._write(
                 colorize(
                     "warning",
-                    f"Could not determine OpenSSL version ({str(e)}), assuming older version (1.x.x)",
+                    "Could not determine OpenSSL version, using Ubuntu-22.04-x86_64 build",
                 )
             )
-            openssl_version = "1.0.0"
-
-        if openssl_version.startswith("3."):
             return "Ubuntu-22.04-x86_64"
 
-        return "Ubuntu-x86_64"
+        return "Ubuntu-22.04-x86_64"
 
     def _write(self, line) -> None:
         sys.stdout.write(line + "\n")
