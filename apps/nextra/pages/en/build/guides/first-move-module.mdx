@@ -6,7 +6,7 @@ import { Callout, Steps } from 'nextra/components'
 
 # Your First Move Module
 
-The Aptos blockchain allows developers to write Turing complete smart contracts (called "modules") with the secure-by-design Move language. This means you can do all the blockchain things like sending money, but also write arbitrary code, even games. It all starts with the Move module. Once compiled and deployed with Aptos CLI, you can connect to a published move Module on Aptos like a public API via one of our [many Official SDKs](https://aptos.dev/en/build/sdks).
+The Aptos blockchain allows developers to write Turing complete smart contracts (called "modules") with the secure-by-design Move language. This means you can do all the blockchain things like sending money, but also write arbitrary code, even games. It all starts with the Move module. Once compiled and deployed with Aptos CLI, you can connect to a published move Module on Aptos like a public API via one of our [many Official SDKs](../sdks/index.mdx).
 
 This tutorial will help you understand Move Modules by guiding you through setting up a minimal Aptos environment, then how to compile, test, publish and interact with Move modules on the Aptos Blockchain. You will learn how to:
 
@@ -18,8 +18,10 @@ This tutorial will help you understand Move Modules by guiding you through setti
 6. Keep building with Aptos (next steps)
 
 <Callout type="info">
-This tutorial is not meant to teach you the fundamentals of Move. That is a longer topic best learned through the [Move Book](https://aptos.dev/en/build/smart-contracts/book). If you need more analogies to familiar concepts like OOP, Solidity, or driving, check out the Developers Journey blog.
+This tutorial is not meant to teach you the fundamentals of Move. That is a longer topic best learned through the [Move Book](../smart-contracts/book.mdx). If you need more analogies to familiar concepts like OOP, Solidity, or driving, check out the Developers Journey blog.
 </Callout>
+
+---
 
 ## 1. Setup
 
@@ -27,7 +29,7 @@ All transactions on Aptos require an account paying the decentralized network fe
 
 You can do that by following these steps:
 
-1. Ensure you have [installed the Aptos CLI](https://aptos.dev/en/build/cli).
+1. Ensure you have [installed the Aptos CLI](../cli.mdx).
 2. Open a new terminal.
 3. Run `aptos --version` to verify you have it installed.
 
@@ -70,6 +72,8 @@ What you might not have noticed is that the Aptos CLI has created a new hidden f
 You can view hidden files with `ls -a` in Unix/Mac terminal or `dir /ah` in Windows.
 </Callout>
 
+---
+
 ## 2. (Optional) Explore What You Just Did On-Chain
 
 1. Copy the address from the command line for your new account.
@@ -80,7 +84,7 @@ The address looks like this `0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be
 Aptos CLI is now set up for account 0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba as profile default!
 ```
 
-2. Go to the [Aptos Explorer](https://explorer.aptoslabs.com/).
+2. Go to the [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet).
 
 This is the primary way to quickly check what is happening on devnet, testnet, or mainnet. We will use it later on to view our deployed contracts.
 
@@ -99,6 +103,8 @@ Do not press enter! There is a known bug where searching with Enter does not wor
 <Callout type="info">
 The explorer is an important tool to see the contracts we are deploying, and also offers a way to look up what a contract does. Just search for the address where a contract is deployed and you will be able to see the code for that module.
 </Callout>
+
+---
 
 ## 3. Writing and Compiling Your First Module
 
@@ -126,7 +132,7 @@ This creates a project structure with a `sources` directory and a `Move.toml` fi
 
 2. Create a new file `sources/message.move` with our module code:
 
-```move filename="sources/message.move"
+```move filename="message.move"
 module my_first_module::message {
     use std::string;
     use std::signer;
@@ -194,6 +200,8 @@ BUILDING my_first_module
 
 Great job! We are now ready to test and debug.
 
+---
+
 ## 4. Testing and Debugging
 
 Testing and debugging are crucial parts of Move module development. Move has built-in support for unit testing and debug printing.
@@ -202,7 +210,7 @@ Testing and debugging are crucial parts of Move module development. Move has bui
 
 First, let's modify our message module to add some debug prints. Update your `sources/message.move`:
 
-```move filename="sources/message.move"
+```move filename="message.move"
 module my_first_module::message {
     use std::string;
     use std::signer;
@@ -237,7 +245,7 @@ module my_first_module::message {
 
 2. Create our tests: a new file `sources/message_tests.move` with:
 
-```move filename="sources/message_tests.move"
+```move filename="message_tests.move"
 #[test_only]
 module my_first_module::message_tests {
     use std::string;
@@ -299,6 +307,8 @@ Test result: OK. Total tests: 1; passed: 1; failed: 0
    - Print boolean conditions with `debug::print(&some_bool)`
 </Callout>
 
+---
+
 ## 5. Publishing Your Module
 
 After successfully compiling and testing your module, you can publish it to the Aptos blockchain. This process deploys your code so that it's accessible on-chain.
@@ -355,6 +365,8 @@ You have spent a small amount on gas to deploy the contract so should have aroun
 You can share the explorer link to your module and others can even interact with the module by connecting a wallet.
 </Callout>
 
+---
+
 ## 6. Interacting with Your Module
 
 Now that your module is published, you can interact with it through the Aptos CLI:
@@ -395,6 +407,8 @@ How long did it take you to get through this guide?
 We want to hear from you, please fill out [this short survey](https://forms.gle/Awi2AqxM5qR2SbD57)!
 </Callout>
 
+---
+
 ## Next Steps
 
 Congratulations! You've successfully:
@@ -406,7 +420,16 @@ Congratulations! You've successfully:
 
 Here are some **suggested next steps to get a deeper understanding of Move modules**:
 
-1. Try modifying the module to add a new feature. You can use the [Move Book](https://aptos.dev/en/build/smart-contracts/book) to build your understanding of writing Move modules.
-2. To understand how Move works on-chain, you can learn about Move's [resource system](https://aptos.dev/en/network/blockchain/resources).
-3. If you're building an application to interact with contracts or look up data from on-chain, learn how to use the SDKs [here](https://aptos.dev/en/build/sdks).
+1. Try modifying the module to add a new feature. You can use the [Move Book](../smart-contracts/book.mdx) to build your understanding of writing Move modules.
+2. To understand how Move works on-chain, you can learn about Move's [resource system](../../network/blockchain/resources.mdx).
+3. If you're building an application to interact with contracts or look up data from on-chain, learn how to use the SDKs [here](../sdks/index.mdx).
 4. Join the [Aptos Discord](https://discord.gg/aptoslabs) to connect with other developers.
+
+---
+
+## Supporting documentation
+
+- [Account basics](../../network/blockchain/accounts.mdx)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+- [REST API specification](../../network/nodes/aptos-api-spec.mdx)
