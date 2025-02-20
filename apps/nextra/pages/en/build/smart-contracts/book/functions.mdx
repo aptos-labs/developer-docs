@@ -733,3 +733,17 @@ The call `s.foo(1)` is syntactic sugar for `foo(&s, 1)`. Notice that the compile
 The type of the `self` argument can be a struct or an immutable or mutable reference to a struct. The struct must be declared in the same module as the function.
 
 Notice that you do not need to `use` the modules which introduce receiver functions. The compiler will find those functions automatically based on the argument type of `s` in a call like `s.foo(1)`. This, in combination with the automatic insertion of reference operators, can make code using this syntax significantly more concise.
+
+The receiver style syntax can also be used on generic functions, like shown below for the generic function `std::vector::remove<T>(self: &mut vector<T>, i: u64): T`.
+
+```move
+module 0x42::example {
+    fun bar() {
+        let v = vector[1, 2, 3];
+        let e1 = v.remove(0); // type params inferred for `remove<T>`
+        assert!(e1 == 1);
+        let e2 = v.remove::<u8>(0); // type params explicitly specified
+        assert!(e2 == 2);
+    }
+}
+```
