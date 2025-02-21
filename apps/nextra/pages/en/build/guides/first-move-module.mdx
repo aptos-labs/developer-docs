@@ -90,6 +90,8 @@ This is the primary way to quickly check what is happening on devnet, testnet, o
 
 3. Switch to the `Devnet` network by clicking the "Mainnet" dropdown and selecting `Devnet`
 
+![Switching to Devnet network in Aptos Explorer](/screenshots/explorer_devnet.png)
+
 4. Paste your newly created address into the search bar.
 
 <Callout type="warning">
@@ -98,6 +100,9 @@ Do not press enter! There is a known bug where searching with Enter does not wor
 
 5. Wait for the results to appear, then click the top result.
 6. You should see your newly created account and a transaction with the faucet function, funding it with devnet tokens.
+
+![Viewing Account in Aptos Explorer](/screenshots/explorer_account.png)
+
 7. Click the "Coins" tab to see that you have 1 APT of the Aptos Coin. This will allow you to publish and interact with smart contracts on the aptos devnet.
 
 <Callout type="info">
@@ -108,7 +113,11 @@ The explorer is an important tool to see the contracts we are deploying, and als
 
 ## 3. Writing and Compiling Your First Module
 
-Now that we have our environment set up and an account created, let's write and compile our first Move module. Unlike other blockchains where contracts exist independently, Move ties everything to accounts - both modules and their resources. Let's start with a simple example to understand the core concepts.
+Now that we have our environment set up and an account created, let's write and compile our first Move module. Unlike Ethereum where contracts exist independently, Move ties everything to accounts - both modules and their resources. Let's start with a simple example to understand the core concepts.
+
+![Move Blockchain Diagram](/screenshots/move_blockchain.png)
+
+This diagram illustrates the relationship between module ownership, token ownership, and the Move blockchain state. It helps visualize how modules and resources are tied to accounts, emphasizing the unique aspects of Move's design compared to other blockchain platforms.
 
 ### What is a Move Module?
 
@@ -356,9 +365,14 @@ After successful publication, you can verify your module is on-chain by followin
 2. Search for your account address. You should notice that there is a new transaction in your account, the `code::publish_package_txn` function.
 3. Click the "Coins" tab to see that you now have less than 1 APT of the Aptos Coin.
 
+![Explorer Coins View](/screenshots/explorer_coins.png)
+
 You have spent a small amount on gas to deploy the contract so should have around `0.99855 APT` remaining.
 
 4. Look under the "Modules" tab
+
+![Exporer Modules View](/screenshots/explorer_modules.png)
+
 5. You should see your "message" module listed
 
 <Callout type="info">
