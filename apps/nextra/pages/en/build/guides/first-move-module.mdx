@@ -6,7 +6,7 @@ import { Callout, Steps } from 'nextra/components'
 
 # Your First Move Module
 
-The Aptos blockchain allows developers to write Turing complete smart contracts (called "modules") with the secure-by-design Move language. This means you can do all the blockchain things like sending money, but also write arbitrary code, even games. It all starts with the Move module. Once compiled and deployed with Aptos CLI, you can connect to a published move Module on Aptos like a public API via one of our [many Official SDKs](../sdks/index.mdx).
+The Aptos blockchain allows developers to write Turing complete smart contracts (called "modules") with the secure-by-design Move language. This means you can do all the blockchain things like sending money, but also write arbitrary code, even games. It all starts with the Move module. Once compiled and deployed with Aptos CLI, you can connect to a published move Module on Aptos like a public API via one of our [many Official SDKs](../sdks/).
 
 This tutorial will help you understand Move Modules by guiding you through setting up a minimal Aptos environment, then how to compile, test, publish and interact with Move modules on the Aptos Blockchain. You will learn how to:
 
@@ -69,6 +69,7 @@ Aptos CLI is now set up for account 0x9ec1cfa30b885a5c9d595f32f3381ec16d20873491
 
 <Callout type="info">
 What you might not have noticed is that the Aptos CLI has created a new hidden folder `.aptos/` with a `.gitignore` and `config.yaml` which contains the account information, including private key, public key, and account address.
+
 You can view hidden files with `ls -a` in Unix/Mac terminal or `dir /ah` in Windows.
 </Callout>
 
@@ -436,7 +437,7 @@ Here are some **suggested next steps to get a deeper understanding of Move modul
 
 1. Try modifying the module to add a new feature. You can use the [Move Book](../smart-contracts/book.mdx) to build your understanding of writing Move modules.
 2. To understand how Move works on-chain, you can learn about Move's [resource system](../../network/blockchain/resources.mdx).
-3. If you're building an application to interact with contracts or look up data from on-chain, learn how to use the SDKs [here](../sdks/index.mdx).
+3. If you're building an application to interact with contracts or look up data from on-chain, learn how to use the SDKs [here](../sdks/).
 4. Join the [Aptos Discord](https://discord.gg/aptoslabs) to connect with other developers.
 
 ---
