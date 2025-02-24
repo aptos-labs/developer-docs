@@ -27,25 +27,39 @@ This tutorial is not meant to teach you the fundamentals of Move. That is a long
 
 All transactions on Aptos require an account paying the decentralized network fee ("gas") to write information to the blockchain (our goal, publishing Your First Move Module, is therefore a transaction too!). In order to compile, test and deploy Move contracts, we need to have the Aptos CLI and create an account.
 
-You can do that by following these steps:
+<Steps>
+### Install the Aptos CLI
 
-1. Ensure you have [installed the Aptos CLI](../cli.mdx).
-2. Open a new terminal.
-3. Run `aptos --version` to verify you have it installed.
+Ensure you have [installed the Aptos CLI](../cli.mdx).
+
+### Open a new terminal
+
+Open a new terminal window or tab.
+
+### Verify the installation
+
+Run `aptos --version` to verify you have it installed.
 
 ```bash filename="Terminal"
 > aptos --version
 aptos 4.6.1
 ```
 
-4. Create a new folder for this tutorial by running:
+### Create a project folder
+
+Create a new folder for this tutorial by running:
 
 ```bash filename="Terminal"
 mkdir my-first-module
 ```
 
-5. Run `cd my-first-module` to go into your new folder.
-6. Run `aptos init` and press 'enter' for each step of setup to create a test account on `devnet`.
+### Navigate to the project folder
+
+Run `cd my-first-module` to go into your new folder.
+
+### Initialize your account
+
+Run `aptos init` and press 'enter' for each step of setup to create a test account on `devnet`.
 
 <Callout type="info">
 As we are configuring your Aptos CLI for this folder, notice that this setup follows the logic of the blockchain itself:
@@ -72,12 +86,16 @@ What you might not have noticed is that the Aptos CLI has created a new hidden f
 
 You can view hidden files with `ls -a` in Unix/Mac terminal or `dir /ah` in Windows.
 </Callout>
+</Steps>
 
 ---
 
 ## 2. (Optional) Explore What You Just Did On-Chain
 
-1. Copy the address from the command line for your new account.
+<Steps>
+### Copy your account address
+
+Copy the address from the command line for your new account.
 
 The address looks like this `0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba` and you can find it in the line:
 
@@ -85,30 +103,44 @@ The address looks like this `0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be
 Aptos CLI is now set up for account 0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba as profile default!
 ```
 
-2. Go to the [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet).
+### Open the Aptos Explorer
+
+Go to the [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet).
 
 This is the primary way to quickly check what is happening on devnet, testnet, or mainnet. We will use it later on to view our deployed contracts.
 
-3. Switch to the `Devnet` network by clicking the "Mainnet" dropdown and selecting `Devnet`
+### Ensure you are on `Devnet` network. 
+
+Look for “Devnet" in the top right corner, or switch networks by clicking the “Mainnet” dropdown and selecting Devnet
 
 ![Switching to Devnet network in Aptos Explorer](/screenshots/explorer_devnet.png)
 
-4. Paste your newly created address into the search bar.
+### Search for your account
+
+Paste your newly created address into the search bar.
 
 <Callout type="warning">
 Do not press enter! There is a known bug where searching with Enter does not work.
 </Callout>
 
-5. Wait for the results to appear, then click the top result.
-6. You should see your newly created account and a transaction with the faucet function, funding it with devnet tokens.
+### View the search results
+
+Wait for the results to appear, then click the top result.
+
+### Check the transaction
+
+You should see your newly created account and a transaction with the faucet function, funding it with devnet tokens.
 
 ![Viewing Account in Aptos Explorer](/screenshots/explorer_account.png)
 
-7. Click the "Coins" tab to see that you have 1 APT of the Aptos Coin. This will allow you to publish and interact with smart contracts on the aptos devnet.
+### Verify your balance
+
+Click the "Coins" tab to see that you have 1 APT of the Aptos Coin. This will allow you to publish and interact with smart contracts on the aptos devnet.
 
 <Callout type="info">
 The explorer is an important tool to see the contracts we are deploying, and also offers a way to look up what a contract does. Just search for the address where a contract is deployed and you will be able to see the code for that module.
 </Callout>
+</Steps>
 
 ---
 
@@ -136,11 +168,16 @@ If you're familiar with Rust, you'll find Move's syntax very similar. If you're 
 
 Our first module will be a simple message storage system that allows accounts to store and retrieve messages. Let's create a new move project within our `my-first-module` folder:
 
-1. Initialize a new move project with `aptos move init --name my_first_module`
+<Steps>
+### Initialize the project
+
+Initialize a new move project with `aptos move init --name my_first_module`
 
 This creates a project structure with a `sources` directory and a `Move.toml` file.
 
-2. Create a new file `sources/message.move` with our module code:
+### Create the module file
+
+Create a new file `sources/message.move` with our module code:
 
 ```move filename="message.move"
 module my_first_module::message {
@@ -185,7 +222,9 @@ Move has some unique characteristics that make it different from other smart con
 3. Explicit acquire annotations tell us which resources a function might access
 </Callout>
 
-3. Compile the Move module we just created with `aptos move compile --named-addresses my_first_module=default`
+### Compile the module
+
+Compile the Move module we just created with `aptos move compile --named-addresses my_first_module=default`
 
 <Callout type="info">
 The `--named-addresses` flag maps our module name to our account's address. In Move, modules must be associated with an address at compile time - we're using `'default'` which points to the account we just created.
@@ -207,6 +246,7 @@ BUILDING my_first_module
   ]
 }
 ```
+</Steps>
 
 Great job! We are now ready to test and debug.
 
@@ -216,7 +256,8 @@ Great job! We are now ready to test and debug.
 
 Testing and debugging are crucial parts of Move module development. Move has built-in support for unit testing and debug printing.
 
-1. Adding Debug Prints
+<Steps>
+### Add debug prints
 
 First, let's modify our message module to add some debug prints. Update your `sources/message.move`:
 
@@ -253,7 +294,9 @@ module my_first_module::message {
 }
 ```
 
-2. Create our tests: a new file `sources/message_tests.move` with:
+### Create test file
+
+Create our tests: a new file `sources/message_tests.move` with:
 
 ```move filename="message_tests.move"
 #[test_only]
@@ -278,7 +321,9 @@ module my_first_module::message_tests {
 }
 ```
 
-3. Now run the tests with `aptos move test --named-addresses my_first_module=default`
+### Run the tests
+
+Now run the tests with `aptos move test --named-addresses my_first_module=default`
 
 You should see output if the tests pass: (See below for how to handle errors)
 
@@ -297,6 +342,7 @@ Test result: OK. Total tests: 1; passed: 1; failed: 0
   "Result": "Success"
 }
 ```
+</Steps>
 
 **If you encounter errors while testing, here are some common issues and solutions:**
 
@@ -323,7 +369,10 @@ Test result: OK. Total tests: 1; passed: 1; failed: 0
 
 After successfully compiling and testing your module, you can publish it to the Aptos blockchain. This process deploys your code so that it's accessible on-chain.
 
-1. Publish your module with `aptos move publish --named-addresses my_first_module=default`
+<Steps>
+### Publish the module
+
+Publish your module with `aptos move publish --named-addresses my_first_module=default`
 
 You'll see output showing the compilation process and then a prompt asking about gas fees:
 
@@ -338,7 +387,9 @@ package size 1271 bytes
 Do you want to submit a transaction for a range of [141300 - 211900] Octas at a gas unit price of 100 Octas? [yes/no] >
 ```
 
-2. Type `y` and press Enter to confirm the transaction.
+### Confirm the transaction
+
+Type `y` and press Enter to confirm the transaction.
 
 After confirmation, you'll receive a response showing the transaction details:
 
@@ -357,28 +408,43 @@ After confirmation, you'll receive a response showing the transaction details:
   }
 }
 ```
+</Steps>
 
 ### (Optional) Seeing Your Contract On-Chain
 
 After successful publication, you can verify your module is on-chain by following these steps:
 
-1. Go to the [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet)
-2. Search for your account address. You should notice that there is a new transaction in your account, the `code::publish_package_txn` function.
-3. Click the "Coins" tab to see that you now have less than 1 APT of the Aptos Coin.
+<Steps>
+### Open the Explorer
+
+Go to the [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet)
+
+### Check the transaction
+
+Search for your account address. You should notice that there is a new transaction in your account, the `code::publish_package_txn` function.
+
+### View your balance
+
+Click the "Coins" tab to see that you now have less than 1 APT of the Aptos Coin.
 
 ![Explorer Coins View](/screenshots/explorer_coins.png)
 
 You have spent a small amount on gas to deploy the contract so should have around `0.99855 APT` remaining.
 
-4. Look under the "Modules" tab
+### Find your module
+
+Look under the "Modules" tab
 
 ![Exporer Modules View](/screenshots/explorer_modules.png)
 
-5. You should see your "message" module listed
+### Verify the module
+
+You should see your "message" module listed
 
 <Callout type="info">
 You can share the explorer link to your module and others can even interact with the module by connecting a wallet.
 </Callout>
+</Steps>
 
 ---
 
@@ -386,7 +452,10 @@ You can share the explorer link to your module and others can even interact with
 
 Now that your module is published, you can interact with it through the Aptos CLI:
 
-1. Set a message `aptos move run --function-id 'default::message::set_message' --args 'string:Hello, Aptos!'`
+<Steps>
+### Set a message
+
+Set a message using the CLI:
 
 ```bash filename="Terminal"
 aptos move run --function-id 'default::message::set_message' --args 'string:Hello, Aptos!'
@@ -394,7 +463,9 @@ aptos move run --function-id 'default::message::set_message' --args 'string:Hell
 
 You'll see a gas fee prompt similar to what you saw during publishing.
 
-2. After confirming with `y`, you should get a success response like:
+### Confirm the transaction
+
+After confirming with `y`, you should get a success response like:
 
 ```bash filename="Terminal"
 Transaction submitted: https://explorer.aptoslabs.com/txn/0x0c0b1e56a31d037280278327eb8fdfcc469a20213e5e65accf6e7c56af574449?network=devnet
@@ -413,14 +484,18 @@ Transaction submitted: https://explorer.aptoslabs.com/txn/0x0c0b1e56a31d03728027
 }
 ```
 
-3. View your stored message by checking under Resources on the Explorer.
+### View your message
 
-4. We did it!
+View your stored message by checking under Resources on the Explorer.
+
+### Celebrate!
+
+We did it!
 
 <Callout type="info">
-How long did it take you to get through this guide?
-We want to hear from you, please fill out [this short survey](https://forms.gle/Awi2AqxM5qR2SbD57)!
+How long did it take you to get through this guide?  We want to hear from you!
 </Callout>
+</Steps>
 
 ---
 
