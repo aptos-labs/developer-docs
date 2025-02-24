@@ -46,6 +46,7 @@ Each configuration file defines a sequences of transactions for a test scenario.
         - script_path: This field holds the path to the Move script file that will be executed as part of the transaction.
         - sender_address: : This field contains the address of the account that will send the transaction.
 
+        The number of output is totally up to you, but the output name should be unique for each transaction. Add as many transactions as you need to test your processor.
         ```yaml
         transactions:
           - output_name: simple_user_script1
@@ -72,7 +73,7 @@ Each configuration file defines a sequences of transactions for a test scenario.
 
     1. Read the configuration in the `move_fixtures` folder.
     2. Execute the specified Move scripts.
-    3. Output the generated JSON files to the designated folder (`~/aptos-core/ecosystem/indexer-grpc/indexer-transaction-generator/json_transactions`).
+    3. Output the generated JSON files to the designated folder (`~/aptos-core/ecosystem/indexer-grpc/indexer-test-transactions/src/json_transactions`).
     4. Overwrite `generated_transactions.rs` with the new transaction data based on the generated JSON files. This file contains the transaction constants that can be used in tests.
 
 ### Verification
@@ -85,7 +86,7 @@ Verify that the json_transactions folder in the target directory contains the ge
 
 ### Export the Generated File
 
-Update the `mod.rs` file to include the generated Rust file containing the transaction constants. If `mod.rs` doesn’t exist, create one in the target folder:
+Update the `mod.rs` file to include the generated Rust file containing the transaction constants. If `mod.rs` doesn't exist, create one in the target folder:
 
 [Reference mod.rs](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/test-transactions-example/src/json_transactions/mod.rs).
 
@@ -97,9 +98,10 @@ Since the `generated_transactions.rs` relies on the `json_transactions` Ensure t
 
 ### Integrate into Test Cases
 
-Use the exported transaction constants directly in your test cases to simulate real transactions and validate processing logic.
-
-[Example Crate](https://github.com/aptos-labs/aptos-indexer-processor-example/tree/main/test-transactions-example).
+If you decided to output the rust file in a different crate, you can update you cargo.toml to import the crate containing the generated file as a dependency. Otherwise, you can simply import the generated file directly in your test file.
+[Example](https://github.com/aptos-labs/aptos-indexer-processors-v2/blob/main/integration-tests/Cargo.toml#L19).
 
 ## Next Steps
 Once the transaction constants are integrated, you can use them in processor tests to validate functionality. For detailed instructions on writing processor tests, refer to Writing Processor Tests.
+
+[Example](https://github.com/aptos-labs/aptos-indexer-processors-v2/blob/main/integration-tests/src/sdk_tests/events_processor_tests.rs)
