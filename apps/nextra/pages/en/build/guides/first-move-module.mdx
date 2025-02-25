@@ -18,19 +18,17 @@ This tutorial will help you understand Move Modules by guiding you through setti
 6. Keep building with Aptos (next steps)
 
 <Callout type="info">
-This tutorial is not meant to teach you the fundamentals of Move. That is a longer topic best learned through the [Move Book](../smart-contracts/book). If you need more analogies to familiar concepts like OOP, Solidity, or driving, check out the Developers Journey blog.
+This tutorial is not meant to teach you the fundamentals of Move. That is a longer topic best learned through the [Move Book](../smart-contracts/book).
 </Callout>
-
----
 
 ## 1. Setup
 
-All transactions on Aptos require an account paying the decentralized network fee ("gas") to write information to the blockchain (our goal, publishing Your First Move Module, is therefore a transaction too!). In order to compile, test and deploy Move contracts, we need to have the Aptos CLI and create an account.
+Changes to the blockchain are called “transactions”, and they require an account to pay the network fee (”gas fee”). We will need to create an account with some APT to pay that fee and own the published contract. In order to do that, we will need to use the Aptos CLI.
 
 <Steps>
 ### Install the Aptos CLI
 
-Ensure you have [installed the Aptos CLI](../cli).
+[Install the Aptos CLI](../cli) (if you haven't already).
 
 ### Open a new terminal
 
@@ -41,9 +39,10 @@ Open a new terminal window or tab.
 Run `aptos --version` to verify you have it installed.
 
 ```bash filename="Terminal"
-> aptos --version
-aptos 4.6.1
+aptos --version
 ```
+
+You should see a response like `aptos 4.6.1`.
 
 ### Create a project folder
 
@@ -87,8 +86,6 @@ What you might not have noticed is that the Aptos CLI has created a new hidden f
 You can view hidden files with `ls -a` in Unix/Mac terminal or `dir /ah` in Windows.
 </Callout>
 </Steps>
-
----
 
 ## 2. (Optional) Explore What You Just Did On-Chain
 
@@ -141,8 +138,6 @@ Click the "Coins" tab to see that you have 1 APT of the Aptos Coin. This will al
 The explorer is an important tool to see the contracts we are deploying, and also offers a way to look up what a contract does. Just search for the address where a contract is deployed and you will be able to see the code for that module.
 </Callout>
 </Steps>
-
----
 
 ## 3. Writing and Compiling Your First Module
 
@@ -249,8 +244,6 @@ BUILDING my_first_module
 </Steps>
 
 Great job! We are now ready to test and debug.
-
----
 
 ## 4. Testing and Debugging
 
@@ -363,8 +356,6 @@ Test result: OK. Total tests: 1; passed: 1; failed: 0
    - Print boolean conditions with `debug::print(&some_bool)`
 </Callout>
 
----
-
 ## 5. Publishing Your Module
 
 After successfully compiling and testing your module, you can publish it to the Aptos blockchain. This process deploys your code so that it's accessible on-chain.
@@ -446,8 +437,6 @@ You can share the explorer link to your module and others can even interact with
 </Callout>
 </Steps>
 
----
-
 ## 6. Interacting with Your Module
 
 Now that your module is published, you can interact with it through the Aptos CLI:
@@ -497,8 +486,6 @@ How long did it take you to get through this guide?  We want to hear from you!
 </Callout>
 </Steps>
 
----
-
 ## Next Steps
 
 Congratulations! You've successfully:
@@ -508,14 +495,14 @@ Congratulations! You've successfully:
 3. Published your module on-chain
 4. Used your contract through the CLI
 
+Now your published Move module can be connected to just like an API via one of our [many Official SDKs](../sdks/)!
+
 Here are some **suggested next steps to get a deeper understanding of Move modules**:
 
 1. Try modifying the module to add a new feature. You can use the [Move Book](../smart-contracts/book.mdx) to build your understanding of writing Move modules.
 2. To understand how Move works on-chain, you can learn about Move's [resource system](../../network/blockchain/resources.mdx).
 3. If you're building an application to interact with contracts or look up data from on-chain, learn how to use the SDKs [here](../sdks/).
 4. Join the [Aptos Discord](https://discord.gg/aptoslabs) to connect with other developers.
-
----
 
 ## Supporting documentation
 
