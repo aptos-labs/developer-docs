@@ -5,6 +5,9 @@ export default {
   "integration-guide": {
     title: "Integration Guide",
   },
+  "simple-example": {
+    title: "Simple Example",
+  },
   other: {
     title: "FAQs",
   },
