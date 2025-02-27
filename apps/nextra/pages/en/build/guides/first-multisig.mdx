@@ -48,7 +48,7 @@ On Windows, use `python --version` instead (without the '3').
 You should see something like "Python 3.7" or higher.
 
 <Callout type="warning">
-If you see an error or your python version is below version 3.7, download Python from [python.org](http://python.org/).
+If you see an error or your Python version is below version 3.7, download Python from [python.org](http://python.org/).
 </Callout>
 
 ### Create project directory
@@ -148,7 +148,7 @@ echo "" > multisig.py
 
 ### Add base code
 
-Open `multisig.py` in your text editor and add the following code:
+Open `multisig.py` in your IDE (we recommend VSCode or JetBrains) and add the following code:
 
 ```python filename="multisig.py"
 # Copyright © Aptos Foundation
@@ -421,7 +421,7 @@ python3 multisig.py
 ```
 
 <Callout type="info">
-Remember, use `python multisig.py` instead.
+Windows users: use `python multisig.py`.
 </Callout>
 
 The output should show each account with its respective balance. For example:
@@ -509,6 +509,10 @@ After you add the code for creating the transaction and getting signatures, run 
 ```bash filename="Terminal"
 python3 multisig.py
 ```
+
+<Callout type="info">
+On Windows, `python multisig.py`.
+</Callout>
 
 You should see something like:
 
@@ -616,6 +620,8 @@ Notice how:
 <Callout type="info">
 You can verify transaction on Aptos Explorer:
 - Go to [Aptos Explorer](https://explorer.aptoslabs.com/)
+- Make sure Explorer is set to Devnet (check the top right corner)
+![Switching to Devnet network in Aptos Explorer](/screenshots/explorer_devnet.png)
 - Search for your multisig address or transaction hash
 - Review the transaction details and balance changes
 </Callout>
