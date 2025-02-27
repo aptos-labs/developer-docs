@@ -102,7 +102,7 @@ called \`Result::unwrap()\` on an \`Err\` value: Os { code: 24, kind: Uncategori
 这意味着您的系统上打开的文件太多。在许多类 Unix 系统上，您可以通过向您的 `.zshrc` 添加类似以下内容来增加打开文件的最大数量：
 
 ```bash filename="Terminal"
-ulimit -n 1000000
+ulimit -n 1048576
 ```
 
 ### Docker 不可用
