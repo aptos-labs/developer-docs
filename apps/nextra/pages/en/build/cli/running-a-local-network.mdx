@@ -96,7 +96,7 @@ called \`Result::unwrap()\` on an \`Err\` value: Os { code: 24, kind: Uncategori
 This means there were too many open files on your system. On many Unix systems you can increase the maximum number of open files by adding something like this to your `.zshrc`:
 
 ```bash filename="Terminal"
-ulimit -n 32768
+ulimit -n 1000000
 ```
 
 ### Docker is not available
