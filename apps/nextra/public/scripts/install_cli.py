@@ -495,15 +495,12 @@ class Installer:
             self._write(
                 colorize(
                     "warning",
-                    "Could not determine OpenSSL version, assuming older version (1.x.x)",
+                    "Could not determine OpenSSL version, using Ubuntu-22.04-x86_64 build",
                 )
             )
-            openssl_version = "1.0.0"
-
-        if openssl_version.startswith("3."):
             return "Ubuntu-22.04-x86_64"
 
-        return "Ubuntu-x86_64"
+        return "Ubuntu-22.04-x86_64"
 
     def _write(self, line) -> None:
         sys.stdout.write(line + "\n")
