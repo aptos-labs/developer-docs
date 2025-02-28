@@ -1,0 +1,253 @@
+---
+title: "Permissioned Signer"
+---
+
+import { Steps, Callout } from "nextra/components";
+
+# Permissioned Signer
+
+The Permissioned Signer is a feature of the Aptos SDK that allows users to grant specific permissions to decentralized applications (dapps), enabling them to access limited resources on the user's behalf.
+
+<Callout>
+ Visit the [Permissioned Signer Example Project](https://github.com/aptos-labs/aptos-connect/tree/main/apps/examples/permissioned-signer) for a complete example of how to use Permissioned Signer with the TS-SDK.
+</Callout>
+
+## Minimal Step-by-Step Guide
+
+<Steps>
+
+### 1. Setting up the Environment
+
+In this example, we will simulate a user (Alice) who wants to permit a dapp to access their account resources. We will generate an account, request permissions to the account, and use account abstraction to sign transactions on behalf of the user.
+
+We will be working with APT on Testnet for this example. The permission we are demonstrating is a Fungible Asset (FA) resource permission, so we first need to migrate the APT in Alice's account to a FA resource.
+
+```ts
+const aptos = new Aptos(new AptosConfig({ network: Network.TESTNET }));
+
+const alice = Ed25519Account.generate();
+
+const bob = Ed25519Account.generate();
+
+const delegatedAccount = Ed25519Account.generate();
+
+await aptos.fundAccount({
+  accountAddress: alice.accountAddress,
+  amount: 100_000_000,
+});
+
+await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      function: "0x1::coin::migrate_to_fungible_store",
+      functionArguments: [],
+      typeArguments: ["0x1::aptos_coin::AptosCoin"],
+    },
+  }),
+});
+```
+
+### 2. Request Permissions from the User
+
+Once you have access to the user's account, you can request permissions from the user. In this example, we will request access to particular Fungible Asset (FA) resources, as well as Gas resources.
+
+When request permissions by providing an account address whose resources you want to access, and a public key to associate permissions with. You can generate any number of public keys to associate with permissions for an account.
+
+```ts
+const gasPermission = GasPermission.from({ amount: 1_000_000 });
+
+const fungibleAssetPermission = FungibleAssetPermission.from({
+  asset: AccountAddress.A,
+  amount: 100_000_000,
+});
+
+await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: await aptos.permissions.requestPermissions({
+    delegationPublicKey: delegatedAccount.publicKey,
+    primaryAccountAddress: alice.accountAddress,
+    permissions: [gasPermission, fungibleAssetPermission],
+  }),
+});
+```
+
+### 3. (Optional) Check on the Permissions
+
+Save access to the generated delegated account. You can use its public key alongside Alice's account address to check on the permissions. Review the constructor of the permissions to see the type of permission.
+
+```ts
+const initialPermissions = await aptos.permissions.getPermissions({
+  delegationPublicKey: delegatedAccount.publicKey,
+  primaryAccountAddress: alice.accountAddress,
+});
+
+initialPermissions.forEach((permission) => {
+  if (permission instanceof FungibleAssetPermission) {
+    console.log("FA Permission:", permission.asset, permission.amount);
+  }
+
+  if (permission instanceof GasPermission) {
+    console.log("Gas Permission:", permission.amount);
+  }
+});
+```
+
+### 4. Transact with the Delegated Account
+
+Now that we have the delegated account, we can use it to transact on Alice's behalf. In this example, we will transfer 5 APT from Alice's account to Bob's account.
+
+To do this, first construct an `AbstractedAccount` based on the delegated account. Then, sign with the abstracted account while also providing Alice's account address as the sender.
+
+```ts
+const abstractAccount = AbstractedAccount.fromPermissionedSigner({
+  signer: delegatedAccount,
+});
+
+await aptos.signAndSubmitTransaction({
+  signer: abstractAccount,
+  transaction: await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      function: "0x1::primary_fungible_store::transfer",
+      functionArguments: [AccountAddress.A, bob.accountAddress, 5],
+      typeArguments: ["0x1::fungible_asset::Metadata"],
+    },
+  }),
+});
+```
+
+<details>
+<summary>
+  <b>Wallet Adapter Example</b>
+</summary>
+
+<Callout>
+  Wallet's will need to be updated in order to request permissions from the user. In this short example, we will use Aptos Connect to request permissions from the user.
+</Callout>
+
+```tsx
+async function aptosConnectExample() {
+  let aliceAccountAddress: AccountAddress | null  = null;
+  let delegatedAccount: Ed25519Account | null = null;
+  let abstractAccount: AbstractedAccount | null = null;
+
+  const aptosConnectClient = new ACDappClient({
+    dappId: "permissions-with-aptos-connect",
+    defaultNetworkName: Network.TESTNET,
+  });
+
+  const connectResponse = await aptosConnectClient.connect();
+  if (connectResponse.status === "approved") {
+    aliceAccountAddress = connectResponse.args.account.address;
+  }
+
+  const requestPermissionResponse = await aptosConnectClient.requestPermission({
+  network: Network.TESTNET,
+    gasPermission: new GasPermission({ amount: 10_000_000 }),
+    fungibleAssetPermissions: [
+      new FungibleAssetPermission({
+        asset: AccountAddress.A,
+        amount: 100_000_000,
+      }),
+    ],
+  });
+
+  if (requestPermissionResponse.status === "approved") {
+    if (requestPermissionResponse.args.privateKey) {
+      delegatedAccount = new Ed25519Account({
+        privateKey: requestPermissionResponse.args.privateKey as Ed25519PrivateKey,
+      });
+
+      abstractAccount = AbstractedAccount.fromPermissionedSigner({
+        signer: delegatedAccount,
+        accountAddress: aliceAccountAddress,
+      });
+    }
+  }
+
+  if (aliceAccountAddress && delegatedAccount && abstractAccount) {
+    const coinTransferTransaction = await aptos.transaction.build.simple({
+      sender: abstractAccount.accountAddress,
+      data: {
+        function: "0x1::coin::transfer",
+        typeArguments: ["0x1::aptos_coin::AptosCoin"],
+        functionArguments: [aliceAccountAddress, 100],
+      },
+    });
+
+    const pendingCoinTransferTransaction = await aptos.transaction.signAndSubmitTransaction({
+      transaction: coinTransferTransaction,
+      signer: abstractAccount,
+    });
+
+    await aptos.waitForTransaction({ hash: pendingCoinTransferTransaction.hash });
+
+    console.log("Coin transfer transaction submitted! ", pendingCoinTransferTransaction.hash);
+  }
+}
+```
+
+</details>
+
+### 6. Renewing Permissions
+
+As dapps transact on the user's behalf, the allotments for the resources will be used up and reflected in the permissions. To replenish the allotments, the dapp can request additional permissions with the same public key. Permissions are additive, not destructive.
+
+In this case, we are only requesting FA permission. We requested 10 initially, transferred 5, and now we are requesting 10 more. Our allotment will be 15. Gas allotment is not affected since we are not requesting any gas.
+
+```ts
+await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: await aptos.permissions.requestPermissions({
+    delegationPublicKey: delegatedAccount.publicKey,
+    primaryAccountAddress: alice.accountAddress,
+    permissions: [
+      FungibleAssetPermission.from({
+        amount: 100_000_000,
+        asset: AccountAddress.A,
+      }),
+    ],
+  }),
+});
+```
+
+### 7. Revoking Permissions
+
+Dapps can revoke permissions by calling the `revokePermissions` function. This will remove the permissions for the given public key. Each permission type has a `revoke` method that can be used to revoke the permission. Alternatively, you can pass a permission object you receive from `getPermissions` to revoke the permission.
+
+```ts
+await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: await aptos.permissions.revokePermission({
+    delegationPublicKey: delegatedAccount.publicKey,
+    primaryAccountAddress: alice.accountAddress,
+    permissions: [
+      FungibleAssetPermission.revoke({ asset: AccountAddress.A }),
+    ],
+  }),
+});
+```
+
+</Steps>
+
+## Move Contract Considerations
+
+TODO: NEEDS WORK!
+
+Thus far, the examples have been independent of any Move contract. However, contract authors will want to consider the following when building with permissions in mind:
+
+### Fungible Asset Permissions
+
+Depending on how funds are deposited into a user's account, permissions will replenish or not.
+
+For example, a simple game of rock-paper-scissors where the user grants permission for 10 APT at the start. Each time they lose, they lose 1 APT; when they win, they receive 1 APT. Withdrawing funds from the account will diminish the allotment. Depositing funds via the contract may or may not replenish the allotment depending on the contract logic.
+
+Depositing funds with `0x1::primary_fungible_store::deposit_with_signer` will replenish the allotment. [Link](https://github.com/aptos-labs/aptos-core/blob/65525b671913ec8e7444722e21f6fa4209649d1e/aptos-move/framework/aptos-framework/sources/primary_fungible_store.move#L205-L217)
+
+### Token Permissions
+
+// Add relevant information here
+
+
