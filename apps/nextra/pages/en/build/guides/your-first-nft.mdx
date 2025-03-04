@@ -30,6 +30,7 @@ Below is the step-by-step explanation of how to create, transfer, and interact w
 ### Code Walkthrough
 
 <Steps>
+
 ### Setup the Client
 
 We import and configure the `Aptos` client from the SDK to connect to the specified network:
@@ -44,7 +45,7 @@ This `aptos` object allows us to interact with the Aptos blockchain (funding acc
 
 ### Create and Fund Accounts
 
-We generate two accounts, Alice and Bob. On devnet, we can easily fund them with test coins so they can cover the gas fees for transactions.
+We generate two accounts, Alice and Bob. On devnet, we can easily fund them with test APT.
 
 ```tsx filename="index.ts"
 const alice = Account.generate();
@@ -398,15 +399,9 @@ example();
 
 ### Run the code
 
-Run the code with:
-
 ```bash filename="Terminal"
 npx ts-node index.ts
 ```
-
-<Callout type="warning">
-If you encounter any errors, make sure all your files are saved and that you've followed all the steps correctly.
-</Callout>
 
 If everything is set up correctly, you will see output logs detailing each step, transaction hashes, and final balances.
 
@@ -440,34 +435,7 @@ You can view these transactions on the Aptos Explorer:
 This is a great way to verify your transactions and understand how they're recorded on the blockchain.
 </Steps>
 
-## Summary of the Key Steps
-
-1. **Setup Your Project**: Initialize a Node.js project and install `@aptos-labs/ts-sdk` and `dotenv`.
-2. **Configure Your Environment**: Set `APTOS_NETWORK` in a `.env` file.
-3. **Configure TypeScript**: Create a proper `tsconfig.json` file to ensure type safety.
-4. **Initialize the `Aptos` Client**: Connect to Aptos using `new Aptos(new AptosConfig({ network }))`.
-5. **Create & Fund Accounts**: Generate and fund accounts on devnet to pay for transactions.
-6. **Create a Collection:** All Digital Assets need a collection to own them.
-7. **Mint a Digital Asset**: Create custom Digital Assets which point to whichever `uri` you choose.
-8. **Transfer the Asset**: Move the digital asset from one account to another.
-9. **Verify the Result**: Confirm that the recipient now holds the newly minted digital asset.
-10. **Log Transaction Hashes**: Output all transaction hashes for easy reference and exploration.
-11. **Explore Transactions**: View your transactions on the Aptos Explorer to understand how they're recorded on-chain.
-
-## Troubleshooting
-
-### Common TypeScript Errors
-
-- **"Cannot find name 'process'"**: This error occurs when TypeScript can't find the Node.js type definitions. Make sure you have both installed `@types/node` and created a proper `tsconfig.json` file as shown in the "Configure TypeScript" step.
-
-- **"Object is possibly 'undefined'"**: TypeScript's strict mode prevents accessing properties on potentially undefined objects. Always check if arrays have elements before accessing them, as shown in our code example.
-
-### Environment Variables
-
-If you're having issues with environment variables not being recognized:
-1. Make sure your `.env` file is in the root directory of your project
-2. Verify the file contains `APTOS_NETWORK=devnet` (or your chosen network)
-3. Check that you've imported `dotenv/config` at the top of your script
+Congrats!
 
 ### Further Reading & Resources
 
