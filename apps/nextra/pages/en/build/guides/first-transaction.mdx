@@ -1,696 +1,419 @@
-import { Callout, Tabs } from 'nextra/components';
+---
+title: "Your First Transaction"
+---
+
+import { Callout, Steps, Tabs } from 'nextra/components'
 
 # Your First Transaction
 
-This tutorial describes how to generate and submit transactions to the Aptos
-blockchain, and verify these submitted transactions. The `transfer-coin` example
-used in this tutorial is built with the Aptos SDKs.
-
-## Step 1: Pick an SDK
-
-Install your preferred SDK from the below list:
-
-- [TypeScript SDK](../sdks/ts-sdk.mdx)
-- [Python SDK](../sdks/python-sdk.mdx)
-- [Rust SDK](../sdks/rust-sdk.mdx)
-
----
-
-## Step 2: Run the example
-
-<Tabs items={["TypeScript", "Python", "Rust"]}>
-  <Tabs.Tab>
-
-Clone the `aptos-ts-sdk` repo and build it:
-
-```bash filename="Terminal"
-git clone https://github.com/aptos-labs/aptos-ts-sdk.git
-cd aptos-ts-sdk
-pnpm install
-pnpm build
-```
-
-Navigate to the Typescript examples directory:
-
-```bash filename="Terminal"
-cd examples/typescript
-```
-
-Install the necessary dependencies:
-
-```bash filename="Terminal"
-pnpm install
-```
-
-Run the [`transfer_coin`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/transfer_coin.ts) example:
-
-```bash filename="Terminal"
-pnpm run transfer_coin
-```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-
-Clone the `aptos-python-sdk` repo:
-
-```bash filename="Terminal"
-git clone https://github.com/aptos-labs/aptos-python-sdk.git
-```
-
-Install the necessary dependencies:
-
-```bash filename="Terminal"
-curl -sSL https://install.python-poetry.org | python3
-poetry install
-```
-
-Run the [`transfer-coin`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/transfer_coin.py) example:
-
-```bash filename="Terminal"
-poetry run python -m examples.transfer_coin
-```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-
-Clone the `aptos-core` repo:
-
-```bash filename="Terminal"
-git clone https://github.com/aptos-labs/aptos-core.git
-```
-
-Navigate to the Rust SDK directory:
-
-```bash filename="Terminal"
-cd aptos-core/sdk
-```
-
-Run the [`transfer-coin`](https://github.com/aptos-labs/aptos-core/blob/main/sdk/examples/transfer-coin.rs) example:
-
-```bash filename="Terminal"
-cargo run --example transfer-coin
-```
-
-  </Tabs.Tab>
-</Tabs>
-
----
-
-## Step 3: Understand the output
-
-<Tabs items={["TypeScript", "Python", "Rust"]}>
-  <Tabs.Tab>
-    An output very similar to the following will appear after executing the above command:
-
-```bash filename="Terminal"
-=== Addresses ===
-
-Alice's address is: 0xbd20517751571ba3fd06326c23761bc0bc69cf450898ffb43412fbe670c28806
-Bob's address is: 0x8705f98a74f5efe17740276ed75031927402c3a965e10f2ee16cda46d99d8f7f
-
-=== Initial Balances ===
-
-Alice's balance is: 100000000
-Bob's balance is: 0
-
-=== Transfer 1000000 from Alice to Bob ===
-
-Committed transaction: 0xc0d348afdfc34ae2c48971b253ece727cc9980dde182e2f2c42834552cbbf04c
-
-=== Balances after transfer ===
-
-Alice's balance is: 98899100
-Bob's balance is: 1000000
-```
-
-The above output demonstrates that the `transfer-coin` example executes the following steps:
-
-- Initializing the Aptos client.
-- The creation of two accounts: Alice and Bob.
-- The funding and creation of Alice's account from a faucet.
-- The transferring of 1000000 coins from Alice to Bob.
-- The 1100900 coins of gas paid for by Alice to make that transfer.
-
-</Tabs.Tab>
-
-  <Tabs.Tab>
-    An output very similar to the following will appear after executing the above command:
-
-```bash filename="Terminal"
-=== Addresses ===
-Alice: 0xbd20517751571ba3fd06326c23761bc0bc69cf450898ffb43412fbe670c28806
-Bob: 0x8705f98a74f5efe17740276ed75031927402c3a965e10f2ee16cda46d99d8f7f
-
-=== Initial Balances ===
-Alice: 100000000
-Bob: 0
-
-=== Intermediate Balances ===
-Alice: 99944900
-Bob: 1000
-
-=== Final Balances ===
-Alice: 99889800
-Bob: 2000
-```
-
-The above output demonstrates that the `transfer-coin` example executes the following steps:
-
-- Initializing the REST and faucet clients.
-- The creation of two accounts: Alice and Bob.
-- The funding and creation of Alice's account from a faucet.
-- The creation of Bob's account from a faucet.
-- The transferring of 1000 coins from Alice to Bob.
-- The 54100 coins of gas paid for by Alice to make that transfer.
-- Another transfer of 1000 coins from Alice to Bob.
-- The additional 54100 coins of gas paid for by Alice to make that transfer.
-
-Now see the below walkthrough of the SDK functions used to accomplish the above steps.
-</Tabs.Tab>
-
-  <Tabs.Tab>
-    An output very similar to the following will appear after executing the above command:
-
-```bash filename="Terminal"
-=== Addresses ===
-Alice: 0xbd20517751571ba3fd06326c23761bc0bc69cf450898ffb43412fbe670c28806
-Bob: 0x8705f98a74f5efe17740276ed75031927402c3a965e10f2ee16cda46d99d8f7f
-
-=== Initial Balances ===
-Alice: 100000000
-Bob: 0
-
-=== Intermediate Balances ===
-Alice: 99944900
-Bob: 1000
-
-=== Final Balances ===
-Alice: 99889800
-Bob: 2000
-```
-
-The above output demonstrates that the `transfer-coin` example executes the following steps:
-
-- Initializing the REST and faucet clients.
-- The creation of two accounts: Alice and Bob.
-- The funding and creation of Alice's account from a faucet.
-- The creation of Bob's account from a faucet.
-- The transferring of 1000 coins from Alice to Bob.
-- The 54100 coins of gas paid for by Alice to make that transfer.
-- Another transfer of 1000 coins from Alice to Bob.
-- The additional 54100 coins of gas paid for by Alice to make that transfer.
-
-Now see the below walkthrough of the SDK functions used to accomplish the above steps.
-</Tabs.Tab>
-</Tabs>
-
----
-
-## Step 4: The SDK in depth
-
-The `transfer-coin` example code uses helper functions to interact with the [REST API](../apis/fullnode-rest-api-reference.mdx). This section reviews each of the calls and gives insights into functionality.
-
-<Tabs items={["TypeScript", "Python", "Rust"]}>
-  <Tabs.Tab>
+Transactions allow you to change on-chain data or trigger events by calling smart contract functions (called `entry functions`). Generally, transactions follow 5 steps from building to executing on chain: building, simulating, signing, submitting, and waiting.
 
 <Callout type="info">
-See the TypeScript [`transfer_coin`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/transfer_coin.ts) for the complete code as you follow the below steps.
+You can jump below to the full code sample or continue reading for a step-by-step walkthrough.
 </Callout>
-</Tabs.Tab>
+
+<Tabs items={["TypeScript", "Python"]}>
+
 <Tabs.Tab>
 
-<Callout type="info">
-See the Python [`transfer_coin`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/transfer_coin.py) for the complete code as you follow the below steps.
-</Callout>
-</Tabs.Tab>
-<Tabs.Tab>
+<Steps>
 
-<Callout type="info">
-See the Rust [`transfer-coin`](https://github.com/aptos-labs/aptos-core/blob/main/sdk/examples/transfer-coin.rs) for the complete code as you follow the below steps.
-</Callout>
-</Tabs.Tab>
-</Tabs>
+### Build
 
----
+Building a transaction is how you specify:
 
-### Step 4.1: Initializing the clients
+1. **The `sender` account.** This account normally pays the gas fees for this transaction.
+2. **The `function` being called on-chain.** This is the identifier for the smart contract entry function on-chain that will trigger when you execute this transaction.
+3. **The `functionArguments`.** This is any data the function needs to run.
 
-<Tabs items={["TypeScript", "Python", "Rust"]}>
-  <Tabs.Tab>
+This can be packaged into a `SimpleTransaction` using `aptos.transaction.build.simple(...)` like so:
 
-In the first step, the `transfer_coin` example initializes the Aptos client:
-
-```ts filename="transfer_coin.ts"
-const APTOS_NETWORK: Network =
-  NetworkToNetworkName[process.env.APTOS_NETWORK] || Network.DEVNET;
-const config = new AptosConfig({ network: APTOS_NETWORK });
-const aptos = new Aptos(config);
-```
-
-<Callout type="info">
-By default, the Aptos client points to Aptos devnet services. However, it can be configured with the `network` input argument
-</Callout>
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-  In the first step, the `transfer-coin` example initializes both the REST and faucet clients:
-
-- The REST client interacts with the REST API.
-- The faucet client interacts with the devnet Faucet service for creating and funding accounts.
-
-```python filename="transfer-coin.py"
-rest_client = RestClient(NODE_URL)
-faucet_client = FaucetClient(FAUCET_URL, rest_client)
-```
-
-[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/common.py) initializes these values as follows:
-
-```python filename="common.py"
-NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")
-FAUCET_URL = os.getenv(
-    "APTOS_FAUCET_URL",
-    "https://faucet.devnet.aptoslabs.com",
-)
-```
-
-<Callout type="info">
-
-By default, the URLs for both the services point to Aptos devnet services. However, they can be configured with the following environment variables:
-
-- `APTOS_NODE_URL`
-- `APTOS_FAUCET_URL`
-</Callout>
-  </Tabs.Tab>
-  <Tabs.Tab>
-  In the first step, the `transfer-coin` example initializes both the REST and faucet clients:
-
-- The REST client interacts with the REST API.
-- The faucet client interacts with the devnet Faucet service for creating and funding accounts.
-
-```rust filename="transfer-coin.rs"
-let rest_client = Client::new(NODE_URL.clone());
-let faucet_client = FaucetClient::new(FAUCET_URL.clone(), NODE_URL.clone());
-```
-
-Using the API client we can create a `CoinClient`, which we use for common coin operations such as transferring coins and checking balances.
-
-```rust filename="transfer-coin.rs"
-let coin_client = CoinClient::new(&rest_client);
-```
-
-In the example we initialize the URL values as such:
-
-```rust filename="transfer-coin.rs"
-static NODE_URL: Lazy<Url> = Lazy::new(|| {
-    Url::from_str(
-        std::env::var("APTOS_NODE_URL")
-            .as_ref()
-            .map(|s| s.as_str())
-            .unwrap_or("https://api.devnet.aptoslabs.com"),
-    )
-    .unwrap()
-});
-
-static FAUCET_URL: Lazy<Url> = Lazy::new(|| {
-    Url::from_str(
-        std::env::var("APTOS_FAUCET_URL")
-            .as_ref()
-            .map(|s| s.as_str())
-            .unwrap_or("https://faucet.devnet.aptoslabs.com"),
-    )
-    .unwrap()
-});
-
-```
-
-<Callout type="info">
-
-By default, the URLs for both the services point to Aptos devnet services. However, they can be configured with the following environment variables:
-
-- `APTOS_NODE_URL`
-- `APTOS_FAUCET_URL`
-</Callout>
-  </Tabs.Tab>
-  </Tabs>
-
----
-
-### Step 4.2: Creating local accounts
-
-The next step is to create two accounts locally. [Accounts](../../network/blockchain/accounts.mdx) represent both on and off-chain state. Off-chain state consists of an address and the public/private key pair used to authenticate ownership. This step demonstrates how to generate that off-chain state.
-
-<Tabs items={["TypeScript", "Python", "Rust"]}>
-  <Tabs.Tab>
-
-```ts filename="example.ts"
-const alice = Account.generate();
-const bob = Account.generate();
-```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-
-```python filename="example.py"
-alice = Account.generate()
-bob = Account.generate()
-```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-
-```rust filename="example.rs"
-let mut alice = LocalAccount::generate(&mut rand::rngs::OsRng);
-let bob = LocalAccount::generate(&mut rand::rngs::OsRng);
-```
-
-  </Tabs.Tab>
-</Tabs>
-
----
-
-### Step 4.3: Creating blockchain accounts
-
-In Aptos, each account must have an on-chain representation in order to receive tokens and coins and interact with other dapps. An account represents a medium for storing assets; hence, it must be explicitly created. This example leverages the Faucet to create and fund Alice's account and to create but not fund Bob's account:
-
-<Tabs items={["TypeScript", "Python", "Rust"]}>
-  <Tabs.Tab>
-
-```ts filename="example.ts"
-await aptos.fundAccount({
-  accountAddress: alice.accountAddress,
-  amount: 100_000_000,
+```ts filename="build-a-transaction.ts"
+const transaction = await aptos.transaction.build.simple({
+  sender: sender.accountAddress,
+  data: {
+    // All transactions on Aptos are implemented via smart contracts.
+    function: "0x1::aptos_account::transfer",
+    functionArguments: [destination.accountAddress, 100],
+  },
 });
 ```
 
-  </Tabs.Tab>
-  <Tabs.Tab>
+<Callout type="info">
+There is a more advanced format to pass in `functionArguments` called [Binary Canonical Serialization (BCS)](building-transactions/bcs-format.mdx) which is how the Aptos chain parses function arguments. The SDK converts TypeScript primitives to BCS format behind the scenes via an API call.
+</Callout>
 
-```python filename="example.py"
-alice_fund = faucet_client.fund_account(alice.address(), 100_000_000)
-bob_fund = faucet_client.fund_account(bob.address(), 0)
-```
+### Simulate (Optional)
 
-  </Tabs.Tab>
-  <Tabs.Tab>
+Every transaction on the Aptos chain has a gas fee associated with how much work the network machines have to do when executing the transaction. In order to estimate the cost associated with that, you can simulate transactions before committing them.
 
-```rust filename="example.rs"
-faucet_client
-    .fund(alice.address(), 100_000_000)
-    .await
-    .context("Failed to fund Alice's account")?;
-faucet_client
-    .create_account(bob.address())
-    .await
-    .context("Failed to fund Bob's account")?;
-```
+<Callout type="info">
+This simulation only requires the `publicKey` of an account since it will not impact the actual state of the ledger.
+</Callout>
 
-  </Tabs.Tab>
-</Tabs>
-
----
-
-### Step 4.4: Reading balances
-
-In this step, the SDK translates a single call into the process of querying a resource and reading a field from that resource.
-
-<Tabs items={["TypeScript", "Python", "Rust"]}>
-  <Tabs.Tab>
-
-```ts filename="example.ts"
-const aliceBalance = await balance("Alice", alice.accountAddress);
-const bobBalance = await balance("Bob", bob.accountAddress);
-```
-
-Behind the scenes, the `balance` function uses the SDK `getAccountAPTAmount` function that queries the Indexer service and reads the current stored value:
-
-```ts filename="example.ts"
-const balance = async (
-  name: string,
-  accountAddress: AccountAddress,
-): Promise<number> => {
-  const amount = await aptos.getAccountAPTAmount({
-    accountAddress,
-  });
-  console.log(`${name}'s balance is: ${amount}`);
-  return amount;
-};
-```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-
-```python filename="example.py"
-alice_balance = rest_client.account_balance(alice.address())
-bob_balance = rest_client.account_balance(bob.address())
-[alice_balance, bob_balance] = await asyncio.gather(*[alice_balance, bob_balance])
-print(f"Alice: {alice_balance}")
-print(f"Bob: {bob_balance}")
-```
-
-Behind the scenes, the SDK queries the CoinStore resource for the AptosCoin and reads the current stored value:
-
-```python filename="example.py"
-def account_balance(self, account_address: str) -> int:
-    """Returns the test coin balance associated with the account"""
-    return self.account_resource(
-        account_address, "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>"
-    )["data"]["coin"]["value"]
-```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-
-```rust filename="example.rs"
-println!(
-    "Alice: {:?}",
-    coin_client
-        .get_account_balance(&alice.address())
-        .await
-        .context("Failed to get Alice's account balance the second time")?
-);
-println!(
-    "Bob: {:?}",
-    coin_client
-        .get_account_balance(&bob.address())
-        .await
-        .context("Failed to get Bob's account balance the second time")?
-);
-```
-
-Behind the scenes, the SDK queries the CoinStore resource for the AptosCoin and reads the current stored value:
-
-```rust filename="example.rs"
-let balance = self
-    .get_account_resource(address, "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>")
-    .await?;
-```
-
-  </Tabs.Tab>
-</Tabs>
-
----
-
-### Step 4.5: Transferring
-
-Like the previous step, this is another helper step that constructs a transaction transferring the coins from Alice to Bob. The SDK provides a helper function to generate a `transferCoinTransaction` transaction that can be simulated or submitted to chain. Once a transaction has been submitted to chain, the API will return a transaction hash that can be used in the subsequent step to check on the transaction status. The Aptos blockchain does perform a handful of validation checks on submission; and if any of those fail, the user will instead be given an error. These validations use the transaction signature and unused sequence number, and submitting the transaction to the appropriate chain.
-<Tabs items={["TypeScript", "Python", "Rust"]}>
-<Tabs.Tab>
-
-```ts filename="example.ts"
-const transaction = await aptos.transferCoinTransaction({
-  sender: alice,
-  recipient: bob.accountAddress,
-  amount: TRANSFER_AMOUNT,
+```ts filename="build-a-transaction.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+  signerPublicKey: signer.publicKey,
+  transaction,
 });
-const pendingTxn = await aptos.signAndSubmitTransaction({
-  signer: alice,
+// If the fee looks ok, continue to signing!
+```
+
+### Sign
+
+Once the transaction is built and the fees seem reasonable, you can sign the transaction with `aptos.transaction.sign`. The signature must come from the `sender` account.
+
+```ts filename="build-a-transaction.ts"
+// 3. Sign
+const senderAuthenticator = aptos.transaction.sign({
+  signer: sender,
   transaction,
 });
 ```
 
-Behind the scenes, the `transferCoinTransaction` function generates a transaction payload that can be simulated or submitted to chain:
+### Submit
 
-```ts filename="example.ts"
-export async function transferCoinTransaction(args: {
-  aptosConfig: AptosConfig;
-  sender: Account;
-  recipient: AccountAddressInput;
-  amount: AnyNumber;
-  coinType?: MoveStructId;
-  options?: InputGenerateTransactionOptions;
-}): Promise<SingleSignerTransaction> {
-  const { aptosConfig, sender, recipient, amount, coinType, options } = args;
-  const coinStructType = coinType ?? APTOS_COIN;
-  const transaction = await generateTransaction({
-    aptosConfig,
-    sender: sender.accountAddress,
-    data: {
-      function: "0x1::aptos_account::transfer_coins",
-      typeArguments: [coinStructType],
-      functionArguments: [recipient, amount],
-    },
-    options,
+Now that the transaction is signed, you can submit it to the network using `aptos.transaction.submit.simple` like so:
+
+```ts filename="build-a-transaction.ts"
+// 4. Submit
+const committedTransaction = await aptos.transaction.submit.simple({
+  transaction,
+  senderAuthenticator,
+});
+```
+
+### Wait
+
+Finally, you can wait for the result of the transaction by using `aptos.waitForTransaction` and specifying the hash of the transaction you just submitted like so:
+
+```ts filename="build-a-transaction.ts"
+// 5. Wait
+const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
+```
+
+</Steps>
+
+## Full TypeScript Example
+
+```ts filename="build-a-transaction.ts"
+/**
+ * This example shows how to use the Aptos SDK to send a transaction.
+ * Don't forget to install @aptos-labs/ts-sdk before running this example!
+ */
+
+import {
+  Account,
+  Aptos,
+  AptosConfig,
+  Network,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+  console.log("This example will create two accounts (Alice and Bob) and send a transaction transferring APT to Bob's account.");
+
+  // 0. Setup the client and test accounts
+  const config = new AptosConfig({ network: Network.DEVNET });
+  const aptos = new Aptos(config);
+
+  let alice = Account.generate();
+  let bob = Account.generate();
+
+  console.log("=== Addresses ===\n");
+  console.log(`Alice's address is: ${alice.accountAddress}`);
+  console.log(`Bob's address is: ${bob.accountAddress}`);
+
+  console.log("\n=== Funding accounts ===\n");
+  await aptos.fundAccount({
+    accountAddress: alice.accountAddress,
+    amount: 100_000_000,
   });
+  await aptos.fundAccount({
+    accountAddress: bob.accountAddress,
+    amount: 100,
+  });
+  console.log("Funded Alice and Bob's accounts!");
 
-  return transaction;
+  // 1. Build
+  console.log("\n=== 1. Building the transaction ===\n");
+  const transaction = await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      // All transactions on Aptos are implemented via smart contracts.
+      function: "0x1::aptos_account::transfer",
+      functionArguments: [bob.accountAddress, 100],
+    },
+  });
+  console.log("Built the transaction!");
+
+  // 2. Simulate (Optional)
+  console.log("\n=== 2. Simulating Transaction (Optional) ===\n");
+  const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+    signerPublicKey: alice.publicKey,
+    transaction,
+  });
+  console.log(userTransactionResponse);
+
+  // 3. Sign
+  console.log("\n=== 3. Signing transaction ===\n");
+  const senderAuthenticator = aptos.transaction.sign({
+    signer: alice,
+    transaction,
+  });
+  console.log("Signed the transaction!");
+
+  // 4. Submit
+  console.log("\n=== 4. Submitting transaction ===\n");
+  const submittedTransaction = await aptos.transaction.submit.simple({
+    transaction,
+    senderAuthenticator,
+  });
+  console.log(`Submitted transaction hash: ${submittedTransaction.hash}`);
+
+  // 5. Wait
+  console.log("\n=== 5. Waiting for result of transaction ===\n");
+  const executedTransaction = await aptos.waitForTransaction({
+    transactionHash: submittedTransaction.hash,
+  });
+  console.log(executedTransaction);
 }
+
+example();
 ```
 
-Breaking the above down into pieces:
+</Tabs.Tab>
 
-1. `transfer_coins` internally is a `EntryFunction` in the [Aptos Account Move module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L92), i.e., an entry function in Move that is directly callable.
-2. The Move function is stored on the aptos_account module: `0x1::aptos_account`.
-3. The `transfer_coins` functions uses the [Coin Move module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)
-4. Because the Coin module can be used by other coins, the `transferCoinTransaction` must explicitly specify which coin type to transfer. If not specified with `coinType` it defaults to `0x1::aptos_coin::AptosCoin`.
+<Tabs.Tab>
 
-  </Tabs.Tab>
-  <Tabs.Tab>
-Like the previous step, this is another helper step that constructs a transaction transferring the coins from Alice to Bob. For correctly generated transactions, the API will return a transaction hash that can be used in the subsequent step to check on the transaction status. The Aptos blockchain does perform a handful of validation checks on submission; and if any of those fail, the user will instead be given an error. These validations use the transaction signature and unused sequence number, and submitting the transaction to the appropriate chain.
+<Steps>
 
-```python filename="example.py"
-txn_hash = await rest_client.transfer(alice, bob.address(), 1_000)
-```
+### Build
 
-Behind the scenes the Python SDK generates, signs, and submits a transaction:
+Building a transaction is how you specify:
 
-```python filename="example.py"
-async def bcs_transfer(
-    self,
-    sender: Account,
-    recipient: AccountAddress,
-    amount: int,
-    sequence_number: Optional[int] = None,
-) -> str:
-    transaction_arguments = [
+1. **The `sender` account.** This account normally pays the gas fees for this transaction.
+2. **The `function` being called on-chain.** This is the identifier for the smart contract entry function on-chain that will trigger when you execute this transaction.
+3. **The `functionArguments`.** This is any data the function needs to run.
+
+This can be packaged into an `EntryFunction.natural` like so:
+
+```python filename="build-a-transaction.py"
+# You can modify this payload to call whichever smart contract entry function you want. 
+# module - "0x1::aptos_account" indicates the address and module. 
+# function - "transfer" is the name of the function we are calling.
+# ty_args - Transfer has no type parameters, so we leave that blank with [].
+# args - Then we add the arguments to the "transfer" function. We wrap them in "TransactionArgument" to get them
+#        into the proper Binary Canonical Serialization (BCS) format so the chain can understand the data.
+#
+# See the Move Reference to find the function signatures for entry functions: https://aptos.dev/en/build/smart-contracts/reference 
+payload = EntryFunction.natural(
+    "0x1::aptos_account",
+    "transfer",
+    [],
+    [
         TransactionArgument(recipient, Serializer.struct),
         TransactionArgument(amount, Serializer.u64),
-    ]
+    ],
+)
+```
 
+### Simulate (Optional)
+
+Every transaction on the Aptos chain has a gas fee associated with how much work the network machines have to do when executing the transaction. In order to estimate the cost associated with that, you can simulate transactions before committing them.
+
+```python filename="build-a-transaction.py"
+try:
+    raw_transaction = await rest_client.create_bcs_transaction(sender, TransactionPayload(payload))
+    simulation_result = await rest_client.simulate_transaction(raw_transaction, sender)
+    print("Simulation successful. Transaction output:")
+    print(simulation_result)
+except Exception as e:
+    print("Simulation failed:", str(e))
+# If the fee looks ok, continue to signing!
+```
+
+### Sign
+
+Once the transaction is built and the fees seem reasonable, you can sign the transaction with `rest_client.create_bcs_signed_transaction`. The signature must come from the `sender` account.
+
+```python filename="build-a-transaction.py"
+signed_transaction = await rest_client.create_bcs_signed_transaction(
+    sender, TransactionPayload(payload), sequence_number=sequence_number
+)
+```
+
+### Submit
+
+Now that the transaction is signed, you can submit it to the network using `rest_client.submit_bcs_transaction` like so:
+
+```python filename="build-a-transaction.py"
+txn_hash = await rest_client.submit_bcs_transaction(signed_transaction)
+```
+
+### Wait
+
+Finally, you can wait for the result of the transaction by using `rest_client.wait_for_transaction` and specifying the hash of the transaction you just submitted:
+
+```python filename="build-a-transaction.py"
+if txn_hash:
+    await rest_client.wait_for_transaction(txn_hash)
+```
+
+</Steps>
+
+## Full Python Example
+
+<Callout type="info">
+You can import the Python SDK by running `pip3 install aptos-sdk`.
+</Callout>
+
+```python filename="build-a-transaction.py"
+"""
+This example shows how to use the Aptos client to create accounts, fund them, simulate a transaction, and transfer between accounts.
+"""
+
+import asyncio
+
+from aptos_sdk.account import Account
+from aptos_sdk.async_client import FaucetClient, RestClient
+from aptos_sdk.bcs import Serializer
+from aptos_sdk.transactions import (
+    EntryFunction,
+    TransactionArgument,
+    TransactionPayload,
+)
+
+# Constants for the Aptos network URLs
+NODE_URL = "https://fullnode.devnet.aptoslabs.com/v1"
+FAUCET_URL = "https://faucet.devnet.aptoslabs.com"
+FAUCET_AUTH_TOKEN = None  # Set this if using an authenticated faucet
+
+# Constants for the coin and initial balances
+ALICE_INITIAL_BALANCE = 100_000_000
+TRANSFER_AMOUNT = 1_000
+
+# A helper that handles the 5 steps to build and execute a transaction. Modify this to change which entry function you want to call.
+async def build_and_submit_transfer_transaction(
+    rest_client: RestClient, sender: Account, recipient: Account, amount: int, sequence_number: int = None, simulate: bool = False
+):
+    # 1. Build the transaction payload. 
+
+    # You can modify this payload to call whichever smart contract entry function you want. 
+    # module - "0x1::aptos_account" indicates the address and module. 
+    # function - "transfer" is the name of the function we are calling.
+    # ty_args - Transfer has no type parameters, so we leave that blank with [].
+    # args - Then we add the arguments to the "transfer" function. We wrap them in "TransactionArgument" to get them
+    #        into the proper Binary Canonical Serialization (BCS) format so the chain can understand the data.
+    # 
+    # See the Move Reference to find the function signatures for entry functions: https://aptos.dev/en/build/smart-contracts/reference 
+    print("\n=== Building the transaction payload ===")
     payload = EntryFunction.natural(
         "0x1::aptos_account",
         "transfer",
         [],
-        transaction_arguments,
+        [
+            TransactionArgument(recipient, Serializer.struct),
+            TransactionArgument(amount, Serializer.u64),
+        ],
     )
 
-    signed_transaction = await self.create_bcs_signed_transaction(
+    # 2. (Optional) Simulate the transaction if requested
+    if simulate:
+        print("\n=== Simulating Transaction ===")
+        print("You can use this to check gas fees before committing to executing the transaction.")
+        try:
+            raw_transaction = await rest_client.create_bcs_transaction(sender, TransactionPayload(payload))
+            simulation_result = await rest_client.simulate_transaction(raw_transaction, sender)
+            print("Simulation successful. Transaction output:")
+            print(simulation_result)
+        except Exception as e:
+            print("Simulation failed:", str(e))
+            return None
+
+    # 3. Sign the transaction
+    print("\n=== Signing the transaction ===")
+    signed_transaction = await rest_client.create_bcs_signed_transaction(
         sender, TransactionPayload(payload), sequence_number=sequence_number
     )
-    return await self.submit_bcs_transaction(signed_transaction)
+
+    # 4. Submit the transaction onchain
+    print("\n=== Submitting the transaction ===")
+    txn_hash = await rest_client.submit_bcs_transaction(signed_transaction)
+
+    # 5. Wait for the transaction to complete
+    if txn_hash:
+        print("\n=== Waiting for the transaction to complete ===")
+        await rest_client.wait_for_transaction(txn_hash)
+        print("\n=== Transaction has been completed ===")
+
+    return txn_hash
+
+# This main function demonstrates how to transfer coins between multiple accounts using transactions.
+async def main():
+    # Setup the clients
+    rest_client = RestClient(NODE_URL)
+    faucet_client = FaucetClient(FAUCET_URL, rest_client, FAUCET_AUTH_TOKEN)
+
+    # Generate two accounts
+    alice = Account.generate()
+    bob = Account.generate()
+
+    print("\n=== Addresses ===")
+    print(f"Alice's address: {alice.address()}")
+    print(f"Bob's address: {bob.address()}")
+
+    # Fund the accounts using the faucet
+    alice_fund = faucet_client.fund_account(alice.address(), ALICE_INITIAL_BALANCE)
+    bob_fund = faucet_client.fund_account(bob.address(), 0)
+    await asyncio.gather(alice_fund, bob_fund)
+
+    print("\n=== Initial Balances ===")
+    alice_balance_task = rest_client.account_balance(alice.address())
+    bob_balance_task = rest_client.account_balance(bob.address())
+    alice_balance, bob_balance = await asyncio.gather(alice_balance_task, bob_balance_task)
+    print(f"Alice's balance: {alice_balance}")
+    print(f"Bob's balance: {bob_balance}")
+
+    # Perform a transfer from Alice to Bob with simulation
+    print("\n=== Performing Transfer with Simulation ===")
+    txn_hash = await build_and_submit_transfer_transaction(
+        rest_client, alice, bob.address(), TRANSFER_AMOUNT, simulate=True
+    )
+
+    print("\n=== Final Balances ===")
+    alice_balance_task = rest_client.account_balance(alice.address())
+    bob_balance_task = rest_client.account_balance(bob.address())
+    alice_balance, bob_balance = await asyncio.gather(alice_balance_task, bob_balance_task)
+    print(f"Alice's balance: {alice_balance}")
+    print(f"Bob's balance: {bob_balance}")
+
+    await rest_client.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
-Breaking the above down into pieces:
+</Tabs.Tab>
 
-1. `transfer` internally is a `EntryFunction` in the [Coin Move module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move#L412), i.e., an entry function in Move that is directly callable.
-1. The Move function is stored on the coin module: `0x1::coin`.
-1. Because the Coin module can be used by other coins, the transfer must explicitly use a `TypeTag` to define which coin to transfer.
-1. The transaction arguments must be placed into `TransactionArgument`s with type specifiers (`Serializer.{type}`), that will serialize the value into the appropriate type at transaction generation time.
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-Like the previous step, this is another helper step that constructs a transaction transferring the coins from Alice to Bob. For correctly generated transactions, the API will return a transaction hash that can be used in the subsequent step to check on the transaction status. The Aptos blockchain does perform a handful of validation checks on submission; and if any of those fail, the user will instead be given an error. These validations use the transaction signature and unused sequence number, and submitting the transaction to the appropriate chain.
-
-```rust filename="example.rs"
-let txn_hash = coin_client
-    .transfer(&mut alice, bob.address(), 1_000, None)
-    .await
-    .context("Failed to submit transaction to transfer coins")?;
-```
-
-Behind the scenes the Rust SDK generates, signs, and submits a transaction:
-
-```rust filename="example.rs"
-let chain_id = self
-    .api_client
-    .get_index()
-    .await
-    .context("Failed to get chain ID")?
-    .inner()
-    .chain_id;
-let transaction_builder = TransactionBuilder::new(
-    TransactionPayload::EntryFunction(EntryFunction::new(
-        ModuleId::new(AccountAddress::ONE, Identifier::new("coin").unwrap()),
-        Identifier::new("transfer").unwrap(),
-        vec![TypeTag::from_str(options.coin_type).unwrap()],
-        vec![
-            bcs::to_bytes(&to_account).unwrap(),
-            bcs::to_bytes(&amount).unwrap(),
-        ],
-    )),
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
-        + options.timeout_secs,
-    ChainId::new(chain_id),
-)
-.sender(from_account.address())
-.sequence_number(from_account.sequence_number())
-.max_gas_amount(options.max_gas_amount)
-.gas_unit_price(options.gas_unit_price);
-let signed_txn = from_account.sign_with_transaction_builder(transaction_builder);
-Ok(self
-    .api_client
-    .submit(&signed_txn)
-    .await
-    .context("Failed to submit transfer transaction")?
-    .into_inner())
-```
-
-Breaking the above down into pieces:
-
-1. First, we fetch the chain ID, necessary for building the transaction payload.
-1. `transfer` internally is a `EntryFunction` in the [Coin Move module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move#L412), i.e., an entry function in Move that is directly callable.
-1. The Move function is stored on the coin module: `0x1::coin`.
-1. Because the Coin module can be used by other coins, the transfer must explicitly use a `TypeTag` to define which coin to transfer.
-1. The transaction arguments, such as `to_account` and `amount`, must be encoded as BCS to use with the `TransactionBuilder`.
-
-  </Tabs.Tab>
 </Tabs>
 
----
+## Summary
 
-### Step 4.6: Waiting for transaction resolution
+Building and sending transactions on-chain involves the following 5 steps:
+1. **Build** the transaction.
+2. **Simulate** the cost. (Optional)
+3. **Sign** the transaction (if the simulated cost seems ok).
+4. **Submit** the transaction to the network.
+5. **Wait** for the chain to validate and update.
 
-<Tabs items={["TypeScript", "Python", "Rust"]}>
-  <Tabs.Tab>
+## Explore Advanced Transaction Features
 
-In the TypeScript SDK, just calling `waitForTransaction` is sufficient to wait for the transaction to complete. The function will return the `Transaction` returned by the API once it is processed (either successfully or unsuccessfully) or throw an error if processing time exceeds the timeout.
+<Callout type="warning">
+These guides below are written for TypeScript, but the Python SDK does have similar features implemented. See the [Python SDK GitHub](https://github.com/aptos-labs/aptos-python-sdk/tree/main/examples) for example code which demonstrates these features.
+</Callout>
 
-```ts filename="example.ts"
-const response = await aptos.waitForTransaction({
-  transactionHash: pendingTxn.hash,
-});
-```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-
-The transaction hash can be used to query the status of a transaction:
-
-```python filename="example.py"
-await rest_client.wait_for_transaction(txn_hash)
-```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-
-The transaction hash can be used to query the status of a transaction:
-
-```rust filename="example.rs"
-rest_client
-    .wait_for_transaction(&txn_hash)
-    .await
-    .context("Failed when waiting for the transfer transaction")?;
-```
-
-  </Tabs.Tab>
-</Tabs>
-
-## Supporting documentation
-
-- [Account basics](../../network/blockchain/accounts.mdx)
-- [TypeScript SDK](../sdks/ts-sdk.mdx)
-- [Python SDK](../sdks/python-sdk.mdx)
-- [Rust SDK](../sdks/rust-sdk.mdx)
-- [REST API specification](../apis/fullnode-rest-api-reference.mdx)
+1. [Multi-Agent Signatures](building-transactions/multi-agent-transactions.mdx) - Allowing multiple accounts to be used for a single contract.
+2. [Sponsoring Transactions](building-transactions/sponsoring-transactions.mdx) - Have another account pay gas fees for this transaction.
+3. [Batch Submit Transactions](building-transactions/batching-transactions.mdx) - How to send multiple transactions quickly from a single account.
+4. [Binary Canonical Serialization (BCS)](building-transactions/bcs-format.mdx) - The format used to serialize data for Aptos transactions.
+5. [Composing multiple Move calls with ScriptComposer](building-transactions/script-composer.mdx) - (Experimental) Building more complex transaction payload that calls into multiple Move functions dynamically.
