@@ -8,4 +8,4 @@ export default {
   other: {
     title: "常见问题",
   },
-}; 
+};

@@ -44,7 +44,7 @@ export default {
     items: {
       nodes: {
         title: "节点",
-      }
+      },
     },
   },
   "developer-platforms": {

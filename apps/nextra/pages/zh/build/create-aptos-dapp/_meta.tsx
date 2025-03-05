@@ -7,4 +7,4 @@ export default {
   faq: {
     title: "常见问题",
   },
-}; 
+};

@@ -53,4 +53,4 @@ export default {
   "system-integrators-guide": {
     title: "应用程序",
   },
-}; 
+};

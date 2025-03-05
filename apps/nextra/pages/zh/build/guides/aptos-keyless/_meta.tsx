@@ -20,4 +20,4 @@ export default {
   "federated-keyless": {
     title: "联合 Keyless",
   },
-}; 
+};
