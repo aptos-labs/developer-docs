@@ -1,24 +1,25 @@
+
 import { Callout, Tabs } from 'nextra/components';
 
-# 创建你的第一个 NFT
+# Your First NFT
 
-本教程介绍如何在 Aptos 区块链上创建和转移非同质化资产。Aptos 的非同质化数字资产的无代码实现可以在 [aptos_token.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move) Move 模块中找到。
+This tutorial describes how to create and transfer non-fungible assets on the Aptos blockchain. The Aptos no-code implementation for non-fungible digital assets can be found in the [aptos_token.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move) Move module.
 
-## 第 1 步：选择 SDK
+## Step 1: Pick an SDK
 
-从以下列表中安装你偏好的 SDK：
+Install your preferred SDK from the below list:
 
 - [TypeScript SDK](../sdks/ts-sdk.mdx)
 - [Python SDK](../sdks/python-sdk.mdx)
 
 ---
 
-## 第 2 步：运行示例
+## Step 2: Run the example
 
 <Tabs items={['TypeScript', 'Python']}>
   <Tabs.Tab>
 
-克隆 `aptos-ts-sdk` 仓库并构建：
+Clone the `aptos-ts-sdk` repo and build it:
 
 ```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-ts-sdk.git
@@ -27,20 +28,20 @@ pnpm install
 pnpm build
 ```
 
-导航到 TypeScript ESM 示例目录：
+Navigate to the Typescript ESM examples directory:
 
 ```bash filename="Terminal"
 cd examples/typescript-esm
 ```
 
-安装必要的依赖并构建：
+Install the necessary dependencies and build it:
 
 ```bash filename="Terminal"
 pnpm install
 pnpm build
 ```
 
-运行 TypeScript [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) 示例：
+Run the TypeScript [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) example:
 
 ```bash filename="Terminal"
 pnpm run simple_digital_asset
@@ -49,20 +50,20 @@ pnpm run simple_digital_asset
   </Tabs.Tab>
   <Tabs.Tab>
 
-克隆 `aptos-python-sdk` 仓库：
+Clone the `aptos-python-sdk` repo:
 
 ```bash filename="Terminal"
 git clone https://github.com/aptos-labs/aptos-python-sdk.git
 ```
 
-安装必要的依赖：
+Install the necessary dependencies:
 
 ```bash filename="Terminal"
 curl -sSL https://install.python-poetry.org | python3
 poetry install
 ```
 
-运行 Python [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simple_aptos_token.py) 示例：
+Run the Python [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simple_aptos_token.py) example:
 
 ```bash filename="Terminal"
 poetry run python -m examples.simple_aptos_token
@@ -73,12 +74,12 @@ poetry run python -m examples.simple_aptos_token
 
 ---
 
-## 第 3 步：理解输出
+## Step 3: Understand the output
 
 <Tabs items={["TypeScript", "Python"]}>
 <Tabs.Tab>
 
-执行 `simple_digital_asset` 示例后应该会出现以下输出（某些值会不同）：
+The following output should appear after executing the `simple_digital_asset` example, though some values will be different:
 
 ```bash filename="Terminal"
 === Addresses ===
@@ -160,18 +161,18 @@ Bob's digital assets balance: 1
 ```
 
 <details>
-<summary>此示例演示了...</summary>
-* 初始化 Aptos 客户端。
-* 创建两个账户：Alice 和 Bob。
-* 为 Alice 和 Bob 的账户提供资金并创建账户。
-* 使用 Alice 的账户创建集合和代币。
-* Alice 向 Bob 发送代币。
+<summary>This example demonstrates...</summary>
+* Initializing the Aptos client.
+* The creation of two accounts: Alice and Bob.
+* The funding and creation of Alice and Bob's accounts.
+* The creation of a collection and a token using Alice's account.
+* Alice sending a token to Bob.
 </details>
 
 </Tabs.Tab>
   <Tabs.Tab>
 
-执行 `simple_aptos_token` 示例后应该会出现以下输出（某些值会不同）：
+The following output should appear after executing the `simple_aptos_token` example, though some values will be different:
 
 ```bash filename="Terminal"
 === Addresses ===
@@ -211,13 +212,13 @@ Token owner: Alice
 ```
 
 <details>
-<summary>此示例演示了...</summary>
-* 初始化 REST 和水龙头客户端。
-* 创建两个账户：Alice 和 Bob。
-* 为 Alice 和 Bob 的账户提供资金并创建账户。
-* 使用 Alice 的账户创建集合和代币。
-* Alice 向 Bob 发送代币。
-* Bob 将代币发送回 Alice。
+<summary>This example demonstrates...</summary>
+* Initializing the REST and faucet clients.
+* The creation of two accounts: Alice and Bob.
+* The funding and creation of Alice and Bob's accounts.
+* The creation of a collection and a token using Alice's account.
+* Alice sending a token to Bob.
+* Bob sending the token back to Alice.
 </details>
 
   </Tabs.Tab>
@@ -225,30 +226,30 @@ Token owner: Alice
 
 ---
 
-## 第 4 步：深入了解 SDK
+## Step 4: The SDK in depth
 
 <Tabs items={["TypeScript", "Python"]}>
 <Tabs.Tab>
   <Callout type="info">
-  在按照以下步骤操作时，请参阅 [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) 获取完整代码。
+  See [`simple_digital_asset`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/simple_digital_asset.ts) for the complete code as you follow the below steps.
   </Callout>
 </Tabs.Tab>
 <Tabs.Tab>
   <Callout type="info">
-  在按照以下步骤操作时，请参阅 [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simple_aptos_token.py) 获取完整代码。
+  See [`simple_aptos_token`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/simple_aptos_token.py) for the complete code as you follow the below steps.
   </Callout>
 </Tabs.Tab>
 </Tabs>
 
 ---
 
-### 第 4.1 步：初始化客户端
+### Step 4.1: Initializing the clients
 
 <Tabs items={["TypeScript", "Python"]}>
 
   <Tabs.Tab>
 
-在第一步中，`simple_digital_asset` 示例初始化 Aptos 客户端：
+In the first step, the `simple_digital_asset` example initializes the Aptos client:
 
 ```ts filename="example.ts"
 const APTOS_NETWORK: Network =
@@ -258,29 +259,29 @@ const aptos = new Aptos(config);
 ```
 
 <Callout type="info">
-默认情况下，Aptos 客户端指向 Aptos devnet 服务。但是可以通过 `network` 输入参数进行配置
+By default, the Aptos client points to Aptos devnet services. However, it can be configured with the `network` input argument
 </Callout>
 
   </Tabs.Tab>
   <Tabs.Tab>
 
-在第一步中，示例初始化 API 和水龙头客户端。
+In the first step, the example initializes both the API and faucet clients.
 
-- API 客户端与 REST API 交互。
-- 水龙头客户端与 devnet 水龙头服务交互，用于创建和提供账户资金。
+- The API client interacts with the REST API.
+- The faucet client interacts with the devnet Faucet service for creating and funding accounts.
 
 ```python filename="example.py"
 rest_client = RestClient(NODE_URL)
 faucet_client = FaucetClient(FAUCET_URL, rest_client)
 ```
 
-使用 API 客户端，我们可以创建一个 `TokenClient`，用于常见的代币操作，如创建集合和代币、转移代币、认领代币等。
+Using the API client we can create a `TokenClient` that we use for common token operations such as creating collections and tokens, transferring them, claiming them, and so on.
 
 ```python filename="example.py"
 token_client = AptosTokenClient(rest_client)
 ```
 
-[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/common.py) 初始化这些值如下：
+[`common.py`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/common.py) initializes these values as follows:
 
 ```python filename="example.py"
 NODE_URL = os.getenv("APTOS_NODE_URL", "https://api.devnet.aptoslabs.com/v1")
@@ -292,7 +293,7 @@ FAUCET_URL = os.getenv(
 
 <Callout type="info">
 
-默认情况下，两个服务的 URL 都指向 Aptos devnet 服务。但是可以通过以下环境变量进行配置：
+By default, the URLs for both the services point to Aptos devnet services. However, they can be configured with the following environment variables:
 
 - `APTOS_NODE_URL`
 - `APTOS_FAUCET_URL`
@@ -302,9 +303,9 @@ FAUCET_URL = os.getenv(
 
 ---
 
-### 第 4.2 步：创建本地账户
+### Step 4.2: Creating local accounts
 
-下一步是在本地创建两个账户。[账户](../../network/blockchain/accounts.mdx)由公共地址和用于验证账户所有权的公钥/私钥对组成。此步骤演示如何生成账户并将其密钥对和地址存储在变量中。
+The next step is to create two accounts locally. [Accounts](../../network/blockchain/accounts.mdx) consist of a public address and the public/private key pair used to authenticate ownership of the account. This step demonstrates how to generate an Account and store its key pair and address in a variable.
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
@@ -326,14 +327,14 @@ bob = Account.generate()
 </Tabs>
 
 <Callout type="info">
-请注意，这只是生成本地密钥对。生成密钥对和公共地址后，账户仍然不存在于链上。
+Note that this only generates the local keypair. After generating the keypair and public address, the account still does not exist on-chain.
 </Callout>
 
 ---
 
-### 第 4.3 步：创建区块链账户
+### Step 4.3: Creating blockchain accounts
 
-为了在链上实际实例化账户，必须以某种方式显式创建它。在 devnet 上，你可以通过水龙头 API 请求免费代币用于测试。此示例利用水龙头为 Alice 和 Bob 的账户提供资金，并无意中创建了这些账户：
+In order to actually instantiate the Account on-chain, it must be explicitly created somehow. On devnet, you can request free coins with the Faucet API to use for testing purposes. This example leverages the faucet to fund and inadvertently create Alice and Bob's accounts:
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
@@ -362,14 +363,14 @@ alice_fund = faucet_client.fund_account(bob.address(), 100_000_000)
 
 ---
 
-### 第 4.4 步：创建集合
+### Step 4.4: Creating a collection
 
-现在开始创建数字非同质化资产的过程。首先，作为创建者，你必须创建一个集合来组织资产。一个集合可以包含零个、一个或多个不同的同质化或非同质化资产。集合只是一个容器，仅用于为创建者组织资产。
+Now begins the process of creating the digital, non-fungible assets. First, as the creator, you must create a collection that groups the assets. A collection can contain zero, one, or many distinct fungible or non-fungible assets within it. The collection is simply a container, intended only to group assets for a creator.
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
 
-你的应用程序将调用 `createCollectionTransaction` 然后调用 `signAndSubmitTransaction` 到链上：
+Your application will call `createCollectionTransaction` and then `signAndSubmitTransaction` to chain:
 
 ```ts filename="example.ts"
 const createCollectionTransaction = await aptos.createCollectionTransaction({
@@ -385,7 +386,7 @@ const committedTxn = await aptos.signAndSubmitTransaction({
 });
 ```
 
-这是 `createCollectionTransaction` 的函数签名。它返回一个可以模拟或提交到链上的 `SingleSignerTransaction`：
+This is the function signature of `createCollectionTransaction`. It returns a `SingleSignerTransaction` that can be simulated or submitted to chain:
 
 ```ts filename="example.ts"
 export async function createCollectionTransaction(
@@ -402,7 +403,7 @@ export async function createCollectionTransaction(
   </Tabs.Tab>
   <Tabs.Tab>
 
-你的应用程序将调用 `create_collection`：
+Your application will call `create_collection`:
 
 ```python filename="example.py"
 txn_hash = await token_client.create_collection(
@@ -425,7 +426,7 @@ txn_hash = await token_client.create_collection(
 )
 ```
 
-这是 `create_collection` 的函数签名。它返回一个交易哈希：
+This is the function signature of `create_collection`. It returns a transaction hash:
 
 ```python filename="example.py"
 async def create_collection(
@@ -454,14 +455,14 @@ async def create_collection(
 
 ---
 
-### 第 4.5 步：创建代币
+### Step 4.5: Creating a token
 
-要创建代币，创建者必须指定一个关联的集合。代币必须与一个集合关联，并且该集合必须有剩余的代币可以铸造。代币有许多属性，但辅助 API 只暴露创建静态内容所需的最小数量。
+To create a token, the creator must specify an associated collection. A token must be associated with a collection, and that collection must have remaining tokens that can be minted. There are many attributes associated with a token, but the helper API exposes only the minimal amount required to create static content.
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
 
-你的应用程序将调用 `mintTokenTransaction`：
+Your application will call `mintTokenTransaction`:
 
 ```ts filename="example.ts"
 const mintTokenTransaction = await aptos.mintTokenTransaction({
@@ -478,7 +479,7 @@ const committedTxn = await aptos.signAndSubmitTransaction({
 });
 ```
 
-这是 `mintTokenTransaction` 的函数签名。它返回一个可以模拟或提交到链上的 `SingleSignerTransaction`：
+This is the function signature of `mintTokenTransaction`. It returns a `SingleSignerTransaction` that can be simulated or submitted to chain:
 
 ```ts filename="example.ts"
 async mintTokenTransaction(args: {
@@ -494,7 +495,7 @@ async mintTokenTransaction(args: {
   </Tabs.Tab>
   <Tabs.Tab>
 
-你的应用程序将调用 `mint_token`：
+Your application will call `mint_token`:
     {/* TODO: NEed to ensure image is still hosted */}
 ```python filename="example.py"
 txn_hash = await token_client.mint_token(
@@ -507,7 +508,7 @@ txn_hash = await token_client.mint_token(
 )
 ```
 
-这是 `mint_token` 的函数签名。它返回一个交易哈希：
+This is the function signature of `mint_token`. It returns a transaction hash:
 
 ```python filename="example.py"
 async def mint_token(
@@ -526,14 +527,14 @@ async def mint_token(
 
 ---
 
-### 第 4.6 步：读取代币和集合元数据
+### Step 4.6: Reading token and collection metadata
 
-集合和代币资产都是链上的[对象](../smart-contracts/objects.mdx)，具有唯一的地址。它们的元数据存储在对象地址中。SDK 提供了查询此数据的便捷包装器：
+Both the collection and token assets are [Objects](../smart-contracts/objects.mdx) on-chain with unique addresses. Their metadata is stored at the object address. The SDKs provide convenience wrappers around querying this data:
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
 
-要读取集合的元数据：
+To read a collection's metadata:
 
 ```ts filename="example.ts"
 const alicesCollection = await aptos.getCollectionData({
@@ -544,7 +545,7 @@ const alicesCollection = await aptos.getCollectionData({
 console.log(`Alice's collection: ${JSON.stringify(alicesCollection, null, 4)}`);
 ```
 
-要读取已拥有代币的元数据：
+To read an owned token's metadata:
 
 ```ts filename="example.ts"
 const alicesDigitalAsset = await aptos.getOwnedDigitalAssets({
@@ -560,7 +561,7 @@ console.log(
   </Tabs.Tab>
   <Tabs.Tab>
 
-要读取集合的元数据：
+To read a collection's metadata:
 
 ```python filename="example.py"
 async def get_collection_data(
@@ -575,7 +576,7 @@ async def get_collection_data(
     }
 ```
 
-要读取代币的元数据：
+To read a token's metadata:
 
 ```python filename="example.py"
 async def get_token_data(
@@ -596,9 +597,9 @@ async def get_token_data(
 
 ---
 
-### 第 4.7 步：读取对象的所有者
+### Step 4.7: Reading an object's owner
 
-从 `aptos_token.move` 合约创建的每个对象都是一个独特的资产。用户拥有的资产与用户的账户分开存储。要检查用户是否拥有对象，请检查对象的所有者：
+Each object created from the `aptos_token.move` contract is a distinct asset. The assets owned by a user are stored separately from the user's account. To check if a user owns an object, check the object's owner:
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
@@ -665,9 +666,9 @@ owners = {str(alice.address()): "Alice", str(bob.address()): "Bob"}
 
 ---
 
-### 第 4.8 步：来回转移对象
+### Step 4.8: Transfer the object back and forth
 
-从 `aptos_token.move` 合约创建的每个对象都是一个独特的资产。用户拥有的资产与用户的账户分开存储。要检查用户是否拥有对象，请检查对象的所有者：
+Each object created from the `aptos_token.move` contract is a distinct asset. The assets owned by a user are stored separately from the user's account. To check if a user owns an object, check the object's owner:
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
@@ -759,11 +760,9 @@ print(f"Token owner: {owners[str(get_owner(obj_resources))]}\n")
 
 ---
 
-## 支持文档
+## Supporting documentation
 
-- [账户基础知识](../../network/blockchain/accounts.mdx)
+- [Account basics](../../network/blockchain/accounts.mdx)
 - [TypeScript SDK](../sdks/ts-sdk.mdx)
 - [Python SDK](../sdks/python-sdk.mdx)
-- [REST API 规范](../../network/nodes/aptos-api-spec.mdx)
-
-</rewritten_file> 
+- [REST API specification](../../network/nodes/aptos-api-spec.mdx)

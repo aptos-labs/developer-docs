@@ -1,22 +1,22 @@
- import { Callout } from 'nextra/components'
+import { Callout } from 'nextra/components'
 
-# 多重签名治理教程
+# Multisig Governance Tutorial
 
-## 背景
+## Background
 
-本节基于 [JSON 参数教程](arguments-in-json-tutorial.mdx)。如果你还没有完成该教程，请先完成它。
+This section builds upon the [Arguments in JSON tutorial](arguments-in-json-tutorial.mdx). If you have not done that, please complete that tutorial first.
 
-本教程同样引用了 [`CliArgs` 示例包](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args)。
+This tutorial likewise references the [`CliArgs` example package](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args).
 
 <Callout type="info" emoji="ℹ️">
-如果你想跟随学习，请先完成 [JSON 参数](arguments-in-json-tutorial.mdx)教程的步骤！
+If you would like to follow along, start by completing the [Arguments in JSON](arguments-in-json-tutorial.mdx) tutorial steps!
 </Callout>
 
-在这个示例中，Ace 和 Bee 将从一个 2-of-2 的"多重签名 v2"账户（根据 [`multisig_account.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/multisig_account.move) 的链上多重签名账户）进行治理操作。
+For this example, Ace and Bee will conduct governance operations from a 2-of-2 "multisig v2" account (an on-chain multisig account per [`multisig_account.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/multisig_account.move))
 
-## 账户创建
+## Account creation
 
-由于 Ace 的账户是在 [JSON 参数](arguments-in-json-tutorial.mdx)教程中创建的，现在开始为 Bee 也生成一个虚荣地址账户：
+Since Ace's account was created during the [Arguments in JSON](arguments-in-json-tutorial.mdx) tutorial, start by mining a vanity address account for Bee too:
 
 ```bash filename="Terminal"
 aptos key generate \
@@ -25,7 +25,7 @@ aptos key generate \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -40,24 +40,24 @@ aptos key generate \
 </details>
 
 <Callout type="info" emoji="ℹ️">
-确切的账户地址在每次运行时应有所不同，但虚荣前缀不应改变。
+The exact account address should vary for each run, though the vanity prefix should not.
 </Callout>
 
-将 Bee 的地址存储在 shell 变量中，以便稍后可以内联调用：
+Store Bee's address in a shell variable, so you can call it inline later on:
 
 ```bash filename="Terminal"
-# 你的确切地址应有所不同
+# Your exact address should vary
 bee_addr=0xbeec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc
 ```
 
-使用水龙头为 Bee 的账户提供资金：
+Fund Bee's account using the faucet:
 
 ```bash filename="Terminal"
 aptos account fund-with-faucet --account $bee_addr
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -67,7 +67,7 @@ aptos account fund-with-faucet --account $bee_addr
 
 </details>
 
-现在 Ace 可以创建一个多重签名账户：
+Ace can now create a multisig account:
 
 ```bash filename="Terminal"
 aptos multisig create \
@@ -78,7 +78,7 @@ aptos multisig create \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -99,18 +99,18 @@ aptos multisig create \
 
 </details>
 
-将多重签名地址存储在 shell 变量中：
+Store the multisig address in a shell variable:
 
 ```bash filename="Terminal"
-# 你的地址应有所不同
+# Your address should vary
 multisig_addr=0x57478da34604655c68b1dcb89e4f4a9124b6c0ecc1c59a0931d58cc4e60ac5c5
 ```
 
-## 检查多重签名账户
+## Inspect the multisig
 
-使用各种 [`multisig_account.move` 视图函数](https://github.com/aptos-labs/aptos-core/blob/9fa0102c3e474d99ea35a0a85c6893604be41611/aptos-move/framework/aptos-framework/sources/multisig_account.move#L237) 来检查多重签名账户：
+Use the assorted [`multisig_account.move` view functions](https://github.com/aptos-labs/aptos-core/blob/9fa0102c3e474d99ea35a0a85c6893604be41611/aptos-move/framework/aptos-framework/sources/multisig_account.move#L237) to inspect the multisig:
 
-```bash filename="所需签名数量"
+```bash filename="Number of signatures required"
 aptos move view \
     --function-id 0x1::multisig_account::num_signatures_required \
     --args \
@@ -118,7 +118,7 @@ aptos move view \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -130,7 +130,7 @@ aptos move view \
 
 </details>
 
-```bash filename="所有者"
+```bash filename="Owners"
 aptos move view \
     --function-id 0x1::multisig_account::owners \
     --args \
@@ -138,7 +138,7 @@ aptos move view \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -153,7 +153,7 @@ aptos move view \
 
 </details>
 
-```bash filename="最后解决的序列号"
+```bash filename="Last resolved sequence number"
 aptos move view \
     --function-id 0x1::multisig_account::last_resolved_sequence_number \
     --args \
@@ -161,7 +161,7 @@ aptos move view \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -173,7 +173,7 @@ aptos move view \
 
 </details>
 
-```bash filename="下一个序列号"
+```bash filename="Next sequence number"
 aptos move view \
     --function-id 0x1::multisig_account::next_sequence_number \
     --args \
@@ -181,7 +181,7 @@ aptos move view \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -193,107 +193,54 @@ aptos move view \
 
 </details>
 
-## 发布包
+## Enqueue a publication transaction
 
-Bee 可以提议从多重签名账户发布包：
+The first multisig transaction enqueued will be a transaction for publication of the [`CliArgs` example package](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args).
+First, generate a publication payload entry function JSON file:
 
-```bash filename="提议发布"
-aptos multisig create-transaction \
-    --multisig-address $multisig_addr \
-    --function-id 0x1::code::publish_package_txn \
-    --args hex:"$(cat publication.json)" \
-    --private-key-file bee.key \
+```bash filename="Command"
+aptos move build-publish-payload \
+    --named-addresses test_account=$multisig_addr \
+    --json-output-file publication.json \
     --assume-yes
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
-  "Result": {
-    "transaction_hash": "0x0c9e107f5e7a7a4b3c0d4a0f2b5d6e8f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3",
-    "gas_used": 1524,
-    "gas_unit_price": 100,
-    "sender": "beec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc",
-    "sequence_number": 1,
-    "success": true,
-    "timestamp_us": 1685078744186194,
-    "version": 528428143,
-    "vm_status": "Executed successfully"
-  }
+  "Result": "Publication payload entry function JSON file saved to publication.json"
 }
 ```
 
 </details>
 
-Ace 可以验证提议的交易：
+Now have Ace propose publication of the package from the multisig account, storing only the payload hash on-chain:
 
-```bash filename="验证提议"
-aptos multisig verify-proposal \
+```bash filename="Command"
+aptos multisig create-transaction \
     --multisig-address $multisig_addr \
-    --function-id 0x1::code::publish_package_txn \
-    --args hex:"$(cat publication.json)" \
-    --sequence-number 1
-```
-
-<details>
-<summary>输出</summary>
-
-```bash filename="Terminal"
-{
-  "Result": {
-    "Status": "Transaction match",
-    "Multisig transaction": {
-      "creation_time_secs": "1685078744",
-      "creator": "0xbeec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc",
-      "payload": {
-        "vec": [
-          "0x01000000000000000200000000000000000000000000000000000000000000000000000000000000010663...(省略)"
-        ]
-      },
-      "payload_hash": {
-        "vec": []
-      },
-      "votes": {
-        "data": [
-          {
-            "key": "0xbeec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc",
-            "value": true
-          }
-        ]
-      }
-    }
-  }
-}
-```
-
-</details>
-
-Ace 批准交易：
-
-```bash filename="批准交易"
-aptos multisig approve \
-    --multisig-address $multisig_addr \
-    --sequence-number 1 \
+    --json-file publication.json \
+    --store-hash-only \
     --private-key-file ace.key \
     --assume-yes
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
   "Result": {
-    "transaction_hash": "0x233427d95832234fa13dddad5e0b225d40168b4c2c6b84f5255eecc3e68401bf",
-    "gas_used": 6,
+    "transaction_hash": "0x70c75903f8e1b1c0069f1e84ef9583ad8000f24124b33a746c88d2b031f7fe2c",
+    "gas_used": 510,
     "gas_unit_price": 100,
     "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
     "sequence_number": 6,
     "success": true,
-    "timestamp_us": 1685078844186194,
-    "version": 528428243,
+    "timestamp_us": 1685078836492390,
+    "version": 528429447,
     "vm_status": "Executed successfully"
   }
 }
@@ -301,42 +248,233 @@ aptos multisig approve \
 
 </details>
 
-现在 Ace 或 Bee 都可以从多重签名账户执行发布交易，因为只有哈希存储在链上，所以需要传递完整的交易负载：
+Note that the last resolved sequence number is still 0 because no transactions have been resolved:
 
-```bash filename="发布"
-aptos multisig execute-with-payload \
-    --multisig-address $multisig_addr \
-    --json-file publication.json \
-    --private-key-file bee.key \
-    --max-gas 10000 \
-    --assume-yes
+```bash filename="Last resolved sequence number"
+aptos move view \
+    --function-id 0x1::multisig_account::last_resolved_sequence_number \
+    --args \
+        address:"$multisig_addr"
 ```
 
-<Callout type="info" emoji="ℹ️">
-在解决 [#8304](https://github.com/aptos-labs/aptos-core/issues/8304) 之前，交易模拟器（用于估算气体成本）对多重签名交易不起作用，所以你需要手动指定最大气体数量。
-</Callout>
-
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
-在解决 [#8304](https://github.com/aptos-labs/aptos-core/issues/8304) 之前，如果只有负载哈希存储在链上，成功的多重签名发布交易执行会导致 API 错误，但可以使用浏览器手动验证交易。
+```bash filename="Terminal"
+{
+  "Result": [
+    "0"
+  ]
+}
+```
 
 </details>
 
-## 执行治理参数交易
+However, the next sequence number has been incremented because a transaction has been enqueued:
 
-由于只有 Bee 对治理参数交易进行了投票（她在提议时隐含地批准了），所以交易还不能执行：
+```bash filename="Next sequence number"
+aptos move view \
+    --function-id 0x1::multisig_account::next_sequence_number \
+    --args \
+        address:"$multisig_addr"
+```
 
-```bash filename="是否可以执行"
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": [
+    "2"
+  ]
+}
+```
+
+</details>
+
+The multisig transaction enqueued on-chain can now be inspected:
+
+```bash filename="Get transaction"
+aptos move view \
+    --function-id 0x1::multisig_account::get_transaction \
+    --args \
+        address:"$multisig_addr" \
+        String:1
+```
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": [
+    {
+      "creation_time_secs": "1685078836",
+      "creator": "0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+      "payload": {
+        "vec": []
+      },
+      "payload_hash": {
+        "vec": [
+          "0x62b91159c1428c1ef488c7290771de458464bd665691d9653d195bc28e0d2080"
+        ]
+      },
+      "votes": {
+        "data": [
+          {
+            "key": "0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+            "value": true
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+</details>
+
+Note from the above result that no payload is stored on-chain, and that Ace implicitly approved the transaction (voted `true`) upon the submission of the proposal.
+
+## Enqueue a governance parameter transaction
+
+Now have Bee enqueue a governance parameter setter transaction, storing the entire transaction payload on-chain:
+
+```bash filename="Command"
+aptos multisig create-transaction \
+    --multisig-address $multisig_addr \
+    --function-id $multisig_addr::cli_args::set_vals \
+    --type-args \
+        0x1::account::Account \
+        0x1::chain_id::ChainId \
+    --args \
+        u8:123 \
+        "bool:[false, true, false, false]" \
+        'address:[["0xace", "0xbee"], ["0xcad"], []]' \
+    --private-key-file bee.key \
+    --assume-yes
+```
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0xd0a348072d5bfc5a2e5d444f92f0ecc10b978dad720b174303bc6d91342f27ec",
+    "gas_used": 511,
+    "gas_unit_price": 100,
+    "sender": "beec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc",
+    "sequence_number": 0,
+    "success": true,
+    "timestamp_us": 1685078954841650,
+    "version": 528430315,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
+</details>
+
+Note the next sequence number has been incremented again:
+
+```bash filename="Next sequence number"
+aptos move view \
+    --function-id 0x1::multisig_account::next_sequence_number \
+    --args \
+        address:"$multisig_addr"
+```
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": [
+    "3"
+  ]
+}
+```
+
+</details>
+
+Now both the publication and parameter transactions are pending:
+
+```bash filename="Get pending transactions"
+aptos move view \
+    --function-id 0x1::multisig_account::get_pending_transactions \
+    --args \
+        address:"$multisig_addr"
+```
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": [
+    [
+      {
+        "creation_time_secs": "1685078836",
+        "creator": "0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+        "payload": {
+          "vec": []
+        },
+        "payload_hash": {
+          "vec": [
+            "0x62b91159c1428c1ef488c7290771de458464bd665691d9653d195bc28e0d2080"
+          ]
+        },
+        "votes": {
+          "data": [
+            {
+              "key": "0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+              "value": true
+            }
+          ]
+        }
+      },
+      {
+        "creation_time_secs": "1685078954",
+        "creator": "0xbeec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc",
+        "payload": {
+          "vec": [
+            "0x0057478da34604655c68b1dcb89e4f4a9124b6c0ecc1c59a0931d58cc4e60ac5c508636c695f61726773087365745f76616c7302070000000000000000000000000000000000000000000000000000000000000001076163636f756e74074163636f756e740007000000000000000000000000000000000000000000000000000000000000000108636861696e5f696407436861696e49640003017b0504000100006403020000000000000000000000000000000000000000000000000000000000000ace0000000000000000000000000000000000000000000000000000000000000bee010000000000000000000000000000000000000000000000000000000000000cad00"
+          ]
+        },
+        "payload_hash": {
+          "vec": []
+        },
+        "votes": {
+          "data": [
+            {
+              "key": "0xbeec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc",
+              "value": true
+            }
+          ]
+        }
+      }
+    ]
+  ]
+}
+```
+
+</details>
+
+## Execute the publication transaction
+
+Since only Ace has voted on the publication transaction (which he implicitly approved upon proposing) the transaction can't be executed yet:
+
+```bash filename="Can be executed"
 aptos move view \
     --function-id 0x1::multisig_account::can_be_executed \
     --args \
         address:"$multisig_addr" \
-        String:2
+        String:1
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -348,9 +486,152 @@ aptos move view \
 
 </details>
 
-然而，在 Ace 投票之前，他验证存储在链上的负载是否与他期望的函数参数匹配：
+Before Bee votes, however, she verifies that the payload hash stored on-chain matches the publication entry function JSON file:
 
-```bash filename="验证交易提议"
+```bash filename="Verifying transaction proposal"
+aptos multisig verify-proposal \
+    --multisig-address $multisig_addr \
+    --json-file publication.json \
+    --sequence-number 1
+```
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": {
+    "Status": "Transaction match",
+    "Multisig transaction": {
+      "creation_time_secs": "1685078836",
+      "creator": "0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+      "payload": {
+        "vec": []
+      },
+      "payload_hash": {
+        "vec": [
+          "0x62b91159c1428c1ef488c7290771de458464bd665691d9653d195bc28e0d2080"
+        ]
+      },
+      "votes": {
+        "data": [
+          {
+            "key": "0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+            "value": true
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+</details>
+
+Since Bee has verified that the on-chain payload hash checks out against her locally-compiled package publication JSON file, she votes yes:
+
+```bash filename="Approving transaction"
+aptos multisig approve \
+    --multisig-address $multisig_addr \
+    --sequence-number 1 \
+    --private-key-file bee.key \
+    --assume-yes
+```
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0xa5fb49f1077de6aa6d976e6bcc05e4c50c6cd061f1c87e8f1ea74e7a04a06bd1",
+    "gas_used": 6,
+    "gas_unit_price": 100,
+    "sender": "beec980219d246581cef5166dc6ba5fb1e090c7a7786a5176d111a9029b16ddc",
+    "sequence_number": 1,
+    "success": true,
+    "timestamp_us": 1685079892130861,
+    "version": 528437204,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
+</details>
+
+Now the transaction can be executed:
+
+```bash filename="Can be executed"
+aptos move view \
+    --function-id 0x1::multisig_account::can_be_executed \
+    --args \
+        address:"$multisig_addr" \
+        String:1
+```
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": [
+    true
+  ]
+}
+```
+
+</details>
+
+Now either Ace or Bee can invoke the publication transaction from the multisig account, passing the full transaction payload since only the hash was stored on-chain:
+
+```bash filename="Publication"
+aptos multisig execute-with-payload \
+    --multisig-address $multisig_addr \
+    --json-file publication.json \
+    --private-key-file bee.key \
+    --max-gas 10000 \
+    --assume-yes
+```
+
+<Callout type="info" emoji="ℹ️">
+Pending the resolution of [#8304](https://github.com/aptos-labs/aptos-core/issues/8304), the transaction simulator (which is used to estimate gas costs) is broken for multisig transactions, so you will have to manually specify a max gas amount.
+</Callout>
+
+<details>
+<summary>Output</summary>
+
+Also pending the resolution of [#8304](https://github.com/aptos-labs/aptos-core/issues/8304), the CLI output for a successful multisig publication transaction execution results in an API error if only the payload hash has been stored on-chain, but the transaction can be manually verified using an explorer.
+
+</details>
+
+## Execute the governance parameter transaction
+
+Since only Bee has voted on the governance parameter transaction (which she implicitly approved upon proposing), the transaction can't be executed yet:
+
+```bash filename="Can be executed"
+aptos move view \
+    --function-id 0x1::multisig_account::can_be_executed \
+    --args \
+        address:"$multisig_addr" \
+        String:2
+```
+
+<details>
+<summary>Output</summary>
+
+```bash filename="Terminal"
+{
+  "Result": [
+    false
+  ]
+}
+```
+
+</details>
+
+Before Ace votes, however, he verifies that the payload stored on-chain matches the function arguments he expects:
+
+```bash filename="Verifying transaction proposal"
 aptos multisig verify-proposal \
     --multisig-address $multisig_addr \
     --function-id $multisig_addr::cli_args::set_vals \
@@ -365,7 +646,7 @@ aptos multisig verify-proposal \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -397,9 +678,9 @@ aptos multisig verify-proposal \
 
 </details>
 
-注意，如果他修改了任何一个参数，验证都会失败：
+Note that the verification fails if he modifies even a single argument:
 
-```bash filename="修改 u8 后的失败交易验证"
+```bash filename="Failed transaction verification with modified u8"
 aptos multisig verify-proposal \
     --multisig-address $multisig_addr \
     --function-id $multisig_addr::cli_args::set_vals \
@@ -414,7 +695,7 @@ aptos multisig verify-proposal \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -424,9 +705,9 @@ aptos multisig verify-proposal \
 
 </details>
 
-Ace 批准交易：
+Ace approves the transaction:
 
-```bash filename="批准交易"
+```bash filename="Approving transaction"
 aptos multisig approve \
     --multisig-address $multisig_addr \
     --sequence-number 2 \
@@ -435,7 +716,7 @@ aptos multisig approve \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -455,9 +736,9 @@ aptos multisig approve \
 
 </details>
 
-由于负载已存储在链上，执行待处理交易时不需要提供它：
+Since the payload was stored on-chain, it is not required to execute the pending transaction:
 
-```bash filename="执行"
+```bash filename="Execution"
 aptos multisig execute \
     --multisig-address $multisig_addr \
     --private-key-file ace.key \
@@ -466,7 +747,7 @@ aptos multisig execute \
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 
 ```bash filename="Terminal"
 {
@@ -480,8 +761,7 @@ aptos multisig execute \
     "timestamp_us": 1685080344045461,
     "version": 528440423,
     "vm_status": "Executed successfully"
-  }
-}
+
 ```
 
 </details>

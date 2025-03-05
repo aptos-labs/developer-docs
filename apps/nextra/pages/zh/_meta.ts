@@ -42,21 +42,9 @@ export default {
     type: "menu",
     title: "网络",
     items: {
-      blockchain: {
-        title: "区块链",
-      },
       nodes: {
         title: "节点",
-      },
-      releases: {
-        title: "发布",
-      },
-      glossary: {
-        title: "术语表",
-      },
-      faucet: {
-        title: "水龙头",
-      },
+      }
     },
   },
   "developer-platforms": {

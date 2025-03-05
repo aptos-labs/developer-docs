@@ -1,44 +1,44 @@
- import { Callout, FileTree } from "nextra/components";
+import { Callout, FileTree } from "nextra/components";
 
-# 本地模拟、基准测试与气体分析
+# Local Simulation, Benchmarking & Gas Profiling
 
-## 概述
-前面的教程演示了如何使用各种 CLI 命令部署和与 Move 合约交互。
+## Overview
+The previous tutorial demonstrates how you can deploy and interact with Move contracts using various CLI commands.
 
-默认情况下，这些命令将交易发送到远程全节点进行模拟和执行。
-你可以通过附加以下命令行选项之一来覆盖此行为，并在本地模拟交易：
-- `--local`：在不进行任何进一步测量或分析的情况下在本地模拟交易。
-- `--benchmark`：基准测试交易并报告运行时间。
-- `--profile-gas`：对交易进行气体分析以获取详细的气体使用情况。
+By default, those commands send a transaction to the remote fullnode for simulation and execution.
+You can override this behavior and simulate the transaction locally, by appending one of the following command line options of your preference:
+- `--local`: Simulate the transaction locally without conducting any further measurements or analysis.
+- `--benchmark`: Benchmark the transaction and report the running time(s).
+- `--profile-gas`: Profile the transaction for detailed gas usage.
 
-这些附加选项可以与以下 CLI 命令组合使用：
+These additional options can be used in combination with the following CLI commands:
 - `aptos move run`
 - `aptos move run-script`
 - `aptos move publish`
 
-另外，如果你有兴趣重放过去的交易，请查看[本教程](../replay-past-transactions.mdx)。
+Alternatively, if you are interested in replaying a past transaction, check out [this tutorial](../replay-past-transactions.mdx).
 
 <Callout type="info" emoji="ℹ️">
-本地模拟不会对链上状态产生任何影响。
+Local simulations do not result in any to the on-chain state.
 </Callout>
 
-## 部署示例合约
-为了演示，我们将继续使用 [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) 包作为示例。
+## Deploying the Example Contract
+For demonstration purposes, we will continue to use the [`hello_blockchain`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain) package as an example.
 
-首先，将包发布到开发网或测试网（如果你还没有这样做）。
+First, publish the package to devnet or testnet (if you haven't done so already).
 
-切换到包目录。
+Change into the package directory.
 ```bash filename="Terminal"
 cd aptos-move/move-examples/hello_blockchain
 ```
 
-然后使用以下命令发布包。
+Then publish the package using the following command.
 ```bash filename="Terminal"
 aptos move publish --named-addresses hello_blockchain=default --assume-yes
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 ```bash
 {
   "Result": {
@@ -56,23 +56,23 @@ aptos move publish --named-addresses hello_blockchain=default --assume-yes
 ```
 </details>
 
-请注意，你需要正确设置 CLI 配置文件并正确绑定命名地址。有关更多详细信息，请参阅 [CLI 配置](../setup-cli.mdx)。
+Notice that you do need to have your CLI profile set up properly and bind the named addresses correctly. Please refer to [CLI Configuration](../setup-cli.mdx) for more details.
 
 <Callout type="info" emoji="ℹ️">
-注意：将包发布到开发网/测试网只是为本地模拟设置舞台的一种方式，并不是唯一的方式。
-你也可以使用本地节点，或者模拟不需要先发布代码的交易，例如脚本，甚至是包发布交易本身。
+Note: publishing the package to devnet/testnet is just one way to set up the stage for local simulation and is not the only one possible.
+Alternatively you can use a local node, or simulate transactions that do not need to have code published first, such as scripts and even the package publishing transaction itself.
 </Callout>
 
-## 本地模拟
-接下来，使用附加命令行选项 `--local` 执行入口函数 `message::set_message`，这将本地执行交易，而不进行任何进一步的测量或分析。
+## Local Simulation
+Next, execute the entry function message::set_message with local simulation enabled using the additional command line option `--local`. This will execute the transaction locally without conducting any further measurements or analysis.
 ```bash filename="Terminal"
 aptos move run --function-id 'default::message::set_message' --args 'string:abc' --local
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 ```bash
-正在本地模拟交易...
+Simulating transaction locally...
 {
   "Result": {
     "transaction_hash": "0x5aab20980688185eed2c9a27bab624c84b8b8117241cd4a367ba2a012069f57b",
@@ -87,22 +87,22 @@ aptos move run --function-id 'default::message::set_message' --args 'string:abc'
 ```
 </details>
 <Callout type="info" emoji="ℹ️">
-本地和远程模拟应产生相同的结果。
+Local and remote simulation shall produce identical results.
 </Callout>
 
-## 基准测试
-要测量交易的运行时间，请使用 `--benchmark` 选项。
+## Benchmarking
+To measure the running time(s) of your transaction, use the `--benchmark` option.
 
 ```bash filename="Terminal"
 aptos move run --function-id 'default::message::set_message' --args 'string:abc' --benchmark
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 ```bash
-正在本地基准测试交易...
-运行时间（冷代码缓存）：985.141µs
-运行时间（热代码缓存）：848.159µs
+Benchmarking transaction locally...
+Running time (cold code cache): 985.141µs
+Running time (warm code cache): 848.159µs
 {
   "Result": {
     "transaction_hash": "0xa2fe548d37f12ee79df13e70fdd8212e37074c1b080b89b7d92e82550684ecdb",
@@ -117,31 +117,31 @@ aptos move run --function-id 'default::message::set_message' --args 'string:abc'
 ```
 </details>
 
-值得注意的是，这些运行时间仅作为信息参考，因为它们取决于你的本地机器的规格，并可能受到噪声或其他随机因素的影响。
+It's worth noting that these running times serve only as informational references, as they are contingent upon the specifications of your local machine and may be influenced by noise or other random factors.
 
-**如果你打算优化你的合约，应该根据气体分析结果来做出决策。**
+**If you are aiming to optimize your contract, you should base your decisions on the gas profiling results.**
 
 <Callout type="info" emoji="ℹ️">
-为了最小化测量误差，基准测试工具会多次执行相同的交易。因此，基准测试任务可能需要一段时间才能完成。
+To minimize measurement errors, the benchmark harness executes the same transaction multiple times. For this reason, it may take a while for the benchmark task to complete.
 </Callout>
 
-## 气体分析
-Aptos 气体分析器是一个强大的工具，可以帮助你了解 Aptos 交易的气体使用情况。一旦激活，它将使用仪器化的虚拟机模拟交易，并生成基于 Web 的报告。
+## Gas Profiling
+The Aptos Gas Profiler is a powerful tool that can help you understand the gas usage of Aptos transactions. Once activated, it will simulate transactions using an instrumented VM, and generate a web-based report.
 
-气体分析器还可以作为调试器，因为报告还包括完整的执行跟踪。
+The gas profiler can also double as a debugger since the report also includes a full execution trace.
 
-### 使用气体分析器
-气体分析器可以通过附加 `--profile-gas` 选项来调用。
+### Using the Gas Profiler
+The gas profiler can be invoked by appending the `--profile-gas` option.
 
 ```bash filename="Terminal"
 aptos move run --function-id 'default::message::set_message' --args 'string:abc' --profile-gas
 ```
 
 <details>
-<summary>输出</summary>
+<summary>Output</summary>
 ```bash
-正在使用气体分析器本地模拟交易...
-气体报告已保存到 gas-profiling/txn-d0bc3422-0xdbcb-message-set_message。
+Simulating transaction locally using the gas profiler...
+Gas report saved to gas-profiling/txn-d0bc3422-0xdbcb-message-set_message.
 {
   "Result": {
     "transaction_hash": "0xd0bc342232f14a6a7d2d45251719aee45373bdb53f68403cfc6dc6062c74fa9e",
@@ -156,7 +156,7 @@ aptos move run --function-id 'default::message::set_message' --args 'string:abc'
 ```
 </details>
 
-然后你可以在目录 `gas-profiling` 中找到生成的气体报告：
+You can then find the generated gas report in the directory `gas-profiling`:
 
 <FileTree>
   <FileTree.Folder name="hello_blockchain" defaultOpen>
@@ -171,43 +171,44 @@ aptos move run --function-id 'default::message::set_message' --args 'string:abc'
   </FileTree.Folder>
 </FileTree>
 
-`index.html` 是报告的主页，可以使用你的 Web 浏览器查看。
-[示例报告](/gas-profiling/sample-report/index.html)
+`index.html` is the main page of the report, which can view using your web browser.
+[Sample report](/gas-profiling/sample-report/index.html)
 
-### 理解气体报告
 
-气体报告由三个部分组成，帮助你从不同的角度理解气体使用情况。
+### Understanding the Gas Report
 
-#### 火焰图
+The gas report consists of three sections that help you to understand the gas usage through different lenses.
 
-第一部分是以两种火焰图的形式可视化气体使用情况：一种用于执行和 IO，另一种用于存储。
-我们需要两个图的原因是它们以不同的单位进行测量：一种以气体单位，另一种以 APT。
+#### Flamegraphs
 
-可以与图中的各种元素进行交互。如果你将光标悬停在某个项目上，它将显示精确的成本和百分比。
+The first section consists of visualization of the gas usage in the form of two flamegraphs: one for execution & IO, the other for storage.
+The reason why we need two graphs is that these are measured in different units: one in gas units, and the other in APT.
+
+It is possible to interact with various elements in the graph. If you hover your cursor over an item, it will show you the precise cost and percentage.
 ![gas-profiling-flamegraph-0.png](/docs/gas-profiling-flamegraph-0.png)
 
-如果你单击某个项目，可以放大它并更清楚地查看子项目。
-你可以通过单击左上角的“重置缩放”按钮来重置视图。
+If you click on an item, you can zoom into it and see the child items more clearly.
+You can reset the view by clicking the "Reset Zoom" button in the top-left corner.
 ![gas-profiling-flamegraph-1.png](/docs/gas-profiling-flamegraph-1.png)
 
-右上角还有一个“搜索”按钮，可以匹配某些项目并突出显示它们。
+There is also "Search" button in the top-right corner that allows to match certain items and highlight them.
 ![gas-profiling-flamegraph-2.png](/docs/gas-profiling-flamegraph-2.png)
 
-#### 成本细分
+#### Cost Break-down
 
-第二部分是所有气体成本的详细细分。本部分中呈现的数据经过分类、汇总和排序。
-如果你知道要查看哪些数字，这可能特别有帮助。
+The second section is a detailed break-down of all gas costs. Data presented in this section is categorized, aggregated and sorted.
+This can be especially helpful if you know what numbers to look at.
 
-例如，以下表格显示了所有 Move 字节码指令/操作的执行成本。
-这里的百分比是相对于所属类别的总成本（在这种情况下为 Exec + IO）。
+For example, the following tables show the execution costs of all Move bytecode instructions/operations.
+The percentage here is relative to the total cost of the belonging category (Exec + IO in this case).
 
 ![gas-profiling-cost-break-down-table.png](/docs/gas-profiling-cost-break-down-table.png)
 
-#### 完整执行跟踪
+#### Full Execution Trace
 
-气体报告的最后一部分是交易的完整执行跟踪，格式如下：
+The final section of the gas report is the full execution trace of the transaction that looks like this:
 
-```text filename="示例执行跟踪"
+```text filename="Example execution trace"
     intrinsic                                                     2.76        85.12%
     dependencies                                                  0.0607      1.87%
         0xdbcb..::message                                         0.0607      1.87%
@@ -246,9 +247,9 @@ aptos move run --function-id 'default::message::set_message' --args 'string:abc'
             create<0xdbcb..::0xdbcb..::message::MessageHolder>    0.097756    3.01%
 ```
 
-左列列出了所有正在执行的 Move 指令和操作，每个缩进级别表示一个函数调用。
+The left column lists all Move instructions and operations being executed, with each level of indentation indicating a function call.
 
-中间列表示与操作相关的气体成本。
+The middle column represents the gas costs associated with the operations.
 
-还有一个特殊符号 `@number`，表示跳转到字节码中的特定位置（上面的片段中的 `@28`）。
-这纯粹是信息性的，旨在帮助理解控制流。
+There is also a special notation `@number` that represents a jump to a particular location in the byte code. (`@28` in the snippet above)
+This is purely informational and to help understand the control flow.

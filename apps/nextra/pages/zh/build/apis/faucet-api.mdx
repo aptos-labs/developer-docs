@@ -1,0 +1,75 @@
+---
+title: "Faucet API"
+---
+
+# Faucet API
+
+The faucet allows users to get `APT` on devnet. On testnet you can only mint at the [mint page](/network/faucet). It is not available on Mainnet.
+
+The endpoints for each faucet are:
+
+- Devnet: https://faucet.devnet.aptoslabs.com
+
+## Using the faucet
+
+Each SDK has integration for devnet to use the faucet. Below are a few examples, but you can
+see more information on each individual [SDK's documentation](../sdks.mdx).
+
+### Using the faucet in a wallet
+
+Most wallets, such as [Petra](https://aptosfoundation.org/ecosystem/project/petra) or [Pontem](https://aptosfoundation.org/ecosystem/project/pontem-wallet)
+will have a faucet button for devnet. See full list of [Aptos Wallets](https://aptosfoundation.org/ecosystem/projects/wallets).
+
+### Using the faucet in the Aptos CLI
+
+Once you've [set up your CLI](../cli/setup-cli.mdx), you can simply call fund-with-faucet.  The amount used is in Octas (1 APT = 100,000,000 Octas).
+
+```bash filename="Terminal"
+aptos account fund-with-faucet --account 0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6 --amount 100000000
+```
+
+### Using the faucet in the TypeScript SDK
+
+Here is an example funding the account `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6` with 1 APT in Devnet. The amount used is in Octas (1 APT = 100,000,000 Octas).
+
+```ts filename="index.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const aptos = new Aptos(new AptosConfig({network: Network.Devnet}));
+aptos.fundAccount({accountAddress: "0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6", amount: 100000000});
+```
+
+### Using the faucet in the Go SDK
+
+Here is an example funding the account `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6` with 1 APT in Devnet. The amount used is in Octas (1 APT = 100,000,000 Octas).
+
+```go filename="index.go"
+import "github.com/aptos-labs/aptos-go-sdk"
+
+func main() {
+	client, err := aptos.NewClient(aptos.LocalnetConfig)
+	if err != nil {
+		panic(err)
+	}
+
+  client.Fund("0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6", 100000000)
+}
+```
+
+### Calling the faucet: Other languages not supported by SDKs
+
+If you are trying to call the faucet in other languages, you have two options:
+
+1. Generate a client from
+the [OpenAPI spec](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-faucet/doc/spec.yaml).
+2. Call the faucet on your own.
+
+For the latter, you will want to build a query similar to this:
+
+```bash filename="Terminal"
+curl -X POST
+'https://faucet.devnet.aptoslabs.com/mint?amount=10000&address=0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6'
+```
+
+This means mint 10000 [octas](../../network/glossary.mdx#Octa) to
+address `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6`.
