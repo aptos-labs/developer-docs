@@ -1,0 +1,122 @@
+---
+title: "Aptos Move Lint"
+---
+
+# Aptos Move Lint
+
+The "Aptos Move Lint" tool runs on a Move package to find and warn about common issues in Move programs, helping improve your Move code.
+
+You can run it with the aptos CLI command: `aptos move lint`.
+
+This tool is currently in beta, so please try it out and submit [bugs and feedback](https://github.com/aptos-labs/aptos-core/issues/new?title=%5Blinter%5D%20%3CDescriptive%20Title%3E&body=%3CDetailed%20description%20of%20the%20issue%20or%20feature%20request%3E&labels=move-linter&projects=aptos-labs/16). Also, we are tracking ideas and prioritization requests for new lint rules [here](https://github.com/aptos-labs/aptos-core/issues/15221), we welcome your contributions.
+
+
+## Lint Checks
+### `avoid_copy_on_identity_comparison`
+
+Checks for identity comparisons (`==` or `!=`) between copied values of type `vector` or `struct` (i.e., types for which copy can be expensive). It instead suggests to use reference-based identity comparison instead (i.e., use `&x == &y` instead of `x == y`, when the above mentioned conditions meet).
+
+[This recommendation](book/equality.mdx#avoid-extra-copies) is also given in the Move book. Due to automatic copy inference, it may not be obvious when a copy is being made while using `==` or `!=` on values with types that have the `copy` ability. This lint identifies cases where extra copies on vectors or structs could be skipped by using reference-based identity comparisons.
+
+### `blocks_in_conditions`
+
+Checks for use of blocks in conditions (e.g., in `if`, `match`, and `while` conditions), which can make code hard to read. An example coding pattern caught by this lint is:
+
+```move
+if ({let x = foo(); !x}) { // uses a block in condition
+  bar();
+}
+```
+
+Such code can usually be rewritten to hoist the block out and above the condition, usually making it more readable.
+
+It is a common Move pattern to provide inline specifications in conditions, especially loop invariants, which requires creating blocks in conditions. We exclude this pattern in the lint check to continue to allow for this specification pattern.
+
+Note that an `assert!` is translated to a conditional abort, so blocks in `assert!` condition also are reported by this lint.
+
+### `needless_bool`
+
+Checks for patterns of the form (where `x` is any arbitrary boolean expression):
+
+- `if (x) true else false`, which can be replaced with just `x`.
+- `if (x) false else true`, which can be replaced with just `!x`.
+- `if (x) { return true } else { return false }`, which can be replaced with just `return x`.
+- `if (x) { return false } else { return true }`, which can be replaced with just `return !x`.
+- `if (x) true else true` or `if (x) false else false`, which should be rewritten to remove the redundant branch.
+
+### `needless_deref_ref`
+
+Checks for patterns where references taken are immediately dereferenced, and suggests removing the pair of dereference-reference operators:
+
+- `*&x.f` can be simplified to `x.f`
+- `*&mut x.f` can be simplified to `x.f`
+- `*&mut x.f = 5;` can be simplified to `x.f = 5;`
+
+### `needless_mutable_reference`
+
+Checks for mutable references or borrows (currently: mutable reference parameters, mutable borrow of locals, `borrow_global_mut`) that are not used mutably, and suggests to use the immutable reference or borrow instead.
+
+For example, in the function `foo` below, `&mut` can be replaced by `&` because the reference is not mutably used.
+
+```move
+fun foo(x: u64): u64 {
+  let y = &mut x;
+  *y
+}
+
+```
+
+### `needless_ref_deref`
+
+Checks for patterns where immutable reference are taken for a dereference, and suggests removing the pair of reference-dereference operators: `&*x` can be simplified to `x`.
+
+### `needless_ref_in_field_access`
+
+Checks for patterns where there are needless references taken when accessing a field of a struct or an enum, and suggests removing the explicit reference taken:
+
+- `(&s).f` can be simplified to `s.f`
+- `(&mut s).f = 42;` can be simplified to `s.f = 42;`
+
+### `simpler_numeric_expression`
+
+Checks for various patterns where a simpler numeric expression can be used instead. In all these cases, the code must already type check, and `x` can be any numeric expression.
+
+- `x & 0`, `x * 0`, `0 & x`, `0 * x`, `0 << x`, `0 >> x`, `x % 1` can all be replaced with just `0`.
+- `x | 0`, `x ^ 0`, `x >> 0`, `x << 0`, `x + 0`, `x - 0`, `x / 1`, `x * 1`, `0 | x`, `0 ^ x`, `0 + x`, `1 * x` can all be replaced with just `x`.
+
+### `unnecessary_boolean_identity_comparison`
+
+Checks for boolean identity comparisons of the form:
+
+- `x == true`, `true == x`, which can be replaced with just `x`.
+- `x == false`, `false == x`, which can be replaced with just `!x`.
+
+In all these cases, `x` can be any arbitrary boolean expression.
+
+### `unnecessary_numerical_extreme_comparison`
+
+Checks if there are any numerical comparisons with extreme values (i.e., min and max value representable by that numeric type) that are unnecessary or can be made more precise and clear. Depending on the comparison, various recommendations are made.
+
+Consider the following example expressions that are caught by the lint, and the corresponding recommendations made (in all these cases, `x` is a place holder for a numerical expression of type `u8`, `u16`, `u32`, `u64`, `u128`, or `u256`, and `MAX` is a place holder for the max value representable for that numeric type):
+
+- `x < 0`, `0 > x`, `x > MAX`, `MAX < x`, are always false, rewrite code to remove this comparison
+- `x >= 0`, `0 <= x`, `x <= MAX`, `MAX >= x`, are always true, rewrite code to remove this comparison
+- `x <= 0`, `0 >= x`, `x >= MAX`, `MAX <= x`, can all be simplified to use `==` instead
+- `x > 0`, `0 < x`, `x < MAX`, `MAX > x`, can all be clarified to use `!=` instead
+
+### `while_true`
+
+Checks for `while (true) { .... }` patterns and suggests using the more explicit `loop { .... }` construct instead.
+
+## Suppressing Lint Warnings
+
+To suppress one or more lint checks named `check1`, `check2`, ... (and so on), you can add the attribute `#[lint::skip(check1, check2, ...)]` to a function or a module. The linter will then not perform the checks named `check1`, `check2`, ... (and so on) for that function or module.
+
+For example, the function below would usually get a warning from the linter about a `needless_bool`, but due to the attribute on the function, the linter does not emit a warning.
+
+```move
+#[lint::skip(needless_bool)]
+fun violation(): bool {
+    if (foo()) true else false
+}
+```

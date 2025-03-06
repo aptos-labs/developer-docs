@@ -1,0 +1,36 @@
+---
+title: "Federated Keyless Key Considerations"
+---
+
+## Federated Keyless Key Considerations
+
+**Supported IAMs**
+
+Currently, the supported IAMs are Amazon Cognito and Auth0 across devnet, testnet, and mainnet. See a table of the full set of supported IAM providers [here](../oidc-support.mdx).
+
+**Federated Keyless flow**
+
+The flow for Federated Keyless transactions is the same as described [here](../how-keyless-works.mdx). However, the difference is that in Federated Keyless, instead of the OIDC provider (e.g. Google, Apple) acting as the issuer of the JWT, the IAM provider (e.g. Auth0, Cognito) acts as the issuer. The user authenticates with the application, the IAM receives the user’s credentials, and then the IAM issues the Keyless-compatible JWT.
+
+**Available authentication methods**
+
+All authentication methods that are supported by the IAM providers are available for use - this includes SMS OTP, email link, and the traditional username + password.
+
+**Configuration limitations**
+
+A Keyless account address varies according to the `aud` (AKA application ID or client ID), and `iss` (AKA issuer). The setup of your user data within the IAM must reflect the interoperability you seek to provide to your users. JWT tokens issued for a user in the same user pool but for different applications will result in a different address derivation if the `aud` value is different.
+
+**JSON Web Key Set management**
+
+If you or the IAM platform rotates the key pairs used to signed the JWT tokens, the JWK set must be updated on chain using the same account used to instantiate your app's Federated Keyless accounts.  As such it is vital to -
+
+1. Maintain access to your JWKS owner account
+2. Update the JWK set on chain whenever a key rotation occurs
+
+When a keypair is rotated existing keyless account instantiations will continue to work so long as the old JWK has not been removed.  Any new JWTs issued by the new keypair will not be accepted until the JWK set on chain is updated to contain its public key.
+
+**The trust and security model for Federated Keyless**
+
+Compared to the existing Keyless implementation, dApp developers utilizing Federated Keyless alongside certain authentication methods like email/SMS, OTP and email/password may have more access to user credentials when leveraging IAM providers than with the existing direct OIDC provider integrations. 
+
+We recommend each dApp developer perform their own research and consult with their legal counsel before integrating an authentication method.  Developers should also understand to what extent they may have access to user credentials and what controls they have in place.  

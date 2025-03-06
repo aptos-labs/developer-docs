@@ -1,0 +1,870 @@
+---
+title: "Account Key Rotation"
+---
+
+import { Callout, Steps } from "nextra/components";
+
+# Account Key Rotation
+
+<Callout type="warning">
+  Account key rotation is an advanced feature that should be used with caution.
+  Most users will never need to use this feature.
+</Callout>
+
+Aptos Move accounts have a public address, an authentication key, a public key,
+and a private key. The public address is permanent, always matching the
+account's initial authentication key, which is derived from the original private
+key.
+
+The Aptos account model facilitates the unique ability to rotate an account's
+private key. Since an account's address is the _initial_ authentication key, the
+ability to sign for an account can be transferred to another private key without
+changing its public address.
+
+In this guide, we show examples of how to rotate an account's authentication key
+using the CLI and few of the various Aptos SDKs.
+
+Here are the installation links for the SDKs we will cover in this example:
+
+- [Aptos CLI](../cli.mdx)
+- [Typescript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+
+<Callout type="warning">
+Some of the following examples use private keys. Do not share your private
+keys with anyone.
+</Callout>
+
+## Proven and unproven key rotations
+
+The onchain logic for key rotation is implemented through two Move APIs:
+
+1. [`account::rotate_authentication_key`], which executes a "proven" rotation.
+1. [`account::rotate_authentication_key_call`], which executes an "unproven"
+   rotation.
+
+### Proven key rotations
+
+The [`account::rotate_authentication_key`] API requires a signed
+[`account::RotationProofChallenge`], which proves that the rotation operation is
+approved by the private key from both before _and_ after the operation. When the
+operation is successful, the [`account::OriginatingAddress`] table is updated
+with an entry that maps from the new authentication key to the corresponding
+account address.
+
+The [`account::OriginatingAddress`] table is a reverse lookup table that allows
+users to query an account address associated with a given authentication key,
+and only allows for one entry per authentication key. Hence the requirement of a
+signed [`account::RotationProofChallenge`] to ensure that a malicious actor does
+not rotate an account's authentication key to a key that is already in the
+table, as this attack would prevent lookup of the valid originating address that
+the holder of an authentication key had previously approved.
+
+Notably, the [`account::OriginatingAddress`] table is _only_ updated upon key
+rotation, not upon standard account generation. This means that with proven key
+rotations, a given private key can theoretically authenticate up to two accounts
+at the same time:
+
+1. The account address derived from the private key during standard account
+   generation, assuming the account has not undergone any key rotations.
+1. A second arbitrary address, which has had its authentication key rotated to
+   the given private key.
+
+However, it is considered best practice to only authenticate _one_ account with
+a given private key at a time, because whenever the
+[`account::OriginatingAddress`] table is updated, the underlying logic first
+checks if the rotating account's initial authentication key is in the table, and
+if so, verifies that the rotating account's address is the one mapped to in the
+table.
+
+This means that if an arbitrary account's authentication key is rotated to
+a given private key, the standard account whose address is originally derived
+from the private key will not be able to execute its first authentication key
+rotation while the associated authentication key is mapped to a second arbitrary
+account address in the [`account::OriginatingAddress`] table, because this
+operation would fail the check that the rotating account's address is the one
+mapped to in the table (since the table is only updated during rotation, not
+upon standard account generation).
+
+To prevent this issue and ensure best practices are followed, you can always run
+[`account::set_originating_address`] after generating a new account (see below
+CLI tutorial).
+
+### Unproven key rotations
+
+Unlike [`account::rotate_authentication_key`], the
+[`account::rotate_authentication_key_call`] does _not_ require a signed
+[`account::RotationProofChallenge`]. This means that the operation is not proven
+in the sense the the private key from _after_ the operation has approved the
+key rotation. Hence the [`account::OriginatingAddress`] table is _not_ updated
+for unproven key rotations, and there is thus no restriction on the number of
+accounts that can be authenticated with a given private key. Note that the
+`aptos` CLI does not currently support unproven key rotations.
+
+<Callout type="info" emoji="🧠">
+The [`account::rotate_authentication_key_call`] was introduced to support
+non-standard key algorithms, like passkeys, which cannot produce proofs of
+knowledge during rotation operations.
+</Callout>
+
+While it is technically possible to authenticate as many accounts as you want
+with a given authentication key via unproven key rotations, it is not considered
+best practice because this approach does not ensure one-to-one mapping.
+
+If you execute an unproven key rotation, it is suggested that you follow up with
+[`account::set_originating_address`] to ensure a one-to-one mapping from
+authentication key to account address for ease of originating address lookup
+(see below CLI tutorial).
+
+## Key rotation with the Aptos CLI
+
+<Steps>
+
+### Start a localnet
+
+Start a localnet:
+
+```sh filename="Terminal"
+aptos node run-localnet
+```
+
+The localnet is ready when it prints out:
+
+```sh filename="Terminal"
+Applying post startup steps...
+
+Setup is complete, you can now use the localnet!
+```
+
+<Callout type="info" emoji="🧠">
+If you are on a UNIX-like system, the following command can be used to start a
+fresh localnet as a background process:
+
+```sh filename="Terminal"
+mkdir -p localnet-data
+aptos node run-localnet \
+    --assume-yes \
+    --test-dir localnet-data \
+    --force-restart &
+export LOCALNET_PID=$!
+```
+
+You can then stop the localnet at any point with the following command:
+
+```sh filename="Terminal"
+kill $LOCALNET_PID
+```
+
+</Callout>
+
+### Generate a private key
+
+Create a private key corresponding to an authentication key, and thus initial
+account address, that starts with the vanity prefix `0xaaa`:
+
+```sh filename="Terminal"
+aptos key generate \
+    --assume-yes \
+    --output-file private-key-a \
+    --vanity-prefix 0xaaa
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "Account Address:": "0xaaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b",
+    "PublicKey Path": "private-key-a.pub",
+    "PrivateKey Path": "private-key-a"
+  }
+}
+```
+</details>
+
+This will generate two files:
+
+1. A private key at `private-key-a`.
+1. A public key at `private-key-a.pub`.
+
+Since there is not yet an account associated with the authentication key, the
+following command should fail with a corresponding messsage:
+
+```sh filename="Terminal"
+aptos account lookup-address \
+    --public-key-file private-key-a.pub \
+    --url http://localhost:8080
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Error": "API error: API error Error(AccountNotFound): Account not found by Address(0xaaafb224eb00e4d0ef520ce02038ede850893622562a4189b7f6e5d94454ccd9) and Ledger version(1206)"
+}
+```
+</details>
+
+### Initialize a profile
+
+Use the private key to initialize `test-profile-1` on the localnet:
+
+```sh filename="Terminal"
+aptos init \
+    --assume-yes \
+    --network local \
+    --private-key-file private-key-a \
+    --profile test-profile-1
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+Configuring for profile test-profile-1
+Configuring for network Local
+Using command line argument for private key
+Account 0xaaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b doesn\'t exist, creating it and funding it with 100000000 Octas
+Account 0xaaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b funded successfully
+
+---
+Aptos CLI is now set up for account 0xaaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b as profile test-profile-1!  Run `aptos --help` for more information about commands
+{
+  "Result": "Success"
+}
+```
+</details>
+
+Note that you can always view the profile with:
+
+```sh filename="Terminal"
+aptos config show-profiles --profile test-profile-1
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "test-profile-1": {
+      "has_private_key": true,
+      "public_key": "0xe0bfe46f41c5be40e7a068e8dff4d6016126b226d947a39262f5b2347217a7e3",
+      "account": "aaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+```
+</details>
+
+However, this will not show the private key, which is hidden by default. If you
+would like to show the private key:
+
+```sh filename="Terminal"
+aptos config show-private-key --profile test-profile-1
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": "0xcc3b0c38ad99e171263a7af930464313d1fb105d0d8e6a4b13f9b1140563a7dd"
+}
+```
+</details>
+
+### Look up address
+
+Now that there is an onchain account associated with the authentication key,
+you can look up the account address using `aptos account lookup-address`:
+
+```sh filename="Terminal"
+aptos account lookup-address \
+    --public-key-file private-key-a.pub \
+    --url http://localhost:8080
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": "aaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b"
+}
+```
+</details>
+
+Store this address in a shell variable:
+
+```sh filename="Terminal"
+ADDRESS_A=aaa...
+```
+
+<Callout type="info" emoji="🧠">
+If you are using a UNIX-like machine that has `jq`, you can easily store the account address via:
+
+```sh filename="Terminal"
+export ADDRESS_A=$(
+    aptos account lookup-address \
+        --public-key-file private-key-a.pub \
+        --url http://localhost:8080 \
+            | jq -r '.Result'
+)
+echo $ADDRESS_A
+```
+</Callout>
+
+### Look up authentication key
+
+Recall that the address of an account is identical to its authentication key
+when it is initially created, which means that the account address `aaa...` is
+identical to the account's authentication key:
+
+```sh filename="Terminal"
+aptos move view \
+    --args address:$ADDRESS_A \
+    --function-id 0x1::account::get_authentication_key \
+    --url http://localhost:8080
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": [
+    "0xaaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b"
+  ]
+}
+```
+</details>
+
+Hence, store the authentication key in a shell variable:
+
+```sh
+AUTH_KEY_A=$ADDRESS_A
+```
+
+Note, however, since the account has not yet had its authentication key rotated,
+there is no corresponding entry in the [`account::OriginatingAddress`] table:
+
+```sh filename="Terminal"
+aptos move view \
+    --args address:$AUTH_KEY_A \
+    --function-id 0x1::account::originating_address \
+    --url http://localhost:8080
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": [
+    {
+      "vec": []
+    }
+  ]
+}
+```
+</details>
+
+### Set originating address
+
+To ensure an entry in the [`account::OriginatingAddress`] table for this new account,
+you can run [`account::set_originating_address`]:
+
+```sh filename="Terminal"
+aptos move run \
+    --assume-yes \
+    --function-id 0x1::account::set_originating_address \
+    --profile test-profile-1
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0x216992ef37a3c2f42aa9f8fed8f94d9f945a00e952dfe96b46123bb5c387ab6c",
+    "gas_used": 444,
+    "gas_unit_price": 100,
+    "sender": "aaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b",
+    "sequence_number": 0,
+    "success": true,
+    "timestamp_us": 1717809169531279,
+    "version": 3268,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+</details>
+
+Then you should see an entry in the [`account::OriginatingAddress`] table:
+
+```sh filename="Terminal"
+aptos move view \
+    --args address:$AUTH_KEY_A \
+    --function-id 0x1::account::originating_address \
+    --url http://localhost:8080
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": [
+    {
+      "vec": [
+        "0xaaa5131b4d3fcef8d33ee465c4ee65727e36039f283455be87b1164200572e5b"
+      ]
+    }
+  ]
+}
+```
+</details>
+
+### Rotate authentication key
+
+Generate a new private key:
+
+```sh filename="Terminal"
+aptos key generate \
+    --assume-yes \
+    --output-file private-key-b \
+    --vanity-prefix 0xbbb
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "PrivateKey Path": "private-key-b",
+    "Account Address:": "0xbbbdb12f4fa23b8fe8711b77f4ab7108f3a22077c5dfe787eed3d048a0b82734",
+    "PublicKey Path": "private-key-b.pub"
+  }
+}
+```
+</details>
+
+Rotate the authentication key of the existing onchain account to the new
+private key:
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --new-private-key-file private-key-b \
+    --profile test-profile-1 \
+    --save-to-profile test-profile-2
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile test-profile-2",
+    "transaction": {
+      "transaction_hash": "0xe561b710390511203511d15eee6f019a2e43ba32f8e3b7ce6bf812232e3bd27f",
+      "gas_used": 449,
+      "gas_unit_price": 100,
+      "sender": "aaa8dc0f5e7a6e820f7b1906d99864412b12274ed259ad06bc2c2d8ee7b51e51",
+      "sequence_number": 1,
+      "success": true,
+      "timestamp_us": 1717810059696079,
+      "version": 1109,
+      "vm_status": "Executed successfully"
+    }
+  }
+}
+```
+</details>
+
+### Compare profiles
+
+Compare `test-profile-1` (which is now stale) with `test-profile-2` (which is
+current) noting that the public key has changed, but not the account address:
+
+```sh filename="Terminal"
+aptos config show-profiles --profile test-profile-1
+aptos config show-profiles --profile test-profile-2
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "test-profile-1": {
+      "has_private_key": true,
+      "public_key": "0xb517173e68f4116e99c7fa1677058a6ee786a3b9e12447000db7fd85ab99dbdd",
+      "account": "aaa8dc0f5e7a6e820f7b1906d99864412b12274ed259ad06bc2c2d8ee7b51e51",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+{
+  "Result": {
+    "test-profile-2": {
+      "has_private_key": true,
+      "public_key": "0xadc3dd795fdd8569f59dc7b9900b38a5d7b95348b815de4eb5f00e2c2da07916",
+      "account": "aaa8dc0f5e7a6e820f7b1906d99864412b12274ed259ad06bc2c2d8ee7b51e51",
+      "rest_url": "http://localhost:8080",
+      "faucet_url": "http://localhost:8081"
+    }
+  }
+}
+```
+</details>
+
+Lookup the new authentication key:
+
+```sh filename="Terminal"
+aptos move view \
+    --args address:$ADDRESS_A \
+    --function-id 0x1::account::get_authentication_key \
+    --url http://localhost:8080
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": [
+    "0xbbbdb12f4fa23b8fe8711b77f4ab7108f3a22077c5dfe787eed3d048a0b82734"
+  ]
+}
+```
+</details>
+
+Store the authentication key in a shell variable:
+
+```sh filename="Terminal"
+AUTH_KEY_B=bbb...
+```
+
+<Callout type="info" emoji="🧠">
+If you are using a UNIX-like machine that has `jq`, you can easily store the authentication key via:
+
+```sh filename="Terminal"
+export AUTH_KEY_B=$(
+    aptos move view \
+        --args address:$ADDRESS_A \
+        --function-id 0x1::account::get_authentication_key \
+        --url http://localhost:8080 \
+        | jq -r '.Result[0]'
+)
+echo $AUTH_KEY_B
+```
+</Callout>
+
+### Look up originating addresses
+
+Check the originating address for the new authentication key:
+
+```sh filename="Terminal"
+aptos move view \
+    --args address:$AUTH_KEY_B \
+    --function-id 0x1::account::originating_address \
+    --url http://localhost:8080
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": [
+    {
+      "vec": [
+        "0xaaa8dc0f5e7a6e820f7b1906d99864412b12274ed259ad06bc2c2d8ee7b51e51"
+      ]
+    }
+  ]
+}
+```
+</details>
+
+Check the originating address for the old authentication key:
+
+```sh filename="Terminal"
+aptos move view \
+    --args address:$AUTH_KEY_A \
+    --function-id 0x1::account::originating_address \
+    --url http://localhost:8080
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": [
+    {
+      "vec": []
+    }
+  ]
+}
+```
+</details>
+
+### Attempt invalid rotation (same key)
+
+Attempt an invalid rotation where the current authentication key is identical
+to the new authentication key:
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --new-private-key-file private-key-b \
+    --profile test-profile-2 \
+    --skip-saving-profile
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Error": "Invalid arguments: New public key cannot be the same as the current public key"
+}
+```
+</details>
+
+### Attempt invalid rotation (new key already mapped)
+
+Create another private key:
+
+```sh filename="Terminal"
+aptos key generate \
+    --assume-yes \
+    --output-file private-key-c \
+    --vanity-prefix 0xccc
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "PrivateKey Path": "private-key-c",
+    "PublicKey Path": "private-key-c.pub",
+    "Account Address:": "0xccc79d46b2963cb87f2ff32c51eb6c6361e8aa108d334d3183c3016389542958"
+  }
+}
+```
+</details>
+
+Initialize a new profile:
+
+```sh filename="Terminal"
+aptos init \
+    --assume-yes \
+    --network local \
+    --private-key-file private-key-c \
+    --profile test-profile-3
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+Configuring for profile test-profile-3
+Configuring for network Local
+Using command line argument for private key
+Account 0xccc79d46b2963cb87f2ff32c51eb6c6361e8aa108d334d3183c3016389542958 doesn\'t exist, creating it and funding it with 100000000 Octas
+Account 0xccc79d46b2963cb87f2ff32c51eb6c6361e8aa108d334d3183c3016389542958 funded successfully
+
+---
+Aptos CLI is now set up for account 0xccc79d46b2963cb87f2ff32c51eb6c6361e8aa108d334d3183c3016389542958 as profile test-profile-3!  Run `aptos --help` for more information about commands
+{
+  "Result": "Success"
+}
+```
+</details>
+
+Attempt an invalid rotation where the new authentication key is already mapped:
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --max-gas 100000 \
+    --new-private-key-file private-key-b \
+    --profile test-profile-3 \
+    --skip-saving-profile
+```
+
+(`--max-gas` is specified here to skip local simulation, which does not print
+out as descriptive of an error as the actual transaction.)
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Error": "API error: Unknown error Transaction committed on chain, but failed execution: Move abort in 0x1::account: ENEW_AUTH_KEY_ALREADY_MAPPED(0x10015): The new authentication key already has an entry in the `OriginatingAddress` table"
+}
+```
+</details>
+
+### Attempt invalid rotation (invalid originating address)
+
+Rotate the authentication key for account `0xaaa...` to use the authentication
+key for account `0xccc...`:
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --new-private-key-file private-key-c \
+    --profile test-profile-2 \
+    --save-to-profile test-profile-4
+```
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Result": {
+    "message": "Saved new profile test-profile-4",
+    "transaction": {
+      "transaction_hash": "0xa5dec792d82ef7471cdf82b9c957fc79b5815da770ad1dd9232ae4692e4f0895",
+      "gas_used": 449,
+      "gas_unit_price": 100,
+      "sender": "aaa8dc0f5e7a6e820f7b1906d99864412b12274ed259ad06bc2c2d8ee7b51e51",
+      "sequence_number": 2,
+      "success": true,
+      "timestamp_us": 1717812312772580,
+      "version": 5355,
+      "vm_status": "Executed successfully"
+    }
+  }
+}
+```
+</details>
+
+Then try to rotate the authentication key for account `0xccc...` for the first
+time, an operation that is blocked because an entry for the authentication key
+was established in the [`account::OriginatingAddress`] table during the last
+operation:
+
+```sh filename="Terminal"
+aptos account rotate-key \
+    --assume-yes \
+    --max-gas 100000 \
+    --new-private-key-file private-key-b \
+    --profile test-profile-3 \
+    --skip-saving-profile
+```
+
+(`--max-gas` is specified here to skip local simulation, which does not print
+out as descriptive of an error as the actual transaction.)
+
+<details>
+<summary>Example output</summary>
+```sh filename="Terminal"
+{
+  "Error": "API error: Unknown error Transaction committed on chain, but failed execution: Move abort in 0x1::account: EINVALID_ORIGINATING_ADDRESS(0x6000d): Abort the transaction if the expected originating address is different from the originating address on-chain"
+}
+```
+</details>
+
+### Clean up
+
+Delete the test profiles:
+
+```shell filename="Terminal"
+aptos config delete-profile --profile test-profile-1
+aptos config delete-profile --profile test-profile-2
+aptos config delete-profile --profile test-profile-3
+aptos config delete-profile --profile test-profile-4
+```
+
+Then you can stop the localnet and delete the private and public key files.
+
+<Callout type="info" emoji="🧠">
+If you are using a UNIX-like machine:
+
+```shell filename="Terminal"
+aptos config delete-profile --profile test-profile-1
+aptos config delete-profile --profile test-profile-2
+aptos config delete-profile --profile test-profile-3
+aptos config delete-profile --profile test-profile-4
+rm private-key-*
+kill $LOCALNET_PID
+rm -fr localnet-data
+```
+</Callout>
+
+### Rotate keys for a Ledger
+
+You can also perform authentication key rotation with a private key that is
+securely stored on a Ledger hardware wallet. For more information, see the
+[Ledger authentication key rotation guide](../cli/trying-things-on-chain/ledger.mdx#authentication-key-rotation).
+
+</Steps>
+
+## TypeScript key rotation example
+    This program creates two accounts on devnet, Alice and Bob, funds them, then
+    rotates the Alice's authentication key to that of Bob's.
+
+    View the full example for this code
+    [here](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/typescript/sdk/examples/typescript-esm/rotate_key.ts).
+
+    The function to rotate is very simple:
+
+    {/* TODO CODE EXAMPLE */}
+
+    Commands to run the example script:
+
+    ### Navigate to the typescript SDK directory, install dependencies and run
+    rotate_key.ts
+    ```bash filename="Terminal"
+    cd ~/aptos-core/ecosystem/typescript/sdk/examples/typescript-esm
+    pnpm install && pnpm rotate_key
+    ```
+
+    ### rotate_key.ts output
+    ```shell filename="Terminal"
+    Account Address Auth Key Private Key Public Key
+    ------------------------------------------------------------------------------------------------
+    Alice 0x213d...031013 '0x213d...031013' '0x00a4...b2887b' '0x859e...08d2a9'
+    Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
+
+    ...rotating...
+
+    Alice 0x213d...031013 '0x1c06...ac3bb3' '0xf2be...9486aa' '0xbbc1...abb808'
+    Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
+    ```
+
+## Python key rotation example
+    This program creates two accounts on devnet, Alice and Bob, funds them, then
+    rotates the Alice's authentication key to that of Bob's.
+
+    View the full example for this code
+    [here](https://github.com/aptos-labs/aptos-core/blob/main/ecosystem/python/sdk/examples/rotate_key.py).
+
+    Here's the relevant code that rotates Alice's keys to Bob's:
+
+    {/* TODO CODE EXAMPLE */}
+
+    Commands to run the example script:
+
+    ### Navigate to the python SDK directory, install dependencies and run
+    rotate_key.ts
+    ```bash filename="Terminal"
+    cd aptos-core/ecosystem/python/sdk
+    poetry install && poetry run python -m examples.rotate-key
+    ```
+
+    ### rotate_key.py output
+    ```bash filename="Terminal"
+    Account Address Auth Key Private Key Public Key
+    ------------------------------------------------------------------------------------------------
+    Alice 0x213d...031013 '0x213d...031013' '0x00a4...b2887b' '0x859e...08d2a9'
+    Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
+
+    ...rotating...
+
+    Alice 0x213d...031013 '0x1c06...ac3bb3' '0xf2be...9486aa' '0xbbc1...abb808'
+    Bob 0x1c06...ac3bb3 0x1c06...ac3bb3 0xf2be...9486aa 0xbbc1...abb808
+    ```
+
+[`account::rotate_authentication_key`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L326
+[`account::rotate_authentication_key_call`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L294
+[`account::RotationProofChallenge`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L79
+[`account::OriginatingAddress`]: https://github.com/aptos-labs/aptos-core/blob/acb6c891cd42a63b3af96561a1aca164b800c7ee/aptos-move/framework/aptos-framework/sources/account.move#L70
+[`account::set_originating_address`]: https://github.com/alnoki/aptos-core/blob/5ba4a8d1344b0bb6e22665525a96e787b9a44e55/aptos-move/framework/aptos-framework/sources/account.move#L528

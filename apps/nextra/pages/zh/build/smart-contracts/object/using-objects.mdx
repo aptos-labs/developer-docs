@@ -1,0 +1,285 @@
+---
+title: "Using objects"
+---
+
+import { Callout } from 'nextra/components'
+
+# Using Objects
+
+Once you've created your Object, you can use it in Move entry functions, structs, transfer it, and modify it using any refs you generated during [Object construction](creating-objects.mdx). Below are various ways to utilize, manage, and interact with Objects in Move.
+
+## Using an Object as an entry function argument
+
+Objects in move functions have the type `Object<T>`, where `T` is the type of a resource owned by the Object. All Objects have an `ObjectCore` type which contains the metadata for the Object.
+
+To use an Object parameter, users can pass in the Object address or a reference to the Object. At runtime the contract will verify that the Object exists at that address, and has a resource of type T before executing the function.
+
+```move filename="Example.move"
+module my_addr::object_playground {
+  use aptos_framework::object::{Object, ObjectCore};
+
+  struct MyAwesomeStruct has key {}
+
+  /// This will fail if the object doesn't have MyAwesomeStruct stored
+  entry fun do_something(object: Object<MyAwesomeStruct>) {
+    // ...
+  }
+
+  /// All Objects have ObjectCore, so this will only fail if the
+  /// address is not an object
+  entry fun do_something_to_object_core(object: Object<ObjectCore>) {
+    // ...
+  }
+}
+```
+
+To let the user of the entry function specify the type of resource, you can keep the generic type `T` like so:
+
+```move filename="Example.move"
+module my_addr::object_playground {
+  use aptos_framework::object::Object;
+
+  /// This will fail if the object doesn't have the generic `T` stored
+  entry fun do_something<T>(object: Object<T>) {
+    // ...
+  }
+}
+```
+
+### Object types
+
+You can refer to an Object by any type of resource that is owned by the Object. For convenience, you can convert an address to an Object, or convert an Object between types as long as the resources are available using `address_to_object` and `convert` like so:
+
+```move filename="Example.move"
+module my_addr::object_playground {
+  use aptos_framework::object::{Self, Object, ObjectCore};
+
+  struct MyAwesomeStruct has key {}
+
+  fun convert_type(object: Object<ObjectCore>): Object<MyAwesomeStruct> {
+    object::convert<ObjectCore, MyAwesomeStruct>(object)
+  }
+
+  fun address_to_type(object_address: address): Object<MyAwesomeStruct> {
+    object::address_to_object<MyAwesomeStruct>(object_address)
+  }
+}
+```
+
+<Callout type="info">
+Objects can be owned by any address, including Objects, Accounts, and Resource accounts. This allows composability between objects and complex relationships between them.
+</Callout>
+
+## Using an Object as type of a field in struct
+
+Objects can help represent complicated types by using them in structs. For example,
+
+```move filename="Example.move"
+module my_addr::object_playground {
+  use aptos_framework::object::{Self, Object};
+  use aptos_framework::fungible_asset::Metadata;
+  use aptos_framework::primary_fungible_store;
+  use std::signer;
+  use std::option;
+  use std::string::utf8;
+
+  struct MyStruct has key {
+    fungible_asset_object: Object<Metadata>
+  }
+
+  entry fun create_fungible_asset(creator: &signer) {
+    let fa_obj_constructor_ref = &object::create_sticky_object(@my_addr);
+    let fa_obj_signer = object::generate_signer(fa_obj_constructor_ref);
+    let fa_obj_addr = signer::address_of(&fa_obj_signer);
+    primary_fungible_store::create_primary_store_enabled_fungible_asset(
+        fa_obj_constructor_ref, 
+        option::none(),
+        utf8(b"Asset name"),
+        utf8(b"Asset symbol"),
+        2,
+        utf8(b"Icon uri"),
+        utf8(b"Project uri")
+    );
+    move_to(creator, MyStruct {
+      fungible_asset_object: object::address_to_object(fa_obj_addr)
+    });
+  }
+}
+```
+
+## Looking up who owns an Object
+
+When writing contracts for Objects, it is often important to verify ownership before modifying the Object. Because an Object can be owned by any address, verifying ownership needs to account for whether the owner is an Account, a Resource Account or another Object like so:
+
+```move filename="Example.move"
+module my_addr::object_playground {
+  use std::signer;
+  use aptos_framework::object::{Self, Object};
+
+  // Not authorized!
+  const E_NOT_AUTHORIZED: u64 = 1;
+
+  fun check_owner_is_caller<T: key>(caller: &signer, object: Object<T>) {
+    assert!(
+      object::is_owner(object, signer::address_of(caller)),
+      E_NOT_AUTHORIZED
+    );
+  }
+
+  fun check_is_owner_of_object<T: key>(addr: address, object: Object<T>) {
+    assert!(object::owner(object) == addr, E_NOT_AUTHORIZED);
+  }
+
+  fun check_is_nested_owner_of_object<T: key, U: key>(
+    caller: &signer,
+    outside_object: Object<T>,
+    inside_object: Object<U>
+  ) {
+    // Ownership expected
+    // Caller account -> Outside object -> inside object
+
+    // Check outside object owns inside object
+    let outside_address = object::object_address(&outside_object);
+    assert!(object::owns(inside_object, outside_address), E_NOT_AUTHORIZED);
+
+    // Check that the caller owns the outside object
+    let caller_address = signer::address_of(caller);
+    assert!(object::owns(outside_object, caller_address), E_NOT_AUTHORIZED);
+
+    // Check that the caller owns the inside object (via the outside object)
+    // This can skip the first two calls (and even more nested)
+    assert!(object::owns(inside_object, caller_address), E_NOT_AUTHORIZED);
+  }
+}
+```
+
+## Transfer of ownership
+
+By default, all Objects are transferrable. Some Objects are configured to disable `ungated_transfer`s when they are constructed (see Constructing Objects for more details).
+
+You can transfer an Object like so:
+
+```move filename="Example.move"
+module my_addr::object_playground {
+  use aptos_framework::object::{Self, Object};
+
+  /// Transfer to another address, this can be an object or account
+  fun transfer<T: key>(owner: &signer, object: Object<T>, destination: address) {
+    object::transfer(owner, object, destination);
+  }
+
+  /// Transfer to another object
+  fun transfer_to_object<T: key, U: key>(
+    owner: &signer,
+    object: Object<T>,
+    destination: Object<U>
+  ) {
+    object::transfer_to_object(owner, object, destination);
+  }
+}
+```
+
+<Callout type="warning">
+If `ungated_transfer` is **disabled**, then all transfers need to use a special permission given by a `TransferRef` or `LinearTransferRef`.
+</Callout>
+
+## Events
+By default, Objects only have a `TransferEvent` which triggers whenever the Object is transferred.
+
+Objects can be extended to have additional events.
+
+You can use the following functions to create event handles for Objects:
+
+```move filename="example.move"
+module 0x1::object {
+  /// Create a guid for the object, typically used for events
+  public fun create_guid(object: &signer): guid::GUID {}
+
+  /// Generate a new event handle.
+  public fun new_event_handle<T: drop + store>(object: &signer): event::EventHandle<T> {}
+}
+```
+
+Generated event handles can be transferred to the Object as long as you have the Object's `SignerRef`. For example:
+
+```move filename="example.move"
+module 0x42::example {
+  use aptos_framework::event;
+  use aptos_framework::fungible_asset::Metadata;
+  use aptos_framework::object::{Self, Object};
+
+  #[resource_group_member(group = aptos_framework::object::ObjectGroup)]  
+  struct LiquidityPoolResourceGroup has key {
+    pool: LiquidityPool,
+    event_store: LiquidityPoolEventStore,
+  }
+
+  struct LiquidityPool has store {
+    metadata_token_a: Object<Metadata>,
+    metadata_token_b: Object<Metadata>,
+    reserves_a: u128,
+    reserves_b: u128,
+  }
+
+  struct LiquidityPoolEventStore has store {
+    create_events: event::EventHandle<CreateLiquidityPoolEvent>,
+  }
+
+  #[event]
+  struct CreateLiquidityPoolEvent has store, drop {
+    token_a: address,
+    token_b: address,
+    reserves_a: u128,
+    reserves_b: u128,
+  }
+
+  public entry fun create_liquidity_pool_with_events(
+        account_signer: &signer,
+        metadata_token_a: Object<Metadata>,
+        metadata_token_b: Object<Metadata>,
+        reserves_a: u128,
+        reserves_b: u128
+  ) {
+    let liquidity_pool_constructor_ref = &object::create_object_from_account(
+      account_signer
+    );
+    let liquidity_pool_signer = &object::generate_signer(
+      liquidity_pool_constructor_ref
+    );
+    let event_handle = object::new_event_handle<CreateLiquidityPoolEvent>(
+      liquidity_pool_signer
+    );
+
+    event::emit_event<CreateLiquidityPoolEvent>(&mut event_handle, CreateLiquidityPoolEvent {
+      token_a: object::object_address(&metadata_token_a),
+      token_b: object::object_address(&metadata_token_b),
+      reserves_a,
+      reserves_b,
+    });
+
+    move_to(liquidity_pool_signer, LiquidityPoolResourceGroup {
+      pool: LiquidityPool {
+        metadata_token_a,
+        metadata_token_b,
+        reserves_a,
+        reserves_b
+      },
+      event_store: LiquidityPoolEventStore {
+        create_events: event_handle
+      }
+    });
+  }
+}
+```
+
+## Modifying Objects after creation
+
+In general, Objects can only be modified with `Refs` generated during construction. See [Creating and Configuring Objects](creating-objects.mdx) for more details on what `Refs` are available, how to generate them, and how to use them. This is how you add additional resources to an Object, delete it, and extend it.
+
+## Example contracts
+
+Here are three real-world code snippets which use Objects:
+
+- [Digital Asset Marketplace Example](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/marketplace)
+- [Digital Assets Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/token_objects)
+- [Fungible Asset Examples](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset)
