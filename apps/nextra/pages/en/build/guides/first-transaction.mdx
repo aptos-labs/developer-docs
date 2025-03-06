@@ -157,7 +157,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  Each account has a unique address (like a bank account number) and a keypair (like your login credentials). The address is derived from the public key, while the private key is kept secret and used for signing transactions.
+  Each account has a unique address (like a bank account number) and a keypair (like your login credentials). The address is derived from the public key, while the private key is kept secret and used for signing transactions. For more details on how accounts work in Aptos, see [Account basics](../../network/blockchain/accounts.mdx).
   </Callout>
 
   ### Fund the accounts
@@ -273,7 +273,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  Each account has a unique address (like a bank account number) and a keypair (like your login credentials). The address is derived from the public key, while the private key is kept secret and used for signing transactions.
+  Each account has a unique address (like a bank account number) and a keypair (like your login credentials). The address is derived from the public key, while the private key is kept secret and used for signing transactions. For more details on how accounts work in Aptos, see [Account basics](../../network/blockchain/accounts.mdx).
   </Callout>
 
   ### Fund the accounts
@@ -381,7 +381,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  The function `0x1::aptos_account::transfer` is a built-in function in the Aptos framework that transfers coins between accounts. The `0x1` prefix indicates it's part of the core framework.
+  The function `0x1::aptos_account::transfer` is a built-in function in the Aptos framework that transfers coins between accounts. The `0x1` prefix indicates it's part of the core framework. Behind the scenes, this function calls the [Coin Move module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) to perform the actual transfer.
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -453,7 +453,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  The function `0x1::aptos_account::transfer` is a built-in function in the Aptos framework that transfers coins between accounts. The `0x1` prefix indicates it's part of the core framework.
+  The function `0x1::aptos_account::transfer` is a built-in function in the Aptos framework that transfers coins between accounts. The `0x1` prefix indicates it's part of the core framework. Behind the scenes, this function calls the [Coin Move module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) to perform the actual transfer.
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -487,7 +487,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  Gas is the computational fee paid to process transactions on the blockchain. The total cost is calculated as `gas_used × gas_unit_price`. Simulation helps you estimate this cost before committing to the transaction.
+  Gas is the computational fee paid to process transactions on the blockchain. The total cost is calculated as `gas_used × gas_unit_price`. During simulation, the blockchain executes the transaction in a temporary environment to estimate these costs without making permanent changes to the blockchain state. This helps you avoid failed transactions due to insufficient gas.
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -522,7 +522,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  Gas is the computational fee paid to process transactions on the blockchain. The total cost is calculated as `gas_used × gas_unit_price`. Simulation helps you estimate this cost before committing to the transaction.
+  Gas is the computational fee paid to process transactions on the blockchain. The total cost is calculated as `gas_used × gas_unit_price`. During simulation, the blockchain executes the transaction in a temporary environment to estimate these costs without making permanent changes to the blockchain state. This helps you avoid failed transactions due to insufficient gas.
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -571,7 +571,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  The transaction hash is a unique identifier for your transaction, similar to a tracking number for a package. You can use it to check the status of your transaction on the [Aptos Explorer](https://explorer.aptoslabs.com/).
+  The transaction hash is a unique identifier for your transaction, similar to a tracking number for a package. When submitting a transaction, the Aptos blockchain performs several validation checks, including verifying the transaction signature and ensuring the sequence number hasn't been used before (preventing replay attacks). You can use the hash to check the status of your transaction on the [Aptos Explorer](https://explorer.aptoslabs.com/) or via the [REST API](../apis/fullnode-rest-api-reference.mdx).
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -623,7 +623,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  The transaction hash is a unique identifier for your transaction, similar to a tracking number for a package. You can use it to check the status of your transaction on the [Aptos Explorer](https://explorer.aptoslabs.com/).
+  The transaction hash is a unique identifier for your transaction, similar to a tracking number for a package. When submitting a transaction, the Aptos blockchain performs several validation checks, including verifying the transaction signature and ensuring the sequence number hasn't been used before (preventing replay attacks). You can use the hash to check the status of your transaction on the [Aptos Explorer](https://explorer.aptoslabs.com/) or via the [REST API](../apis/fullnode-rest-api-reference.mdx).
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -725,7 +725,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  Notice that Alice's balance decreased by more than 1000 octas. The extra amount is the gas fee paid to process the transaction.
+  Notice that Alice's balance decreased by more than 1000 octas. The extra amount is the gas fee paid to process the transaction. Behind the scenes, when checking balances, the SDK queries the CoinStore resource for the AptosCoin (`0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>`) and reads the current stored value.
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -828,7 +828,7 @@ This tutorial builds on concepts from the Aptos blockchain. If you're new to blo
   ```
 
   <Callout type="info">
-  Notice that Alice's balance decreased by more than 1000 octas. The extra amount is the gas fee paid to process the transaction.
+  Notice that Alice's balance decreased by more than 1000 octas. The extra amount is the gas fee paid to process the transaction. Behind the scenes, when checking balances, the SDK queries the CoinStore resource for the AptosCoin (`0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>`) and reads the current stored value.
   </Callout>
   </Steps>
   </Tabs.Tab>
