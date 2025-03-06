@@ -1,0 +1,16 @@
+# Federated Keyless
+
+## Federated Keyless
+
+[AIP-96](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-96.md): Federated Keyless is an extension of Aptos Keyless to support more OpenID Connect (OIDC) providers, beyond the ones that are allow-listed in `0x1::jwks` via JWK consensus, while maintaining its decentralization. Federated keyless adds support for authenticating users via identity & access management (IAM) providers (e.g. Auth0, AWS Cognito) as long as your project uses a supported IAM provider for user authentication. 
+
+To elaborate further, Federated Keyless enables:
+    1. Extension of authentication methods
+        a. All authentication methods supported by the IAM are available to the dApp including email/SMS OTP and their marketplace of social login integrations like Discord, Naver, X and more. Auth0 marketplace linked [here](https://marketplace.auth0.com/) as an example.  
+
+    2. Compatibility with existing account systems
+        a. Since IAMs also support custom authentication, it allows an application to bring its own username/password (Cognito [docs](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html), Auth0 [docs](https://auth0.com/blog/Custom-Authentication-With-Auth0/)). An application can start using an existing account system already set up with an IAM or they can migrate their existing account system to an IAM to generate Keyless-compatible JWTs.
+
+- [Federated Keyless Key Considerations](federated-keyless/key-considerations.mdx)
+- [Federated Keyless Integration Guide](federated-keyless/integration-guide.mdx)
+- [Federated Keyless FAQs](federated-keyless/other.mdx)

@@ -1,240 +1,61 @@
----
-title: "关于 Move 合约的工作"
----
-
-import {Callout} from 'nextra/components'
+import { Callout } from 'nextra/components'
 
 # 使用 Move 合约
 
-Aptos CLI 主要被用来编译、测试以及对 Move 合约进行形式化验证工作。如果你尚未安装 Aptos CLI，可以按照[安装 Aptos CLI](../cli#-install-the-aptos-cli)提供的步骤进行安装。
+Aptos CLI 主要用于编译、测试和形式化验证 Move 合约。如果你还没有安装 Aptos CLI，可以按照[安装 Aptos CLI](../cli.mdx#-install-the-aptos-cli) 的步骤进行安装。
 
-您可以通过右侧的目录跳转到特定部分。
+你可以使用右侧的目录跳转到特定部分。
 
-要了解如何使用 CLI 在链上链接 Move 合约，可以按照这个[“CLI 参数”教程](working-with-move-contracts/arguments-in-json-tutorial.mdx)。
+要了解如何使用 CLI 在链上链接 Move 合约，你可以按照这个["CLI 参数"教程](working-with-move-contracts/arguments-in-json-tutorial.mdx)进行操作。
 
 <Callout type="info" emoji="ℹ️">
-在本文档中，有些命令部分需要您修改以适应您的情况。这些变量将用三角括号`<像这样>`包裹起来。
+在本文档中，有些命令部分需要你根据自己的情况进行修改。这些变量将用尖括号括起来 `<像这样>`。
 </Callout>
 
 ## 1. 编译 Move
 
-您可以通过运行以下命令来编译 Move 包：
+你可以通过运行以下命令编译 Move 包：
 
 ```bash filename="Terminal"
-aptos move compile --package-dir <your-package-directory>
+aptos move compile --package-dir <你的包目录>
 ```
 
 <Callout type="info" emoji="ℹ️">
 包目录是包含 `Move.toml` 文件的文件夹。
 </Callout>
 
-根据您的 `Move.toml` 文件中的配置，您可能需要向该编译命令传递额外参数（information）。
+根据你的 `Move.toml` 文件中的设置，你可能需要向编译命令传递额外的信息。
 
-例如，如果您查看[hello_blockchain 示例 Move 合约](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)，在`Move.toml`文件中它指定了一个名为`hello_blockchain`的变量。
+例如，如果你查看 [hello_blockchain 示例 Move 合约](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)，在 `Move.toml` 文件中指定了一个名为 `hello_blockchain` 的地址变量。
 
 ```toml filename="Move.toml"
 [addresses]
 hello_blockchain = "_"
 ```
 
-因此，要编译这个，您需要使用 `--named-addresses` 参数传递 `hello_blockchain` 的值。
+因此，要编译它，你需要使用 `--named-addresses` 参数传入 `hello_blockchain` 的值。
+你可以使用完整的地址，例如 `0x123456...7890` 或 CLI 中配置文件的名称，例如 `default` 或 `superuser`。
+
+在我们的示例中，我们将使用 `default`：
 
 ```bash filename="Terminal"
-aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=superuser
+aptos move compile --package-dir aptos-move/move-examples/hello_blockchain/ --named-addresses hello_blockchain=default
 ```
 
-您可以通过运行 `aptos move compile --help` 了解更多关于编译 Move 合约时的可选参数。
+你可以通过运行 `aptos move compile --help` 了解编译 Move 合约时的可选参数。
 
-## 2. Move 合约的单元测试
-
-Aptos CLI 还可以用来编译并在本地运行单元测试：
-
-```bash filename="Terminal"
-aptos move test --package-dir <您的包目录>
-```
-
-此命令既编译又运行测试，因此它需要使用与编译时相同的所有可选参数。
-
-您可以通过运行 `aptos move test --help` 了解更多关于测试 Move 合约的可选参数。
-
-### 打印调试信息
-
-在编写测试时，打印调试信息或堆栈跟踪可能会很有帮助。您可以通过使用 `debug::print` 和 `debug::print_stack_trace` 函数在合约中标记打印调试内容，然后在命令行使用 `aptos move test` 打印调试信息。在[DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move)可以查看如何使用示例。
-
-如果要查看测试[DebugDemo.move](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos/debug-move-example/sources/DebugDemo.move)包的输出，请按照以下方式操作：
-
-1. 克隆 `[aptos-core](https://github.com/aptos-labs/aptos-core)`。
-2. 通过运行 `cd crates/aptos/debug-move-example` 进入到 [debug-move-example](https://github.com/aptos-labs/aptos-core/tree/main/crates/aptos/debug-move-example)。
-3. 然后运行 `aptos move test`。
-
-您应该能够看到：
-
-```bash filename="Terminal"
-Running Move unit tests
-[debug] 0000000000000000000000000000000000000000000000000000000000000001
-Call Stack:
-    [0] 0000000000000000000000000000000000000000000000000000000000000001::Message::sender_can_set_message
-
-        Code:
-            [4] CallGeneric(0)
-            [5] MoveLoc(0)
-            [6] LdConst(0)
-          > [7] Call(1)
-            [8] Ret
-
-        Locals:
-            [0] -
-            [1] 0000000000000000000000000000000000000000000000000000000000000001
-
-Operand Stack:
-```
-
-有关如何使用 Move 编写单元测试的更多信息，请按照这个 [Move 教程](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial)（第 2 步重点介绍了单元测试）。
-
-## 3. 生成测试覆盖率报告
-
-Aptos CLI 可用于分析和改进您的 Move 模块的测试。要使用此功能：
-
-要从您的 Move 包目录运行测试覆盖率，请运行以下命令：
-
-```bash filename="Terminal"
-aptos move test --coverage
-```
-
-如果您希望将覆盖范围缩小到指定的包，可以使用 `--filter` 选项。要进一步缩小到指定的 Move 模块，请使用 `--module` 参数。
-
-有关更详细 / 高级的覆盖信息（例如编译字节码中的测试覆盖率），您可以运行 `aptos move coverage`。使用该命令时，CLI 将提示您提供更多关于您希望获得更详细覆盖信息的具体内容。
-
-您可以通过运行 `aptos move test --help` 和 `aptos move coverage --help` 了解更多关于测试覆盖率的可选参数。
-
-## 4. 发布 Move 合约
-
-要发布 Move 合约，您需要运行：
-
-```bash filename="Terminal"
-aptos move publish --package-dir <您的包目录>
-```
-
-请注意，在主网络发布时，您通过可选参数传入的账户信息（如 `--named-addresses`）必须是主网络上的实际账户，不能使用测试环境下的账户。
-
-包将发布到 CLI 中的默认配置文件。您可以使用命令中的 `--profile` 覆盖它以指定要发布到哪个账户。要为特定账户生成新的配置文件，请使用 `aptos init --profile <name_of_profile>` 并按照提示操作。
-
-另外，请注意，在发布 Move 模块的过程中，若一个软件包中有多个模块，则这些模块都必需使用同一个账户进行发布。不然，如果使用不同账户，则该软件包的发布操作将在交易处理的阶段遭遇失败。
-
-您可以使用 [Gas Profiler](working-with-move-contracts/local-simulation-benchmarking-and-gas-profiling.mdx)估算与发布 Move 合约相关的 Gas 费用。{/* TODO: Fix this link */}
-
-<Callout type="warning">
-默认情况下，Move 合约会发布其源代码。要避免发布源代码，请使用 `--included-artifacts none` 参数发布。
-
-由于 Aptos 区块链的设计本质上是开源的，请注意，即使没有源代码访问权限，也可以从发布的 Move 字节码重新生成 Move 源代码。
-</Callout>
-
-## 5. 运行已发布合约
-
-现在您已经发布了 Move 包，您可以直接从 CLI 运行它。
-
-您首先需要通过组合来构建您的`function-id`：
-
-```jsx
-<the-address-you-published-to>::<module_name>::<function_name>
-```
-
-然后，您可以使用 `--args` 参数传递参数。
-
-例如，如果您已经发布了 [hello_blockchain 示例包](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/hello_blockchain)到一个地址为 `b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb` 的账户，您可以通过以下命令运行它的 `set_message` 函数：
-
-```bash filename="Terminal"
-aptos move run --function-id 0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb::message::set_message --args string:hello!
-```
-
-结果应该是：
-
-```json
-{
-  "Result": {
-    "changes": [
-      {
-        "address": "b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
-        "data": {
-          "authentication_key": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
-          "self_address": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
-          "sequence_number": "3"
-        },
-        "event": "write_resource",
-        "resource": "0x1::account::Account"
-      },
-      {
-        "address": "b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
-        "data": {
-          "coin": {
-            "value": "9777"
-          },
-          "deposit_events": {
-            "counter": "1",
-            "guid": {
-              "id": {
-                "addr": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
-                "creation_num": "1"
-              }
-            }
-          },
-          "withdraw_events": {
-            "counter": "1",
-            "guid": {
-              "id": {
-                "addr": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
-                "creation_num": "2"
-              }
-            }
-          }
-        },
-        "event": "write_resource",
-        "resource": "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>"
-      },
-      {
-        "address": "b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
-        "data": {
-          "counter": "4"
-        },
-        "event": "write_resource",
-        "resource": "0x1::guid::Generator"
-      },
-      {
-        "address": "b9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
-        "data": {
-          "message": "hello!",
-          "message_change_events": {
-            "counter": "0",
-            "guid": {
-              "id": {
-                "addr": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb",
-                "creation_num": "3"
-              }
-            }
-          }
-        },
-        "event": "write_resource",
-        "resource": "0xb9bd2cfa58ca29bce1d7add25fce5c62220604cd0236fe3f90d9de91ed9fb8cb::Message::MessageHolder"
-      }
-    ],
-    "gas_used": 41,
-    "success": true,
-    "version": 3488,
-    "vm_status": "Executed successfully"
-  }
-}
-```
+...(about 300 lines omitted)...
 
 ## 6. （可选）形式化验证 Move 脚本
 
-对于您希望在单元测试之外保证代码按预期工作的情况，您可以使用 [Move Prover](../smart-contracts/prover.mdx)来形式化验证您的 Move 合约代码。
+对于需要保证代码按预期工作的情况（超出单元测试的范围），你可以使用 [Move Prover](../smart-contracts/prover.mdx) 来形式化验证你的 Move 合约代码。
 
-您可以通过按照[这些步骤](setup-cli/install-move-prover.mdx)来安装 Move Prover。
+你可以按照[这些步骤](setup-cli/install-move-prover.mdx)安装 Move Prover。
 
-安装 Move Prover 之后，你就可以执行下面的命令通过 Aptos CLI 来使用它了：
+安装 Move Prover 后，你可以通过运行以下命令从 Aptos CLI 使用它：
 
 ```bash filename="Terminal"
-aptos move prove --package-dir <your-package-directory>
+aptos move prove --package-dir <你的包目录>
 ```
 
-想要学习如何对你的代码进行形式化验证，请参考[深入学习 Move 教程](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial)中的内容（特别是第 7 步和第 8 步，其中介绍了如何运用 Move Prover 工具并在示例代码中撰写正式规范）。
+要了解如何形式化验证你的代码，请按照[这里](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial)的深入 Move 教程进行操作（步骤 7 和 8 介绍了如何在示例代码中使用 Move Prover 和编写形式规范）。

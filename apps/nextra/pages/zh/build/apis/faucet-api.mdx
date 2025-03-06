@@ -2,59 +2,74 @@
 title: "Faucet API"
 ---
 
+# Faucet API
 
-# 水龙头 API
+The faucet allows users to get `APT` on devnet. On testnet you can only mint at the [mint page](/network/faucet). It is not available on Mainnet.
 
-水龙头允许用户在 Devnet 和 Testnet 上获取测试用的 `APT`。在 Mainnet 上不可用。
-
-## Devnet 和 Testnet 的区别
-
-Devnet 和 Testnet 之间有什么区别？实际上没有。过去，Testnet 的水龙头有一些异常的方式。但现在已经不再如此。
-每个水龙头的端点如下：
+The endpoints for each faucet are:
 
 - Devnet: https://faucet.devnet.aptoslabs.com
-- Testnet: [todo](/network/faucet)
 
-### 通过终端调用水龙头
+## Using the faucet
 
-如果您想在其他语言中调用水龙头，有两种选择：
+Each SDK has integration for devnet to use the faucet. Below are a few examples, but you can
+see more information on each individual [SDK's documentation](../sdks.mdx).
 
-1. 从 [OpenAPI 规范](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-faucet/doc/spec.yaml)生成客户端。
-2. 自行调用水龙头。
+### Using the faucet in a wallet
 
-对于后者，您将需要构建类似于以下的查询：
+Most wallets, such as [Petra](https://aptosfoundation.org/ecosystem/project/petra) or [Pontem](https://aptosfoundation.org/ecosystem/project/pontem-wallet)
+will have a faucet button for devnet. See full list of [Aptos Wallets](https://aptosfoundation.org/ecosystem/projects/wallets).
+
+### Using the faucet in the Aptos CLI
+
+Once you've [set up your CLI](../cli/setup-cli.mdx), you can simply call fund-with-faucet.  The amount used is in Octas (1 APT = 100,000,000 Octas).
+
+```bash filename="Terminal"
+aptos account fund-with-faucet --account 0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6 --amount 100000000
+```
+
+### Using the faucet in the TypeScript SDK
+
+Here is an example funding the account `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6` with 1 APT in Devnet. The amount used is in Octas (1 APT = 100,000,000 Octas).
+
+```ts filename="index.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const aptos = new Aptos(new AptosConfig({network: Network.Devnet}));
+aptos.fundAccount({accountAddress: "0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6", amount: 100000000});
+```
+
+### Using the faucet in the Go SDK
+
+Here is an example funding the account `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6` with 1 APT in Devnet. The amount used is in Octas (1 APT = 100,000,000 Octas).
+
+```go filename="index.go"
+import "github.com/aptos-labs/aptos-go-sdk"
+
+func main() {
+	client, err := aptos.NewClient(aptos.LocalnetConfig)
+	if err != nil {
+		panic(err)
+	}
+
+  client.Fund("0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6", 100000000)
+}
+```
+
+### Calling the faucet: Other languages not supported by SDKs
+
+If you are trying to call the faucet in other languages, you have two options:
+
+1. Generate a client from
+the [OpenAPI spec](https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-faucet/doc/spec.yaml).
+2. Call the faucet on your own.
+
+For the latter, you will want to build a query similar to this:
 
 ```bash filename="Terminal"
 curl -X POST
 'https://faucet.devnet.aptoslabs.com/mint?amount=10000&address=0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6'
 ```
 
-这意味着铸造 10000 个 [Octas](../../network/glossary.mdx#Octa) 到地址 `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6`。
-
-### 调用水龙头：JavaScript / TypeScript
-
-如果您正在使用 JavaScript 或 TypeScript 构建客户端，您应该使用
-[@aptos-labs/aptos-faucet-client](https://www.npmjs.com/package/@aptos-labs/aptos-faucet-client)
- 包。该客户端是根据水龙头服务发布的 OpenAPI 规范生成的。
-
-Example use:
-
-```ts filename="index.ts"
-import {
-  AptosFaucetClient,
-  FundRequest,
-} from "@aptos-labs/aptos-faucet-client";
-
-async function callFaucet(amount: number, address: string): Promise<string []> {
-  const faucetClient = new AptosFaucetClient({
-    BASE: "https://faucet.devnet.aptoslabs.com",
-  });
-  const request: FundRequest = {
-    amount,
-    address,
-  };
-  const response = await faucetClient.fund({ requestBody: request });
-  return response.txn_hashes;
-}
-```
-
+This means mint 10000 [octas](../../network/glossary.mdx#Octa) to
+address `0xd0f523c9e73e6f3d68c16ae883a9febc616e484c4998a72d8899a1009e5a89d6`.

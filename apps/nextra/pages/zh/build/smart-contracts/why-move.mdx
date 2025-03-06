@@ -1,0 +1,51 @@
+---
+title: "Why Move?"
+---
+
+# Why Move?
+
+The Move programming language was originally created by a team of engineers at
+Facebook for the Diem Payment Network. Move is designed to be a platform-agnostic
+language to enable common libraries, tooling, and developer communities across
+diverse blockchains with vastly different data and execution models.
+At Aptos, we believe in building a strong developer community in Move and invite
+them to build upon the Move on Aptos stack and contribute to the open source software.
+
+Move is built upon the following principles:
+
+| **Principle**             | **Explanation**                                                                                                                                                                                                                                                                                                                                                                   |
+|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Secure by default**      | Financial systems are built to ensure users don't lose funds. Move was designed to prevent entire classes of attacks and bugs such as reentrancy attacks, double spends, and arithmetic overflow. Type safety and compile time checks are at the forefront of the security.                                                                                                         |
+| **Runtime Verification**   | The bytecode can be verified at runtime to verify that nothing has gone wrong, providing extra safety and preventing malicious actors.                                                                                                                                                                                                                                            |
+| **Formal Verification**    | Move on Aptos provides a specification language to provide formal verification of contracts. This allows for proving invariants and assists with code auditing.                                                                                                                                                                                                                    |
+| **Simplicity**             | The commands and bytecode are purposely simple. This allows for easy decompilation, runtime verification, and code inspection. Using regular programming languages for blockchains often requires to ignore large part of the language to make them suitable for smart contracts (e.g. Rust).                                                                                      |
+
+
+## Why Move on Aptos?
+
+Move on Aptos supports the full language built by the team at Facebook, with
+additional extensions built to improve the security and the developer experience.
+
+### Security
+
+| **Advantages**              | **Explanation**                                                                                                                                                                                                                                          |
+|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Formal Verification**     | Aptos framework is fully specified and formally verified with the Move Prover. This includes the core contracts involving governance, NFTs, and Tokens.                                                                                                   |
+| **Gas Coverage**            | Move VM has 100% gas coverage. Gas is charged based upon actual usage in the system (CPU, memory, storage, I/O). In other words, no gas exploits.                                                                                                          |
+| **Security Redundancy**     | Security redundancy provided by runtime safety checks.                                                                                                                                                                                                    |
+| **Permission Controls**     | Permission controls can flexibly be built at various levels. For example, token level permission controls exist by default to enable RWA tokenization.                                                                                                     |
+
+
+### Developer Experience
+
+| **Advantages**              | **Explanation**                                                                                                                                                                                                                                                                                                                                                                      |
+|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Move Development Tools**  | - **Unit testing**: Move has built-in unit testing for all contracts. Aptos additionally provides test functionality in the framework to test different scenarios. <br/> - **Coverage**: Coverage tooling allows for both source and bytecode level coverage reporting. <br/> - **Decompiler**: For better security, on-chain bytecode can be disassembled or decompiled to provide visibility into the actual contracts. <br/> - **IDE Plugins**: Aptos has support for two major IDEs: [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer) and [IntelliJ](https://plugins.jetbrains.com/plugin/14721-move-on-aptos). |
+| **Data Model**              | Aptos has an accessible data model with the data definition stored on-chain. Objects and accounts can have multiple distinct structures in an easy-to-parse format.                                                                                                                                                                                                                   |
+| **Upgradability**           | Upgradability ensures that application interfaces cannot be broken and doesn't require explicit adoption from downstream applications. Contracts can simply be upgraded in-place to fix bugs.                                                                                                                                                                                        |
+| **Cross-Interaction**       | Move allows for interaction between contracts by using type-safe structs.                                                                                                                                                                                                                                                                                                            |
+| **Code Storage**            | Aptos stores source code on-chain improving the ability to audit and ensure contract to bytecode correctness.                                                                                                                                                                                                                                                                         |
+| **Sponsored Transactions**  | Native sponsored transaction support allows for having transactions be paid by other users with no special services or contract-specific code required.                                                                                                                                                                                                                              |
+| **Robust Token Standards**  | The Digital Asset and Fungible Asset standards provide flexibility and a unified standard for diverse types of tokens and digital assets on-chain. These were influenced by existing standards such as ERC-20, ERC-721, ERC-1155 and Token-2022.                                                                                                                                      |
+| **On-chain Randomness**     | Native on-chain unbiasable randomness provides a safe and consistent way of getting random numbers, with extra safety checks at compile time.                                                                                                                                                                                                                                        |
+
