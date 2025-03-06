@@ -412,7 +412,61 @@ Notice that Alice's balance decreased by more than 1000 octas. The extra amount 
 </Callout>
 </Steps>
 
-## 7. Understanding the Transaction Lifecycle
+## 7. (Optional) Explore Your Transaction On-Chain
+
+Now that you've successfully executed a transaction, you can explore it on the Aptos Explorer. This will help you understand how transactions are recorded on the blockchain and what information is publicly available.
+
+<Steps>
+### Copy your transaction hash
+
+From your terminal output, copy the transaction hash that was printed after submission. It looks something like this:
+
+```
+Transaction submitted with hash: 0x3a8a3e34a1c64ad9d7636a3a827b7ec3bb12d73825b36fa06d425c5a3b42cccc
+```
+
+### Open the Aptos Explorer
+
+Go to the [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet).
+
+### Ensure you are on `Devnet` network
+
+Look for "Devnet" in the top right corner, or switch networks by clicking the dropdown and selecting Devnet.
+
+![Switching to Devnet network in Aptos Explorer](/screenshots/explorer_devnet.png)
+
+### Search for your transaction
+
+Paste your transaction hash into the search bar in the middle of the page.
+
+<Callout type="warning">
+Do not press enter! There is a known bug where searching with Enter does not work.
+</Callout>
+
+### View the transaction details
+
+Wait for the results to appear, then click on the transaction hash to view its details.
+
+You should see information about your transaction, including:
+- Status (should be "Success")
+- Timestamp
+- Gas used
+- Sender and recipient addresses
+- Amount transferred
+
+### Explore further
+
+From the transaction details page, you can:
+- Click on the sender or recipient addresses to view their account details
+- See the exact changes made to the blockchain state
+- View the transaction payload and arguments
+
+<Callout type="info">
+The Explorer is a powerful tool for debugging transactions and understanding blockchain activity. Developers frequently use it to verify their transactions executed as expected and to investigate any issues.
+</Callout>
+</Steps>
+
+## 8. Understanding the Transaction Lifecycle
 
 Let's review the five key steps in the transaction lifecycle:
 
@@ -424,7 +478,7 @@ Let's review the five key steps in the transaction lifecycle:
 
 This pattern is consistent across all transactions on Aptos, whether you're transferring coins, minting NFTs, or interacting with smart contracts.
 
-## 8. Transaction Structure in Detail
+## 9. Transaction Structure in Detail
 
 Every Aptos transaction contains several important components:
 
@@ -442,7 +496,7 @@ When a transaction is signed, the signature is combined with the transaction dat
 All transaction data is serialized using Binary Canonical Serialization (BCS) before being sent to the blockchain. This ensures consistent, compact representation of data across different platforms.
 </Callout>
 
-## 9. Advanced Transaction Features
+## 10. Advanced Transaction Features
 
 Aptos supports several advanced transaction features that extend beyond basic transfers:
 
@@ -499,7 +553,7 @@ await aptos.transaction.batch.forSingleAccount({
 });
 ```
 
-## 10. Next Steps
+## 11. Next Steps
 
 Congratulations! You've successfully created and executed your first transaction on the Aptos blockchain. Here are some suggestions for what to explore next:
 
@@ -931,7 +985,61 @@ Notice that Alice's balance decreased by more than 1000 octas. The extra amount 
 </Callout>
 </Steps>
 
-## 7. Understanding the Transaction Lifecycle
+## 7. (Optional) Explore Your Transaction On-Chain
+
+Now that you've successfully executed a transaction, you can explore it on the Aptos Explorer. This will help you understand how transactions are recorded on the blockchain and what information is publicly available.
+
+<Steps>
+### Copy your transaction hash
+
+From your terminal output, copy the transaction hash that was printed after submission. It looks something like this:
+
+```
+Transaction submitted with hash: 0x3a8a3e34a1c64ad9d7636a3a827b7ec3bb12d73825b36fa06d425c5a3b42cccc
+```
+
+### Open the Aptos Explorer
+
+Go to the [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet).
+
+### Ensure you are on `Devnet` network
+
+Look for "Devnet" in the top right corner, or switch networks by clicking the dropdown and selecting Devnet.
+
+![Switching to Devnet network in Aptos Explorer](/screenshots/explorer_devnet.png)
+
+### Search for your transaction
+
+Paste your transaction hash into the search bar in the middle of the page.
+
+<Callout type="warning">
+Do not press enter! There is a known bug where searching with Enter does not work.
+</Callout>
+
+### View the transaction details
+
+Wait for the results to appear, then click on the transaction hash to view its details.
+
+You should see information about your transaction, including:
+- Status (should be "Success")
+- Timestamp
+- Gas used
+- Sender and recipient addresses
+- Amount transferred
+
+### Explore further
+
+From the transaction details page, you can:
+- Click on the sender or recipient addresses to view their account details
+- See the exact changes made to the blockchain state
+- View the transaction payload and arguments
+
+<Callout type="info">
+The Explorer is a powerful tool for debugging transactions and understanding blockchain activity. Developers frequently use it to verify their transactions executed as expected and to investigate any issues.
+</Callout>
+</Steps>
+
+## 8. Understanding the Transaction Lifecycle
 
 Let's review the five key steps in the transaction lifecycle:
 
@@ -943,7 +1051,7 @@ Let's review the five key steps in the transaction lifecycle:
 
 This pattern is consistent across all transactions on Aptos, whether you're transferring coins, minting NFTs, or interacting with smart contracts.
 
-## 8. Transaction Structure in Detail
+## 9. Transaction Structure in Detail
 
 Every Aptos transaction contains several important components:
 
@@ -961,7 +1069,7 @@ When a transaction is signed, the signature is combined with the transaction dat
 All transaction data is serialized using Binary Canonical Serialization (BCS) before being sent to the blockchain. This ensures consistent, compact representation of data across different platforms.
 </Callout>
 
-## 9. Advanced Transaction Features
+## 10. Advanced Transaction Features
 
 Aptos supports several advanced transaction features that extend beyond basic transfers:
 
@@ -1026,7 +1134,7 @@ payload2 = EntryFunction.natural(
 # You would need to handle each transaction individually
 ```
 
-## 10. Next Steps
+## 11. Next Steps
 
 Congratulations! You've successfully created and executed your first transaction on the Aptos blockchain. Here are some suggestions for what to explore next:
 
