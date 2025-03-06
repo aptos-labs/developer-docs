@@ -2,7 +2,7 @@
 title: "Your First NFT"
 ---
 
-import { Callout, Steps } from 'nextra/components'
+import { Callout, Steps, Tabs } from 'nextra/components'
 
 # Your First NFT
 
@@ -173,13 +173,18 @@ npm install --save-dev @types/node
 
 1. Create a new TypeScript configuration file:
 
-```bash filename="Terminal"
-touch tsconfig.json
-```
-
-<Callout type="info">
-**Windows users:** Use `type nul > tsconfig.json` in Command Prompt.
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    touch tsconfig.json
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    type nul > tsconfig.json
+    ```
+  </Tabs.Tab>
+</Tabs>
 
 2. Open the `tsconfig.json` file and add the following configuration:
 
@@ -208,13 +213,18 @@ This configuration ensures TypeScript properly recognizes Node.js types and prov
 
 1. Create a `.env` file by running:
 
-```bash filename="Terminal"
-touch .env
-```
-
-<Callout type="info">
-**Windows users:** Use `type nul > .env` in Command Prompt.
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    touch .env
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    type nul > .env
+    ```
+  </Tabs.Tab>
+</Tabs>
 
 2. Open `.env` to edit it.
 3. Update `.env` to have the following line:
@@ -235,13 +245,18 @@ By default, we'll use `devnet`, but you can also choose `testnet` or `mainnet` d
 
 1. Create a new file called `index.ts` in your project folder:
 
-```bash filename="Terminal"
-touch index.ts
-```
-
-<Callout type="info">
-**Windows users:** Use `type nul > index.ts` in Command Prompt.
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    touch index.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash filename="Terminal"
+    type nul > index.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
 
 2. Open `index.ts` for editing.
 3. Copy the below code into `index.ts`: 
