@@ -76,9 +76,7 @@ In blockchain, all transactions must come from an account. Let's create two test
 <Steps>
 ### Set up the client
 
-First, we need to initialize the Aptos client that will connect to the blockchain:
-
-Open `transaction.ts` in your editor and add:
+First, we need to initialize the Aptos client that will connect to the blockchain. Open `transaction.ts` in your editor and add:
 
 ```ts filename="transaction.ts"
 import {
@@ -466,112 +464,20 @@ The Explorer is a powerful tool for debugging transactions and understanding blo
 </Callout>
 </Steps>
 
-## 8. Understanding the Transaction Lifecycle
-
-Let's review the five key steps in the transaction lifecycle:
-
-1. **Build**: Create a transaction specifying the sender, function to call, and arguments
-2. **Simulate** (Optional): Estimate the gas cost before committing
-3. **Sign**: Authorize the transaction with the sender's private key
-4. **Submit**: Send the signed transaction to the blockchain
-5. **Wait**: Monitor the transaction until it's processed
-
-This pattern is consistent across all transactions on Aptos, whether you're transferring coins, minting NFTs, or interacting with smart contracts.
-
-## 9. Transaction Structure in Detail
-
-Every Aptos transaction contains several important components:
-
-- **Sender**: The account address initiating the transaction
-- **Sequence Number**: A counter that increases with each transaction from the sender, preventing replay attacks
-- **Payload**: The operation to perform (entry function call, script, or module publishing)
-- **Max Gas Amount**: The maximum computational units the transaction can consume
-- **Gas Unit Price**: The price per unit of gas in octas
-- **Expiration Timestamp**: When the transaction becomes invalid if not executed
-- **Chain ID**: Identifies which Aptos network the transaction is for (e.g., devnet, testnet, mainnet)
-
-When a transaction is signed, the signature is combined with the transaction data to create a `SignedTransaction` that can be submitted to the blockchain.
-
-<Callout type="info">
-All transaction data is serialized using Binary Canonical Serialization (BCS) before being sent to the blockchain. This ensures consistent, compact representation of data across different platforms.
-</Callout>
-
-## 10. Advanced Transaction Features
-
-Aptos supports several advanced transaction features that extend beyond basic transfers:
-
-### Multi-Agent Transactions
-
-Multi-agent transactions allow multiple accounts to participate in a single transaction. This is useful for operations that require approval from multiple parties.
-
-```ts filename="multi-agent-example.ts"
-// Example of building a multi-agent transaction
-const transaction = await aptos.transaction.build.multiAgent({
-  sender: alice.accountAddress,
-  secondarySignerAddresses: [bob.accountAddress],
-  data: {
-    function: "0x1::your_module::your_function",
-    functionArguments: [...],
-  },
-});
-```
-
-### Sponsored Transactions
-
-Sponsored transactions allow one account to pay gas fees for another account's transaction. This is useful for applications that want to cover gas costs for their users.
-
-```ts filename="sponsored-example.ts"
-// Example of building a sponsored transaction
-const transaction = await aptos.transaction.build.simple({
-  sender: alice.accountAddress,
-  withFeePayer: true,  // Indicates this will be a sponsored transaction
-  data: {
-    function: "0x1::aptos_account::transfer",
-    functionArguments: [bob.accountAddress, 1000],
-  },
-});
-```
-
-### Batch Transactions
-
-Batch transactions allow you to submit multiple transactions quickly from a single account. This is useful for operations that require multiple independent steps.
-
-```ts filename="batch-example.ts"
-// Example of batching transactions
-await aptos.transaction.batch.forSingleAccount({
-  sender: alice,
-  data: [
-    {
-      function: "0x1::aptos_account::transfer",
-      functionArguments: [bob.accountAddress, 1000],
-    },
-    {
-      function: "0x1::aptos_account::transfer",
-      functionArguments: [carol.accountAddress, 2000],
-    },
-  ],
-});
-```
-
-## 11. Next Steps
+## 8. Next Steps
 
 Congratulations! You've successfully created and executed your first transaction on the Aptos blockchain. Here are some suggestions for what to explore next:
 
-1. **Learn about more complex transactions**:
-   - [Multi-Agent Signatures](../sdks/ts-sdk/building-transactions/multi-agent-transactions.mdx) - Transactions requiring multiple signers
-   - [Sponsoring Transactions](../sdks/ts-sdk/building-transactions/sponsoring-transactions.mdx) - Having another account pay gas fees
-   - [Batching Transactions](../sdks/ts-sdk/building-transactions/batching-transactions.mdx) - Sending multiple transactions efficiently
-   - [Binary Canonical Serialization (BCS)](../sdks/ts-sdk/building-transactions/bcs-format.mdx) - Understanding the serialization format
+**Learn about more complex transactions**:
+  - [Multi-Agent Signatures](../sdks/ts-sdk/building-transactions/multi-agent-transactions) - Transactions requiring multiple signers
+  - [Sponsoring Transactions](../sdks/ts-sdk/building-transactions/sponsoring-transactions) - Having another account pay gas fees
+  - [Batching Transactions](../sdks/ts-sdk/building-transactions/batching-transactions) - Sending multiple transactions efficiently
 
-2. **Explore smart contracts**:
-   - [Your First Move Module](first-move-module.mdx) - Create your own smart contract
-   - [Your First Coin](first-coin.mdx) - Create a custom token
-   - [Your First NFT](your-first-nft.mdx) - Create a non-fungible token
+**Explore smart contracts or account basics**:
+  - [Your First Move Module](first-move-module) - Create your own smart contract
+  - [Account Basics](../../network/blockchain/accounts)
 
-3. **Dive deeper into Aptos**:
-   - [Account Basics](../../network/blockchain/accounts.mdx)
-   - [Gas and Transaction Fees](../../network/blockchain/gas.mdx)
-   - [Join the Aptos Discord](https://discord.gg/aptoslabs)
+[Join the Aptos Discord](https://discord.gg/aptoslabs) and share what you're building!
 
 </Tabs.Tab>
 <Tabs.Tab>
@@ -614,9 +520,7 @@ In blockchain, all transactions must come from an account. Let's create two test
 <Steps>
 ### Set up the client
 
-First, we need to initialize the Aptos client that will connect to the blockchain:
-
-Open `transaction.py` in your editor and add:
+First, we need to initialize the Aptos client that will connect to the blockchain. Open `transaction.py` in your editor and add:
 
 ```python filename="transaction.py"
 import asyncio
@@ -968,6 +872,10 @@ Transaction would succeed
 Transaction signed successfully
 
 === 4. Submitting the transaction ===
+=== 3. Signing the transaction ===
+Transaction signed successfully
+
+=== 4. Submitting the transaction ===
 Transaction submitted with hash: 0x3a8a3e34a1c64ad9d7636a3a827b7ec3bb12d73825b36fa06d425c5a3b42cccc
 
 === 5. Waiting for transaction completion ===
@@ -1039,120 +947,24 @@ The Explorer is a powerful tool for debugging transactions and understanding blo
 </Callout>
 </Steps>
 
-## 8. Understanding the Transaction Lifecycle
-
-Let's review the five key steps in the transaction lifecycle:
-
-1. **Build**: Create a transaction specifying the sender, function to call, and arguments
-2. **Simulate** (Optional): Estimate the gas cost before committing
-3. **Sign**: Authorize the transaction with the sender's private key
-4. **Submit**: Send the signed transaction to the blockchain
-5. **Wait**: Monitor the transaction until it's processed
-
-This pattern is consistent across all transactions on Aptos, whether you're transferring coins, minting NFTs, or interacting with smart contracts.
-
-## 9. Transaction Structure in Detail
-
-Every Aptos transaction contains several important components:
-
-- **Sender**: The account address initiating the transaction
-- **Sequence Number**: A counter that increases with each transaction from the sender, preventing replay attacks
-- **Payload**: The operation to perform (entry function call, script, or module publishing)
-- **Max Gas Amount**: The maximum computational units the transaction can consume
-- **Gas Unit Price**: The price per unit of gas in octas
-- **Expiration Timestamp**: When the transaction becomes invalid if not executed
-- **Chain ID**: Identifies which Aptos network the transaction is for (e.g., devnet, testnet, mainnet)
-
-When a transaction is signed, the signature is combined with the transaction data to create a `SignedTransaction` that can be submitted to the blockchain.
-
-<Callout type="info">
-All transaction data is serialized using Binary Canonical Serialization (BCS) before being sent to the blockchain. This ensures consistent, compact representation of data across different platforms.
-</Callout>
-
-## 10. Advanced Transaction Features
-
-Aptos supports several advanced transaction features that extend beyond basic transfers:
-
-### Multi-Agent Transactions
-
-Multi-agent transactions allow multiple accounts to participate in a single transaction. This is useful for operations that require approval from multiple parties.
-
-```python filename="multi-agent-example.py"
-# Example of building a multi-agent transaction
-# First create a transaction payload
-payload = EntryFunction.natural(
-    "0x1::your_module",
-    "your_function",
-    [],
-    [
-        # Function arguments
-    ],
-)
-
-# Get sequence number for the primary signer (Alice)
-account_data = await rest_client.account(alice.address())
-sequence_number = int(account_data["sequence_number"])
-
-# Build and sign the transaction with multiple signers
-# This requires more complex handling with the Python SDK
-# See the Aptos Python SDK documentation for detailed examples
-```
-
-### Sponsored Transactions
-
-Sponsored transactions allow one account to pay gas fees for another account's transaction. This is useful for applications that want to cover gas costs for their users.
-
-```python filename="sponsored-example.py"
-# Example of a sponsored transaction approach in Python
-# The sponsorship pattern requires more complex handling in the Python SDK
-# See the Aptos Python SDK documentation for detailed examples
-```
-
-### Batch Transactions
-
-Batch transactions allow you to submit multiple transactions quickly from a single account. This is useful for operations that require multiple independent steps.
-
-```python filename="batch-example.py"
-# Example of batching transactions in Python
-# Create multiple transaction payloads
-payload1 = EntryFunction.natural(
-    "0x1::aptos_account",
-    "transfer",
-    [],
-    [TransactionArgument(bob.address(), Serializer.struct), TransactionArgument(1000, Serializer.u64)],
-)
-
-payload2 = EntryFunction.natural(
-    "0x1::aptos_account",
-    "transfer",
-    [],
-    [TransactionArgument(carol.address(), Serializer.struct), TransactionArgument(2000, Serializer.u64)],
-)
-
-# Submit transactions sequentially
-# Note: The Python SDK doesn't have a built-in batching mechanism like the TS SDK
-# You would need to handle each transaction individually
-```
-
-## 11. Next Steps
+## 8. Next Steps
 
 Congratulations! You've successfully created and executed your first transaction on the Aptos blockchain. Here are some suggestions for what to explore next:
 
-1. **Learn about more complex transactions**:
-   - [Multi-Agent Signatures](../sdks/ts-sdk/building-transactions/multi-agent-transactions.mdx) - Transactions requiring multiple signers
-   - [Sponsoring Transactions](../sdks/ts-sdk/building-transactions/sponsoring-transactions.mdx) - Having another account pay gas fees
-   - [Batching Transactions](../sdks/ts-sdk/building-transactions/batching-transactions.mdx) - Sending multiple transactions efficiently
-   - [Binary Canonical Serialization (BCS)](../sdks/ts-sdk/building-transactions/bcs-format.mdx) - Understanding the serialization format
+**Learn about more complex transactions**:
+  - [Multi-Agent Signatures](../sdks/ts-sdk/building-transactions/multi-agent-transactions) - Transactions requiring multiple signers
+  - [Sponsoring Transactions](../sdks/ts-sdk/building-transactions/sponsoring-transactions) - Having another account pay gas fees
+  - [Batching Transactions](../sdks/ts-sdk/building-transactions/batching-transactions) - Sending multiple transactions efficiently
 
-2. **Explore smart contracts**:
-   - [Your First Move Module](first-move-module.mdx) - Create your own smart contract
-   - [Your First Coin](first-coin.mdx) - Create a custom token
-   - [Your First NFT](your-first-nft.mdx) - Create a non-fungible token
+<Callout type="info">
+These links are for the Typescript SDK but the principlesa are the same.
+</Callout>
 
-3. **Dive deeper into Aptos**:
-   - [Account Basics](../../network/blockchain/accounts.mdx)
-   - [Gas and Transaction Fees](../../network/blockchain/gas.mdx)
-   - [Join the Aptos Discord](https://discord.gg/aptoslabs)
+**Explore smart contracts or account basics**:
+  - [Your First Move Module](first-move-module) - Create your own smart contract
+  - [Account Basics](../../network/blockchain/accounts)
+
+[Join the Aptos Discord](https://discord.gg/aptoslabs) and share what you're building!
 
 </Tabs.Tab>
 </Tabs>
