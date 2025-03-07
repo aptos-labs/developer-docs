@@ -188,13 +188,29 @@ export const decodeEphemeralKeyPair = (encodedEkp: string): EphemeralKeyPair =>
         });
         ```
 
-        2. Federated Keyless
+        2. Federated Keyless (Auth0)
         ```tsx
         import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
 
         const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET })); // Configure your network here
         const keylessAccount = await aptos.deriveKeylessAccount({
             jwt,
+            ephemeralKeyPair,
+            jwkAddress: jwkOwner.accountAddress
+        });
+        ```
+
+        3. Federated Keyless (Cognito)
+
+        For Cognito, you will need to use another API to derive the `KeylessAccount` for the user.  This is in order to handle the specific way Cognito encodes the JWT.
+        The account returned will be a MultiKey account which provides interoperability between JWT encodings.
+
+        ```tsx
+        import {Aptos, AptosConfig, Network} from '@aptos-labs/ts-sdk';
+
+        const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET })); // Configure your network here
+        const keylessAccount = await aptos.deriveCognitoKeylessAccount({
+            jwt, // The JWT from Cognito
             ephemeralKeyPair,
             jwkAddress: jwkOwner.accountAddress
         });
