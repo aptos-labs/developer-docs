@@ -509,7 +509,7 @@ class Installer:
                 "OpenSSL 1.x.x is deprecated, and future versions of the Aptos CLI may not be published with it",
             )
         )
-        return "Ubuntu-x86_64"
+        return "Ubuntu-22.04-x86_64"
 
     def _write(self, line) -> None:
         sys.stdout.write(line + "\n")
