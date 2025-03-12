@@ -24,18 +24,18 @@ import { useWallet } from "@aptos-labs/wallet-adapter-react";
 ```tsx filename="App.tsx"
 function App (
 	const { account } = useWallet();
-	...
 )
 ```
 
 The `account` object is `null` if there is no account connected; when an account is connected, the `account` object holds the account information, including the account address.
 
 3. Next, we want to fetch the account’s TodoList resource.
-   Begin by importing `useEffect` by using `jsx import useEffect from "react"; `
+   Begin by importing `useEffect` by using `import { useEffect } from "react";`
    Let’s add a `useEffect` hook to our file that would call a function to fetch the resource whenever our account address changes:
 
 ```tsx filename="App.tsx"
 function App() {
+  import { useEffect } from "react"
   ...
   useEffect(() => {
     fetchList();
@@ -54,8 +54,8 @@ function App (
 )
 ```
 
-also import `useEffect` using
-`import { useState, useEffect } from "react"; ` and 
+also import `useState` using
+`import { useState, useEffect } from "react";` 
 
 5. Import `MODULE_ADDRESS` variable using `import { MODULE_ADDRESS } from "./constants";`. This is the address of the module we published in the previous chapter.
 6. Import `aptosClient` using `import { aptosClient } from "./utils/aptosClient";`. This is a client `create-aptos-dapp` created for us to interact with the chain.
