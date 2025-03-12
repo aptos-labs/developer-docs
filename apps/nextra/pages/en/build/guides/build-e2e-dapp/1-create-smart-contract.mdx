@@ -4,74 +4,62 @@ import { Callout } from 'nextra/components';
 
 This is the first chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx). If you haven’t done it, review that introduction, and ensure your environment meets the [prerequisites](../build-e2e-dapp.mdx#prerequisites) listed there.
 
-Now that you are all set up and at your terminal:
+Now that you are all set up, let's explore the `contract` directory.
 
-1.  `cd` into the `my-first-dapp` root directory, and create a new `move` directory.
-2.  `cd` into the new `move` directory and run: `aptos move init --name my_todo_list`
-    That command creates a `sources/` directory and `Move.toml` file inside the `move` directory.
-3.  Your new `move` directory should now resemble:
-
-    ![move-directory](/docs/build-e2e-dapp-img-1.png)
+![contract-directory](/docs/build-e2e-dapp-img-1-1.png)
 
 ### What is a `Move.toml` file?
 
 A `Move.toml` file is a manifest file that contains metadata such as name, version, and dependencies for the package.
 
-Take a look at the new `Move.toml` file. You should see your package information and an `AptosFramework` dependency. Note that the `name` property is the same `--name` attribute we passed to the `aptos move init` command before. The `AptosFramework` dependency points to the `aptos-core/aptos-move/framework/aptos-framework` GitHub repo main branch.
+Take a look at the new `Move.toml` file. You should see your package information and an `AptosFramework` dependency. The `AptosFramework` dependency points to the `aptos-core/aptos-move/framework/aptos-framework` GitHub repo main branch.
 
 ### Why `sources` directory?
 
 The `sources` directory holds a collection of `.move` modules files. And later when we want to compile the package using the CLI, the compiler will look for that `sources` directory and its `Move.toml` file.
 
+### What is the `tests` directory?
+
+The `tests` directory holds `.move` files that are used to test the files in our `sources` directory.
+
 ### Create a Move module
 
-An account is needed to publish a Move module. So first we need to create an account. Once we have the account's private key, we can create a module under its account address and publish the module using that account.
+An account is needed to publish a Move module. When we installed the template, the tool created a new account for us and added it to the `.env` file.
+If you open that file, you will see content resembling:
 
-1. In our `move` directory, run `aptos init --network devnet`. Press enter when prompted.
-
-   This creates for us a `.aptos` directory with a `config.yaml` file that holds our profile information. In the `config.yaml` file, we now have our profiles list that holds a `default` profile. If you open that file, you will see content resembling:
-
-   ```yaml filename="config.yaml"
-   profiles:
-     default:
-       private_key: "0xee8f387ef0b4bb0018c4b91d1c0f71776a9b85935b4c6ec2823d6c0022fbf5cb"
-       public_key: "0xc6c07218d79a806380ca67761905063ec7a78d41f79619f4562462a0f8b6be11"
-       account: cbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018
-       rest_url: "https://api.devnet.aptoslabs.com"
-       faucet_url: "https://faucet.devnet.aptoslabs.com"
-   ```
-
-   From now on, whenever we run a CLI command in this `move` directory, it will run with that default profile.
-   We use the `devnet` network flag so eventually when we publish our package it will get published to the `devnet` network.
-
-   <Callout type="info">
-   You just created a new account on the Aptos (dev) network! Yay! You can see it by going to the [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet) Devnet network view, pasting the `account` address value from your configuration file into the search field, and clicking on the dropdown option!
-   </Callout>
-
-As mentioned, our `sources` directory holds our `.move` module files; so let’s add our first Move file.
-
-2. Open the `Move.toml` file.
-3. Add the following code to that Move file, substituting your actual default profile account address from `.aptos/config.yaml`:
-
-```toml  filename="Move.toml"
-[addresses]
-todolist_addr='<default-profile-account-address>'
+```bash filename=".env"
+PROJECT_NAME=my-aptos-dapp
+VITE_APP_NETWORK=devnet
+VITE_APTOS_API_KEY=""
+VITE_MODULE_PUBLISHER_ACCOUNT_ADDRESS=0x1cecfef9e239eff12fb1a3d189a121c37f48908d86c0e9c02ec103e0a05ddebb
+#This is the module publisher account's private key. Be cautious about who you share it with, and ensure it is not exposed when deploying your dApp.
+VITE_MODULE_PUBLISHER_ACCOUNT_PRIVATE_KEY=0x84638fd5c42d0937503111a587307169842f355ab661b5253c01cfe389373f43
 ```
 
-If the default profile account address is `cbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018`, your `Move.toml` file should look like:
+<Callout type="info">
+You just created a new account on the Aptos (dev) network! Yay! You can see it by going to the Aptos Explorer Devnet network view, pasting the `VITE_MODULE_PUBLISHER_ACCOUNT_ADDRESS` value from your `.env` file into the search field, and clicking on the dropdown option!
+</Callout>
 
-```toml filename="Move.toml"
-[addresses]
-todolist_addr='cbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018'
-```
+The Boilerplate template comes with a pre generated `message_board.move` file, a relevant test file and a `Move.toml` file.
 
-4. Create a new `todolist.move` file within the `sources` directory and add the following to that file:
+As mentioned, our sources directory holds our `.move` module files; so let's create a new `todolist.move` file.
+
+1. Create a new `todolist.move` file within the `sources` directory and add the following to that file:
 
 ```move filename="todolist.move"
 module todolist_addr::todolist {
 
 }
 ```
+
+2. Open the `Move.toml` file.
+3. Add the following code to that Move file:
+
+```toml  filename="Move.toml"
+[addresses]
+todolist_addr='_'
+```
+
 
 <Callout type="info">
 A Move module is stored under an address (so when it published anyone can access it using that address); the syntax for a Move module is
@@ -83,6 +71,26 @@ module <account-address>::<module-name> {
 ```
 
 In our module, the `account-address` is `todolist_addr` (a variable we just declared on the `Move.toml` file in the previous step that holds an `address`), and the `module-name` is `todolist` (a random name we selected).
+</Callout>
+
+### What is the `'_'` in the `Move.toml` file?
+
+The `'_'` is a placeholder for the account address. When we run the `move` compiler, the compiler will replace it with the actual account address.
+
+`create-aptos-dapp` comes with premade scripts to easily run `move` commands, like `compile`, `test` and `publish`.
+
+1. Open each of the files in the `scripts/move` directory and update the `message_board_addr` variable to be `todolist_addr`.
+
+```js filename="scripts/move/compile.js"
+...
+  namedAddresses: {
+    todolist_addr: process.env.VITE_MODULE_PUBLISHER_ACCOUNT_ADDRESS,
+  },
+...
+```
+
+<Callout type="info">
+Later, when we will run the each of the `move` commands, it will run these scripts, and replace the `'_'` with the actual account address that assigned to the `todolist_addr` variable.
 </Callout>
 
 ### Our contract logic
@@ -155,8 +163,7 @@ A struct that has the `store`, `drop` and `copy`abilities.
 
 Let’s try to compile what we have now:
 
-1. `cd` into the `move` directory.
-2. Run: `aptos move compile`
+1. Run: `npm run move:compile`
 
 **Seeing errors?!** Let’s understand them.
 
@@ -174,21 +181,28 @@ use aptos_std::table::Table;
 
 That will tell the compiler where it can get those types from.
 
-4. Run the `aptos move compile` command again; If all goes well, we should see a response resembling (where the resulting account address is your default profile account address):
+2. Run the `npm run move:compile` command again; If all goes well, we should see a response resembling (where the resulting account address is your default profile account address):
 
 ```bash filename="Terminal"
+Compiling, may take a little while to download git dependencies...
+UPDATING GIT DEPENDENCY https://github.com/aptos-labs/aptos-core.git
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib
 INCLUDING DEPENDENCY MoveStdlib
-BUILDING myTodolist
+BUILDING MessageBoard
 {
 "Result": [
-    "cbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018::todolist"
+    "1cecfef9e239eff12fb1a3d189a121c37f48908d86c0e9c02ec103e0a05ddebb::message_board",
+    "1cecfef9e239eff12fb1a3d189a121c37f48908d86c0e9c02ec103e0a05ddebb::todolist"
   ]
 }
 ```
 
 At this point, we have successfully compiled our Move module. Yay!
+
+We can also delete the `message_board.move` file, as we won't be using it. And remove the `message_board_addr` from the `Move.toml` file.
+
+3. Let's make sure eveyrthing is still working by running the `npm run move:compile` command again.
 
 We also have a new `move/build` directory (created by the compiler) that holds our compiled modules, build information and `sources` directory.
 
@@ -311,14 +325,14 @@ public entry fun complete_task(account: &signer, task_id: u64) acquires TodoList
 
 Now try to compile the code:
 
-2. Run: `aptos move compile`
+2. Run: `npm run move:compile`
 3. Another `Unbound` error? To fix this, add a `use` statement to use the `account` module.
 
 ```move filename="todolist.move"
 use aptos_framework::account;
 ```
 
-4. run `aptos move compile` again.
+4. run `npm run move:compile` again.
 
 ### Add validations
 
@@ -372,7 +386,7 @@ On the top of the module file (under the `use` statements), add those error decl
 
 ```move filename="todolist.move"
 // Errors
-const E_NOT_INITIALIZED: u64 = 1;
+const ENOT_INITIALIZED: u64 = 1;
 const ETASK_DOESNT_EXIST: u64 = 2;
 const ETASK_IS_COMPLETED: u64 = 3;
 ```
@@ -385,7 +399,7 @@ public entry fun create_task(account: &signer, content: String) acquires TodoLis
   let signer_address = signer::address_of(account);
 
   // assert signer has created a list
-  assert!(exists<TodoList>(signer_address), E_NOT_INITIALIZED);
+  assert!(exists<TodoList>(signer_address), ENOT_INITIALIZED);
 
   ...
 }
@@ -395,7 +409,7 @@ public entry fun create_task(account: &signer, content: String) acquires TodoLis
 public entry fun complete_task(account: &signer, task_id: u64) acquires TodoList {
   // gets the signer address
   let signer_address = signer::address_of(account);
-  assert!(exists<TodoList>(signer_address), E_NOT_INITIALIZED);
+  assert!(exists<TodoList>(signer_address), ENOT_INITIALIZED);
   // gets the TodoList resource
   let todo_list = borrow_global_mut<TodoList>(signer_address);
   // assert task exists
@@ -411,16 +425,18 @@ public entry fun complete_task(account: &signer, task_id: u64) acquires TodoList
 
 **WONDERFUL!!**
 
-Let’s stop for one moment and make sure our code compiles by running the `aptos move compile` command. If all goes well, we should output resembling:
+Let’s stop for one moment and make sure our code compiles by running the `npm run move:compile` command. If all goes well, we should output resembling:
 
 ```bash filename="Terminal"
+Compiling, may take a little while to download git dependencies...
+UPDATING GIT DEPENDENCY https://github.com/aptos-labs/aptos-core.git
 INCLUDING DEPENDENCY AptosFramework
 INCLUDING DEPENDENCY AptosStdlib
 INCLUDING DEPENDENCY MoveStdlib
-BUILDING myTodolist
+BUILDING MessageBoard
 {
-"Result": [
-    "cbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018::todolist"
+  "Result": [
+    "1cecfef9e239eff12fb1a3d189a121c37f48908d86c0e9c02ec103e0a05ddebb::todolist"
   ]
 }
 ```
@@ -431,22 +447,9 @@ If you encounter errors, make sure you followed the steps above correctly and tr
 
 Now that we have our smart contract logic ready, we need to add some tests for it.
 
-Test functions use the `#[test]` annotation.
+First, delete the `test_end_to_end.move` file in the `tests` directory, as we won't be using it.
 
-1. Add the following code to the bottom of the file:
-
-```move filename="todolist.move"
-#[test]
-public entry fun test_flow() {
-
-}
-```
-
-<Callout type="info">
-we need to use `entry` here because we are testing an `entry` function.
-</Callout>
-
-2. For simplicity, and because we don't have much code to test, we use one function to test the whole flow of the app.
+1. For simplicity, and because we don't have much code to test, we use one function to test the whole flow of the app and will have it in the `todolist.move` file.
    The test steps are:
 
 ```move filename="todolist.move"
@@ -455,7 +458,22 @@ we need to use `entry` here because we are testing an `entry` function.
   // update task as completed
 ```
 
-Update the test function to be:
+2. Add the following code to the bottom of the `todolist.move` file:
+
+```move filename="todolist.move"
+#[test]
+public entry fun test_flow() {
+ 
+}
+```
+Note: Test functions use the `#[test]` annotation.
+
+<Callout type="info">
+we need to use `entry` here because we are testing an `entry` function.
+</Callout>
+
+
+3. Update the test function to be:
 
 ```move filename="todolist.move"
 #[test(admin = @0x123)]
@@ -512,11 +530,11 @@ Before running the tests again, we need to import (`use`) some new modules we ar
 use std::string::{Self, String}; // already have it, need to modify
 ```
 
-4. Run the `aptos move test` command. If all goes right, we should see a success message like:
+4. Run the `npm run move:test` command. If all goes right, we should see a success message like:
 
 ```move filename="todolist.move"
 Running Move unit tests
-[ PASS    ] 0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018::todolist::test_flow
+[ PASS    ] 0x1cecfef9e239eff12fb1a3d189a121c37f48908d86c0e9c02ec103e0a05ddebb::todolist::test_flow
 Test result: OK. Total tests: 1; passed: 1; failed: 0
 {
   "Result": "Success"
@@ -527,7 +545,7 @@ Test result: OK. Total tests: 1; passed: 1; failed: 0
 
 ```move filename="todolist.move"
 #[test(admin = @0x123)]
-#[expected_failure(abort_code = E_NOT_INITIALIZED)]
+#[expected_failure(abort_code = ENOT_INITIALIZED)]
 public entry fun account_can_not_update_task(admin: signer) acquires TodoList {
   // creates an admin @todolist_addr account for test
   account::create_account_for_test(signer::address_of(&admin));
@@ -538,14 +556,14 @@ public entry fun account_can_not_update_task(admin: signer) acquires TodoList {
 
 This test confirms that an account can’t use that function if they haven’t created a list before.
 
-The test also uses a special annotation `#[expected_failure]` that, as the name suggests, expects to fail with an `E_NOT_INITIALIZED` error code.
+The test also uses a special annotation `#[expected_failure]` that, as the name suggests, expects to fail with an `ENOT_INITIALIZED` error code.
 
 6. Run the `aptos move test` command. If all goes right, we should see a success message like:
 
 ```bash filename="Terminal"
 Running Move unit tests
-[ PASS    ] 0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018::todolist::account_can_not_update_task
-[ PASS    ] 0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018::todolist::test_flow
+[ PASS    ] 0x1cecfef9e239eff12fb1a3d189a121c37f48908d86c0e9c02ec103e0a05ddebb::todolist::account_can_not_update_task
+[ PASS    ] 0x1cecfef9e239eff12fb1a3d189a121c37f48908d86c0e9c02ec103e0a05ddebb::todolist::test_flow
 Test result: OK. Total tests: 2; passed: 2; failed: 0
 {
   "Result": "Success"
@@ -556,9 +574,7 @@ Now that everything works, we can compile the Move modules and publish the Move 
 
 ### Publish todolist module to chain
 
-For now, the easiest way to publish a Move package to chain is using the CLI:
-
-1. `cd` into our `move` directory, and run: `aptos move compile`
+1. Run: `npm run move:compile`
 
 We are getting some _Unused alias_ errors. This is because we added the `string` alias before since we use it in our tests. But we don't use this alias in our smart contract code.
 
@@ -575,27 +591,41 @@ use std::string::String; // change to this
 use std::string; // add this
 ```
 
-2. Run: `aptos move test` and `aptos move compile` - all should work without errors.
-3. Run: `aptos move publish`
+2. Run: `npm run move:test` and `npm run move:compile` - all should work without errors.
+3. Run: `npm run move:publish`
 4. Enter `yes` in the prompt.
-5. That will compile, simulate and finally publish your module into devnet. You should see a success message:
+
+**Oh no! We got an error!**
+
+It complains about an account mismatch. Apperantly we compiled the package with a different account we try to publish it.
+
+Let's fix it.
+
+1. Open the `scripts/move/publish.js` file.
+2. Update the `addressName` variable value to be `todolist_addr`.
+
+That will use the same account we used for compiling the package.
+
+Let's try again:
+
+1. Run: `npm run move:publish`
+2. Enter `yes` in the prompt.
+3. Enter `yes` in the second prompt.
+
+4. That will compile, simulate and finally publish your module into devnet. You should see a success message:
 
 ```bash filename="Terminal"
+Transaction submitted: https://explorer.aptoslabs.com/txn/0x68dadf24b9ec29b9c32bd78836d20032de615bbef5f10db580228577f7ca945a?network=devnet
+Code was successfully deployed to object address 0x2bce4f7bb8a67641875ba5076850d2154eb9621b0c021982bdcd80731279efa6
 {
-  "Result": {
-    "transaction_hash": "0x96b84689a53a28db7be6346627a99967f719946bc22766811a674e69da7783fa",
-    "gas_used": 7368,
-    "gas_unit_price": 100,
-    "sender": "cbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018",
-    "sequence_number": 2,
-    "success": true,
-    "timestamp_us": 1674246585276143,
-    "version": 651327,
-    "vm_status": "Executed successfully"
-  }
+  "Result": "Success"
 }
 ```
 
-6. You can now head to the [Aptos Explorer](https://explorer.aptoslabs.com/), change the dropdown on the top right to the _Devnet_ network and look for that `transaction_hash` value - this will show you the transaction details.
+6. You can now head to the [Aptos Explorer](https://explorer.aptoslabs.com/) link and view the transaction details. You can also see the module published on chain by looking for the object address.
 
-Now let's [set up a React app](2-set-up-react-app.mdx) in chapter 2.
+<Callout type="info">
+Check out your `.env` file and see the `VITE_MODULE_ADDRESS` variable, it is set to the object address of the published module.
+</Callout>
+
+Now let's [set up the frontend](2-set-up-the-frontend.mdx) in chapter 2.

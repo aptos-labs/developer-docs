@@ -1,8 +1,8 @@
-# 6. Handle Tasks
+# 5. Handle Tasks
 
-In the sixth and final chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx), you will add functionality to the app so the user interface is able to handle cases where an account has created a list.
+In the fifth and final chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx), you will add functionality to the app so the user interface is able to handle cases where an account has created a list.
 
-We have covered how to [fetch data](4-fetch-data-from-chain.mdx) (an account’s todo list) from chain and how to [submit a transaction](5-submit-data-to-chain.mdx) (new todo list) to chain using Wallet.
+We have covered how to [fetch data](3-fetch-data-from-chain.mdx) (an account’s todo list) from chain and how to [submit a transaction](4-submit-data-to-chain.mdx) (new todo list) to chain using Wallet.
 
 Let’s finish building our app by implementing fetch tasks and adding a task function.
 
@@ -30,10 +30,10 @@ function App() {
 const fetchList = async () => {
   if (!account) return [];
   try {
-    const todoListResource = await aptos.getAccountResource(
-        {accountAddress:account?.address,
-          resourceType:`${moduleAddress}::todolist::TodoList`}
-      );
+    const todoListResource = await aptosClient().getAccountResource({
+      accountAddress:account?.address,
+      resourceType:`${moduleAddress}::todolist::TodoList`
+    });
     setAccountHasList(true);
 		// tasks table handle
     const tableHandle = (todoListResource as any).tasks.handle;
@@ -48,11 +48,11 @@ const fetchList = async () => {
         value_type: `${moduleAddress}::todolist::Task`,
         key: `${counter}`,
       };
-      const task = await aptos.getTableItem<Task>({handle:tableHandle, data:tableItem});
+      const task = await aptosClient().getTableItem<Task>({handle:tableHandle, data:tableItem});
       tasks.push(task);
       counter++;
     }
-		// set tasks in local state
+	  // set tasks in local state
     setTasks(tasks);
   } catch (e: any) {
     setAccountHasList(false);
@@ -82,7 +82,7 @@ while (counter <= taskCounter) {
     value_type: `${moduleAddress}::todolist::Task`,
     key: `${counter}`,
   };
-  const task = await provider.getTableItem(tableHandle, tableItem);
+  const task = await aptosClient().getTableItem(tableHandle, tableItem);
   tasks.push(task);
   counter++;
 }
@@ -119,88 +119,54 @@ Where `key_type` is the table `key` type, `key` is the key value we are looking 
 
 The last thing we want to do is display the tasks we just fetched.
 
-6. In our `App.tsx` file, update our UI with the following code:
+3. In our `App.tsx` file, update our UI with the following code:
+
+Import the `Input` using `import { Input } from "./components/ui/input";`
 
 ```tsx filename="App.tsx"
-{
-  !accountHasList ? (
-    <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
-      <Col span={8} offset={8}>
-        <Button
-          disabled={!account}
-          block
-          onClick={addNewList}
-          type="primary"
-          style={{ height: "40px", backgroundColor: "#3f67ff" }}
-        >
-          Add new list
-        </Button>
-      </Col>
-    </Row>
-  ) : (
-    <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
-      <Col span={8} offset={8}>
-        {tasks && (
-          <List
-            size="small"
-            bordered
-            dataSource={tasks}
-            renderItem={(task: any) => (
-              <List.Item actions={[<Checkbox />]}>
-                <List.Item.Meta
-                  filename="{task.content}
-                  description={
-                    <a
-                      href={`https://explorer.aptoslabs.com/account/${task.address}/`}
-                      target="_blank"
-                    >{`${task.address.slice(0, 6)}...${task.address.slice(-5)}`}</a>
-                  }
-                />
-              </List.Item>
-            )}
-          />
-        )}
-      </Col>
-    </Row>
-  );
-}
+{!accountHasList ? (
+  <Button onClick={addNewList} disabled={transactionInProgress}>
+    Add new list
+  </Button>
+) : (
+  <div className="flex flex-col gap-10">
+    {tasks &&
+      tasks.length > 0 &&
+      tasks.map((task) => (
+        <div key={task.task_id} className="flex justify-between flex-row">
+          <p className="text-xl font-bold">{task.content}</p>
+          <div>
+            <Input type="checkbox"/>
+          </div>
+        </div>
+      ))}
+  </div>
+)}
 ```
 
 That will display the **Add new list** button if account doesn’t have a list or instead the tasks if the account has a list.
 
 Go ahead and refresh your browser - see the magic!
 
-We haven’t added any tasks yet, so we simply see a box of empty data. Let’s add some tasks!
+We haven’t added any tasks yet, so we dont see anything. Let’s add the option to add some tasks!
 
 ## Add task
 
 1. Update our UI with an _add task_ input:
 
-Import `Input` from `antd` - `import { Input } from "antd";`
-
 ```tsx filename="App.tsx"
 {!accountHasList ? (
   ...
 ) : (
-  <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
-		// Add this!
-    <Col span={8} offset={8}>
-      <Input.Group compact>
-        <Input
-          style={{ width: "calc(100% - 60px)" }}
-          placeholder="Add a Task"
-          size="large"
-        />
-        <Button
-          type="primary"
-          style={{ height: "40px", backgroundColor: "#3f67ff" }}
-        >
-          Add
-        </Button>
-      </Input.Group>
-    </Col>
+  <div className="flex flex-col gap-10">
+    // Add this!
+    <div className="flex flex-row gap-10">
+      <Input/>
+      <Button>Add new task</Button>
+    </div>
     ...
-  </Row>
+  </div>
+  ...
 )}
 ```
 
@@ -216,44 +182,21 @@ function App() {
 }
 ```
 
-3. Add an `onWriteTask` function that will get called whenever a user types something in the input text:
+3. Find our `<Input/>` component, add the `onChange` event to it, pass it our `onWriteTask` function and set the input value to be the `newTask` local state:
 
 ```tsx filename="App.tsx"
-function App() {
-  ...
-  const [newTask, setNewTask] = useState<string>("");
-
-  const onWriteTask = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setNewTask(value);
-  };
-  ...
-}
-```
-
-4. Find our `<Input/>` component, add the `onChange` event to it, pass it our `onWriteTask` function and set the input value to be the `newTask` local state:
-
-```tsx filename="App.tsx"
-<Input
-  onChange={(event) => onWriteTask(event)} // add this
-  style={{ width: "calc(100% - 60px)" }}
-  placeholder="Add a Task"
-  size="large"
-  value={newTask} // add this
-/>
+<Input value={newTask} onChange={(e) => setNewTask(e.target.value)} />
 ```
 
 Cool! Now we have a working flow that when the user types something on the Input component, a function will get fired and set our local state with that content.
 
-5. Let’s also add a function that submits the typed task to chain! Find our Add `<Button />` component and update it with the following
+4. Let’s also add a function that submits the typed task to chain! Find our Add `<Button />` component and update it with the following
 
 ```tsx filename="App.tsx"
 <Button
   onClick={onTaskAdded} // add this
-  type="primary"
-  style={{ height: "40px", backgroundColor: "#3f67ff" }}
 >
-  Add
+  Add new task
 </Button>
 ```
 
@@ -267,26 +210,26 @@ When someones adds a new task we:
 - wait for the transaction.
 - update our UI with that new task (without the need to refresh the page).
 
-6. Add an `onTaskAdded` function with:
+5. Add an `onTaskAdded` function with:
 
 ```tsx filename="App.tsx"
   const onTaskAdded = async () => {
     // check for connected account
     if (!account) return;
     setTransactionInProgress(true);
-    const transaction:InputTransactionData = {
-      data:{
-        function:`${moduleAddress}::todolist::create_task`,
-        functionArguments:[newTask]
-      }
-    }
+    const transaction: InputTransactionData = {
+      data: {
+        function: `${moduleAddress}::todolist::create_task`,
+        functionArguments: [newTask],
+      },
+    };
 
     // hold the latest task.task_id from our local state
     const latestId = tasks.length > 0 ? parseInt(tasks[tasks.length - 1].task_id) + 1 : 1;
 
     // build a newTaskToPush object into our local state
-    const newTaskToPush = {
-      address: account.address,
+    const newTaskToPush: Task = {
+      address: account.address.toString(),
       completed: false,
       content: newTask,
       task_id: latestId + "",
@@ -296,7 +239,7 @@ When someones adds a new task we:
       // sign and submit transaction to chain
       const response = await signAndSubmitTransaction(transaction);
       // wait for transaction
-      await aptos.waitForTransaction({transactionHash:response.hash});
+      await aptosClient().waitForTransaction({ transactionHash: response.hash });
 
       // Create a new array based on current state:
       let newTasks = [...tasks];
@@ -346,36 +289,30 @@ Next, we can implement the `complete_task` function. We have the checkbox in our
 
 1. Update the `<Checkbox/>` component with an `onCheck` property that would call an `onCheckboxChange` function once it is checked:
 
-Import `List` from `antd` - `import { List } from "antd";`
 
 ```tsx filename="App.tsx"
-<List.Item actions={[
-  <Checkbox onChange={(event) => onCheckboxChange(event, task.task_id)}/>
-]}>
+ <Input type="checkbox" onChange={(event) => onCheckboxChange(event, task.task_id)} />
 ```
 
-2. Create the `onCheckboxChange` function (make sure to import `CheckboxChangeEvent` from `antd` - `import { CheckboxChangeEvent } from "antd/es/checkbox";`):
+2. Create the `onCheckboxChange` function:
 
 ```tsx filename="App.tsx"
-const onCheckboxChange = async (
-    event: CheckboxChangeEvent,
-    taskId: string
-  ) => {
+const onCheckboxChange = async (event: React.ChangeEvent<HTMLInputElement>, taskId: string) => {
     if (!account) return;
     if (!event.target.checked) return;
     setTransactionInProgress(true);
-    const transaction:InputTransactionData = {
-      data:{
-        function:`${moduleAddress}::todolist::complete_task`,
-        functionArguments:[taskId]
-      }
-    }
+    const transaction: InputTransactionData = {
+      data: {
+        function: `${moduleAddress}::todolist::complete_task`,
+        functionArguments: [taskId],
+      },
+    };
 
     try {
       // sign and submit transaction to chain
       const response = await signAndSubmitTransaction(transaction);
       // wait for transaction
-      await aptos.waitForTransaction({transactionHash:response.hash});
+      await aptosClient().waitForTransaction({ transactionHash: response.hash });
 
       setTasks((prevState) => {
         const newState = prevState.map((obj) => {
@@ -404,21 +341,15 @@ We make sure there is an account connected, set the transaction in progress stat
 
 3. Update the `Checkbox` component to be checked by default if a task has already marked as completed:
 
-Import `Checkbox` from `antd` - `import { Checkbox } from "antd";`
-
 ```tsx filename="App.tsx"
 ...
 <List.Item
   actions={[
     <div>
       {task.completed ? (
-        <Checkbox defaultChecked={true} disabled />
+        <Input type="checkbox" checked={true} disabled />
       ) : (
-        <Checkbox
-          onChange={(event) =>
-            onCheckboxChange(event, task.task_id)
-          }
-        />
+        <Input type="checkbox" onChange={(event) => onCheckboxChange(event, task.task_id)} />
       )}
     </div>,
   ]}
