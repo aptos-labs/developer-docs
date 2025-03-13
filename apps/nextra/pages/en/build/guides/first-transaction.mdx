@@ -32,6 +32,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Before we can create transactions, we need to set up our development environment with the necessary tools and SDKs.
 
   <Steps>
+
   ### Install the TypeScript SDK
 
   Install the TypeScript SDK using your preferred package manager:
@@ -67,9 +68,18 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
 
   Create a new file named `transaction.ts`:
 
+  <Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
   ```bash filename="Terminal"
   touch transaction.ts
   ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"
+  type nul > transaction.ts
+  ```
+  </Tabs.Tab>
+  </Tabs>
   </Steps>
 
   </Tabs.Tab>
@@ -78,6 +88,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Before we can create transactions, we need to set up our development environment with the necessary tools and SDKs.
 
   <Steps>
+
   ### Install the Python SDK
 
   Install the Python SDK using pip:
@@ -99,9 +110,18 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
 
   Create a new file named `transaction.py`:
 
+  <Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
   ```bash filename="Terminal"
   touch transaction.py
   ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"
+  type nul > transaction.py
+  ```
+  </Tabs.Tab>
+  </Tabs>
   </Steps>
 
   </Tabs.Tab>
@@ -115,6 +135,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   In blockchain, all transactions must come from an account. Let's create two test accounts: one to send coins (Alice) and one to receive them (Bob).
 
   <Steps>
+
   ### Set up the client
 
   First, we need to initialize the Aptos client that will connect to the blockchain. Open `transaction.ts` in your editor and add:
@@ -141,7 +162,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   <Callout type="info">
-  We're connecting to the Aptos devnet, which is a test network where you can experiment without using real coins. The devnet is reset periodically, so don't store anything important there.
+  We're connecting to the Aptos devnet, which is a test network where you can experiment without using real coins. The devnet is reset periodically, so don't store anything important there. You can explore the full TypeScript SDK source code in the [aptos-ts-sdk repository](https://github.com/aptos-labs/aptos-ts-sdk).
   </Callout>
 
   ### Generate accounts
@@ -227,6 +248,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   In blockchain, all transactions must come from an account. Let's create two test accounts: one to send coins (Alice) and one to receive them (Bob).
 
   <Steps>
+
   ### Set up the client
 
   First, we need to initialize the Aptos client that will connect to the blockchain. Open `transaction.py` in your editor and add:
@@ -257,7 +279,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   <Callout type="info">
-  We're connecting to the Aptos devnet, which is a test network where you can experiment without using real coins. The devnet is reset periodically, so don't store anything important there.
+  We're connecting to the Aptos devnet, which is a test network where you can experiment without using real coins. The devnet is reset periodically, so don't store anything important there. You can explore the full Python SDK source code in the [aptos-python-sdk repository](https://github.com/aptos-labs/aptos-python-sdk).
   </Callout>
 
   ### Generate accounts
@@ -340,6 +362,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Now that we have funded accounts, let's create a transaction to transfer coins from Alice to Bob. This is like filling out a form specifying what you want to send and to whom.
 
   <Steps>
+
   ### Understand transaction structure
 
   A transaction in Aptos has several key components:
@@ -353,6 +376,8 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
 
   <Callout type="info">
   All data in Aptos transactions is serialized using Binary Canonical Serialization (BCS), a compact and deterministic format designed for blockchain use. The SDK handles this serialization for you.
+
+  BCS ensures that transaction data is consistently encoded across different platforms and languages, which is critical for a blockchain where the same transaction might be processed by nodes running different implementations.
   </Callout>
 
   ### Build the transaction
@@ -392,6 +417,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Now that we have funded accounts, let's create a transaction to transfer coins from Alice to Bob. This is like filling out a form specifying what you want to send and to whom.
 
   <Steps>
+
   ### Understand transaction structure
 
   A transaction in Aptos has several key components:
@@ -405,6 +431,8 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
 
   <Callout type="info">
   All data in Aptos transactions is serialized using Binary Canonical Serialization (BCS), a compact and deterministic format designed for blockchain use. The SDK handles this serialization for you.
+
+  BCS ensures that transaction data is consistently encoded across different platforms and languages, which is critical for a blockchain where the same transaction might be processed by nodes running different implementations.
   </Callout>
 
   ### Build the transaction
@@ -456,6 +484,14 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
 
   <Callout type="info">
   The function `0x1::aptos_account::transfer` is a built-in function in the Aptos framework that transfers coins between accounts. The `0x1` prefix indicates it's part of the core framework. Behind the scenes, this function calls the [Coin Move module source code](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) to perform the actual transfer.
+
+  The Python SDK uses several key components to construct transactions:
+  - `EntryFunction.natural()` creates a callable Move function reference
+  - `TransactionArgument` with `Serializer` types ensures proper BCS serialization
+  - `TransactionPayload` wraps the entry function for inclusion in the transaction
+  - `RawTransaction` combines all transaction parameters into a complete transaction
+
+  This layered approach gives you fine-grained control over transaction construction.
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -469,6 +505,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Before submitting a transaction, it's wise to simulate it first to estimate the gas cost. This is like checking shipping costs before sending a package.
 
   <Steps>
+
   ### Simulate the transaction
 
   Add this code after building the transaction:
@@ -498,6 +535,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Before submitting a transaction, it's wise to simulate it first to estimate the gas cost. This is like checking shipping costs before sending a package.
 
   <Steps>
+
   ### Simulate the transaction
 
   Add this code after building the transaction:
@@ -538,6 +576,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Now that we've built and simulated the transaction, we need to sign it with Alice's private key and submit it to the blockchain.
 
   <Steps>
+
   ### Sign the transaction
 
   Signing proves that Alice authorized this transaction:
@@ -582,6 +621,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Now that we've built and simulated the transaction, we need to sign it with Alice's private key and submit it to the blockchain.
 
   <Steps>
+
   ### Sign the transaction
 
   Signing proves that Alice authorized this transaction:
@@ -639,6 +679,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   After submitting a transaction, we need to wait for it to be processed by the blockchain. This is like waiting for a package to be delivered.
 
   <Steps>
+
   ### Wait for transaction completion
 
   Add this code after submitting the transaction:
@@ -725,7 +766,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   <Callout type="info">
-  Notice that Alice's balance decreased by more than 1000 octas. The extra amount is the gas fee paid to process the transaction. Behind the scenes, when checking balances, the SDK queries the CoinStore resource for the AptosCoin (`0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>`) and reads the current stored value.
+  Notice that Alice's balance decreased by more than 1000 octas. The extra amount is the gas fee paid to process the transaction. Behind the scenes, when checking balances, the SDK queries the CoinStore resource for the AptosCoin (`0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>`) and reads the current stored value. This demonstrates how the SDK abstracts away complex blockchain interactions into simple function calls.
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -734,6 +775,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   After submitting a transaction, we need to wait for it to be processed by the blockchain. This is like waiting for a package to be delivered.
 
   <Steps>
+
   ### Wait for transaction completion
 
   Add this code after submitting the transaction:
@@ -837,6 +879,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
 Now that you've successfully executed a transaction, you can explore it on the Aptos Explorer. This will help you understand how transactions are recorded on the blockchain and what information is publicly available.
 
 <Steps>
+
 ### Copy your transaction hash
 
 From your terminal output, copy the transaction hash that was printed after submission. It looks something like this:
