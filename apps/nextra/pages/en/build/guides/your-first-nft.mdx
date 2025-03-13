@@ -163,24 +163,9 @@ npm install @aptos-labs/ts-sdk dotenv
 npm install --save-dev @types/node
 ```
 
-### Create tsconfig.json
+### Create `tsconfig.json`
 
-1. Create a new TypeScript configuration file:
-
-<Tabs items={["Mac/Linux", "Windows"]}>
-  <Tabs.Tab>
-    ```bash filename="Terminal"
-    touch tsconfig.json
-    ```
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash filename="Terminal"
-    type nul > tsconfig.json
-    ```
-  </Tabs.Tab>
-</Tabs>
-
-2. Open the `tsconfig.json` file and add the following configuration:
+Create a `tsconfig.json` file with the following:
 
 ```json filename="tsconfig.json"
 {
@@ -197,39 +182,15 @@ npm install --save-dev @types/node
 }
 ```
 
-<Callout type="warning">
-Remember to save your file after adding the configuration!
-</Callout>
-
 This configuration ensures TypeScript properly recognizes Node.js types and provides appropriate type checking.
 
 ### Configure Environment Variables
 
-1. Create a `.env` file by running:
-
-<Tabs items={["Mac/Linux", "Windows"]}>
-  <Tabs.Tab>
-    ```bash filename="Terminal"
-    touch .env
-    ```
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash filename="Terminal"
-    type nul > .env
-    ```
-  </Tabs.Tab>
-</Tabs>
-
-2. Open `.env` to edit it.
-3. Update `.env` to have the following line:
+Create a `.env` file with the following:
 
 ```bash filename="Terminal"
 APTOS_NETWORK=devnet
 ```
-
-<Callout type="warning">
-Remember to save your `.env` file after adding the configuration!
-</Callout>
 
 <Callout type="info">
 By default, we'll use `devnet`, but you can also choose `testnet` or `mainnet` depending on your needs.
@@ -237,25 +198,7 @@ By default, we'll use `devnet`, but you can also choose `testnet` or `mainnet` d
 
 ### Adding index.ts
 
-1. Create a new file called `index.ts` in your project folder:
-
-<Tabs items={["Mac/Linux", "Windows"]}>
-  <Tabs.Tab>
-    ```bash filename="Terminal"
-    touch index.ts
-    ```
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash filename="Terminal"
-    type nul > index.ts
-    ```
-  </Tabs.Tab>
-</Tabs>
-
-2. Open `index.ts` for editing.
-3. Copy the below code into `index.ts`: 
-
-**index.ts**
+Create an `index.ts` file with the following:
 
 ```tsx filename="index.ts"
 // Update the TODOs below to customize this digital asset to your needs.
@@ -443,8 +386,6 @@ You can view these transactions on the Aptos Explorer:
 
 This is a great way to verify your transactions and understand how they're recorded on the blockchain.
 </Steps>
-
-**Congrats!**
 
 ### Further Reading & Resources
 
