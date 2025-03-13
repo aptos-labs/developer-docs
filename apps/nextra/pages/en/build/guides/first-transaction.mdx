@@ -159,7 +159,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   <Callout type="info">
-  Each account has a unique address (like a bank account number) and a keypair (like your login credentials). The address is derived from the public key, while the private key is kept secret and used for signing transactions. For more details on how accounts work in Aptos, see [Account basics](../../network/blockchain/accounts.mdx).
+  Each account has a unique address (like a bank account number) and a keypair (like your login credentials). The address is derived from the public key, while the private key is kept secret and used for signing transactions. For more details on how accounts work in Aptos, see [Account basics](../../network/blockchain/accounts).
   </Callout>
 
   ### Fund the accounts
@@ -275,7 +275,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   <Callout type="info">
-  Each account has a unique address (like a bank account number) and a keypair (like your login credentials). The address is derived from the public key, while the private key is kept secret and used for signing transactions. For more details on how accounts work in Aptos, see [Account basics](../../network/blockchain/accounts.mdx).
+  Each account has a unique address (like a bank account number) and a keypair (like your login credentials). The address is derived from the public key, while the private key is kept secret and used for signing transactions. For more details on how accounts work in Aptos, see [Account basics](../../network/blockchain/accounts).
   </Callout>
 
   ### Fund the accounts
@@ -383,7 +383,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   <Callout type="info">
-  The function `0x1::aptos_account::transfer` is a built-in function in the Aptos framework that transfers coins between accounts. The `0x1` prefix indicates it's part of the core framework. Behind the scenes, this function calls the [Coin Move module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) to perform the actual transfer.
+  The function `0x1::aptos_account::transfer` is a built-in function in the Aptos framework that transfers coins between accounts. The `0x1` prefix indicates it's part of the core framework. Behind the scenes, this function calls the [Coin Move module source code](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) to perform the actual transfer.
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -455,7 +455,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   <Callout type="info">
-  The function `0x1::aptos_account::transfer` is a built-in function in the Aptos framework that transfers coins between accounts. The `0x1` prefix indicates it's part of the core framework. Behind the scenes, this function calls the [Coin Move module](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) to perform the actual transfer.
+  The function `0x1::aptos_account::transfer` is a built-in function in the Aptos framework that transfers coins between accounts. The `0x1` prefix indicates it's part of the core framework. Behind the scenes, this function calls the [Coin Move module source code](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move) to perform the actual transfer.
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -573,7 +573,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   <Callout type="info">
-  The transaction hash is a unique identifier for your transaction, similar to a tracking number for a package. When submitting a transaction, the Aptos blockchain performs several validation checks, including verifying the transaction signature and ensuring the sequence number hasn't been used before (preventing replay attacks). You can use the hash to check the status of your transaction on the [Aptos Explorer](https://explorer.aptoslabs.com/) or via the [REST API](../apis/fullnode-rest-api-reference.mdx).
+  The transaction hash is a unique identifier for your transaction, similar to a tracking number for a package. When submitting a transaction, the Aptos blockchain performs several validation checks, including verifying the transaction signature and ensuring the sequence number hasn't been used before (preventing replay attacks). You can use the hash to check the status of your transaction on the [Aptos Explorer](https://explorer.aptoslabs.com/) or via the [REST API](../apis/fullnode-rest-api-reference).
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -625,7 +625,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   <Callout type="info">
-  The transaction hash is a unique identifier for your transaction, similar to a tracking number for a package. When submitting a transaction, the Aptos blockchain performs several validation checks, including verifying the transaction signature and ensuring the sequence number hasn't been used before (preventing replay attacks). You can use the hash to check the status of your transaction on the [Aptos Explorer](https://explorer.aptoslabs.com/) or via the [REST API](../apis/fullnode-rest-api-reference.mdx).
+  The transaction hash is a unique identifier for your transaction, similar to a tracking number for a package. When submitting a transaction, the Aptos blockchain performs several validation checks, including verifying the transaction signature and ensuring the sequence number hasn't been used before (preventing replay attacks). You can use the hash to check the status of your transaction on the [Aptos Explorer](https://explorer.aptoslabs.com/) or via the [REST API](../apis/fullnode-rest-api-reference).
   </Callout>
   </Steps>
   </Tabs.Tab>
@@ -675,8 +675,6 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   ### Run the complete code
-
-  Now run the complete program:
 
   ```bash filename="Terminal"
   npx ts-node transaction.ts
@@ -774,8 +772,6 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   ```
 
   ### Run the complete code
-
-  Now run the complete program:
 
   ```bash filename="Terminal"
   python transaction.py
@@ -910,6 +906,8 @@ The Explorer is a powerful tool for debugging transactions and understanding blo
   [Join the Aptos Discord](https://discord.gg/aptoslabs) and share what you're building!
 
 ## Full Code Sample
+
+The complete code samples below combine all the snippets we've covered in this tutorial:
 
 <Tabs items={["TypeScript", "Python"]}>
   <Tabs.Tab>
