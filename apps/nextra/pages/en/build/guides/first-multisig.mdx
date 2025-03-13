@@ -2,12 +2,11 @@
 title: "Your First Aptos Multisig (Python SDK)"
 ---
 
-import { Callout, Steps } from 'nextra/components'
+import { Callout, Steps, Tabs } from 'nextra/components'
 
 # Your First Aptos Multisig (Python SDK)
 
-In this tutorial, you'll learn how to create and manage a multisig account that requires 2 out of 3 people to approve any transaction.
-
+In this tutorial, you'll learn how to create and manage a multisig account that requires 2 out of 3 key holders to approve any transaction.
 You'll learn how to:
 
 1. Set up a development environment for Aptos
@@ -17,18 +16,18 @@ You'll learn how to:
 5. Create and execute multisig transactions
 
 <Callout type="info">
-If you're coming from Ethereum/Solidity, note that Aptos handles multisig differently. Instead of deploying a smart contract like Gnosis Safe, Aptos implements multisig at the protocol level through its account abstraction system.
-
-We're interfacing with Aptos using the [Aptos Python SDK](https://aptos.dev/en/build/sdks/python-sdk).
+If you're coming from Ethereum/Solidity, note that Aptos handles multisig accounts differently. Instead of deploying a smart contract like Gnosis Safe, Aptos implements multisig at the protocol level through its account abstraction system.
+We're interfacing with Aptos using the [Aptos Python SDK](../sdks/python-sdk).
 </Callout>
 
-As a brief conceptual overview, imagine a bank vault that requires multiple key holders to open it where each key holder must be present and provide their unique key before any access is granted. This is exactly how multisig (multi-signature) works in Aptos, but with digital signatures instead of physical keys.
+Conceptually, a multisig (multi-signature) account works like a bank vault requiring multiple key holders to authorize access. In Aptos, this is implemented with digital signatures rather than physical keys, with each authorized signer providing their cryptographic approval.
 
 ## Setup
 
 First, let's prepare our development environment. We'll create an isolated workspace and install all necessary dependencies.
 
 <Steps>
+
 ### Open a terminal
 
 Open a new terminal window.
@@ -37,18 +36,23 @@ Open a new terminal window.
 
 Run this command to check your Python version:
 
-```bash filename="Terminal"
-python3 --version
-```
-
-<Callout type="info">
-On Windows, use `python --version` instead (without the '3').
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 --version
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python --version
+  ```     
+  </Tabs.Tab>
+</Tabs>
 
 You should see something like "Python 3.7" or higher.
 
 <Callout type="warning">
-If you see an error or your Python version is below version 3.7, download Python from [python.org](http://python.org/).
+If you see an error or your Python version is below version 3.7, download Python from [python.org](https://python.org/).
 </Callout>
 
 ### Create project directory
@@ -71,13 +75,18 @@ cd my-first-multisig
 
 Set up an isolated Python environment:
 
-```bash filename="Terminal"
-python3 -m venv venv
-```
-
-<Callout type="info">
-On Windows, use `python -m venv venv` instead (without the '3').
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 -m venv venv
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python -m venv venv
+  ```     
+  </Tabs.Tab>
+</Tabs>
 
 This command:
 - Creates an isolated Python environment
@@ -87,23 +96,28 @@ This command:
 
 ### Activate virtual environment
 
-Activate the virtual environment:
-
-```bash filename="Terminal"
-source venv/bin/activate
-```
-
-<Callout type="info">
-On Windows, use `.\venv\Scripts\activate` instead.
-
-If you get an error about scripts not being allowed to run, you can enable them with PowerShell:
-
-```powershell filename="Terminal"
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-Confirm by typing `[Y]` and pressing Enter, then retry the activation command.
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  source venv/bin/activate
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  .\venv\Scripts\activate
+  ```     
+  
+  <Callout type="info">
+  If you get an error about scripts not being allowed to run, you can enable them with PowerShell:
+  
+  ```powershell filename="Terminal"
+  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+  ```
+  
+  Confirm by typing `[Y]` and pressing Enter, then retry the activation command.
+  </Callout>
+  </Tabs.Tab>
+</Tabs>
 
 This command:
 - Modifies your terminal's environment variables
@@ -131,20 +145,23 @@ This command:
 Let's start building our multisig implementation. First, we'll set up our imports, main loop, and base configuration.
 
 <Steps>
+
 ### Create Python script
 
-Create an empty Python script:
+Create an empty Python script file:
 
-```bash filename="Terminal"
-touch multisig.py
-```
-
-<Callout type="info">
-On Windows, use the command:
-```powershell filename="Terminal"
-echo "" > multisig.py
-```
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  touch multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  echo "" > multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
 
 ### Add base code
 
@@ -220,6 +237,7 @@ You can get free test tokens on Aptos Devnet or Testnet by using the `FaucetClie
 Just like a bank vault needs designated key holders, our multisig needs authorized signers. Let's create the accounts for our key holders.
 
 <Steps>
+
 ### Create key holder accounts
 
 Add the following code after `############# Add additional code here ###############`:
@@ -231,7 +249,7 @@ bob = Account.generate()
 chad = Account.generate()
 ```
 
-The `Account.generate()` function creates a new Aptos account with a fresh keypair. Each account will have its own private key (for signing) and public key (for verification). This is similar to how each bank vault key holder would have their own unique physical key.
+The `Account.generate()` function creates a new Aptos account with a fresh keypair. Each account will have its own private key (for signing) and public key (for verification). In our multisig setup, these accounts represent the key holders who will have authorization to sign transactions, similar to how each bank vault key holder would have their own unique physical key.
 
 <Callout type="info">
 Each time you run this script it will generate new accounts on the devnet. You'll need to save the private key and account address if you want to continue working with that account.
@@ -266,13 +284,18 @@ wait()
 
 Run our `multisig.py` from your terminal:
 
-```python filename="Terminal"
-python3 multisig.py
-```
-
-<Callout type="info">
-On Windows, use `python multisig.py` instead (without the '3').
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
 
 You should see output showing the addresses, authentication keys, and public keys for each account. For example:
 
@@ -302,9 +325,10 @@ The Aptos account model facilitates the unique ability to rotate an account's pr
 
 ## Configuring the Multisig Vault
 
-Now that we have our key holders (Alice, Bob, and Chad), let's set up our multisig configuration. This is like setting the rules for our digital vault.
+Now that we have our key holders (Alice, Bob, and Chad), let's set up our multisig configuration.
 
 <Steps>
+
 ### Configure multisig account
 
 Add code to configure a 2-of-3 multisig account:
@@ -343,15 +367,20 @@ wait()
 
 ### Run the script
 
-You can run the code to verify the output:
+Verify the output:
 
-```bash filename="Terminal"
-python3 multisig.py
-```
-
-<Callout type="info">
-On Windows, remember to use `python multisig.py` instead.
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
 
 You should see output showing your multisig account's public key type and its unique address on the Aptos blockchain. For example:
 
@@ -367,6 +396,7 @@ Account address:    0x08cac3b7b7ce4fbc5b18bc039279d7854e4c898cbf82518ac2650b565a
 Just like new bank accounts need initial deposits, our blockchain accounts need funds to operate.
 
 <Steps>
+
 ### Add funding code
 
 Add code to fund all accounts:
@@ -414,15 +444,20 @@ The `account_balance()` function queries the blockchain for each account's curre
 
 ### Run the script
 
-Run the code to verify funding success:
+Verify funding success by running:
 
-```bash filename="Terminal"
-python3 multisig.py
-```
-
-<Callout type="info">
-Windows users: use `python multisig.py`.
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
 
 The output should show each account with its respective balance. For example:
 
@@ -448,6 +483,7 @@ Values are in octas (1 APT = 100_000_000 octas). This is similar to how 1 dollar
 Now let's create a transaction that requires multiple signatures. We'll transfer 100 octas from the multisig account to Chad, similar to how a bank transfer would require two managers to approve a large withdrawal.
 
 <Steps>
+
 ### Create transfer transaction
 
 Create the transfer transaction by defining its parameters:
@@ -506,13 +542,18 @@ The above code:
 
 After you add the code for creating the transaction and getting signatures, run the script:
 
-```bash filename="Terminal"
-python3 multisig.py
-```
-
-<Callout type="info">
-On Windows, `python multisig.py`.
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
 
 You should see something like:
 
@@ -526,6 +567,8 @@ This shows that both Alice and Bob have signed the transaction. Each signature i
 
 <Callout type="info">
 Like gathering two bank managers to sign a withdrawal slip - we need both signatures before the transaction can proceed.
+
+Changing the number of managers required from two out of three to 13 out of 22 (or any K-of-N your business needs) is a few more lines of code.
 </Callout>
 </Steps>
 
@@ -534,6 +577,7 @@ Like gathering two bank managers to sign a withdrawal slip - we need both signat
 Now we'll combine the signatures and submit the transaction. This is similar to gathering all the signed papers from bank managers and submitting them to process a large transfer.
 
 <Steps>
+
 ### Combine signatures
 
 Combine the signatures into a multisig authenticator:
@@ -592,13 +636,18 @@ print(f"Multisig balance: {multisig_balance}")
 
 Run the script to see the transaction results:
 
-```bash filename="Terminal"
-python3 multisig.py
-```
-
-<Callout type="info">
-On Windows, `python multisig.py`.
-</Callout>
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
 
 You should see something like:
 
@@ -653,6 +702,6 @@ Let us know what excites you most about multisig on Aptos! Join our community ch
 ## Next Steps
 
 1. Review the [complete code example](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/multisig.py) which include all the Advanced Features (see above).
-2. Learn about [multisig governance in this tutorial](https://aptos.dev/en/build/cli/working-with-move-contracts/multi-signature-tutorial).
-3. Explore [account abstraction in Aptos](https://aptos.dev/concepts/accounts).
+2. Learn about [multisig governance in this tutorial](../cli/working-with-move-contracts/multi-signature-tutorial).
+3. Explore [account abstraction in Aptos](../../network/blockchain/accounts).
 4. Join the [Aptos Discord](https://discord.gg/aptoslabs) for developer support.
