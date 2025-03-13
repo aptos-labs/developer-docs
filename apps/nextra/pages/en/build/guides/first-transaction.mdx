@@ -974,7 +974,7 @@ The complete code samples below combine all the snippets we've covered in this t
     console.log(`Alice's address: ${alice.accountAddress}`);
     console.log(`Bob's address: ${bob.accountAddress}`);
 
-    // Fund the accounts
+    // Fund the accounts with test APT from the devnet faucet
     console.log("\n=== Funding accounts ===");
     await aptos.fundAccount({
       accountAddress: alice.accountAddress,
