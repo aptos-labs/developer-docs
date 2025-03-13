@@ -188,7 +188,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Add this code after generating the accounts to get test coins from the faucet:
 
   ```ts filename="transaction.ts"
-  // Fund the accounts
+  // Fund the accounts with test APT from the devnet faucet
   console.log("\n=== Funding accounts ===");
   await aptos.fundAccount({
     accountAddress: alice.accountAddress,
@@ -305,7 +305,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   Add this code after generating the accounts to get test coins from the faucet:
 
   ```python filename="transaction.py"
-  # Fund the accounts
+  # Fund the accounts with test APT from the devnet faucet
   print("\n=== Funding accounts ===")
   alice_amount = 100_000_000  # 1 APT = 100,000,000 octas
   bob_amount = 0  # Bob starts with 0 APT
@@ -1124,7 +1124,7 @@ The complete code samples below combine all the snippets we've covered in this t
       print(f"Alice's address: {alice.address()}")
       print(f"Bob's address: {bob.address()}")
           # More code will go here
-          # Fund the accounts
+          # Fund the accounts with test APT from the devnet faucet
       print("\n=== Funding accounts ===")
       alice_amount = 100_000_000  # 1 APT = 100,000,000 octas
       bob_amount = 0  # Bob starts with 0 APT
