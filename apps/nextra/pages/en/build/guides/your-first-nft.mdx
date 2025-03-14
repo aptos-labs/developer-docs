@@ -82,7 +82,7 @@ const mintTokenTransaction = await aptos.mintDigitalAssetTransaction({
   collection: "Example Collection",
   description: "This is an example digital asset.",
   name: "Example Asset",
-  uri: "aptos.dev/asset",
+  uri: "https://aptos.dev/asset.png",
 });
 
 const mintTxn = await aptos.signAndSubmitTransaction({
