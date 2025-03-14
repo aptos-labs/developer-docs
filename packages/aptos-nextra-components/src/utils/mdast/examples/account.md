@@ -666,11 +666,11 @@ Transaction exceeded its allocated max gas
 <pre><code><b>const</b> <a href="account.md#0x1_account_EOUT_OF_GAS">EOUT_OF_GAS</a>: u64 = 6;
 </code></pre>
 
-<a id="0x1_account_ERESOURCE_ACCCOUNT_EXISTS"></a>
+<a id="0x1_account_ERESOURCE_ACCOUNT_EXISTS"></a>
 
 An attempt to create a resource account on a claimed account
 
-<pre><code><b>const</b> <a href="account.md#0x1_account_ERESOURCE_ACCCOUNT_EXISTS">ERESOURCE_ACCCOUNT_EXISTS</a>: u64 = 15;
+<pre><code><b>const</b> <a href="account.md#0x1_account_ERESOURCE_ACCOUNT_EXISTS">ERESOURCE_ACCOUNT_EXISTS</a>: u64 = 15;
 </code></pre>
 
 <a id="0x1_account_ESEQUENCE_NUMBER_TOO_BIG"></a>
@@ -1634,7 +1634,7 @@ than <code>(1/2)^(256)</code>.
         <b>let</b> <a href="account.md#0x1_account">account</a> = <b>borrow_global</b>&lt;<a href="account.md#0x1_account_Account">Account</a>&gt;(resource_addr);
         <b>assert</b>!(
             <a href="../../aptos-stdlib/../move-stdlib/doc/option.md#0x1_option_is_none">option::is_none</a>(&<a href="account.md#0x1_account">account</a>.signer_capability_offer.for),
-            <a href="../../aptos-stdlib/../move-stdlib/doc/error.md#0x1_error_already_exists">error::already_exists</a>(<a href="account.md#0x1_account_ERESOURCE_ACCCOUNT_EXISTS">ERESOURCE_ACCCOUNT_EXISTS</a>),
+            <a href="../../aptos-stdlib/../move-stdlib/doc/error.md#0x1_error_already_exists">error::already_exists</a>(<a href="account.md#0x1_account_ERESOURCE_ACCOUNT_EXISTS">ERESOURCE_ACCOUNT_EXISTS</a>),
         );
         <b>assert</b>!(
             <a href="account.md#0x1_account">account</a>.sequence_number == 0,
