@@ -1,0 +1,167 @@
+---
+title: "Maps"
+---
+
+# Overview
+
+There are multiple different implementations of key-value maps inside the framework, suited for different usecases.
+We will go over their differences and similarities, and how to choose which one to use.
+
+## Aptos Blockchain performance and gas cost considerations 
+
+State on the Aptos Blockchain is managed as a set of resources. Transactions
+performance heavily depends on how reads and writes to resources.
+Storage gas costs are paid based on number of resources that exist, and their sizes. 
+IO gas costs are paid based on number of resources read and modified, and their sizes, 
+but are generally significantly smaller than storage gas costs. 
+That means that writing to a new resource has the highest (storage) gas cost, and deleting
+an existing resource gives the largest refund. 
+Additionally, transactions modifying the same resource conflict with one another, and cannot be
+executed in parallel.
+
+One useful analogy is thinking about each resource being a file on a disk, 
+then performance of smart contract would correlate well to a program that 
+operates on files in the same way.
+
+## Different Map implementations
+
+- `OrderedMap` is a struct, and is, similar to `vector`, fully contained within the resource that stores it.
+  With it, it is bounded in size to the size of a single resource.
+  It provides regular map functions, as well as accessing elements in order, like front/back or prev/next. 
+  When you need an inline mapping, that will fit in a resource, this is the option to choose.
+  It's implementation is SortedVectorMap, but because of limited size and efficiency of memcpy, all main operations are practically O(log(n)). 
+- `Table` is unbounded in size, puts each (key, value) pair in the separate resource. You can `add` or `remove` elements, 
+  or check if it `contains` some key, but cannot be iterated on. When keys or values are large / unbounded, we can use the `Table`. 
+  Also if we want to parallelize transactions and we have a few elements that are modified extremely often, `Table` can provide that.
+  Note that `Table` cannot be destroyed, because it doesn't know if it is empty.
+  - `TableWithLength` is wrapper around the `Table`, that adds tracking of it's `length`, allowing `length`, `empty` and `destroy_empty`
+    operations on top of the `Table`. Adding or removing elements to `TableWithLength` cannot be done in parallel.
+- `BigOrderedMap` groups multiple (key, value) pairs in a single resource, but is unbounded in size - and uses more resources as needed.
+  It's implementation is a BPlusTreeMap, where each node is a resource containing OrderedMap, with inner nodes only containing keys, while leaves contain values as well.
+  It is opportunistically parallel - if map has large enough elements to be using multiple resources, modifying the map for keys that are not close
+  to each other should generally be parallel operation.
+  It is configured so that each resource containing internal node has the same capacity in number of keys, 
+  and each resource containing leaf node has the same capacity in the number of (key, value) pairs.
+  Capacity of nodes (both leaf and inner degree) are configurable - to allow the tradeoff between storage gas cost on one end, 
+  and other gas costs and parallelism on the other. 
+  It provides regular map functions, as well as accessing elements in order, like front/back or prev/next. 
+
+Note:
+- `SimpleMap` has been deprecated, and replaced with `OrderedMap`. 
+- `SmartTable` has been deprecated, and replaced with `BigOrderedMap`.
+
+## Common map operations:
+
+Most maps above support the same set of functions (for actual signatures and restrictions, check out the corresponding implementations):
+
+#### Creating Tables
+
+- `new<K, V>(): Self`: creates an empty map
+
+#### Destroying Tables
+
+All except `Table` support:
+- `destroy_empty<K, V>(table: Self<K, V>)`: Destroys an empty map. (not supported by `Table`)
+- `destroy<K, V>(self: Self<K, V>, dk: |K|, dv: |V|)`: Destroys a map with given functions that destroy correponding elements. (not supported by `Table` and `TableWithLength`)
+
+#### Managing Entries
+
+- `add<K, V>(table: &mut Self<K, V>, key: K, value: V)`: Adds a key-value pair to the map.
+- `remove<K, V>(table: &mut Self<K, V>, key: K): V`: Removes and returns the value associated with a key.
+- `upsert<K, V>(table: &mut Self<K, V>, key: K, value: V): Option<V>`: Inserts or updates a key-value pair.
+- `add_all<K, V>(table: &mut Self<K, V>, keys: vector<K>, values: vector<V>)`: Adds multiple key-value pairs to the map. (not supported by `Table` and `TableWithLength`)
+
+#### Retrieving Entries
+
+- `contains<K, V>(self: &Self<K, V>, key: &K): bool`: Checks whether key exists in the map.
+- `borrow<K, V>(table: &Self<K, V>, key: &K): &V`: Returns an immutable reference to the value associated with a key.
+- `borrow_mut<K: drop, V>(table: &mut Self<K, V>, key: K): &mut V`: Returns a mutable reference to the value associated with a key. 
+  (`BigOrderedMap` only allows `borrow_mut` when value type has a static constant size, due to modification being able to break it's invariants otherwise. Use `remove()` and `add()` combination instead)
+
+#### Order-dependant functions
+
+These set of functions are only implemented by `OrderedMap` and `BigOrderedMap`.
+
+- `borrow_front<K, V>(self: &Self<K, V>): (&K, &V)`
+- `borrow_back<K, V>(self: &Self<K, V>): (&K, &V)`
+- `pop_front<K, V>(self: &mut Self<K, V>): (K, V)`
+- `pop_back<K, V>(self: &mut Self<K, V>): (K, V)`
+- `prev_key<K: copy, V>(self: &Self<K, V>, key: &K): Option<K>`
+- `next_key<K: copy, V>(self: &Self<K, V>, key: &K): Option<K>`
+
+#### Utility Functions
+
+- `length<K, V>(table: &Self<K, V>): u64`: Returns the number of entries in the table. (not supported by `Table`)
+
+#### Traversal Functions
+
+These set of functions are not implemented by `Table` and `TableWithLength`.
+
+- `keys<K: copy, V>(self: &Self<K, V>): vector<K>`
+- `values<K, V: copy>(self: &Self<K, V>): vector<V>`
+- `to_vec_pair<K, V>(self: Self<K, V>): (vector<K>, vector<V>)`
+- `for_each_ref<K, V>(self: &Self<K, V>, f: |&K, &V|)`
+
+- `to_ordered_map<K, V>(self: &BigOrderedMap<K, V>): OrderedMap<K, V>`: Converts `BigOrderedMap` into `OrderedMap`
+
+## Example Usage
+
+### Creating and Using a OrderedMap
+
+```move filename="map_usage.move"
+module 0x42::map_usage {
+    use aptos_framework::ordered_map;
+
+    public entry fun main() {
+        let map = ordeded_map::new<u64, u64>();
+        map.add(1, 100);
+        map.add(2, 200);
+
+        let length = map.length();
+        assert!(length == 2, 0);
+
+        let value1 = map.borrow(&1);
+        assert!(*value1 == 100, 0);
+
+        let value2 = map.borrow(&2);
+        assert!(*value2 == 200, 0);
+
+        let removed_value = map.remove(&1);
+        assert!(removed_value == 100, 0);
+
+        map.destroy_empty();
+    }
+}
+```
+
+## Additional details for BigOrderedMap
+
+Its current implementation is B+ tree, which is chosen as it is best suited for the onchain storage layout - where the majority of cost comes from loading and writing to storage items, and there is no partial read/write of them. 
+
+Implementation has few characteristics that make it very versatile and useful across wide range of usecases:
+
+- When it has few elements, it stores all of them within the resource that contains it, providing comparable performance to OrderedMap itself, while then dynamically growing to multiple resources as more and more elements are added
+- It reduces amount of conflicts: modifications to a different part of the key-space are generally parallel, and it provides knobs for tuning between parallelism and size
+- All operations have guaranteed upper-bounds on performance (how long they take, as well as how much execution and io gas they consume), allowing for safe usage across a variety of use cases.
+  - One caveat, is refundable storage fee. By default, operation that requires map to grow to more resources needs to pay for storage fee for it. Implementation here has an option to pre-pay for storage slots, and to reuse them as elements are added/removed, allowing applications to achieve fully predictable overall gas charges, if needed.
+- If key/value is within the size limits map was configured with, inserts will never fail unpredictably, as map internally understands and manages maximal resource size limits.
+
+Because it's layout affects what can be inserted and performance, there are a few ways to create and configure it:
+
+- `new<K, V>(): Self<K, V>`: Returns a new `BigOrderedMap` with the default configuration. Only allowed to be called with constant size types. For variable sized types, another constructor is needed, to explicitly select automatic or specific degree selection.
+- `new_with_type_size_hints<K, V>(avg_key_bytes: u64, max_key_bytes: u64, avg_value_bytes: u64, max_value_bytes: u64): Self<K, V>`: Returns a map that is configured to perform best when keys and values are of given `avg` sizes, and guarantees to fit elements up to given `max` sizes.
+- `new_with_config<K, V>(inner_max_degree: u16, leaf_max_degree: u16, reuse_slots: bool): Self<K, V>`: Returns a new `BigOrderedMap` with the provided max degree consts (the maximum # of children a node can have, both inner and leaf). If 0 is passed for either, then it is dynamically computed based on size of first key and value, and keys and values up to 100x times larger will be accepted.
+  If non-0 is passed, sizes of all elements must respect (or their additions will be rejected): 
+  - `key_size * inner_max_degree <= MAX_NODE_BYTES`
+  - `entry_size * leaf_max_degree <= MAX_NODE_BYTES`
+
+  `reuse_slots` means that removing elements from the map doesn't free the storage slots and returns the refund.
+  Together with `allocate_spare_slots`, it allows to preallocate slots and have inserts have predictable gas costs.
+  (otherwise, inserts that require map to add new nodes, cost significantly more, compared to the rest)
+
+## Source Code
+
+- [ordered_map.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/datastructures/ordered_map.move)
+- [table.move](https://github.com/aptos-labs/aptos-core/blob/6f5872b567075fe3615e1363d35f89dc5eb45b0d/aptos-move/framework/aptos-stdlib/sources/table.move)
+- [table_with_length.move](https://github.com/aptos-labs/aptos-core/blob/6f5872b567075fe3615e1363d35f89dc5eb45b0d/aptos-move/framework/aptos-stdlib/sources/table.move)
+- [big_ordered_map.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/datastructures/big_ordered_map.move)
