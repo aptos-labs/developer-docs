@@ -9,16 +9,16 @@ We will go over their differences and similarities, and how to choose which one 
 
 ## Aptos Blockchain performance and gas cost considerations 
 
-Aptos Blockchain state is managed through on-chain **resources**. 
-Furthermore, transaction performance and gas cost is heavily influenced by how these resources are read and written.
+Aptos Blockchain state is kept in **storage slots**. 
+Furthermore, transaction performance and gas cost is heavily influenced by how these **slots** are read and written.
 Breaking down the gas costs further, we have:
-1. Storage fee, which are determined by the number and size of resources (i.e., writing to a new resource incurs the highest storage fee, whereas deleting an existing resource provides the largest refund.)
+1. Storage fee, which are determined by the number and size of **slots** (i.e., writing to a new **slot** incurs the highest storage fee, whereas deleting an existing **slot** provides the largest refund.)
 2. IO gas costs —generally much lower— which depend on the number and size of resources read and modified. 
 3. execution gas costs are based on the computation needed, and are generally in the similar scale as io gas costs.
 
-Transactions that modify the same resource cannot be executed in parallel, as they conflict with one another.
+Transactions that modify the same **slot** cannot be executed in parallel (with some exceptions, like aggregators and resources as a part of the same resource group), as they conflict with one another.
 
-One useful analogy is thinking about each resource being a file on a disk, 
+One useful analogy is thinking about each **slot** being a file on a disk, 
 then performance of smart contract would correlate well to a program that 
 operates on files in the same way.
 
@@ -26,10 +26,10 @@ operates on files in the same way.
 
 | Implementation      | Size Limit  | Storage Structure | Key Features |
 |--------------------|------------|------------------|--------------|
-| `OrderedMap`    | Bounded (fits in a single resource) | Stored entirely within the resource | Supports ordered access (front/back, prev/next), implemented as sorted vector, but operations are effectively O(log(n)) due to internal optimizations |
-| `Table`         | Unbounded   | Each (key, value) stored in a separate resource | Supports basic operations, like `add`, `remove`, `contains`, but **not iteration**, and **cannot be destroyed**; useful for large/unbounded keys/values and high-parallelism cases |
+| `OrderedMap`    | Bounded (fits in a single **slot**) | Stored entirely within the resource that contains it | Supports ordered access (front/back, prev/next), implemented as sorted vector, but operations are effectively O(log(n)) due to internal optimizations |
+| `Table`         | Unbounded   | Each (key, value) stored in a separate **slot** | Supports basic operations, like `add`, `remove`, `contains`, but **not iteration**, and **cannot be destroyed**; useful for large/unbounded keys/values and high-parallelism cases |
 | `TableWithLength` | Unbounded  | same as `Table` | Variant of `Table`, with additional length tracking, which adds `length`, `empty`, and `destroy_empty` methods; Adding or removing elements **cannot** be done in parallel, modifying existing elements can. |
-| `BigOrderedMap` | Unbounded | Combines multiple keys into a single resource, and grows into multiple resources dynamically | Implemented as B+ tree; **opportunistically parallel** for non-adjacent keys; supports ordered access (front/back, prev/next); configurable node capacities to balance storage and performance |
+| `BigOrderedMap` | Unbounded | Combines multiple keys into a single **slot**, initially stored within resource that contains it, and grows into multiple **slots** dynamically | Implemented as B+ tree; **opportunistically parallel** for non-adjacent keys; supports ordered access (front/back, prev/next); configurable node capacities to balance storage and performance |
 
 Note:
 - `SimpleMap` has been deprecated, and replaced with `OrderedMap`. 
@@ -46,8 +46,8 @@ We measured performance at small scale, measuring microseconds taken for a singl
 | 1000 | 105 | 168 | 567 |
 | 10000 | 142 | 210 | 656 |
 
-You can see that overhead of `BigOrderedMap` compared to `OrderedMap`, when both are in the single resource, is around 1.5-2x. 
-So you can generally used `BigOrdredMap` when it is unknown if data will be too large to be stored in a single resource.x
+You can see that overhead of `BigOrderedMap` compared to `OrderedMap`, when both are in the single **slot**, is around 1.5-2x. 
+So you can generally used `BigOrdredMap` when it is unknown if data will be too large to be stored in a single **slot**.
 
 ## Common map operations:
 
@@ -143,7 +143,7 @@ Implementation has few characteristics that make it very versatile and useful ac
 - It reduces amount of conflicts: modifications to a different part of the key-space are generally parallel, and it provides knobs for tuning between parallelism and size
 - All operations have guaranteed upper-bounds on performance (how long they take, as well as how much execution and io gas they consume), allowing for safe usage across a variety of use cases.
   - One caveat, is refundable storage fee. By default, operation that requires map to grow to more resources needs to pay for storage fee for it. Implementation here has an option to pre-pay for storage slots, and to reuse them as elements are added/removed, allowing applications to achieve fully predictable overall gas charges, if needed.
-- If key/value is within the size limits map was configured with, inserts will never fail unpredictably, as map internally understands and manages maximal resource size limits.
+- If key/value is within the size limits map was configured with, inserts will never fail unpredictably, as map internally understands and manages maximal **slot** size limits.
 
 #### Creating `BigOrderedMap`
 
