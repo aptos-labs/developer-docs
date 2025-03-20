@@ -9,15 +9,14 @@ We will go over their differences and similarities, and how to choose which one 
 
 ## Aptos Blockchain performance and gas cost considerations 
 
-State on the Aptos Blockchain is managed as a set of resources. Transactions
-performance heavily depends on how reads and writes to resources.
-Storage gas costs are paid based on number of resources that exist, and their sizes. 
-IO gas costs are paid based on number of resources read and modified, and their sizes, 
-but are generally significantly smaller than storage gas costs. 
-That means that writing to a new resource has the highest (storage) gas cost, and deleting
-an existing resource gives the largest refund. 
-Additionally, transactions modifying the same resource conflict with one another, and cannot be
-executed in parallel.
+Aptos Blockchain state is managed through on-chain **resources**. 
+Furthermore, transaction performance and gas cost is heavily influenced by how these resources are read and written.
+Breaking down the gas costs further, we have:
+1. Storage fee, which are determined by the number and size of resources (i.e., writing to a new resource incurs the highest storage fee, whereas deleting an existing resource provides the largest refund.)
+2. IO gas costs —generally much lower— which depend on the number and size of resources read and modified. 
+3. execution gas costs are based on the computation needed, and are generally in the similar scale as io gas costs.
+
+Transactions that modify the same resource cannot be executed in parallel, as they conflict with one another.
 
 One useful analogy is thinking about each resource being a file on a disk, 
 then performance of smart contract would correlate well to a program that 
@@ -25,57 +24,57 @@ operates on files in the same way.
 
 ## Different Map implementations
 
-- `OrderedMap` is a struct, and is, similar to `vector`, fully contained within the resource that stores it.
-  With it, it is bounded in size to the size of a single resource.
-  It provides regular map functions, as well as accessing elements in order, like front/back or prev/next. 
-  When you need an inline mapping, that will fit in a resource, this is the option to choose.
-  It's implementation is SortedVectorMap, but because of limited size and efficiency of memcpy, all main operations are practically O(log(n)). 
-- `Table` is unbounded in size, puts each (key, value) pair in the separate resource. You can `add` or `remove` elements, 
-  or check if it `contains` some key, but cannot be iterated on. When keys or values are large / unbounded, we can use the `Table`. 
-  Also if we want to parallelize transactions and we have a few elements that are modified extremely often, `Table` can provide that.
-  Note that `Table` cannot be destroyed, because it doesn't know if it is empty.
-  - `TableWithLength` is wrapper around the `Table`, that adds tracking of it's `length`, allowing `length`, `empty` and `destroy_empty`
-    operations on top of the `Table`. Adding or removing elements to `TableWithLength` cannot be done in parallel.
-- `BigOrderedMap` groups multiple (key, value) pairs in a single resource, but is unbounded in size - and uses more resources as needed.
-  It's implementation is a BPlusTreeMap, where each node is a resource containing OrderedMap, with inner nodes only containing keys, while leaves contain values as well.
-  It is opportunistically parallel - if map has large enough elements to be using multiple resources, modifying the map for keys that are not close
-  to each other should generally be parallel operation.
-  It is configured so that each resource containing internal node has the same capacity in number of keys, 
-  and each resource containing leaf node has the same capacity in the number of (key, value) pairs.
-  Capacity of nodes (both leaf and inner degree) are configurable - to allow the tradeoff between storage gas cost on one end, 
-  and other gas costs and parallelism on the other. 
-  It provides regular map functions, as well as accessing elements in order, like front/back or prev/next. 
+| Implementation      | Size Limit  | Storage Structure | Key Features |
+|--------------------|------------|------------------|--------------|
+| `OrderedMap`    | Bounded (fits in a single resource) | Stored entirely within the resource | Supports ordered access (front/back, prev/next), implemented as sorted vector, but operations are effectively O(log(n)) due to internal optimizations |
+| `Table`         | Unbounded   | Each (key, value) stored in a separate resource | Supports basic operations, like `add`, `remove`, `contains`, but **not iteration**, and **cannot be destroyed**; useful for large/unbounded keys/values and high-parallelism cases |
+| `TableWithLength` | Unbounded  | same as `Table` | Variant of `Table`, with additional length tracking, which adds `length`, `empty`, and `destroy_empty` methods; Adding or removing elements **cannot** be done in parallel, modifying existing elements can. |
+| `BigOrderedMap` | Unbounded | Combines multiple keys into a single resource, and grows into multiple resources dynamically | Implemented as B+ tree; **opportunistically parallel** for non-adjacent keys; supports ordered access (front/back, prev/next); configurable node capacities to balance storage and performance |
 
 Note:
 - `SimpleMap` has been deprecated, and replaced with `OrderedMap`. 
 - `SmartTable` has been deprecated, and replaced with `BigOrderedMap`.
 
+#### Performance comparison
+
+We measured performance at small scale, measuring microseconds taken for a single pair of `insert` + `remove` operation, into a map of varied size.
+
+| num elements | OrderedMap | BigOrderedMap all inlined | BigOrderedMap max_degree=16 |
+|--------------|------------|---------------------------|-----------------------------|
+| 10 | 65 | 123 | 123 |
+| 100 | 85 | 146 | 455 |
+| 1000 | 105 | 168 | 567 |
+| 10000 | 142 | 210 | 656 |
+
+You can see that overhead of `BigOrderedMap` compared to `OrderedMap`, when both are in the single resource, is around 1.5-2x. 
+So you can generally used `BigOrdredMap` when it is unknown if data will be too large to be stored in a single resource.x
+
 ## Common map operations:
 
 Most maps above support the same set of functions (for actual signatures and restrictions, check out the corresponding implementations):
 
-#### Creating Tables
+#### Creating Maps
 
 - `new<K, V>(): Self`: creates an empty map
 
-#### Destroying Tables
+#### Destroying Maps
 
 All except `Table` support:
-- `destroy_empty<K, V>(table: Self<K, V>)`: Destroys an empty map. (not supported by `Table`)
-- `destroy<K, V>(self: Self<K, V>, dk: |K|, dv: |V|)`: Destroys a map with given functions that destroy correponding elements. (not supported by `Table` and `TableWithLength`)
+- `destroy_empty<K, V>(self: Self<K, V>)`: Destroys an empty map. (**not** supported by `Table`)
+- `destroy<K, V>(self: Self<K, V>, dk: |K|, dv: |V|)`: Destroys a map with given functions that destroy correponding elements. (**not** supported by `Table` and `TableWithLength`)
 
 #### Managing Entries
 
-- `add<K, V>(table: &mut Self<K, V>, key: K, value: V)`: Adds a key-value pair to the map.
-- `remove<K, V>(table: &mut Self<K, V>, key: K): V`: Removes and returns the value associated with a key.
-- `upsert<K, V>(table: &mut Self<K, V>, key: K, value: V): Option<V>`: Inserts or updates a key-value pair.
-- `add_all<K, V>(table: &mut Self<K, V>, keys: vector<K>, values: vector<V>)`: Adds multiple key-value pairs to the map. (not supported by `Table` and `TableWithLength`)
+- `add<K, V>(self: &mut Self<K, V>, key: K, value: V)`: Adds a key-value pair to the map.
+- `remove<K, V>(self: &mut Self<K, V>, key: K): V`: Removes and returns the value associated with a key.
+- `upsert<K, V>(self: &mut Self<K, V>, key: K, value: V): Option<V>`: Inserts or updates a key-value pair.
+- `add_all<K, V>(self: &mut Self<K, V>, keys: vector<K>, values: vector<V>)`: Adds multiple key-value pairs to the map. (**not** supported by `Table` and `TableWithLength`)
 
 #### Retrieving Entries
 
 - `contains<K, V>(self: &Self<K, V>, key: &K): bool`: Checks whether key exists in the map.
-- `borrow<K, V>(table: &Self<K, V>, key: &K): &V`: Returns an immutable reference to the value associated with a key.
-- `borrow_mut<K: drop, V>(table: &mut Self<K, V>, key: K): &mut V`: Returns a mutable reference to the value associated with a key. 
+- `borrow<K, V>(self: &Self<K, V>, key: &K): &V`: Returns an immutable reference to the value associated with a key.
+- `borrow_mut<K: drop, V>(self: &mut Self<K, V>, key: K): &mut V`: Returns a mutable reference to the value associated with a key. 
   (`BigOrderedMap` only allows `borrow_mut` when value type has a static constant size, due to modification being able to break it's invariants otherwise. Use `remove()` and `add()` combination instead)
 
 #### Order-dependant functions
@@ -91,7 +90,7 @@ These set of functions are only implemented by `OrderedMap` and `BigOrderedMap`.
 
 #### Utility Functions
 
-- `length<K, V>(table: &Self<K, V>): u64`: Returns the number of entries in the table. (not supported by `Table`)
+- `length<K, V>(self: &Self<K, V>): u64`: Returns the number of entries in the map. (not supported by `Table`)
 
 #### Traversal Functions
 
@@ -134,7 +133,7 @@ module 0x42::map_usage {
 }
 ```
 
-## Additional details for BigOrderedMap
+## Additional details for `BigOrderedMap`
 
 Its current implementation is B+ tree, which is chosen as it is best suited for the onchain storage layout - where the majority of cost comes from loading and writing to storage items, and there is no partial read/write of them. 
 
@@ -145,6 +144,8 @@ Implementation has few characteristics that make it very versatile and useful ac
 - All operations have guaranteed upper-bounds on performance (how long they take, as well as how much execution and io gas they consume), allowing for safe usage across a variety of use cases.
   - One caveat, is refundable storage fee. By default, operation that requires map to grow to more resources needs to pay for storage fee for it. Implementation here has an option to pre-pay for storage slots, and to reuse them as elements are added/removed, allowing applications to achieve fully predictable overall gas charges, if needed.
 - If key/value is within the size limits map was configured with, inserts will never fail unpredictably, as map internally understands and manages maximal resource size limits.
+
+#### Creating `BigOrderedMap`
 
 Because it's layout affects what can be inserted and performance, there are a few ways to create and configure it:
 
