@@ -501,9 +501,15 @@ class Installer:
             openssl_version = "1.0.0"
 
         if openssl_version.startswith("3."):
-            return "Ubuntu-22.04-x86_64"
+            return "Linux-x86_64"
 
-        return "Ubuntu-x86_64"
+        self._write(
+            colorize(
+                "warning",
+                "OpenSSL 1.x.x is deprecated, and future versions of the Aptos CLI may not be published with it",
+            )
+        )
+        return "Ubuntu-22.04-x86_64"
 
     def _write(self, line) -> None:
         sys.stdout.write(line + "\n")

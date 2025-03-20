@@ -1,0 +1,237 @@
+# Enums
+
+_Since language version 2.0_
+
+Enum types are similar to struct types but support defining multiple *variants* of the data layout. Each variant has its distinct set of fields. Enum variants are supported in expressions, tools for testing, matching, and deconstructing. 
+
+
+## Declaration of Enum Types 
+
+An enum type declaration lists the number of different variants, as seen in the example below:
+
+```move
+enum Shape {
+    Circle{radius: u64},
+    Rectangle{width: u64, height: u64}
+}
+```
+
+There can be zero or more fields for an enum variant. If no arguments are given, the braces can also be omitted, declaring simple values:
+
+```move
+enum Color {
+  Red, Blue, Green
+}
+```
+
+Like struct types, enum types can have abilities. For example, the `Color` enum type would be appropriately declared as copyable, droppable, and storable, like primitive number types:
+
+```move
+enum Color has copy, drop, store, key { Red, Blue, Green }
+```
+
+Enum types can also have the `key` ability and appear as roots of data in global storage. A common usage of enums in this context is versioning of data:
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+  V2{name: String, age: u64}
+}
+```
+
+Similar to structs, enum types can be generic and take positional arguments. For example, the type below represents a generic result type, where the variant constructors use positional instead of named arguments (see also [positional structs](structs-and-resources.mdx#positional-structs)).
+
+```move
+enum Result<T> has copy, drop, store {
+  Err(u64),
+  Ok(T)
+}
+```
+
+## Constructing Enum Values 
+
+An enum value is constructed similarly to a struct value:
+
+```move
+let s: String;
+let data = VersionedData::V1{name: s};
+```
+
+If the enum variant has no fields, the braces can also be omitted:
+
+```move
+let color = Color::Blue;
+```
+
+## Name Resolution for Enum Variants 
+
+The variant names for an enum need to be qualified by the enum type name, as in `VersionedData::V1`. 
+
+> Note: Aliasing via the `use` clause is currently not supported for enum variants, but will be added in later language versions
+
+In certain cases (such as match expressions, below), the Move compiler can infer the enum type from the context, and the qualification by the type name may be omitted:
+
+```move
+fun f(data: VersionedData) {
+  match (data) { V1{..} => .., ..} // simple variant name OK
+}
+```
+
+## Matching Enum Values 
+
+The value of an enum value can be inspected using a match expression. For example:
+
+```move
+fun area(self: &Shape): u64 {
+    match (self) {
+        Circle{radius}           => mul_with_pi(*radius * *radius),
+        Rectangle{width, height} => *width * *height
+    }
+}
+```
+
+Notice above that the value matched is an immutable reference to an enum value. A match expression can also consume a value, or match over a mutable reference for interior updates:
+
+```move
+fun scale_radius(self: &mut Shape, factor:  u64) {
+    match (self) {
+        Circle{radius: r} => *r = *r * factor,
+        _                 => {} // do nothing if not a Circle
+  }
+}
+```
+
+The patterns provided in the match expression are evaluated sequentially, in order of textual occurrence, until a match is found. It is a compile time error if not all known patterns are covered.
+
+Patterns can be nested and contain conditions, as in the following example:
+
+```move
+let r : Result<Result<u64>> = Ok(Err(42));
+let v = match (r)) {
+  Ok(Err(c)) if c < 42  => 0,
+  Ok(Err(c)) if c >= 42 => 1,
+  Ok(_)                 => 2,
+  _                     => 3
+};
+assert!(v == 1);
+```
+
+Notice that in the above example, the last match clause (`_`) covers both patterns `Ok(Err(_))` and `Err(_)`.  Although at execution time, the earlier clauses match `Ok(Err(c))` for all values of `c`, the compiler cannot be sure all cases are covered due to the conditionals: conditions in match expressions are not considered when tracking coverage.  Thus the first two clauses in the match expression above are not sufficient for match completeness, and an additional clause is required to avoid a compiler error.
+
+## Testing Enum Variants
+
+With the `is` operator, one can examine whether a given enum value is of a given variant:
+
+```move
+let data: VersionedData;
+if (data is VersionedData::V1) { .. }
+```
+
+The operator allows specifying a list of variants, separated by "`|`" characters. The variants need not be qualified by the enum name if the type of the expression being tested is known:
+
+```move
+assert!(data is V1|V2);
+```
+
+## Selecting From Enum Values
+
+It is possible to directly select a field from an enum value. Recall the definition of versioned data:
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+  V2{name: String, age: u64}
+}
+```
+
+One can write code as below to directly select the fields of variants:
+
+```move
+let s: String;
+let data1 = VersionedData::V1{name: s};
+let data2 = VersionedData::V2{name: s, age: 20};
+assert!(data1.name == data2.name)
+assert!(data2.age == 20); 
+```
+
+Notice that field selection aborts if the enum value has no variant with the given field. This is the case for  `data1.age`. 
+The abort code used for this case is `0xCA26CBD9BE0B0001`. In terms of the `std::error` convention, this code has
+category `std::error::INTERNAL` and reason `1`.
+
+Field selection is only possible if the field is uniquely named and typed throughout all variants. Thus, the following yields a compile time error:
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+  V2{name: u64}
+}
+
+data.name
+ // ^^^^^ compile time error that `name` field selection is ambiguous
+```
+
+## Using Enums Patterns in Lets
+
+An enum variant pattern may be used in a `let` statement:
+
+```move
+let data: VersionData;
+let V1{name} = data;
+```
+
+Unpacking the enum value will abort if the variant is not the expected one. To ensure that all variants of an enum are handled, a `match` expression is recommended instead of a `let`. The `match` is checked at compile time, ensuring that all variants are covered. In some cases, tools like the Move Prover can be used to verify that unexpected aborts cannot happen with a `let`.
+
+## Destroying Enums via Pattern Matching
+
+Similar to struct values, enum values can be destroyed by explicitly unpacking them. Enums can be unpacked with pattern matching in a `match` expression, enum pattern in a `let` binding, or enum pattern in an assignment.
+
+```move
+// Note: `Shape` has no `drop` ability, so must be destroyed with explicit unpacking.
+enum Shape {
+    Circle{radius: u64},
+    Rectangle{width: u64, height: u64}
+}
+
+fun destroy_empty(self: Shape) {
+    match (self) {
+        Shape::Circle{radius} => assert!(radius == 0),
+        Shape::Rectangle{width, height: _} => assert!(width == 0),
+    }
+}
+
+fun example_destroy_shapes() {
+    let c = Shape::Circle{radius: 0};
+    let r = Shape::Rectangle{width: 0, height: 0};
+    c.destroy_empty();
+    r.destroy_empty();
+}
+```
+
+## Enum Type Upgrade Compatibility 
+
+An enum type can be upgraded by another enum type if the new type only adds new variants at the end of the variant list. All variants present in the old enum type must also appear in the new type, in the same order and starting from the beginning. Consider the `VersionedData` type, which might have begun with a single version:
+
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+}
+```
+
+This type could be upgraded to the version we used so far in this text:
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+  V2{name: String, age: u64}
+}
+```
+
+The following upgrade would not be allowed, since the order of variants must be preserved:
+
+```move
+enum VersionedData has key {
+  V2{name: String, age: u64}   // not a compatible upgrade
+  V1{name: String}
+}
+```
