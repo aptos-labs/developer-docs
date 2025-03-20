@@ -7,5 +7,6 @@ export default {
   },
   ledger: {
     title: "使用硬件钱包",
+    href: "/en/build/cli/trying-things-on-chain/ledger",
   },
 };
