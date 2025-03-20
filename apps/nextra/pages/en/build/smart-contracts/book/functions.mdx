@@ -232,8 +232,11 @@ script {
 }
 ```
 
-Entry functions can take primitive types, String, and vector arguments but cannot take Structs (e.g. Option). They also
-must not have any return values.
+Entry functions can accept parameters that are: primitive types, reference to a
+`signer`, vectors (where the element type is itself acceptable),
+and certain standard library types such as `String`, `Object`, and `Option`.
+Entry functions must not have any return values.
+
 
 ### Name
 
@@ -733,7 +736,22 @@ The type of the `self` argument can be a struct or an immutable or mutable refer
 
 Notice that you do not need to `use` the modules which introduce receiver functions. The compiler will find those functions automatically based on the argument type of `s` in a call like `s.foo(1)`. This, in combination with the automatic insertion of reference operators, can make code using this syntax significantly more concise.
 
-## Function Values 
+The receiver style syntax can also be used on generic functions, like shown below for the generic function `std::vector::remove<T>(self: &mut vector<T>, i: u64): T`.
+
+ ```move
+module 0x42::example {
+    fun bar() {
+        let v = vector[1, 2, 3];
+        let e1 = v.remove(0); // type params inferred for `remove<T>`
+        assert!(e1 == 1);
+        let e2 = v.remove::<u8>(0); // type params explicitly specified
+        assert!(e2 == 2);
+    }
+}
+```
+
+
+## Function Values
 
 _Since language version 2.2_ (preview)
 
@@ -748,7 +766,7 @@ Function types can have associated abilities, written as `|u64|bool has copy`. M
 Function values can be stored in fields of structs or enums. In this case, the field type inherits the abilities of the struct:
 
 ```move
-struct S has key { 
+struct S has key {
   func: |u64| bool /* has store */  // not needed since inherited
 }
 ```
@@ -799,7 +817,7 @@ let f: |u64|bool has copy+drop+store = is_even;
 let g: |u64|bool has copy+drop = is_odd;
 ```
 
-A public function is required to build a storable function value because it needs to be guaranteed that the underlying function persists so the function value can be safely restored from storage at any point in the future. However, code upgrade may change the underlying implementation of the function, while its signature is persistent. 
+A public function is required to build a storable function value because it needs to be guaranteed that the underlying function persists so the function value can be safely restored from storage at any point in the future. However, code upgrade may change the underlying implementation of the function, while its signature is persistent.
 
 If a function should storable which is non-public, an attribute can be used to mark this function as persistent, with the same upgrade behavior than public functions. This avoids exposing such a function outside of a package which can be a security risk:
 
@@ -840,11 +858,11 @@ let f: |u64|u64 has copy+drop+store = |y| add(x, y)
 let f: |u64|u64 has copy+drop+store = |y| add(y, x)
 ```
 
-For reference, this mechanism is also called 'currying' of `add` in functional programming languages. 
+For reference, this mechanism is also called 'currying' of `add` in functional programming languages.
 
 ### Reentrancy Check
 
-Via dynamic dispatch of function values, reentrancy of modules in a chain of function calls is possible. If module `m1`  uses module `m2`, and `m1` calls `m2::f` passing a function value to it, this function value can callback into `m1`. This situation is called _reentrancy_, and is not possible in Move without function values, since the module usage relation is acyclic. 
+Via dynamic dispatch of function values, reentrancy of modules in a chain of function calls is possible. If module `m1`  uses module `m2`, and `m1` calls `m2::f` passing a function value to it, this function value can callback into `m1`. This situation is called _reentrancy_, and is not possible in Move without function values, since the module usage relation is acyclic.
 
 The Move VM dynamically detects reentrancy for a module, and _locks_ all resources declared in this module from being accessed. Thus during reentrancy, calling the functions `borrow_global`, `borrow_global_mut`, and `move_from` lead to an abort. Here is an example:
 
@@ -855,7 +873,7 @@ module caller {
   fun calling() acquires R {
      let r = &mut R[@addr];
      // This callback is OK, because `R` is not accessed
-     callee::call_me(r, |x| do_something(x)) 
+     callee::call_me(r, |x| do_something(x))
      // This callback will lead to reentrancy runtime error
      callee::call_me(r, |_| R[@addr].count += 1)
      r.call_count += 1
@@ -867,12 +885,12 @@ module callee {
   fun call_me<T(x: &mut T, action: |&mut T|) {
     action(x)
   }
-}  
+}
 ```
 
 Notice that dispatching a function value to a concrete function in the same module is also considered to be reentrancy. If the function `callee::call_me` would be moved into the module `caller`, the same semantics is in effect.
 
-The default reentrancy check ensures consistency of Move's reference semantics and suppresses side-effects for the resources in a reentered module. But it does not protect from side-effects on other state of the app. For this purposes, the `#[module_lock]` attribute can be attached to a function. In a calling context where this attribute is active, reentrancy will be fully suppressed, causing an abort at the moment a module is reentered. In the example below, the state effected is owned by another module `account` instead of the module `caller` for which the can potentially happen via the `notify` callback: 
+The default reentrancy check ensures consistency of Move's reference semantics and suppresses side-effects for the resources in a reentered module. But it does not protect from side-effects on other state of the app. For this purposes, the `#[module_lock]` attribute can be attached to a function. In a calling context where this attribute is active, reentrancy will be fully suppressed, causing an abort at the moment a module is reentered. In the example below, the state effected is owned by another module `account` instead of the module `caller` for which the can potentially happen via the `notify` callback:
 
 ```move
 module account { ... }
