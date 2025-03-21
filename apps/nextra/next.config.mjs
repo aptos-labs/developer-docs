@@ -1866,6 +1866,11 @@ export default withBundleAnalyzer(
         destination: "/en/network/faucet",
         permanent: true,
       },
+      {
+        source: "/en/build/smart-contracts/smart-table",
+        destination: "/en/build/smart-contracts/maps",
+        permanent: true,
+      },
     ],
   }),
 );

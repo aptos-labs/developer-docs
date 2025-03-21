@@ -75,8 +75,8 @@ export default {
   "smart-vector": {
     title: "Smart Vector",
   },
-  "smart-table": {
-    title: "Smart Table",
+  maps: {
+    title: "Maps",
   },
   "---examples---": {
     type: "separator",
