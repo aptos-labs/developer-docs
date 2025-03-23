@@ -1,6 +1,6 @@
 export default {
   index: {
-    title: "Introduction",
+    title: "介绍",
     type: "page",
     display: "hidden",
     theme: {
@@ -10,79 +10,79 @@ export default {
   },
   build: {
     type: "menu",
-    title: "Build",
+    title: "构建",
     items: {
       "get-started": {
-        title: "Get Started",
+        title: "开始使用",
       },
-      //   "smart-contracts": {
-      //     title: "Smart Contracts (Move)",
-      //   },
+      "smart-contracts": {
+        title: "智能合约 (Move)",
+      },
       apis: {
-        title: "APIs",
+        title: "API",
       },
-      //   sdks: {
-      //     title: "SDKs",
-      //   },
-      //   indexer: {
-      //     title: "Indexer",
-      //   },
+      sdks: {
+        title: "SDK",
+      },
+      indexer: {
+        title: "索引器",
+      },
       cli: {
-        title: "CLI",
+        title: "命令行工具",
       },
-      // "create-aptos-dapp": {
-      //   title: "create-aptos-dapp",
-      // },
-      // guides: {
-      //   title: "Guides",
-      // },
+      "create-aptos-dapp": {
+        title: "create-aptos-dapp",
+      },
+      guides: {
+        title: "指南",
+      },
     },
   },
   network: {
     type: "menu",
-    title: "Network",
+    title: "网络",
     items: {
       nodes: {
-        title: "Nodes",
+        title: "节点",
       },
     },
   },
   "developer-platforms": {
     type: "menu",
-    title: "Additional Resources",
+    title: "更多资源",
     items: {
       learn: {
         type: "page",
-        title: "Aptos Learn ↗",
+        title: "Aptos 学习 ↗",
         href: "https://learn.aptoslabs.com/",
         newWindow: true,
       },
       forum: {
-        title: "Community Forum ↗",
+        title: "社区论坛 ↗",
         href: "https://forum.aptosfoundation.org/",
         newWindow: true,
         type: "page",
       },
       discussions: {
-        title: "Developer Discussions ↗",
+        title: "开发者讨论 ↗",
         href: "https://github.com/aptos-labs/aptos-developer-discussions/discussions",
         newWindow: true,
         type: "page",
       },
       api_gateway: {
-        title: "API Gateway ↗",
+        title: "API 网关 ↗",
         href: "https://developers.aptoslabs.com/",
         newWindow: true,
         type: "page",
       },
       aptos_foundation: {
-        title: "Aptos Foundation ↗",
+        title: "Aptos 基金会 ↗",
         href: "https://aptosfoundation.org/",
         newWindow: true,
         type: "page",
       },
       contribute: {
-        title: "Contribute",
+        title: "贡献",
         type: "page",
       },
     },

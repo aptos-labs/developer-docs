@@ -64,30 +64,18 @@ pnpm install
 
 Ensure you have configured your `.env` properly under `apps/nextra/.env`. There is a `.env.example` there that you can duplicate and rename to `.env` for simplicity.
 
-To ensure you have the right setup, you can run:
-
-```sh
-pnpm prebuild
-```
-
 2. Build Nextra
 
 ```bash
-npx turbo run build --filter={apps/nextra}...
+pnpm run build
 ```
 
 This will build `apps/nextra` and all local packages it depends on.
 
-3. Navigate to the correct subdirectory
+3. Run the development server
 
 ```sh
-cd apps/nextra
-```
-
-4. Run the development server
-
-```sh
-pnpm dev
+pnpm run dev
 ```
 
 ## Debugging

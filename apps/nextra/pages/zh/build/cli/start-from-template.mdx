@@ -1,0 +1,45 @@
+import { Card, RemoteCodeblock, permalinkFetch } from '@components/index';
+import { Cards, Steps } from "nextra/components"
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    "https://github.com/aptos-labs/aptos-core/blob/afd3706c17bcccfb39a9d6059aecbfa648ed295d/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L64"
+  ])
+}
+
+# 从模板开始创建 Move 包
+按照以下步骤快速开始。
+
+<Steps>
+  ### 初始化
+  运行以下命令使用 `hello-blockchain` 模板初始化包：
+  ```bash filename="Terminal"
+  aptos move init --name hello_blockchain --template hello-blockchain
+  ```
+
+  ### 开始构建
+  模板在 `sources` 下创建了一个 `hello_blockchain.move` 文件来帮助你开始。
+  <RemoteCodeblock
+    permalink="https://github.com/aptos-labs/aptos-core/blob/afd3706c17bcccfb39a9d6059aecbfa648ed295d/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L64"
+  />
+
+  ### 查看所有模板
+  运行以下命令查看所有模板（并获取初始化包的一般帮助）：
+  ```bash
+  aptos move init --help
+  ```
+
+</Steps>
+
+### 了解更多
+
+<Cards>
+  <Card href="../smart-contracts">
+    <Card.Title>智能合约</Card.Title>
+    <Card.Description>学习如何使用 Move 构建</Card.Description>
+  </Card>
+  <Card href="../smart-contracts/create-package">
+    <Card.Title>创建包</Card.Title>
+    <Card.Description>从学习如何创建 Move 包开始</Card.Description>
+  </Card>
+</Cards> 

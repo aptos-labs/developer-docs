@@ -1,6 +1,6 @@
-# 5. Submit Data to Chain
+# 4. Submit Data to Chain
 
-In the fifth chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx), you will be submitting data to the chain.
+In the fourth chapter of the tutorial on [building an end-to-end dapp on Aptos](../build-e2e-dapp.mdx), you will be submitting data to the chain.
 
 So now we have an **Add new list** button that appears if the connected account hasn’t created a list yet. We still don't have a way for an account to create a list, so let’s add that functionality.
 
@@ -15,9 +15,6 @@ const { account, signAndSubmitTransaction } = useWallet();
 ```tsx filename="App.tsx"
 <Button
   onClick={addNewList}
-  block
-  type="primary"
-  style={{ height: "40px", backgroundColor: "#3f67ff" }}
 >
   Add new list
 </Button>
@@ -49,7 +46,7 @@ const addNewList = async () => {
     // sign and submit transaction to chain
     const response = await signAndSubmitTransaction(transaction);
     // wait for transaction
-    await aptos.waitForTransaction({transactionHash:response.hash});
+    await aptosClient().waitForTransaction({transactionHash:response.hash});
     setAccountHasList(true);
   } catch (error: any) {
     setAccountHasList(false);
@@ -62,19 +59,10 @@ const addNewList = async () => {
 In our `fetchList` function, find the line:
 
 ```tsx filename="App.tsx"
-// replace with your own address
-const moduleAddress =
-  "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
+const moduleAddress = MODULE_ADDRESS;
 ```
 
-And move it to outside of the main `App` function, right beneath our const `provider` declarations.
-
-```tsx filename="App.tsx"
-export const aptos = new Aptos();
-// change this to be your module account address
-export const moduleAddress =
-  "0xcbddf398841353776903dbab2fdaefc54f181d07e114ae818b1a67af28d1b018";
-```
+And move it to outside of the main `App` function, so it can be globally accessed.
 
 **Let’s go over the `addNewList` function code.**
 
@@ -120,7 +108,7 @@ const addNewList = async () => {
     // sign and submit transaction to chain
     const response = await signAndSubmitTransaction(transaction);
     // wait for transaction
-    await aptos.waitForTransaction({transactionHash:response.hash});
+    await aptosClient().waitForTransaction({transactionHash:response.hash});
     setAccountHasList(true);
   } catch (error: any) {
     setAccountHasList(false);
@@ -130,38 +118,23 @@ const addNewList = async () => {
 };
 ```
 
-8. Update the important statement from `antd` to also import `Spin`
-
-```tsx filename="App.tsx"
-import { Layout, Row, Col, Button, Spin } from "antd";
-```
-
 9. Update our UI with the following:
 
 ```tsx filename="App.tsx"
 return (
   <>
     ...
-    <Spin spinning={transactionInProgress}>
       {!accountHasList && (
-        <Row gutter={[0, 32]} style={{ marginTop: "2rem" }}>
-          <Col span={8} offset={8}>
-            <Button
-              onClick={addNewList}
-              block
-              type="primary"
-              style={{ height: "40px", backgroundColor: "#3f67ff" }}
-            >
-              Add new list
-            </Button>
-          </Col>
-        </Row>
+        <div className="flex items-center justify-center flex-col">
+          <Button onClick={addNewList} disabled={transactionInProgress}>
+            Add new list
+          </Button>
+        </div>
       )}
-    </Spin>
   </>
 );
 ```
 
 Now you can head over to our app, and add a new list!
 
-Since you haven’t made the user interface able to handle cases where an account has created a list, you will do so next [handling tasks](6-handle-tasks.mdx) in chapter 6.
+Since you haven’t made the user interface able to handle cases where an account has created a list, you will do so next [handling tasks](5-handle-tasks.mdx) in chapter 5.

@@ -112,7 +112,7 @@ disable the pruner by following the instructions in the [disabling the ledger pr
 starting the node. Note: performing a full history restore requires a significant amount of resources and time.
 See the resource requirements below.
 
-- **Open File Limit**: Set the open file limit to 10K, e.g., using `ulimit -n 10000`.
+- **Open File Limit**: Set the open file limit >= 999999, e.g., using `ulimit -n 1048576`.
 
 If you are restoring a node, you will need the following resources:
 

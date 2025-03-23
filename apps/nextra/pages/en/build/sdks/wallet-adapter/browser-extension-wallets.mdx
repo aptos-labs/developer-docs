@@ -22,7 +22,7 @@ For an example of how to implement the Wallet Adapter plugin (and how to registe
 </Callout>
 
 <Steps>
-### Copy the [`wallet-standard` example](https://github.com/aptos-labs/wallet-standard/blob/main/example/wallet.ts) into your browser extension codebase.
+### Copy the [`wallet-standard` example](https://github.com/aptos-labs/wallet-standard/blob/main/example/basic/wallet.ts) into your browser extension codebase.
 ### Follow the instructions in that example to make it use your wallet to execute the AIP-62 functions.
 
 <Callout type="info">
@@ -65,8 +65,8 @@ In order for dapp users who are not already using your wallet to get the option 
 git checkout -b your-wallet
 ```
 
-### Navigate to [`packages/wallet-adapter-core/src/AIP62StandardWallets`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core/src/AIP62StandardWallets).
-### Add your wallet’s details to [`registry.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/registry.ts) by following the `AptosStandardSupportedWallet` interface.
+### Navigate to [`packages/wallet-adapter-core/src/AIP62StandardWallets`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core/src).
+### Add your wallet’s details to [`registry.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/registry.ts) by following the `AptosStandardSupportedWallet` interface.
 
 ```tsx filename="registry.ts"
 export interface AptosStandardSupportedWallet<Name extends string = string> {

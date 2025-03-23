@@ -26,7 +26,7 @@ For an example of how to implement the Wallet Adapter plugin, see the [Wallet Ad
 
 ### Create a new typescript repository.
 
-### Copy the [`wallet-standard` example](https://github.com/aptos-labs/wallet-standard/blob/main/example/wallet.ts) into that new repo.
+### Copy the [`wallet-standard` example](https://github.com/aptos-labs/wallet-standard/blob/main/example/basic/wallet.ts) into that new repo.
 
 ### Follow the instructions in that example to make it use your wallet to execute the AIP-62 functions.
 
@@ -69,7 +69,7 @@ In order for dapp users who are not already using your wallet to get the option 
 git checkout -b your-wallet
 ```
 
-### Navigate to [`packages/wallet-adapter-core/src/AIP62StandardWallets`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core/src/AIP62StandardWallets).
+### Navigate to [`packages/wallet-adapter-core/src/AIP62StandardWallets`](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-core/src).
 
 ### Import your SDK wallet npm package.
 
@@ -77,7 +77,7 @@ git checkout -b your-wallet
 pnpm i @yourpackage
 ```
 
-### Import your wallet in [`sdkWallets.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/AIP62StandardWallets/sdkWallets.ts).
+### Import your wallet in [`sdkWallets.ts`](https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/packages/wallet-adapter-core/src/sdkWallets.ts).
 
 For example with AptosConnect:
 

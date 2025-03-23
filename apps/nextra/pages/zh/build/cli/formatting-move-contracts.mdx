@@ -1,0 +1,70 @@
+# 格式化 Move 合约
+
+`movefmt` 是一个格式化工具，可以让 Move 代码更容易编写、阅读和维护 — 极大地改善了 Aptos 上的开发体验。
+
+## 安装
+
+`movefmt` 已集成到 Aptos CLI 中。要开始使用它，首先使用 CLI 更新命令安装它。
+
+```bash filename="Terminal"
+# 首次使用时安装 movefmt
+aptos update movefmt
+```
+
+要安装特定版本的 `movefmt`：
+
+```bash filename="Terminal"
+# 安装目标 <VERSION> 版本的 movefmt
+aptos update movefmt --target-version <VERSION>
+```
+
+可以在[这里](https://github.com/movebit/movefmt/releases)找到 `movefmt` 的最新版本。
+
+## 格式化你的代码
+
+与编译和测试类似，你可以使用以下命令来格式化 Move 包：
+
+```bash filename="Terminal"
+# 格式化 Move 包
+aptos move fmt
+```
+
+支持不同的格式化结果输出方式：
+
+```bash filename="Terminal"
+# 格式化并覆盖包中所有目标 move 文件。
+# 如果未明确指定 `--emit-mode`，这是默认行为
+aptos move fmt --emit-mode=overwrite
+
+# 将格式化结果打印到终端
+aptos move fmt --emit-mode=std-out
+
+# 将格式化结果打印到同一目录下带有 `.fmt.out` 后缀的新文件中
+aptos move fmt --emit-mode=new-file
+
+# 打印格式化前后的差异
+aptos move fmt --emit-mode=diff
+```
+
+`movefmt` 还提供了不同的选项来配置代码的格式化方式。
+以下是默认配置：
+
+```
+max_width = 90 # 每行最多可以有 90 个字符
+indent_size = 4 # 缩进为 4 个空格
+tab_spaces = 4 # 每个制表符等于 4 个空格
+hard_tabs = false # 插入制表符时，会自动替换为 4 个空格
+```
+
+要覆盖默认选项，用户可以在 Move 包目录中指定配置文件 `movefmt.toml`，
+或者在命令行中手动指定：
+
+```bash filename="Terminal"
+# 格式化代码时，将 `max_width` 设置为 80，将 `indent_size` 设置为 2
+aptos move fmt --config max_width=80,indent_size=2
+```
+
+## 反馈
+
+Aptos Labs 始终致力于改善使用 Move 在 Aptos 上构建的开发者体验。
+如果你有兴趣参与制定 Move 的风格指南，我们很乐意在[这里](https://github.com/movebit/movefmt/issues)听取你的意见和反馈。

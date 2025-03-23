@@ -1,14 +1,10 @@
----
-title: "JSON 教程中的参数设置"
----
-
 import { Callout } from 'nextra/components';
 
-# JSON 教程中的参数设置
+# JSON 参数教程
 
-## 软件包信息
+## 包信息
 
-本小节涉及 [`CliArgs` 示例软件包](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args)，你可以在此包的清单文件中找到相关信息：
+本节引用 [`CliArgs` 示例包](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args)，其包含以下清单：
 
 ```toml filename="move.toml"
 [package]
@@ -23,20 +19,19 @@ test_account = "_"
 AptosFramework = { git = "https://github.com/aptos-labs/aptos-framework.git", rev = "mainnet", subdir = "aptos-framework" }
 ```
 
-这个包部署于名为 `test_account` 的地址。
+在这里，包以命名地址 `test_account` 部署。
 
 <Callout type="info" emoji="ℹ️">
-为了跟随本教程，请将你的工作目录切换到 [`aptos-move/move-examples/cli_args`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args)。
+将你的工作目录设置为 [`aptos-move/move-examples/cli_args`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/cli_args) 以便跟随：
 
 ```bash filename="Terminal"
 cd <aptos-core-parent-directory>/aptos-core/aptos-move/move-examples/cli_args
 ```
-
 </Callout>
 
-## 开始部署包
+## 部署包
 
-首先，为 Ace 创建一个好记的特殊地址，让 Ace 使用这个地址来部署包：
+首先为将要部署包的 Ace 生成一个虚荣地址：
 
 ```bash filename="Terminal"
 aptos key generate \
@@ -45,7 +40,7 @@ aptos key generate \
 ```
 
 <details>
-<summary>Output</summary>
+<summary>输出</summary>
 
 ```bash filename="Terminal"
 {
@@ -58,25 +53,25 @@ aptos key generate \
 ```
 
 <Callout type="info" emoji="ℹ️">
-确切的账户地址每次生成时可能会不同，但是特定的前缀是固定的。
+确切的账户地址在每次运行时应有所不同，但虚荣前缀不应改变。
 </Callout>
 </details>
 
-你需要将 Ace 的地址设置成一个 shell 变量，以便之后可以方便地引用：
+将 Ace 的地址存储在 shell 变量中，以便稍后可以内联调用：
 
 ```bash filename="Terminal"
-# Y请注意，你实际的地址可能会与其他人的不同。
+# 你的确切地址会有所不同
 ace_addr=0xacef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46
 ```
 
-通过测试网络（devnet）或测试环境（testnet）的水龙头（faucet）为 Ace 的账户添加资金：
+通过水龙头为 Ace 的账户提供资金（仅在开发网上有效）：
 
 ```bash filename="Terminal"
 aptos account fund-with-faucet --account $ace_addr
 ```
 
 <details>
-<summary>Output</summary>
+<summary>输出</summary>
 
 ```bash filename="Terminal"
 {
@@ -86,7 +81,7 @@ aptos account fund-with-faucet --account $ace_addr
 
 </details>
 
-紧接着，在 Ace 的账户下部署该软件包：
+现在在 Ace 的账户下发布包：
 
 ```bash filename="Terminal"
 aptos move publish \
@@ -96,7 +91,7 @@ aptos move publish \
 ```
 
 <details>
-<summary>Output</summary>
+<summary>输出</summary>
 
 ```json filename="Terminal"
 {
@@ -113,12 +108,11 @@ aptos move publish \
   }
 }
 ```
-
 </details>
 
-## 入口函数（Entry）
+## 入口函数
 
-该软件包中唯一的模块 `cli_args.move` 定义了一个名为 `Holder` 的简单资源，该资源包含了多种不同数据类型的字段：
+包中的唯一模块 `cli_args.move` 定义了一个简单的 `Holder` 资源，具有各种数据类型的字段：
 
 ```move filename="Holder in cli_args.move"
 module test_account::cli_args {
@@ -137,10 +131,10 @@ module test_account::cli_args {
   }
 ```
 
-可以使用一个带有多重嵌套向量 (vectors) 的公共入口函数来设置数据字段：
+一个公共入口函数可以用于设置字段，具有多层嵌套向量：
 
 ```move filename="Setter function in cli_args.move"
-/// 在特定账户 (`account`) 下设置 `Holder` 资源的值
+/// 在 `account` 下设置 `Holder` 中的值。
 public entry fun set_vals<T1, T2>(
     account: signer,
     u8_solo: u8,
@@ -165,13 +159,13 @@ public entry fun set_vals<T1, T2>(
 }
 ```
 
-软件包部署之后，你可以通过 `aptos move run` 命令来执行 `set_vals()` 函数：
+在包发布后，可以使用 `aptos move run` 调用 `set_vals()`：
 
 <Callout type="info" emoji="ℹ️">
-要通过命令行输入 vectors（包括嵌套的 vectors）作为参数时，记得使用带双引号的 JSON 格式,以确保输入正确。
+要从命令行传递向量（包括嵌套向量）作为参数，请使用转义的 JSON 语法！
 </Callout>
 
-```bash filename="在 CLI 中执行有嵌套 vector 参数的函数"
+```bash filename="Running function with nested vector arguments from CLI"
 aptos move run \
     --function-id $ace_addr::cli_args::set_vals \
     --type-args \
@@ -184,215 +178,11 @@ aptos move run \
         "bool:[false, true, false, false]" \
         'address:[["0xace", "0xbee"], ["0xcad"], []]' \
     --private-key-file ace.key \
-    --assume-yes
-```
-
-<details>
-<summary>Output</summary>
-
-```json filename="Terminal"
-{
-  "Result": {
-    "transaction_hash": "0x5e141dc6c28e86fa9f5594de93d07a014264ebadfb99be6db922a929eb1da24f",
-    "gas_used": 504,
-    "gas_unit_price": 100,
-    "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
-    "sequence_number": 1,
-    "success": true,
-    "timestamp_us": 1685077888820037,
-    "version": 528422422,
-    "vm_status": "Executed successfully"
-  }
-}
-```
-
-</details>
-
-函数的身份标识 (function ID)、类型参数 (type arguments) 和具体参数 (arguments) 也可以在一个 JSON 文件里进行设置：
-
-```json filename="entry_function_arguments.json"
-{
-    "function_id": "<test_account>::cli_args::set_vals",
-    "type_args": [
-        "0x1::account::Account",
-        "0x1::chain_id::ChainId"
-    ],
-    "args": [
-        {
-            "type": "u8",
-            "value": 123
-        },
-        {
-            "type": "hex",
-            "value": "0x1234"
-        },
-        {
-            "type": "string",
-            "value": "hello, world! ♥"
-        },
-        {
-            "type": "bool",
-            "value": [
-                false,
-                true,
-                false,
-                false
-            ]
-        },
-        {
-            "type": "address",
-            "value": [
-                [
-                    "0xace",
-                    "0xbee"
-                ],
-                [
-                    "0xcad"
-                ],
-                []
-            ]
-        }
-    ]
-}
-```
-
-在这里，执行 `aptos move run` 命令的格式如下：
-
-```bash filename="通过使用 JSON 格式的输入文件来执行函数"
-aptos move run \
-    --json-file entry_function_arguments.json \
-    --private-key-file ace.key \
-    --assume-yes
-```
-
-<details>
-<summary>Output</summary>
-
-```json filename="Terminal"
-{
-  "Result": {
-    "transaction_hash": "0x60a32315bb48bf6d31629332f6b1a3471dd0cb016fdee8d0bb7dcd0be9833e60",
-    "gas_used": 3,
-    "gas_unit_price": 100,
-    "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
-    "sequence_number": 2,
-    "success": true,
-    "timestamp_us": 1685077961499641,
-    "version": 528422965,
-    "vm_status": "Executed successfully"
-  }
-}
-```
-
-</details>
-
-<Callout type="info" emoji="ℹ️">
-如果你想要亲自尝试这个例子，别忘了在 `entry_function_arguments.json` 文件中将 `<test_account>` 替换成 Ace 的实际账户地址！
-</Callout>
-
-## View 函数
-
-在 `Holder` 中的值被设置之后，可以使用 `reveal()` 函数来查看开头的三个字段，并比较这些字段的类型参数是否与最后两个字段一致：
-
-```move filename="View function"
-struct RevealResult has drop {
-    u8_solo: u8,
-    bytes: vector<u8>,
-    utf8_string: String,
-    bool_vec: vector<bool>,
-    address_vec_vec: vector<vector<address>>,
-    type_info_1_match: bool,
-    type_info_2_match: bool
-}
-
-#[view]
-/// 把 `Holder` 的前三个字段以及两个布尔值（bool）标志整理到一个 `RevealResult` 结果中，
-/// 这两个布尔值分别指出 `T1` 和 `T2` 是否与 `Holder` 中的 `type_info_1` 和 `type_info_2` 字段匹配，
-/// 然后返回这个 `RevealResult`
-public fun reveal<T1, T2>(host: address): RevealResult acquires Holder {
-    let holder_ref = borrow_global<Holder>(host);
-    RevealResult {
-        u8_solo: holder_ref.u8_solo,
-        bytes: holder_ref.bytes,
-        utf8_string: holder_ref.utf8_string,
-        bool_vec: holder_ref.bool_vec,
-        address_vec_vec: holder_ref.address_vec_vec,
-        type_info_1_match:
-            type_info::type_of<T1>() == holder_ref.type_info_1,
-        type_info_2_match:
-            type_info::type_of<T2>() == holder_ref.type_info_2
-    }
-}
-```
-
-可以通过命令行或者一个 JSON 文件来指定参数，从而调用这个 view 函数：
-
-```bash filename="通过 CLI 进行参数传递"
-aptos move view \
-    --function-id $ace_addr::cli_args::reveal \
-    --type-args \
-        0x1::account::Account \
-        0x1::account::Account \
-    --args address:$ace_addr
-```
-
-```bash filename="通过 JSON 文件进行参数传递"
-aptos move view --json-file view_function_arguments.json
-```
-
-<Callout type="info" emoji="ℹ️">
- 如果你打算亲自尝试这个示例，请不要忘记将 `view_function_arguments.json` 文件中的两个 `<test_account>` 替换为 Ace 的真实的账户地址！
-</Callout>
-
-```json filename="view_function_arguments.json"
-{
-    "function_id": "<test_account>::cli_args::reveal",
-    "type_args": [
-        "0x1::account::Account",
-        "0x1::account::Account"
-    ],
-    "args": [
-        {
-            "type": "address",
-            "value": "<test_account>"
-        }
-    ]
-}
-```
-
-```bash filename="Terminal"
-{
-  "Result": [
-    {
-      "address_vec_vec": [
-        [
-          "0xace",
-          "0xbee"
-        ],
-        [
-          "0xcad"
-        ],
-        []
-      ],
-      "bool_vec": [
-        false,
-        true,
-        false,
-        false
-      ],
-      "bytes": "0x1234",
-      "type_info_1_match": true,
-      "type_info_2_match": false,
-      "u8_solo": 123,
-      "utf8_string": "hello, world! ♥"
-    }
-  ]
-}
-```
+...(about 100 lines omitted)...
 
 ## 脚本函数
 
-这个包里还包括一个脚本 `set_vals.move`，它实际上是一个设定器（setter）函数的包装器：
+包还包含一个脚本 `set_vals.move`，它是设置函数的包装器：
 
 ```move filename="script"
 script {
@@ -400,13 +190,10 @@ script {
     use std::vector;
     use std::string::String;
 
-    /// Get a `bool` vector where each element indicates `true` if the
-    /// corresponding element in `u8_vec` is greater than `u8_solo`.
-    /// Then pack `address_solo` in a `vector<vector<<address>>` and
-    /// pass resulting argument set to public entry function.
-
-    /// 创建一个 `bool` 向量（vector），其中每个元素的值为 `true`，表示这个元素在 `u8_vec` 向量中的对应值大于 `u8_solo`。
-    /// 接着，把 `address_solo` 封装到 `vector<vector<address>>` 中，并将这些参数集合传给一个公共的入口函数。
+    /// 获取一个 `bool` 向量，其中每个元素指示
+    /// 对应的 `u8_vec` 中的元素是否大于 `u8_solo`。
+    /// 然后将 `address_solo` 打包到一个 `vector<vector<address>>` 中，并
+    /// 将结果参数集传递给公共入口函数。
     fun set_vals<T1, T2>(
         account: signer,
         u8_solo: u8,
@@ -422,14 +209,14 @@ script {
 }
 ```
 
-先编译这个包（这个步骤会同时编译脚本）：
+首先编译包（这将编译脚本）：
 
 ```bash filename="Compilation"
 aptos move compile --named-addresses test_account=$ace_addr
 ```
 
 <details>
-<summary>Output</summary>
+<summary>输出</summary>
 
 ```json filename="Terminal"
 {
@@ -438,12 +225,11 @@ aptos move compile --named-addresses test_account=$ace_addr
   ]
 }
 ```
-
 </details>
 
-然后，执行 `aptos move run-script` 命令：
+接下来，运行 `aptos move run-script`：
 
-```bash filename="通过 CLI 传递参数"
+```bash filename="Arguments via CLI"
 aptos move run-script \
     --compiled-script-path build/CliArgs/bytecode_scripts/set_vals.mv \
     --type-args \
@@ -460,41 +246,12 @@ aptos move run-script \
 ```
 
 <details>
-<summary>Output</summary>
+<summary>输出</summary>
 
 ```json filename="Terminal"
 {
   "Result": {
     "transaction_hash": "0x1d644eba8187843cc43919469112339bc2c435a49a733ac813b7bc6c79770152",
-    "gas_used": 3,
-    "gas_unit_price": 100,
-    "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
-    "sequence_number": 3,
-    "success": true,
-    "timestamp_us": 1685078415935612,
-    "version": 528426413,
-    "vm_status": "Executed successfully"
-  }
-}
-```
-
-</details>
-
-```bash filename="通过 JSON 文件进行参数传递"
-aptos move run-script \
-    --compiled-script-path build/CliArgs/bytecode_scripts/set_vals.mv \
-    --json-file script_function_arguments.json \
-    --private-key-file ace.key \
-    --assume-yes
-```
-
-<details>
-<summary>Output</summary>
-
-```json filename="Terminal"
-{
-  "Result": {
-    "transaction_hash": "0x840e2d6a5ab80d5a570effb3665f775f1755e0fd8d76e52bfa7241aaade883d7",
     "gas_used": 3,
     "gas_unit_price": 100,
     "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
@@ -506,7 +263,34 @@ aptos move run-script \
   }
 }
 ```
+</details>
 
+```bash filename="Arguments via JSON file"
+aptos move run-script \
+    --compiled-script-path build/CliArgs/bytecode_scripts/set_vals.mv \
+    --json-file script_function_arguments.json \
+    --private-key-file ace.key \
+    --assume-yes
+```
+
+<details>
+<summary>输出</summary>
+
+```json filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0x840e2d6a5ab80d5a570effb3665f775f1755e0fd8d76e52bfa7241aaade883d7",
+    "gas_used": 3,
+    "gas_unit_price": 100,
+    "sender": "acef1b9b7d4ab208b99fed60746d18dcd74865edb7eb3c3f1428233988e4ba46",
+    "sequence_number": 5,
+    "success": true,
+    "timestamp_us": 1685078616832128,
+    "version": 528428132,
+    "vm_status": "Executed successfully"
+  }
+}
+```
 </details>
 
 ```json filename="script_function_arguments.json"
@@ -545,9 +329,9 @@ aptos move run-script \
 }
 ```
 
-这两种脚本函数的调用都会得到 `reveal()` view 函数的以下输出结果：
+这两种脚本函数调用都会产生以下 `reveal()` 视图函数输出：
 
-```bash filename="调用 View 函数"
+```bash filename="View function call"
 aptos move view \
     --function-id $ace_addr::cli_args::reveal \
     --type-args \
@@ -556,7 +340,7 @@ aptos move view \
     --args address:$ace_addr
 ```
 
-```json filename="调用 View 函数的输出"
+```json filename="View function output"
 {
   "Result": [
     {
@@ -573,5 +357,5 @@ aptos move view \
 ```
 
 <Callout type="info" emoji="ℹ️">
-在本文写作之时，`aptos` 命令行界面仅支持 `u8` 类型向量作为脚本函数的参数。因此，`vector<address>` 和 `vector<vector<u8>>` 是不被支持的脚本函数参数类型。
-</Callout>
+截至本文撰写时，`aptos` CLI 仅支持脚本函数参数为类型为 `u8` 的向量，并且仅支持深度为 1 的向量。因此 `vector<address>` 和 `vector<vector<u8>>` 是无效的脚本函数参数类型。
+</Callout> 

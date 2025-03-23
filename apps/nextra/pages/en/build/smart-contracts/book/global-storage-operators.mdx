@@ -119,6 +119,8 @@ module 0x42::counter {
 
 ## Annotating functions with `acquires`
 
+*Note: Since language version 2.2, acquires annotations are optional. If no acquires is given, it will be inferred.*
+
 In the `counter` example, you might have noticed that the `get_count`, `increment`, `reset`, and `delete` functions are annotated with `acquires Counter`. A Move function `m::f` must be annotated with `acquires T` if and only if:
 
 - The body of `m::f` contains a `move_from<T>`, `borrow_global_mut<T>`, or `borrow_global<T>` instruction, or
