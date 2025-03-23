@@ -1,0 +1,59 @@
+---
+title: "Create Aptos Dapp 常见问题"
+---
+
+# Create Aptos Dapp 常见问题
+
+## 为什么我们使用 `import.meta.env`？
+
+模板的构建方式是有些页面只能在开发模式下访问，而有些页面在生产模式下也可以访问。例如，"创建集合"和"我的集合"页面仅用于本地开发，只能在开发模式下访问，而"公开铸造"页面可以在生产模式下访问。`import.meta.env` 是 `Vite` 用来判断 dapp 运行环境（开发或生产）的方式。
+
+## 我尝试将 dapp 发布到线上服务器但收到 `404 错误`
+
+可能需要更新根路由，如果您将网站部署到 `user-name.github.io/my-repo`，则根路由应该更新为 `my-repo`。
+
+## 什么是 Tailwind CSS？
+
+Tailwind 是一个实用优先的 CSS 框架，它会扫描您的组件中的类名，并在构建时生成包含相应样式的静态 CSS 文件。
+
+这个框架使您可以快速编写与组件标记共存的样式，而不会产生任何运行时性能开销。它还可以帮助您在整个应用程序中保持一致的主题，并能响应浅色和深色模式。
+
+要了解更多关于 Tailwind CSS 的信息，请参阅其官方[文档](https://tailwindcss.com/docs/utility-first)。
+
+## 什么是 `shadcn/ui`？
+
+Shadcn 是一个可访问组件的集合，您可以通过其 CLI 工具将这些组件复制并粘贴到您的应用程序中。由于源文件存在于您的应用程序代码库中，您可以根据需要自定义它们。
+
+这些组件基于 [Radix UI Primitives](https://www.radix-ui.com/primitives) 构建，并使用 [Tailwind CSS](https://tailwindcss.com/) 进行样式设计。要了解更多关于 `shadcn/ui` 的信息，请参阅其官方[文档](https://ui.shadcn.com/docs)。
+
+## 如何修改主题？
+
+此模板的主题分布在 `tailwind.config.js` 和 `frontend/index.css` 中。Tailwind 配置声明了所有主题颜色、文本样式、动画关键帧、边框半径等。根 CSS 文件（`index.css`）使用 CSS 自定义属性（CSS 变量）声明了浅色和深色模式的实际颜色值、基本半径值，并应用了所需的全局 CSS。
+
+例如，如果您想让应用程序中的所有按钮和卡片更圆，可以在 `index.css` 中增加基本半径值（`--radius`）。
+
+如果您想添加新的文本样式，可以在 `tailwind.config.js` 末尾的 `addTextStyles` 函数中定义它。
+
+如果您想修改应用程序的主要颜色，可以更新 `index.css` 中定义的 HSL 颜色值。
+
+## 如何添加组件？
+
+可以通过 `shadcn-ui` CLI 添加其他组件。例如，如果您想添加 `Switch` 组件，可以运行以下命令：
+
+```bash filename="Terminal"
+npx shadcn-ui@latest add switch
+```
+
+此命令将在您的 `frontend/components/ui` 目录中创建一个包含样式化开关组件的 `switch.tsx` 文件。有关可用的 shadcn 组件的完整列表，请参阅 [shadcn 组件文档](https://ui.shadcn.com/docs/components)。
+
+如果您需要添加 `shadcn/ui` 集合中未包含的组件，欢迎您在 `frontend/components` 下添加自己的组件，或者如果它们是特定于您正在处理的页面，则可以在 `frontend/pages` 目录中添加。
+
+## 如何添加颜色？
+
+如果您正在创建自己的自定义组件或以某种方式添加到 UI 中，您可能需要添加一些新颜色。要添加新颜色，您必须首先在 `frontend/index.css` 中定义浅色和深色的 HSL 颜色值，然后将新的主题颜色标记添加到 `tailwind.config.js` 中定义的主题中。
+
+有关更详细的说明，请参阅 [shadcn 主题文档](https://ui.shadcn.com/docs/theming)。
+
+## 如何添加深色模式？
+
+为了保持 dapp 模板的简单性，目前只设置了浅色模式。但是，主题中已经为浅色和深色模式定义了颜色值。如果您希望为您的应用程序添加深色模式，只需添加 shadcn 的 `ThemeProvider` 和 `ModeToggle` 到您的应用程序中。添加后，UI 将完全响应浅色和深色模式。有关如何实现这一点的详细说明，请参阅 [shadcn 深色模式文档](https://ui.shadcn.com/docs/dark-mode/vite)。 

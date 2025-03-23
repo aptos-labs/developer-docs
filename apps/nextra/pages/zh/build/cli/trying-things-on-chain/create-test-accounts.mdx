@@ -1,26 +1,26 @@
 ---
 
-title: "从 Aptos CLI 创建测试账户和发送交易"
+title: "使用 Aptos CLI 创建测试账户和发送交易"
 
 ---
 
 import {Callout} from 'nextra/components'
 
-# 从 Aptos CLI 创建测试账户并发送交易
+# 使用 Aptos CLI 创建测试账户和发送交易
 
 <Callout type="info" emoji="ℹ️">
 如果您尚未安装 Aptos CLI，可以按照[这些步骤](../../cli.mdx)进行安装。
 </Callout>
 
-通常，要在链上创建一个新账户，您需要先生成密钥，然后为该账户充值。在测试网络上，您可以通过向持有测试 Aptos token 的“水龙头（faucet）”账户请求，让它将 Token 发送到您的账户来为新账户充值。
+通常，要在链上创建一个新账户，您需要先生成密钥，然后为该账户充值。在开发网上，您可以通过请求拥有测试 Aptos 代币的"水龙头"账户将它们发送到您的账户来为新账户提供资金。在测试网上，您可以在[铸币页面](/network/faucet)进行铸币。
 
 使用 CLI，您可以使用以下命令生成并为测试账户注资：
 
 ```bash filename="Terminal"
-aptos init --profile <your-profile-name>
+aptos init --profile <您的配置文件名称>
 ```
 
-一旦您拥有了一个有资金的账户，您可以使用 `transfer` 命令在账户之间发送 Coin，如下所示：
+一旦您拥有了一个有资金的账户，您可以使用 `transfer` 命令在账户之间发送代币，如下所示：
 
 ```bash filename="Terminal"
 aptos account transfer --account superuser --amount 100
