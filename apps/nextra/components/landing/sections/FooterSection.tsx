@@ -55,7 +55,7 @@ export function FooterSection() {
             <Link href="https://t.me/aptos" title={t.telegramAlt}>
               <IconTelegram />
             </Link>
-            <Link href="https://twitter.com/Aptos" title={t.twitterAlt}>
+            <Link href="https://x.com/Aptos" title={t.twitterAlt}>
               <IconTwitter />
             </Link>
           </div>

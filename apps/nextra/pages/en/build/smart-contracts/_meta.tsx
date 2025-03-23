@@ -19,9 +19,15 @@ export default {
   deployment: {
     title: "Deployment",
   },
+  debugging: {
+    title: "Debugging",
+  },
   "---aptos-standards---": {
     type: "separator",
     title: "Aptos Standards",
+  },
+  bcs: {
+    title: "Binary Canonical Serialization (BCS)",
   },
   object: {
     title: "Object",

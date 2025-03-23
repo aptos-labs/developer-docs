@@ -1,6 +1,6 @@
 # Vector
 
-`vector<T>` is the only primitive collection type provided by Move. A `vector<T>` is a homogenous
+`vector<T>` is the only primitive collection type provided by Move. A `vector<T>` is a homogeneous
 collection of `T`'s that can grow or shrink by pushing/popping values off the "end".
 
 A `vector<T>` can be instantiated with any type `T`. For example, `vector<u64>`, `vector<address>`,

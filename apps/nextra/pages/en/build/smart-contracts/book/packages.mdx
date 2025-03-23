@@ -393,10 +393,6 @@ Place the bytecode file and the corresponding `Move.toml` file in the same direc
   </FileTree.Folder>
 </FileTree>
 
-<FileTree>
-
-</FileTree>
-
 Specify `[dependencies]` in the `Move.toml` of the target (first) package with the location of the dependent (secondary) packages. For instance, assuming all three package directories are at the same level, `Move.toml` of `A` would resemble:
 
 ```toml filename="workspace/A/Move.toml"
@@ -413,3 +409,28 @@ Foo = { local = "../C" }
 ```
 
 Note that if both the bytecode and the source code of the same package exist in the search paths, the compiler will complain that the declaration is duplicated.
+
+## Overriding the Standard Libraries
+When working with third-party packages, you might encounter issues where different versions of the Move and Aptos standard library packages are referenced.
+
+This can lead to package resolution failures.
+
+```
+"Error": "Move compilation failed:
+  Unable to resolve packages for package 'C':
+    While resolving dependency 'B' in package 'C':
+      Unable to resolve package dependency 'B':
+        While resolving dependency 'AptosFramework' in package 'B':
+          Unable to resolve package dependency 'AptosFramework':
+            Conflicting dependencies found: package 'AptosFramework' conflicts with 'AptosFramework'
+```
+To resolve this, you can override the standard library packages using a command-line option. This allows you to enforce a specific version of the standard libraries across your entire dependency tree.
+
+You can apply the override to commands like `aptos move compile`, `aptos move run`, and others. Here is the syntax:
+```
+--override-std <network name>
+```
+Where `network_name` can be one of the following:
+- devnet
+- testnet
+- mainnet

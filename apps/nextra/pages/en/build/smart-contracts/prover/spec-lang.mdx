@@ -56,7 +56,7 @@ The type system of MSL is similar to that of Move, with the following difference
   reference equality (which eliminates the need for doing so in MSL). (Note there is also a
   restriction in expressiveness coming with this, namely
   for [functions which return `&mut T`](#expressiveness). However, this is rarely hit in practice,
-  and there are workarounds.)
+  and there are workarounds).
 - There is the additional type `type`, which is the type of all types. It can be used only in
   quantifiers.
 - There is the additional type `range`, which represents an integer range (and the notation `n..m` to
@@ -135,12 +135,6 @@ exists <binding>, ..., <binding> [ where <exp> ] : <exp>
   expression must either be a `range` or a vector.
 - The optional constraint `where <exp>` allows to restrict the quantified range. `forall x: T where p: q`
   is equivalent to `forall x: T : p ==> q` and `exists x: T where p: q` is equivalent to `exists x: T : p && q`.
-
-Notice that it is possible to quantify over types. For example:
-
-```move
-forall t: type, addr: address where exists<R<t>>(addr): exists<T<t>>(addr)
-```
 
 ## Choice operator
 
@@ -344,7 +338,7 @@ and structures are not allowed.
 A specification module must be compiled together with the Move module it is targeting and cannot be
 compiled and verified standalone.
 
-In case Move definitions are far apart (e.g. in different files), it is possible to augment the
+In case Move definitions are far apart (e.g., in different files), it is possible to augment the
 specification of a Move function with a signature of this function to give sufficient context to
 understand the specification. This syntax is optionally enabled in regular and in specification
 modules:
@@ -658,20 +652,6 @@ module 0x42::m {
 }
 ```
 
-If this is not wanted, and the `aborts_with` should be independent of `aborts_if`, one can use the
-property `[check]`:
-
-```move
-module 0x42::m {
-  spec get_one_off {
-    aborts_if !exists<Counter>(addr) with 3;
-    aborts_if global<Counter>(addr) == 0 with EXECUTION_FAILURE;
-
-    aborts_with [check] 3, EXECUTION_FAILURE;
-  }
-}
-```
-
 ## Requires condition
 
 The `requires` condition is a spec block member that postulates a pre-condition for a function. The
@@ -697,7 +677,7 @@ module 0x42::m {
 ## Ensures condition
 
 The `ensures` condition postulates a post-condition for a function that must be satisfied when the
-function terminates successfully (i.e. does not abort). The Move Prover will verify each `ensures` to
+function terminates successfully (i.e., does not abort). The Move Prover will verify each `ensures` to
 this end.
 
 An example for the `ensures` condition is the following:
@@ -821,13 +801,13 @@ module 0x42::m {
 ```
 
 A struct invariant is checked by the Move Prover whenever the struct value is constructed (packed). While
-the struct is mutated (e.g. via a `&mut Counter`) the invariant does _not_ hold (but see exception
+the struct is mutated (e.g., via a `&mut Counter`) the invariant does _not_ hold (but see exception
 below). In general, we consider mutation as an implicit unpack, and end of mutation as a pack.
 
 The Move language semantics unambiguously identifies the point when mutation ends and starts. This
 follows from the borrow semantics of Move and includes mutation via an enclosing struct.
 (The mutation of an inner struct ends when the mutation of the root struct where mutation started
-ends.)
+ends).
 
 There is one exception to this rule. When a mutable reference to a struct declared in module M is
 passed into a _public_ function of M which does by itself _not_ return any other mutable reference (which could be borrowed from the input parameter), we treat this parameter as "packed". That means, on function entry, we will unpack it and on function exit we will pack again, enforcing the invariant. This reflects that in Move, struct data can be mutated only within the module that declares the struct; so for an outside caller of the public function, the mutable reference can actually not be mutated unless by calling public functions of module M again. It is a significant simplification of the verification problem to exploit this in the semantics.
@@ -857,9 +837,17 @@ module 0x42::m {
 }
 ```
 
+Notice that type parameters are supported in global invariants. For example, the invariant above can be rewritten into the below one if `Counter` is generic:
+
+```move
+module addr::M {
+    invariant<T> forall a: addr where exists<Counter<T>>(a): global<Counter<T>>(a).value > 0;
+}
+```
+
 #### Disabling invariants
 
-There are times when a global invariant holds almost everywhere, except for a brief interval inside a function. In current Move code, this often occurs when something (e.g. an account) is being set up and
+There are times when a global invariant holds almost everywhere, except for a brief interval inside a function. In current Move code, this often occurs when something (e.g., an account) is being set up and
 several structs are published together. Almost everywhere, an invariant holds that all the structs are published or none of them are. But the code that publishes the structs must do so sequentially. While the structs are being published, there will be a point where some are published and others are not.
 
 In order to verify invariants that hold except during small regions, there is a feature to allow users to disable invariants temporarily. Consider the following code fragment:
@@ -1227,7 +1215,7 @@ One of the main use cases for schemas is to be able to name a group of propertie
 those to a set of functions. This is achieved by the `apply` operator. The `apply` spec block member
 can appear only in module spec blocks.
 
-The general form of the apply operator is `apply Schema to FunctionPattern, .. except FunctionPattern, ..`. Here, `Schema` can be a schema name or a schema name plus formal type arguments. `FunctionPatterns` consists of an optional visibility modifier `public` or `internal` (if not provided, both visibilities will match), a name pattern in the style of a shell file pattern ( e.g. `*`, `foo*`, `foo*bar`, etc.), and finally an optional type argument list. All type arguments provided to `Schema` must be bound
+The general form of the apply operator is `apply Schema to FunctionPattern, .. except FunctionPattern, ..`. Here, `Schema` can be a schema name or a schema name plus formal type arguments. `FunctionPatterns` consists of an optional visibility modifier `public` or `internal` (if not provided, both visibilities will match), a name pattern in the style of a shell file pattern ( e.g., `*`, `foo*`, `foo*bar`, etc.), and finally an optional type argument list. All type arguments provided to `Schema` must be bound
 in this list and vice versa.
 
 The `apply` operator includes the given schema in all function spec blocks that match the patterns,

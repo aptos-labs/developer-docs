@@ -436,9 +436,34 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/indexer-sdk/documentation/transaction-stream",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/transaction-stream",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/version-tracking",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/version-tracking",
+        permanent: true,
+      },
+      {
         source: "/indexer/indexer-sdk/documentation/run-processor",
         destination:
           "/en/build/indexer/indexer-sdk/documentation/run-processor",
+        permanent: true,
+      },
+      {
+        source: "/indexer/indexer-sdk/documentation/advanced-tutorials",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/advanced-tutorials",
+        permanent: true,
+      },
+      {
+        source:
+          "/indexer/indexer-sdk/documentation/advanced-tutorials/txn-importer",
+        destination:
+          "/en/build/indexer/indexer-sdk/documentation/advanced-tutorials/txn-importer",
         permanent: true,
       },
       {
@@ -1065,22 +1090,42 @@ export default withBundleAnalyzer(
       },
       {
         source: "/tutorials/build-e2e-dapp/add-wallet-support",
-        destination: "/en/build/guides/build-e2e-dapp/3-add-wallet-support",
+        destination: "/en/build/guides/build-e2e-dapp/2-set-up-react-app",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/3-add-wallet-support",
+        destination: "/en/build/guides/build-e2e-dapp/2-set-up-react-app",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/fetch-data-from-chain",
-        destination: "/en/build/guides/build-e2e-dapp/4-fetch-data-from-chain",
+        destination: "/en/build/guides/build-e2e-dapp/3-fetch-data-from-chain",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/4-fetch-data-from-chain",
+        destination: "/en/build/guides/build-e2e-dapp/3-fetch-data-from-chain",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/submit-data-to-chain",
-        destination: "/en/build/guides/build-e2e-dapp/5-submit-data-to-chain",
+        destination: "/en/build/guides/build-e2e-dapp/4-submit-data-to-chain",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/5-submit-data-to-chain",
+        destination: "/en/build/guides/build-e2e-dapp/4-submit-data-to-chain",
         permanent: true,
       },
       {
         source: "/tutorials/build-e2e-dapp/handle-tasks",
-        destination: "/en/build/guides/build-e2e-dapp/6-handle-tasks",
+        destination: "/en/build/guides/build-e2e-dapp/5-handle-tasks",
+        permanent: true,
+      },
+      {
+        source: "/tutorials/build-e2e-dapp/6-handle-tasks",
+        destination: "/en/build/guides/build-e2e-dapp/5-handle-tasks",
         permanent: true,
       },
       {

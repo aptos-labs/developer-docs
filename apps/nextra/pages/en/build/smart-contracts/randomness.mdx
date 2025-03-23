@@ -262,7 +262,7 @@ malicious players can deploy their own contract to:
 
 The Aptos Move compiler has been updated to prevent this attack for your contract safety:
 a randomness-dependent public function is treated as a compile error.
-If you have finished the steps in the ["build Aptos CLI"](#build-aptos-cli-from-latest-source)) section,
+If you have finished the steps in the ["build Aptos CLI"](../cli.mdx) section,
 then your Aptos CLI are equipped with the updated compiler.
 
 ```move
@@ -304,7 +304,7 @@ The user then repeatedly call the entry function until it gets the reward.
 Formally, this is referred to as an [undergasing attack](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#undergasing-attacks),
 where an attacker can control how much gas is left for the entry function to execute,
 and so can arbitrarily decide to abort paths that cost more gas,
-biasing the outcome (i.e. effectively changing the distribution of random numbers).
+biasing the outcome (i.e., effectively changing the distribution of random numbers).
 
 <Callout type="Warning">
   **WARNING: randomness API currently does not prevent undergasing attacks.**
@@ -312,8 +312,8 @@ biasing the outcome (i.e. effectively changing the distribution of random number
   Here are some ideas of how to prevent undergasing attack generally.
 
   - Make your entry function gas independent from the randomness outcome.
-  The simplest example is to not "act" on the randomness outcome, i.e. read it and store it for later. Note that calling any other functions  can have variable gas costs. For example, when calling randomness to decide which player should win, and then depositing the winnings to the winner might seem like a fixed gas cost. But, `0x1::coin::transfer` / `0x1::fungible_asset::transfer` can have a variable cost based on the user's on-chain state.
-  - If your dApp involves a trusted admin/admin group, only allow the trusted to execute randomness transaction (i.e. require an admin signer).
+  The simplest example is to not "act" on the randomness outcome, i.e., read it and store it for later. Note that calling any other functions  can have variable gas costs. For example, when calling randomness to decide which player should win, and then depositing the winnings to the winner might seem like a fixed gas cost. But, `0x1::coin::transfer` / `0x1::fungible_asset::transfer` can have a variable cost based on the user's on-chain state.
+  - If your dApp involves a trusted admin/admin group, only allow the trusted to execute randomness transaction (i.e., require an admin signer).
   - Make the path that is most beneficial have the highest gas (as attacker can only abort paths with gas above a threshold he chooses.
   NOTE: that this can be tricky to get right, and gas schedule can change, and is even harder to get right when there are more than 2 possible outcomes.
 

@@ -1,0 +1,650 @@
+---
+title: "Account Abstraction"
+---
+
+import { Steps, Callout } from "nextra/components";
+
+# Account Abstraction
+
+Account Abstraction (AA) on Aptos **enables custom transaction authentication logic through Move modules**, allowing accounts to define their own rules beyond native cryptographic schemes.
+
+## Core Concepts
+
+### `FunctionInfo`
+
+A struct defining the authentication function to be invoked.
+
+```move
+struct FunctionInfo has copy, drop, store {
+    module_address: address,
+    module_name: String,
+    function_name: String
+}
+```
+
+The authentication function is responsible for defining the authentication logic using Move. It should return a signer if authentication is successful, otherwise it aborts the transaction.
+The only accepted authentication function signature that can be added onto an account is the following:
+
+```move
+// The function can return a signer if authentication is successful, otherwise it aborts the transaction.
+public fun authenticate(account: signer, auth_data: AbstractionAuthData): signer;
+```
+
+**Example (Move)**
+
+```move
+module deployer::authenticator {
+    use aptos_framework::auth_data::{AbstractionAuthData};
+
+    public fun authenticate(account: signer, auth_data: AbstractionAuthData): signer {
+        // ... authentication logic ...
+        account
+    }
+}
+```
+
+**Example (Typescript)**
+
+```typescript
+const authenticationFunction = `${deployer}::authenticator:authenticate`;
+```
+
+### `AbstractionAuthData`
+
+An enum variant defining the authentication data to be passed to the authentication function. It contains:
+
+- `digest`: The sha256 hash of the signing message.
+- `authenticator`: Abstract bytes that will be passed to the authentication function that will be used to verify the transaction.
+
+```move
+enum AbstractionAuthData has copy, drop {
+    V1 { 
+        digest: vector<u8>,       // SHA3-256 hash of the signing message
+        authenticator: vector<u8> // Custom auth data (e.g., signatures)
+    },
+}
+```
+
+**Why is the `digest` important?**
+
+The `digest` is checked by the MoveVM to ensure that the signing message of the transaction being submitted is the same as the one presented in the `AbstractionAuthData`. This
+is important because it allows the authentication function to verify signatures with respect to the correct transaction.
+
+For example, if you want to permit a public key to sign transactions on behalf of the user, you can permit the public key to sign a transaction with a specific payload.
+However, if a malicious user sends a signature for the correct public key but a different payload from the `digest`, the signature will not be valid.
+
+**Example (Move)**
+
+This example demonstrates a simple authentication logic that checks if the authenticator is equal to `"hello world"`.
+
+```move
+module deployer::hello_world_authenticator {
+    use aptos_framework::auth_data::{Self, AbstractionAuthData};
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer {
+        let authenticator = *auth_data::authenticator(&auth_data);
+        assert!(authenticator == b"hello world", 1);
+        account
+    }
+}
+```
+
+**Example (Typescript)**
+
+```typescript
+const abstractedAccount = new AbstractedAccount({
+  /**
+   * The result of the signer function will be available as the `authenticator` field in the `AbstractionAuthData` enum variant.
+   */
+  signer: () => new TextEncoder().encode("hello world"),
+  /**
+   * The authentication function to be invoked.
+   */
+  authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+});
+```
+
+## Minimal Step-by-Step Guide
+
+<Steps>
+
+### 1. Deploy Authentication Module
+
+In this example, we will deploy the `hello_world_authenticator` module. The `authenticate` function takes an `AbstractionAuthData` and returns a `signer` 
+if the authentication is successful, otherwise it aborts the transaction. The authentication logic will only allow transactions that have an authenticator equal to `"hello world"`.
+
+```move
+module deployer::hello_world_authenticator {
+    use aptos_framework::auth_data::{Self, AbstractionAuthData};
+    use std::bcs;
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer {
+        let authenticator = *auth_data::authenticator(&auth_data);
+        assert!(authenticator == b"hello world", 1);
+        account
+    }
+}
+```
+
+To deploy the module, you can use the following commands from the [Aptos CLI](../../../../build/cli). We assume that you already have set up a workspace with `aptos init` and 
+declared the named addresses in your `Move.toml` file.
+
+```bash
+aptos move publish --named-addresses deployer=0x1234567890123456789012345678901234567890
+```
+
+### 2. Setup your Environment
+
+Once deployed, you can setup your environment. In this example, we will use Devnet and create an account named `alice` which will act as our user.
+
+```ts
+const DEPLOYER = "0x<hello_world_authenticator_deployer>"
+
+const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET }));
+
+const alice = Account.generate();
+
+const authenticationFunctionInfo = `${deployer}::hello_world_authenticator:authenticate`;
+```
+
+### 3. (Optional) Check if Account Abstraction is Enabled
+
+Before you ask them to enable account abstraction, you can check if the account has account abstraction enabled by calling the `isAccountAbstractionEnabled` function.
+This will return a boolean value indicating if the account has account abstraction enabled.
+
+```ts
+const accountAbstractionStatus = await aptos.account.isAccountAbstractionEnabled({
+    accountAddress: alice.accountAddress,
+    authenticationFunction,
+});
+
+console.log("Account Abstraction status: ", accountAbstractionStatus);
+```
+
+### 4. Enable the Authentication Function
+
+Assuming that the account does not have account abstraction enabled, you need to enable the authentication function for the account. This can be done by calling 
+the `enableAccountAbstractionTransaction` function. This creates a raw transaction that needs to be signed and submitted to the network. In this example, `alice` 
+will be the account that will be enabled.
+
+```ts
+const transaction = aptos.abstraction.enableAccountAbstractionTransaction({
+  accountAddress: alice.accountAddress,
+  authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+});
+
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  transaction,
+  signer: alice.signer,
+});
+
+await aptos.waitForTransaction({ hash: pendingTransaction.hash });
+
+console.log("Account Abstraction enabled for account: ", alice.accountAddress);
+```
+
+<details>
+<summary>
+  <b>Wallet Adapter Example</b>
+</summary>
+
+<Callout>
+  If you are using the wallet adapter, you can use the `signTransaction` function to sign the transaction before submitting it to the network.
+</Callout>
+
+```tsx
+export default function useEnableAbstraction() {
+  const { account, signTransaction } = useWallet();
+
+  return {
+    enableAbstraction: async () => {
+      if (!account) return;
+
+      // Note: The Aptos client must be defined somewhere in the application.
+      const transaction = aptos.abstraction.enableAccountAbstractionTransaction({
+        accountAddress: account.address,
+        authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+      });
+
+      const senderAuthenticator = await signTransaction(txn);
+
+      const pendingTxn = await aptos.transaction.submit.simple({
+        transaction: txn,
+        senderAuthenticator,
+      });
+
+      return await aptos.waitForTransaction({ hash: pendingTxn.hash });
+    }
+  }
+}
+```
+
+</details>
+
+### 5. Create an Abstracted Account
+
+Once the authentication function is enabled, you can create an abstracted account object for signing transactions. You must provide the authentication function that will be used to verify the transaction
+and a `signer` function that will be used to sign the transaction. The `signer` function is responsible for generating the authenticator that will be passed to the authentication function.
+
+```ts
+const abstractedAccount = new AbstractedAccount({
+  accountAddress: alice.accountAddress,
+  signer: () => new TextEncoder().encode("hello world"),
+  authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+});
+```
+
+### 6. Sign and Submit a Transaction using the Abstracted Account
+
+Once you have created the abstracted account, you can use it to sign transactions normally. It is important that the `sender` field in the transaction
+is the same as the abstracted account's address.
+
+```ts
+const coinTransferTransaction = await aptos.transaction.build.simple({
+  sender: abstractedAccount.accountAddress,
+  data: {
+    function: "0x1::coin::transfer",
+    typeArguments: ["0x1::aptos_coin::AptosCoin"],
+    functionArguments: [alice.accountAddress, 100],
+  },
+});
+
+const pendingCoinTransferTransaction = await aptos.transaction.signAndSubmitTransaction({
+  transaction: coinTransferTransaction,
+  signer: abstractedAccount,
+});
+
+await aptos.waitForTransaction({ transactionHash: pendingCoinTransferTransaction.hash });
+
+console.log("Coin transfer transaction submitted! ", pendingCoinTransferTransaction.hash);
+```
+
+### 7. Conclusion
+
+To verify that you have successfully sign and submitted the transaction using the abstracted account, you can use the explorer to check the transaction. If the 
+transaction signature contains a `function_info` and `auth_data` field, it means you succesfully used account abstraction! The full E2E demo can be found [here](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/public_key_authenticator_account_abstraction.ts).
+
+![Transaction Signature](https://i.imgur.com/HZylFnc.png)
+
+</Steps>
+
+## Complex Step-by-Step Guide
+
+Now that you have a basic understanding of how account abstraction works, let's dive into a more complex example.
+
+In this example, we will create an authenticator that allows users to permit certain public keys to sign transactions on behalf of the abstracted account.
+
+<Steps>
+
+### 1. Create an Authenticator module
+
+We will deploy the `public_key_authenticator` module that does two things:
+- Allow users to permit and/or revoke public keys from signing on behalf of the user.
+- Allow users to authenticate on behalf of somebody else using account abstraction.
+
+```move
+module deployer::public_key_authenticator {
+    use std::signer;
+    use aptos_std::smart_table::{Self, SmartTable};
+    use aptos_std::ed25519::{
+        Self,
+        new_signature_from_bytes,
+        new_unvalidated_public_key_from_bytes,
+        unvalidated_public_key_to_bytes
+    };
+    use aptos_framework::bcs_stream::{Self, deserialize_u8};
+    use aptos_framework::auth_data::{Self, AbstractionAuthData};
+
+    // ====== Error Codes ====== //
+
+    const EINVALID_PUBLIC_KEY: u64 = 0x20000;
+    const EPUBLIC_KEY_NOT_PERMITTED: u64 = 0x20001;
+    const EENTRY_ALREADY_EXISTS: u64 = 0x20002;
+    const ENO_PERMISSIONS: u64 = 0x20003;
+    const EINVALID_SIGNATURE: u64 = 0x20004;
+
+    // ====== Data Structures ====== //
+
+    struct PublicKeyPermissions has key {
+        public_key_table: SmartTable<vector<u8>, bool>,
+    }
+
+    // ====== Authenticator ====== //
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(&account);
+        assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
+        let permissions = borrow_global<PublicKeyPermissions>(account_addr);
+
+        // Extract the public key and signature from the authenticator
+        let authenticator = *auth_data::authenticator(&auth_data);
+        let stream = bcs_stream::new(authenticator);
+        let public_key = new_unvalidated_public_key_from_bytes(
+            bcs_stream::deserialize_vector<u8>(&mut stream, |x| deserialize_u8(x))
+        );
+        let signature = new_signature_from_bytes(
+            bcs_stream::deserialize_vector<u8>(&mut stream, |x| deserialize_u8(x))
+        );
+
+        // Check if the public key is permitted
+        assert!(smart_table::contains(&permissions.public_key_table, unvalidated_public_key_to_bytes(&public_key)), EPUBLIC_KEY_NOT_PERMITTED);
+
+        // Verify the signature
+        let digest = *auth_data::digest(&auth_data);
+        assert!(ed25519::signature_verify_strict(&signature, &public_key, digest), EINVALID_SIGNATURE);
+
+        account
+    }
+
+    // ====== Core Functionality ====== //
+
+    public entry fun permit_public_key(
+        signer: &signer,
+        public_key: vector<u8>
+    ) acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(signer);
+        assert!(std::vector::length(&public_key) == 32, EINVALID_PUBLIC_KEY);
+        
+        if (!exists<PublicKeyPermissions>(account_addr)) {
+            move_to(signer, PublicKeyPermissions {
+                public_key_table: smart_table::new(),
+            });
+        };
+
+        let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
+        assert!(
+            !smart_table::contains(&permissions.public_key_table, public_key), 
+            EENTRY_ALREADY_EXISTS
+        );
+
+        smart_table::add(&mut permissions.public_key_table, public_key, true);
+    
+    }
+
+    public entry fun revoke_public_key(
+        signer: &signer,
+        public_key: vector<u8>
+    ) acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(signer);
+        
+        assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
+
+        let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
+        smart_table::remove(&mut permissions.public_key_table, public_key);
+    }
+
+}
+```
+
+Let's break down the module...
+
+**Storing Public Keys**
+
+The `PublicKeyPermissions` struct is a key that contains a `SmartTable` of public keys that determines
+whether a public key is permitted to sign transactions on behalf of the user.
+
+```move
+module deployer::public_key_authenticator {
+  // ...
+ 
+  struct PublicKeyPermissions has key {
+      public_key_table: SmartTable<vector<u8>, bool>,
+  } 
+  
+}
+```
+
+**Permitting and Revoking Public Keys**
+
+We define two entry functions to permit and revoke public keys. These functions are used to add and remove public keys from the `PublicKeyPermissions` struct.
+
+```move
+module deployer::public_key_authenticator {
+  // ...
+
+      public entry fun permit_public_key(
+        signer: &signer,
+        public_key: vector<u8>
+    ) acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(signer);
+        assert!(std::vector::length(&public_key) == 32, EINVALID_PUBLIC_KEY);
+        
+        if (!exists<PublicKeyPermissions>(account_addr)) {
+            move_to(signer, PublicKeyPermissions {
+                public_key_table: smart_table::new(),
+            });
+        };
+
+        let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
+        assert!(
+            !smart_table::contains(&permissions.public_key_table, public_key), 
+            EENTRY_ALREADY_EXISTS
+        );
+
+        smart_table::add(&mut permissions.public_key_table, public_key, true);
+    
+    }
+
+    public entry fun revoke_public_key(
+        signer: &signer,
+        public_key: vector<u8>
+    ) acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(signer);
+        
+        assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
+
+        let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
+        smart_table::remove(&mut permissions.public_key_table, public_key);
+    }
+}
+```
+
+**Authenticating on behalf of somebody else**
+
+The `authenticate` function is the main function that allows users to authenticate on behalf of somebody else using account abstraction. The `authenticator`
+will contain the **public key** and a **signature** of the user. We will verify that the public key is permitted and that the signature is valid.
+
+The signature is the result of signing the `digest`. The `digest` is the sha256 hash of the **signing message** which contains information about the transaction. 
+By signing the `digest`, we confirm that the user has approved the specific transaction that was submitted.
+
+```move
+module deployer::public_key_authenticator {
+    // ...
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(&account);
+        assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
+        let permissions = borrow_global<PublicKeyPermissions>(account_addr);
+
+        // Extract the public key and signature from the authenticator
+        let authenticator = *auth_data::authenticator(&auth_data);
+        let stream = bcs_stream::new(authenticator);
+        let public_key = new_unvalidated_public_key_from_bytes(
+            bcs_stream::deserialize_vector<u8>(&mut stream, |x| deserialize_u8(x))
+        );
+        let signature = new_signature_from_bytes(
+            bcs_stream::deserialize_vector<u8>(&mut stream, |x| deserialize_u8(x))
+        );
+
+        // Check if the public key is permitted
+        assert!(smart_table::contains(&permissions.public_key_table, unvalidated_public_key_to_bytes(&public_key)), EPUBLIC_KEY_NOT_PERMITTED);
+
+        // Verify the signature
+        let digest = *auth_data::digest(&auth_data);
+        assert!(ed25519::signature_verify_strict(&signature, &public_key, digest), EINVALID_SIGNATURE);
+
+        account
+    }
+}
+```
+
+To deploy the module, you can use the following commands from the [Aptos CLI](../../../../build/cli). We assume that you already have set up a workspace with `aptos init` and 
+declared the named addresses in your `Move.toml` file.
+
+```bash
+aptos move publish --named-addresses deployer=0x1234567890123456789012345678901234567890
+```
+
+### 2. Setup your Environment
+
+Once deployed, you can setup your environment. In this example, we will use Devnet and create an account named `alice` as the user that will be authenticated on behalf of
+and `bob` as the user that will be permitted to sign transactions on behalf of `alice`.
+```ts
+const DEPLOYER = "0x<public_key_authenticator_deployer>"
+
+const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET }));
+
+const alice = Account.generate();
+const bob = Account.generate();
+
+const authenticationFunctionInfo = `${deployer}::public_key_authenticator:authenticate`;
+```
+
+### 3. (Optional) Check if Account Abstraction is Enabled
+
+Before we enable the authentication function, we can check if the account has account abstraction enabled by calling the `isAccountAbstractionEnabled` function.
+This will return a boolean value indicating if the account has account abstraction enabled.
+
+```ts
+const accountAbstractionStatus = await aptos.account.isAccountAbstractionEnabled({
+    accountAddress: alice.accountAddress,
+    authenticationFunction,
+});
+
+console.log("Account Abstraction status: ", accountAbstractionStatus);
+```
+
+### 4. Enable the Authentication Function
+
+Assuming that the account does not have account abstraction enabled, we need to enable the authentication function for the account. This can be done by calling 
+the `enableAccountAbstractionTransaction` function. This creates a raw transaction that needs to be signed and submitted to the network. In this example, `alice` 
+will be the account that will be enabled.
+
+```ts
+const transaction = await aptos.abstraction.enableAccountAbstractionTransaction({
+  accountAddress: alice.accountAddress,
+  authenticationFunction,
+});
+
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  transaction,
+  signer: alice.signer,
+});
+
+await aptos.waitForTransaction({ hash: pendingTransaction.hash });
+
+console.log("Account Abstraction enabled for account: ", alice.accountAddress);
+```
+
+### 5. Permit Bob's Public Key
+
+Now that we have enabled the authentication function, we can permit `bob`'s public key to sign transactions on behalf of `alice`.
+
+```ts
+const enableBobPublicKeyTransaction = await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      function: `${alice.accountAddress}::public_key_authenticator::permit_public_key`,
+      typeArguments: [],
+      functionArguments: [bob.publicKey.toUint8Array()],
+    },
+  });
+
+const pendingEnableBobPublicKeyTransaction = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: enableBobPublicKeyTransaction,
+});
+
+await aptos.waitForTransaction({ hash: pendingEnableBobPublicKeyTransaction.hash });
+
+console.log(`Enable Bob's public key transaction hash: ${pendingEnableBobPublicKeyTransaction.hash}`);
+```
+
+### 6. Create an Abstracted Account
+
+Now that we have permitted `bob`'s public key, we can create an abstracted account that will be used to sign transactions on behalf of `alice`.
+**Notice that the `signer` function uses `bob`'s signer.**
+
+```ts
+const abstractedAccount = new AbstractedAccount({
+  accountAddress: alice.accountAddress,
+  signer: (digest) => {
+      const serializer = new Serializer();
+      bob.publicKey.serialize(serializer);
+      bob.sign(digest).serialize(serializer);
+      return serializer.toUint8Array();
+  },
+  authenticationFunction,
+});
+```
+
+### 7. Sign and Submit a Transaction using the Abstracted Account
+
+Now that we have created the abstracted account, we can use it to sign transactions normally. It is important that the `sender` field in the transaction
+is the same as the abstracted account's address.
+
+```ts
+const coinTransferTransaction = new aptos.transaction.build.simple({
+  sender: abstractedAccount.accountAddress,
+  data: {
+    function: "0x1::coin::transfer",
+    typeArguments: ["0x1::aptos_coin::AptosCoin"],
+    functionArguments: [alice.accountAddress, 100],
+  },
+});
+
+const pendingCoinTransferTransaction = await aptos.transaction.signAndSubmitTransaction({
+  transaction: coinTransferTransaction,
+  signer: abstractedAccount,
+});
+
+await aptos.waitForTransaction({ hash: pendingCoinTransferTransaction.hash });
+
+console.log("Coin transfer transaction submitted! ", pendingCoinTransferTransaction.hash);
+```
+
+### 8. Conclusion
+
+To verify that you have successfully sign and submitted the transaction using the abstracted account, you can use the explorer to check the transaction. If the 
+transaction signature contains a `function_info` and `auth_data` field, it means you succesfully used account abstraction! The full E2E demo can be found [here](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/public_key_authenticator_account_abstraction.ts)
+
+![Transaction Signature](https://i.imgur.com/3U40YSb.png)
+
+</Steps>
+
+## Management Operations
+
+If you want to disable account abstraction for an account, you can use the `disableAccountAbstractionTransaction`. If you do not specify an authentication function,
+the transaction will disable all authentication functions for the account.
+
+```ts
+const transaction = aptos.abstraction.disableAccountAbstractionTransaction({
+  accountAddress: alice.accountAddress,
+  /**
+   * The authentication function to be disabled. If left `undefined`, all authentication functions will be disabled.
+  */
+  authenticationFunction,
+});
+```
+
+## Application User Experience
+
+Applications that want to leverage account abstraction will want to provide a user experience that allows users to check if the account has account abstraction enabled, 
+and to enable it, if it is not enabled.
+
+
+Below is a diagram of the UX flow for enabling account abstraction.
+
+![Account Abstraction UX](https://i.imgur.com/1xcrFjG.png)

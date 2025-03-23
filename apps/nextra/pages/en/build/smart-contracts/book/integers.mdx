@@ -98,12 +98,12 @@ Bitwise operations do not abort.
 
 Similar to the bitwise operations, each integer type supports bit shifts. But unlike the other operations, the right-hand side operand (how many bits to shift by) must _always_ be a `u8` and need not match the left side operand (the number you are shifting).
 
-Bit shifts can abort if the number of bits to shift by is greater than or equal to `8`, `16`, `32`, `64`, `128` or `256` for `u8`, `u16`, `u32`, `u64`, `u128` and `u256` respectively.
+Bit shifts abort if the number of bits to shift by is greater than or equal to `8`, `16`, `32`, `64`, `128` or `256` for `u8`, `u16`, `u32`, `u64`, `u128` and `u256` respectively.
 
 | Syntax | Operation   | Aborts if                                                               |
 | ------ | ----------- | ----------------------------------------------------------------------- |
-| `<<`   | shift left  | Number of bits to shift by is greater than the size of the integer type |
-| `>>`   | shift right | Number of bits to shift by is greater than the size of the integer type |
+| `<<`   | shift left  | Number of bits to shift by is greater than or equal to the size of the integer type |
+| `>>`   | shift right | Number of bits to shift by is greater than or equal to the size of the integer type |
 
 ### Comparisons
 

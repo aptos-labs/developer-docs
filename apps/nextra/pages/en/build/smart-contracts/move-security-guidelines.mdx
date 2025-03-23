@@ -441,7 +441,7 @@ When creating objects ensure to never expose the object’s `ConstructorRef` as 
 
 #### Example Vulnerable code
 
-For example, if a `mint` function returns the `ConstructorRef` for an NFT, it can be transformed to a `TransferRef` , stored in global storage, and can allow the original owner to transfer the NFT back after it’s being sold.
+For example, if a `mint` function returns the `ConstructorRef` for an NFT, it can be transformed to a `TransferRef`, stored in global storage, and can allow the original owner to transfer the NFT back after it’s being sold.
 
 ```move
 module 0x42::example {
@@ -494,9 +494,9 @@ For example, transferring one resource implies the transfer of all group members
 
 #### Example Insecure Code
 
-The `mint_two` function lets `sender` create a `Monkey` for themselves and send a `Toad` to `recipient` .
+The `mint_two` function lets `sender` create a `Monkey` for themselves and send a `Toad` to `recipient`.
 
-As `Monkey` and `Toad` belong to the same object account the result is that both objects’ are now owned by the `recipient` .
+As `Monkey` and `Toad` belong to the same object account the result is that both objects’ are now owned by the `recipient`.
 
 ```move
 module 0x42::example {

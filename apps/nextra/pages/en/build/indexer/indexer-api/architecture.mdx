@@ -1,0 +1,57 @@
+---
+title: "Indexer Architecture"
+---
+
+import { ThemedImage } from '@components/index'
+import { Callout } from 'nextra/components'
+
+# Indexer Architecture
+
+The Aptos Indexer stores data from on-chain (via the Transaction Stream Service). It indexes basic data about transactions, fungible assets, tokens, collections, accounts, ANS (Aptos Name Service) names, and more. Apps can query that data via the Indexer API. 
+
+Aptos Labs hosts a free version of the Indexer API to help the community get access to data such as: 
+
+1. Historical data - Ex. [What transactions have impacted this account?](./account-transactions.mdx)
+2. Aggregate data - Ex. [How many delegators are in this staking pool?](./get-delegators.mdx)
+3. Specific info best searched via query - Ex. [What NFTs does an account own?](./get-nfts.mdx)
+
+### High Level Breakdown
+
+Here is how the Indexer creates that API at a high-level: 
+
+<center>
+  <ThemedImage
+    alt="Signed Transaction Flow"
+    sources={{
+      light: '/docs/indexer-architecture-light.svg',
+      dark: '/docs/indexer-architecture-dark.svg',
+    }}
+  />
+</center>
+
+The Indexer uses the [Transaction Stream Service](../txn-stream.mdx) and custom processors written with the [Indexer SDK](../indexer-sdk.mdx) to update a database with rich tables. Then it exposes an API for Aptos apps to access the consolidated data.
+
+For situations where you need to go beyond the Aptos hosted Indexer API data, you will want to create a custom processor with the [Indexer SDK](../indexer-sdk.mdx).
+
+Writing a custom processor can help you:
+1. Get access to different types of data.
+2. Store additional information beyond what the Aptos Labs hosted Indexer API is saving.
+3. Change how transactions are processed.
+
+If you would like to operate your own Indexer API as a service, see how to [host your own Indexer](./self-hosted.mdx).
+
+## Detailed Overview
+
+You can use the below diagram for a much more in-depth diagram explaining how the Indexer code actually works behind the scenes.
+
+<div style={{textAlign:"center"}}>
+  <div style={{marginBottom: 20}}>
+    <iframe
+      style={{border: "1px solid rgba(0, 0, 0, 0.1);"}}
+      width="100%"
+      height="750"
+      src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FsVhSOGR7ZT4CdeUzlXyduD%2FIndexer-Overview%3Ftype%3Dwhiteboard%26node-id%3D0%253A1%26t%3DUnUKeEaBE7ETMksb-1"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>

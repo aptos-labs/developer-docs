@@ -6,9 +6,9 @@ title: "FAQ"
 
 **What if I stop using my IAM for my application? What if I switch IAM providers?**
 
-- An account address depends on values of several variables that are specific to an IAM service, including `aud` (client ID) and `iss` (issuer).  If these values are changed, then a different address will be derived. 
-- If you want to switch IAM providers, you will need to develop an account migration flow, resulting in a key rotation from the account derived from the prior IAM provider to the account derived from the new IAM provider. 
-- We recommend allowing your users to add a secondary authentication method to their accounts (e.g. back-up private key) so that they can maintain access should the authentication path into their account via Federated Keyless be disrupted via a service provider change. In order to implement this, you need to do a key rotation to a multikey account. For relevant documentation see [key rotation](https://aptos.dev/en/build/guides/key-rotation) and [multikey SDK](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.29.1/classes/MultiKeyAccount.html).
+- An account address depends on values of several variables that are specific to an IAM service, including `aud` (client ID) and `iss` (issuer).  If these values are changed, then a different address will be derived.
+- If you want to switch IAM providers, you will need to develop an account migration flow, resulting in a key rotation from the account derived from the prior IAM provider to the account derived from the new IAM provider.
+- We recommend allowing your users to add a secondary authentication method to their accounts (e.g., back-up private key) so that they can maintain access should the authentication path into their account via Federated Keyless be disrupted via a service provider change. In order to implement this, you need to do a key rotation to a multikey account. For relevant documentation see [key rotation](https://aptos.dev/en/build/guides/key-rotation) and [multikey SDK](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.35.0/classes/MultiKeyAccount.html).
 
 **Does using an IAM cost money?**
 
@@ -16,8 +16,8 @@ title: "FAQ"
 
 **In the case the dApp or IAM provider goes offline, how do I make sure my users can continue accessing their accounts?**
 
-- We recommend allowing your users to add a secondary authentication method to their accounts (e.g. back-up private key) so that they can maintain access should the authentication path into their account via Federated Keyless is disrupted via service provider change or other outage.
+- We recommend allowing your users to add a secondary authentication method to their accounts (e.g., back-up private key) so that they can maintain access should the authentication path into their account via Federated Keyless is disrupted via service provider change or other outage.
 
 **I use an open source IAM like Keycloak. Can I use Federated Keyless?**
 
-- Not today. Due to the trust placed in the IAM to have sufficient uptime and security standards, we have limited the accepted IAM set to the currently supported issuers. If you believe your provider should be included for consideration, please consider raising an AIP or contact us in the Keyless developers [telegram](https://t.me/+h5CN-W35yUFiYzkx). 
+- Not today. Due to the trust placed in the IAM to have sufficient uptime and security standards, we have limited the accepted IAM set to the currently supported issuers. If you believe your provider should be included for consideration, please consider raising an AIP or contact us in the Keyless developers [telegram](https://t.me/+h5CN-W35yUFiYzkx).

@@ -9,7 +9,7 @@ import { IndexerBetaNotice } from '@components/index';
 This guide will walk you through setting up the basic template for a new processor.
 
 ## Pre-requisites
-You've already set up your environment and have the Indexer SDK `aptos-indexer-sdk` and `aptos-indexer-sdk-server-framework` installed. 
+You've already set up your environment and have the Indexer SDK `aptos-indexer-sdk` installed. 
 If you haven't, follow the [Indexer SDK installation guide](./setup.mdx).
 
 ## Overview
@@ -25,9 +25,9 @@ The next section goes through each of these pieces more explicitly and provides 
 The `IndexerProcessorConfig` defines the base configuration for all processors that you'll be running.
 It should include configuration for things that are shared across multiple processors, like the database configuration and [Transaction Stream](../../txn-stream.mdx) configuration.
 
-[`ServerArgs`](https://github.com/aptos-labs/aptos-indexer-processor-sdk/blob/main/aptos-indexer-processors-sdk/sdk-server-framework/src/lib.rs#L26) parses a `config.yaml` file and bootstraps a server with all the common pieces to run a processor.
+`ServerArgs` parses a `config.yaml` file and bootstraps a server with all the common pieces to run a processor.
 
-To setup the configuration for your processor and make it work with `ServerArgs`, you'll need to define a `IndexerProcessorConfig` that implements the [`RunnableConfig`](https://github.com/aptos-labs/aptos-indexer-processor-sdk/blob/main/aptos-indexer-processors-sdk/sdk-server-framework/src/lib.rs#L102) trait.
+To setup the configuration for your processor and make it work with `ServerArgs`, you'll need to define a `IndexerProcessorConfig` that implements the `RunnableConfig` trait.
 It also triggers a run method, which can be invoked in `main.rs`.
 
 For basic cases, you can copy the [`IndexerProcessorConfig` from the `aptos-indexer-processor-example`](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/aptos-indexer-processor-example/src/config/indexer_processor_config.rs) repository and modify it to fit your needs.
@@ -102,7 +102,7 @@ loop {
 ```
 
 You can see a full example of a processor that indexes raw Aptos events in [`aptos-indexer-processor-example`](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/aptos-indexer-processor-example/src/processors/events/events_processor.rs). 
-As a reference, you can also see all of the processors that make up the [Indexer API](../../aptos-hosted.mdx) in [`aptos-indexer-processors`](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/sdk-processor/src/processors).
+As a reference, you can also see all of the processors that make up the [Indexer API](../../indexer-api.mdx) in [`aptos-indexer-processors`](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/sdk-processor/src/processors).
 
 ## How to define `main.rs`
 You may copy the [`main.rs`](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/aptos-indexer-processor-example/src/main.rs) file from the `aptos-indexer-processor-example`. 
