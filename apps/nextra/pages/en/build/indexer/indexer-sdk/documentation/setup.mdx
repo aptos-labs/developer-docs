@@ -9,20 +9,15 @@ The quickstart guide provides a template processor and includes all of this setu
 
 If you're migrating an existing processor to the Indexer SDK, follow the steps below.
 
-The Indexer SDK provides several Rust crates:
-1. [`aptos-indexer-processor-sdk`](https://github.com/aptos-labs/aptos-indexer-processor-sdk/tree/main/aptos-indexer-processors-sdk/sdk) - The core SDK that provides the building blocks for writing a processor.
-2. [`aptos-indexer-processor-sdk-server-framework`](https://github.com/aptos-labs/aptos-indexer-processor-sdk/tree/main/aptos-indexer-processors-sdk/sdk-server-framework) - A server framework for creating a server that runs the processor and includes health checks and metrics logging probes.
-If you're setting up a server to host your processor, you will need to include this crate. 
-3. [`aptos-indexer-testing-framework`](https://github.com/aptos-labs/aptos-indexer-processor-sdk/tree/main/aptos-indexer-processors-sdk/testing-framework) - An e2e testing framework for testing processors.
-If you want to write tests for your processor, you will need to include this crate.
-
-Depending on your use case, you can import the crates to your `Cargo.toml`.
+Add `aptos-indexer-processor-sdk` to your `Cargo.toml`.
 
 ```toml
 [dependencies]
 aptos-indexer-processor-sdk = { git = "https://github.com/aptos-labs/aptos-indexer-processor-sdk.git", rev = "aptos-indexer-processor-sdk-v1.0.0" }
-aptos-indexer-processor-sdk-server-framework = { git = "https://github.com/aptos-labs/aptos-indexer-processor-sdk.git", rev = "aptos-indexer-processor-sdk-v1.0.0" }
-aptos-indexer-testing-framework = { git = "https://github.com/aptos-labs/aptos-indexer-processor-sdk.git", rev = "aptos-indexer-processor-sdk-v1.0.0" }
 ```
+
+`aptos-indexer-processor-sdk` includes the following features:
+1. `postgres_full` - Interface layer to integrate Postgres with your processor.
+2. `testing_framework` - An e2e testing framework for testing processors. If you want to write tests for your processor, add this feature to the crate. 
 
 {/* <!-- Add list of SDK releases once we have that --> */}
