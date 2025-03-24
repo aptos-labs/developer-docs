@@ -16,7 +16,7 @@ Breaking down the gas costs further, we have:
 2. IO gas costs —generally much lower— which depend on the number and size of resources read and modified. 
 3. execution gas costs are based on the computation needed, and are generally in the similar scale as io gas costs.
 
-Transactions that modify the same **slot** cannot be executed in parallel (with some exceptions, like aggregators and resources as a part of the same resource group), as they conflict with one another.
+Transactions that modify the same **slot** cannot be executed concurrently (with some exceptions, like aggregators and resources as a part of the same resource group), as they conflict with one another.
 
 One useful analogy is thinking about each **slot** being a file on a disk, 
 then performance of smart contract would correlate well to a program that 
@@ -27,9 +27,9 @@ operates on files in the same way.
 | Implementation      | Size Limit  | Storage Structure | Key Features |
 |--------------------|------------|------------------|--------------|
 | `OrderedMap`    | Bounded (fits in a single **slot**) | Stored entirely within the resource that contains it | Supports ordered access (front/back, prev/next), implemented as sorted vector, but operations are effectively O(log(n)) due to internal optimizations |
-| `Table`         | Unbounded   | Each (key, value) stored in a separate **slot** | Supports basic operations, like `add`, `remove`, `contains`, but **not iteration**, and **cannot be destroyed**; useful for large/unbounded keys/values and high-parallelism cases |
-| `TableWithLength` | Unbounded  | same as `Table` | Variant of `Table`, with additional length tracking, which adds `length`, `empty`, and `destroy_empty` methods; Adding or removing elements **cannot** be done in parallel, modifying existing elements can. |
-| `BigOrderedMap` | Unbounded | Combines multiple keys into a single **slot**, initially stored within resource that contains it, and grows into multiple **slots** dynamically | Implemented as B+ tree; **opportunistically parallel** for non-adjacent keys; supports ordered access (front/back, prev/next); configurable node capacities to balance storage and performance |
+| `Table`         | Unbounded   | Each (key, value) stored in a separate **slot** | Supports basic operations, like `add`, `remove`, `contains`, but **not iteration**, and **cannot be destroyed**; useful for large/unbounded keys/values and where high-concurrency is needed |
+| `TableWithLength` | Unbounded  | same as `Table` | Variant of `Table`, with additional length tracking, which adds `length`, `empty`, and `destroy_empty` methods; Adding or removing elements **cannot** be done concurrently, modifying existing elements can. |
+| `BigOrderedMap` | Unbounded | Combines multiple keys into a single **slot**, initially stored within resource that contains it, and grows into multiple **slots** dynamically | Implemented as B+ tree; **opportunistically concurrent** for non-adjacent keys; supports ordered access (front/back, prev/next); configurable node capacities to balance storage and performance |
 
 Note:
 - `SimpleMap` has been deprecated, and replaced with `OrderedMap`. 
@@ -39,7 +39,7 @@ Note:
 
 We measured performance at small scale, measuring microseconds taken for a single pair of `insert` + `remove` operation, into a map of varied size.
 
-| num elements | OrderedMap | BigOrderedMap all inlined | BigOrderedMap max_degree=16 |
+| num elements | OrderedMap | BigOrderedMap max_degree>10000 | BigOrderedMap max_degree=16 |
 |--------------|------------|---------------------------|-----------------------------|
 | 10 | 65 | 123 | 123 |
 | 100 | 85 | 146 | 455 |
@@ -59,7 +59,6 @@ Most maps above support the same set of functions (for actual signatures and res
 
 #### Destroying Maps
 
-All except `Table` support:
 - `destroy_empty<K, V>(self: Self<K, V>)`: Destroys an empty map. (**not** supported by `Table`)
 - `destroy<K, V>(self: Self<K, V>, dk: |K|, dv: |V|)`: Destroys a map with given functions that destroy correponding elements. (**not** supported by `Table` and `TableWithLength`)
 
@@ -140,10 +139,15 @@ Its current implementation is B+ tree, which is chosen as it is best suited for 
 Implementation has few characteristics that make it very versatile and useful across wide range of usecases:
 
 - When it has few elements, it stores all of them within the resource that contains it, providing comparable performance to OrderedMap itself, while then dynamically growing to multiple resources as more and more elements are added
-- It reduces amount of conflicts: modifications to a different part of the key-space are generally parallel, and it provides knobs for tuning between parallelism and size
+- It reduces amount of conflicts: modifications to a different part of the key-space can be generally done concurrently, and it provides knobs for tuning between concurrency and size
 - All operations have guaranteed upper-bounds on performance (how long they take, as well as how much execution and io gas they consume), allowing for safe usage across a variety of use cases.
   - One caveat, is refundable storage fee. By default, operation that requires map to grow to more resources needs to pay for storage fee for it. Implementation here has an option to pre-pay for storage slots, and to reuse them as elements are added/removed, allowing applications to achieve fully predictable overall gas charges, if needed.
 - If key/value is within the size limits map was configured with, inserts will never fail unpredictably, as map internally understands and manages maximal **slot** size limits.
+
+### `BigOrderedMap` structure
+
+`BigOrderedMap` is represented as a tree, where inner nodes split the "key-space" into separate ranges for each of it's children, and leaf nodes contain the actual key-value pairs.
+Internally it has `inner_max_degree` representing largest number of children an inner node can have, and `leaf_max_degree` representing largest number of key-value pairs leaf node can have.
 
 #### Creating `BigOrderedMap`
 
@@ -166,3 +170,27 @@ Because it's layout affects what can be inserted and performance, there are a fe
 - [table.move](https://github.com/aptos-labs/aptos-core/blob/6f5872b567075fe3615e1363d35f89dc5eb45b0d/aptos-move/framework/aptos-stdlib/sources/table.move)
 - [table_with_length.move](https://github.com/aptos-labs/aptos-core/blob/6f5872b567075fe3615e1363d35f89dc5eb45b0d/aptos-move/framework/aptos-stdlib/sources/table.move)
 - [big_ordered_map.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/datastructures/big_ordered_map.move)
+
+## Additional details of (deprecated) SmartTable
+
+The Smart Table is a scalable hash table implementation based on linear hashing.
+This data structure aims to optimize storage and performance by utilizing linear hashing, which splits one bucket at a time instead of doubling the number of buckets, thus avoiding unexpected gas costs.
+Unfortunatelly, it's implementation makes every addition/removal be a conflict, making such transactions fully sequential.
+The Smart Table uses the SipHash function for faster hash computations while tolerating collisions. Unfortunatelly, this also means that collisions are predictable, which means that if end users can control the keys being inserted, it can have large number of collisions in a single bucket.
+
+### SmartTable Structure
+
+The `SmartTable` struct is designed to handle dynamic data efficiently:
+
+- `buckets`: A table with a length that stores vectors of entries.
+- `num_buckets`: The current number of buckets.
+- `level`: The number of bits representing `num_buckets`.
+- `size`: The total number of items in the table.
+- `split_load_threshold`: The load threshold percentage that triggers bucket splits.
+- `target_bucket_size`: The target size of each bucket, which is not strictly enforced.
+
+### SmartTable usage examples
+
+- [Move Spiders Smart Table](https://movespiders.com/courses/modules/datastructures/lessonId/7)
+- [Move Spiders Querying Smart Table via FullNode APIs](https://movespiders.com/courses/modules/datastructures/lessonId/9)
+- [Move Spiders Querying Smart Table via View Function](https://movespiders.com/courses/modules/datastructures/lessonId/10)
