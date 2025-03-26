@@ -48,8 +48,8 @@ TEST_COMMAND = f"{SCRIPT} info"
 
 X86_64 = ["x86_64", "amd64"]
 SUPPORTED_ARCHITECTURES = {
-    "macos": X86_64 + ["arm", "arm64", "aarch64"],
-    "linux": X86_64,
+    "macos": X86_64 + ["arm64", "aarch64"],
+    "linux": X86_64 + ["arm64", "aarch64"],
     "windows": X86_64,
 }
 
@@ -456,11 +456,24 @@ class Installer:
 
     # Given the OS and CPU architecture, determine the "target" to download.
     def get_target(self):
+        self._write(
+                colorize(
+                    "info",
+                    "Checking OS and architecture...",
+                )
+            )
         # We only look this up for validation, we only need the OS to figure out which
         # binary to download right now since we only build for x86_64 right now.
         arch = (platform.machine() or platform.processor()).lower()
-
         os = "windows" if WINDOWS else "macos" if MACOS else "linux"
+
+        self._write(
+                colorize(
+                    "info",
+                    f"OS: {os} Architecture: {arch} Platform: {sys.platform}",
+                )
+            )
+
         if not arch in SUPPORTED_ARCHITECTURES[os]:
             self._write(
                 colorize(
@@ -483,33 +496,128 @@ class Installer:
             self._write("")
             sys.exit(1)
 
-        # On Linux, we check what version of OpenSSL we're working with to figure out
-        # which binary to download.
+        if arch in ["arm64", "aarch64"]:
+            self._write(
+                colorize(
+                    "warning",
+                    "The given CPU architecture ({}) for Linux is in Beta, and only built for one version of Ubuntu-22.04.".format(arch),
+                )
+            )
+            self._write(
+                colorize(
+                    "info",
+                    "Using: Linux-aarch64",
+                )
+            )
+            return "Linux-aarch64"
+
+        # On Linux, determine the distribution and release
+        distro = "Unknown"
+        release = "Unknown"
+
+        # Try to get distribution info from /etc/os-release first
+        self._write(
+                colorize(
+                    "info",
+                    "Checking Linux distribution and version...",
+                )
+            )
+        try:
+            with open("/etc/os-release") as f:
+                os_release = {}
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#'):
+                        k, v = line.split('=', 1)
+                        os_release[k] = v.strip('"')
+
+                if 'ID' in os_release:
+                    distro = os_release['ID'].capitalize()
+                if 'VERSION_ID' in os_release:
+                    release = os_release['VERSION_ID']
+                self._write(
+                    colorize(
+                        "info",
+                        f"Linux distribution: {distro} Version: {release}",
+                    )
+                )
+        except Exception:
+            self._write(
+                colorize(
+                    "warning",
+                    "Could not determine Linux distribution and version, assuming Ubuntu 22.04",
+                )
+            )
+            distro = "Ubuntu"
+            release = "22.04"
+
+        # Determine which OpenSSL you have
+        openssl = "3.0.0"
+        self._write(
+                colorize(
+                    "info",
+                    "Checking OpenSSL version...",
+                )
+            )
         try:
             out = subprocess.check_output(
                 ["openssl", "version"],
                 universal_newlines=True,
             )
             openssl_version = out.split(" ")[1].rstrip().lstrip()
+            self._write(
+                colorize(
+                    "info",
+                    f"OpenSSL version: {openssl_version}",
+                )
+            )
         except Exception:
             self._write(
                 colorize(
                     "warning",
-                    "Could not determine OpenSSL version, assuming older version (1.x.x)",
+                    "Could not determine OpenSSL version, assuming version (3.x.x)",
                 )
             )
-            openssl_version = "1.0.0"
 
-        if openssl_version.startswith("3."):
-            return "Linux-x86_64"
-
-        self._write(
-            colorize(
-                "warning",
-                "OpenSSL 1.x.x is deprecated, and future versions of the Aptos CLI may not be published with it",
+        # We unfortunately do not build for OpenSSL v1 anymore, so if you have v1, we will just stop here :(
+        if not openssl_version.startswith("3."):
+            self._write(
+                colorize(
+                    "warning",
+                    "The Aptos CLI is only supported with OpenSSL v3.0.0 or newer.  We will attempt to install the CLI, but please follow instructions to build manually or install the CLI using brew for OpenSSL v1.x.x.",
+                )
             )
+            self._write(
+                colorize(
+                    "info",
+                    "Using: Ubuntu 22.04-x86_64",
+                )
+            )
+            return "Ubuntu-22.04-x86_64"
+
+        # Ubuntu 24.04 is built specifically for it, and may have some dependencies we don't count otherwise.
+        if distro.startswith("Ubuntu"):
+          if release.startswith("24.04"):
+            return "Ubuntu-24.04-x86_64"
+          # Ubuntu 22.04 is built specifically for it
+          elif release.startswith("22.04"):
+            return "Ubuntu-22.04-x86_64"
+          # In other cases, we use the generic version
+          elif release.startswith("20.04"):
+            self._write(
+              colorize(
+                  "warning",
+                  "The Aptos CLI is officially only built for Ubuntu >= 22.04.  We will try to install, but it may not work with your setup. Please follow the instructions to build manually if it does not work.",
+              )
+            )
+            return "Ubuntu-22.04-x86_64"
+        self._write(
+          colorize(
+              "warning",
+              "The Aptos CLI is officially only built for Ubuntu.  We will try to install, but it may not work with your setup. Please follow the instructions to build manually if it does not work.",
+          )
         )
-        return "Ubuntu-22.04-x86_64"
+        return "Linux-x86_64"
 
     def _write(self, line) -> None:
         sys.stdout.write(line + "\n")
