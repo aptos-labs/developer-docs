@@ -232,9 +232,11 @@ script {
 }
 ```
 
-Entry functions can accept parameters that are: primitive types, reference to a `signer`, vectors (where the element type is itself acceptable),
+Entry functions can accept parameters that are: primitive types, reference to a
+`signer`, vectors (where the element type is itself acceptable),
 and certain standard library types such as `String`, `Object`, and `Option`.
 Entry functions must not have any return values.
+
 
 ### Name
 
@@ -736,7 +738,7 @@ Notice that you do not need to `use` the modules which introduce receiver functi
 
 The receiver style syntax can also be used on generic functions, like shown below for the generic function `std::vector::remove<T>(self: &mut vector<T>, i: u64): T`.
 
-```move
+ ```move
 module 0x42::example {
     fun bar() {
         let v = vector[1, 2, 3];
@@ -747,3 +749,172 @@ module 0x42::example {
     }
 }
 ```
+
+
+## Function Values
+
+_Since language version 2.2_ (preview)
+
+Move supports *function values* as first-class citizen of the language. A function value is constructed from the name of a function or by a lambda expression, and is evaluated by passing parameters to it and causing the underlying function to be executed. This feature is often also called _dynamic dispatch_. Which concrete function is called, is not known to the caller, and determined from the runtime value. Dynamic dispatch is an important tool for composing applications. Move makes dynamic dispatch safe by providing builtin protection mechanisms against reentrancy, which can be further refined by user choice.
+
+### Function Types
+
+The type of functions values is already known from [inline functions](#function-parameters-and-lambda-expressions). A function type is denoted, for example, as `|u64|bool`, indicating a function which takes a number and returns a boolean. Lists of types are separated by comma, as in `|u64, bool|(bool,u4)`.
+
+Function types can have associated abilities, written as `|u64|bool has copy`. Multiple abilities are separated by plus, as in `|u64|bool has copy+drop`. If no abilities are provided, the value can be only moved around and evaluated (for evaluation of function values, see [below](#function-evaluation)).
+
+Function values can be stored in fields of structs or enums. In this case, the field type inherits the abilities of the struct:
+
+```move
+struct S has key {
+  func: |u64| bool /* has store */  // not needed since inherited
+}
+```
+
+### Operations on Functions
+
+A function value is evaluated by providing the corresponding number of parameters, similar as when calling a named function. During evaluation, the function value is *consumed*. Hence if the value needs to be evaluated multiple times, it's type must have the `copy` ability:
+
+```move
+let f: |u64|bool has copy = |x| x > 0;
+assert!(f(1) == f(2))
+```
+
+Function values support equality and ordering. Note that those relations are based on the name of the underlying function behind a runtime value, and do not reflect semantic equivalence.
+
+
+### Function Type Wrappers
+
+Function types, specifically if they come together with abilities, can be verbose, and if the same type of function type is used many times in the code, repetitive. For this purpose, Move recognizes struct wrappers around function types as a special case. They can be used to effectively create named function types:
+
+```move
+struct Predicate<T>(|&T|bool) has copy;
+```
+
+Move supports this feature by automatically converting function values into the wrapper type and vice versa. Examples:
+
+```move
+let f: Predicate<u64> = |x| *x > 0; // lambda converts to Predicate
+assert!(f(&22)) // Predicate callable
+```
+
+### Denoting Function Values
+
+Function values can be constructed by directly using a function name. The resulting function type is derived from the signature of the underlying function, with abilities `copy+drop`. If the function is public, those function values have the `store` ability as well:
+
+```move
+public fun is_even(x: u64): bool { x % 2 == 0 }
+fun is_odd(x: u64): bool { x % 2 == 1 }
+...
+let f: |u64|bool has copy+drop+store = is_even;
+let g: |u64|bool has copy+drop = is_odd;
+```
+
+A _persistent_ function is required to build a storable function value because it needs to be guaranteed that the underlying function exists and can be safely restored from storage at any point in the future. However, code upgrade may change the underlying implementation of the function, while its signature is persistent.
+
+While `public` and `entry` functions are persistent by default, a none-public function needs to be marked with the attribute `#[persistent]` to become storable:
+
+```move
+#[persistent] fun is_odd(x: u64): bool { x % 2 == 1 }
+...
+let g: |u64|bool has copy+drop+store = is_odd;
+```
+
+Using the `#[persistent]` attribute is preferred if the only objective is to make a function storable, avoiding security implications with public or entry visibility.
+
+
+### Lambda Expressions and Closures
+
+Function values can be denoted by _lambda expressions_ (as also available as parameters for [inline functions](#function-parameters-and-lambda-expressions)). Lambda expressions can capture context variables _by value_: those values are moved (or copied) into a _closure_, from where they are produced when the function is evaluated. Examples:
+
+```move
+struct S(u64); // cannot be copied or dropped
+...
+let s = S(1);
+let add = |y| { let S(x) = s; x + y }; // s will be moved into the closure
+assert!(add(2) == 3)
+```
+
+Closures with captured values are lexicographical ordered using first the name of the underlying function (which maybe generated from lambda lifting), and then the captured values.
+
+The type of the closure constructed by a lambda expression is inferred from the expression (for example, the type of `add` in the example above is inferred as `|u64|u64`). The abilities of this function type are derived as follows. By default, the function underlying a closure is a private function, so the function itself is `copy+drop` (and not `store`). This is intersected with the abilities of all the captured context variables. However, there is a special case for lambdas where instead of a private function an underlying persistent function can be identified, such that the lambda just 'delays' certain arguments of this function. This pattern is also called 'currying' in functional programming (named after the mathematician Curry). Here are some examples:
+
+```move
+#[persistent] fun add(x: u64, y: u64) { x + y }
+...
+let x = 22;
+let f: |u64|u64 has copy+drop+store = |y| add(x, y);  // 1st argument captured, 2nd argument delayed
+let f: |u64|u64 has copy+drop+store = |y| add(y, x);  // 1st argument delayed, 2nd argument captured
+```
+
+Notice it is not possible to _capture_ reference values at this point of time in Move. Thus, the following code does not compile:
+
+```move
+let x = &22;
+let f = |y| add(*x, y) // DOES NOT COMPILE
+```
+
+Related, it is not possible to mutate any locals in the context of a lambda. Specifically, the following pattern as known from lambdas with inline functions, is not supported:
+
+```move
+let x = 0;
+collection.for_each(|e| x += e) // DOES NOT COMPILE
+```
+
+However, the actual parameters of lambdas can be references, only captured values are restricted. For example:
+
+```move
+let x = 22;
+let f : |&u64|u64 = |y| add(x, *y)
+```
+
+### Reentrancy Check
+
+Via dynamic dispatch of function values, reentrancy of modules in a chain of function calls is possible. If module `m1` uses module `m2`, and `m1` calls `m2::f` passing a function value to it, this function value can callback into `m1`. This situation is called _reentrancy_, and is not possible in Move without function values, since the module usage relation is acyclic.
+
+The Move VM dynamically detects reentrancy of a module, and _locks_ all resources declared in this module from being accessed. Thus during reentrancy of `m`, calling resource operations like `&m::R[addr]`, `&mut m::R[addr]`, and `move_from<m::R>` lead to an abort. Here is an example:
+
+```move
+module 0x42::caller {
+  use 0x42::callee;
+  struct R{ count: u64 } has key;
+  fun calling() acquires R {
+     let r = &mut R[@addr];
+     // This callback is OK, because `R` is not accessed
+     callee::call_me(r, |x| do_something(x))
+     // This callback will lead to reentrancy runtime error
+     callee::call_me(r, |_| R[@addr].count += 1)
+     r.call_count += 1
+  }
+  fun do_something(r: &mut R) { .. }
+}
+
+module 0x42::callee {
+  fun call_me<T(x: &mut T, action: |&mut T|) {
+    action(x)
+  }
+}
+```
+
+Notice that dispatching a function value to a concrete function in the same module is also considered to be reentrancy. If the function `callee::call_me` would be moved into the module `caller`, the same semantics is in effect.
+
+The default reentrancy check ensures consistency of Move's reference semantics and suppresses side effects of reentrancy for the resources owned by the re-entered module. However, re-entered code is allowed to still access resource state managed by modules outside the reentrancy path. Such state accesses can be considered bad design, but they exist. 
+For these purposes, the `#[module_lock]` attribute can be attached to a function:
+
+```move
+module 0x42::account { ... }
+module 0x42::caller {
+  #[module_lock] // without this lock, the notify call could withdraw more than intended.
+  fun transfer(from: address, to: address, amount: u64, notify: |u64|) {
+    // Oops. This should be really differently designed, using `Coin` type and moving it.
+    assert!(account::balance(from) - MIN_BALANCE >= amount);
+    account::deposit(to, amount)
+    notify(amount); // attempt to re-entrer `transfer` is blocked
+    account::withtdraw(from, amout);
+  }
+}
+```
+
+While a function with this attribute is running, all calls reentering any module will lead to an abort, given a stronger protection. 
+
+The attribute `#[module_lock]` restriction is not the default behavior since it is too strong for typical patterns of higher-order programming. For example, `collection.find(|x| cond(x))` will lead to a reentrancy of the module which contains this expression, from the module which defines the collection type. 
