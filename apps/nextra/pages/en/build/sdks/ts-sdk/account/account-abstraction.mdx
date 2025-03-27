@@ -58,7 +58,7 @@ An enum variant defining the authentication data to be passed to the authenticat
 
 ```move
 enum AbstractionAuthData has copy, drop {
-    V1 { 
+    V1 {
         digest: vector<u8>,       // SHA3-256 hash of the signing message
         authenticator: vector<u8> // Custom auth data (e.g., signatures)
     },
@@ -113,7 +113,7 @@ const abstractedAccount = new AbstractedAccount({
 
 ### 1. Deploy Authentication Module
 
-In this example, we will deploy the `hello_world_authenticator` module. The `authenticate` function takes an `AbstractionAuthData` and returns a `signer` 
+In this example, we will deploy the `hello_world_authenticator` module. The `authenticate` function takes an `AbstractionAuthData` and returns a `signer`
 if the authentication is successful, otherwise it aborts the transaction. The authentication logic will only allow transactions that have an authenticator equal to `"hello world"`.
 
 ```move
@@ -132,7 +132,7 @@ module deployer::hello_world_authenticator {
 }
 ```
 
-To deploy the module, you can use the following commands from the [Aptos CLI](../../../../build/cli). We assume that you already have set up a workspace with `aptos init` and 
+To deploy the module, you can use the following commands from the [Aptos CLI](../../../../build/cli). We assume that you already have set up a workspace with `aptos init` and
 declared the named addresses in your `Move.toml` file.
 
 ```bash
@@ -169,8 +169,8 @@ console.log("Account Abstraction status: ", accountAbstractionStatus);
 
 ### 4. Enable the Authentication Function
 
-Assuming that the account does not have account abstraction enabled, you need to enable the authentication function for the account. This can be done by calling 
-the `enableAccountAbstractionTransaction` function. This creates a raw transaction that needs to be signed and submitted to the network. In this example, `alice` 
+Assuming that the account does not have account abstraction enabled, you need to enable the authentication function for the account. This can be done by calling
+the `enableAccountAbstractionTransaction` function. This creates a raw transaction that needs to be signed and submitted to the network. In this example, `alice`
 will be the account that will be enabled.
 
 ```ts
@@ -267,7 +267,7 @@ console.log("Coin transfer transaction submitted! ", pendingCoinTransferTransact
 
 ### 7. Conclusion
 
-To verify that you have successfully sign and submitted the transaction using the abstracted account, you can use the explorer to check the transaction. If the 
+To verify that you have successfully sign and submitted the transaction using the abstracted account, you can use the explorer to check the transaction. If the
 transaction signature contains a `function_info` and `auth_data` field, it means you succesfully used account abstraction! The full E2E demo can be found [here](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/public_key_authenticator_account_abstraction.ts).
 
 ![Transaction Signature](https://i.imgur.com/HZylFnc.png)
@@ -353,7 +353,7 @@ module deployer::public_key_authenticator {
     ) acquires PublicKeyPermissions {
         let account_addr = signer::address_of(signer);
         assert!(std::vector::length(&public_key) == 32, EINVALID_PUBLIC_KEY);
-        
+
         if (!exists<PublicKeyPermissions>(account_addr)) {
             move_to(signer, PublicKeyPermissions {
                 public_key_table: smart_table::new(),
@@ -362,12 +362,12 @@ module deployer::public_key_authenticator {
 
         let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
         assert!(
-            !smart_table::contains(&permissions.public_key_table, public_key), 
+            !smart_table::contains(&permissions.public_key_table, public_key),
             EENTRY_ALREADY_EXISTS
         );
 
         smart_table::add(&mut permissions.public_key_table, public_key, true);
-    
+
     }
 
     public entry fun revoke_public_key(
@@ -375,7 +375,7 @@ module deployer::public_key_authenticator {
         public_key: vector<u8>
     ) acquires PublicKeyPermissions {
         let account_addr = signer::address_of(signer);
-        
+
         assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
 
         let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
@@ -395,11 +395,11 @@ whether a public key is permitted to sign transactions on behalf of the user.
 ```move
 module deployer::public_key_authenticator {
   // ...
- 
+
   struct PublicKeyPermissions has key {
       public_key_table: SmartTable<vector<u8>, bool>,
-  } 
-  
+  }
+
 }
 ```
 
@@ -417,7 +417,7 @@ module deployer::public_key_authenticator {
     ) acquires PublicKeyPermissions {
         let account_addr = signer::address_of(signer);
         assert!(std::vector::length(&public_key) == 32, EINVALID_PUBLIC_KEY);
-        
+
         if (!exists<PublicKeyPermissions>(account_addr)) {
             move_to(signer, PublicKeyPermissions {
                 public_key_table: smart_table::new(),
@@ -426,12 +426,12 @@ module deployer::public_key_authenticator {
 
         let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
         assert!(
-            !smart_table::contains(&permissions.public_key_table, public_key), 
+            !smart_table::contains(&permissions.public_key_table, public_key),
             EENTRY_ALREADY_EXISTS
         );
 
         smart_table::add(&mut permissions.public_key_table, public_key, true);
-    
+
     }
 
     public entry fun revoke_public_key(
@@ -439,7 +439,7 @@ module deployer::public_key_authenticator {
         public_key: vector<u8>
     ) acquires PublicKeyPermissions {
         let account_addr = signer::address_of(signer);
-        
+
         assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
 
         let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
@@ -453,7 +453,7 @@ module deployer::public_key_authenticator {
 The `authenticate` function is the main function that allows users to authenticate on behalf of somebody else using account abstraction. The `authenticator`
 will contain the **public key** and a **signature** of the user. We will verify that the public key is permitted and that the signature is valid.
 
-The signature is the result of signing the `digest`. The `digest` is the sha256 hash of the **signing message** which contains information about the transaction. 
+The signature is the result of signing the `digest`. The `digest` is the sha256 hash of the **signing message** which contains information about the transaction.
 By signing the `digest`, we confirm that the user has approved the specific transaction that was submitted.
 
 ```move
@@ -490,7 +490,7 @@ module deployer::public_key_authenticator {
 }
 ```
 
-To deploy the module, you can use the following commands from the [Aptos CLI](../../../../build/cli). We assume that you already have set up a workspace with `aptos init` and 
+To deploy the module, you can use the following commands from the [Aptos CLI](../../../../build/cli). We assume that you already have set up a workspace with `aptos init` and
 declared the named addresses in your `Move.toml` file.
 
 ```bash
@@ -528,8 +528,8 @@ console.log("Account Abstraction status: ", accountAbstractionStatus);
 
 ### 4. Enable the Authentication Function
 
-Assuming that the account does not have account abstraction enabled, we need to enable the authentication function for the account. This can be done by calling 
-the `enableAccountAbstractionTransaction` function. This creates a raw transaction that needs to be signed and submitted to the network. In this example, `alice` 
+Assuming that the account does not have account abstraction enabled, we need to enable the authentication function for the account. This can be done by calling
+the `enableAccountAbstractionTransaction` function. This creates a raw transaction that needs to be signed and submitted to the network. In this example, `alice`
 will be the account that will be enabled.
 
 ```ts
@@ -617,7 +617,7 @@ console.log("Coin transfer transaction submitted! ", pendingCoinTransferTransact
 
 ### 8. Conclusion
 
-To verify that you have successfully sign and submitted the transaction using the abstracted account, you can use the explorer to check the transaction. If the 
+To verify that you have successfully sign and submitted the transaction using the abstracted account, you can use the explorer to check the transaction. If the
 transaction signature contains a `function_info` and `auth_data` field, it means you succesfully used account abstraction! The full E2E demo can be found [here](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/public_key_authenticator_account_abstraction.ts)
 
 ![Transaction Signature](https://i.imgur.com/3U40YSb.png)
@@ -641,7 +641,7 @@ const transaction = aptos.abstraction.disableAccountAbstractionTransaction({
 
 ## Application User Experience
 
-Applications that want to leverage account abstraction will want to provide a user experience that allows users to check if the account has account abstraction enabled, 
+Applications that want to leverage account abstraction will want to provide a user experience that allows users to check if the account has account abstraction enabled,
 and to enable it, if it is not enabled.
 
 
