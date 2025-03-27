@@ -552,7 +552,6 @@ class Installer:
             release = "22.04"
 
         # Determine which OpenSSL you have
-        openssl = "3.0.0"
         self._write(
                 colorize(
                     "info",
