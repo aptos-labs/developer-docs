@@ -1,0 +1,170 @@
+---
+title: "Cross Chain Wallets"
+---
+
+import { Callout } from "nextra/components";
+
+# Cross Chain Wallets
+
+<Callout>
+  The feature is currently only available on devnet and is considered an alpha version; therefore, you can expect breaking changes.
+</Callout>
+
+
+Thanks to [AIP-133 Derivable Account Abstraction](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-113.md), we can manage cross-chain signatures flexibly and securely on the Aptos network.
+This means that any wallet with an authentication function implementation on the Aptos chain can submit transactions to the Aptos network.
+
+This functionality enables a variety of use cases for dApps, enhancing user experience and onboarding.
+
+### High level flow
+
+When a user enters a dApp that supports cross-chain wallets, the interaction and experience feel the same as with any Aptos wallet.
+The user connects with a cross-chain wallet (e.g., Phantom for Solana) and can view their Derivable Abstracted Account (DAA) details, sign messages, and submit transactions to the Aptos chain.
+
+When a dapp submits a transaction using a cross-chain wallet, the wallet adapter utilizes the `signIn` function (defined in the cross-chain wallet standard) for domain verification and security.
+The wallet is requested to sign a message to submit a transaction on the Aptos network. Once the wallet approves the transaction, it is submitted to the Aptos chain, where it undergoes a signature verification process.
+
+### Hoe does DAA work in a cross chain wallet?
+
+When a user connects to a dApp using the cross-chain wallet adapter, the adapter computes the user's Derivable Abstracted Account (DAA) address and converts the cross-chain wallet to follow the Aptos wallet standard interface.
+This ensures a seamless interaction with the wallet for both developers and end users.
+
+The computation of the DAA address is done using the `authenticationFunction` and the `accountIdentity`, both of which are defined in the wallet adapter:
+
+- `authenticationFunction`: This is a function that exists on-chain and is used to verify the signature of the cross-chain wallet.
+- `accountIdentity`: This represents the identity of the account used in the on-chain authentication function to verify the signature of the cross-chain wallet.
+In the Wallet Adapter, the `accountIdentity` is based on the original cross-chain wallet’s public key and the dApp domain (e.g., mydomain.com). The format is:
+`${originWallet.publicKey}${domain}`
+
+<Callout>
+   Since the account identity is based on the dApp domain, it is scoped to the dApp context. As a result, each wallet has a different DAA address on different dApps.
+</Callout>
+
+
+### How to integrate cross-chain wallets in my dApp?
+
+Make sure you integrate with the Aptos Wallet Adapter by following these [steps](./dapp.mdx)
+
+Supporting cross-chain wallets in a dApp requires only a 2-step installation process.
+
+```bash
+npm install @aptos-labs/derived-wallet-solana
+```
+
+Once you have installed the `@aptos-labs/derived-wallet-solana` package, you can import and use it.
+In the same file where you import the other wallets, such as `WalletProvider.tsx`, you can add the following:
+
+```ts
+import { setupAutomaticSolanaWalletDerivation } from "@aptos-labs/derived-wallet-solana";
+
+setupAutomaticSolanaWalletDerivation({ defaultNetwork: Network.TESTNET }); // this is the Aptos network your dapp is working with
+
+.....
+
+<AptosWalletAdapterProvider
+ dappConfig={{
+    network: Network.TESTNET,
+  }}
+>
+  {children}
+<AptosWalletAdapterProvider/>
+```
+
+That will handle the logic and implementation to include the cross-chain wallets as if they were Aptos wallets.
+
+<Callout>
+  It is highly recommended to use the `@aptos-labs/wallet-adapter-react` package for the best experience.
+</Callout>
+
+
+#### Submitting a transaction
+
+In most cases, allowing users to submit a transaction with a cross-chain wallet to the Aptos chain requires using a sponsor transaction. This is because the cross-chain wallet might not have APT to pay for gas.
+Therefore, the dApp should consider maintaining a sponsor account to sponsor the transactions.
+
+```tsx filename="SignAndSubmitDemo.tsx"
+import React from 'react';
+import { useWallet } from '@aptos-labs/wallet-adapter-react'; 
+import { Aptos, AptosConfig, Network, Ed25519PrivateKey, PrivateKey, PrivateKeyVariants, Account } from '@aptos-labs/ts-sdk';
+
+// Initialize an Aptos client
+const config = new AptosConfig({ network: Network.DEVNET });
+const aptos = new Aptos(config);
+
+// Generate a sponsor account or use an existing account
+const privateKey = new Ed25519PrivateKey(
+  PrivateKey.formatPrivateKey(
+    "0x123",
+    PrivateKeyVariants.Ed25519
+  )
+);
+const sponsor = Account.fromPrivateKey({ privateKey });
+
+const SignAndSubmit = () => {
+  const { account, signTransaction } = useWallet();
+
+  const onSignAndSubmitTransaction = async () => {
+    if(!account) {
+      throw new Error("Account is not connected and unable to sign transaction")
+    }
+
+    try {
+      // Build the transaction
+      const rawTransaction = await aptos.transaction.build.simple({
+        data: {
+          function: "0x1::aptos_account::transfer",
+          functionArguments: [account.address.toString(), 1],
+        },
+        sender: account.address,
+        withFeePayer: true,
+      });
+
+      // Send it to the wallet to sign
+      const walletSignedTransaction = await signTransaction({
+        transactionOrPayload: rawTransaction,
+      });
+
+      // Sponsor account signs the transaction to pay for the gas fees
+      const sponsorAuthenticator = aptos.transaction.signAsFeePayer({
+        signer: sponsor,
+        transaction: rawTransaction,
+      });
+
+      // Submit the transaction to chain
+      const txnSubmitted = await aptosClient(network).transaction.submit.simple(
+        {
+          transaction: rawTransaction,
+          senderAuthenticator: walletSignedTransaction.authenticator,
+          feePayerAuthenticator: sponsorAuthenticator,
+        }
+      );
+
+      // if you want to wait for transaction
+      await aptos.waitForTransaction({ transactionHash: txnSubmitted.hash });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <button onClick={onSignAndSubmitTransaction}>
+      Sign and submit transaction
+    </button>
+  );
+};
+
+export default SignAndSubmit;
+```
+
+### Considerations
+- Since the wallet is a cross-chain wallet and is most likely not integrated with Aptos, simulation is not available in the wallet.
+- Due to the use of the `signIn` standard available on other chains, wallets that have not implemented this flow are not supported.
+- While the cross-chain wallet prioritizes DAA, each wallet also retains the original wallet, so developers should be able to use it and interact with it
+
+
+### Resources
+
+- Croos Chain Wallet Adapter Demo App
+    - [Live site](https://aptos-labs.github.io/aptos-wallet-adapter/nextjs-cross-chain-example/)
+    - [Source code](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-x-chain)
+- [AIP-113 Derivable Account Abstraction](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-113.md)
