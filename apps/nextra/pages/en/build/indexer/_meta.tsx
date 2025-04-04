@@ -11,4 +11,7 @@ export default {
   legacy: {
     title: "Legacy Indexer",
   },
+  "nft-aggregator": {
+    title: "NFT Aggregator API",
+  },
 };
