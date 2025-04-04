@@ -1,0 +1,69 @@
+---
+title: "NFT Aggregator API"
+---
+
+# NFT Aggregator API
+
+import { IndexerBetaNotice, Card, Cards } from '@components/index';
+import { Callout } from 'nextra/components';
+
+<Callout type="info">
+The NFT Aggregator API is currently in beta. If you’re building an aggregator or need real-time event streaming via gRPC, please reach out to our team for early access and support!
+</Callout>
+
+We’re building a **universal NFT aggregator** for the Aptos ecosystem that normalizes activity across all major marketplaces — including **Tradeport**, **Wapal**, **bluemove**, **Souffl3**, **Topaz**, and more.
+
+At its core, the aggregator captures marketplace events in real-time (like listings, token offers, and collection-wide offers) and converts them into clean, structured data.  
+This allows developers to work with a unified data format — no need to handle different marketplace-specific formats manually.
+
+You can access this data through two main API categories:  
+- **GraphQL** for querying live activity
+- **REST** for analytics and aggregated metrics
+
+For more information on the NFT Aggregator API, see the [NFT Aggregator API Reference](./nft-aggregator-reference.mdx).
+
+---
+## GraphQL API (NFT Activity)
+
+Query real-time marketplace activity across supported marketplaces.  
+Use this for:
+- Active listings
+- Token offers
+- Collection offers
+
+For direct GraphQL queries to the Aptos-Labs hosted Indexer API, use these endpoints:
+- console: https://console.nft-aggregator-staging.gcp.aptosdev.com/console/api/api-explorer
+- Mainnet: https://api.mainnet.aptoslabs.com/nft-aggregator/v1/graphql
+
+## REST API (Analytics)
+
+Access aggregated data like:
+- Total sales volume
+- Top buyers/sellers
+- Marketplace trends
+
+<Callout type="info">
+Analytics API is currently in beta.  
+For custom analytics pipelines, we recommend using our gRPC stream for raw structured events.
+</Callout>
+
+<Cards>
+  <Card href="https://www.notion.so/NFT-Marketplace-API-Endpoints-1c88b846eb7280b982b1d7fafdaeee93?pvs=21">
+    <Card.Title linkType="external">Analytics API Reference</Card.Title>
+    <Card.Description>Explore REST API endpoints and metrics</Card.Description>
+  </Card>
+</Cards>
+
+
+---
+
+## Next: Integrate Your Marketplace
+
+If you’re a marketplace and want to be indexed by the NFT Aggregator, follow our step-by-step guide:
+
+<Cards>
+  <Card href="/nft-aggregator/marketplace-integration">
+    <Card.Title>Marketplace Integration Guide</Card.Title>
+    <Card.Description>Step-by-step guide to get your marketplace indexed and live</Card.Description>
+  </Card>
+</Cards>
