@@ -1,0 +1,133 @@
+---
+title: "Marketplace Integration Guide"
+---
+
+# Marketplace Integration Guide
+
+import { Callout, Steps } from 'nextra/components';
+import { Card, Cards } from '@components/index';
+
+<Callout type="info">
+This guide helps you integrate your marketplace with the Aptos NFT Aggregator by writing a config file that maps your marketplace events to our standard format.
+</Callout>
+
+## Requirements
+
+Before you begin, ensure you have:
+
+1. A deployed marketplace module on Aptos **testnet** or **mainnet**.
+2. Access to your marketplace contract ABI.
+3. A list of emitted events matching our standard event types:
+   - `place_listing`, `cancel_listing`, `fill_listing`
+   - `place_token_offer`, `cancel_token_offer`, `fill_token_offer`
+   - `place_collection_offer`, `cancel_collection_offer`, `fill_collection_offer`
+4. Sample transaction versions for each event type for testing and validation.
+
+## Steps: How to Write a Config
+
+<Steps>
+
+### Step 1: Add Your Config File
+
+Create a YAML file in the following directory: `src/config/example/`
+
+📂 **Repository:**  [Aptos NFT Aggregator](https://github.com/aptos-labs/aptos-nft-aggregator)
+
+**Naming convention:**
+`{marketplace}_{contract_version}.yaml` (e.g. `tradeport_v2.yaml`)
+
+✅ Tip:
+Use lowercase letters and underscores. Avoid spaces or special characters.
+
+### Step 2: Map Your Event Types
+
+Match your emitted events to our [standard event types](https://github.com/aptos-labs/aptos-nft-aggregator/blob/main/src/config/marketplace_config.rs#L79-L93).
+
+Example mapping:
+
+```yaml
+event_model_mapping:
+  0x<address>::listings::InsertListingEvent: place_listing
+  0x<address>::listings::DeleteListingEvent: cancel_listing
+  0x<address>::listings::BuyEvent: fill_listing
+  0x<address>::biddings::InsertTokenBidEvent: place_token_offer
+  0x<address>::biddings::DeleteTokenBidEvent: cancel_token_offer
+  0x<address>::biddings::AcceptTokenBidEvent: fill_token_offer
+  0x<address>::biddings::InsertCollectionBidEvent: place_collection_offer
+  0x<address>::biddings::DeleteCollectionBidEvent: cancel_collection_offer
+  0x<address>::biddings::AcceptCollectionBidEvent: fill_collection_offer
+
+```
+✅ Tip:
+Use your ABI or sample transactions to confirm the full addresses and event paths.
+
+### Step 3: Map Key Fields with JSONPath
+
+For each event type, define how to extract required fields using JSONPath.
+
+Example for place_listing event:
+```
+events:
+  0xabc::events::ListingPlacedEvent:
+    event_fields:
+      "$.listing":
+        - table: nft_marketplace_activities
+          column: listing_id
+        - table: current_nft_marketplace_listings
+          column: listing_id
+```
+
+- `$.listing`: JSONPath to the listing_id in the emitted event. (e.g. [listingFilledEvent](https://fullnode.mainnet.aptoslabs.com/v1/transactions/by_version/280927541))
+    - Note that JSONPath expressions are relative to the data field inside the emitted event.
+    - If you are new to JSONPath, you could also take a look at this doc: https://www.npmjs.com/package/jsonpath
+- The aggregator will write this value to two tables:
+    - `nft_marketplace_activities`: a denormalized log of activity used for historical tracking & analytics
+    - `current_nft_marketplace_listings`: the latest state of active listings
+- Each field maps to a column in a table
+    - you can refer to this check what’s the required fields. but for data completeness, check our schema from this hasura explorer what’s availalbe for each table  what can be indexed for each table.
+
+### Step 4: (Optional) Extract from Write Set Changes
+If your event does not include all required fields, extract data from write_set_changes.
+Note that we only support extracting data from `write_resource` type for now.
+Example config:
+[Tradeport v2 YAML Example](https://github.com/aptos-labs/aptos-nft-aggregator/blob/main/src/config/example/tradeport_v2.yaml)
+
+```yaml
+write_resource:
+    "0x4::token::TokenIdentifiers":
+    resource_fields:
+        "$.name.value":
+        - table: current_nft_marketplace_token_offers
+            column: token_name
+        - table: current_nft_marketplace_listings
+            column: token_name
+        - table: nft_marketplace_activities
+            column: token_name
+```
+
+✅ Tip:
+Use sample transactions to verify your JSONPath expressions!
+
+### Step 5: Submit a Pull Request
+
+1. Include your YAML config.
+2. Provide sample transaction versions for each event type.
+3. Aptos team will review, deploy and get your marketplace data live.
+
+</Steps>
+
+## Need Help?
+
+If you run into issues:
+- 🐙 Open a GitHub issue.
+- 💬 Contact our support team.
+- 🧩 Join our community chat.
+
+We’re here to help you go live!
+
+## Next Steps
+
+Once your marketplace is integrated:
+- ✅ Test your config via our Hasura Explorer.
+- ✅ Start using the NFT Aggregator APIs to query live marketplace data.
+- ✅ Reach out to us for beta access to gRPC streams for real-time events!
