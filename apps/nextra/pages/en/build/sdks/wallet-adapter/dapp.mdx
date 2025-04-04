@@ -82,19 +82,10 @@ import { PropsWithChildren } from "react";
 import { Network } from "@aptos-labs/ts-sdk";
 
 export const WalletProvider = ({ children }: PropsWithChildren) => {
-  const wallets = [
-    new BitgetWallet(),
-    new FewchaWallet(),
-    new MartianWallet(),
-    new MSafeWalletAdapter(),
-    new PontemWallet(),
-    new TrustWallet(),
-    new OKXWallet(),
-  ];
 
   return (
     <AptosWalletAdapterProvider
-      plugins={wallets}
+      optInWallets={['Petra']}
       autoConnect={true}
       dappConfig={{ network: Network.MAINNET }}
       onError={(error) => {
