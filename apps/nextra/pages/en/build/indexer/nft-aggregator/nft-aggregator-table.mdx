@@ -1,0 +1,195 @@
+---
+title: "NFT Aggregator Table Reference"
+---
+
+import { Callout } from 'nextra/components'
+import { Card, Cards } from '@components/index';
+
+# NFT Aggregator Table API Reference
+
+This page documents the PostgreSQL tables generated and updated by the NFT Aggregator.  
+These tables power both the **GraphQL API** and **REST API**, and reflect the live state of marketplace activity on Aptos.
+
+For querying, refer to:
+- **[NFT Aggregator API GraphQL](./graphql-api.mdx)**
+- **[NFT Aggregator REST API](./rest-api.mdx)**
+
+<Callout type="info">
+When exploring the GraphQL API, you can view these tables in the schema explorer. Tables with `_by_pk` suffixes are automatically generated for primary key lookups.
+</Callout>
+
+<br/>
+
+# NFT Aggregator Table Overview
+
+| Table Name                                | Description |
+|-------------------------------------------|-------------|
+| `nft_marketplace_activities`                | Historical data of all NFT marketplace events |
+| `current_nft_marketplace_listing`         | Latest active listings per token |
+| `current_nft_marketplace_token_offer`     | Latest active offers per token and buyer |
+| `current_nft_marketplace_collection_offer`| Latest active offers per collection |
+| `current_collections_v2`                  | Latest active collections |
+| `current_token_datas_v2`                  | Latest active tokens |
+| `current_token_ownerships_v2`             | Latest active token ownerships |
+| `current_collection_ownerships_v2_view`   | Latest active collection ownerships |
+
+
+## Notes
+
+- Use `is_deleted = false` to query **only active** records in current state tables.
+- The `nft_marketplace_activities` table is your **source of truth** for historical marketplace activity.
+
+
+## `nft_marketplace_activities`
+
+Historical table capturing all NFT marketplace events — listings, offers, sales, and more. Has an aggregate view for summary data called `nft_marketplace_activities_aggregate`.
+
+**Primary Key:** `txn_version, index, marketplace`
+
+### Indexes
+
+| Index Name | Columns |
+|------------|---------|
+| `idx_collection_event_ts` | collection_id, standard_event_type, block_timestamp DESC |
+| `idx_token_id` | token_data_id |
+| `idx_buyer` | buyer |
+| `idx_seller` | seller |
+| `idx_listing_id` | listing_id |
+| `idx_offer_id` | offer_id |
+| `idx_timestamp` | block_timestamp DESC |
+
+### Fields
+<Callout type="info">
+Many fields use `Option` types because marketplace events may not emit complete data for all fields. The processor captures what's available while maintaining type safety.
+</Callout>
+
+
+| Field | Type | Description |
+|-------|------|-------------|
+| txn_version | i64 | Blockchain version of the transaction |
+| index | i64 | Event index in the transaction |
+| listing_id | Option\<String> | Listing ID (if applicable) |
+| offer_id | Option\<String> | Offer ID (if applicable) |
+| raw_event_type | String | Raw marketplace event type |
+| standard_event_type | String | Normalized event type |
+| creator_address | Option\<String> | Collection creator address |
+| collection_id | Option\<String> | Collection identifier |
+| collection_name | Option\<String> | Collection name |
+| token_data_id | Option\<String> | Token identifier |
+| token_name | Option\<String> | Token name |
+| price | i64 | Price in Octas |
+| token_amount | Option\<i64> | Token amount (for bundles etc.) |
+| buyer | Option\<String> | Buyer's address |
+| seller | Option\<String> | Seller's address |
+| expiration_time | Option\<String> | Listing/offer expiration time |
+| marketplace | String | Marketplace name |
+| contract_address | String | Contract address of the marketplace |
+| json_data | serde_json::Value | Internal raw event payload (not public) |
+| block_timestamp | NaiveDateTime | Block timestamp of the event |
+
+<Callout type="warning">
+`json_data` is internal and not exposed in public APIs.
+</Callout>
+
+
+## `current_nft_marketplace_listing`
+
+Tracks current active listings. Updated in real-time.
+
+**Primary Key:** `token_data_id, marketplace`
+
+### Indexes
+
+| Index Name | Columns |
+|------------|---------|
+| `idx_current_nft_marketplace_listings_token_data_id` | token_data_id |
+| `idx_current_nft_marketplace_listings_collection_id` | collection_id |
+| `idx_current_nft_marketplace_listings_collection_id_price` | collection_id, price |
+| `idx_current_nft_marketplace_listings_seller` | seller |
+
+### Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| token_data_id | String | Token identifier |
+| listing_id | Option\<String> | Listing ID |
+| collection_id | Option\<String> | Collection identifier |
+| seller | String | Seller address |
+| price | i64 | Listing price |
+| token_amount | i64 | Number of tokens listed |
+| token_name | Option\<String> | Token name |
+| standard_event_type | String | Normalized event type |
+| is_deleted | bool | True if the listing is inactive |
+| marketplace | String | Marketplace name |
+| contract_address | String | Marketplace contract address |
+| last_transaction_version | i64 | Last transaction version |
+| last_transaction_timestamp | NaiveDateTime | Last update timestamp |
+
+
+## `current_nft_marketplace_token_offer`
+
+Tracks current active token offers by token and buyer.
+
+**Primary Key:** `token_data_id, buyer, marketplace`
+
+### Indexes
+
+| Index Name | Columns |
+|------------|---------|
+| `idx_current_nft_marketplace_token_offers_token_data_id` | token_data_id |
+| `idx_current_nft_marketplace_token_offers_price` | price |
+| `idx_current_nft_marketplace_token_offers_buyer` | buyer |
+
+### Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| token_data_id | String | Token identifier |
+| offer_id | Option\<String> | Offer ID |
+| buyer | String | Buyer's address |
+| collection_id | String | Collection identifier |
+| price | i64 | Offer price |
+| token_amount | Option\<i64> | Token quantity |
+| token_name | Option\<String> | Token name |
+| standard_event_type | String | Normalized event type |
+| is_deleted | bool | Offer active status |
+| marketplace | String | Marketplace name |
+| contract_address | String | Marketplace contract address |
+| last_transaction_version | i64 | Last transaction version |
+| last_transaction_timestamp | NaiveDateTime | Last update timestamp |
+
+
+## `current_nft_marketplace_collection_offer`
+
+Tracks current active collection-wide offers.
+
+**Primary Key:** `collection_offer_id`
+
+### Indexes
+
+| Index Name | Columns |
+|------------|---------|
+| `idx_current_nft_marketplace_collection_offers_collection_id` | collection_id |
+| `idx_current_nft_marketplace_collection_offers_token_data_id` | token_data_id |
+| `idx_current_nft_marketplace_collection_offers_collection_offer_id_token_data_id` | collection_offer_id, token_data_id |
+
+### Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| collection_offer_id | String | Unique collection offer ID |
+| token_data_id | String | Token identifier |
+| collection_id | String | Collection identifier |
+| buyer | String | Buyer's address |
+| price | i64 | Offer price |
+| remaining_token_amount | Option\<i64> | Remaining quantity in the offer |
+| standard_event_type | String | Normalized event type |
+| is_deleted | bool | Offer active status |
+| marketplace | String | Marketplace name |
+| contract_address | String | Marketplace contract address |
+| last_transaction_version | i64 | Last transaction version |
+| last_transaction_timestamp | NaiveDateTime | Last update timestamp |
+
+
+## Other Tables
+More info on tables (e.g. `current_token_datas_v2`, `current_collections_v2`, `current_token_ownerships_v2`, `current_collection_ownerships_v2_view`) are available [here](../indexer-api/indexer-reference.mdx)
