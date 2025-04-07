@@ -66,18 +66,11 @@ It is recommended to:
 | `optInWallets` | Limit the list of supported AIP-62 wallets to just the ones with names in optedInWallets.  | `['Petra']` |
 | `dappConfig` | Specify an alternate network to work on. This prop only works for wallets which are NOT chrome extensions. If set, this object must include the name of the network the app is connected to. The object may include a aptosConnectDappId. | `{ network: 'mainnet',   aptosConnectDappId: undefined }` |
 | `onError` | A callback function to fire when the adapter throws an error. | `(error) => { console.log("error", error); }` |
-| `plugins` | Any legacy standard wallet, i.e., a wallet that is not AIP-62 standard compatible, should be installed in this array. Check https://github.com/aptos-labs/aptos-wallet-adapter/blob/main/README.md#supported-wallet-packages for a list of legacy standard wallet plugins. | `[new LegacyWallet()]` |
 
 #### Full Example
 
 ```tsx filename="App.tsx"
 import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
-import { BitgetWallet } from "@bitget-wallet/aptos-wallet-adapter";
-import { MartianWallet } from "@martianwallet/aptos-wallet-adapter";
-import { MSafeWalletAdapter } from "@msafe/aptos-wallet-adapter";
-import { OKXWallet } from "@okwallet/aptos-wallet-adapter";
-import { TrustWallet } from "@trustwallet/aptos-wallet-adapter";
-import { FewchaWallet } from "fewcha-plugin-wallet-adapter";
 import { PropsWithChildren } from "react";
 import { Network } from "@aptos-labs/ts-sdk";
 
