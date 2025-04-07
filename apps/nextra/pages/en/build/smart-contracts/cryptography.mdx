@@ -207,7 +207,7 @@ For more use cases of the `crypto_algebra` module, check out some Move examples:
 
 ### Veiled coins
 
-The [`veiled_coin` example](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework-experimental/veiled_coin) demonstrates how to use [the Ristretto255 modules from above](#ristretto255-arithmetic) to add a reasonable layer of confidentiality to coin balances and transactions.
+The [`veiled_coin` example](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-experimental/sources/veiled_coin/) demonstrates how to use [the Ristretto255 modules from above](#ristretto255-arithmetic) to add a reasonable layer of confidentiality to coin balances and transactions.
 
 Specifically, users can **veil** their balance, keeping it hidden from everyone, including validators.
 Furthermore, a user can send a **veiled transaction** that hides the transaction amount from everybody, including validators.

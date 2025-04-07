@@ -222,11 +222,11 @@ It is noted in the migration phase from coin to FA, withdraw/deposit/transfer FA
 call `0x1::coin::deposit/withdraw/transfer`(coin module API) to transfer the asset because the account may have the asset in both
 form but fungible asset API can only move FA part but not the coin part. In contrast, coin API could move both parts. For other FA,
 since it does not have a paired coin type, only fungible asset API can be used to move assets.
-To know which API to call, please refer to [`concurrent_fungible_asset_balance`](../../../indexer/fungible-asset-balances.mdx) table `standard` field, where "v1" means using coin API and "v2" means using fungible asset API.
+To know which API to call, please refer to [`concurrent_fungible_asset_balance`](../indexer/indexer-api/fungible-asset-balances.mdx) table `standard` field, where "v1" means using coin API and "v2" means using fungible asset API.
 
 ### Current balance for Fungible Asset
 
-Indexer users can just query [`concurrent_fungible_asset_balance`](../../indexer/fungible-asset-balances.mdx) to get the balance.
+Indexer users can just query [`concurrent_fungible_asset_balance`](../indexer/indexer-api/fungible-asset-balances.mdx) to get the balance.
 
 For node API, the current balance for an APT FA of FungibleStore is available at the account resources URL: `https://{rest_api_server}/accounts/{fungible_store_object_address}/resource/0x1::fungible_asset::FungibleStore`. The balance is stored as `balance`. The resource also contains a metadata object of the FA type and the frozen status. The address of the primary fungible store can be calculated as `sha3_256(32-byte account address | 32-byte metadata object address | 0xFC)`. The metadata object address of APT FA is `0xA`.
 
