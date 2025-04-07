@@ -26,8 +26,8 @@ importers:
         specifier: workspace:*
         version: link:packages/typescript-config
       prettier:
-        specifier: ^3.4.2
-        version: 3.4.2
+        specifier: ^3.5.3
+        version: 3.5.3
 
   apps/nextra:
     dependencies:
@@ -269,7 +269,7 @@ importers:
         version: 8.19.1(eslint@8.57.1)(typescript@5.7.2)
       '@vercel/style-guide':
         specifier: ^6.0.0
-        version: 6.0.0(eslint@8.57.1)(prettier@3.4.2)(typescript@5.7.2)(vitest@2.1.9(@types/node@22.10.5))
+        version: 6.0.0(eslint@8.57.1)(prettier@3.5.3)(typescript@5.7.2)(vitest@2.1.9(@types/node@22.10.5))
       eslint-config-prettier:
         specifier: ^9.1.0
         version: 9.1.0(eslint@8.57.1)
@@ -5526,6 +5526,11 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  prettier@3.5.3:
+    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   pretty-bytes@6.1.1:
     resolution: {integrity: sha512-mQUvGU6aUFQ+rNvTIAcZuWGRT9a6f6Yrg9bHs4ImKF+HZCEK+plBvnAZYSIQztknZF2qnzNtr6F8s0+IuptdlQ==}
     engines: {node: ^14.13.1 || >=16.0.0}
@@ -9678,7 +9683,7 @@ snapshots:
       satori: 0.10.9
       yoga-wasm-web: 0.3.3
 
-  '@vercel/style-guide@6.0.0(eslint@8.57.1)(prettier@3.4.2)(typescript@5.7.2)(vitest@2.1.9(@types/node@22.10.5))':
+  '@vercel/style-guide@6.0.0(eslint@8.57.1)(prettier@3.5.3)(typescript@5.7.2)(vitest@2.1.9(@types/node@22.10.5))':
     dependencies:
       '@babel/core': 7.26.0
       '@babel/eslint-parser': 7.25.9(@babel/core@7.26.0)(eslint@8.57.1)
@@ -9699,10 +9704,10 @@ snapshots:
       eslint-plugin-tsdoc: 0.2.17
       eslint-plugin-unicorn: 51.0.1(eslint@8.57.1)
       eslint-plugin-vitest: 0.3.26(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.7.2))(eslint@8.57.1)(typescript@5.7.2))(eslint@8.57.1)(typescript@5.7.2)(vitest@2.1.9(@types/node@22.10.5))
-      prettier-plugin-packagejson: 2.5.6(prettier@3.4.2)
+      prettier-plugin-packagejson: 2.5.6(prettier@3.5.3)
     optionalDependencies:
       eslint: 8.57.1
-      prettier: 3.4.2
+      prettier: 3.5.3
       typescript: 5.7.2
     transitivePeerDependencies:
       - eslint-import-resolver-webpack
@@ -13293,14 +13298,16 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-packagejson@2.5.6(prettier@3.4.2):
+  prettier-plugin-packagejson@2.5.6(prettier@3.5.3):
     dependencies:
       sort-package-json: 2.12.0
       synckit: 0.9.2
     optionalDependencies:
-      prettier: 3.4.2
+      prettier: 3.5.3
 
   prettier@3.4.2: {}
+
+  prettier@3.5.3: {}
 
   pretty-bytes@6.1.1: {}
 
