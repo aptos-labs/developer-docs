@@ -1782,6 +1782,41 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/nft-aggregator/marketplaces",
+        destination: "/en/build/indexer/nft-aggregator/marketplaces",
+        permanent: true,
+      },
+      {
+        source: "/indexer/nft-aggregator/marketplaces/bluemove",
+        destination: "/en/build/indexer/nft-aggregator/marketplaces/bluemove",
+        permanent: true,
+      },
+      {
+        source: "/indexer/nft-aggregator/marketplaces/tradeport",
+        destination: "/en/build/indexer/nft-aggregator/marketplaces/tradeport",
+        permanent: true,
+      },
+      {
+        source: "/indexer/nft-aggregator/marketplaces/topaz",
+        destination: "/en/build/indexer/nft-aggregator/marketplaces/topaz",
+        permanent: true,
+      },
+      {
+        source: "/indexer/nft-aggregator/marketplaces/rarible",
+        destination: "/en/build/indexer/nft-aggregator/marketplaces/rarible",
+        permanent: true,
+      },
+      {
+        source: "/indexer/nft-aggregator/marketplaces/wapal",
+        destination: "/en/build/indexer/nft-aggregator/marketplaces/wapal",
+        permanent: true,
+      },
+      {
+        source: "/indexer/nft-aggregator/marketplaces/wagmi",
+        destination: "/en/build/indexer/nft-aggregator/marketplaces/wagmi",
+        permanent: true,
+      },
+      {
         source: "/integration/wallet-adapter-concept",
         destination: "/en/build/sdks/wallet-adapter",
         permanent: true,
