@@ -1772,6 +1772,11 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/nft-aggregator",
+        destination: "/en/build/indexer/nft-aggregator",
+        permanent: true,
+      },
+      {
         source: "/indexer/txn-stream",
         destination: "/en/build/indexer/txn-stream",
         permanent: true,
