@@ -1,0 +1,153 @@
+---
+title: "GraphQL API"
+---
+
+# GraphQL API
+
+import { Callout, Cards, Card } from 'nextra/components';
+import { GraphQLEditor, NFTGraphQLEditor } from 'components/index'
+
+<Callout type="info">
+The GraphQL API provides real-time access to NFT marketplace activity across the Aptos ecosystem. 
+</Callout>
+
+## Endpoints
+
+- **Hasura Console:** [API Explorer](https://console.nft-aggregator-staging.gcp.aptosdev.com/console/api/api-explorer)
+- **Mainnet Endpoint:**  
+  `https://api.mainnet-staging.aptoslabs.com/nft-aggregator/v1/graphql`
+
+## Schema
+
+The API follows standard GraphQL conventions.
+
+You can explore all available queries and types using the API Explorer linked above.
+
+Some key types:
+- `current_nft_marketplace_listings`: Get active listings
+- `current_nft_marketplace_token_offers`: See offers made on specific tokens
+- `current_nft_marketplace_collection_offers`: Track offers made at the collection level
+- `nft_marketplace_activities`: Monitor all marketplace activities
+
+➡️ [Full Schema Reference](./nft-aggregator-table.mdx)
+
+## Example Queries
+
+### Get Active Listings with Token Metadata
+
+Retrieve **active NFT listings** enriched with token metadata.
+
+<Callout type="info">
+Try it yourself! Adjust filters like `marketplace`, `limit`, and sorting to explore more results.
+</Callout>
+
+<NFTGraphQLEditor
+  query={`query ActiveListingsWithMetadata {
+  current_nft_marketplace_listings(
+    limit: 10,
+    where: {is_deleted: {_eq: false}},
+    order_by: {last_transaction_timestamp: desc} 
+  ) {
+    listing_id
+    price
+    marketplace
+    seller
+    last_transaction_version
+    last_transaction_timestamp
+    token_data_id
+    current_token_data {
+      token_name
+      token_uri
+      description
+      token_properties
+      token_standard
+      supply
+      maximum
+      collection_id
+    }
+  }
+}`}
+  variables={`{}`}
+/>
+
+_No variables are required for this query by default, but you can adjust the `where` filter directly inside the editor._
+
+
+---
+
+### Get Collection Offers with Collection Metadata
+
+Retrieve **active collection-level offers** along with detailed collection metadata.
+
+<Callout type="info">
+Try it yourself! Adjust marketplace filter and pagination to explore more offers.
+</Callout>
+
+<NFTGraphQLEditor 
+  query={`query CollectionOffersWithMetadata($marketplace: String!) {
+  current_nft_marketplace_collection_offers(
+    where: {
+      is_deleted: {_eq: false},
+      marketplace: {_eq: $marketplace}
+    },
+    limit: 2,
+    order_by: {last_transaction_timestamp: desc}
+  ) {
+    collection_offer_id
+    collection_id
+    price
+    marketplace
+    buyer
+    last_transaction_timestamp
+    token_data_id
+    current_collection {
+      collection_id
+      collection_name
+      creator_address
+      current_supply
+      max_supply
+      description
+    }
+  }
+}`}
+  variables={`{
+  "marketplace": "wapal"
+}`}
+/>
+
+### Get Token Offers with Token Metadata
+
+Retrieve **active token-specific offers** along with detailed token metadata.
+
+<Callout type="info">
+Try it yourself! Adjust the token_data_id and other filters to explore specific token offers.
+</Callout>
+
+<NFTGraphQLEditor 
+  query={`query TokenOffersWithMetadata($token_data_id: String!) {
+  current_nft_marketplace_token_offers(
+    where: {
+      is_deleted: {_eq: false},
+      token_data_id: {_eq: $token_data_id}
+    },
+    limit: 5,
+    order_by: {last_transaction_timestamp: desc}
+  ) {
+    offer_id
+    token_data_id
+    price
+    marketplace
+    buyer
+    last_transaction_timestamp
+    current_token_datas {
+      token_name
+      token_uri
+      description
+      collection_id
+    }
+  }
+}`}
+  variables={`{
+  "token_data_id": "0x8142a7fde5039839509e81615e456413bac1c53a1d6c6447f2daf64e84665948"
+}`}
+/>
