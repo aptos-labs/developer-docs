@@ -910,7 +910,7 @@ module 0x42::caller {
     assert!(account::balance(from) - MIN_BALANCE >= amount);
     account::deposit(to, amount)
     notify(amount); // attempt to re-entrer `transfer` is blocked
-    account::withtdraw(from, amout);
+    account::withtdraw(from, amount);
   }
 }
 ```
