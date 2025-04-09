@@ -1,0 +1,72 @@
+---
+title: "NFT Aggregator API"
+---
+
+# NFT Aggregator API
+
+import { IndexerBetaNotice, Card, Cards } from '@components/index';
+import { Callout } from 'nextra/components';
+
+<Callout type="info">
+The NFT Aggregator API is currently in beta. If you’re building an aggregator or need real-time event streaming via gRPC, please reach out to our team for early access and support!
+</Callout>
+
+We’re building a **universal NFT aggregator** for the Aptos ecosystem - normalized activity across all major marketplaces, including **Tradeport**, **Wapal**, **bluemove**, **Souffl3**, **Topaz**, and more.
+
+At its core, the aggregator captures marketplace events in real-time (like listings, token offers, and collection-wide offers) and converts them into clean, structured data. This allows developers to work with a unified data format — no need to handle different marketplace-specific formats manually.
+
+## What We Provide
+
+- **[GraphQL API](./nft-aggregator/graphql-api.mdx)** for querying activities
+- **[Analytics REST API](./nft-aggregator/analytics-api.mdx)** for aggregated analytics
+- Marketplace integration support for new partners  
+
+Our API supports two main use cases:
+- **Historical Data tracking:** Listings, NFT Token Offers, NFT Collection Offers — in real-time.
+- **Analytics & Trends:** Aggregate data, market insights, top traders, and more.
+
+## GraphQL API
+Query real-time marketplace activity across all integrated marketplaces. Use this for:
+- Basic historical data
+- Aggregated data (e.g. how many listings are there for a given collection)
+
+You can explore it by hand by viewing the Hasura Explorer below for the network you are interested in.
+- Hasura Console: https://console.nft-aggregator-staging.gcp.aptosdev.com/console/api/api-explorer
+
+For direct GraphQL queries to the Aptos-Labs hosted Indexer API, use these endpoints:
+- Mainnet Graphql Endpoint: https://api.mainnet.aptoslabs.com/nft-aggregator/v1/graphql
+
+you can find the full API reference [here](./nft-aggregator/graphql-api.mdx).
+
+## Analytics REST API 
+<Callout type="info">
+Analytics API is currently in beta.  
+For custom analytics pipelines, we recommend using our gRPC stream for raw structured events.
+</Callout>
+
+Get high-level insights and historical data on the NFT market. Use this analytics API for:
+- Total sales volumes
+- Top buyers and sellers
+- Marketplace trends
+
+You can find the full API reference [here](./nft-aggregator/analytics-api.mdx).
+
+## Integrated Marketplaces
+
+See the full list of marketplaces currently integrated with the NFT Aggregator [here](./nft-aggregator/marketplaces.mdx).
+
+## Add Your Marketplace
+
+<Callout type="info">
+We handle most integrations directly with your support
+</Callout>
+
+If you’d like your marketplace to be included, please reach out to our team. We support both public integrations and private beta partners.
+
+
+## Next Steps
+
+Ready to dive deeper?
+- 👉 [GraphQL API](./nft-aggregator/graphql-api.mdx)
+- 👉 [Analytics REST API](./nft-aggregator/analytics-api.mdx)
+- 👉 [Integrated Marketplaces](./nft-aggregator/marketplaces.mdx)
