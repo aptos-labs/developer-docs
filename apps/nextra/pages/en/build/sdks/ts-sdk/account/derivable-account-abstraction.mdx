@@ -6,53 +6,56 @@ import { Steps } from "nextra/components";
 
 # Derivable Account Abstraction
 
-[Derivable Account Abstraction (DAA)]((https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-113.md)) extends the existing [Account Abstraction (AA)](./account-abstraction) framework on Aptos by enabling authentication based on domains.
+[Derivable Account Abstraction (DAA)]((https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-113.md))
+is a standard for account abstraction that enables custom authentication schemes by registering a `derivable_authentication_function`.
+
+DAA differs from vanilla [Account Abstraction (AA)](./account-abstraction) in that, for a given `derivable_authentication_function`,
+it defines how to deterministically derive the account address from an `abstract_public_key`, which can be done off-chain.
+
+In contrast, vanilla AA is enabled for a specific pre-existing account by explicitly registering an on-chain `authentication_function`
+and submitting a transaction, which involves extra steps and costs gas for each account.
+
+This allows registering secondary authentication schemes with identical user experience to the native ones.
+More specifically, this provides a flexible and secure way to manage cross-chain signatures. (see [cross chain wallets](../../wallet-adapter/cross-chain-wallet.mdx))
 
 ## Core Concepts
 
-### `FunctionInfo`
+### Authentication function
 
-A struct defining the authentication function to be invoked.
+DAA works by defining an custom authentication scheme and registering a valid authentication function to perform on-chain authentication.
 
-```move
-struct FunctionInfo has copy, drop, store {
-    module_address: address,
-    module_name: String,
-    function_name: String
-}
-```
+Each abstract account should have an associated `abstract_public_key` and should be able to produce `abstract_signature`s
+whose formats depend on the authentication scheme.
 
-The authentication function is responsible for defining the authentication logic using Move. It should return a signer if authentication is successful, otherwise it aborts the transaction.
+Simply put, the `derivable_authentication_function` needs to check that:
+- the `abstract_signature` is valid for the given `abstract_public_key`
+- the `abstract_signature` depends on the transaction's digest
 
 ```move
-// The function can return a signer if authentication is successful, otherwise it aborts the transaction.
+// The function should return a signer if authentication is successful, otherwise it aborts the execution
 public fun authenticate(account: signer, auth_data: AbstractionAuthData): signer;
 ```
 
-### `AccountIdentity`
+The DAA framework automatically checks whether the address derived from `abstract_public_key` matches with the signer's address.
 
-In Derivable AA, authentication is scoped to a domain. You can register an authentication function, which then creates a domain. The authentication logic is not tied to a specific account but instead relies on the domain and account identity.
+### Authentication data
 
-Rather than having each user register it's own authentication function, Derivable AA allows for registering a full domain of addresses to be authenticated with same authentication function.
-That avoids a need for each account to have a different starting authentication and to need to initialize AA (from it).
-This allows providing a more flexible and secure way to manage cross-chain signatures.
-This approach also allows for deterministic account address generation based on the `account_identity` and `function_info` of the domain.
+`AbstractionAuthData` is an enum that represent the authentication data to be passed to custom authentication functions.
+It's used in all flavors of AA, but the `DerivableV1` variant defines the following fields:
 
-### `AbstractionAuthData`
+- `digest`: The SHA3-256 hash of the signing message.
+- `abstract_signature`: Abstract signature bytes that need to be verified against `abstract_public_key`.
+- `abstract_public_key`: Abstract public key bytes associated to the abstract account
 
-An enum variant defining the authentication data to be passed to the authentication function. It contains:
-
-- `digest`: The sha256 hash of the signing message.
-- `abstract_signature`: Abstract bytes that will be passed to the authentication function that will be used to verify the signature.
-- `abstract_public_key`: Abstract bytes represents the account identity that will be passed to the authentication function that will be used to verify the transaction.
-
+Here's what the Move enum looks like:
 
 ```move
 enum AbstractionAuthData has copy, drop {
+  V1 { ... }, // Only applicable to vanilla AA
   DerivableV1 {
       digest: vector<u8>, // SHA3-256 hash of the signing message
-      abstract_signature: vector<u8>, // Custom auth data (e.g., signatures)
-      abstract_public_key: vector<u8>, // The account identity
+      abstract_signature: vector<u8>,
+      abstract_public_key: vector<u8>,
   }
 }
 ```
@@ -65,6 +68,34 @@ is important because it allows the authentication function to verify signatures 
 For example, if you want to permit a public key to sign transactions on behalf of the user, you can permit the public key to sign a transaction with a specific payload.
 However, if a malicious user sends a signature for the correct public key but a different payload from the `digest`, the signature will not be valid.
 
+### Account address derivation
+
+With DAA, a given `derivable_authentication_function` defines a space of account addresses that can be deterministically derived from their associated `abstract_public_key`.
+
+The on-chain function looks like the following:
+
+```move
+public fun derive_account_address(derivable_func_info: FunctionInfo, abstract_public_key: &vector<u8>): address {
+  let bytes = bcs::to_bytes(&derivable_func_info);
+  bytes.append(bcs::to_bytes(abstract_public_key));
+  bytes.push_back(DERIVABLE_ABSTRACTION_DERIVED_SCHEME);
+  from_bcs::to_address(hash::sha3_256(bytes))
+}
+```
+
+where `FunctionInfo` is a fully qualified identifier for a on-chain function:
+
+```move
+struct FunctionInfo has copy, drop, store {
+    module_address: address,
+    module_name: String,
+    function_name: String
+}
+```
+
+The address derivation depends on the authentication function's identifier and on a DAA-specific domain separator.
+Because of this, each address space is isolated from the others and it's not possible for the same account to have multiple
+authentication functions.
 
 **Example (Move)**
 
@@ -108,7 +139,7 @@ module aptos_experimental::test_derivable_account_abstraction_ed25519_hex {
 ```typescript
 const derivableAbstractedAccount = new DerivableAbstractedAccount({
   /**
-   * The result of the signer function will be available as the `authenticator` field in the `AbstractionAuthData` enum variant.
+   * The result of the signer function will be available as the `abstract_signature` field in the `AbstractionAuthData` enum variant.
    */
   signer: (digest) => {
     const hexDigest = new TextEncoder().encode(Hex.fromHexInput(digest).toString());
@@ -140,7 +171,6 @@ const ed25519Account = Account.generate();
 ```ts
 const daa = new DerivableAbstractedAccount({
   signer: (digest) => {
-    // The solana wallet sign function
     const hexDigest = new TextEncoder().encode(Hex.fromHexInput(digest).toString());
     return ed25519Account.sign(hexDigest).toUint8Array();
   },
