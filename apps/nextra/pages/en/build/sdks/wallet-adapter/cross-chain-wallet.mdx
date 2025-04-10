@@ -11,41 +11,41 @@ import { Callout } from "nextra/components";
 </Callout>
 
 
-Thanks to [AIP-113 Derivable Account Abstraction](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-113.md), we can manage cross-chain signatures flexibly and securely on the Aptos network.
+Thanks to [AIP-113 Derivable Account Abstraction](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-113.md), we can manage x-chain signatures flexibly and securely on the Aptos network.
 This means that any wallet with an authentication function implementation on the Aptos chain can submit transactions to the Aptos network.
 
 This functionality enables a variety of use cases for dApps, enhancing user experience and onboarding.
 
 ### High level flow
 
-When a user enters a dApp that supports cross-chain wallets, the interaction and experience feel the same as with any Aptos wallet.
-The user connects with a cross-chain wallet (e.g., Phantom for Solana) and can view their Derivable Abstracted Account (DAA) details, sign messages, and submit transactions to the Aptos chain.
+When a user enters a dApp that supports x-chain accounts, the interaction and experience feel the same as with any Aptos wallet.
+The user connects with a x-chain account (e.g., Phantom for Solana) and can view their Derivable Abstracted Account (DAA) details, sign messages, and submit transactions to the Aptos chain.
 
-When a dapp submits a transaction using a cross-chain wallet, the wallet adapter utilizes the `signIn` function (defined in the cross-chain wallet standard) for domain verification and security.
+When a dapp submits a transaction using a x-chain account, the wallet adapter utilizes the `signIn` function (defined in the x-chain account standard) for domain verification and security.
 The wallet is requested to sign a message to submit a transaction on the Aptos network. Once the wallet approves the transaction, it is submitted to the Aptos chain, where it undergoes a signature verification process.
 
-### Hoe does DAA work in a cross chain wallet?
+### How does DAA work in a x-chain account?
 
-When a user connects to a dApp using the cross-chain wallet adapter, the adapter computes the user's Derivable Abstracted Account (DAA) address and converts the cross-chain wallet to follow the Aptos wallet standard interface.
+When a user connects to a dApp using the x-chain account adapter, the adapter computes the user's Derivable Abstracted Account (DAA) address and converts the x-chain account to follow the Aptos wallet standard interface.
 This ensures a seamless interaction with the wallet for both developers and end users.
 
 The computation of the DAA address is done using the `authenticationFunction` and the `accountIdentity`, both of which are defined in the wallet adapter:
 
-- `authenticationFunction`: This is a function that exists on-chain and is used to verify the signature of the cross-chain wallet.
-- `accountIdentity`: This represents the identity of the account used in the on-chain authentication function to verify the signature of the cross-chain wallet.
-In the Wallet Adapter, the `accountIdentity` is based on the original cross-chain wallet’s public key and the dApp domain (e.g., mydomain.com). The format is:
+- `authenticationFunction`: This is a function that exists on-chain and is used to verify the signature of the x-chain account.
+- `accountIdentity`: This represents the identity of the account used in the on-chain authentication function to verify the signature of the x-chain account.
+In the Wallet Adapter, the `accountIdentity` is based on the original x-chain account's public key and the dApp domain (e.g., mydomain.com). The format is:
 `${originWallet.publicKey}${domain}`
 
 <Callout>
-   Since the account identity is based on the dApp domain, it is scoped to the dApp context. As a result, each wallet has a different DAA address on different dApps.
+   Since the account identity is based on the dApp domain, it is scoped to the dApp context. As a result, each account has a different DAA address on different dApps.
 </Callout>
 
 
-### How to integrate cross-chain wallets in my dApp?
+### How to integrate x-chain accounts in my dApp?
 
 Make sure you integrate with the Aptos Wallet Adapter by following these [steps](./dapp.mdx)
 
-Supporting cross-chain wallets in a dApp requires only a 2-step installation process.
+Supporting x-chain accounts in a dApp requires only a 2-step installation process.
 
 ```bash
 npm install @aptos-labs/derived-wallet-solana
@@ -70,7 +70,7 @@ setupAutomaticSolanaWalletDerivation({ defaultNetwork: Network.TESTNET }); // th
 <AptosWalletAdapterProvider/>
 ```
 
-That will handle the logic and implementation to include the cross-chain wallets as if they were Aptos wallets.
+That will handle the logic and implementation to include the x-chain accounts as if they were Aptos wallets.
 
 <Callout>
   It is highly recommended to use the `@aptos-labs/wallet-adapter-react` package for the best experience.
@@ -79,7 +79,7 @@ That will handle the logic and implementation to include the cross-chain wallets
 
 #### Submitting a transaction
 
-In most cases, allowing users to submit a transaction with a cross-chain wallet to the Aptos chain requires using a sponsor transaction. This is because the cross-chain wallet might not have APT to pay for gas.
+In most cases, allowing users to submit a transaction with a x-chain account to the Aptos chain requires using a sponsor transaction. This is because the x-chain account might not have APT to pay for gas.
 Therefore, the dApp should consider maintaining a sponsor account to sponsor the transactions.
 
 ```tsx filename="SignAndSubmitDemo.tsx"
@@ -157,9 +157,9 @@ export default SignAndSubmit;
 ```
 
 ### Considerations
-- Since the wallet is a cross-chain wallet and is most likely not integrated with Aptos, simulation is not available in the wallet.
+- Since the origin wallet creates an x-chain account and is most likely not integrated with Aptos, simulation is not available in the wallet.
 - Due to the use of the `signIn` standard available on other chains, wallets that have not implemented this flow are not supported.
-- While the cross-chain wallet prioritizes DAA, each wallet also retains the original wallet, so developers should be able to use it and interact with it
+- While the x-chain account prioritizes DAA, each account also retains the origin wallet, so developers should be able to use it and interact with it
 
 
 ### Resources
