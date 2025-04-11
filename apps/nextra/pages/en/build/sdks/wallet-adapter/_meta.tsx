@@ -11,7 +11,7 @@ export default {
   "wallet-standards": {
     title: "Aptos Wallet Standard",
   },
-  "x-chain-account": {
-    title: "X-Chain Account",
+  "x-chain-accounts": {
+    title: "X-Chain Accounts",
   },
 };
