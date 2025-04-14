@@ -1,0 +1,65 @@
+---
+title: "Topaz (Deprecated)"
+---
+
+import { Callout } from 'nextra/components';
+
+# Topaz (Deprecated)
+
+<Callout type="warning">
+**Marketplace Deprecated**  
+Topaz is no longer operational as a marketplace. However, we continue to include its historical data in our NFT Aggregator for reference.
+</Callout>
+
+## Contract Address
+
+| Contract Version | Account Address |
+|-----------------|----------------|
+| Mainnet | [`0x2c7bccf7b31baf770fdbcc768d9e9cb3d87805e255355df5db32ac9a669010a2`](https://explorer.aptoslabs.com/account/0x2c7bccf7b31baf770fdbcc768d9e9cb3d87805e255355df5db32ac9a669010a2/modules/code/events?network=mainnet) |
+
+*This address is the on-chain account for Topaz's contract deployment.*
+
+---
+
+## Supported Event Types
+
+| Standard Event Type | Raw On-Chain Event Type (entry function) | Example Txn Version |
+|--------------------|------------------------------------------|--------------------|
+| **Offers** | | |
+| `token_offer_created` | `events::BidEvent` | [1645629583](https://explorer.aptoslabs.com/txn/1645629583?network=mainnet) |
+| `token_offer_cancelled` | `events::CancelBidEvent` | [86119627](https://explorer.aptoslabs.com/txn/86119627?network=mainnet) |
+| `token_offer_filled` | `events::SellEvent` | [984827420](https://explorer.aptoslabs.com/txn/984827420?network=mainnet) |
+| **Collection Offers** | | |
+| `collection_offer_created` | `events::CollectionBidEvent` | [85566357](https://explorer.aptoslabs.com/txn/85566357?network=mainnet) |
+| `collection_offer_cancelled` | `events::CancelCollectionBidEvent` | [2787969](https://explorer.aptoslabs.com/txn/2787969?network=mainnet) |
+| `collection_offer_filled` | `events::FillCollectionBidEvent` | [2367804069](https://explorer.aptoslabs.com/txn/2367804069?network=mainnet) |
+| **Listings** | | |
+| `listing_created` | `events::ListEvent` | [1964348978](https://explorer.aptoslabs.com/txn/1964348978?network=mainnet) |
+| `listing_cancelled` | `events::DelistEvent` | [2331658551](https://explorer.aptoslabs.com/txn/2331658551?network=mainnet) |
+| `listing_filled` | `events::BuyEvent` | [2379182335](https://explorer.aptoslabs.com/txn/2379182335?network=mainnet) |
+
+---
+
+## Historical Data Access
+
+While Topaz is no longer operational, all historical marketplace events remain accessible through the NFT Aggregator API. You can filter specifically for Topaz marketplace activity using the `marketplace` field:
+
+```graphql
+query GetTopazHistoricalActivity {
+  nft_marketplace_activities(
+    where: {marketplace: {_eq: "topaz"}}
+  ) {
+    txn_version
+    standard_event_type
+    token_data_id
+    }
+}
+```
+
+---
+
+## Related Docs
+
+- 👉 [NFT Aggregator Table Reference](../nft-aggregator-table.mdx)
+- 👉 [GraphQL API: Real-time Activity](../graphql-api.mdx)
+- 👉 [Integrated Marketplaces Overview](../marketplaces.mdx) 

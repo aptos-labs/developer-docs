@@ -1797,6 +1797,11 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
+        source: "/indexer/nft-aggregator/marketplaces/topaz",
+        destination: "/en/build/indexer/nft-aggregator/marketplaces/topaz",
+        permanent: true,
+      },
+      {
         source: "/indexer/nft-aggregator/marketplaces/rarible",
         destination: "/en/build/indexer/nft-aggregator/marketplaces/rarible",
         permanent: true,
