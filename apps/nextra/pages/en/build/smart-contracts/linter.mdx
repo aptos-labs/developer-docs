@@ -77,6 +77,18 @@ Checks for patterns where there are needless references taken when accessing a f
 - `(&s).f` can be simplified to `s.f`
 - `(&mut s).f = 42;` can be simplified to `s.f = 42;`
 
+### `nonminimal_bool`
+
+Check for boolean expressions that can be simplified when a boolean literal (either `true` or `false`) is part of a binary or unary boolean operator. Examples:
+- `x && true` is logically equivalent to `x`
+- `x || true` is logically equivalent to `true`
+- `x => false` is logically equivalent to `!x`
+- `x <==> true` is logically equivalent to `x`
+- `! true` is logically equivalent to `false`
+
+Does NOT consider side-effects/short-circuiting in the recommended simplifications. Example:
+- `1/0 || true` is logically equivalent to `true`, but applying this simplification affects program semantics.
+
 ### `simpler_numeric_expression`
 
 Checks for various patterns where a simpler numeric expression can be used instead. In all these cases, the code must already type check, and `x` can be any numeric expression.
