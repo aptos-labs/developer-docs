@@ -1,0 +1,46 @@
+---
+title: "Bluemove"
+---
+
+import { Callout } from 'nextra/components';
+
+# Bluemove
+
+<Callout type="info">
+This page details all supported event types and example transactions for the Bluemove marketplace.
+</Callout>
+
+## Contract Address
+
+| Contract Version | Account Address |
+|-----------------|----------------|
+| Mainnet | [`0xd1fd99c1944b84d1670a2536417e997864ad12303d19eac725891691b04d614e`](https://explorer.aptoslabs.com/account/0xd1fd99c1944b84d1670a2536417e997864ad12303d19eac725891691b04d614e/modules/code/events?network=mainnet) |
+
+*This address is the on-chain account for Bluemove's contract deployment.*
+
+---
+
+## Supported Event Types
+
+| Standard Event Type | Raw On-Chain Event Type (entry function) | Example Txn Version |
+|--------------------|------------------------------------------|--------------------|
+| **Offers** | | |
+| `token_offer_created` | `offer_lib::OfferEvent` | [2299166354](https://explorer.aptoslabs.com/txn/2299166354?network=mainnet) |
+| `token_offer_cancelled` | `offer_lib::CancelOfferEvent` | [2299053567](https://explorer.aptoslabs.com/txn/2299053567?network=mainnet) |
+| `token_offer_filled` | `offer_lib::AcceptOfferEvent` | [1809917526](https://explorer.aptoslabs.com/txn/1809917526?network=mainnet) |
+| **Collection Offers** | | |
+| `collection_offer_created` | `offer_lib::OfferCollectionEvent` | [2403214712](https://explorer.aptoslabs.com/txn/2403214712?network=mainnet) |
+| `collection_offer_cancelled` | `offer_lib::CancelOfferCollectionEvent` | [2397017908](https://explorer.aptoslabs.com/txn/2397017908?network=mainnet) |
+| `collection_offer_filled` | `offer_lib::AcceptOfferCollectionEvent` | [2382717056](https://explorer.aptoslabs.com/txn/2382717056?network=mainnet) |
+| **Listings** | | |
+| `listing_created` | `marketplaceV2::ListEvent` | [2404863839](https://explorer.aptoslabs.com/txn/2404863839?network=mainnet) |
+| `listing_cancelled` | `marketplaceV2::DeListEvent` | [2399933805](https://explorer.aptoslabs.com/txn/2399933805?network=mainnet) |
+| `listing_filled` | `listings_v2::BuyEvent` | [2396025485](https://explorer.aptoslabs.com/txn/2396025485?network=mainnet) |
+
+---
+
+## Related Docs
+
+- 👉 [NFT Aggregator Table Reference](../nft-aggregator-table.mdx)
+- 👉 [GraphQL API: Real-time Activity](../graphql-api.mdx)
+- 👉 [Integrated Marketplaces Overview](../marketplaces.mdx)

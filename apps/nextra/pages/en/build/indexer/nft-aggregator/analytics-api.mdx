@@ -1,0 +1,140 @@
+---
+title: "Analytics REST API"
+---
+
+# NFT Analytics REST API
+
+import { Callout } from 'nextra/components';
+import { Card, Cards } from '@components/index';
+
+<Callout type="info">
+The REST API provides collection and marketplace-level insights across the Aptos ecosystem.
+</Callout>
+
+Use this API to access:
+- 📊 Marketplace performance metrics
+- 🥉 Collection-level sales and volume data
+- 🏆 Top buyers and sellers
+- 📈 Historical trends and leaderboard data
+
+> **Base URL:** `https://api.mainnet.aptoslabs.com/v1/analytics/nft`
+
+---
+
+## Marketplace Endpoints
+
+### **Get Marketplace Total Sales Count**
+
+- **GET** `/nft/marketplace/total_sales_count`
+- **Parameters:**
+  - `marketplace` *(string, required)* — Marketplace identifier (e.g. `topaz`, `wapal`)
+- **Description:** Returns the total number of completed sales for a given marketplace.
+- **Example:**
+
+```bash
+curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/marketplace/total_sales_count?marketplace=topaz"
+```
+
+---
+
+## Collection Endpoints
+
+### **Get Collection Total Sales**
+
+- **GET** `/nft/collection/total_sales_count`
+- **Parameters:**
+  - `collection_id` *(string, required)*
+- **Description:** Returns total number of completed sales for the specified collection.
+- **Example:**
+
+```bash
+curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/total_sales_count?collection_id=123"
+```
+
+---
+
+### **Get Collection Top Buyers**
+
+- **GET** `/nft/collection/top_buyer`
+- **Parameters:**
+  - `collection_id` *(string, required)*
+  - `limit` *(integer, optional, default: 10)*
+  - `offset` *(integer, optional, default: 0)*
+- **Description:** Returns top buyers in the collection, ranked by total amount spent.
+- **Example:**
+
+```bash
+curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/top_buyer?collection_id=123&limit=5"
+```
+
+---
+
+### **Get Collection Top Sellers**
+
+- **GET** `/nft/collection/top_seller`
+- **Parameters:**
+  - `collection_id` *(string, required)*
+  - `limit` *(integer, optional, default: 10)*
+  - `offset` *(integer, optional, default: 0)*
+- **Description:** Returns top sellers in the collection, ranked by total volume sold.
+- **Example:**
+
+```bash
+curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/top_seller?collection_id=123&limit=5"
+```
+
+---
+
+### **Get Collection Total Sales Volume**
+
+- **GET** `/nft/collection/total_sales_volume`
+- **Parameters:**
+  - `collection_id` *(string, required)*
+- **Description:** Returns total trading volume (in APT) for the collection.
+- **Example:**
+
+```bash
+curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/total_sales_volume?collection_id=123"
+```
+
+---
+
+### **List Collections by Trading Volume**
+
+- **GET** `/nft/collection/list_by_volume`
+- **Parameters:**
+  - `limit` *(integer, max: 10)*
+  - `offset` *(integer)*
+  - `time_period` *(string)* — `1h`, `6h`, `24h`, `7d`, `30d`
+- **Description:** Returns collections sorted by total sales volume within a selected time period.
+- **Example:**
+
+```bash
+curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/list_by_volume?limit=10&offset=0&time_period=1d"
+```
+
+---
+
+### **List Collections by Number of Sales**
+
+- **GET** `/nft/collection/list_by_sales`
+- **Parameters:** Same as above
+- **Description:** Returns collections sorted by total number of sales.
+- **Example:**
+
+```bash
+curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/list_by_sales?limit=10&offset=0&time_period=1d"
+```
+
+---
+
+### **List Collections by Floor Price**
+
+- **GET** `/nft/collection/list_by_floor_price`
+- **Parameters:** Same as above
+- **Description:** Returns collections sorted by floor price within the selected time period.
+- **Example:**
+
+```bash
+curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/list_by_floor_price?limit=10&offset=0&time_period=1d"
+```

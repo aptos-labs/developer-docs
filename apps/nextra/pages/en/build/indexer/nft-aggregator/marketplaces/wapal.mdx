@@ -1,0 +1,46 @@
+---
+title: "Wapal"
+---
+
+import { Callout } from 'nextra/components';
+
+# Wapal
+
+<Callout type="info">
+This page details all supported event types and example transactions for the Wapal marketplace.
+</Callout>
+
+## Contract Address
+
+| Contract Version | Account Address |
+|-----------------|----------------|
+| Mainnet | [`0x584b50b999c78ade62f8359c91b5165ff390338d45f8e55969a04e65d76258c9`](https://explorer.aptoslabs.com/account/0x584b50b999c78ade62f8359c91b5165ff390338d45f8e55969a04e65d76258c9/modules/code/events?network=mainnet) |
+
+*This address is the on-chain account for Wapal's contract deployment.*
+
+---
+
+## Supported Event Types
+
+| Standard Event Type | Raw On-Chain Event Type (entry function) | Example Txn Version |
+|--------------------|------------------------------------------|--------------------|
+| **Offers** | | |
+| `token_offer_created` | `TokenOfferPlacedEvent` | [2382313982](https://explorer.aptoslabs.com/txn/2382313982?network=mainnet) |
+| `token_offer_cancelled` | `TokenOfferCanceledEvent` | [2381810159](https://explorer.aptoslabs.com/txn/2381810159?network=mainnet) |
+| `token_offer_filled` | `TokenOfferFilledEvent` | [2313248448](https://explorer.aptoslabs.com/txn/2313248448?network=mainnet) |
+| **Collection Offers** | | |
+| `collection_offer_created` | `CollectionOfferPlacedEvent` | [2382373209](https://explorer.aptoslabs.com/txn/2382373209?network=mainnet) |
+| `collection_offer_cancelled` | `CollectionOfferCanceledEvent` | [2382373978](https://explorer.aptoslabs.com/txn/2382373978?network=mainnet) |
+| `collection_offer_filled` | `CollectionOfferFilledEvent` | [2382219668](https://explorer.aptoslabs.com/txn/2382219668?network=mainnet) |
+| **Listings** | | |
+| `listing_created` | `ListingPlacedEvent` | [2382251863](https://explorer.aptoslabs.com/txn/2382251863?network=mainnet) |
+| `listing_cancelled` | `ListingCanceledEvent` | [2381742315](https://explorer.aptoslabs.com/txn/2381742315?network=mainnet) |
+| `listing_filled` | `ListingFilledEvent` | [2382221134](https://explorer.aptoslabs.com/txn/2382221134?network=mainnet) |
+
+---
+
+## Related Docs
+
+- 👉 [NFT Aggregator Table Reference](../nft-aggregator-table.mdx)
+- 👉 [GraphQL API: Real-time Activity](../graphql-api.mdx)
+- 👉 [Integrated Marketplaces Overview](../marketplaces.mdx)

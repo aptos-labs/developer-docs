@@ -1,0 +1,76 @@
+---
+title: "Tradeport"
+---
+
+import { Callout } from 'nextra/components';
+
+# Tradeport
+
+<Callout type="info">
+This page details all supported event types and example transactions for the Tradeport marketplace, across both V1 and V2 contracts.
+</Callout>
+
+## Contract Address
+
+| Contract Version | Account Address |
+|-----------------|----------------|
+| Mainnet | [`0xe11c12ec495f3989c35e1c6a0af414451223305b579291fc8f3d9d0575a23c26`](https://explorer.aptoslabs.com/account/0xe11c12ec495f3989c35e1c6a0af414451223305b579291fc8f3d9d0575a23c26/modules/code/bluemove_v2?network=mainnet) |
+
+*This address is the on-chain account for Tradeport's contract deployment, used across both V1 and V2 versions.*
+
+<Callout type="info">
+**Important:**  
+While most marketplaces aim for a single contract supporting both v1 and v2 tokens, Tradeport is an exception.  
+- The **V1 contract exclusively handles Aptos v1 tokens**.
+- The **V2 contract exclusively handles Aptos v2 tokens**.
+- Both contracts share the same account but operate independently.
+
+When building queries, make sure to align your token standard with the correct contract version for accurate results.
+</Callout>
+---
+
+## Supported Event Types
+
+### V1 Contract
+
+| Standard Event Type | Raw On-Chain Event Type (i.e. entry function) | Example Txn Version |
+|--------------------|-----------------------------------------------|--------------------|
+| **Offers** | | |
+| `token_offer_created` | `biddings::InsertTokenBidEvent` | [2377828353](https://explorer.aptoslabs.com/txn/2377828353?network=mainnet) |
+| `token_offer_cancelled` | `biddings::DeleteTokenBidEvent` | [2361990811](https://explorer.aptoslabs.com/txn/2361990811?network=mainnet) |
+| `token_offer_filled` | `biddings::AcceptTokenBidEvent` | [2332332877](https://explorer.aptoslabs.com/txn/2332332877?network=mainnet) |
+| **Collection Offers** | | |
+| `collection_offer_created` | `biddings::InsertCollectionBidEvent` | [2386877471](https://explorer.aptoslabs.com/txn/2386877471?network=mainnet) |
+| `collection_offer_cancelled` | `biddings::DeleteCollectionBidEvent` | [2386876427](https://explorer.aptoslabs.com/txn/2386876427?network=mainnet) |
+| `collection_offer_filled` | `biddings::AcceptCollectionBidEvent` | [2386481933](https://explorer.aptoslabs.com/txn/2386481933?network=mainnet) |
+| **Listings** | | |
+| `listing_created` | `listings::InsertListingEvent` | [2386786871](https://explorer.aptoslabs.com/txn/2386786871?network=mainnet) |
+| `listing_cancelled` | `listings::DeleteListingEvent` | [2386786127](https://explorer.aptoslabs.com/txn/2386786127?network=mainnet) |
+| `listing_filled` | `listings::BuyEvent` | [2386133110](https://explorer.aptoslabs.com/txn/2386133110?network=mainnet) |
+
+---
+
+### V2 Contract
+
+| Standard Event Type | Raw On-Chain Event Type (i.e. entry function) | Example Txn Version |
+|--------------------|-----------------------------------------------|--------------------|
+| **Offers** | | |
+| `token_offer_created` | `biddings_v2::InsertTokenBidEvent` | [2386133936](https://explorer.aptoslabs.com/txn/2386133936?network=mainnet) |
+| `token_offer_cancelled` | `biddings_v2::DeleteTokenBidEvent` | [2386142672](https://explorer.aptoslabs.com/txn/2386142672?network=mainnet) |
+| `token_offer_filled` | `biddings_v2::AcceptTokenBidEvent` | [2298838662](https://explorer.aptoslabs.com/txn/2298838662?network=mainnet) |
+| **Collection Offers** | | |
+| `collection_offer_created` | `biddings_v2::InsertCollectionBidEvent` | [2386891051](https://explorer.aptoslabs.com/txn/2386891051?network=mainnet) |
+| `collection_offer_cancelled` | `biddings_v2::DeleteCollectionBidEvent` | [2386889884](https://explorer.aptoslabs.com/txn/2386889884?network=mainnet) |
+| `collection_offer_filled` | `biddings_v2::AcceptCollectionBidEvent` | [2386021136](https://explorer.aptoslabs.com/txn/2386021136?network=mainnet) |
+| **Listings** | | |
+| `listing_created` | `listings_v2::InsertListingEvent` | [2386809975](https://explorer.aptoslabs.com/txn/2386809975?network=mainnet) |
+| `listing_cancelled` | `listings_v2::DeleteListingEvent` | [2386716658](https://explorer.aptoslabs.com/txn/2386716658?network=mainnet) |
+| `listing_filled` | `listings_v2::BuyEvent` | [2386455218](https://explorer.aptoslabs.com/txn/2386455218?network=mainnet) |
+
+---
+
+## Related Docs
+
+- 👉 [NFT Aggregator Table Reference](../nft-aggregator-table.mdx)
+- 👉 [GraphQL API: Real-time Activity](../graphql-api.mdx)
+- 👉 [Integrated Marketplaces Overview](../marketplaces.mdx)
