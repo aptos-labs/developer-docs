@@ -909,8 +909,8 @@ module 0x42::caller {
     // Oops. This should be really differently designed, using `Coin` type and moving it.
     assert!(account::balance(from) - MIN_BALANCE >= amount);
     account::deposit(to, amount)
-    notify(amount); // attempt to re-entrer `transfer` is blocked
-    account::withtdraw(from, amount);
+    notify(amount); // attempt to re-enter `transfer` is blocked
+    account::withdraw(from, amount);
   }
 }
 ```
