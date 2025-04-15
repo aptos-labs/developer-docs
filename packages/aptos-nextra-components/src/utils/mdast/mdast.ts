@@ -1,12 +1,9 @@
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toMarkdown } from "mdast-util-to-markdown";
-import { Options } from "mdast-util-to-markdown/lib";
-import { Code, Root, Text } from "mdast-util-from-markdown/lib";
 import { visit } from "unist-util-visit";
-import { visitParents } from "unist-util-visit-parents";
 import { mdxExpressionToMarkdown } from "mdast-util-mdx-expression";
 
-export function readMarkdownString(source: string): Root {
+export function readMarkdownString(source: string): any {
   const tree = fromMarkdown(source);
   return tree;
 }
@@ -16,7 +13,7 @@ export function readMarkdownString(source: string): Root {
  *
  * Parser first pass
  */
-export function convertHtmlToMarkdownCodeBlocks(tree: Root) {
+export function convertHtmlToMarkdownCodeBlocks(tree: any) {
   visit(tree, "html", (node, index, parent) => {
     // Codeblock parsing (only applies to <pre><code>)
     const codeblockRegex = /<pre><code[^>]*>([\s\S]*?)<\/code><\/pre>/;
@@ -32,7 +29,7 @@ export function convertHtmlToMarkdownCodeBlocks(tree: Root) {
         .trim();
 
       // Create a new 'code' node
-      const codeNode: Code = {
+      const codeNode = {
         type: "code",
         lang: "move", // You can adjust or detect the language dynamically
         meta: null,
@@ -56,7 +53,7 @@ export function convertHtmlToMarkdownCodeBlocks(tree: Root) {
 
     if (notHtmlTagMatch) {
       const nodeValueCopy = node.value.toString();
-      const textNode: Text = {
+      const textNode = {
         type: "text",
         value: nodeValueCopy
           .replace(/</g, (match, offset, str) => {
@@ -118,7 +115,7 @@ export function convertHtmlToMarkdownCodeBlocks(tree: Root) {
 //   });
 // }
 
-export function escapeAngleBrackets(tree: Root) {
+export function escapeAngleBrackets(tree: any) {
   visit(tree, "text", (node, index, parent) => {
     if (!parent || index === null || index === undefined) {
       return;
@@ -153,7 +150,7 @@ export function escapeAngleBrackets(tree: Root) {
 /**
  * Primary function for transpiling markdown -> MDX
  */
-export function markdownToMdx(tree: Root) {
+export function markdownToMdx(tree: any) {
   convertHtmlToMarkdownCodeBlocks(tree);
   escapeAngleBrackets(tree);
 }
@@ -161,8 +158,8 @@ export function markdownToMdx(tree: Root) {
 /**
  * Convert AST to Markdown string
  */
-export const astToMarkdown = (tree: Root) => {
-  const options: Options = {
+export const astToMarkdown = (tree: any) => {
+  const options = {
     extensions: [mdxExpressionToMarkdown()],
   };
   const textMarkdown = toMarkdown(tree, options);

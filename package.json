@@ -9,14 +9,14 @@
     "spellcheck": "turbo run spellcheck"
   },
   "dependencies": {
-    "turbo": "2.3.3"
+    "turbo": "2.5.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "prettier": "^3.5.3"
   },
-  "packageManager": "pnpm@9.15.1",
+  "packageManager": "pnpm@10.8.1",
   "engines": {
     "node": ">=22"
   },
@@ -28,7 +28,8 @@
       "@babel/runtime": ">=7.26.10",
       "@babel/helpers": ">=7.26.10",
       "estree-util-value-to-estree": ">=3.3.3",
-      "glob": "^11.0.1"
+      "glob": "^11.0.1",
+      "vite": ">=6.2.6"
     }
   }
 }
