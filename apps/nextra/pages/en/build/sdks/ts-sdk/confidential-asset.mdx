@@ -4,17 +4,17 @@ title: "Confidential Asset (CA)"
 
 import { Callout } from 'nextra/components'
 
-# Interact with Confidential Coin (CA) via the typescript SDK
+# Interact with Confidential Asset (CA) via the Typescript SDK
 
-You can use `confidentialCoin` property of `Aptos` client to interact with `CA`
+You can use `confidentialAsset` property of `Aptos` client to interact with `CA`
 
 ### Initialization
 
-Operations in CA require generating zk-proofs (ZKPs), and depending on your environment, you need to define `Range Proof` calculation.
+Operations in CA require generating zk-proofs (ZKPs), and depending on your environment, you need to define a `Range Proof` calculation.
 
 For the web, you could use `@distributedlab/aptos-wasm-bindings`:
 
-Let's prepare range-proof generation and configure sdk to use it:
+Let's prepare range-proof generation and configure SDK to use it:
 
 ```typescript
 import initWasm, {
@@ -88,7 +88,7 @@ export async function verifyBatchRangeZKP(opts: BatchVerifyRangeProofInputs): Pr
 }
 ```
 
-And then, just place this at the very top of your app
+And then, just place this at the very top of your app:
 
 ```typescript
 import { RangeProofExecutor } from '@aptos-labs/ts-sdk'
@@ -105,16 +105,11 @@ Generate `android` and `ios` bindings [here](https://github.com/distributed-lab/
 
 And the last, but not the least important part:
 
-CA implements the Pollard's Kangaroo method for solving the discrete logarithm problem (DLP)
-on the Ristretto curve. This method is particularly effective for finding discrete logarithms
-within a known interval.
-
-The implementation is inspired by the work of Daniel J. Bernstein and Tanja Lange in
-"Computing small discrete logarithms faster" (2012), which discusses methods to accelerate
-the computation of discrete logarithms in small intervals using precomputed tables.
+To get a "numeric" value of the confidential balance, you also need to solve a Discrete Logarithm Problem (DLP).
+CA implements the Pollard's Kangaroo method for solving DLPs on the Ristretto curve.
 [Source](https://cr.yp.to/dlog/cuberoot-20120919.pdf)
 
-So we also need to init decryption for that:
+So we also need to initialize a decryption function for that:
 
 ```ts
 import initWasm, { create_kangaroo, WASMKangaroo } from "@distributedlab/aptos-wasm-bindings/pollard-kangaroo";
@@ -190,9 +185,9 @@ export const preloadTablesForBalances = async () => {
 };
 ```
 
-Notice, you can see, that both `preloadTables` and `preloadTablesForBalances` aiming for the same thing.
+Notice, that both `preloadTables` and `preloadTablesForBalances` aiming for the same thing.
 As far as SDK's decryption method is abstract - you could implement it by yourself.
-And `preloadTablesForBalances` provides a slightly faster approach with concurrent decryption execution.
+And `preloadTablesForBalances` provides a slightly faster approach with the concurrent decryption execution.
 The `preloadTables` is the default approach.
 
 [//]: # (TODO: update to 16->32->48 usage)
@@ -204,11 +199,11 @@ const init = async () => {
 }
 ```
 
-For the native apps, you could generate `android` and `ios` bindings [here](https://github.com/distributed-lab/aptos-wasm-bindings) to use instead of WASM
+For the native apps, you could generate `android` and `ios` bindings [here](https://github.com/distributed-lab/aptos-wasm-bindings) to use instead of WASM.
 
 ---
 
-Now we are ready to go. Let's define Aptos client
+Now we are ready to go. Let's define Aptos client:
 
 ```typescript
 const APTOS_NETWORK: Network = NetworkToNetworkName[Network.TESTNET];
@@ -218,7 +213,7 @@ export const aptos = new Aptos(config);
 
 ### Create Decryption Key (DK)
 
-To interact with confidential token user must create a [unique key pair](/en/build/smart-contracts/confidential-coin#confidential-asset-store).
+To interact with the confidential asset, first create a [unique key pair](/en/build/smart-contracts/confidential-asset#confidential-asset-store).
 
 Generate new:
 
@@ -232,7 +227,7 @@ Or import existed one:
 const dk = new TwistedEd25519PrivateKey("0x...");
 ```
 
-Also you could derive it using your `signature` (for testing purposes, don't use at production):
+Also, you could derive it using your `signature` (for testing purposes, don't use at production):
 
 ```typescript
 const user = Account.generate()
@@ -242,7 +237,7 @@ const signature = user.sign(TwistedEd25519PrivateKey.decryptionKeyDerivationMess
 const dk = TwistedEd25519PrivateKey.fromSignature(signature);
 ```
 
-And get encryption key:
+And get an encryption key:
 
 ```typescript
 const encryptionKey = dk.publicKey()
@@ -251,7 +246,7 @@ const encryptionKeyHex = encryptionKey.toString()
 
 ### Register
 
-To interact with confidential tokens, a user has to [register](/en/build/smart-contracts/confidential-coin#register) their encryption key (EK) in contracts
+Next, you need to [register](/en/build/smart-contracts/confidential-asset#register) a previously generated encryption key (EK) in contracts:
 
 ```typescript
 const user = Account.generate()
@@ -272,7 +267,7 @@ const txReceipt = await aptos.waitForTransaction({ transactionHash: txResponse.h
 console.log(txReceipt);
 ```
 
-Check is user has already registered with token.
+Check if a user has already registered a specific token:
 
 ```typescript
 const isRegistered = await aptos.confidentialCoin.hasUserRegistered({
@@ -304,13 +299,13 @@ console.log(txReceipt);
 
 ### Get user's balance
 
-Let's check user's balance after deposit.
+Let's check the user's balance after the deposit.
 
 ```typescript
 const userConfidentialBalance = await aptos.confidentialCoin.getBalance({ accountAddress: user.accountAddress, tokenAddress: TOKEN_ADDRESS });
 ```
 
-This method returns you the user's [`pending` and `actual`](/en/build/smart-contracts/confidential-coin#confidential-asset-store) confidential balances, and to [decrypt](/en/build/smart-contracts/confidential-coin#encryption-and-decryption) them, you can use `ConfidentialAmount` class
+This method returns you the user's [`pending` and `actual`](/en/build/smart-contracts/confidential-asset#confidential-asset-store) confidential balances, and to [decrypt](/en/build/smart-contracts/confidential-asset#encryption-and-decryption) them, you can use `ConfidentialAmount` class
 
 ```typescript
 import { ConfidentialAmount, TwistedEd25519PrivateKey } from '@aptos-labs/ts-sdk'
@@ -354,12 +349,12 @@ With ConfidentialAmount class you will have:
 
 After you deposited to user's confidential balance, you can see, that he has, for instance `5n` at his `pending` balance, and `0n` at his `actual` balance.
 
-User can't operate with `pending` balance, so you could [rollover](/en/build/smart-contracts/confidential-coin#rollover-pending-balance) it to `actual` one.
+User can't operate with `pending` balance, so you could [rollover](/en/build/smart-contracts/confidential-asset#rollover-pending-balance) it to `actual` one.
 
 And to do so - use `aptos.confidentialCoin.rolloverPendingBalance`.
 
 <Callout type="warning">
-  Important note, that user's actual balance need to be [normalized](/en/build/smart-contracts/confidential-coin#normalize) before `rollover` operation.
+  Important note, that user's actual balance need to be [normalized](/en/build/smart-contracts/confidential-asset#normalize) before `rollover` operation.
 </Callout>
 
 To cover [normalization](#normalization) & `rollover` simultaneously, you could use `aptos.confidentialCoin.safeRolloverPendingCB`.
@@ -384,7 +379,7 @@ After that you could check user's balance. His `pending` balance should be empty
 
 ### Normalization
 
-Usually you don't need to explicit call [normalization](/en/build/smart-contracts/confidential-coin#normalize)
+Usually you don't need to explicit call [normalization](/en/build/smart-contracts/confidential-asset#normalize)
 
 In case you want to:
 
@@ -419,7 +414,7 @@ const txReceipt = await aptos.waitForTransaction({ transactionHash: txResponse.h
 
 ### Withdraw
 
-To [withdraw](/en/build/smart-contracts/confidential-coin#withdraw) your assets out from confidential balance:
+To [withdraw](/en/build/smart-contracts/confidential-asset#withdraw) your assets out from confidential balance:
 
 ```typescript
 const balances = await getBalances(user.accountAddress.toString(), decryptionKey, TOKEN_ADDRESS);
@@ -442,7 +437,7 @@ console.log(txReceipt);
 
 ### Transfer
 
-For [transfer](/en/build/smart-contracts/confidential-coin#confidential-transfer) you need to know recipient's encryption key and `aptos` account address
+For [transfer](/en/build/smart-contracts/confidential-asset#confidential-transfer) you need to know the recipient's encryption key and `aptos` account address
 
 <Callout type="warning">
   Encryption key is now an `Account` address or public key, you need a specifically defined in Confidential Coin standard encryption key stored on-chain. (The same key you could get by calling `decryptionKey.publicKey())`
@@ -477,7 +472,7 @@ const txReceipt = await aptos.waitForTransaction({ transactionHash: txResponse.h
 console.log(txReceipt);
 ```
 
-Basically, your transfer could include a global auditor, which you can get by
+Basically, your transfer could include a global auditor, which you can get by:
 
 ```typescript
 const [{ vec: globalAuditorAddressBytes }] = await aptos.confidentialCoin.getAssetAuditor();
@@ -486,7 +481,7 @@ console.log(globalAuditorAddressBytes)
 
 The global auditor can be `None` (optional feature). But if it's set globally for TOKEN_ADDRESS, it will be included into the auditor list as the first element automatically.
 
-If you want to add more auditors to your transfer, you can use
+If you want to add more auditors to your transfer, you can use:
 
 ```typescript
 const AUDITOR = TwistedEd25519PrivateKey.generate();
@@ -511,9 +506,9 @@ const txResponse = await aptos.signAndSubmitTransaction({ signer: user, transact
 const txReceipt = await aptos.waitForTransaction({ transactionHash: txResponse.hash });
 ```
 
-### key rotation
+### Key Rotation
 
-To do [key rotation](/en/build/smart-contracts/confidential-coin#rotate-encryption-key), you need to create new decryption key and use `aptos.confidentialCoin.rotateCBKey`
+To do [key rotation](/en/build/smart-contracts/confidential-asset#rotate-encryption-key), you need to create new decryption key and use `aptos.confidentialCoin.rotateCBKey`
 
 <Callout type="warning">
   But keep in mind, that to avoid `front-running` attacks you have to `freeze` your pending balance with `rollover_pending_balance` function, to do so, you can use static `ConfidentialCoin.safeRotateCBKey` method, which simplify this flow.
