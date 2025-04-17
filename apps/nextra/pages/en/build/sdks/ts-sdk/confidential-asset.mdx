@@ -381,12 +381,12 @@ export const safelyRolloverConfidentialBalance = async (
 
 ### Normalization
 
-Usually you don't need to explicit call [normalization](/en/build/smart-contracts/confidential-asset#normalize)
+Usually you don't need to explicitly call [normalization](/en/build/smart-contracts/confidential-asset#normalize)
 
 In case you want to:
 
 <Callout type='warning'>
-  Firstly check confidential balance is normalized, because trying to normalize an already normalized balance will return you an exception
+  Firstly, check a confidential balance is normalized, because trying to normalize an already normalized balance will return you an exception
 </Callout>
 
 ```typescript
@@ -456,7 +456,7 @@ export const withdrawConfidentialBalance = async (
 
 For [transfer](/en/build/smart-contracts/confidential-asset#confidential-transfer) you need to know the recipient's encryption key and `aptos` account address
 
-Let's say you have recipient's account address, lets get his Encryption key.
+Let's say you have a recipient's account address, let's get their encryption key.
 
 ```typescript
 export const getEkByAddr = async (addrHex: string, tokenAddress: string) => {
@@ -468,6 +468,7 @@ export const getEkByAddr = async (addrHex: string, tokenAddress: string) => {
 ```
 
 Now, wrap it all together and transfer:
+
 ```typescript
 export const transferConfidentialCoin = async (
   account: Account,
@@ -506,11 +507,11 @@ export const transferConfidentialCoin = async (
 
 ### Key Rotation
 
-To do [key rotation](/en/build/smart-contracts/confidential-asset#rotate-encryption-key), you need to create new decryption key and use `aptos.confidentialCoin.rotateCBKey`
+To do [key rotation](/en/build/smart-contracts/confidential-asset#rotate-encryption-key), you need to create a new decryption key and use `aptos.confidentialCoin.rotateCBKey`
 
 <Callout type="warning">
   But keep in mind, that `key-rotation` checks that pending balance equals 0.
-  In that case we could do a `rollover` with `freeze` option, to move assets from pending balance to actual one and lock our balance.
+  In that case, we could do a `rollover` with `freeze` option, to move assets from the pending balance to the actual one and lock our balance.
 
   ```typescript
   aptos.confidentialCoin.safeRolloverPendingCB({
@@ -520,7 +521,7 @@ To do [key rotation](/en/build/smart-contracts/confidential-asset#rotate-encrypt
   ```
 </Callout>
 
-Now let's create a new decryption key and rotate out balance:
+Now let's create a new decryption key and rotate our encryption key:
 
 ```typescript
 const balances = await getBalances(user.accountAddress.toString(), myDecryptionKey, TOKEN_ADDRESS);
