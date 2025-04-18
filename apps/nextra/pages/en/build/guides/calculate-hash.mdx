@@ -1,0 +1,95 @@
+# Calculating the Signed Transaction Hash
+
+When working with the Aptos, you may want to retrieve a transaction from the blockchain immediately after submitting it. To do this, you need the **signed transaction hash** (also known as `tx_hash`), which uniquely identifies the transaction on-chain.
+
+While the Aptos REST API returns the transaction hash after submission, some developers may want to **precompute** it (e.g., for optimistic UIs, monitoring, or debugging purposes). This guide explains how to accurately compute the hash of a signed transaction.
+
+Here is the installation link for the SDK we will use in this example:
+- [Python SDK](../sdks/python-sdk.mdx)
+
+To test this example you can try it after [your first transaction](./first-transaction.mdx)
+
+---
+
+## Process overview
+
+Aptos uses a specific flow to generate the transaction hash:
+
+1. Serialize the signed transaction using Binary Canonical Serialization (BCS).
+2. Prepend a domain-specific prefix.
+3. Hash the resulting bytes using SHA3-256.
+
+Without proper serialization and prefixing, your calculated hash may not match the one on-chain.
+
+---
+
+## Code to Calculate the Transaction Hash
+
+### Step 1: Serialize the signed transaction
+We first convert the transaction data into a standardized binary format using Binary Canonical Serialization (BCS). This ensures consistent representation across different platforms.
+
+```python
+serializer = Serializer()
+signed_txn.serialize(serializer)
+bcs_bytes = serializer.output()
+```
+
+### Step 2: Create the domain separator hash
+A domain separator adds context to prevent hash collisions between different types of data. We create a hash of the string "APTOS::Transaction".
+
+```python
+domain_separator = b"APTOS::Transaction"
+prefix_hash = hashlib.sha3_256(domain_separator).digest()
+```
+
+### Step 3: Add the transaction variant
+Different transaction types are identified by variant bytes. For user transactions, this is `0`.
+
+```python
+user_transaction_variant = bytes([0])
+```
+
+### Step 4: Create the final hash
+We combine all components and generate the SHA3-256 hash.
+
+```python
+hash_input = prefix_hash + user_transaction_variant + bcs_bytes
+hash_bytes = hashlib.sha3_256(hash_input).digest()
+```
+
+### Step 5: Format the result
+Convert the binary hash to a hexadecimal string with a "0x" prefix.
+
+```python
+tx_hash = "0x" + hash_bytes.hex()
+```
+
+### Step 6: Full code block
+
+```python
+import hashlib
+from aptos_sdk.transactions import SignedTransaction
+from aptos_sdk.bcs import Serializer
+
+def get_transaction_hash(signed_txn: SignedTransaction) -> str:
+    # Step 1: Serialize the signed transaction using BCS
+    serializer = Serializer()
+    signed_txn.serialize(serializer)
+    bcs_bytes = serializer.output()
+    
+    # Step 2: Prepare the domain-specific prefix hash
+    domain_separator = b"APTOS::Transaction"
+    prefix_hash = hashlib.sha3_256(domain_separator).digest()
+    
+    # Step 3: Prepend the variant byte for UserTransaction (0)
+    user_transaction_variant = bytes([0])
+    
+    # Step 4: Concatenate all pieces and hash
+    hash_input = prefix_hash + user_transaction_variant + bcs_bytes
+    hash_bytes = hashlib.sha3_256(hash_input).digest()
+    
+    # Step 5: Convert to hexadecimal string with '0x' prefix
+    tx_hash = "0x" + hash_bytes.hex()
+    
+    return tx_hash
+```
