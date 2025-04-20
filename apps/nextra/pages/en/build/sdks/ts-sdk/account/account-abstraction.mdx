@@ -46,7 +46,7 @@ module deployer::authenticator {
 **Example (Typescript)**
 
 ```typescript
-const authenticationFunction = `${deployer}::authenticator:authenticate`;
+const authenticationFunction = `${deployer}::authenticator::authenticate`;
 ```
 
 ### `AbstractionAuthData`
@@ -103,7 +103,7 @@ const abstractedAccount = new AbstractedAccount({
   /**
    * The authentication function to be invoked.
    */
-  authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+  authenticationFunction: `${deployer}::hello_world_authenticator::authenticate`,
 });
 ```
 
@@ -150,7 +150,7 @@ const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET }));
 
 const alice = Account.generate();
 
-const authenticationFunctionInfo = `${deployer}::hello_world_authenticator:authenticate`;
+const authenticationFunctionInfo = `${deployer}::hello_world_authenticator::authenticate`;
 ```
 
 ### 3. (Optional) Check if Account Abstraction is Enabled
@@ -159,7 +159,7 @@ Before you ask them to enable account abstraction, you can check if the account 
 This will return a boolean value indicating if the account has account abstraction enabled.
 
 ```ts
-const accountAbstractionStatus = await aptos.account.isAccountAbstractionEnabled({
+const accountAbstractionStatus = await aptos.abstraction.isAccountAbstractionEnabled({
     accountAddress: alice.accountAddress,
     authenticationFunction,
 });
@@ -176,7 +176,7 @@ will be the account that will be enabled.
 ```ts
 const transaction = aptos.abstraction.enableAccountAbstractionTransaction({
   accountAddress: alice.accountAddress,
-  authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+  authenticationFunction: `${deployer}::hello_world_authenticator::authenticate`,
 });
 
 const pendingTransaction = await aptos.signAndSubmitTransaction({
@@ -209,7 +209,7 @@ export default function useEnableAbstraction() {
       // Note: The Aptos client must be defined somewhere in the application.
       const transaction = aptos.abstraction.enableAccountAbstractionTransaction({
         accountAddress: account.address,
-        authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+        authenticationFunction: `${deployer}::hello_world_authenticator::authenticate`,
       });
 
       const senderAuthenticator = await signTransaction(txn);
@@ -236,7 +236,7 @@ and a `signer` function that will be used to sign the transaction. The `signer` 
 const abstractedAccount = new AbstractedAccount({
   accountAddress: alice.accountAddress,
   signer: () => new TextEncoder().encode("hello world"),
-  authenticationFunction: `${deployer}::hello_world_authenticator:authenticate`,
+  authenticationFunction: `${deployer}::hello_world_authenticator::authenticate`,
 });
 ```
 
@@ -509,7 +509,7 @@ const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET }));
 const alice = Account.generate();
 const bob = Account.generate();
 
-const authenticationFunctionInfo = `${deployer}::public_key_authenticator:authenticate`;
+const authenticationFunctionInfo = `${deployer}::public_key_authenticator::authenticate`;
 ```
 
 ### 3. (Optional) Check if Account Abstraction is Enabled
@@ -518,7 +518,7 @@ Before we enable the authentication function, we can check if the account has ac
 This will return a boolean value indicating if the account has account abstraction enabled.
 
 ```ts
-const accountAbstractionStatus = await aptos.account.isAccountAbstractionEnabled({
+const accountAbstractionStatus = await aptos.abstraction.isAccountAbstractionEnabled({
     accountAddress: alice.accountAddress,
     authenticationFunction,
 });
