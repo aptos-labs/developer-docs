@@ -12,7 +12,7 @@ You can use `confidentialCoin` property of `Aptos` client to interact with `CA`
 
 Operations in CA require generating zk-proofs (ZKPs), and depending on your environment, you need to define a `Range Proof` calculation.
 
-For the web, you could use `@distributedlab/aptos-wasm-bindings`:
+For the web, you could use `confidential-asset-wasm-bindings/confidential-asset-wasm-bindings`:
 
 Let's prepare range-proof generation and configure SDK to use it:
 
@@ -22,7 +22,7 @@ import initWasm, {
   batch_verify_proof as batchVerifyProof,
   range_proof as rangeProof,
   verify_proof as verifyProof,
-} from '@distributedlab/aptos-wasm-bindings/range-proofs'
+} from '@aptos-labs/confidential-asset-wasm-bindings/range-proofs'
 import {
   BatchRangeProofInputs,
   BatchVerifyRangeProofInputs,
@@ -31,7 +31,7 @@ import {
 } from '@lukachi/aptos-labs-ts-sdk'
 
 const RANGE_PROOF_WASM_URL =
-  'https://unpkg.com/@distributedlab/aptos-wasm-bindings@0.3.16/range-proofs/aptos_rp_wasm_bg.wasm'
+  'https://unpkg.com/@aptos-labs/confidential-asset-wasm-bindings@0.3.16/range-proofs/aptos_rp_wasm_bg.wasm'
 
 export async function genBatchRangeZKP(
   opts: BatchRangeProofInputs,
@@ -80,7 +80,7 @@ RangeProofExecutor.setVerifyRangeZKP(verifyRangeZKP);
 
 For the native apps:
 
-Generate `android` and `ios` bindings [here](https://github.com/distributed-lab/aptos-wasm-bindings) and integrate in your app as you please.
+Generate `android` and `ios` bindings [here](https://github.com/aptos-labs/confidential-asset-wasm-bindings) and integrate in your app as you please.
 
 And the last, but not the least important part:
 
@@ -97,7 +97,7 @@ So we also need to initialize a decryption function for that:
 import initWasm, {
   create_kangaroo,
   WASMKangaroo,
-} from '@distributedlab/aptos-wasm-bindings/pollard-kangaroo'
+} from '@aptos-labs/confidential-asset-wasm-bindings/pollard-kangaroo'
 import {
   ConfidentialAmount,
   TwistedEd25519PrivateKey,
@@ -107,7 +107,7 @@ import {
 import { bytesToNumberLE } from '@noble/curves/abstract/utils'
 
 const POLLARD_KANGAROO_WASM_URL =
-  'https://unpkg.com/@distributedlab/aptos-wasm-bindings@0.3.15/pollard-kangaroo/aptos_pollard_kangaroo_wasm_bg.wasm'
+  'https://unpkg.com/@aptos-labs/confidential-asset-wasm-bindings@0.3.15/pollard-kangaroo/aptos_pollard_kangaroo_wasm_bg.wasm'
 
 export async function createKangaroo(secret_size: number) {
   await initWasm({ module_or_path: POLLARD_KANGAROO_WASM_URL })
@@ -149,7 +149,7 @@ const init = async () => {
 }
 ```
 
-For the native apps, you could generate `android` and `ios` bindings [here](https://github.com/distributed-lab/aptos-wasm-bindings) to use instead of WASM.
+For the native apps, you could generate `android` and `ios` bindings [here](https://github.com/aptos-labs/confidential-asset-wasm-bindings) to use instead of WASM.
 
 ---
 
