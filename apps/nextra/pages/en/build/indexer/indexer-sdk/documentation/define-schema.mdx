@@ -17,7 +17,7 @@ By using the indexer, a single indexer query can often replace multiple queries 
 ## Aptos Core Processors
 All data exposed by the [Indexer API](../../indexer-api.mdx) is initially indexed using custom processors.
 Each core processor indexes a specific type of data.
-You can explore the [full list of processors](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/sdk-processor/src/processors) and the [complete indexer data schema](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/db/postgres/schema.rs).
+You can explore the [full list of processors](https://github.com/aptos-labs/aptos-indexer-processors-v2/blob/main/processor/src/db/schema.rs).
 
 The Aptos core processors and the [Quickstart Guide](../quickstart.mdx) use [PostgreSQL](https://www.postgresql.org/) as the database and [Diesel](https://diesel.rs/) as the ORM.
 If you'd also like to use PostgreSQL and Diesel, you can follow the instructions in [PostgreSQL Installation](../quickstart.mdx#postgresql-installation).
