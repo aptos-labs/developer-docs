@@ -81,9 +81,9 @@ export default {
         newWindow: true,
         type: "page",
       },
-      api_gateway: {
-        title: "API Gateway ↗",
-        href: "https://developers.aptoslabs.com/",
+      aptos_build: {
+        title: "Aptos Build ↗",
+        href: "https://build.aptoslabs.com/",
         newWindow: true,
         type: "page",
       },
