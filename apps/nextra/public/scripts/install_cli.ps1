@@ -176,7 +176,6 @@ function Main {
     }
     else {
         Write-ColorMessage -Color $RED -Message "There was a problem with the installation."
-        exit 1
     }
 }
 
