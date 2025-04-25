@@ -13,12 +13,6 @@ $BLUE = "${ESC}[34m"
 $CYAN = "${ESC}[36m"
 $BOLD = "${ESC}[1m"
 $NC = "${ESC}[0m"
-$GREEN = "`e[32m"
-$YELLOW = "`e[33m"
-$BLUE = "`e[34m"
-$CYAN = "`e[36m"
-$BOLD = "`e[1m"
-$NC = "`e[0m"
 
 # Default values
 $SCRIPT = "aptos.exe"
