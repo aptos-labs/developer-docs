@@ -120,3 +120,17 @@ In the figure:
 - **T<sub>_i_</sub>** : This is the _i_-th transaction executed on the blockchain. In this example, it represents Alice sending 10 APT to Bob.
 - **Apply()**: This is a deterministic function that always returns the same final state for a specific initial state and a specific transaction. If the current state of the blockchain is **S<sub>_i-1_</sub>**, and transaction **T<sub>_i_</sub>** is executed on the state **S<sub>_i-1_</sub>**, then the new state of the blockchain is always **S<sub>_i_</sub>**. The Aptos blockchain uses the [Move language](../../build/smart-contracts/book/SUMMARY.mdx) to implement the deterministic execution function **Apply()**.
 - **S<sub>_i_</sub>** : This is the _i_-the state of the blockchain. When the transaction **T<sub>_i_</sub>** is applied to the blockchain, it generates the new state **S<sub>_i_</sub>** (an outcome of applying **Apply(S<sub>_i-1_</sub>, T<sub>_i_</sub>)** to **S<sub>_i-1_</sub>** and **T<sub>_i_</sub>**). This causes Alice’s account balance to be reduced by 10 to 100 APT and Bob’s account balance to be increased by 10 to 62 APT. The new state **S<sub>_i_</sub>** shows these updated balances.
+
+## Size limits
+
+As part of the gas schedule, there are on-chain configurable limits for the sizes of [the transaction itself](https://github.com/aptos-labs/aptos-core/blob/8074588b5c9c4424fa247c2c9ec5572981ee31cd/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs#L71-L81) and [its outputs](https://github.com/aptos-labs/aptos-core/blob/8074588b5c9c4424fa247c2c9ec5572981ee31cd/aptos-move/aptos-gas-schedule/src/gas_schedule/transaction.rs#L152-L177).
+
+| Limit Type | Current Per Transaction Limit |
+| ---------------------- | ---- |
+| transaction            | 64KB |
+| governance transaction | 1MB  |
+| a single write op      | 1MB  |
+| all write ops combined | 10MB |
+| number of write ops    | 8192 |
+| a single event         | 1MB  |
+| all events combined    | 10MB |
