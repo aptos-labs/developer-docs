@@ -154,7 +154,7 @@ function Main {
         $currentVersion = (& $cliPath --version | Select-String -Pattern '\d+\.\d+\.\d+').Matches.Value
         if ($currentVersion -eq $VERSION) {
             Write-ColorMessage -Color $YELLOW -Message "Aptos CLI version $VERSION is already installed."
-            exit 0
+            return
         }
     }
     
@@ -176,7 +176,7 @@ function Main {
     }
     else {
         Write-ColorMessage -Color $RED -Message "There was a problem with the installation."
-        exit 1
+        return
     }
 }
 
