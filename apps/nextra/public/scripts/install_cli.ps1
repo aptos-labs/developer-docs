@@ -5,7 +5,14 @@
 # - Put it in an appropriate location
 
 # ANSI color codes for PowerShell
-$RED = "`e[31m"
+$ESC = [char]0x1B
+$RED = "${ESC}[31m"
+$GREEN = "${ESC}[32m"
+$YELLOW = "${ESC}[33m"
+$BLUE = "${ESC}[34m"
+$CYAN = "${ESC}[36m"
+$BOLD = "${ESC}[1m"
+$NC = "${ESC}[0m"
 $GREEN = "`e[32m"
 $YELLOW = "`e[33m"
 $BLUE = "`e[34m"
