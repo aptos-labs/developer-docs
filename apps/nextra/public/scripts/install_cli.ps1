@@ -92,7 +92,13 @@ function Install-CLI {
     
     try {
         # Download the file
-        Invoke-WebRequest -Uri $url -OutFile $zipPath
+        # Check if curl is installed
+        if (-not (Test-CommandExists "curl.exe")) {
+            Invoke-WebRequest -Uri $url -OutFile $zipPath
+        } else {
+            # Use curl to download the file
+            curl.exe -L $url -o $zipPath
+        }
         
         # Extract the zip file
         Expand-Archive -Path $zipPath -DestinationPath $BIN_DIR -Force
