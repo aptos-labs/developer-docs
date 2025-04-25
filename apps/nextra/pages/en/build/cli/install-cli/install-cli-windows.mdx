@@ -2,23 +2,16 @@ import { Callout, Steps } from 'nextra/components'
 
 # Install the Aptos CLI on Windows
 
-For Windows, the easiest way to install the Aptos CLI tool is via Python script. If that does not work, you can also install manually via pre-compiled binaries. The pre-compiled binaries approach is not generally recommended as updating is very manual.
+For Windows, the easiest way to install the Aptos CLI tool is via PowerShell script. If that does not work, you can also install manually via pre-compiled binaries. The pre-compiled binaries approach is not generally recommended as updating is very manual.
 
-# Install via Python Script
+# Install via PowerShell Script
 <Steps>
-### Ensure you have Python 3.6+ installed by running `python --version`
-
-   If python3 is not installed, you can find installation instructions on [python.org](http://python.org).
-
 ### In PowerShell, run the install script:
 
    ```powershell filename="Terminal"
-   Invoke-WebRequest -Uri "https://aptos.dev/scripts/install_cli.py" -OutFile "$env:TEMP\install_cli.py"; python "$env:TEMP\install_cli.py"
+     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+     Invoke-RestMethod -Uri https://aptos.dev/scripts/install_cli.ps1 | Invoke-Expression
    ```
-
-   <Callout type="warning">
-   If you receive the error `ModuleNotFoundError: No module named packaging` you can install `packaging` by running `pip3 install packaging` then repeat this step.  The above install scripts are for PowerShell specifically (you may have to adapt it based on your shell of choice).
-   </Callout>
 
    You should see instructions in your terminal saying "Execute the following command to update your PATH:".
 ### Copy and run the command to update your PATH from the terminal.
