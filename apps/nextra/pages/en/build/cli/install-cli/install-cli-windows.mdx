@@ -9,14 +9,8 @@ For Windows, the easiest way to install the Aptos CLI tool is via PowerShell scr
 ### In PowerShell, run the install script:
 
    ```powershell filename="Terminal"
-     Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-     Invoke-RestMethod -Uri https://aptos.dev/scripts/install_cli.ps1 | Invoke-Expression
+   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; iwr https://aptos.dev/scripts/install_cli.ps1 | iex
    ```
-
-   You should see instructions in your terminal saying "Execute the following command to update your PATH:".
-### Copy and run the command to update your PATH from the terminal.
-
-   It should look something like `setx PATH "%PATH%;C:\Users\<your_account_name>\.aptoscli\bin"`.
 
 ### Verify the script is installed by opening a new terminal and running `aptos help`.
    - You should see a list of commands you can run using the CLI.
@@ -26,6 +20,19 @@ For Windows, the easiest way to install the Aptos CLI tool is via PowerShell scr
 <Callout type="info" emoji="ℹ️">
 If you would like to update the Aptos CLI to the latest version via script, you can run `aptos update`.
 </Callout>
+
+# Install via Package Manager (Optional)
+
+### If you have [Scoop](https://scoop.sh/) installed, you can run the following command to install the Aptos CLI:
+
+   ```powershell filename="Terminal"
+   scoop install https://aptos.dev/scoop/aptos.json
+   ```
+### If you have [Chocolatey](https://chocolatey.org/) installed, you can run the following command to install the Aptos CLI:
+
+   ```powershell filename="Terminal"
+   choco install aptos
+   ```
 
 # Install via Pre-Compiled Binaries (Backup Method)
 
