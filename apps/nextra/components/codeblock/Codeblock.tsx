@@ -11,7 +11,7 @@ export interface CodeblockContainerProps {
 /**
  * Codeblock Container
  *
- * Customizeable wrapper around Codeblock Header and Content. Default styling mimics Nextra's built-in Codeblocks
+ * Customizable wrapper around Codeblock Header and Content. Default styling mimics Nextra's built-in Codeblocks
  */
 export function CodeblockContainer({
   children,
@@ -31,7 +31,7 @@ export interface CodeblockContainerProps {
 /**
  * Codeblock Header
  *
- * Fully customizeable Codeblock header. Default styling mimics Nextra's built-in Codeblocks
+ * Fully customizable Codeblock header. Default styling mimics Nextra's built-in Codeblocks
  */
 export function CodeblockHeader({
   children,
