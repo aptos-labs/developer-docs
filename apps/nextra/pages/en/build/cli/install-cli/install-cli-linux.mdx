@@ -40,6 +40,23 @@ For Linux, the easiest way to install the Aptos CLI tool is via shell script, al
 If you would like to update the Aptos CLI to the latest version, you can run `aptos update`.
 </Callout>
 
+# Install via Package Manager (Optional)
+
+<Callout type="info">
+When installing Aptos via a package manager, please update it through the same package manager in the future.
+</Callout>
+
+### Arch Linux
+#### Install via AUR (Arch User Repository)
+```bash filename="Terminal"
+git clone https://aur.archlinux.org/aptos-bin.git
+cd aptos-bin
+makepkg -si
+```
+or use an AUR helper like `yay`:
+```bash filename="Terminal"
+yay -S aptos-bin
+```
 # Install via Pre-Compiled Binaries (Backup Method)
 
 <Steps>
