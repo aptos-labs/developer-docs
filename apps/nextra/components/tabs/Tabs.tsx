@@ -89,7 +89,7 @@ export interface TabsProps {
  * Tabs Component for Nextra
  *
  * A groupName is provided to the Tabs parent component.
- * The <Tabs /> component then maps over each child and propogates
+ * The <Tabs /> component then maps over each child and propagates
  * the groupName to each <TabItem /> child
  *
  * This is done to avoid the need to pass groupName individually

@@ -1,0 +1,89 @@
+---
+title: "数据提供商"
+---
+
+# 数据提供商
+
+如果您需要访问 Aptos 区块链数据但无需实时获取。
+我们提供了几种选项让您可以通过 SQL 或 UI 仪表盘访问这些数据。
+这类数据通常用于分析场景，因为它支持聚合操作。
+
+## 数据端点概览
+
+直接访问全节点将获取最新数据（除非是归档全节点，否则不包含历史数据），使用 [REST API](../apis.mdx#aptos-fullnode)
+
+在此之上的索引器层提供 [GRPC 交易流](../indexer/txn-stream/aptos-hosted-txn-stream)
+
+基于这个交易流，我们构建了一些可通过 [GraphQL](../indexer/) 查询的产品逻辑表
+
+由于交易解析逻辑是 [公开的](https://github.com/aptos-labs/aptos-indexer-processors-v2)，部分供应商已实现类似的解析逻辑来创建数据表子集并开放查询。
+
+## SQL 数据表
+
+索引器定义了多个处理器来创建不同的数据库表。
+
+### 核心表
+
+这些表直接解析自节点 API 响应，一种方案是将它们拆分为以下表：
+
+- 区块 - 版本号、区块高度、epoch、时间戳
+- 交易 - 版本号、发送方、入口函数、gas
+- 签名 - 签名类型、签名者、费用支付地址
+- 事件 - 事件类型和数据
+
+我们将数据存储为表项(table items)、资源(resources)或模块(modules)：
+
+- (写入集)变更 - 变更索引、变更类型、资源地址
+- 表项 - 表键、表句柄、键（内容与类型）、值（内容与类型）
+- (Move)资源 - 资源地址、资源类型、数据
+- (Move)模块 - 已部署模块的字节码
+
+## 链下数据供应商
+
+我们大多数数据供应商仅提供核心数据集。
+以下是 [部分供应商列表](https://aptosfoundation.org/currents/aptos-on-chain-data-capabilities-with-dune-nansen-and-other-providers)
+
+### Google BigQuery 公共数据集
+
+通过 [Google 公共数据](https://console.cloud.google.com/marketplace/product/bigquery-public-data/crypto-aptos-mainnet-us) 提供数据
+
+![bq_sql](/screenshots/bq_sql.png)
+
+我们还提供了 [使用上述资源](https://github.com/aptos-labs/explorer/tree/main/analytics) 的分析查询示例
+
+### Dune
+
+我们的仪表盘地址：https://dune.com/aptos/aptos-chain-metrics-overview
+
+### Flipside
+
+另一个仪表盘供应商，核心表中的签名已合并至 `fact_transactions`
+他们还提供了一些便利表（DeFi、NFT、价格），[表清单](https://flipsidecrypto.github.io/aptos-models/#!/overview)
+
+### Artemis 
+
+提供 [关键指标](https://app.artemis.xyz/project/aptos) 和图表构建工具
+
+### Nansen
+
+提供 [关键指标](https://app.nansen.ai/macro/blockchains?chain=aptos) 及账户附加功能
+
+### Allium
+
+原始数据地址：https://docs.allium.so/historical-data/supported-blockchains/move-ecosystem/aptos
+
+### Sentio
+
+他们在这里提供了指南：https://docs.sentio.xyz/docs/aptos  数据可以在 data source -> external project -> sentio/aptos-overview 路径下找到  
+他们还提供交易的堆栈追踪功能  
+
+### Space and Time  
+
+数据可以在这里查看：https://app.spaceandtime.ai/data-sets?selectedChain=aptos  
+他们还有一些非核心表（Token、Staking 等）  
+
+## 其他供应商  
+
+我们还有一些面向更企业级使用场景的合作伙伴- [Token Terminal](https://tokenterminal.com/resources/articles/aptos-data-partnership)
+- [The Tie](https://www.thetie.io/insights/news/introducing-aptos-ecosystem-dashboard-and-on-chain-data/)
+- [Elliptic](https://www.elliptic.co/media-center/elliptic-partners-with-aptos-foundation-as-a-data-integration-provider-to-offer-compliance-screening-and-risk-services-for-aptos-network)

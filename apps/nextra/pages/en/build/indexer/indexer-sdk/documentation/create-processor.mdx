@@ -37,7 +37,7 @@ For basic cases, you can copy the [`IndexerProcessorConfig` from the `aptos-inde
 It's used by `IndexerProcessorConfig.run()` to map the processor name to the right `ProcessorConfig`. 
 
 You can see a basic example of a `ProcessorConfig` [here](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/aptos-indexer-processor-example/src/config/processor_config.rs). 
-An example of a more complex setup that includes multiple processors and configurations is [`aptos-indexer-processors`](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/sdk-processor/src/config/processor_config.rs#L84).
+An example of a more complex setup that includes multiple processors and configurations is [`aptos-indexer-processors`](https://github.com/aptos-labs/aptos-indexer-processors-v2/blob/main/processor/src/config/processor_config.rs#L84).
 
 ## How to create a processor
 Now that you've got the configuration pieces set up, the next step is to create the processor. 
@@ -102,7 +102,7 @@ loop {
 ```
 
 You can see a full example of a processor that indexes raw Aptos events in [`aptos-indexer-processor-example`](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/aptos-indexer-processor-example/src/processors/events/events_processor.rs). 
-As a reference, you can also see all of the processors that make up the [Indexer API](../../indexer-api.mdx) in [`aptos-indexer-processors`](https://github.com/aptos-labs/aptos-indexer-processors/tree/main/rust/sdk-processor/src/processors).
+As a reference, you can also see all of the processors that make up the [Indexer API](../../indexer-api.mdx) in [`aptos-indexer-processors`](https://github.com/aptos-labs/aptos-indexer-processors-v2/tree/main/processor/src/processors).
 
 ## How to define `main.rs`
 You may copy the [`main.rs`](https://github.com/aptos-labs/aptos-indexer-processor-example/blob/main/aptos-indexer-processor-example/src/main.rs) file from the `aptos-indexer-processor-example`. 

@@ -44,7 +44,7 @@ From here you will likely want to change the values of some of these fields. Let
 A single instance of the service only runs a single processor. If you want to run multiple processors, you must run multiple instances of the service. In this case, it is up to you whether to use the same database or not.
 </Callout>
 
-This is the processor you want to run. You can see what processors are available [here](https://github.com/aptos-labs/aptos-indexer-processors/blob/main/rust/processor/src/processors/mod.rs#L23). Some examples:
+This is the processor you want to run. You can see what processors are available [here](https://github.com/aptos-labs/aptos-indexer-processors-v2/tree/main/processor/src/processors). Some examples:
 
 - `coin_processor`
 - `ans_processor`
@@ -72,10 +72,10 @@ Clone the repo:
 
 ```bash filename="Terminal"
 # SSH
-git clone git@github.com:aptos-labs/aptos-indexer-processors.git
+git clone git@github.com:aptos-labs/aptos-indexer-processors-v2.git
 
 # HTTPS
-git clone https://github.com/aptos-labs/aptos-indexer-processors.git
+git clone https://github.com/aptos-labs/aptos-indexer-processors-v2.git
 ```
 
 Navigate to the directory for the service:
