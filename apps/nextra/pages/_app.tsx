@@ -1,6 +1,7 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { docsConfig } from "@docs-config";
 import "../styles.css";
+import { DynamicPreloadSearch } from "@components/preload-search";
 
 export const config = {
   runtime: "experimental-edge",
@@ -15,6 +16,7 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <GoogleAnalytics gaId={docsConfig.googleAnalyticsId} />
+      <DynamicPreloadSearch />
       <Component {...pageProps} />
     </>
   );
