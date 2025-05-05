@@ -21,6 +21,13 @@ class MyDocument extends Document {
               `,
             }}
           />
+          <link
+            rel="preload"
+            href="/_next/static/chunks/nextra-data-en.json"
+            as="fetch"
+            type="application/json"
+            crossOrigin="anonymous"
+          />
         </Head>
         <body>
           <SkipNavLink styled />

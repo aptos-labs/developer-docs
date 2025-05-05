@@ -5,94 +5,74 @@ title: "Fullnode Rest API"
 import { Callout } from 'nextra/components'
 import { Card, Cards } from '@components/index'
 
-# Aptos Fullnode REST API
+# Aptos 全节点 REST API
 
-This API - embedded into Fullnodes - provides a simple, low latency, yet low-level way of reading state and submitting transactions to the Aptos Blockchain. It also supports transaction simulation.
-For more advanced queries, we recommend using the [Indexer GraphQL API](../indexer.mdx).
+该 API 内置于全节点中，提供了一种简单、低延迟但底层的方式来读取状态和向 Aptos 区块链提交交易。它还支持交易模拟功能。
+如需进行更高级的查询，我们推荐使用 [索引器 GraphQL API](../indexer.mdx)。
 
-## Fullnode REST API Explorer
+## 全节点 REST API 浏览器
 
 <Cards>
   <Card href="https://api.mainnet.aptoslabs.com/v1/spec#/">
-    <Card.Title linkType="external">Mainnet Fullnode REST API</Card.Title>
-    <Card.Description>REST API Explorer for Mainnet</Card.Description>
+    <Card.Title linkType="external">主网全节点 REST API</Card.Title>
+    <Card.Description>主网 REST API 浏览器</Card.Description>
   </Card>
   <Card href="https://api.testnet.aptoslabs.com/v1/spec#/">
-    <Card.Title linkType="external">Testnet Fullnode REST API</Card.Title>
-    <Card.Description>REST API Explorer for Testnet</Card.Description>
+    <Card.Title linkType="external">测试网全节点 REST API</Card.Title>
+    <Card.Description>测试网 REST API 浏览器</Card.Description>
   </Card>
   <Card href="https://api.devnet.aptoslabs.com/v1/spec#/">
-    <Card.Title linkType="external">Devnet Fullnode REST API</Card.Title>
-    <Card.Description>REST API Explorer for Devnet</Card.Description>
+    <Card.Title linkType="external">开发网全节点 REST API</Card.Title>
+    <Card.Description>开发网 REST API 浏览器</Card.Description>
   </Card>
 </Cards>
 
-## Understanding rate limits
+## 理解速率限制
 
-As with the [Aptos Indexer](../indexer/aptos-hosted.mdx), the Aptos REST API has rate limits based on compute units. You can learn more about how the ratelimiting works by reading the [Aptos Build docs](https://build.aptoslabs.com/docs/start/billing).
+与 [Aptos 索引器](../indexer/indexer-api.mdx) 类似，Aptos REST API 也基于计算单元设有速率限制。您可以通过阅读 [Aptos Build 文档](https://build.aptoslabs.com/docs/start/billing) 了解更多关于速率限制的工作原理。
 
-## Viewing current and historical state
+## 查看当前和历史状态
 
-Most integrations into the Aptos blockchain benefit from a holistic and comprehensive overview of the current and
-historical state of the blockchain. Aptos provides historical transactions, state, and events, all the result of
-transaction execution.
+大多数与 Aptos 区块链的集成都需要全面了解区块链当前和历史状态。Aptos 提供了历史交易、状态和事件，这些都是交易执行的结果。
 
-- Historical transactions specify the execution status, output, and tie to related events. Each transaction has a unique
-version number associated with it that dictates its global sequential ordering in the history of the blockchain ledger.
-- The state is the representation of all transaction outputs up to a specific version. In other words, a state version
-is the accumulation of all transactions inclusive of that transaction version.
-- As transactions execute, they may emit events. [Events](../../network/blockchain/events.mdx) are hints about changes in on-chain
-data.
+- 历史交易包含执行状态、输出以及与相关事件的关联。每笔交易都有一个唯一的版本号，用于确定其在区块链账本历史中的全局顺序。
+- 状态表示截至特定版本的所有交易输出。换句话说，状态版本是包含该交易版本之前所有交易的累积结果。
+- 交易执行时可能会触发事件。[事件](../../network/blockchain/events.mdx) 是关于链上数据变更的提示信息。
 
 <Callout type="info">
-Ensure the [fullnode](../../network/nodes/networks.mdx) you are communicating with is up-to-date. The fullnode must reach the
-version containing your transaction to retrieve relevant data from it. There can be latency from the fullnodes
-retrieving state from [validator fullnodes](../../network/blockchain/fullnodes.mdx), which in turn rely upon
-[validator nodes](../../network/blockchain/validator-nodes.mdx) as the source of truth.
+请确保您通信的 [全节点](../../network/nodes/networks.mdx) 是最新版本。全节点必须达到包含您交易的版本才能从中检索相关数据。全节点从 [验证器全节点](../../network/blockchain/apis.mdx) 获取状态可能存在延迟，而验证器全节点又以 [验证器节点](../../network/blockchain/validator-nodes.mdx) 作为真实数据源。
 </Callout>
 
-The storage service on a node employs two forms of pruning that erase data from nodes:
+节点上的存储服务采用两种数据修剪机制来清除数据：
 
-- state
-- events, transactions, and everything else
+- 状态数据
+- 事件、交易等其他所有数据虽然可以禁用其中任一功能，但存储状态版本并不是特别可持续的做法。
 
-While either of these may be disabled, storing the state versions is not particularly sustainable.
+可以通过在 `storage_config.rs` 中将 [`enable_ledger_pruner`](https://github.com/aptos-labs/aptos-core/blob/cf0bc2e4031a843cdc0c04e70b3f7cd92666afcf/config/src/config/storage_config.rs#L141) 设置为 `false` 来禁用事件和交易剪枝功能。这在 Mainnet 中是默认行为。在不久的将来，Aptos 将提供索引器来减少直接从节点查询的需求。
 
-Events and transactions pruning can be disabled via setting the [`enable_ledger_pruner`](https://github.com/aptos-labs/aptos-core/blob/cf0bc2e4031a843cdc0c04e70b3f7cd92666afcf/config/src/config/storage_config.rs#L141)
-to `false` in `storage_config.rs`. This is default behavior in Mainnet. In the near future, Aptos will provide indexers
- that mitigate the need to directly query from a node.
+REST API 提供以下方式查询交易和事件：
 
-The REST API offers querying transactions and events in these ways:
+- [按账户查询交易](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_account_transactions)
+- [按版本查询交易](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_version)
+- [按事件句柄查询事件](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)
 
-- [Transactions for an account](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_account_transactions)
-- [Transactions by version](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_transaction_by_version)
-- [Events by event handle](https://api.devnet.aptoslabs.com/v1/spec#/operations/get_events_by_event_handle)
+## 使用 View 函数读取状态
 
-## Reading state with the View function
+通过 API 调用时，View 函数不会修改区块链状态。[View 函数](https://github.com/aptos-labs/aptos-core/blob/main/api/src/view_function.rs) 及其 [输入参数](https://github.com/aptos-labs/aptos-core/blob/main/api/types/src/view.rs) 可用于通过 Move 读取潜在的复杂链上状态。例如，您可以评估拍卖合约中的最高出价者。以下是相关文件：
 
-View functions do not modify blockchain state when called from the API. A [View function](https://github.com/aptos-labs/aptos-core/blob/main/api/src/view_function.rs)
- and its [input](https://github.com/aptos-labs/aptos-core/blob/main/api/types/src/view.rs) can be used to read
- potentially complex on-chain state using Move. For example, you can evaluate who has the highest bid in an auction
- contract. Here are related files:
+- [`view_function.rs`](https://github.com/aptos-labs/aptos-core/blob/main/api/src/tests/view_function.rs) 示例
+- 相关 [Move](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/aptos-move/framework/aptos-framework/sources/coin.move#L226) 代码
+- [规范说明](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/api/doc/spec.yaml#L8513)
 
-- [`view_function.rs`](https://github.com/aptos-labs/aptos-core/blob/main/api/src/tests/view_function.rs) for an example
-- related [Move](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/aptos-move/framework/aptos-framework/sources/coin.move#L226) code
-- [specification](https://github.com/aptos-labs/aptos-core/blob/90c33dc7a18662839cd50f3b70baece0e2dbfc71/api/doc/spec.yaml#L8513).
+View 函数的运行方式类似于 Aptos 模拟 API，但没有副作用且具有可访问的输出路径。可以通过 `/view` 端点调用 View 函数。调用 View 函数需要提供模块名、函数名以及输入类型参数和值。
 
-The view function operates like the Aptos simulation API,
-though with no side effects and an accessible output path. View functions can be called via the `/view` endpoint. Calls
-to view functions require the module and function names along with input type parameters and values.
+函数不必是不可变的才能标记为 `#[view]`，但如果函数是可变的，通过 API 调用时不会导致状态变更。如果要标记可变函数为 `#[view]`，建议将其设为私有，以防止在运行时被恶意调用。
 
-A function does not have to be immutable to be tagged as `#[view]`, but if the function is mutable it will not result in
-state mutation when called from the API. If you want to tag a mutable function as `#[view]`, consider making it private
-so that it cannot be maliciously called during runtime.
+要使用 View 函数，需要通过 [Aptos CLI](../cli.mdx) [发布模块](../cli/working-with-move-contracts.mdx)。
 
-In order to use the View functions, you need to [publish the module](../cli/working-with-move-contracts.mdx)
-through the [Aptos CLI](../cli.mdx).
+在 Aptos CLI 中，View 函数请求示例如下：
 
-In the Aptos CLI, a view function request would look like this:
-
-```bash filename="Terminal"
+```bash filename="终端"
 aptos move view --function-id devnet::message::get_message --profile devnet --args address:devnet
 {
   "Result": [
@@ -101,7 +81,7 @@ aptos move view --function-id devnet::message::get_message --profile devnet --ar
 }
 ```
 
-In the TypeScript SDK, a view function request would look like this:
+在 TypeScript SDK 中，View 函数请求示例如下：
 
 ```ts filename="index.ts"
 import { Aptos } from "@aptos-labs/ts-sdk";
@@ -116,5 +96,4 @@ const [balance] = aptos.view<[string]>({
 expect(balance).toBe("100000000");
 ```
 
-The view function returns a list of values as a vector. By default, the results are returned in JSON format; however,
-they can be optionally returned in Binary Canonical Serialization (BCS) encoded format.
+视图函数返回一个值列表作为向量。默认情况下，结果以 JSON 格式返回；不过，也可以选择以 Binary Canonical Serialization (BCS) 编码格式返回。
