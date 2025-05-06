@@ -1,0 +1,203 @@
+---
+title: "可派生账户抽象"
+---
+
+import { Steps } from "nextra/components";
+
+# 可派生账户抽象
+
+[可派生账户抽象 (DAA)](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-113.md)
+是一种账户抽象标准，通过注册 `derivable_authentication_function` 实现自定义认证方案。
+
+DAA 与原生[账户抽象 (AA)](./account-abstraction) 的区别在于，对于给定的 `derivable_authentication_function`，
+它定义了如何从 `abstract_public_key` 确定性地派生出账户地址，这一过程可以在链下完成。
+
+相比之下，原生 AA 需要通过显式注册链上 `authentication_function` 并提交交易来为特定预先存在的账户启用，
+这涉及额外步骤且每个账户都需要消耗 gas。
+
+这使得注册次级认证方案能获得与原生方案完全一致的用户体验。
+更具体地说，这为管理跨链签名提供了灵活且安全的方式。（参见[跨链账户](../../wallet-adapter/x-chain-accounts.mdx)）
+
+## 核心概念
+
+### 认证函数
+
+DAA 通过定义自定义认证方案并注册有效的认证函数来执行链上认证。
+
+每个抽象账户都应关联一个 `abstract_public_key`，并且能够生成格式取决于认证方案的 `abstract_signature`。
+
+简而言之，`derivable_authentication_function` 需要验证：
+- `abstract_signature` 对于给定的 `abstract_public_key` 是有效的
+- `abstract_signature` 依赖于交易的摘要
+
+```move
+// 认证成功时应返回 signer，否则中止执行
+public fun authenticate(account: signer, auth_data: AbstractionAuthData): signer;
+```
+
+DAA 框架会自动检查从 `abstract_public_key` 派生的地址是否与签名者的地址匹配。
+
+### 认证数据
+
+`AbstractionAuthData` 是一个枚举类型，表示要传递给自定义认证函数的认证数据。
+它用于所有类型的 AA，但 `DerivableV1` 变体定义了以下字段：
+
+- `digest`：签名消息的 SHA3-256 哈希值
+- `abstract_signature`：需要针对 `abstract_public_key` 验证的抽象签名字节
+- `abstract_public_key`：与抽象账户关联的抽象公钥字节
+
+以下是 Move 枚举的定义：
+
+```move
+enum AbstractionAuthData has copy, drop {
+  V1 { ... }, // 仅适用于原生 AA
+  DerivableV1 {
+      digest: vector<u8>, // 签名消息的 SHA3-256 哈希
+      abstract_signature: vector<u8>,
+      abstract_public_key: vector<u8>,
+  }
+}
+```
+
+**为什么 `digest` 很重要？**
+
+MoveVM 会检查 `digest` 以确保提交的交易签名消息与 `AbstractionAuthData` 中呈现的消息一致。
+这很重要，因为它允许认证函数针对正确的交易验证签名。
+
+例如，如果你想允许某个公钥代表用户签署交易，可以授权该公钥签署具有特定负载的交易。
+但如果恶意用户发送正确公钥但 `digest` 不同负载的签名，该签名将无效。
+
+### 账户地址派生
+
+在 DAA 中，给定的 `derivable_authentication_function` 定义了一个可以从关联的 `abstract_public_key` 确定性派生的账户地址空间。
+
+链上函数如下所示：
+
+```move
+public fun derive_account_address(derivable_func_info: FunctionInfo, abstract_public_key: &vector<u8>): address {
+  let bytes = bcs::to_bytes(&derivable_func_info);
+  bytes.append(bcs::to_bytes(abstract_public_key));
+  bytes.push_back(DERIVABLE_ABSTRACTION_DERIVED_SCHEME);
+  from_bcs::to_address(hash::sha3_256(bytes))
+}
+```
+
+其中 `FunctionInfo` 是一个链上函数的完全限定标识符：
+
+```move
+struct FunctionInfo has copy, drop, store {
+    module_address: address,
+    module_name: String,
+    function_name: String
+}
+```
+
+地址派生依赖于认证函数的标识符和一个 DAA 特定的域分隔符。
+因此，每个地址空间都是相互隔离的，同一个账户不可能拥有多个认证函数。
+
+**示例（Move）**
+
+该示例演示了使用 ed25519 hex 进行签名的域账户抽象。
+
+```move
+module aptos_experimental::test_derivable_account_abstraction_ed25519_hex {
+    use std::error;
+    use aptos_std::string_utils;
+    use aptos_std::ed25519::{
+        Self,
+        new_signature_from_bytes,
+        new_unvalidated_public_key_from_bytes,
+    };
+    use aptos_framework::auth_data::AbstractionAuthData;
+
+    const EINVALID_SIGNATURE: u64 = 1;
+
+    /// 派生账户抽象的授权函数。
+    public fun authenticate(account: signer, aa_auth_data: AbstractionAuthData): signer {
+    let hex_digest = string_utils::to_string(aa_auth_data.digest());
+
+    let public_key = new_unvalidated_public_key_from_bytes(*aa_auth_data.derivable_abstract_public_key());
+    let signature = new_signature_from_bytes(*aa_auth_data.derivable_abstract_signature());
+    assert!(
+        ed25519::signature_verify_strict(
+            &signature,
+            &public_key,
+            *hex_digest.bytes(),
+        ),
+        error::permission_denied(EINVALID_SIGNATURE)
+    );
+
+    account
+    }
+}
+```
+
+**示例（Typescript）**
+
+```typescript
+const derivableAbstractedAccount = new DerivableAbstractedAccount({
+  /**
+   * 签名器函数的结果将作为 `abstract_signature` 字段出现在 `AbstractionAuthData` 枚举变体中。
+   */
+  signer: (digest) => {
+    const hexDigest = new TextEncoder().encode(Hex.fromHexInput(digest).toString());
+    return solanaAccount.sign(hexDigest).toUint8Array();
+  },
+  /**
+   * 要调用的认证函数。
+   */
+  authenticationFunction: `0x7::test_derivable_account_abstraction_ed25519_hex::authenticate`,
+  /**
+  * 抽象公钥（即账户身份）
+  */
+  abstractPublicKey: account.publicKey.toUint8Array(),
+});
+```
+
+## 最小化分步指南
+
+<Steps>
+
+### 1. 生成 ED25519 密钥对
+
+```ts
+const ed25519Account = Account.generate();
+```
+
+### 2. 创建 DAA
+
+```ts
+const daa = new DerivableAbstractedAccount({
+  signer: (digest) => {
+    const hexDigest = new TextEncoder().encode(Hex.fromHexInput(digest).toString());
+    return ed25519Account.sign(hexDigest).toUint8Array();
+  },
+  authenticationFunction: `0x7::test_derivable_account_abstraction_ed25519_hex::authenticate`,
+  abstractPublicKey: ed25519Account.publicKey.toUint8Array(),
+});
+```
+
+### 3. 向 DAA 账户注资以创建链上记录
+
+```ts
+await aptos.fundAccount({ accountAddress: daa.accountAddress, amount: 1000000 });
+```
+
+### 4. 创建接收方账户并转入 APT 代币
+
+```ts
+const recipient = Account.generate();
+
+const pendingTxn = await aptos.transaction.signAndSubmitTransaction({
+  signer: daa,
+  transaction: await aptos.transferCoinTransaction({
+    sender: daa.accountAddress,
+    recipient: recipient.accountAddress,
+    amount: 100,
+  }),
+});
+
+const response = await aptos.waitForTransaction({ transactionHash: pendingTxn.hash });
+```
+
+</Steps>

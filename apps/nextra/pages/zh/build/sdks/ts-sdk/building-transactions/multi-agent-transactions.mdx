@@ -1,0 +1,206 @@
+---
+title: "多代理交易"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# 多代理交易
+
+多代理交易允许多个账户共同参与 Move 合约的逻辑执行。
+
+这种机制可用于以下场景：
+- 要求多方在交易执行前达成一致
+- 调用来自多个账户的资源
+
+## 编写多代理交易
+
+创建和执行多代理交易的流程与[简单交易流程](../building-transactions.mdx)类似，但存在几个重要区别。
+
+<Callout type="info">
+多代理交易使用 `.multiAgent` 方法而非 `.simple`
+</Callout>
+
+<Steps>
+### 构建交易时需包含 `secondarySignerAddresses` 参数来指定所有附加代理
+
+<Callout type="info">
+请确保将下方的 `function` 字段替换为您需要多方签名的入口函数
+</Callout>
+
+```ts filename="multi-agent.ts"
+const transaction = await aptos.transaction.build.multiAgent({
+  sender: alice.accountAddress,
+  secondarySignerAddresses: [bob.accountAddress],
+  data: {
+    // 在此替换为您的多代理函数
+    function:
+      "<请替换为您的多代理 Move 入口函数> (语法格式 {address}::{module}::{function})",
+    // 为上述函数传入参数
+    functionArguments: [],
+  },
+});
+```
+
+### （可选）模拟交易
+
+提交前可通过模拟预览多代理交易结果：
+```ts filename="multi-agent.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
+  {
+    signerPublicKey: alice.publicKey,
+    secondarySignersPublicKeys: [bob.publicKey],
+    transaction,
+  },
+);
+```
+`signerPublicKey` 和 `secondarySignersPublicKeys` 参数是可选的，省略时将跳过模拟过程中对签名者的认证密钥检查。若只需检查部分次要签名者的认证密钥，可以在 `secondarySignersPublicKeys` 数组中使用 `undefined` 作为占位符。
+
+例如：当 `bob` 和 `carol` 都是次要签名者时，若只需检查 `carol` 的认证密钥，可设置为 `secondarySignersPublicKeys: [undefined, carol.publicKey]`，其中 `undefined` 对应 `bob` 的位置。
+
+### 为每个代理分别签名
+
+这些签名将在下一步合并使用。
+
+```ts filename="multi-agent.ts"
+const aliceSenderAuthenticator = aptos.transaction.sign({
+  signer: alice,
+  transaction,
+});
+// Bob 作为本次交易的次要签名者
+const bobSenderAuthenticator = aptos.transaction.sign({
+  signer: bob,
+  transaction,
+});
+```
+
+### 通过 `additionalSignerAuthenticators` 参数合并所有代理签名后提交交易
+
+```ts filename="multi-agent.ts"
+const committedTransaction = await aptos.transaction.submit.multiAgent({
+  transaction,
+  senderAuthenticator: aliceSenderAuthenticator,
+  additionalSignersAuthenticators: [bobSenderAuthenticator],
+});
+```
+
+### 最后，等待交易确认
+
+```ts filename="multi-agent.ts"
+const executedTransaction = await aptos.waitForTransaction({
+  transactionHash: committedTransaction.hash,
+});
+```
+</Steps>
+
+## TypeScript 多代理完整代码片段
+
+<Callout type="warning">
+下方代码片段需要简单编辑才能正常工作！（参见以下步骤）
+</Callout>
+
+1. 通过运行 `pnpm i @aptos-labs/ts-sdk` 或使用您习惯的包管理器安装 `@aptos-labs/ts-sdk`
+2. 更新下方代码片段以构建需要多代理签名的交易
+    1. 替换下方注释后的函数和参数：`// REPLACE WITH YOUR MULTI-AGENT FUNCTION HERE`
+    2. 此自定义是必要的，因为 Aptos 没有预制的需要多代理签名的合约。如果您想部署自己的示例多代理合约，可以部署 ["transfer two by two" 示例 Move 合约](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/tests/move/transfer/sources/script_two_by_two.move#L5)
+
+```ts filename="multi-agent.ts"
+/**
+ * 此示例展示如何使用 Aptos SDK 发送交易
+ */
+
+import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+async function example() {
+  console.log(
+    "此示例将创建两个账户（Alice 和 Bob）并发送一笔转账交易到 Bob 的账户",
+  );
+
+  // 0. 设置客户端和测试账户
+  const config = new AptosConfig({ network: Network.DEVNET });
+  const aptos = new Aptos(config);
+
+  let alice = Account.generate();
+  let bob = Account.generate();
+  let carol = Account.generate();
+
+  console.log("=== 地址 ===\n");
+  console.log(`Alice 的地址是: ${alice.accountAddress}`);
+  console.log(`Bob 的地址是: ${bob.accountAddress}`);
+  console.log(`Carol 的地址是: ${carol.accountAddress}`);
+
+  console.log("\n=== 注资账户 ===\n");
+  await aptos.fundAccount({
+    accountAddress: alice.accountAddress,
+    amount: 100_000_000,
+  });
+  await aptos.fundAccount({
+    accountAddress: bob.accountAddress,
+    amount: 100_000_000,
+  });
+  await aptos.fundAccount({
+    accountAddress: carol.accountAddress,
+    amount: 100_000_000,
+  });
+  console.log("已完成 Alice、Bob 和 Carol 账户的注资");
+
+  // 1. 构建
+  console.log("\n=== 1. 构建交易 ===\n");
+  const transaction = await aptos.transaction.build.multiAgent({
+    sender: alice.accountAddress,
+    secondarySignerAddresses: [bob.accountAddress],
+    data: {
+      // 在此处替换您的多代理函数
+      function:
+        "<替换为您的多代理 Move 入口函数> (语法 {address}::{module}::{function})",
+      functionArguments: [],
+    },
+  });
+  console.log("交易:", transaction);
+
+  // 2. 模拟（可选）
+  console.log("\n === 2. 模拟响应（可选）=== \n");
+  const [userTransactionResponse] = await aptos.transaction.simulate.multiAgent(
+    {
+      signerPublicKey: alice.publicKey,
+      secondarySignersPublicKeys: [bob.publicKey],
+      transaction,
+    },
+  );
+  console.log(userTransactionResponse);
+
+  // 3. 签名
+  console.log("\n=== 3. 交易签名 ===\n");
+  const aliceSenderAuthenticator = aptos.transaction.sign({
+    signer: alice,
+    transaction,
+  });
+  const bobSenderAuthenticator = aptos.transaction.sign({
+    signer: bob,
+    transaction,
+  });
+  console.log(aliceSenderAuthenticator);
+  console.log(bobSenderAuthenticator);
+
+  // 4. 提交
+  console.log("\n=== 4. 提交交易 ===\n");
+  const committedTransaction = await aptos.transaction.submit.multiAgent({
+    transaction,
+    senderAuthenticator: aliceSenderAuthenticator,
+    additionalSignersAuthenticators: [bobSenderAuthenticator],
+  });
+  console.log("已提交交易哈希:", committedTransaction.hash);
+
+  // 5. 等待结果
+  console.log("\n=== 5. 等待交易结果 ===\n");
+  const executedTransaction = await aptos.waitForTransaction({
+    transactionHash: committedTransaction.hash,
+  });
+  console.log(executedTransaction);
+}
+
+example();
+```
+
+## 常见错误
+
+`NUMBER_OF_SIGNER_ARGUMENTS_MISMATCH` - 当您尝试为不需要该数量账户的函数进行多代理签名时，会发生此错误。例如，如果您尝试对 `0x1::aptos_account::transfer` 函数使用多个签名 - 该函数仅需要一个地址，因此当提供多个地址时会报错。
