@@ -1,23 +1,21 @@
 ---
-主題: "創造和管理帳戶口"
+title: "创建和管理账户"
 ---
 
 import { Callout } from 'nextra/components'
 
-# 創造和管理帳戶口
+# 创建和管理账户
 
-這裡有幾種方法用 TypeScript SDK 去生成Aptos的帳戶。你可以使用:
-
+使用 TypeScript SDK 有几种方式可以生成账户凭证。你可以使用：
 - `Account.generate()`
 - `Account.fromPrivateKey()`
 - `Account.fromDerivationPath()`
 
-`Account.generate()` 是最常使用的方法去生成一個全新的私鑰帳戶。
-
-它默認使用`ED25519`解密私鑰,但您也可以手動指定您喜歡的簽名標準:
+`Account.generate()` 是最常用的为新账户创建密钥的方法。
+它默认使用 `ED25519` 密钥编码，但你也可以手动指定偏好的签名方案：
 
 ```ts
-const account = Account.generate(); // defaults to Legacy Ed25519
+const account = Account.generate(); // 默认为 Legacy Ed25519
 const account = Account.generate({ scheme: SigningSchemeInput.Secp256k1Ecdsa }); // Single Sender Secp256k1
 const account = Account.generate({
   scheme: SigningSchemeInput.Ed25519,
@@ -26,12 +24,12 @@ const account = Account.generate({
 ```
 
 <Callout type="info">
-根據 [AIP-55](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-55.md) SDK 支援「Legacy」和「Unified」身份驗證.“Legacy”包括“ED25519”和“MultiED25519”，“Unified”包括“SingleSender”和“MultiSender”驗證器。
+根据 [AIP-55](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-55.md)，SDK 支持 `Legacy` 和 `Unified` 认证方式。`Legacy` 包含 `ED25519` 和 `MultiED25519`，而 `Unified` 包含 `SingleSender` 和 `MultiSender` 认证器。
 </Callout>
 
-當你產生了新的憑證，你 **一定要** 把資金傳入，讓aptos的網路知道它的存在。 
+生成凭证后，你**必须**为其注资，网络才能识别该账户的存在。
 
-在測試的環境中，這個可以使用以下的命令去領取測試幣完成:
+在本地网络/开发网络中，可以通过运行以下命令使用 faucet 完成：
 
 ```ts filename="fund.ts"
 const transaction = await aptos.fundAccount({
@@ -40,35 +38,63 @@ const transaction = await aptos.fundAccount({
 });
 ```
 
-## 表示帳戶的其他方式
-如果你有私鑰, 或同等表示,你可以使用它們去創建 `Account` 物件在使用 TypeScript SDK 時管理這些憑證。 
+对于测试网络，你可以使用此处的铸币页面[here](/network/faucet)。
 
-這裡有一些例子是教你怎麼使用具體的解碼方案：
+## 其他表示账户的方式
+如果你拥有私钥或等效表示形式，可以使用它们创建 `Account` 对象，在使用 TypeScript SDK 时管理这些凭证。
 
-### 從私鑰生成帳戶
+以下是几个展示如何使用特定编码方案实现的示例。
 
-SDK 支援使用「fromPrivateKey()」靜態方法從私鑰衍生出帳戶。
-另外，該方法支援從私鑰和帳戶地址衍生帳戶。
-此方法使用本地計算，因此適合用於衍生尚未輪換身份驗證金鑰的「帳戶」。
+### 从私钥派生账户
+
+SDK 支持使用 `fromPrivateKey()` 静态方法从私钥派生账户。
+此外，该方法还支持从私钥和账户地址派生账户。
+该方法使用本地计算，因此用于派生尚未进行认证密钥轮换的 `Account`。
 
 ```ts
-// to derive an account with a legacy Ed25519 key scheme
+// 使用 legacy Ed25519 密钥方案派生账户
 const privateKey = new Ed25519PrivateKey(privateKeyBytes);
 const account = Account.fromPrivateKey({ privateKey });
 
-// to derive an account with a Single Sender Ed25519 key scheme
+// 使用 Single Sender Ed25519 密钥方案派生账户
 const privateKey = new Ed25519PrivateKey(privateKeyBytes);
 const account = Account.fromPrivateKey({ privateKey, legacy: false });
 
-// to derive an account with a Single Sender Secp256k1 key scheme
+// 使用 Single Sender Secp256k1 密钥方案派生账户
 const privateKey = new Secp256k1PrivateKey(privateKeyBytes);
 const account = Account.fromPrivateKey({ privateKey });
 
-// to derive an account with a private key and account address
+// 使用私钥和账户地址派生账户
 const privateKey = new Ed25519PrivateKey(privateKeyBytes);
 const address = AccountAddress.from(address);
 const account = Account.fromPrivateKey({ privateKey, address });
 ```
-### 從派生路徑生成帳戶
 
-SDK支援使用「fromDerivationPath()」靜態方法從衍生路徑生成帳戶。
+### 从派生路径派生账户
+
+SDK 支持使用 `fromDerivationPath()` 静态方法从派生路径派生账户。
+
+```ts
+// 使用传统的 Ed25519 密钥方案派生账户
+const { mnemonic, address, path } = wallet;
+const account = Account.fromDerivationPath({
+  path,
+  mnemonic,
+  scheme: SigningSchemeInput.Ed25519,
+});
+
+// 使用 Single Sender Ed25519 密钥方案派生账户
+const { mnemonic, address, path } = wallet;
+const account = Account.fromDerivationPath({
+  path,
+  mnemonic,
+  scheme: SigningSchemeInput.Ed25519,
+  legacy: false,
+});// 派生一个使用 Single Sender Secp256k1 密钥方案的账户
+const { mnemonic, address, path } = wallet;
+const account = Account.fromDerivationPath({
+  path,
+  mnemonic,
+  scheme: SigningSchemeInput.Secp256k1Ecdsa,
+});
+```
