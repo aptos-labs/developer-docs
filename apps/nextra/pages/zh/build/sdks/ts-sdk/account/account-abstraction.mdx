@@ -1,0 +1,630 @@
+---
+title: "账户抽象"
+---
+
+import { Steps, Callout } from "nextra/components";
+
+# 账户抽象
+
+Aptos 上的账户抽象 (AA) **通过 Move 模块实现自定义交易验证逻辑**，允许账户在原生加密方案之外定义自己的规则。
+
+## 核心概念
+
+### `FunctionInfo`
+
+定义待调用验证函数的结构体。
+
+```move
+struct FunctionInfo has copy, drop, store {
+    module_address: address,
+    module_name: String,
+    function_name: String
+}
+```
+
+验证函数负责使用 Move 定义验证逻辑。验证成功时应返回一个 signer，否则中止交易。
+可添加到账户上的唯一有效验证函数签名如下：
+
+```move
+// 函数在验证成功时可返回 signer，否则中止交易
+public fun authenticate(account: signer, auth_data: AbstractionAuthData): signer;
+```
+
+**示例 (Move)**
+
+```move
+module deployer::authenticator {
+    use aptos_framework::auth_data::{AbstractionAuthData};
+
+    public fun authenticate(account: signer, auth_data: AbstractionAuthData): signer {
+        // ... 验证逻辑 ...
+        account
+    }
+}
+```
+
+**示例 (Typescript)**
+
+```typescript
+const authenticationFunction = `${deployer}::authenticator::authenticate`;
+```
+
+### `AbstractionAuthData`
+
+定义传递给验证函数的验证数据的枚举变体。包含：
+
+- `digest`: 签名消息的 sha256 哈希值
+- `authenticator`: 将传递给验证函数的抽象字节数据，用于验证交易
+
+```move
+enum AbstractionAuthData has copy, drop {
+    V1 { 
+        digest: vector<u8>,       // 签名消息的 SHA3-256 哈希
+        authenticator: vector<u8> // 自定义验证数据（如签名）
+    },
+}
+```
+
+**为什么 `digest` 很重要？**
+
+MoveVM 会检查 `digest` 以确保提交的交易签名消息与 `AbstractionAuthData` 中呈现的消息一致。
+这很重要，因为它允许验证函数针对正确的交易验证签名。
+
+例如，如果你想允许某个公钥代表用户签署交易，可以授权该公钥对特定 payload 进行签名。
+但如果恶意用户发送了正确公钥但 `digest` 不同 payload 的签名，该签名将无效。
+
+**示例 (Move)**
+
+此示例展示了一个简单的验证逻辑，检查 authenticator 是否等于 `"hello world"`。
+
+```move
+module deployer::hello_world_authenticator {
+    use aptos_framework::auth_data::{Self, AbstractionAuthData};
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer {
+        let authenticator = *auth_data::authenticator(&auth_data);
+        assert!(authenticator == b"hello world", 1);
+        account
+    }
+}
+```
+
+**示例 (Typescript)**
+
+```typescript
+const abstractedAccount = new AbstractedAccount({
+  /**
+   * 签名器函数的执行结果将作为 `authenticator` 字段存在于 `AbstractionAuthData` 枚举变体中。
+   */
+  signer: () => new TextEncoder().encode("hello world"),
+  /**
+   * 需要调用的认证函数。
+   */
+  authenticationFunction: `${deployer}::hello_world_authenticator::authenticate`,
+});
+```
+
+## 最小化分步指南
+
+<Steps>
+
+### 1. 部署认证模块
+
+本示例中，我们将部署 `hello_world_authenticator` 模块。`authenticate` 函数接收一个 `AbstractionAuthData`，若认证成功则返回 `signer`，否则终止交易。认证逻辑仅允许 authenticator 等于 `"hello world"` 的交易。
+
+```move
+module deployer::hello_world_authenticator {
+    use aptos_framework::auth_data::{Self, AbstractionAuthData};
+    use std::bcs;
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer {
+        let authenticator = *auth_data::authenticator(&auth_data);
+        assert!(authenticator == b"hello world", 1);
+        account
+    }
+}
+```
+
+部署模块可使用 [Aptos CLI](../../../../build/cli) 的以下命令。假设您已通过 `aptos init` 设置工作区，并在 `Move.toml` 文件中声明了命名地址。
+
+```bash
+aptos move publish --named-addresses deployer=0x1234567890123456789012345678901234567890
+```
+
+### 2. 设置环境
+
+部署完成后，您可以设置环境。本示例中，我们将使用 Devnet 并创建名为 `alice` 的账户作为用户。
+
+```ts
+const DEPLOYER = "0x<hello_world_authenticator_deployer>"
+
+const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET }));
+
+const alice = Account.generate();
+
+const authenticationFunctionInfo = `${deployer}::hello_world_authenticator::authenticate`;
+```
+
+### 3. （可选）检查账户抽象是否启用
+
+在要求启用账户抽象前，您可以通过调用 `isAccountAbstractionEnabled` 函数检查账户是否已启用账户抽象。该函数返回布尔值表示账户抽象状态。
+
+```ts
+const accountAbstractionStatus = await aptos.abstraction.isAccountAbstractionEnabled({
+    accountAddress: alice.accountAddress,
+    authenticationFunction,
+});
+
+console.log("账户抽象状态: ", accountAbstractionStatus);
+```
+
+### 4. 启用认证功能
+
+若账户未启用账户抽象，您需要通过调用 `enableAccountAbstractionTransaction` 函数为账户启用认证功能。这将创建一个需要签名并提交到网络的原始交易。本示例中，`alice` 账户将被启用。
+
+```ts
+const transaction = aptos.abstraction.enableAccountAbstractionTransaction({
+  accountAddress: alice.accountAddress,
+  authenticationFunction: `${deployer}::hello_world_authenticator::authenticate`,
+});
+
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  transaction,
+  signer: alice.signer,
+});
+
+await aptos.waitForTransaction({ hash: pendingTransaction.hash });
+
+console.log("Account Abstraction enabled for account: ", alice.accountAddress);
+```
+
+<details>
+<summary>
+  <b>钱包适配器示例</b>
+</summary>
+
+<Callout>
+  如果使用钱包适配器，可以通过 `signTransaction` 函数在交易提交到网络前进行签名。
+</Callout>
+
+```tsx
+export default function useEnableAbstraction() {
+  const { account, signTransaction } = useWallet();
+
+  return {
+    enableAbstraction: async () => {
+      if (!account) return;
+
+      // 注意：Aptos 客户端必须在应用某处定义
+      const transaction = aptos.abstraction.enableAccountAbstractionTransaction({
+        accountAddress: account.address,
+        authenticationFunction: `${deployer}::hello_world_authenticator::authenticate`,
+      });
+
+      const senderAuthenticator = await signTransaction(txn);
+
+      const pendingTxn = await aptos.transaction.submit.simple({
+        transaction: txn,
+        senderAuthenticator,
+      });
+
+      return await aptos.waitForTransaction({ hash: pendingTxn.hash });
+    }
+  }
+}
+```
+
+</details>
+
+### 5. 创建抽象账户
+
+启用认证函数后，可以创建用于交易签名的抽象账户对象。需要提供用于验证交易的认证函数，
+以及用于签署交易的 `signer` 函数。`signer` 函数负责生成传递给认证函数的验证器。
+
+```ts
+const abstractedAccount = new AbstractedAccount({
+  accountAddress: alice.accountAddress,
+  signer: () => new TextEncoder().encode("hello world"),
+  authenticationFunction: `${deployer}::hello_world_authenticator::authenticate`,
+});
+```
+
+### 6. 使用抽象账户签署并提交交易
+
+创建抽象账户后，可正常使用它来签署交易。需确保交易中的 `sender` 字段
+与抽象账户地址一致。
+
+```ts
+const coinTransferTransaction = await aptos.transaction.build.simple({
+  sender: abstractedAccount.accountAddress,
+  data: {
+    function: "0x1::coin::transfer",
+    typeArguments: ["0x1::aptos_coin::AptosCoin"],
+    functionArguments: [alice.accountAddress, 100],
+  },
+});
+
+const pendingCoinTransferTransaction = await aptos.transaction.signAndSubmitTransaction({
+  transaction: coinTransferTransaction,
+  signer: abstractedAccount,
+});
+
+await aptos.waitForTransaction({ transactionHash: pendingCoinTransferTransaction.hash });
+
+console.log("代币转账交易已提交！ ", pendingCoinTransferTransaction.hash);
+```
+
+### 7. 结论
+
+要验证您是否已成功使用抽象账户签名并提交交易，您可以使用区块链浏览器检查交易记录。如果交易签名中包含 `function_info` 和 `auth_data` 字段，则表明您已成功使用账户抽象功能！完整端到端演示代码可在[此处](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/public_key_authenticator_account_abstraction.ts)查看。
+
+![交易签名](https://i.imgur.com/HZylFnc.png)
+
+</Steps>
+
+## 复杂分步指南
+
+现在您已基本了解账户抽象的工作原理，接下来我们将深入探讨一个更复杂的示例。
+
+在本示例中，我们将创建一个认证器，允许用户授权特定公钥代表抽象账户签署交易。
+
+<Steps>
+
+### 1. 创建认证器模块
+
+我们将部署 `public_key_authenticator` 模块，该模块实现以下两个功能：
+- 允许用户授权和/或撤销代表用户签名的公钥
+- 允许用户使用账户抽象机制代表他人进行认证
+
+```move
+module deployer::public_key_authenticator {
+    use std::signer;
+    use aptos_std::smart_table::{Self, SmartTable};
+    use aptos_std::ed25519::{
+        Self,
+        new_signature_from_bytes,
+        new_unvalidated_public_key_from_bytes,
+        unvalidated_public_key_to_bytes
+    };
+    use aptos_framework::bcs_stream::{Self, deserialize_u8};
+    use aptos_framework::auth_data::{Self, AbstractionAuthData};
+
+    // ====== 错误码 ====== //
+
+    const EINVALID_PUBLIC_KEY: u64 = 0x20000;
+    const EPUBLIC_KEY_NOT_PERMITTED: u64 = 0x20001;
+    const EENTRY_ALREADY_EXISTS: u64 = 0x20002;
+    const ENO_PERMISSIONS: u64 = 0x20003;
+    const EINVALID_SIGNATURE: u64 = 0x20004;
+
+    // ====== 数据结构 ====== //
+
+    struct PublicKeyPermissions has key {
+        public_key_table: SmartTable<vector<u8>, bool>,
+    }
+
+    // ====== 认证器 ====== //
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(&account);
+        assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
+        let permissions = borrow_global<PublicKeyPermissions>(account_addr);
+
+        // 从认证器中提取公钥和签名
+        let authenticator = *auth_data::authenticator(&auth_data);
+        let stream = bcs_stream::new(authenticator);
+        let public_key = new_unvalidated_public_key_from_bytes(
+            bcs_stream::deserialize_vector<u8>(&mut stream, |x| deserialize_u8(x))
+        );
+        let signature = new_signature_from_bytes(
+            bcs_stream::deserialize_vector<u8>(&mut stream, |x| deserialize_u8(x))
+        );
+
+        // 检查公钥是否已授权
+        assert!(smart_table::contains(&permissions.public_key_table, unvalidated_public_key_to_bytes(&public_key)), EPUBLIC_KEY_NOT_PERMITTED);
+
+        // 验证签名
+        let digest = *auth_data::digest(&auth_data);
+        assert!(ed25519::signature_verify_strict(&signature, &public_key, digest), EINVALID_SIGNATURE);
+
+        account
+    }
+
+    // ====== 核心功能 ====== //
+
+    public entry fun permit_public_key(
+        signer: &signer,
+        public_key: vector<u8>
+    ) acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(signer);
+        assert!(std::vector::length(&public_key) == 32, EINVALID_PUBLIC_KEY);
+        
+        if (!exists<PublicKeyPermissions>(account_addr)) {
+            move_to(signer, PublicKeyPermissions {
+                public_key_table: smart_table::new(),
+            });
+        };
+
+        let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
+        assert!(
+            !smart_table::contains(&permissions.public_key_table, public_key), 
+            EENTRY_ALREADY_EXISTS
+        );
+
+        smart_table::add(&mut permissions.public_key_table, public_key, true);
+    
+    }
+
+    public entry fun revoke_public_key(
+        signer: &signer,
+        public_key: vector<u8>
+    ) acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(signer);
+        
+        assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
+
+        let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
+        smart_table::remove(&mut permissions.public_key_table, public_key);
+    }
+
+}
+```
+
+让我们分解这个模块...
+
+**存储公钥**
+
+`PublicKeyPermissions` 结构体是一个包含 `SmartTable` 的键，用于存储公钥并确定是否允许该公钥代表用户签署交易。
+
+```move
+module deployer::public_key_authenticator {
+  // ...
+ 
+  struct PublicKeyPermissions has key {
+      public_key_table: SmartTable<vector<u8>, bool>,
+  } 
+  
+}
+```
+
+**授权与撤销公钥**
+
+我们定义了两个入口函数来授权和撤销公钥。这些函数用于在 `PublicKeyPermissions` 结构体中添加和移除公钥。
+
+```move
+module deployer::public_key_authenticator {
+  // ...
+
+      public entry fun permit_public_key(
+        signer: &signer,
+        public_key: vector<u8>
+    ) acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(signer);
+        assert!(std::vector::length(&public_key) == 32, EINVALID_PUBLIC_KEY);
+        
+        if (!exists<PublicKeyPermissions>(account_addr)) {
+            move_to(signer, PublicKeyPermissions {
+                public_key_table: smart_table::new(),
+            });
+        };
+
+        let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
+        assert!(
+            !smart_table::contains(&permissions.public_key_table, public_key), 
+            EENTRY_ALREADY_EXISTS
+        );
+
+        smart_table::add(&mut permissions.public_key_table, public_key, true);
+    
+    }
+
+    public entry fun revoke_public_key(
+        signer: &signer,
+        public_key: vector<u8>
+    ) acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(signer);
+        
+        assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
+
+        let permissions = borrow_global_mut<PublicKeyPermissions>(account_addr);
+        smart_table::remove(&mut permissions.public_key_table, public_key);
+    }
+}
+```
+
+**代理身份验证**
+
+`authenticate` 函数是核心功能，允许用户通过账户抽象机制代表他人进行身份验证。`authenticator` 将包含用户的 **公钥** 和 **签名**。我们将验证公钥是否被授权以及签名是否有效。
+
+签名是对 `digest` 进行签名的结果。`digest` 是 **签名消息** 的 sha256 哈希值，包含交易相关信息。通过对 `digest` 签名，我们确认用户已批准提交的特定交易。
+
+```move
+module deployer::public_key_authenticator {
+    // ...
+
+    public fun authenticate(
+        account: signer,
+        auth_data: AbstractionAuthData
+    ): signer acquires PublicKeyPermissions {
+        let account_addr = signer::address_of(&account);
+        assert!(exists<PublicKeyPermissions>(account_addr), ENO_PERMISSIONS);
+        let permissions = borrow_global<PublicKeyPermissions>(account_addr);
+
+        // 从认证器中提取公钥和签名
+        let authenticator = *auth_data::authenticator(&auth_data);
+        let stream = bcs_stream::new(authenticator);
+        let public_key = new_unvalidated_public_key_from_bytes(
+            bcs_stream::deserialize_vector<u8>(&mut stream, |x| deserialize_u8(x))
+        );
+        let signature = new_signature_from_bytes(
+            bcs_stream::deserialize_vector<u8>(&mut stream, |x| deserialize_u8(x))
+        );
+
+        // 检查公钥是否被授权
+        assert!(smart_table::contains(&permissions.public_key_table, unvalidated_public_key_to_bytes(&public_key)), EPUBLIC_KEY_NOT_PERMITTED);
+
+        // 验证签名
+        let digest = *auth_data::digest(&auth_data);
+        assert!(ed25519::signature_verify_strict(&signature, &public_key, digest), EINVALID_SIGNATURE);
+
+        account
+    }
+}
+```
+
+要部署该模块，您可以使用 [Aptos CLI](../../../../build/cli) 的以下命令。我们假设您已经通过 `aptos init` 设置了工作区，并在 `Move.toml` 文件中声明了命名地址。
+
+```bash
+aptos move publish --named-addresses deployer=0x1234567890123456789012345678901234567890
+```
+
+### 2. 设置环境
+
+部署完成后，您可以设置环境。在本示例中，我们将使用 Devnet 并创建一个名为 `alice` 的账户作为被认证用户，以及 `bob` 作为被授权代表 `alice` 签署交易的用户。
+
+```ts
+const DEPLOYER = "0x<public_key_authenticator_deployer>"
+
+const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET }));
+
+const alice = Account.generate();
+const bob = Account.generate();
+
+const authenticationFunctionInfo = `${deployer}::public_key_authenticator::authenticate`;
+```
+
+### 3. （可选）检查账户抽象是否启用
+
+在启用认证功能之前，我们可以通过调用 `isAccountAbstractionEnabled` 函数来检查账户是否已启用账户抽象。这将返回一个布尔值，表示账户是否启用了账户抽象。
+
+```ts
+const accountAbstractionStatus = await aptos.abstraction.isAccountAbstractionEnabled({
+    accountAddress: alice.accountAddress,
+    authenticationFunction,
+});
+
+console.log("Account Abstraction status: ", accountAbstractionStatus);
+```
+
+### 4. 启用认证功能
+
+假设账户尚未启用账户抽象，我们需要为账户启用认证功能。这可以通过调用 `enableAccountAbstractionTransaction` 函数来完成。这会创建一个需要签名并提交到网络的原始交易。在本示例中，`alice` 将是被启用的账户。
+
+```ts
+const transaction = await aptos.abstraction.enableAccountAbstractionTransaction({
+  accountAddress: alice.accountAddress,
+  authenticationFunction,
+});
+
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  transaction,
+  signer: alice.signer,
+});
+
+await aptos.waitForTransaction({ hash: pendingTransaction.hash });
+
+console.log("Account Abstraction enabled for account: ", alice.accountAddress);
+```
+
+### 5. 授权 Bob 的公钥
+
+现在我们已经启用了认证功能，可以授权 `bob` 的公钥代表 `alice` 签署交易。
+
+```ts
+const enableBobPublicKeyTransaction = await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      function: `${alice.accountAddress}::public_key_authenticator::permit_public_key`,
+      typeArguments: [],
+      functionArguments: [bob.publicKey.toUint8Array()],
+    },
+  });
+
+const pendingEnableBobPublicKeyTransaction = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction: enableBobPublicKeyTransaction,
+});
+
+await aptos.waitForTransaction({ hash: pendingEnableBobPublicKeyTransaction.hash });
+
+console.log(`Enable Bob's public key transaction hash: ${pendingEnableBobPublicKeyTransaction.hash}`);
+```
+
+### 6. 创建抽象账户
+
+现在我们已经授权了 `bob` 的公钥，可以创建一个抽象账户，用于代表 `alice` 签署交易。
+**注意 `signer` 函数使用的是 `bob` 的签名器。**
+
+```ts
+const abstractedAccount = new AbstractedAccount({
+  accountAddress: alice.accountAddress,
+  signer: (digest) => {
+      const serializer = new Serializer();
+      bob.publicKey.serialize(serializer);
+      bob.sign(digest).serialize(serializer);
+      return serializer.toUint8Array();
+  },
+  authenticationFunction,
+});
+```
+
+### 7. 使用抽象账户签署并提交交易
+
+创建抽象账户后，我们可以正常使用它来签署交易。需要注意的是，交易中的 `sender` 字段必须与抽象账户地址一致。
+
+```ts
+const coinTransferTransaction = new aptos.transaction.build.simple({
+  sender: abstractedAccount.accountAddress,
+  data: {
+    function: "0x1::coin::transfer",
+    typeArguments: ["0x1::aptos_coin::AptosCoin"],
+    functionArguments: [alice.accountAddress, 100],
+  },
+});
+
+const pendingCoinTransferTransaction = await aptos.transaction.signAndSubmitTransaction({
+  transaction: coinTransferTransaction,
+  signer: abstractedAccount,
+});
+
+await aptos.waitForTransaction({ hash: pendingCoinTransferTransaction.hash });
+
+console.log("Coin transfer transaction submitted! ", pendingCoinTransferTransaction.hash);
+```
+
+### 8. 结论
+
+要验证是否成功使用抽象账户签署并提交了交易，可以通过区块链浏览器检查该交易。如果交易签名中包含 `function_info` 和 `auth_data` 字段，则表示您已成功使用账户抽象功能！完整端到端示例代码可在此处查看 [here](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/public_key_authenticator_account_abstraction.ts)
+
+![交易签名](https://i.imgur.com/3U40YSb.png)
+
+</Steps>
+
+## 管理操作
+
+如需禁用某个账户的账户抽象功能，可以使用 `disableAccountAbstractionTransaction` 方法。如果不指定认证函数，该交易将禁用该账户的所有认证函数。
+
+```ts
+const transaction = aptos.abstraction.disableAccountAbstractionTransaction({
+  accountAddress: alice.accountAddress,
+  /**
+   * 指定要禁用的认证函数。若保持 `undefined` 则禁用所有认证函数
+  */
+  authenticationFunction,
+});
+```
+
+## 应用用户体验
+
+希望利用账户抽象功能的应用程序，应当提供允许用户检查账户是否启用了账户抽象功能，并在未启用时进行启用的用户体验。
+
+下图展示了启用账户抽象功能的用户体验流程。![账户抽象用户体验](https://i.imgur.com/1xcrFjG.png)

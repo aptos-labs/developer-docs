@@ -1,0 +1,338 @@
+---
+title: "TypeScript SDK 快速入门"
+---
+
+import { Callout, Steps, Tabs } from 'nextra/components'
+
+# TypeScript SDK 快速入门
+
+<Callout type="info">
+完整示例代码可在页面底部的[完整快速入门代码](#full-quickstart-code)处查看。
+</Callout>
+
+<Steps>
+
+### 初始化项目
+
+这将初始化一个包含 `quickstart.ts` 的 TypeScript 项目
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+    ```bash
+    npm init && npm add -D typescript @types/node ts-node && npx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pnpm init && pnpm add -D typescript @types/node ts-node && pnpx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    yarn init -y && yarn add -D typescript @types/node ts-node && npx tsc --init && mkdir src && echo 'async function example() { console.log("Running example!")}; example()' > src/quickstart.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### 测试初始化
+
+运行以下命令测试项目是否初始化成功：
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+    ```bash
+    npx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pnpx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    yarn ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### 使用包管理器安装 TypeScript SDK：
+
+```bash npm2yarn
+npm i @aptos-labs/ts-sdk
+```
+
+### 设置 `Aptos` 客户端
+
+你可以使用 `Aptos` 对象来处理所有需要连接 Aptos 网络的操作。创建该对象时会自动建立连接。
+
+```ts filename="quickstart.ts"
+import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+// 通过 AptosConfig 指定要连接的网络
+async function example() {
+  console.log(
+    "本示例将创建两个账户（Alice 和 Bob），为其注资并进行转账操作。",
+  );
+
+  // 配置客户端
+  const config = new AptosConfig({ network: Network.DEVNET });
+  const aptos = new Aptos(config);
+}
+
+example()
+```
+
+<Callout type="info">
+(高级) 如需连接到特定节点，可在 `AptosConfig` 中通过指定 `fullnode` URL 进行设置。例如：`fullnode: http://localhost:8080/v1`。
+</Callout>
+
+### 从链上获取数据
+
+你可以使用 `Aptos` 客户端从链上获取各种数据，例如网络本身的信息或特定账户信息。
+
+```ts filename="quickstart.ts"
+...
+const ledgerInfo = await aptos.getLedgerInfo();
+const modules = await aptos.getAccountModules({ accountAddress: "0x123" });
+const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
+...
+```
+
+### 发送交易
+
+你可以发送交易来改变账本状态。交易允许你发送 APT 代币、触发 Move 模块、交易 NFT 等。你可以在[这里](building-transactions.mdx)找到关于交易的深入教程。
+
+首先，以下是发送基础 APT 转账交易的方法。
+
+#### 1. 创建账户
+
+要创建新账户，首先生成新的凭证，然后为账户注资。在 localnet/devnet 上，你可以通过向拥有大量测试 APT 的 "faucet" 申请来以编程方式为账户注资。
+```ts filename="quickstart.ts"
+...
+// 生成一个新的账户密钥对
+const alice: Account = Account.generate();
+
+// 在链上为该账户注资。注资操作会在链上创建该账户。
+await aptos.fundAccount({
+  accountAddress: alice.accountAddress,
+  amount: 100000000,
+});
+
+// 同时创建第二个账户用于接收代币转账
+const bob: Account = Account.generate();
+
+// 在链上为该账户注资
+await aptos.fundAccount({
+  accountAddress: bob.accountAddress,
+  amount: 100000000,
+});
+...
+```
+
+#### 2. 构建交易
+
+你可以通过 `aptos.transaction.build.simple({...})` 构建交易，需要指定：
+
+1. `sender` - 发送交易的账户。该账户将支付 gas 费用。
+2. `data` - Aptos 执行交易所需的信息。
+    1. `function` - 要调用的链上智能合约，格式为 `<account_address>::<move_module>::<function>`。
+    2. `functionArguments` - 这些参数取决于被调用的函数。你可以通过区块链浏览器（例如[这个](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000001/modules/code/aptos_account?network=mainnet)）查询账户和模块来查找函数所需的参数。
+
+例如：
+
+```ts filename="quickstart.ts"
+...
+const transaction = await aptos.transaction.build.simple({
+  sender: alice.accountAddress,
+  data: {
+	  // Move 入口函数
+    function: "0x1::aptos_account::transfer",
+    functionArguments: [bob.accountAddress, 100],
+  },
+});
+...
+```
+
+<Callout type="info">
+在某些情况下，你也可以使用 SDK 中的简化函数，例如 [`transferCoinTransaction`](https://explorer.aptoslabs.com/account/0x0000000000000000000000000000000000000000000000000000000000000001/modules/code/aptos_account?network=mainnet)。
+</Callout>
+
+#### 3. 签名并提交
+
+签名证明你拥有或管理正在执行交易的账户。这很重要，因为发送者必须为网络执行交易的工作支付 gas 费用。
+
+签名后，你可以将其提交到网络进行链上验证和执行。
+
+你可以使用 `aptos.signAndSubmitTransaction` 将这两个步骤合二为一：
+
+```ts filename="quickstart.ts"
+...
+// 同时完成签名和提交（虽然这两个步骤也可以分开进行）
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction,
+});
+...
+```
+
+#### 4. 等待交易完成
+
+你可以运行 `aptos.waitForTransaction` 来确保你的代码在交易被处理和应用后执行。
+
+这也有助于你获取提交后可能出现的错误，例如交易被拒绝的情况。
+
+```ts filename="quickstart.ts"
+...
+const executedTransaction = await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
+...
+```
+</Steps>
+
+## 完整快速入门代码
+
+### 运行快速入门
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tabs.Tab>
+    ```bash
+    npx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pnpx ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    yarn ts-node src/quickstart.ts
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+```ts filename="quickstart.ts"
+/**
+ * 此示例展示如何使用 Aptos 客户端创建账户、注资并在账户间进行转账。
+ */
+
+import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const APTOS_COIN = "0x1::aptos_coin::AptosCoin";
+const COIN_STORE = `0x1::coin::CoinStore<${APTOS_COIN}>`;
+const ALICE_INITIAL_BALANCE = 100_000_000;
+const BOB_INITIAL_BALANCE = 100;
+const TRANSFER_AMOUNT = 100;
+
+async function example() {
+  console.log(
+    "此示例将创建两个账户（Alice 和 Bob），为它们注资，并在它们之间进行转账。",
+  );
+
+  // 设置客户端
+  const config = new AptosConfig({ network: Network.DEVNET });
+  const aptos = new Aptos(config);
+
+  // 生成两个账户凭证
+  // 每个账户都有一个私钥、公钥和地址
+  const alice = Account.generate();
+  const bob = Account.generate();
+
+  console.log("=== 地址 ===\n");
+  console.log(`Alice 的地址是: ${alice.accountAddress}`);
+  console.log(`Bob 的地址是: ${bob.accountAddress}`);
+
+  // 使用水龙头为账户注资
+  console.log("\n=== 为账户注资 ===\n");
+
+  await aptos.fundAccount({
+    accountAddress: alice.accountAddress,
+    amount: ALICE_INITIAL_BALANCE,
+  });
+
+  await aptos.fundAccount({
+    accountAddress: bob.accountAddress,
+    amount: BOB_INITIAL_BALANCE,
+  });
+  console.log("Alice 和 Bob 的账户已成功注资！");
+
+  // 查询新注资账户的余额
+  console.log("\n=== 余额 ===\n");
+  const aliceAccountBalance = await aptos.getAccountResource({
+    accountAddress: alice.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const aliceBalance = Number(aliceAccountBalance.coin.value);
+  console.log(`Alice 的余额是: ${aliceBalance}`);
+
+  const bobAccountBalance = await aptos.getAccountResource({
+    accountAddress: bob.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const bobBalance = Number(bobAccountBalance.coin.value);
+  console.log(`Bob 的余额是: ${bobBalance}`);
+
+  // 从 Alice 账户向 Bob 账户发送交易
+  const txn = await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      // Aptos 上的所有交易都是通过智能合约实现的。
+      function: "0x1::aptos_account::transfer",
+      functionArguments: [bob.accountAddress, 100],
+    },
+  });
+
+  console.log("\n=== 转账交易 ===\n");
+  // 同时进行签名和提交
+  const committedTxn = await aptos.signAndSubmitTransaction({
+    signer: alice,
+    transaction: txn,
+  });
+  // 等待 Aptos 验证并执行交易
+  const executedTransaction = await aptos.waitForTransaction({
+    transactionHash: committedTxn.hash,
+  });
+  console.log("交易哈希:", executedTransaction.hash);  console.log("\n=== 转账后余额 ===\n");
+  const newAliceAccountBalance = await aptos.getAccountResource({
+    accountAddress: alice.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const newAliceBalance = Number(newAliceAccountBalance.coin.value);
+  console.log(`Alice 的余额是: ${newAliceBalance}`);
+
+  const newBobAccountBalance = await aptos.getAccountResource({
+    accountAddress: bob.accountAddress,
+    resourceType: COIN_STORE,
+  });
+  const newBobBalance = Number(newBobAccountBalance.coin.value);
+  console.log(`Bob 的余额是: ${newBobBalance}`);
+
+  // Bob 应该收到转账金额
+  if (newBobBalance !== TRANSFER_AMOUNT + BOB_INITIAL_BALANCE)
+    throw new Error("转账后 Bob 的余额不正确");
+
+  // Alice 应该保留剩余金额减去 gas 费
+  if (newAliceBalance >= ALICE_INITIAL_BALANCE - TRANSFER_AMOUNT)
+    throw new Error("转账后 Alice 的余额不正确");
+}
+
+example();
+```
+
+## 总结
+
+综上所述，您刚刚学习了如何通过交易转账 APT：
+
+1. 使用 `Aptos` 客户端连接网络
+2. 创建账户
+3. 使用客户端辅助函数如 [`aptos.getAccountModules`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.35.0/classes/Aptos.html#getAccountModules) 查询链上数据
+4. 签名并向网络提交交易
+5. 等待 Aptos 执行交易
+
+要查看完整运行示例，您可以复制并运行上方快速入门中的完整代码片段。
+
+<Callout type="info">
+为了后续开发，请务必收藏 [参考文档](https://aptos-labs.github.io/aptos-ts-sdk/) 以便查阅具体函数签名。
+
+请注意，大多数辅助函数都列在 [`Aptos` 客户端对象](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.35.0/classes/Aptos.html)上。
+</Callout>

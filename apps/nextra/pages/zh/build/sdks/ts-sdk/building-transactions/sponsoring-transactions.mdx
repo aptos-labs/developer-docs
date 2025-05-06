@@ -1,0 +1,193 @@
+---
+title: "赞助交易"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# 赞助交易
+
+通常，执行交易的账户需要支付 gas 费用。您可以通过赞助交易的方式让另一个账户来承担这些费用。
+
+这在处理复杂的智能合约时，可以帮助从中心账户统一管理费用。
+
+## 如何赞助交易
+
+<Steps>
+### 构建交易时添加参数 `withFeePayer: true`
+
+```ts filename="sponsor.ts"
+const transaction = await aptos.transaction.build.simple({
+    sender: sender.accountAddress,
+    withFeePayer: true,
+    data: {
+        // Aptos 上的所有交易都是通过智能合约实现的
+        function: "0x1::aptos_account::transfer",
+        functionArguments: [destination.accountAddress, 100],
+    },
+});
+```
+
+### 使用发送方和赞助方双重签名
+
+1. 使用发送方账户通过 `.sign` 签名
+2. 使用赞助方账户通过 `.signAsFeePayer` 签名
+
+<Callout type="warning">
+赞助方使用的是与发送方不同的签名函数（`.signAsFeePayer`）！
+</Callout>
+
+```ts filename="sponsor.ts"
+const senderAuthenticator = aptos.transaction.sign({
+    signer: sender,
+    transaction,
+});
+const feePayerAuthenticator = aptos.transaction.signAsFeePayer({
+    signer: feePayer,
+    transaction
+})
+```
+
+### （可选）模拟赞助交易
+
+在正式提交前，您可以模拟赞助交易来预览结果：
+```ts filename="sponsor.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+    signerPublicKey: sender.publicKey,
+    transaction,
+});
+```
+默认情况下，`transaction` 的 `feePayerAddress` 设置为 `0x0`，这会指示交易模拟跳过 gas 费用支付。这样您可以在不指定费用支付方的情况下模拟交易。注意 `signerPublicKey` 是可选的，如果不想检查发送方的认证密钥可以省略。
+
+您也可以通过设置 `transaction` 对象中的 `feePayerAddress` 来指定费用支付方进行模拟：
+```ts filename="sponsor.ts"
+transaction.feePayerAddress = feePayer.accountAddress;
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+    signerPublicKey: sender.publicKey,
+    feePayerPublicKey: feePayer.publicKey,
+    transaction,
+});
+```
+这种设置将验证 `feePayer` 是否有足够的余额来支付交易的 gas 费用。同样，`feePayerPublicKey` 也是可选的，如果不想检查费用支付方的认证密钥可以省略。
+
+### 合并两个签名提交交易
+
+```ts filename="sponsor.ts"
+// 4. 提交
+const committedTransaction = await aptos.transaction.submit.simple({
+    transaction,
+    senderAuthenticator: senderAuthenticator,
+    feePayerAuthenticator: feePayerAuthenticator,
+});
+```
+
+### 等待交易执行
+
+```ts filename="sponsor.ts"
+// 5. 等待交易结果
+const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
+```
+</Steps>
+
+## TypeScript 赞助交易代码示例
+
+```ts filename="sponsor.ts"
+/**
+ * 此示例展示如何使用 Aptos SDK 发送由赞助者支付的交易。
+ */
+
+import {
+    Account,
+    Aptos,
+    AptosConfig,
+    Network,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+    console.log("本示例将展示 Alice 通过赞助者向 Carol 发送交易的过程。");
+
+    // 0. 初始化客户端和测试账户
+    const config = new AptosConfig({ network: Network.DEVNET });
+    const aptos = new Aptos(config);
+
+    let alice = Account.generate();
+    let bob = Account.generate();
+    let carol = Account.generate();
+
+    console.log("=== 地址 ===\n");
+    console.log(`Alice 的地址: ${alice.accountAddress}`);
+    console.log(`Bob 的地址: ${bob.accountAddress}`);
+    console.log(`Carol 的地址: ${carol.accountAddress}`);
+
+    console.log("\n=== 账户充值 ===\n");
+    await aptos.fundAccount({
+        accountAddress: alice.accountAddress,
+        amount: 500_000_000,
+    });
+    await aptos.fundAccount({
+        accountAddress: bob.accountAddress,
+        amount: 500_000_000,
+    });
+    await aptos.fundAccount({
+        accountAddress: carol.accountAddress,
+        amount: 100,
+    });
+    console.log("账户充值完成!")
+
+    // 1. 构建交易
+    console.log("\n=== 1. 构建交易 ===\n");
+    const transaction = await aptos.transaction.build.simple({
+        sender: alice.accountAddress,
+        withFeePayer: true,
+        data: {
+            // Aptos 上的所有交易都是通过智能合约实现的
+            function: "0x1::aptos_account::transfer",
+            functionArguments: [carol.accountAddress, 100],
+        },
+    });
+    console.log("交易构建完成!")
+
+    // 2. 签名
+    console.log("\n=== 2. 交易签名 ===\n");
+    const aliceSenderAuthenticator = aptos.transaction.sign({
+        signer: alice,
+        transaction,
+    });
+    const bobSenderAuthenticator = aptos.transaction.signAsFeePayer({
+        signer: bob,
+        transaction
+    })
+    console.log("交易签名完成!")
+
+    // 3. 模拟执行（可选）
+    console.log("\n === 3. 模拟交易响应（可选）=== \n")
+    const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+        signerPublicKey: alice.publicKey,
+        feePayerPublicKey: bob.publicKey,
+        transaction,
+    });
+    console.log(userTransactionResponse)
+
+    // 4. 提交
+    console.log("\n=== 4. 提交交易 ===\n");
+    const committedTransaction = await aptos.transaction.submit.simple({
+        transaction,
+        senderAuthenticator: aliceSenderAuthenticator,
+        feePayerAuthenticator: bobSenderAuthenticator,
+    });
+    console.log("已提交交易哈希:", committedTransaction.hash);
+
+    // 5. 等待结果
+    console.log("\n=== 5. 等待交易结果 ===\n");
+    const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
+    console.log(executedTransaction)
+};
+
+example();
+```
+
+## 常见错误
+
+`INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE` : 
+
+1. 这可能是由于在将交易提交上链之前签名时，错误地使用了 `.sign` 而非 `.signAsFeePayer` 导致的。
+2. 赞助交易要求赞助账户拥有足够的资金来支付最大可能的 gas 费用。这通常比交易执行所需的预期或实际 gas 费用高出数个数量级。在这种情况下，需要将账户资金增加到高于模拟交易中 `max_gas_amount` **乘以** `gas_unit_price` 的数值。之所以需要相乘，是因为 gas 是无单位的，因此必须乘以从 gas 到 [octas](../../../../network/glossary.mdx#Octa) 的转换率。您可以在[这里](../../../../network/blockchain/gas-txn-fee.mdx)了解更多关于 gas 的信息。

@@ -1,0 +1,203 @@
+---
+title: "构建交易"
+---
+
+
+import { Callout, Steps } from 'nextra/components';
+
+# 使用交易
+
+交易允许你更改链上数据或触发事件。通常，交易从构建到链上执行会经历5个步骤：构建、模拟、签名、提交和等待。
+
+<Callout type="info">
+在这些示例中，`aptos` 是 [`Aptos`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.35.0/classes/Aptos.html) 客户端对象的实例。
+</Callout>
+
+<Steps>
+### 构建
+
+构建交易时需要指定：
+
+1. **发送方账户 (`sender`)** <br/>该账户通常支付本次交易的 gas 费用。了解[交易赞助](building-transactions/sponsoring-transactions.mdx)可以让其他账户支付费用。
+2. **调用的链上函数 (`function`)** <br/>这是智能合约入口函数的标识符，执行交易时将触发该函数。
+3. **函数参数 (`functionArguments`)** <br/>这是函数运行所需的任何数据。
+
+可以通过 `aptos.transaction.build.simple(...)` 将其打包成 `SimpleTransaction`，如下所示：
+
+```ts filename="build-a-transaction.ts"
+const transaction = await aptos.transaction.build.simple({
+  sender: sender.accountAddress,
+  data: {
+	  // Aptos 上的所有交易都是通过智能合约实现的。
+	  function: "0x1::aptos_account::transfer",
+	  functionArguments: [destination.accountAddress, 100],
+  },
+});
+```
+
+<Callout type="info">
+还有一种更高级的 `functionArguments` 传递格式叫做[二进制规范序列化 (BCS)](building-transactions/bcs-format.mdx) 格式，这是 Aptos 链解析函数参数的方式。SDK 在后台通过 API 调用将 TypeScript 原始类型转换为 BCS 格式。
+</Callout>
+
+#### 构建选项
+
+构建时可以通过传入 `options: {...}` 来自定义交易的执行方式。一些最常用的选项包括：
+
+1. `maxGasAmount` - 设置你愿意为执行该交易支付的 gas 上限。
+2. `gasUnitPrice` - 可以指定高于最低价的 gas 单价，Aptos 网络会优先执行这类交易。
+3. `expireTimestamp` - 设置交易必须执行的具体时间，否则将被取消。
+
+如果未明确指定这些值，SDK 会提供合理的默认值。
+
+### 模拟（可选）
+
+Aptos 链上的每笔交易都有与其执行时网络机器工作量相关的 gas 费用。为了估算相关成本，你可以在提交前模拟交易。
+
+<Callout type="info">
+此模拟只需要账户的 `publicKey`，因为它不会影响账本的实际状态。
+</Callout>
+
+你可以使用 `aptos.transaction.simulate.simple(...)` 执行模拟，如下所示：
+
+```ts filename="build-a-transaction.ts"
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+  signerPublicKey: signer.publicKey,
+  transaction,
+});
+// 如果费用看起来合适，继续签名！
+```### 签名
+
+当交易构建完成且手续费合理时，可以使用 `aptos.transaction.sign` 对交易进行签名。签名必须来自 `sender` 账户。
+
+```ts filename="build-a-transaction.ts"
+// 3. 签名
+const senderAuthenticator = aptos.transaction.sign({
+  signer: sender,
+  transaction,
+});
+```
+
+### 提交
+
+交易签名完成后，可以使用 `aptos.transaction.submit.simple` 将其提交到网络：
+
+```ts filename="build-a-transaction.ts"
+// 4. 提交
+const committedTransaction = await aptos.transaction.submit.simple({
+  transaction,
+  senderAuthenticator,
+});
+```
+
+### 等待
+
+最后，可以通过 [`aptos.waitForTransaction`](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.35.0/classes/Aptos.html#waitForTransaction) 等待交易结果，指定刚提交的交易哈希：
+
+```ts filename="build-a-transaction.ts"
+// 5. 等待
+const executedTransaction = await aptos.waitForTransaction({ transactionHash: committedTransaction.hash });
+```
+</Steps>
+
+## 完整 TypeScript 示例
+
+```ts filename="build-a-transaction.ts"
+/**
+ * 此示例展示如何使用 Aptos SDK 发送交易。
+ * 运行此示例前请确保已安装 @aptos-labs/ts-sdk！
+ */
+
+import {
+    Account,
+    Aptos,
+    AptosConfig,
+    Network,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+    console.log("本示例将创建两个账户（Alice 和 Bob）并发送一笔将 APT 转账给 Bob 账户的交易。");
+
+    // 0. 设置客户端和测试账户
+    const config = new AptosConfig({ network: Network.DEVNET });
+    const aptos = new Aptos(config);
+
+    let alice = Account.generate();
+    let bob = Account.generate();
+
+    console.log("=== 地址 ===\n");
+    console.log(`Alice 的地址是: ${alice.accountAddress}`);
+    console.log(`Bob 的地址是: ${bob.accountAddress}`);
+
+    console.log("\n=== 资助账户 ===\n");
+    await aptos.fundAccount({
+        accountAddress: alice.accountAddress,
+        amount: 100_000_000,
+    });
+    await aptos.fundAccount({
+        accountAddress: bob.accountAddress,
+        amount: 100,
+    });
+    console.log("已资助 Alice 和 Bob 的账户！")
+
+    // 1. 构建
+    console.log("\n=== 1. 构建交易 ===\n");
+    const transaction = await aptos.transaction.build.simple({
+        sender: alice.accountAddress,
+        data: {
+        // Aptos 上所有交易都通过智能合约实现
+        function: "0x1::aptos_account::transfer",
+        functionArguments: [bob.accountAddress, 100],
+        },
+    });
+    console.log("交易构建完成！")
+
+    // 2. 模拟（可选）
+    console.log("\n === 2. 模拟响应（可选） === \n")
+    const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+        signerPublicKey: alice.publicKey,
+        transaction,
+    });
+    console.log(userTransactionResponse)
+
+    // 3. 签名
+    console.log("\n=== 3. 交易签名 ===\n");
+    const senderAuthenticator = aptos.transaction.sign({
+        signer: alice,
+        transaction,
+    });
+    console.log("交易签名完成！")
+
+    // 4. 提交
+    console.log("\n=== 4. 提交交易 ===\n");
+    const submittedTransaction = await aptos.transaction.submit.simple({
+        transaction,
+        senderAuthenticator,
+    });
+
+    console.log(`已提交交易哈希: ${submittedTransaction.hash}`);
+
+    // 5. 等待结果
+    console.log("\n=== 5. 等待交易结果 ===\n");
+    const executedTransaction = await aptos.waitForTransaction({ transactionHash: submittedTransaction.hash });
+    console.log(executedTransaction)
+};
+
+example();
+```
+
+## 概述
+
+在链上构建和发送交易包含以下 5 个步骤：
+1. **构建** 交易
+2. **模拟** 成本（可选）
+3. **签名** 交易（如果模拟成本可接受）
+4. **提交** 交易到网络
+5. **等待** 链上验证和更新
+
+## 探索高级交易功能
+
+交易还具备一些额外的特性，可以根据您的需求进行调整，您可以在这里了解更多：1. [多代理签名](building-transactions/multi-agent-transactions.mdx) - 允许多个账户共同作用于单个合约。
+2. [交易赞助](building-transactions/sponsoring-transactions.mdx) - 由其他账户代为支付该交易的 gas 费用。
+3. [批量提交交易](building-transactions/batching-transactions.mdx) - 如何从单个账户快速发送多笔交易。
+4. [二进制规范序列化 (BCS)](building-transactions/bcs-format.mdx) - Aptos 交易使用的数据序列化格式。
+5. [使用 ScriptComposer 组合多个 Move 调用](building-transactions/script-composer.mdx) - (实验性功能) 构建更复杂的交易负载以动态调用多个 Move 函数。
