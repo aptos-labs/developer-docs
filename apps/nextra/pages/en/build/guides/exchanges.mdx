@@ -211,6 +211,8 @@ const [balanceStr] = await aptos.view<[string]>({
 const balance = parseInt(balanceStr, 10);
 ```
 
+Besides SDK, you can also directly use aptos node's [balance API endpoint](../../build/apis/fullnode-rest-api-reference#tag/accounts/GET/accounts/{address}/balance/{asset_type}) to get the balance of a migrated coin or fungible asset.
+
 ## Tracking Balance Changes
 
 Balance changes can be queried in one of two ways:
@@ -331,12 +333,68 @@ In this case, we only care about coin store changes.
 </details>
 
 3. Events are the events that were emitted by the transaction.  In this case, we
-only care about the `0x1::coin::deposit` and `0x1::coin::withdraw` events.
+only care about the `0x1::coin::Withdraw` and `0x1::coin::Deposit` events.
+
+The Coin withdraw event is emitted when coins are withdrawn from an account. The
+account's balance will decrease by that amount in the field `data.amount`.  To
+determine the matching asset, you must match the `guid` in the `withdraw_events`
+to the `guid` in the `changes` section for a `CoinStore`. But if the `CoinStore`
+is not found in the `changes`, it means it got deleted, and a `CoinStoreDeleteEvent`
+must be present instead. Then you can match the `guid` with
+ `deleted_withdraw_event_handle_creation_number` and `event_handle_creation_address`.
+
+<details>
+  <summary>Coin Withdraw Event</summary>
+  ```json
+  {
+    "events": [
+      {
+        "guid": {
+          "creation_number": "3",
+          "account_address": "0xf8e25f6c8ce40a15107fb4b4d288ca03dd434d057392f2ccb5fde505a300a0bf"
+        },
+        "sequence_number": "0",
+        "type": "0x1::coin::WithdrawEvent",
+        "data": {
+          "amount": "100000"
+        }
+      },
+    ]
+  }
+  ```
+</details>
+
+<details>
+  <summary>Coin Store Deletion Event</summary>
+  ```json
+  {
+    "events": [
+      {
+        "guid": {
+          "creation_number": "0",
+          "account_address": "0x0"
+        },
+        "sequence_number": "0",
+        "type": "0x1::coin::CoinStoreDeletion",
+        "data": {
+          "coin_type": "0x1::aptos_coin::AptosCoin",
+          "deleted_deposit_event_handle_creation_number": "2",
+          "deleted_withdraw_event_handle_creation_number": "3",
+          "event_handle_creation_address": "0xf8e25f6c8ce40a15107fb4b4d288ca03dd434d057392f2ccb5fde505a300a0bf"
+        }
+      }
+    ]
+  }
+  ```
+</details>
 
 The Coin deposit event is emitted when coins are deposited into an account. The
 account's balance will increase by that amount in the field `data.amoount`.  To
 determine the matching asset, you must match the `guid` in the `deposit_events`
-to the `guid` in the `changes` section for a `CoinStore`.
+to the `guid` in the `changes` section for a `CoinStore`. Similarly, if the `CoinStore`
+is not found in the `changes`, it means it got deleted, and a `CoinStoreDeleteEvent`
+must be present instead. Then you can match the `guid` with
+ `deleted_deposit_event_handle_creation_number` and `event_handle_creation_address`.
 
 <details>
   <summary>Coin Deposit Event</summary>
@@ -357,29 +415,6 @@ to the `guid` in the `changes` section for a `CoinStore`.
   ```
 </details>
 
-The Coin withdraw event is emitted when coins are withdrawn from an account. The
-account's balance will decrease by that amount in the field `data.amount`.  To
-determine the matching asset, you must match the `guid` in the `deposit_events`
-to the `guid` in the `changes` section for a `CoinStore`.
-
-<details>
-  <summary>Coin Withdraw Event</summary>
-  ```json
-  {
-    "events": [{
-      "guid": {
-        "creation_number": "3",
-        "account_address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0"
-      },
-      "sequence_number": "52484",
-      "type": "0x1::coin::WithdrawEvent",
-      "data": {
-        "amount": "10"
-      }
-    }]
-  }
-  ```
-</details>
 
 4. Gas usage only is tracked for APT.  There is no direct event for tracking gas,
 but it can be calculated from the transaction.  Using the `gas_used` field, and
@@ -710,7 +745,10 @@ is the address of the `metadata` for the fungible asset.
 Additionally, to figure out the actual owner of the assets, you will need to look
 at the owner of the store.  In this case, you will need the `0x1::object::ObjectCore`, where
 the `address` field matches the `store` field from the events.  The `owner` field
-will show the asset owner's address.
+will show the asset owner's address. similar to the coin events, if the `ObjectCore`
+is not found in the `changes`, it means it got deleted, and a `FungibleStoreDeletion`
+event must be present instead. Then you can match the `store` fields between the
+`Withdraw`/`Deposit` events and the `FungibleStoreDeletion` event.
 
 <details>
   <summary>Fungible Asset Changes</summary>
@@ -755,6 +793,25 @@ will show the asset owner's address.
       "type": "write_resource"
     }
   ]
+}
+```
+</details>
+
+<details>
+  <summary>FungibleStore Deletion Event</summary>
+```json
+{
+  "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+  "sequence_number": "0",
+  "type": "0x1::fungible_asset::FungibleStoreDeletion",
+  "data": {
+    "metadata": "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12",
+    "owner": "0xcf3906e2c9bc7e489c3b09d5ed5d90d8d403a68a50fe52932116b26e5878af26",
+    "store": "0xa6ab8518e5f28a5f27247a895aa8b3de4a917209c6841b16187e8d64a67de242"
+  }
 }
 ```
 </details>
@@ -1114,6 +1171,7 @@ Here is an example of a migrated coin with APT: https://api.mainnet.aptoslabs.co
   ```
 </details>
 
+
 ## Transferring Assets
 
 ### Coin (or migrated coin) Transfers
@@ -1160,7 +1218,7 @@ In order to check that everything is working correctly, we've provided these che
 To test balance checks, you can check the balance for the account `0x5` for the asset `0x1::aptos_coin::AptosCoin`.
 The balance should show `0.002 APT`, where 0.001 APT is a coin, and 0.001 APT is a migrated coin (fungible asset).
 
-If your balance is not correct, see [Coin and Migrated Coin Balances](#coin-and-migrated-coin-balances) for more information.
+If your balance is not correct, see [Coin and Migrated Coin Balances](#coin-and-migrated-coins-balances) for more information.
 
 ### Balance Change / Transfer Checks
 
