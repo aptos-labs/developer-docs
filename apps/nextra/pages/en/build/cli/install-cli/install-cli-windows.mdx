@@ -2,28 +2,15 @@ import { Callout, Steps } from 'nextra/components'
 
 # Install the Aptos CLI on Windows
 
-For Windows, the easiest way to install the Aptos CLI tool is via Python script. If that does not work, you can also install manually via pre-compiled binaries. The pre-compiled binaries approach is not generally recommended as updating is very manual.
+For Windows, the easiest way to install the Aptos CLI tool is via PowerShell script. If that does not work, you can also install manually via pre-compiled binaries. The pre-compiled binaries approach is not generally recommended as updating is very manual.
 
-# Install via Python Script
+# Install via PowerShell Script
 <Steps>
-### Ensure you have Python 3.6+ installed by running `python --version`
-
-   If python3 is not installed, you can find installation instructions on [python.org](http://python.org).
-
 ### In PowerShell, run the install script:
 
    ```powershell filename="Terminal"
-   Invoke-WebRequest -Uri "https://aptos.dev/scripts/install_cli.py" -OutFile "$env:TEMP\install_cli.py"; python "$env:TEMP\install_cli.py"
+   Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; iwr https://aptos.dev/scripts/install_cli.ps1 | iex
    ```
-
-   <Callout type="warning">
-   If you receive the error `ModuleNotFoundError: No module named packaging` you can install `packaging` by running `pip3 install packaging` then repeat this step.  The above install scripts are for PowerShell specifically (you may have to adapt it based on your shell of choice).
-   </Callout>
-
-   You should see instructions in your terminal saying "Execute the following command to update your PATH:".
-### Copy and run the command to update your PATH from the terminal.
-
-   It should look something like `setx PATH "%PATH%;C:\Users\<your_account_name>\.aptoscli\bin"`.
 
 ### Verify the script is installed by opening a new terminal and running `aptos help`.
    - You should see a list of commands you can run using the CLI.
@@ -33,6 +20,23 @@ For Windows, the easiest way to install the Aptos CLI tool is via Python script.
 <Callout type="info" emoji="ℹ️">
 If you would like to update the Aptos CLI to the latest version via script, you can run `aptos update`.
 </Callout>
+
+# Install via Package Manager (Optional)
+
+<Callout type="info">
+When installing Aptos via a package manager, please update it through the same package manager in the future.
+</Callout>
+
+### If you have [Scoop](https://scoop.sh/) installed, you can run the following command to install the Aptos CLI:
+
+   ```powershell filename="Terminal"
+   scoop install https://aptos.dev/scoop/aptos.json
+   ```
+### If you have [Chocolatey](https://chocolatey.org/) installed, you can run the following command to install the Aptos CLI:
+
+   ```powershell filename="Terminal"
+   choco install aptos
+   ```
 
 # Install via Pre-Compiled Binaries (Backup Method)
 

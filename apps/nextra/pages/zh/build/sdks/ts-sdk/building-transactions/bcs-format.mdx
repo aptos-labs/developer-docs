@@ -1,0 +1,28 @@
+---
+title: "BCS 格式"
+---
+
+# 二进制规范序列化 (BCS) 格式
+
+在底层，Aptos SDK 为交易参数提供了两种格式：
+
+1. **简单格式** - 使用字符串、整数等基本类型表示交易参数
+2. **二进制规范序列化 (BCS)** - Aptos 链识别的格式，具有特定类型（例如：不使用普通整数，而是使用 `U64` 或 `U128` 等类型）
+
+通常，TypeScript SDK 会自动将函数参数中的简单类型转换为 BCS 格式以便与网络通信。但对于某些合约，您需要直接使用 BCS 来指定复杂类型。
+
+直接使用 BCS 格式有轻微的性能优势，因为 SDK 可以跳过将 TypeScript 原始参数格式转换为 BCS 格式的 API 调用。
+
+您可以通过显式指定参数类型来直接使用 BCS 格式构建交易，如下所示：
+
+```ts filename="example.ts"
+const transaction = await aptos.transaction.build.simple({
+    sender: alice.accountAddress,
+    data: {
+      function: "0x1::aptos_account::transfer",
+      functionArguments: [AccountAddress.fromString("0x123"), new U64(1_000_000)],
+    },
+  });
+```
+
+您可以通过探索 [BCS GitHub 代码库](https://github.com/aptos-labs/bcs) 了解更多关于 BCS 的信息。

@@ -1,0 +1,85 @@
+---
+title: "批量交易"
+---
+
+# 批量交易
+
+TypeScript SDK 内置了将多个独立交易批量发送的功能。当需要从同一账户快速执行多个交易时，这是一个便捷的工具。
+
+可以通过 `aptos.transaction.batch.forSingleAccount` 实现，如下例所示。
+
+## 完整 TypeScript 示例
+
+```ts filename="batch.ts"
+/**
+ * 此示例展示如何使用 Aptos SDK 批量发送多个交易
+ */
+
+import {
+    Account,
+    Aptos,
+    AptosConfig,
+    Network,
+    InputGenerateTransactionPayloadData,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+    console.log("本示例将批量发送多个交易");
+
+    // 配置客户端和测试账户
+    const config = new AptosConfig({ network: Network.DEVNET });
+    const aptos = new Aptos(config);
+
+    let sender = Account.generate();
+
+    console.log("=== 地址 ===\n");
+    console.log(`发送方地址: ${sender.accountAddress}`);
+
+    console.log("\n=== 为发送方注资 ===\n");
+    await aptos.fundAccount({
+        accountAddress: sender.accountAddress,
+        amount: 100_000_000,
+    });  
+    console.log("已为发送方账户注资")
+
+    // 生成多个接收方账户用于发送 APT
+    const recipients = [Account.generate(), Account.generate(), Account.generate()];
+
+    // 创建向每个账户发送 APT 的交易
+    const transactions: InputGenerateTransactionPayloadData[] = [];
+
+    for (let i = 0; i < recipients.length; i += 1) {
+        const transaction: InputGenerateTransactionPayloadData = {
+            function: "0x1::aptos_account::transfer",
+            functionArguments: [recipients[i].accountAddress, 10],
+        };
+        transactions.push(transaction);
+    }
+
+    // 签名并尽可能快地提交所有交易（任一错误都会抛出）
+    await aptos.transaction.batch.forSingleAccount({ sender: sender, data: transactions });
+};
+
+example();
+```
+
+## 检查批量交易状态
+
+要判断批量提交的交易何时在链上执行，必须在流程运行时监听事件。
+
+```ts filename="transaction-worker-events.ts"
+export enum TransactionWorkerEventsEnum {
+  // 交易发送到链上后触发
+  TransactionSent = "transactionSent",
+  // 交易发送到链上失败时触发
+  TransactionSendFailed = "transactionSendFailed",
+  // 单个交易成功执行时触发
+  TransactionExecuted = "transactionExecuted",
+  // 单个交易执行失败时触发
+  TransactionExecutionFailed = "transactionExecutionFailed",
+  // 当工作线程完成任务/队列清空时触发
+  ExecutionFinish = "executionFinish",
+}
+```
+
+监听这些事件的示例可参考[此处](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/batch_funds.ts#L108).

@@ -1,0 +1,60 @@
+---
+title: "使用 Dynamic Script Composer 调用 Move 链式交易"
+---
+import { Callout } from 'nextra/components'
+
+# 使用 Dynamic Script Composer 调用 Move 链式交易
+
+<Callout type="warning" emoji="ℹ️">
+由于当前 ts-sdk 的包体积过大，我们暂时移除了 ts-sdk 中的 Script Composer 功能。
+
+未来我们将以独立扩展包的形式提供该功能。
+
+如需继续使用 Script Composer，请安装 1.39.0 版本：
+[https://www.npmjs.com/package/@aptos-labs/ts-sdk/v/1.39.0](https://www.npmjs.com/package/@aptos-labs/ts-sdk/v/1.39.0)
+
+</Callout>
+
+在基础 API 中，您只能为单个交易指定一个入口函数调用。而高级构建者可能希望在一个交易中调用多个 **public** Move 函数。现在通过交易构建器中提供的全新 `scriptComposer` API 即可实现这一功能。
+
+以下是调用该 API 的示例：
+
+```ts filename="example.ts"
+const transaction = await aptos.transaction.build.scriptComposer({
+    sender: singleSignerED25519SenderAccount.accountAddress,
+    // 构建器期望通过闭包来构建 move 调用序列
+    builder: async (builder) => {
+        // 调用 0x1::coin::withdraw，该函数会返回一个 `coin` 类型的值
+        const coin = await builder.addBatchedCalls({
+            function: "0x1::coin::withdraw",
+            functionArguments: [CallArgument.new_signer(0), 1],
+            typeArguments: ["0x1::aptos_coin::AptosCoin"],
+        });
+
+        // 将 coin 值传递给 0x1::coin::coin_to_fungible_asset 将代币
+        // 转换为可替代资产
+        const fungibleAsset = await builder.addBatchedCalls({
+            function: "0x1::coin::coin_to_fungible_asset",
+            // coin[0] 表示您添加的第一个调用的第一个返回值
+            functionArguments: [coin[0]],
+            typeArguments: ["0x1::aptos_coin::AptosCoin"],
+        });
+
+        // 存入从第二个调用转换得到的 fungibleAsset
+        await builder.addBatchedCalls({
+            function: "0x1::primary_fungible_store::deposit",
+            functionArguments: [singleSignerED25519SenderAccount.accountAddress, fungibleAsset[0]],
+            typeArguments: [],
+        });
+        return builder;
+    },
+});
+```
+
+在底层，SDK 会调用 WASM 二进制文件将一系列 Move 调用编译为 `CompiledScript`。这将确保在构建过程中仍然遵循 Move 的类型和能力安全性。对于 SDK 用户而言，这意味着：
+1. 能力安全性：
+   a. 如果返回值不具备 Drop 能力，则该返回值需要被后续调用消费
+   b. 如果返回值不具备 Copy 能力，则该返回值只能传递给后续调用一次
+2. 调用者需要确保将正确的值作为参数传递给后续调用。在前述示例中，`0x1::coin::coin_to_fungible_asset` 函数需要接收一个 `Coin<AptosCoin>` 类型的参数。
+
+这实现了 [AIP-102](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-102.md) 规范
