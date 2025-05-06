@@ -1,0 +1,102 @@
+---
+title: "通过 SDK 获取数据"
+---
+
+
+import { Callout } from 'nextra/components'
+
+# 使用 TypeScript SDK 获取数据
+
+你可以使用 `Aptos` 客户端通过多种辅助函数获取链上数据。具体来说，参考文档[此处](https://aptos-labs.github.io/aptos-ts-sdk/@aptos-labs/ts-sdk-1.35.0/classes/Aptos.html)列出的许多以 `get...` 开头的函数都可以从链上检索数据。
+
+以下示例展示了如何获取应用程序中可能需要的常见数据：
+
+```ts filename="fetch-data.ts"
+const aptosConfig = new AptosConfig({ network: Network.DEVNET });
+const aptos = new Aptos(aptosConfig);
+
+const fund = await aptos.getAccountInfo({ accountAddress: "0x123" });
+const modules = await aptos.getAccountModules({ accountAddress: "0x123" });
+const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
+```
+
+<Callout type="info">
+许多查询都有一个名为 `options` 的参数用于自定义结果，使用它来精确获取你需要的内容。
+</Callout>
+
+`Aptos` 客户端开箱即用地支持查询来自[全节点](https://api.mainnet.aptoslabs.com/v1/spec#/)的网络数据和包含聚合丰富数据的[索引器](https://cloud.hasura.io/public/graphiql?endpoint=https://api.mainnet.aptoslabs.com/v1/graphql) API。如果你想对索引器 API 数据使用自定义查询，可以像这样使用 `aptos.queryIndexer`：
+
+```ts filename="fetch-data.ts"
+  const ledgerInfo = await aptos.queryIndexer({
+    query: {
+      query: `
+        query MyQuery {
+          ledger_infos {
+            chain_id
+          }
+        }
+      `
+    }
+  })
+```
+
+## 使用通用查询
+
+某些查询设计上是宽泛的，但这可能使得推断正确的返回类型变得困难。为了适应这种情况，像 `getAccountResources` 这样的广泛请求允许你指定预期的响应类型。
+
+```ts filename="fetch-data.ts"
+type Coin = { coin: { value: string } };
+
+const resource = await aptos.getAccountResource<Coin>({
+  accountAddress: testAccount.accountAddress,
+  resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+});
+
+// 现在你可以访问响应类型属性
+const value = resource.coin.value;
+```
+
+## 使用 Move 视图函数
+
+你可以通过 `aptos.view` 调用返回链上自定义数据的视图函数。
+
+例如，你可以使用 `chain_id` 视图函数查询当前使用的网络：
+
+```ts filename="fetch-data.ts"
+const payload: InputViewFunctionData = {
+  function: "0x1::chain_id::get",
+};
+
+const chainId = (await aptos.view({ payload }))[0];
+```
+
+## 确保索引器数据新鲜度
+
+在底层，某些请求使用[索引器 API](../../indexer.mdx) 来访问经过处理或聚合的数据。这些额外的解析可能需要一些时间，因此数据可能略微落后于最新的账本。
+
+如果你想确保数据是最新的，可以在任何使用索引器 API 的请求中指定 `minimumLedgerVersion`。
+
+```ts filename="fetch-data.ts"
+// 获取最新的账本版本号
+const ledgerVersion = await aptos.getLedgerInfo().ledger_version;
+
+const tokens = await aptos.getAccountOwnedTokens({
+  accountAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(response.version),
+});
+```
+
+你也可以通过从交易验证本身获取账本版本号，来确保你的请求包含了你所提交交易的数据。
+
+```ts filename="fetch-data.ts"
+// 等待你刚提交的交易
+const response = await aptos.waitForTransaction({
+  transactionHash: pendingTransaction.hash,
+});
+
+// 然后查询该交易如何影响 alice 的账户
+const tokens = await aptos.getAccountOwnedTokens({
+  accountAddress: alice.accountAddress,
+  minimumLedgerVersion: BigInt(response.version),
+});
+```
