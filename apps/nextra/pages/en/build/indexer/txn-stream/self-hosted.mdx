@@ -8,4 +8,95 @@ import { IndexerBetaNotice } from '@components/index';
 
 <IndexerBetaNotice />
 
-Coming soon!
+In order to run Self-Hosted Transaction Stream Service, you will need to run the following components.
+
+Indexer FN [https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/indexer-grpc/indexer-grpc-fullnode]: A FN with indexer grpc functionality enabled. Typically your data service will need to access all historical data, therefore your FN need to sync from genesis in order to bootstrap the whole stack. The pruner can be deleted (through pruner) later on once the data is persisted into file store.
+
+GrpcManager [https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/indexer-grpc/indexer-grpc-manager]: A centrilized component that manages all the components in the stack. It can run in two mode (master and non-master), only 1 master is allowed. When it is running as master mode, it will also pull data from the upstream FN, and persistent the data into file store (which can be a local file system or Gooogle Cloud Storage).
+
+DataService [https://github.com/aptos-labs/aptos-core/tree/main/ecosystem/indexer-grpc/indexer-grpc-data-service-v2]: Provides the client facing streaming Grpc service. It can run in 2 modes. The live mode serves data from its local cache, the historical mode serves data from the file store.
+
+## Example Configs
+
+- FN
+```
+indexer_grpc:
+  enabled: true
+  address: 0.0.0.0:50051 # The address to service Grpc request.
+  processor_task_count: 32
+  processor_batch_size: 100
+  output_batch_size: 100
+
+indexer_table_info:
+  table_info_service_mode: IndexingOnly
+  parser_task_count: 10
+  parser_batch_size: 100
+```
+- GrpcManager
+```
+health_check_port: 8081 # The port for monitoring purpose.
+server_config:
+  is_master: true # Whether running in master mode.
+  service_config:
+    listen_address: 0.0.0.0:50052 # The port that serves Grpc requests.
+  self_advertised_address: 0.0.0.0:50052
+  grpc_manager_addresses: # All GrpcManager addresses in the stack, need to point to the server_config.self_advertised_address in GrpcManager config.
+    - >-
+      http://0.0.0.0:50052
+  fullnode_addresses: # All upstream FN addresses in the stack, need to point to the indexer_grpc.address in FN config.
+    - >-
+      http://0.0.0.0:50051
+    - >-
+      http://other-fullnode.xyz:50051
+  file_store_config:
+    file_store_type: GcsFileStore
+    gcs_file_store_bucket_name: indexer
+    gcs_file_store_service_account_key_path: /secrets/indexer-sa-key
+  chain_id: 1
+```
+- DataService
+```
+health_check_port: 8081 # The port for monitoring purpose.
+server_config:
+  chain_id: 1
+  self_advertised_address: 0.0.0.0:50053
+  grpc_manager_addresses: # All GrpcManager addresses in the stack, need to point to the server_config.self_advertised_address in GrpcManager config.
+    - >-
+      http://0.0.0.0:50052
+  service_config:
+    listen_address: 0.0.0.0:50053
+  live_data_service_config: # For live data service.
+    enabled: true
+    num_slots: 5000000 # Max number of transactions to cache.
+    size_limit_bytes: 10000000000 # Cache size in bytes.
+  historical_data_service_config: # For historical data service.
+    enabled: true
+    file_store_config:
+      file_store_type: GcsFileStore
+      gcs_file_store_bucket_name: indexer
+      gcs_file_store_service_account_key_path: /secrets/indexer-sa-key
+```
+
+## Usage
+
+- Use GrpcManager for routing / load balancing
+
+Call GrpcManager.GetDataServiceForRequest first, it will return the address of a data service instance.
+
+Then Call DataService.GetTransactions.
+- Use DataService directly
+
+Call DataService.GetTransactions directly. In this case you might want to run both live data service and historical data service together.
+
+## Advanced Usage
+
+- Do not keep full history
+If your stream never needs to serve old data and you don't want to keep the full history, for example you want to start a stream now and only care about data in the future, you can choose to not sync from genesis.
+
+In order to do that, first you can start your FN and do a fast sync. Then download the most recent table info database from https://console.cloud.google.com/storage/browser/aptos-indexer-grpc-mainnet-table-info-backup (for testnet, replace `mainnet` with `testnet`), unzip to the db folder in your FN.
+
+Then start your GrpcManager, it will generate the `metadata.json` in your file store (it could be your local file stream or GCS based on your config). Manually update the version to the next version you want to start processing. (the version must be a multiple of 100000 plus 1, e.g. 1000000001, and your FN must have data at this version).
+
+Then restart all your binaries, it should start working.
+
+
