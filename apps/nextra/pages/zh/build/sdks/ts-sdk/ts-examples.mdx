@@ -1,0 +1,64 @@
+---
+title: "TypeScript SDK 示例代码"
+---
+
+import { Steps } from 'nextra/components';
+
+# TypeScript SDK 示例代码
+
+以下示例代码展示了 SDK 的核心使用概念：
+ - [数据获取](fetch-data-via-sdk.mdx)
+ - [交易构建、模拟与提交](building-transactions.mdx)
+
+我们还提供了更多可能更适合您具体使用场景的额外资源。
+
+## 代码片段
+
+SDK 仓库中的 [`examples` 文件夹](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples) 包含数十个可自定义的代码片段。
+
+### 如何运行示例
+
+运行示例脚本的步骤：
+<Steps>
+### 克隆 [aptos-ts-sdk 仓库](https://github.com/aptos-labs/aptos-ts-sdk)
+
+```bash filename="终端"
+git clone https://github.com/aptos-labs/aptos-ts-sdk.git
+```
+
+### 在项目根目录安装所有依赖
+
+```bash filename="终端"
+pnpm install
+```
+
+### 构建项目
+
+```bash filename="终端"
+pnpm build
+```
+
+### 进入想运行的示例文件夹
+
+```bash filename="终端"
+cd examples/typescript
+```
+
+### 安装本地依赖
+
+```bash filename="终端"
+pnpm install
+```
+
+### 运行示例
+
+```bash filename="终端"
+pnpm run simple_transfer
+```
+</Steps>
+
+## 实用参考代码
+
+- [SDK 端到端测试](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/tests/e2e) - 这里包含了使用该 SDK 最全面的代码示例集。
+- [SDK 源代码](https://github.com/aptos-labs/aptos-ts-sdk/tree/main) - 源代码中包含解释每个函数功能的行内注释。
+- [SDK 参考文档](https://aptos-labs.github.io/aptos-ts-sdk/) - 这是查看带有内置搜索功能的行内文档的另一种方式。

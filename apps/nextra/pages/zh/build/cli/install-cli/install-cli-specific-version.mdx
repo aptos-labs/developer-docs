@@ -2,30 +2,30 @@ import { Steps } from 'nextra/components'
 
 # 安装特定版本的 Aptos CLI（高级）
 
-如果你需要特定版本的 Aptos CLI，你可以直接从 Aptos 源代码构建它。这种安装方法主要用于与 Devnet 上的特定功能交互，这些功能可能尚未进入 Testnet / Mainnet。如果你运行的架构与现有版本/预编译二进制文件不兼容，你可能也需要按照这些步骤操作。
+如果需要特定版本的 Aptos CLI，可以直接从 Aptos 源代码构建。此安装方法主要用于与 Devnet 上的特定功能交互，这些功能可能尚未发布到 Testnet/Mainnet。如果您运行的架构与现有发布版本/预编译二进制文件不兼容，也可以按照以下步骤操作。
 
-如果你不需要这种高级方法，你可以在[这里](../../cli.mdx)找到普通的安装步骤。
+如果不需要此高级方法，可以在[这里](../../cli.mdx)找到常规安装步骤。
 
-## 在 macOS / Linux 上安装
+## 在 macOS/Linux 上安装
 
 <Steps>
-### 按照[从源代码构建 Aptos](../../../network/nodes/building-from-source.mdx) 的步骤操作。
-### 按照[此页面](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo)上的步骤确保已安装 `cargo`。
+### 按照[从源代码构建 Aptos](../../../network/nodes/building-from-source.mdx)的步骤操作。
+### 按照[此页面](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo)的步骤确保已安装 `cargo`。
 ### 构建 CLI 工具：`cargo build --package aptos --profile cli`。
-   二进制文件将位于 `target/cli/aptos`。
-### (可选) 将此可执行文件移动到 PATH 中的某个位置。
-### 通过运行 `target/cli/aptos help` 验证安装是否成功。
-   这些帮助说明也可以作为特定命令的详细指南。
+   构建后的二进制文件将位于 `target/cli/aptos`。
+### （可选）将此可执行文件移动到 PATH 环境变量包含的目录。
+### 运行 `target/cli/aptos help` 验证安装是否成功。
+   这些帮助说明也作为特定命令的详细指南非常有用。
 </Steps>
 
 ## 在 Windows 上安装
 
 <Steps>
-### 按照[这里](../../../network/nodes/building-from-source.mdx)的步骤从源代码构建 Aptos。
-### 按照[此页面](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo)上的步骤确保已安装 `cargo`。
+### 按照[此文档](../../../network/nodes/building-from-source.mdx)的步骤从源代码构建 Aptos。
+### 确保已安装 `cargo`，可参考[此页面](https://doc.rust-lang.org/cargo/getting-started/installation.html#install-rust-and-cargo)的安装步骤。
 ### 构建 CLI 工具：`cargo build --package aptos --profile cli`。
-   二进制文件将位于 `target\cli\aptos.exe`。
-### (可选) 将此可执行文件移动到 PATH 中的某个位置。
-### 通过运行 `target\cli\aptos.exe help` 验证安装是否成功。
-   这些帮助说明也可以作为特定命令的详细指南。
-</Steps> 
+   构建后的二进制文件将位于 `target\cli\aptos.exe`。
+### （可选）将此可执行文件移动到 PATH 环境变量包含的目录中。
+### 运行 `target\cli\aptos.exe help` 验证安装是否成功。
+   这些帮助说明也可作为特定命令的详细使用指南。
+</Steps>

@@ -8,10 +8,15 @@ The "Aptos Move Lint" tool runs on a Move package to find and warn about common 
 
 You can run it with the aptos CLI command: `aptos move lint`.
 
-This tool is currently in beta, so please try it out and submit [bugs and feedback](https://github.com/aptos-labs/aptos-core/issues/new?title=%5Blinter%5D%20%3CDescriptive%20Title%3E&body=%3CDetailed%20description%20of%20the%20issue%20or%20feature%20request%3E&labels=move-linter&projects=aptos-labs/16). Also, we are tracking ideas and prioritization requests for new lint rules [here](https://github.com/aptos-labs/aptos-core/issues/15221), we welcome your contributions.
+If you find any issues, please submit [bugs and feedback](https://github.com/aptos-labs/aptos-core/issues/new?title=%5Blinter%5D%20%3CDescriptive%20Title%3E&body=%3CDetailed%20description%20of%20the%20issue%20or%20feature%20request%3E&labels=move-linter&projects=aptos-labs/16). Also, we are tracking ideas and prioritization requests for new lint rules [here](https://github.com/aptos-labs/aptos-core/issues/15221), we welcome your contributions.
 
 
 ## Lint Checks
+### `almost_swapped`
+Checks for expression patterns that look like a failed swap attempt and notifies the user. These patterns are likely erroneous code. This currently only detects simple access patterns such as assignments to a variable or a field of a struct. Examples include:
+- `a = b; b = a;` which can be correctly swapped with `(a, b) = (b, a);`
+- `a.x = b.x; b.x = a.x;` which can be correctly swapped with `(a.x, b.x) = (b.x, a.x);`
+
 ### `avoid_copy_on_identity_comparison`
 
 Checks for identity comparisons (`==` or `!=`) between copied values of type `vector` or `struct` (i.e., types for which copy can be expensive). It instead suggests to use reference-based identity comparison instead (i.e., use `&x == &y` instead of `x == y`, when the above mentioned conditions meet).
@@ -88,6 +93,13 @@ Check for boolean expressions that can be simplified when a boolean literal (eit
 
 Does NOT consider side-effects/short-circuiting in the recommended simplifications. Example:
 - `1/0 || true` is logically equivalent to `true`, but applying this simplification affects program semantics.
+
+### `self_assignment`
+
+Checks for patterns where a variable or a field of a struct is assigned to itself and suggests removing the assignment. These assignments do not affect the state of the program. Examples include:
+- `let x = x;`
+- `x = x;`
+- `a.x = a.x;`
 
 ### `simpler_numeric_expression`
 

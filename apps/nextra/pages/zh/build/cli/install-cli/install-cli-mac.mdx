@@ -2,35 +2,87 @@ import { Callout, Steps } from 'nextra/components'
 
 # 在 Mac 上安装 Aptos CLI
 
-在 Mac 上，安装 Aptos CLI 最简单的方法是使用包管理器 `brew`。
+对于 Mac 用户，安装 Aptos CLI 最简单的方法是使用包管理器 `brew`。
 
-# 安装
+# 安装步骤
 
 <Steps>
-### 确保已安装 `brew` https://brew.sh/ 。
-### 打开新的终端并输入以下命令。
+### 确保已安装 `brew` https://brew.sh/
+### 打开新终端并输入以下命令
 
-```bash filename="Terminal"
+```bash filename="终端"
 brew update
 brew install aptos
 ```
 
-### 打开另一个终端并运行 `aptos help` 来验证 CLI 是否已安装。
+### 打开另一个终端并运行 `aptos help` 验证 CLI 是否安装成功
 
-```bash filename="Terminal"
+```bash filename="终端"
 aptos help
 ```
 </Steps>
 
 <Callout type="warning">
-如果 `brew` 不适合你，你可以尝试这里的步骤：[安装特定版本的 Aptos CLI (高级)](install-cli-specific-version.mdx)
+如果 `brew` 不可用，可以尝试以下方法：[通过脚本安装](#install-via-script) 或 [通过预编译二进制文件安装](#install-via-pre-compiled-binaries-backup-method)
 </Callout>
 
 # 升级 CLI
 
-使用 brew 升级 CLI 只需要 2 个命令：
+使用 brew 升级 CLI 只需两条命令：
 
-```bash filename="Terminal"
+```bash filename="终端"
 brew update
 brew upgrade aptos
-``` 
+```
+
+# 通过脚本安装
+
+<Steps>
+  ### 在终端使用以下任一命令：
+
+  ```bash filename="终端"
+  curl -fsSL "https://aptos.dev/scripts/install_cli.sh" | sh
+  ```
+
+  或使用等效的 `wget` 命令：
+
+  ```bash filename="终端"
+  wget -qO- "https://aptos.dev/scripts/install_cli.sh" | sh
+  ```
+
+  ### （可选）建议将 Aptos CLI 添加到 PATH 路径中的文件夹
+  - 添加文件夹到 PATH 的具体步骤取决于使用的 shell
+  - 可运行 `echo $SHELL` 查看当前 shell 类型，然后搜索对应 shell 添加 PATH 的方法
+  ### 验证安装：打开新终端运行 `aptos help`
+  - 应显示 CLI 可用命令列表
+  - 这是未来学习各命令用法的实用参考资料
+</Steps>
+
+<Callout type="info" emoji="ℹ️">
+  如需更新 Aptos CLI 至最新版本，可运行 `aptos update`
+</Callout>
+
+# 通过预编译二进制文件安装（备用方法）
+
+<Steps>
+  ### 访问 [Aptos CLI 发布页面](https://github.com/aptos-labs/aptos-core/releases?q=cli&expanded=true)
+  ### 点击最新版本的 "Assets" 可展开菜单查看预编译文件
+  ### 下载 macOS 版 zip 文件
+  1. 文件名类似：`aptos-cli-<version>-macOS-x86_64.zip` 或 `aptos-cli-<version>-macOS-arm64.zip`
+  2. 确保选择与电脑架构匹配的文件（Intel/AMD 选 x86_64，ARM 选 arm64）
+  3. 下载时可能需要忽略"可疑文件"警告
+  ### 解压下载的文件
+  ### 将解压后的 Aptos 二进制文件移至目标文件夹
+  ### 打开终端并导航至目标文件夹
+  ### 运行 `chmod +x ~/aptos` 赋予可执行权限
+  ### 验证安装：运行 `~/aptos help`
+  应显示所有 CLI 命令的使用说明，这些说明对后续使用很有帮助。
+  ### （可选）将 Aptos CLI 添加到 PATH 环境变量的某个文件夹中，或直接添加到 PATH 可能会很有帮助。
+  - 将文件夹添加到 PATH 的步骤取决于所使用的 shell。
+  - 你可以运行 `echo $SHELL` 来打印你机器的默认 shell，然后搜索针对该 shell 添加文件夹到 PATH 的具体步骤。
+
+</Steps>
+
+<Callout type="info" emoji="ℹ️">
+  使用预编译二进制文件方式时，你可以通过删除现有安装，然后重新按照安装步骤操作来更新 Aptos CLI。
+</Callout>

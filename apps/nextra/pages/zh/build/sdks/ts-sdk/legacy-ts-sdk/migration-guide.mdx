@@ -1,0 +1,192 @@
+---
+title: "迁移指南"
+---
+
+import { Callout } from 'nextra/components';
+
+<Callout emoji="🚨" type="error">
+  旧版 TypeScript SDK 包 `aptos` 已弃用，将被新版 TypeScript SDK 取代。请参考 [新版 TypeScript SDK](../../ts-sdk.mdx) 获取最新功能和更新。
+</Callout>
+
+# TypeScript SDK 迁移指南
+
+如果您正在使用 `aptos` 的早期版本 `1.x.x`，您需要进行以下更新。
+
+<Callout type="info">
+本指南仅包含 API 差异和弃用功能所需的更新，不包含 v2 SDK 的新功能。
+</Callout>
+
+## 安装 SDK
+
+TypeScript SDK V2 已迁移至新的 [GitHub 仓库](https://github.com/aptos-labs/aptos-ts-sdk)，并使用新的包名 - `@aptos-labs/ts-sdk`
+
+```bash npm2yarn
+npm i @aptos-labs/ts-sdk
+```
+
+## SDK 使用与查询 Aptos 链
+
+移除所有 `<*>Client` 模块（如 `AptosClient`、`FaucetClient`、`CoinClient` 等），替换为 `Aptos` 入口类
+
+**V1**
+
+```ts filename="v1.ts"
+const faucetClient = new FaucetClient(NODE_URL, FAUCET_URL);
+const aptosClient = new AptosClient(NODE_URL);
+const indexerClient = new IndexerClient(INDEXER_URL);
+const tokenClient = new TokenClient(aptosClient);
+```
+
+**V2**
+<Callout type="info">
+了解更多信息请[点击这里](../../ts-sdk.mdx)。
+</Callout>
+
+```ts filename="v2.ts"
+const aptos = new Aptos();
+
+// 执行查询
+const fund = await aptos.fundAccount({ accountAddress: "0x123", amount: 100 });
+const modules = await aptos.getAccountModules({ accountAddress: "0x123" });
+const tokens = await aptos.getAccountOwnedTokens({ accountAddress: "0x123" });
+```
+
+## 配置类
+
+要配置您的 `Aptos` 客户端，可以使用 `AptosConfig` 对象。
+
+```ts filename="v2.ts"
+const aptosConfig = new AptosConfig({ network: Network.DEVNET }); // 默认为 devnet
+const aptos = new Aptos(config);
+```
+
+## 交易构建流程
+
+移除了所有独立的交易函数，采用更简化的交易构建流程
+
+**V1**
+
+```ts filename="v1.ts"
+const aptosClient = new AptosClient(NODE_URL);
+
+// bcs 序列化参数负载
+const entryFunctionPayload =
+  new TxnBuilderTypes.TransactionPayloadEntryFunction(
+    TxnBuilderTypes.EntryFunction.natural(
+      "0x1::aptos_account",
+      "transfer",
+      [],
+      [bcsToBytes(TxnBuilderTypes.AccountAddress.fromHex(receiver.address()))],
+    ),
+  );
+// 生成原始交易
+const transaction = await client.generateRawTransaction(
+  sender.address(),
+  entryFunctionPayload,
+);
+
+// 非序列化参数负载
+const payload: Gen.TransactionPayload = {
+  type: "entry_function_payload",
+  function: "0x1::aptos_account::transfer",
+  type_arguments: [],
+  arguments: [account2.address().hex(), 100000],
+};
+// 生成原始交易
+const transaction = await client.generateTransaction(
+  account1.address(),
+  payload,
+);
+
+// 签名交易
+const signedTransaction = AptosClient.generateBCSTransaction(
+  sender,
+  transaction,
+);
+// 提交交易
+const txn = await client.submitSignedBCSTransaction(signedTransaction);
+```
+
+**V2**
+<Callout type="info">
+了解更多信息请查看[这里](../building-transactions.mdx)。
+</Callout>
+
+```ts filename="v2.ts"
+const aptos = new Aptos();
+
+// 非序列化参数的交易
+const transaction = await aptos.build.transaction({
+  sender: alice.accountAddress,
+  data: {
+    function: "0x1::coin::transfer",
+    typeArguments: ["0x1::aptos_coin::AptosCoin"],
+    functionArguments: [bobAddress, 100],
+  },
+});
+
+// bcs序列化参数的交易
+const transaction = await aptos.build.transaction({
+  sender: alice.accountAddress,
+  data: {
+    function: "0x1::coin::transfer",
+    typeArguments: [parseTypeTag("0x1::aptos_coin::AptosCoin")],
+    functionArguments: [bobAddress, new U64(100)],
+  },
+});
+// 签名交易
+const senderAuthenticator = aptos.sign.transaction({
+  signer: alice,
+  transaction,
+});
+// 提交交易
+const committedTransaction = await aptos.submit.transaction({
+  transaction,
+  senderAuthenticator,
+});
+```
+
+## 账户
+
+将 `AptosAccount` 重命名为 `Account` 并使用静态方法来生成/派生账户
+
+**V1**
+
+```ts filename="v1.ts"
+// 生成新账户（或密钥对）或从私钥派生或从私钥和地址派生
+const account = new AptosAccount(); // 仅支持 Legacy Ed25519
+
+// 从派生路径派生账户
+const account = AptosAccount.fromDerivePath(..)
+```
+
+**V2**
+<Callout type="info">
+了解更多信息请查看[这里](../account.mdx)。
+</Callout>
+
+```ts filename="v2.ts"
+// 生成新账户（或密钥对）
+const account = Account.generate(); // 默认使用 Legacy Ed25519
+const account = Account.generate({ scheme: SigningSchemeInput.Secp256k1Ecdsa }); // 单一发送者 Secp256k1
+const account = Account.generate({
+  scheme: SigningSchemeInput.Ed25519,
+  legacy: false,
+}); // 单一发送者 Ed25519
+
+// 从私钥派生账户
+const account = Account.fromPrivateKey({ privateKey });
+
+// 从私钥和地址派生账户
+const account = Account.fromPrivateKeyAndAddress({
+  privateKey,
+  address: accountAddress,
+});
+
+// 从派生路径推导账户
+const account = Account.fromDerivationPath({
+  path,
+  mnemonic,
+  scheme: SigningSchemeInput.Ed25519,
+});
+```

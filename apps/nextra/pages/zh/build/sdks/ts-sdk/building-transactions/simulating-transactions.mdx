@@ -1,0 +1,220 @@
+---
+title: "模拟交易"
+---
+
+# 模拟交易
+
+交易模拟功能允许您在不支付手续费的情况下，预览提交交易的成本和效果。
+您可以用它来预估手续费、测试交易或检查可能的输出结果。
+
+要模拟交易，您需要传入一个交易对象以及签名账户信息：
+
+```ts filename="simulate-a-transaction.ts"
+import {
+    Account,
+    Aptos,
+    AptosConfig,
+    Network,
+} from "@aptos-labs/ts-sdk";
+
+async function example() {
+    let sender = Account.generate();
+    let receiver = Account.generate();
+
+    // 0. 初始化客户端和测试账户
+    const config = new AptosConfig({ network: Network.DEVNET });
+    const aptos = new Aptos(config);
+
+    await aptos.fundAccount({
+        accountAddress: sender.accountAddress,
+        amount: 100_000_000,
+    });
+
+    // 1. 构建交易以预览其影响
+    const transaction = await aptos.transaction.build.simple({
+        sender: sender.accountAddress,
+        data: {
+        // Aptos 上的所有交易都通过智能合约实现
+        function: "0x1::aptos_account::transfer",
+        functionArguments: [receiver.accountAddress, 100],
+        },
+    });
+
+    // 2. 模拟执行该交易可能产生的结果
+    const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+        signerPublicKey: sender.publicKey,
+        transaction,
+    });
+    console.log(userTransactionResponse)
+
+    // 如果手续费合适，继续签名流程！
+    // ...
+}
+
+example();
+```
+
+这将产生与实际提交交易相同的输出结果。
+
+在 `aptos.transaction.simulate.simple` 方法中，`signerPublicKey` 参数用于在交易模拟期间验证签名者的认证密钥。该参数是可选的，如果省略，模拟将跳过认证密钥检查。例如：
+```ts
+// 2. 模拟执行该交易可能产生的结果（跳过认证密钥检查）
+const [userTransactionResponse] = await aptos.transaction.simulate.simple({
+    transaction,
+});
+```
+
+<details>
+<summary>示例输出</summary>
+```bash filename="Terminal"
+{
+  version: '9534925',
+  hash: '0xea50b6fbea39ad1ba015d11cda0e7478334669c34830bc3df067a260d680893c',
+  state_change_hash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+  event_root_hash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+  state_checkpoint_hash: null,
+  gas_used: '9',
+  success: true,
+  vm_status: 'Executed successfully',
+  accumulator_root_hash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+  changes: [
+    {
+      address: '0x811d5a94ccb597fa2a4f7872a3c678867cff94130d9378c39304c1354ef54abe',
+      state_key_hash: '0x09adecee8779b64d05847488e2dbec6679c0c9e2fe618caf0793472ba3a7e4ab',
+      data: [Object],
+      type: 'write_resource'
+    },
+    {
+      address: '0x811d5a94ccb597fa2a4f7872a3c678867cff94130d9378c39304c1354ef54abe',
+      state_key_hash: '0x0c70ede5412277b81d9f8d99369930ed5d56ad65862e3e878ad22dd5500833d0',
+      data: [Object],
+      type: 'write_resource'
+    },
+    {
+      address: '0xf40c314051890d16ba0a2ba427e003a83e730956fdeccf6c8eebc893a229ddc1',
+      state_key_hash: '0x503f9cffb248036da24e18875f3dce72bb33d1d3ef5cfdbdb2fb3411cd718f4f',
+      data: [Object],
+      type: 'write_resource'
+    },
+    {
+      state_key_hash: '0x6e4b28d40f98a106a65163530924c0dcb40c1349d3aa915d108b4d6cfc1ddb19',
+      handle: '0x1b854694ae746cdbd8d44186ca4929b2b337df21d1c74633be19b2710552fdca',
+      key: '0x0619dc29a0aac8fa146714058e8dd6d2d0f3bdf5f6331907bf91f3acd81e6935',
+      value: '0x708f579f62cb01000100000000000000',
+      data: null,
+      type: 'write_table_item'
+    }
+  ],
+  sender: '0x811d5a94ccb597fa2a4f7872a3c678867cff94130d9378c39304c1354ef54abe',
+  sequence_number: '0',
+  max_gas_amount: '200000',
+  gas_unit_price: '100',
+  expiration_timestamp_secs: '1718983701',
+  payload: {
+    function: '0x1::aptos_account::transfer',
+    type_arguments: [],
+    arguments: [
+      '0xf40c314051890d16ba0a2ba427e003a83e730956fdeccf6c8eebc893a229ddc1',
+      '100'
+    ],
+    type: 'entry_function_payload'
+  },
+  signature: {
+    public_key: '0x966b6b9aa8feb58ee1b911235dea1f185b9169de56303d18bb59937066881e44',
+    signature: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+    type: 'ed25519_signature'
+  },
+  events: [
+    {
+      guid: [Object],
+      sequence_number: '0',
+      type: '0x1::coin::CoinWithdraw',
+      data: [Object]
+    },
+    {
+      guid: [Object],
+      sequence_number: '0',
+      type: '0x1::coin::WithdrawEvent',
+      data: [Object]
+    },
+    {
+      guid: [Object],
+      sequence_number: '0',
+      type: '0x1::coin::CoinDeposit',
+      data: [Object]
+    },
+    {
+      guid: [Object],
+      sequence_number: '1',
+      type: '0x1::coin::DepositEvent',
+      data: [Object]
+    },
+    {
+      guid: [Object],
+      sequence_number: '0',
+      type: '0x1::transaction_fee::FeeStatement',
+      data: [Object]
+    }
+  ],
+  timestamp: '1718983681460047'
+}
+```
+</details>
+
+查看[这里](../building-transactions.mdx)了解如何构建、模拟和提交交易的完整示例。
+
+# 模拟更复杂的交易
+
+您还可以通过以下指南学习如何模拟更高级的交易：
+ - [赞助交易](sponsoring-transactions.mdx)
+ - [多代理交易](multi-agent-transactions.mdx)
+ - 多重签名V2交易：详情请见下一节
+
+## 模拟链上多重签名（v2）交易
+对于多重签名交易，有两种模拟类型：
+1. 在目标有效负载上链前进行模拟，忽略投票状态
+2. 在执行前对已批准的链上多重签名交易进行模拟，以验证输出和估算gas费用
+
+执行第一种类型时，您可以将目标有效负载作为赞助交易进行模拟，将多重签名账户设为发送方，并将费用支付方设为`0x0`以绕过模拟期间的gas费用支付。例如：
+```ts
+// 生成一个原始交易，使用多重签名地址作为发送方，
+// 提供的入口函数有效负载，以及0x0作为费用支付方地址
+const transactionToSimulate = await aptos.transaction.build.simple({
+  sender: multisigAddress,
+  data: {
+    function: "0x1::aptos_account::transfer",
+    functionArguments: [recipient.accountAddress, 1_000_000],
+  },
+  withFeePayer: true,
+});
+
+// 模拟交易，跳过对发送方和费用支付方的公钥/授权密钥检查
+const [simulateMultisigTx] = await aptos.transaction.simulate.simple({
+  transaction: transactionToSimulate,
+});
+```
+此设置允许您在上链前预览目标有效负载的结果。此处省略了`signerPublicKey`以跳过发送方的认证密钥检查，因为多重签名账户没有公钥。此外，`feePayerAddress`默认为`0x0`，且省略`feePayerPublicKey`以绕过模拟期间的gas费用支付。当这个有效负载在提交和批准后被执行时，执行交易的所有者将支付gas费用。
+
+对于第二种模拟类型，即对已批准的链上多重签名有效负载交易进行最终验证和gas估算时，请使用以下方法：
+```ts
+const transactionPayload: TransactionPayloadMultiSig = await generateTransactionPayload({
+  multisigAddress,
+  function: "0x1::aptos_account::transfer",
+  functionArguments: [recipient.accountAddress, 1_000_000],
+  aptosConfig: config,
+});
+
+const rawTransaction = await generateRawTransaction({
+  aptosConfig: config,
+  sender: owner.accountAddress,
+  payload: transactionPayload,
+});
+
+const [simulateMultisigTx] = await aptos.transaction.simulate.simple({
+  signerPublicKey: owner.publicKey,
+  transaction: new SimpleTransaction(rawTransaction),
+});
+```
+请注意`signerPublicKey`是可选的，如果您希望在模拟期间跳过发送方的认证密钥检查，可以省略该参数。
+
+完整源代码...要查看完整代码，请参考 [Multisig V2 示例](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript-esm/multisig_v2.ts)。
