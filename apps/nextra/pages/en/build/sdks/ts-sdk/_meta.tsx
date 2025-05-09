@@ -29,4 +29,7 @@ export default {
   "legacy-ts-sdk": {
     title: "Legacy TypeScript SDK (Deprecated)",
   },
+  "confidential-asset": {
+    title: "Confidential Asset (CA)",
+  },
 };
