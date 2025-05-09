@@ -152,6 +152,64 @@ See the next.js example dapp for a demonstration of how these components are use
 - [Live site](https://aptos-labs.github.io/aptos-wallet-adapter/)
 - [Source code](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/apps/nextjs-example)
 
+### `wallets`
+
+`wallets` is a list of available wallets, including standard supported ones, each with name, URL, icon, readiness state, and AIP62 standard compliance indication.
+
+```tsx filename="WalletDisplayDemo.tsx"
+import { useWallet } from '@aptos-labs/wallet-adapter-react';
+
+const displayInstalledWalletsDemo = () => {
+
+  const { wallets } = useWallet();
+  
+  return (
+    <div>
+      {wallets.map(wallet => {
+        return <p>{wallet.name}</p>
+      })}
+    </div>
+  )
+}
+```
+
+#### Support for Uninstalled Wallets
+
+Following AIP-62, the adapter uses an event-based communication model between a wallet and a dapp. This means only wallets installed in the user's browser are detected automatically and available for use.
+To support the full Aptos wallet ecosystem, the adapter maintains a registry of supported wallets—allowing dapps to also display uninstalled wallets. It also exposes a utility function to easily manage all wallets.
+
+```tsx filename="WalletDisplayDemo.tsx"
+import { useWallet, groupAndSortWallets } from '@aptos-labs/wallet-adapter-react';
+
+const displayAllWalletsDemo = () => {
+
+  const { wallets = [], notDetectedWallets = [] } = useWallet();
+
+  const { aptosConnectWallets, availableWallets, installableWallets } =
+    groupAndSortWallets(
+      [...wallets, ...notDetectedWallets] 
+    );
+  
+  return (
+    <div>
+      /** Wallets that use social login to create an account on the blockchain */
+      {aptosConnectWallets.map((aptosConnectwallet) => (
+        return <p>{aptosConnectwallet.name}</p>
+      ))}
+      /** Wallets that are currently installed or loadable. */
+      {availableWallets.map((availableWallet) => (
+        return <p>{availableWallet.name}</p>
+      ))}
+      /** Wallets that are NOT currently installed or loadable. */
+      {installableWallets.map((installableWallet) => (
+        return <p>{installableWallet.name}</p>
+      ))}
+    </div>
+  )
+}
+```
+
+
 ### `connect()` and `disconnect()`
 
 `connect()` establishes a connection between the dapp and a Wallet. You can then use `disconnect()` to 

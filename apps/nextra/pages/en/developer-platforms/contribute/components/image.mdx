@@ -5,18 +5,18 @@ searchable: false
 # Next.js Image
 
 The standard way to use
-[Next.js Image](https://nextjs.org/docs/basic-features/image-optimization)
+[Next.js Image](https://nextjs.org/docs/app/getting-started/images)
 inside MDX is to directly import the component:
 
 ```mdx filename="MDX"
-import Image from 'next/image'
+import Image from "next/image";
 
 <Image src="/demo.png" alt="Hello" width={500} height={500} />
 ```
 
 ## Static Image
 
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 <Callout>
   This feature is enabled via `staticImage: true` in the Nextra config by
