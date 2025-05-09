@@ -1657,13 +1657,6 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source:
-          "/en/build/create-aptos-dapp/templates/clicker-game-tg-mini-app",
-        destination:
-          "https://learn.aptoslabs.com/en/dapp-templates/telegram-mini-app-template",
-        permanent: true,
-      },
-      {
         source: "/en/build/create-aptos-dapp/templates/nft-minting-dapp",
         destination:
           "https://learn.aptoslabs.com/en/dapp-templates/nft-minting-template",

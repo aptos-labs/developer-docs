@@ -1,8 +1,19 @@
 ---
 title: "Invoke chains of Move calls with Dynamic Script Composer"
 ---
+import { Callout } from 'nextra/components'
 
 # Invoke chains of Move calls with Dynamic Script Composer
+
+<Callout type="warning" emoji="ℹ️">
+Due to the current large bundle size of the ts-sdk, we are temporarily removing the Script Composer feature from the ts-sdk.
+
+In the future, we will provide this feature as a separate extension package.
+
+If you wish to continue using Script Composer, please install version 1.39.0:
+[https://www.npmjs.com/package/@aptos-labs/ts-sdk/v/1.39.0](https://www.npmjs.com/package/@aptos-labs/ts-sdk/v/1.39.0)
+
+</Callout>
 
 In the naive api, you only get to specify one entry function to invoke for one transaction. An advanced builder might want to be able to invoke multiple **public** Move functions inside one transaction. This is now enabled by the new `scriptComposer` api provided in the transaction builder.
 

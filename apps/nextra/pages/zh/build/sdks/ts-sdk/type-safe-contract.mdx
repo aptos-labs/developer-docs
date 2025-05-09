@@ -1,0 +1,98 @@
+---
+title: "Surf: 为 Move 合约提供 TypeScript 类型安全"
+---
+
+import { Steps, Tabs } from 'nextra/components'
+
+
+# Surf: 为 Move 合约提供 TypeScript 类型安全
+
+## 什么是 Surf
+
+Surf 是一个基于 Aptos TypeScript SDK 和钱包适配器构建的 TypeScript 库，通过从合约 ABI（应用二进制接口）推断类型，为您的 Move 合约提供静态类型安全。它允许您在编译时而非运行时捕获类型错误。如果您尝试访问不存在的字段或提供错误的输入类型，大多数现有的 TypeScript IDE 都会自动提供警告。
+
+## 使用方法
+
+<Steps>
+
+### 第一步
+
+首先，下载 Move 合约的 ABI 并将其保存到 TypeScript 文件中。本例中，我们将文件命名为 `abi.ts`，存放在 `src/utils` 文件夹中。
+
+<Tabs items={['macOS & Linux', 'Windows']}>
+  <Tabs.Tab>
+    ```bash filename="get_abi.sh"
+    #! /bin/bash
+
+    # 替换为您合约所在的网络
+    NETWORK=testnet
+    # 替换为您的合约地址
+    CONTRACT_ADDRESS=0x12345
+    # 替换为您的模块名称，每个 .move 文件（除 move script 外）都有 module_address::module_name {}
+    MODULE_NAME=fungible_asset_launchpad
+
+    # 将 ABI 保存到 TypeScript 文件
+    echo "export const ABI = $(curl https://fullnode.$NETWORK.aptoslabs.com/v1/accounts/$CONTRACT_ADDRESS/module/$MODULE_NAME | sed -n 's/.*"abi":\({.*}\).*}$/\1/p') as const" > abi.ts
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```PowerShell filename="get_abi.ps1"
+    # 替换为您合约所在的网络
+    $NETWORK = "testnet"
+    # 替换为您的合约地址
+    $CONTRACT_ADDRESS = "0x1"
+    # 替换为您的模块名称，每个 .move 文件（除 move script 外）都有 module_address::module_name {}
+    $MODULE_NAME = "fungible_asset_launchpad"
+
+    # 将 ABI 保存到 TypeScript 文件
+    Invoke-RestMethod -Uri "https://fullnode.$NETWORK.aptoslabs.com/v1/accounts/$CONTRACT_ADDRESS/module/$MODULE_NAME" |
+        Select-Object -ExpandProperty abi | ConvertTo-Json -Compress |
+        Foreach-Object { "export const ABI = $_ as const" } |
+        Out-File -FilePath "abi.ts"
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### 第二步
+
+有了 ABI 后，您可以在与 Move 合约交互时，将 Surf 作为 Aptos TypeScript SDK 客户端 `Aptos` 的附加层使用。对于非合约相关操作，仍需使用 `Aptos`。
+
+```ts filename="src/utils/aptos.ts"
+import { createSurfClient } from '@thalalabs/surf';
+import { Aptos, AptosConfig, NETWORK } from "@aptos-labs/ts-sdk";
+import { ABI } from "./abi";
+
+// 首先创建 Aptos 客户端，确保网络与合约所在网络一致
+export const aptos = new Aptos(new AptosConfig({ network: Network.DEVNET }));
+// 然后使用 Aptos 客户端和 ABI 创建 SurfClient
+export const surfClient = createSurfClient(aptos).useABI(ABI);
+
+// 使用 Surf 执行入口函数
+const result = await surfClient.entry.transfer({
+  functionArguments: ['0x1', 1],
+  typeArguments: ['0x1::aptos_coin::AptosCoin'],
+  account: Account.fromPrivateKey(...),
+});
+
+// 使用 Surf 查询视图函数
+const [balance] = await surfClient.view.balance({
+  functionArguments: ['0x1'],
+  typeArguments: ['0x1::aptos_coin::AptosCoin'],
+});
+```
+
+</Steps>
+
+## 资源
+
+- [访问 GitHub 上的 Surf](https://github.com/ThalaLabs/surf)
+- [展示 Surf 的简单 Next.js 示例](https://github.com/ThalaLabs/surf/tree/main/example)
+- [使用 Surf 构建的可替代资产启动平台示例](https://github.com/aptos-labs/move-by-examples/tree/main/fungible-asset-launchpad)：此示例是 Aptos Learn 上 Solana 转 Aptos 指南的一部分，您可以在[这里](https://fungible-asset-launchpad.vercel.app/)试用，并阅读完整教程[这里](https://learn.aptoslabs.com/en/tutorials/aptogotchi-intermediate/fungible-assets?workshop=solana-to-aptos)。
+
+## 致谢
+
+Surf 由 Aptos 生态项目 [Thala Labs](https://thala.fi/) 开发，并与 Aptos 社区共同维护。
+
+## 反馈
+
+如果您有任何反馈或问题，请在 [Surf 的 GitHub](https://github.com/ThalaLabs/surf/issues) 上提交 issue。
