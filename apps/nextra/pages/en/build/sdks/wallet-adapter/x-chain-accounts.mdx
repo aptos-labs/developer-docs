@@ -2,7 +2,7 @@
 title: "X-Chain Accounts"
 ---
 
-import { Callout } from "nextra/components";
+import { Callout, Steps } from "nextra/components";
 
 # X-Chain Accounts
 
@@ -43,39 +43,54 @@ In the Wallet Adapter, the `accountIdentity` is based on the original x-chain ac
 
 ### How to integrate x-chain accounts in my dApp?
 
-Make sure you integrate with the Aptos Wallet Adapter by following these [steps](./dapp.mdx)
+The wallet adapter follows the [Solana Wallet Standard](https://github.com/wallet-standard/wallet-standard/blob/master/DESIGN.md) to discover wallets.
+Currently, the wallets that have been tested and support cross-chain accounts are:
+
+|          | Aptos Devnet | Aptos Testnet | Aptos Mainnet |
+|----------|--------------|---------------|---------------|
+| Phantom  | ✅           |                |
+| Solflare | ✅           |                |
+| Backpack | ✅           |                |
+| OKX      | ✅           |                |
+
+
+<Callout>
+  It is highly recommended to use the `@aptos-labs/wallet-adapter-react` package for the best experience. Make sure you integrate with the Aptos Wallet Adapter by following these [steps](./dapp.mdx)
+</Callout>
 
 Supporting x-chain accounts in a dApp requires only a 2-step installation process.
+
+<Steps>
+
+### Install the `@aptos-labs/derived-wallet-solana` package
 
 ```bash
 npm install @aptos-labs/derived-wallet-solana
 ```
 
+### Import the `setupAutomaticSolanaWalletDerivation` function
+
 Once you have installed the `@aptos-labs/derived-wallet-solana` package, you can import and use it.
 In the same file where you import the other wallets, such as `WalletProvider.tsx`, you can add the following:
 
-```ts
+```tsx filename="WalletProvider.tsx"
 import { setupAutomaticSolanaWalletDerivation } from "@aptos-labs/derived-wallet-solana";
 
-setupAutomaticSolanaWalletDerivation({ defaultNetwork: Network.TESTNET }); // this is the Aptos network your dapp is working with
+setupAutomaticSolanaWalletDerivation({ defaultNetwork: Network.DEVNET }); // this is the Aptos network your dapp is working with
 
 .....
 
 <AptosWalletAdapterProvider
  dappConfig={{
-    network: Network.TESTNET,
+    network: Network.DEVNET,
   }}
 >
   {children}
 <AptosWalletAdapterProvider/>
 ```
+</Steps>
 
 That will handle the logic and implementation to include the x-chain accounts as if they were Aptos wallets.
-
-<Callout>
-  It is highly recommended to use the `@aptos-labs/wallet-adapter-react` package for the best experience.
-</Callout>
-
 
 #### Submitting a transaction
 
