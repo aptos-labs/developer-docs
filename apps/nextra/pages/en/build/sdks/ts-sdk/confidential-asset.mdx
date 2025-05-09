@@ -163,7 +163,7 @@ export const aptos = new Aptos(config);
 
 ### Create Decryption Key (DK)
 
-To interact with the confidential asset, create a [unique key pair](/en/build/smart-contracts/confidential-asset#confidential-asset-store) first.
+To interact with the confidential asset, create a [unique key pair](confidential-asset.mdx#confidential-asset-store) first.
 
 Generate new:
 
@@ -191,7 +191,7 @@ Or use [`pepper`](/en/build/guides/aptos-keyless/how-keyless-works) from [Keyles
 
 ### Register
 
-Next, you need to [register](/en/build/smart-contracts/confidential-asset#register) a previously generated encryption key (EK) in contracts:
+Next, you need to [register](confidential-asset.mdx#register) a previously generated encryption key (EK) in contracts:
 
 ```typescript
 export const registerConfidentialBalance = async (
@@ -261,7 +261,7 @@ Let's check the user's balance after the deposit.
 const userConfidentialBalance = await aptos.confidentialAsset.getBalance({ accountAddress: user.accountAddress, tokenAddress: TOKEN_ADDRESS });
 ```
 
-This method returns you the user's [`pending` and `actual`](/en/build/smart-contracts/confidential-asset#confidential-asset-store) confidential balances, and to [decrypt](/en/build/smart-contracts/confidential-asset#encryption-and-decryption) them, you can use `ConfidentialAmount` class
+This method returns you the user's [`pending` and `actual`](confidential-asset.mdx#confidential-asset-store) confidential balances, and to [decrypt](confidential-asset.mdx#encryption-and-decryption) them, you can use `ConfidentialAmount` class
 
 ```typescript
 export const getConfidentialBalances = async (
@@ -300,12 +300,12 @@ export const getConfidentialBalances = async (
 
 After you deposited to user's confidential balance, you can see, that he has, for instance `5n` at his `pending` balance, and `0n` at his `actual` balance.
 
-User can't operate with `pending` balance, so you could [rollover](/en/build/smart-contracts/confidential-asset#rollover-pending-balance) it to `actual` one.
+User can't operate with `pending` balance, so you could [rollover](confidential-asset.mdx#rollover-pending-balance) it to `actual` one.
 
 And to do so - use `aptos.confidentialAsset.rolloverPendingBalance`.
 
 <Callout type="warning">
-  Important note, that user's actual balance need to be [normalized](/en/build/smart-contracts/confidential-asset#normalize) before `rollover` operation.
+  Important note, that user's actual balance need to be [normalized](confidential-asset.mdx#normalize) before `rollover` operation.
 </Callout>
 
 To cover [normalization](#normalization) & `rollover` simultaneously, you could use `aptos.confidentialAsset.safeRolloverPendingCB`.
@@ -330,7 +330,7 @@ export const safelyRolloverConfidentialBalance = async (
 
 ### Normalization
 
-Usually you don't need to explicitly call [normalization](/en/build/smart-contracts/confidential-asset#normalize)
+Usually you don't need to explicitly call [normalization](confidential-asset.mdx#normalize)
 
 In case you want to:
 
@@ -377,7 +377,7 @@ export const normalizeConfidentialBalance = async (
 
 ### Withdraw
 
-To [withdraw](/en/build/smart-contracts/confidential-asset#withdraw) your assets out from confidential balance:
+To [withdraw](confidential-asset.mdx#withdraw) your assets out from confidential balance:
 
 ```typescript
 export const withdrawConfidentialBalance = async (
@@ -403,7 +403,7 @@ export const withdrawConfidentialBalance = async (
 
 ### Transfer
 
-For [transfer](/en/build/smart-contracts/confidential-asset#confidential-transfer) you need to know the recipient's encryption key and `aptos` account address
+For [transfer](confidential-asset.mdx#confidential-transfer) you need to know the recipient's encryption key and `aptos` account address
 
 Let's say you have a recipient's account address, let's get their encryption key.
 
@@ -456,7 +456,7 @@ export const transferConfidentialCoin = async (
 
 ### Key Rotation
 
-To do [key rotation](/en/build/smart-contracts/confidential-asset#rotate-encryption-key), you need to create a new decryption key and use `aptos.confidentialAsset.rotateCBKey`
+To do [key rotation](confidential-asset.mdx#rotate-encryption-key), you need to create a new decryption key and use `aptos.confidentialAsset.rotateCBKey`
 
 <Callout type="warning">
   But keep in mind, that `key-rotation` checks that pending balance equals 0.
