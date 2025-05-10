@@ -28,6 +28,9 @@ export default {
     type: "separator",
     title: "Advanced",
   },
+  "calculate-hash": {
+    title: "Calculating Signed Transaction Hash",
+  },
   "multisig-managed-fungible-asset": {
     title: "Manage Fungible Assets with Multisig",
   },
