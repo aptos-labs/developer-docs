@@ -38,6 +38,9 @@ export default {
   "fungible-asset": {
     title: "Fungible Asset (FA)",
   },
+  "confidential-asset": {
+    title: "Confidential Asset (CA)",
+  },
   "aptos-coin": {
     title: "Coin (legacy)",
   },

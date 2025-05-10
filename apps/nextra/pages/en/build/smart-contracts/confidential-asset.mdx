@@ -1,0 +1,738 @@
+---
+title: "Confidential Asset (CA)"
+id: "confidential-asset"
+---
+
+import { Callout } from "nextra/components";
+import { ThemedImage } from "@components/index";
+
+# Aptos Confidential Asset (CA) Standard
+
+The Confidential Asset Standard (also known as "Confidential Asset" or "CA") is a privacy-focused protocol for managing Fungible Assets (FA).
+It allows users to perform transactions with hidden FA amounts while keeping sender and recipient addresses publicly visible.
+
+This standard allows any FA to be wrapped into a corresponding Confidential Asset, ensuring compatibility with existing tokens.
+It supports 64-bit transfers, and balances of up to 128 bits.
+
+Operations on Confidential Asset balances (confidential balances), require zero-knowledge proofs (ZKPs) to verify transaction correctness
+without revealing hidden amounts and other sensitive data.
+
+<Callout type="info">
+  Interacting directly with Confidential Asset's smart contracts is highly complex.
+  Developers are encouraged to create external services to manage tasks like generating ZKPs, recovering keys, and decrypting balances.
+  To assist with this, we've developed a TypeScript SDK, with full documentation available [here](../sdks/ts-sdk/confidential-asset).
+</Callout>
+
+<Callout type="info">
+  This documentation explains the contract's operations and offers insights into the protocol core processes.
+  Cryptographic and mathematical details are explained superficially.
+</Callout>
+
+## Confidential Asset Store
+
+For every confidential asset a user registers, they generate a unique keypair:
+- An encryption key (EK) stored on-chain.
+- A decryption key (DK) kept securely by the user.
+
+These keys are standalone and should not be confused with the user's Aptos account keys.
+
+Each confidential balance is split into two parts:
+- `pending_balance` - accumulates all incoming transactions.
+- `actual_balance` - used exclusively for outgoing transactions.
+
+Both balances are encrypted with the same user's EK, ensuring underlying amounts remain private.
+
+<Callout type="info">
+  This separation protects against "front-running" attacks.
+  Specifically, if there was a single balance, an attacker could revert a user's transaction by sending a small payment,
+  altering the balance and, consequently, invalidating the user's ZKP.
+</Callout>
+
+The confidential balance and its associated encryption key are stored in the `ConfidentialAssetStore` resource.
+The `ConfidentialAssetStore` is instantiated for each confidential asset the user has and managed by the `confidential_asset` module:
+
+```move filename="confidential_asset.move"
+struct ConfidentialAssetStore has key {
+    pending_balance: confidential_balance::CompressedConfidentialBalance,
+    actual_balance: confidential_balance::CompressedConfidentialBalance,
+    ek: twisted_elgamal::CompressedPubkey,
+    // ...
+}
+```
+
+## Confidential Balance
+
+Confidential balances handle token amounts by splitting them into smaller units called chunks.
+Each chunk represents a portion of the total amount and is encrypted individually using the user’s EK.
+This design ensures efficient management of balances.
+
+### Chunks
+
+The pending balance consists of four chunks that hold all incoming transfers.
+It can handle up to 2^16 64-bit transfers before requiring a rollover to the actual balance.
+During this accumulation, the pending balance chunks can grow up to 32 bits each.
+
+The actual balance consists of eight chunks, supporting 128-bit values.
+After any operation the actual balance should be [normalized](#normaliztion) back to 16-bit chunks to maintain efficient decryption.
+
+The `ConfidentialBalance` struct from the `confidential_balance` module is used to represent both the pending and actual balances:
+
+```move filename="confidential_asset.move"
+struct ConfidentialBalance has drop {
+    chunks: vector<twisted_elgamal::Ciphertext>,
+}
+```
+
+### Encryption and Decryption
+
+Encryption involves:
+
+- Splitting the total amount into 16-bit chunks.
+- Applying the user's EK to encrypt each chunk individually.
+
+Decryption involves:
+
+- Applying the user’s DK to decrypt each chunk.
+- Solving a discrete logarithm (DL) problem for each chunk to recover the original values.
+- Combining the recovered values to reconstruct the total amount.
+
+### Normalization
+
+Normalization ensures chunks are always reduced to manageable sizes (16 bits).
+Without normalization, chunks can grow too large, making the decryption process (solving DL) significantly slower or even impractical.
+This mechanism is automatically applied to the actual balance after each operation,
+ensuring that users can always decrypt their balances, even as balances grow through multiple transactions.
+Only after a rollover, users are required to normalize the actual balance [manually](#normalization).
+
+### Homomorphic Encryption
+
+The protocol utilizes Homomorphic encryption, allowing arithmetic operations on confidential balances without their decryption.
+This capability is essential for updating the receiver's pending balance during transfers and for rollovers,
+where the user's pending balance is added to the actual one.
+
+## Architecture
+
+The diagram below shows the relationship between Confidential Asset modules:
+
+<ThemedImage
+  alt="CA Modules Relationship"
+  sources={{
+    light: '/docs/ca-diagram-light.png',
+    dark: '/docs/ca-diagram-dark.png',
+  }}
+/>
+
+Users interact with the `confidential_asset` module to perform operations on their confidential balances.
+The `confidential_asset` module calls the `confidential_balance` module to manage the confidential balances and the `confidential_proof` module to verify ZKPs.
+Under the hood, the `confidential_balance` module uses the `twisted_elgamal` module for operations on chunks.
+
+## Entry functions
+
+### Register
+
+```move filename="confidential_asset.move"
+public entry fun register(sender: &signer, token: Object<Metadata>, ek: vector<u8>)
+```
+```move filename="confidential_asset.move"
+#[view]
+public fun has_confidential_asset_store(user: address, token: Object<Metadata>): bool
+```
+
+Users must register a `ConfidentialAssetStore` for each token they intend to transact with.
+As part of this process, users are required to generate a keypair (EK and DK) on their end.
+
+When a `ConfidentialAssetStore` is first registered, the confidential balance is set to zero,
+represented as zero ciphertexts for both the `pending_balance` and `actual_balance`.
+
+You can also check if a user has a `ConfidentialAssetStore` for a specific token using the `has_confidential_asset_store` function.
+
+<Callout type="info">
+  Although it is recommended to generate a unique keypair for each token to enhance security,
+  it's not restricted to reuse the same encryption key across multiple tokens if preferred.
+</Callout>
+<Callout type="warning">
+  This operation is expensive as it initializes a new storage and storage fees far exceed execution fees.
+  However, users call it only once per token.
+</Callout>
+
+```move filename="register_example.move"
+#[test_only]
+module confidential_asset_addr::register_example {
+    /// ...
+
+    fun register(bob: &signer, token: Object<Metadata>) {
+        let bob_addr = signer::address_of(bob);
+
+        // It's a test-only function, so we don't need to worry about the security of the keypair.
+        let (_bob_dk, bob_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+
+        let bob_ek = twisted_elgamal::pubkey_to_bytes(&bob_ek);
+
+        confidential_asset::register(bob, token, bob_ek);
+
+        print(&utf8(b"Bob's pending balance is a zero ciphertext:"));
+        print(&confidential_asset::pending_balance(bob_addr, token));
+
+        print(&utf8(b"Bob's actual balance is a zero ciphertext:"));
+        print(&confidential_asset::actual_balance(bob_addr, token));
+
+        print(&utf8(b"Bob's encryption key is set:"));
+        print(&confidential_asset::encryption_key(bob_addr, token));
+    }
+}
+```
+
+### Deposit
+
+```move filename="confidential_asset.move"
+public entry fun deposit(sender: &signer, token: Object<Metadata>, amount: u64)
+```
+```move filename="confidential_asset.move"
+public entry fun deposit_to(sender: &signer, token: Object<Metadata>, to: address, amount: u64)
+```
+
+The `deposit` and `deposit_to` functions bring tokens into the protocol, transferring the passed amount
+from primary FA store of the sender to the pending balance of the recipient.
+
+The amount in this function is publicly visible, as adding new tokens to the protocol requires a normal transfer.
+However, tokens within the protocol become obfuscated through confidential transfers, ensuring privacy in subsequent transactions.
+
+<Callout type="info">
+  If you want to have a hidden amount from the beginning, use the `confidential_transfer` function instead.
+</Callout>
+
+```move filename="deposit_example.move"
+#[test_only]
+module confidential_asset_addr::deposit_example {
+    /// ...
+
+    fun deposit(bob: &signer, alice: &signer, token: Object<Metadata>) {
+        let bob_addr = signer::address_of(bob);
+        let alice_addr = signer::address_of(alice);
+
+        // It's a test-only function, so we don't need to worry about the security of the keypair.
+        let (bob_dk, bob_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+        let (alice_dk, alice_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+
+        let bob_ek = twisted_elgamal::pubkey_to_bytes(&bob_ek);
+        let alice_ek = twisted_elgamal::pubkey_to_bytes(&alice_ek);
+        
+        confidential_asset::register(bob, token, bob_ek);
+        confidential_asset::register(alice, token, alice_ek);
+
+        print(&utf8(b"Bob's FA balance before the deposit is 500:"));
+        print(&primary_fungible_store::balance(bob_addr, token));
+
+        assert!(primary_fungible_store::balance(bob_addr, token) == 500);
+
+        let bob_amount = 100;
+        let alice_amount = 200;
+
+        // The balance is not hidden yet, because we explicitly pass the amount to the function.
+        confidential_asset::deposit(bob, token, bob_amount);
+        confidential_asset::deposit_to(bob, token, alice_addr, alice_amount);
+
+        print(&utf8(b"Bob's FA balance after the deposit is 200:"));
+        print(&primary_fungible_store::balance(bob_addr, token));
+
+        assert!(primary_fungible_store::balance(bob_addr, token) == 200);
+
+        print(&utf8(b"Bob's pending balance is not zero:"));
+        print(&confidential_asset::pending_balance(bob_addr, token));
+
+        // In real world, we would not be able to see the someone else's balance as it requires
+        // the knowledge of the decryption key.
+        // The balance decryption requires solving the discrete logarithm problem, 
+        // so we just check if the passed amount is correct for simplicity.
+        assert!(confidential_asset::verify_pending_balance(bob_addr, token, &bob_dk, bob_amount));
+
+        print(&utf8(b"Alice's pending balance is not zero:"));
+        print(&confidential_asset::pending_balance(alice_addr, token));
+
+        assert!(confidential_asset::verify_pending_balance(alice_addr, token, &alice_dk, alice_amount));
+    }
+}
+```
+
+### Rollover Pending Balance
+
+```move filename="confidential_asset.move"
+public entry fun rollover_pending_balance(sender: &signer, token: Object<Metadata>)
+```
+
+The `rollover_pending_balance` function adds the pending balance to the actual one, resetting the pending balance to zero.
+It works with no additional proofs as this function utilizes properties of the [Homomorphic encryption](#homomorphic-encryption) used in the protocol.
+
+<Callout type="info">
+  You cannot spend money from the pending balance directly. It must be rolled over to the actual balance first.
+</Callout>
+
+<Callout type="warning">
+  The actual balance must be [normalized](#normalization) before performing a rollover.
+  If it is not normalized, you can use the [`normalize`](#normalize) function to do so.
+</Callout>
+
+<Callout type="warning">
+  Calling the `rollover_pending_balance` function in a separate transaction is crucial for preventing "front-running" attacks.
+</Callout>
+
+```move filename="rollover_example.move"
+#[test_only]
+module confidential_asset_addr::rollover_example {
+    /// ...
+
+    fun rollover(bob: &signer, token: Object<Metadata>) {
+        let bob_addr = signer::address_of(bob);
+
+        // It's a test-only function, so we don't need to worry about the security of the keypair.
+        let (bob_dk, bob_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+
+        let bob_ek = twisted_elgamal::pubkey_to_bytes(&bob_ek);
+
+        let bob_amount = 100;
+        
+        confidential_asset::register(bob, token, bob_ek);
+        confidential_asset::deposit(bob, token, bob_amount);
+
+        print(&utf8(b"Bob's pending balance is NOT zero:"));
+        print(&confidential_asset::pending_balance(bob_addr, token));
+
+        print(&utf8(b"Bob's actual balance is zero:"));
+        print(&confidential_asset::actual_balance(bob_addr, token));
+        
+        assert!(confidential_asset::verify_pending_balance(bob_addr, token, &bob_dk, bob_amount));
+        assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, 0));
+
+        // No explicit normalization is required, as the actual balance is already normalized.
+        assert!(confidential_asset::is_normalized(bob_addr, token));
+
+        confidential_asset::rollover_pending_balance(bob, token);
+
+        print(&utf8(b"Bob's pending balance is zero:"));
+        print(&confidential_asset::pending_balance(bob_addr, token));
+        
+        print(&utf8(b"Bob's actual balance is NOT zero:"));
+        print(&confidential_asset::actual_balance(bob_addr, token));
+
+        assert!(confidential_asset::verify_pending_balance(bob_addr, token, &bob_dk, 0));
+        assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, (bob_amount as u128)));
+    }
+}
+```
+
+### Confidential Transfer
+
+```move filename="confidential_asset.move"
+public entry fun confidential_transfer(
+    sender: &signer,
+    token: Object<Metadata>,
+    to: address,
+    new_balance: vector<u8>,
+    transfer_amount: vector<u8>,
+    auditor_eks: vector<u8>,
+    auditor_amounts: vector<u8>,
+    zkrp_new_balance: vector<u8>,
+    zkrp_transfer_amount: vector<u8>,
+    sigma_proof: vector<u8>)
+```
+
+The `confidential_transfer` function transfers tokens from the sender's actual balance to the recipient's
+pending balance. The sender encrypts the transferred amount using the recipient's encryption key, enabling the recipient's
+confidential balance to be updated [homomorphically](#homomorphic-encryption).
+
+To ensure transparency, the sender could also encrypt the transferred amount using the auditors' EKs,
+allowing the auditors to decrypt the transferred amount on their end.
+
+<Callout type="warning">
+  If the global auditor is set, it must be included in the `auditor_eks` list as the FIRST element (see the example below).
+</Callout>
+
+<Callout type="info">
+  Once a user has participated in at least one transfer, their balance becomes "hidden".
+  This means that neither the transferred amount nor the updated balances of the sender and recipient are visible to external observers.
+</Callout>
+
+```move filename="transfer_example.move"
+#[test_only]
+module confidential_asset_addr::transfer_example {
+    /// ...
+
+    fun transfer(bob: &signer, alice: &signer, token: Object<Metadata>) {
+        let bob_addr = signer::address_of(bob);
+        let alice_addr = signer::address_of(alice);
+
+        // It's a test-only function, so we don't need to worry about the security of the keypair.
+        let (bob_dk, bob_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+        let (alice_dk, alice_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+
+        // Note: If the asset-specific auditor is set, we need to include it in the `auditor_eks` vector as the FIRST element.
+        //
+        // let asset_auditor_ek = confidential_asset::get_auditor(token);
+        // let auditor_eks = vector[];
+        // if (asset_auditor_ek.is_some()) {
+        //     auditor_eks.push_back(asset_auditor_ek.extract());
+        // };
+
+        let (_, auditor_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+        let auditor_eks = vector[auditor_ek];
+
+        let bob_ek_bytes = twisted_elgamal::pubkey_to_bytes(&bob_ek);
+        let alice_ek_bytes = twisted_elgamal::pubkey_to_bytes(&alice_ek);
+
+        confidential_asset::register(bob, token, bob_ek_bytes);
+        confidential_asset::register(alice, token, alice_ek_bytes);
+
+        // Bob's current balance is 300, and he wants to transfer 50 to Alice, whose balance is zero.
+        let bob_current_amount = 300;
+        let bob_new_amount = 250;
+        let transfer_amount = 50;
+        let alice_current_amount = 0;
+        let alice_new_amount = 50;
+
+        confidential_asset::deposit(bob, token, bob_current_amount);
+        confidential_asset::rollover_pending_balance(bob, token);
+
+        print(&utf8(b"Bob's actual balance is 300"));
+        assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, (bob_current_amount as u128)));
+
+        print(&utf8(b"Alice's pending balance is zero"));
+        assert!(confidential_asset::verify_pending_balance(alice_addr, token, &alice_dk, alice_current_amount));
+
+        let current_balance = confidential_balance::decompress_balance(&confidential_asset::actual_balance(bob_addr, token));
+
+        let (
+            proof,
+            // New balance is the balance after the transfer encrypted with the sender's encryption key.
+            // It will be set as the new actual balance for the sender.
+            new_balance,
+            // Transfer amount encrypted with the recipient's encryption key.
+            // It will be Homomorphically added to the recipient's pending balance.
+            transfer_amount,
+            // Transfer amount encrypted with the auditors' encryption keys.
+            // It won't be stored on-chain, but an auditor can decrypt the transfer amount with its dk.
+            auditor_amounts
+        ) = confidential_proof::prove_transfer(
+            &bob_dk,
+            &bob_ek,
+            &alice_ek,
+            transfer_amount,
+            bob_new_amount,
+            &current_balance,
+            &auditor_eks,
+        );
+
+        let (
+            sigma_proof,
+            zkrp_new_balance,
+            zkrp_transfer_amount
+        ) = confidential_proof::serialize_transfer_proof(&proof);
+
+        confidential_asset::confidential_transfer(
+            bob,
+            token,
+            alice_addr,
+            confidential_balance::balance_to_bytes(&new_balance),
+            confidential_balance::balance_to_bytes(&transfer_amount),
+            confidential_asset::serialize_auditor_eks(&auditor_eks),
+            confidential_asset::serialize_auditor_amounts(&auditor_amounts),
+            zkrp_new_balance,
+            zkrp_transfer_amount,
+            sigma_proof
+        );
+
+        print(&utf8(b"Bob's actual balance is 250"));
+        assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, bob_new_amount));
+
+        print(&utf8(b"Alice's pending balance is 50"));
+        assert!(confidential_asset::verify_pending_balance(alice_addr, token, &alice_dk, alice_new_amount));
+    }
+}
+```
+
+### Withdraw
+
+```move filename="confidential_asset.move"
+public entry fun withdraw(
+    sender: &signer,
+    token: Object<Metadata>,
+    amount: u64,
+    new_balance: vector<u8>,
+    zkrp_new_balance: vector<u8>,
+    sigma_proof: vector<u8>)
+```
+```move filename="confidential_asset.move"
+public entry fun withdraw_to(
+    sender: &signer,
+    token: Object<Metadata>,
+    to: address,
+    amount: u64,
+    new_balance: vector<u8>,
+    zkrp_new_balance: vector<u8>,
+    sigma_proof: vector<u8>)
+```
+
+The `withdraw` and `withdraw_to` allow a user to withdraw tokens from the protocol,
+transferring the passed amount from the actual balance of the sender to the primary FA store of the recipient.
+This function enables users to release tokens while not revealing their remaining balances.
+
+<Callout type="warning">
+  Attempting to withdraw more tokens than available will cause an error.
+</Callout>
+
+```move filename="withdraw_example.move"
+#[test_only]
+module confidential_asset_addr::withdraw_example {
+    /// ...
+
+    fun withdraw(bob: &signer, alice: &signer, token: Object<Metadata>) {
+        let bob_addr = signer::address_of(bob);
+        let alice_addr = signer::address_of(alice);
+
+        // It's a test-only function, so we don't need to worry about the security of the keypair.
+        let (bob_dk, bob_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+        let (_alice_dk, alice_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+
+        let bob_ek_bytes = twisted_elgamal::pubkey_to_bytes(&bob_ek);
+        let alice_ek_bytes = twisted_elgamal::pubkey_to_bytes(&alice_ek);
+        
+        confidential_asset::register(bob, token, bob_ek_bytes);
+        confidential_asset::register(alice, token, alice_ek_bytes);
+
+        let bob_current_amount = 500;
+        let bob_new_amount = 450;
+        let transfer_amount = 50;
+
+        // Bob withdraws all available tokens
+        confidential_asset::deposit(bob, token, (bob_current_amount as u64));
+        confidential_asset::rollover_pending_balance(bob, token);
+
+        print(&utf8(b"Alice's FA balance before the withdrawal is zero:"));
+        print(&primary_fungible_store::balance(alice_addr, token));
+
+        assert!(primary_fungible_store::balance(alice_addr, token) == 0);
+
+        print(&utf8(b"Bob's actual balance before the withdrawal is 500"));
+        assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, bob_current_amount));
+
+        let current_balance = confidential_balance::decompress_balance(&confidential_asset::actual_balance(bob_addr, token));
+
+        let (proof, new_balance) = confidential_proof::prove_withdrawal(
+            &bob_dk,
+            &bob_ek,
+            transfer_amount,
+            bob_new_amount,
+            &current_balance
+        );
+
+        let new_balance = confidential_balance::balance_to_bytes(&new_balance);
+        let (sigma_proof, zkrp_new_balance) = confidential_proof::serialize_withdrawal_proof(&proof);
+        
+        confidential_asset::withdraw_to(bob, token, alice_addr, transfer_amount, new_balance, zkrp_new_balance, sigma_proof);
+        
+        print(&utf8(b"Alice's FA balance after the withdrawal is 50:"));
+        print(&primary_fungible_store::balance(alice_addr, token));
+
+        assert!(primary_fungible_store::balance(alice_addr, token) == 50);
+        
+        print(&utf8(b"Bob's actual balance after the withdrawal is 450"));
+        assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, bob_new_amount));
+    }
+}
+```
+
+### Rotate Encryption Key
+
+```move filename="confidential_asset.move"
+public entry fun rotate_encryption_key(
+    sender: &signer,
+    token: Object<Metadata>,
+    new_ek: vector<u8>,
+    new_balance: vector<u8>,
+    zkrp_new_balance: vector<u8>,
+    sigma_proof: vector<u8>)
+```
+
+```move filename="confidential_asset.move"
+public entry fun rotate_encryption_key_and_unfreeze(
+    sender: &signer,
+    token: Object<Metadata>,
+    new_ek: vector<u8>,
+    new_confidential_balance: vector<u8>,
+    zkrp_new_balance: vector<u8>,
+    rotate_proof: vector<u8>)
+```
+
+```move filename="confidential_asset.move"
+public entry fun rollover_pending_balance_and_freeze(sender: &signer, token: Object<Metadata>)
+```
+
+The `rotate_encryption_key` function modifies the user's EK and re-encrypts the actual balance with the new EK.
+This function checks that the pending balance is zero before proceeding, guaranteeing that the user does not lose funds during the rotation.
+
+To facilitate the rotation process:
+
+- The pending balance must first be rolled over and frozen by calling `rollover_pending_balance_and_freeze`.
+This prevents new transactions from being processed during the key rotation.
+- Then the EK can be rotated and unfrozen using `rotate_encryption_key_and_unfreeze`.
+
+<Callout type="warning">
+  Calling `rotate_encryption_key` with a non-zero pending balance will cause an error.
+</Callout>
+
+```move filename="rotate_example.move"
+#[test_only]
+module confidential_asset_addr::rotate_example {
+    /// ...
+
+    fun rotate(bob: &signer, token: Object<Metadata>) {
+        let bob_addr = signer::address_of(bob);
+
+        // It's a test-only function, so we don't need to worry about the security of the keypair.
+        let (bob_current_dk, bob_current_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+        let (bob_new_dk, bob_new_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+        
+        let bob_current_ek_bytes = twisted_elgamal::pubkey_to_bytes(&bob_current_ek);
+        let bob_new_ek_bytes = twisted_elgamal::pubkey_to_bytes(&bob_new_ek);
+
+        let bob_amount = 100;
+
+        confidential_asset::register(bob, token, bob_current_ek_bytes);
+        confidential_asset::deposit(bob, token, (bob_amount as u64));
+
+        // We need to rollover the pending balance and freeze the token to prevent any new deposits being come.
+        confidential_asset::rollover_pending_balance_and_freeze(bob, token);
+        
+        print(&utf8(b"Bob's encryption key before the rotation:"));
+        print(&confidential_asset::encryption_key(bob_addr, token));
+
+        assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_current_dk, bob_amount));
+
+        let current_balance = confidential_balance::decompress_balance(&confidential_asset::actual_balance(bob_addr, token));
+
+        let (proof, new_balance) = confidential_proof::prove_rotation(
+            &bob_current_dk,
+            &bob_new_dk,
+            &bob_current_ek,
+            &bob_new_ek,
+            bob_amount,
+            &current_balance
+        );
+
+        let (
+            sigma_proof, 
+            zkrp_new_balance
+        ) = confidential_proof::serialize_rotation_proof(&proof);
+
+        // After rotating the encryption key, we unfreeze the token to allow new deposits.
+        confidential_asset::rotate_encryption_key_and_unfreeze(
+            bob,
+            token,
+            bob_new_ek_bytes,
+            confidential_balance::balance_to_bytes(&new_balance),
+            zkrp_new_balance,
+            sigma_proof
+        );
+        
+        print(&utf8(b"Bob's encryption key after the rotation:"));
+        print(&confidential_asset::encryption_key(bob_addr, token));
+
+        // Note that here we use the new decryption key to verify the actual balance.
+        assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_new_dk, bob_amount));
+    }
+}
+```
+
+### Normalize
+
+```move filename="confidential_asset.move"
+public entry fun normalize(
+    sender: &signer,
+    token: Object<Metadata>,
+    new_balance: vector<u8>,
+    zkrp_new_balance: vector<u8>,
+    sigma_proof: vector<u8>)
+```
+```move filename="confidential_asset.move"
+public fun is_normalized(user: address, token: Object<Metadata>): bool
+```
+
+The `normalize` function ensures that the actual balance is reduced to 16-bit chunks for [efficient decryption](#normalization).
+This is necessary only before the `rollover_pending_balance` operation, which requires the actual balance to be normalized beforehand.
+
+All other functions, such as `withdraw` or `confidential_transfer`, handle normalization implicitly, making manual normalization unnecessary in those cases.
+
+<Callout type="info">
+  All functions except `rollover_pending_balance` perform implicit normalization.
+</Callout>
+<Callout type="warning">
+  Calling a `rollover_pending_balance` when the actual balance is already normalized will cause an error.
+  You can check if the actual balance is normalized using the `is_normalized` function.
+</Callout>
+
+```move filename="normalize_example.move"
+#[test_only]
+module confidential_asset_addr::normalize_example {
+    /// ...
+
+    fun normalize(bob: &signer, token: Object<Metadata>) {
+        let bob_addr = signer::address_of(bob);
+
+        // It's a test-only function, so we don't need to worry about the security of the keypair.
+        let (bob_dk, bob_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
+
+        let bob_ek_bytes = twisted_elgamal::pubkey_to_bytes(&bob_ek);
+        
+        let bob_amount = 500;
+
+        confidential_asset::register(bob, token, bob_ek_bytes);
+        confidential_asset::deposit(bob, token, (bob_amount as u64));
+
+        // The rollover function is the only function that requires the actual balance to be normalized 
+        // beforehand and leaves it unnormalized after execution, no matter what the pending balance was.
+        confidential_asset::rollover_pending_balance(bob, token);
+        
+        assert!(!confidential_asset::is_normalized(bob_addr, token));
+
+        confidential_asset::deposit(bob, token, (bob_amount as u64));
+
+        // Before performing a second rollover, the actual balance must be normalized. 
+        // You will get an error if you try to rollover an unnormalized balance:
+        // confidential_asset::rollover_pending_balance(bob, token);
+
+        let current_balance = confidential_balance::decompress_balance(&confidential_asset::actual_balance(bob_addr, token));
+
+        let (
+            proof,
+            new_balance
+        ) = confidential_proof::prove_normalization(
+            &bob_dk,
+            &bob_ek,
+            bob_amount,
+            &current_balance
+        );
+
+        let (sigma_proof, zkrp_new_balance) = confidential_proof::serialize_normalization_proof(&proof);
+
+        confidential_asset::normalize(
+            bob,
+            token,
+            confidential_balance::balance_to_bytes(&new_balance),
+            zkrp_new_balance,
+            sigma_proof
+        );
+
+        assert!(confidential_asset::is_normalized(bob_addr, token));
+        assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, bob_amount));
+
+        // A rollover can be performed once the balance is normalized. 
+        // Note that functions like `withdraw` and `confidential_transfer` do not require the actual balance 
+        // to be normalized beforehand, as zk-proofs guarantee that the actual balance is normalized after 
+        // their execution.
+        confidential_asset::rollover_pending_balance(bob, token);
+    }
+}
+```
+
+## Useful Resources
+
+- [Confidential Asset SDK](../sdks/ts-sdk/confidential-asset)
