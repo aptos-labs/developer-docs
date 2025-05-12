@@ -194,10 +194,6 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
     accountAddress: alice.accountAddress,
     amount: 100_000_000, // 1 APT = 100,000,000 octas
   });
-  await aptos.fundAccount({
-    accountAddress: bob.accountAddress,
-    amount: 0, // Bob starts with 0 APT
-  });
   console.log("Accounts funded successfully");
 
   // Check initial balances
@@ -311,8 +307,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   bob_amount = 0  # Bob starts with 0 APT
 
   await faucet_client.fund_account(alice.address(), alice_amount)
-  await faucet_client.fund_account(bob.address(), bob_amount)
-  print("Accounts funded successfully")
+  print("Account funded successfully")
 
   # Check initial balances
   alice_balance = await rest_client.account_balance(alice.address())
