@@ -517,3 +517,93 @@ const onSignAndSubmitBCSTransaction = async () => {
   Sign and submit BCS transaction
 </button>;
 ```
+
+## Mobile support
+
+Since Chrome extensions are not supported in mobile browsers by default, the adapter maintains a `registry` of undetected wallets, including a `deeplinkProvider` property for wallets that support deep linking. 
+This allows the dapp to display wallets that aren’t detectable in a mobile browser view but can still be connected to by redirecting the user to an in-app browser view.
+
+```tsx filename="registry.tsx"
+{
+  name: "Petra",
+  url: "https://chromewebstore.google.com/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci?hl=en",
+  icon: "data:image/png;base64,iVBOR...QmCC",
+  readyState: WalletReadyState.NotDetected,
+  isAIP62Standard: true,
+  deeplinkProvider: "https://petra.app/explore?link=",
+}
+```
+
+To render wallets with `deeplinkProvider` support in your dapp—assuming you're not using the official adapter wallet selector UI—follow these steps:
+
+<Steps>
+
+### Retrieve all compatible wallets and group them by wallet type
+
+```tsx filename="WalletDisplayDemo.tsx"
+import { useWallet, groupAndSortWallets } from '@aptos-labs/wallet-adapter-react';
+
+const displayAllWalletsDemo = () => {
+
+  const { wallets = [], notDetectedWallets = [] } = useWallet();
+
+  const { aptosConnectWallets, availableWallets, installableWallets } =
+    groupAndSortWallets(
+      [...wallets, ...notDetectedWallets] 
+    );
+  
+  return (
+    <div>
+      /** Wallets that use social login to create an account on the blockchain */
+      {aptosConnectWallets.map((aptosConnectwallet) => (
+        <WalletItemComponent wallet={aptosConnectwallet}/>
+      ))}
+      /** Wallets that are currently installed or loadable. */
+      {availableWallets.map((availableWallet) => (
+        <WalletItemComponent wallet={availableWallets}/>
+      ))}
+      /** Wallets that are NOT currently installed or loadable. */
+      {installableWallets.map((installableWallet) => (
+        <WalletItemComponent wallet={installableWallets}/>
+      ))}
+    </div>
+  )
+}
+```
+
+This code snippet retrieves all wallets in the Aptos ecosystem that are supported by the wallet adapter.
+
+### Display uninstalled wallets with deep link support in mobile view.
+
+To ensure we display only wallets that support deep linking on mobile, we can check both for `deepLinkProvider` support and the current view type.
+
+In the component that renders each wallet:
+
+```tsx filename="WalletItemComponent.tsx"
+import { useWallet, WalletReadyState } from '@aptos-labs/wallet-adapter-react';
+
+const WalletItemComponent = (wallet) => {
+
+  const { connect } = useWallet();
+
+  // On mobile, extension wallets will never have a state of `Installed`
+  const isWalletReady = wallet.readyState === WalletReadyState.Installed;
+
+  // Check if the wallet supports mobile deep linking.
+  const mobileSupport =
+    "deeplinkProvider" in wallet && wallet.deeplinkProvider;
+
+  // If the wallet is not installed, the user is in a redirectable view (i.e., mobile browser but not an in-app browser), 
+  // and the wallet does not support deep linking—do not display the wallet.
+  if (!isWalletReady && isRedirectable() && !mobileSupport) return null;
+
+  // Otherwise, display the wallet
+  return (
+    <Button onClick={connect(wallet)}>{wallet.name}</Button>
+  )
+}
+```
+
+This code snippet ensures that the correct `wallet` object is displayed in the appropriate view.
+
+</Steps>
