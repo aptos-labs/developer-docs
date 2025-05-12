@@ -307,7 +307,7 @@ You can jump to the full code sample [here](#full-code-sample) or continue readi
   bob_amount = 0  # Bob starts with 0 APT
 
   await faucet_client.fund_account(alice.address(), alice_amount)
-  print("Accounts funded successfully")
+  print("Account funded successfully")
 
   # Check initial balances
   alice_balance = await rest_client.account_balance(alice.address())
