@@ -45,6 +45,10 @@ In the Wallet Adapter, the `accountIdentity` is based on the original x-chain ac
 
 Currently, the adapter supports Solana and EVM chains
 
+<Callout>
+  It is highly recommended to use the `@aptos-labs/wallet-adapter-react` package for the best experience. Make sure you integrate with the Aptos Wallet Adapter by following these [steps](./dapp.mdx)
+</Callout>
+
 <Tabs items={['Solana', 'EVM']}>
 {/* Solana */}
 
@@ -61,10 +65,6 @@ Currently, the wallets that have been tested and support cross-chain accounts ar
 | Backpack | ✅           |                |
 | OKX      | ✅           |                |
 
-
-<Callout>
-  It is highly recommended to use the `@aptos-labs/wallet-adapter-react` package for the best experience. Make sure you integrate with the Aptos Wallet Adapter by following these [steps](./dapp.mdx)
-</Callout>
 
 Supporting x-chain accounts in a dApp requires only a 2-step installation process.
 
@@ -97,6 +97,7 @@ setupAutomaticSolanaWalletDerivation({ defaultNetwork: Network.DEVNET }); // thi
 <AptosWalletAdapterProvider/>
 ```
 </Steps>
+
 </Tabs.Tab>
 
 {/* EVM */}
@@ -114,8 +115,6 @@ Currently, the wallets that have been tested and support cross-chain accounts ar
 | Exodus   | ✅           |                |
 | Backpack | ✅           |                |
 
-
-Make sure you integrate with the Aptos Wallet Adapter by following these [steps](./dapp.mdx)
 
 Supporting x-chain accounts in a dApp requires only a 2-step installation process.
 
