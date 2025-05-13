@@ -153,7 +153,10 @@ export function ApiReference() {
         configuration={{
           baseServerURL,
           spec: {
-            content: {...reference, servers: [{url: `${baseServerURL}/v1`}]},
+            content: {
+              ...reference,
+              servers: [{ url: `${baseServerURL}/v1` }],
+            },
           },
           darkMode: convertDarkMode(theme) === "dark",
         }}
