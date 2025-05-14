@@ -1,0 +1,207 @@
+# 向量(Vector)
+
+`vector<T>` 是 Move 语言提供的唯一基本集合类型。`vector<T>` 是同质化的 `T` 类型集合，可以通过在"末尾"推入/弹出值来扩展或收缩。
+
+`vector<T>` 可以用任何类型 `T` 实例化。例如，`vector<u64>`、`vector<address>`、`vector<0x42::MyModule::MyResource>` 和 `vector<vector<u8>>` 都是有效的向量类型。
+
+## 字面量
+
+### 通用 `vector` 字面量
+
+任何类型的向量都可以通过 `vector` 字面量创建。
+
+| 语法                 | 类型                                                                          | 描述                                     |
+| -------------------- | ----------------------------------------------------------------------------- | ---------------------------------------- |
+| `vector[]`           | `vector[]: vector<T>` 其中 `T` 是任意单一非引用类型                           | 空向量                                   |
+| `vector[e1, ..., en]`| `vector[e1, ..., en]: vector<T>` 其中 `e_i: T` 满足 `0 < i <= n` 且 `n > 0`   | 包含 `n` 个元素的向量（长度为 `n`）      |
+
+在这些情况下，`vector` 的类型可以从元素类型或向量的使用场景推断出来。如果无法推断类型，或者为了更清晰，可以显式指定类型：
+
+```move
+vector<T>[]: vector<T>
+vector<T>[e1, ..., en]: vector<T>
+```
+
+#### 向量字面量示例
+
+```move
+script {
+  fun example() {
+    (vector[]: vector<bool>);
+    (vector[0u8, 1u8, 2u8]: vector<u8>);
+    (vector<u128>[]: vector<u128>);
+    (vector<address>[@0x42, @0x100]: vector<address>);
+  }
+}
+```
+
+### `vector<u8>` 字面量
+
+在 Move 中，向量的一个常见用例是表示"字节数组"，即 `vector<u8>`。这些值通常用于加密目的，如公钥或哈希结果。这些值非常常见，因此提供了特定语法来提高可读性，而不必使用 `vector[]` 并以数字形式指定每个单独的 `u8` 值。
+
+目前支持两种类型的 `vector<u8>` 字面量：_字节字符串_ 和 _十六进制字符串_。
+
+#### 字节字符串
+
+字节字符串是以 `b` 为前缀的带引号字符串字面量，例如 `b"Hello!\n"`。
+
+这些是 ASCII 编码的字符串，允许使用转义序列。目前支持的转义序列有：
+
+| 转义序列   | 描述                                     |
+| ---------- | ---------------------------------------- |
+| `\n`       | 换行符（或行结束符）                     |
+| `\r`       | 回车符                                   |
+| `\t`       | 制表符                                   |
+| `\\`       | 反斜杠                                   |
+| `\0`       | 空字符                                   |
+| `\"`       | 引号                                     |
+| `\xHH`     | 十六进制转义，插入十六进制字节序列 `HH`   |
+
+#### 十六进制字符串
+
+十六进制字符串是以 `x` 为前缀的带引号字符串字面量，例如 `x"48656C6C6F210A"`。
+
+每对字节（从 `00` 到 `FF`）被解释为十六进制编码的 `u8` 值。因此每对字节对应结果 `vector<u8>` 中的一个条目。
+
+#### 字符串字面量示例
+
+```move
+script {
+  fun byte_and_hex_strings() {
+    assert!(b"" == x"", 0);
+    assert!(b"Hello!\n" == x"48656C6C6F210A", 1);
+    assert!(b"\x48\x65\x6C\x6C\x6F\x21\x0A" == x"48656C6C6F210A", 2);
+    assert!(
+        b"\"Hello\tworld!\"\n \r \\Null=\0" ==
+            x"2248656C6C6F09776F726C6421220A200D205C4E756C6C3D00",
+        3
+    );
+  }
+}
+```
+
+## 操作
+
+`vector` 通过 Move 标准库中的 `std::vector` 模块提供了多种操作，如下所示。未来可能会添加更多操作。
+关于 `vector` 的最新文档可以在 [这里](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/move-stdlib/doc/vector.md) 找到。
+
+| Function                                                                                   | 描述                                                                                                                                                              | 是否中止?                                               |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `vector::empty<T>(): vector<T>`                                                       | 创建一个可以存储类型为 `T` 的值的空向量                                                                                                                           | 永不                                                    |
+| `vector::is_empty<T>(self: &vector<T>): bool`                                         | 如果向量 `self` 没有元素则返回 `true`，否则返回 `false`                                                                                                           | 永不                                                    |
+| `vector::singleton<T>(t: T): vector<T>`                                               | 创建一个包含 `t` 的大小为 1 的向量                                                                                                                               | 永不                                                    |
+| `vector::length<T>(self: &vector<T>): u64`                                            | 返回向量 `self` 的长度                                                                                                                                           | 永不                                                    |
+| `vector::push_back<T>(self: &mut vector<T>, t: T)`                                    | 将 `t` 添加到 `self` 的末尾                                                                                                                                      | 永不                                                    |
+| `vector::pop_back<T>(self: &mut vector<T>): T`                                        | 移除并返回 `self` 中的最后一个元素                                                                                                                               | 如果 `self` 为空                                        |
+| `vector::borrow<T>(self: &vector<T>, i: u64): &T`                                     | 返回索引 `i` 处元素的不可变引用                                                                                                                                  | 如果 `i` 越界                                          |
+| `vector::borrow_mut<T>(self: &mut vector<T>, i: u64): &mut T`                         | 返回索引 `i` 处元素的可变引用                                                                                                                                    | 如果 `i` 越界                                          |
+| `vector::destroy_empty<T>(self: vector<T>)`                                           | 删除 `self`                                                                                                                                                      | 如果 `self` 不为空                                      |
+| `vector::append<T>(self: &mut vector<T>, other: vector<T>)`                           | 将 `other` 中的元素添加到 `self` 的末尾                                                                                                                          | 永不                                                    |
+| `vector::reverse_append<T>(self: &mut vector<T>, other: vector<T>)`                   | 将 `other` 向量中的所有元素以相反的顺序推入 `self` 向量                                                                                                          | 永不                                                    |
+| `vector::contains<T>(self: &vector<T>, e: &T): bool`                                  | 如果 `e` 在向量 `self` 中则返回 `true`，否则返回 `false`                                                                                                         | 永不                                                    |
+| `vector::swap<T>(self: &mut vector<T>, i: u64, j: u64)`                               | 交换向量 `self` 中第 `i` 个和第 `j` 个索引处的元素                                                                                                               | 如果 `i` 或 `j` 越界                                   |
+| `vector::reverse<T>(self: &mut vector<T>)`                                            | 原地反转向量 `self` 中元素的顺序                                                                                                                                 | 永不                                                    |
+| `vector::reverse_slice<T>(self: &mut vector<T>, l: u64, r: u64)`                      | 原地反转向量 `self` 中 `[l, r)` 范围内元素的顺序                                                                                                                 | 如果 `l > r` 或 `l` 或 `r` 越界                        |
+| `vector::index_of<T>(self: &vector<T>, e: &T): (bool, u64)`                           | 如果 `e` 在向量 `self` 的索引 `i` 处则返回 `(true, i)`，否则返回 `(false, 0)`                                                                                    | 永不                                                    |
+| `vector::insert<T>(self: &mut vector<T>, i: u64, e: T)`                               | 在位置 `0 <= i <= length` 处插入新元素 `e`，时间复杂度为 `O(length - i)`                                                                                         | 如果 `i` 越界                                          |
+| `vector::remove<T>(self: &mut vector<T>, i: u64): T`                                  | 移除向量 `self` 的第 `i` 个元素，并移动所有后续元素。时间复杂度为 O(n)，保持向量中元素的顺序                                                                     | 如果 `i` 越界                                          |
+| `vector::swap_remove<T>(self: &mut vector<T>, i: u64): T`                             | 将向量 `self` 的第 `i` 个元素与最后一个元素交换并弹出该元素，时间复杂度为 O(1)，但不保持向量中元素的顺序                                                         | 如果 `i` 越界                                          |
+| `vector::trim<T>(self: &mut vector<T>, new_len: u64): vector<T>`                      | 将向量 `self` 截断为较小的长度 `new_len`，并按顺序返回被移除的元素                                                                                               | 如果 `new_len > self.length()`                         |
+| `vector::trim_reverse<T>(self: &mut vector<T>, new_len: u64): vector<T>`              | 将向量 `self` 截断为较小的长度 `new_len`，并按相反顺序返回被移除的元素                                                                                           | 如果 `new_len > self.length()`                         |
+| `vector::rotate<T>(self: &mut vector<T>, rot: u64): u64`                              | 原地旋转向量，如 `rotate(&mut [1, 2, 3, 4, 5], 2) -> [3, 4, 5, 1, 2]`，返回分割点（本例中为 `3`）                                                               | 如果不满足 `rot <= self.length()`                      |
+| `vector::rotate_slice<T>(self: &mut vector<T>, left: u64, rot: u64, right: u64): u64` | 原地旋转切片 `[left, right)`，其中 `left <= rot <= right`，返回分割点                                                                                            | 如果不满足 `left <= rot <= right <= self.length()`     |
+
+示例：
+
+```move
+script {
+  use std::vector;
+
+  fun example() {
+    let v = vector::empty<u64>();
+    vector::push_back(&mut v, 5);
+    vector::push_back(&mut v, 6);
+
+    assert!(*vector::borrow(&v, 0) == 5, 42);
+    assert!(*vector::borrow(&v, 1) == 6, 42);
+    assert!(vector::pop_back(&mut v) == 6, 42);
+    assert!(vector::pop_back(&mut v) == 5, 42);
+  }
+}
+```
+
+## 向量的索引表示法
+
+_自语言版本2.0起_
+
+可以使用方括号 (`[]`) 进行向量操作索引表示，这简化了语法并使程序更易理解。
+索引表示法只是编译器将其转换为现有操作的语法糖；原有的命名操作仍然支持。
+
+下表概述了向量的索引表示法：
+
+| 索引语法           | 对应的向量操作                        |
+|-------------------|--------------------------------------|
+| `&v[i]`           | `vector::borrow(&v, i)`              |
+| `&mut v[i]`       | `vector::borrow_mut(&mut v, i)`      |
+| `v[i]`            | `*vector::borrow(&v, i)`             |
+| `v[i] = x`        | `*vector::borrow_mut(&mut v, i) = x` |
+| `&v[i].field`     | `&vector::borrow(&v, i).field`       |
+| `&mut v[i].field` | `&mut vector::borrow_mut(&mut v, i).field` |
+| `v[i].field`      | `vector::borrow(&v, i).field`        |
+| `v[i].field = x`  | `vector::borrow_mut(&mut v, i).field = x` |
+
+例如，以下是使用索引表示法的向量冒泡排序算法：
+
+```move
+fun bubble_sort(v: vector<u64>) {
+  use std::vector;
+  let n = vector::length(&v);
+  let i = 0;
+
+  while (i < n) {
+    let j = 0;
+    while (j < n - i - 1) {
+      if (v[j] > v[j + 1]) {
+        let t = v[j];
+        v[j] = v[j + 1];
+        v[j + 1] = t;
+      };
+      j = j + 1;
+    };
+    i = i + 1;
+  };
+}
+```
+
+## 销毁和复制向量
+
+`vector<T>` 的某些行为取决于元素类型 `T` 的能力。例如，包含没有 `drop` 能力的元素的向量不能像上面例子中的 `v` 那样隐式丢弃——必须使用 `vector::destroy_empty` 显式销毁。
+
+注意 `vector::destroy_empty` 会在运行时中止，除非 `vec` 包含零个元素：
+
+```move
+script {
+  fun destroy_any_vector<T>(vec: vector<T>) {
+    vector::destroy_empty(vec) // 删除这行会导致编译器错误
+  }
+}
+```
+
+但对于包含具有`drop`能力元素的向量，丢弃时不会出错：
+
+```move
+script {
+  fun destroy_droppable_vector<T: drop>(vec: vector<T>) {
+    // 有效！
+    // 不需要显式操作来销毁向量
+  }
+}
+```
+
+类似地，除非元素类型具有 `copy` 能力，否则向量不能被复制。换句话说，`vector<T>` 具有 `copy` 能力当且仅当 `T` 具有 `copy` 能力。
+
+更多细节请参阅 [类型能力](abilities.mdx) 和 [泛型](generics.mdx) 部分。
+
+## 所有权
+
+如 [上文](#销毁和复制向量) 所述，`vector` 值可以被复制仅当元素可以被复制时

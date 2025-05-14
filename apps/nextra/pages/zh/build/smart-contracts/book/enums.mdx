@@ -1,0 +1,234 @@
+# 枚举类型
+
+_自语言版本 2.0 起_
+
+枚举类型与结构体类型相似，但支持定义数据布局的多种*变体*。每个变体都有其独特的字段集合。枚举变体可在表达式、测试工具、匹配和解构中使用。
+
+## 枚举类型声明
+
+枚举类型声明会列出不同变体的数量，如下例所示：
+
+```move
+enum Shape {
+    Circle{radius: u64},
+    Rectangle{width: u64, height: u64}
+}
+```
+
+枚举变体可以有零个或多个字段。如果没有参数，大括号也可以省略，声明为简单值：
+
+```move
+enum Color {
+  Red, Blue, Green
+}
+```
+
+与结构体类型类似，枚举类型也可以具备能力。例如，`Color` 枚举类型可以声明为可复制、可丢弃和可存储的，就像原始数字类型：
+
+```move
+enum Color has copy, drop, store, key { Red, Blue, Green }
+```
+
+枚举类型也可以拥有 `key` 能力，并作为全局存储中的数据根。在此上下文中，枚举的一个常见用途是数据版本控制：
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+  V2{name: String, age: u64}
+}
+```
+
+与结构体类似，枚举类型可以是泛型的，并接受位置参数。例如，下面的类型表示一个泛型结果类型，其中变体构造函数使用位置参数而非命名参数（另见[位置结构体](structs-and-resources.mdx#位置结构体)）。
+
+```move
+enum Result<T> has copy, drop, store {
+  Err(u64),
+  Ok(T)
+}
+```
+
+## 构造枚举值
+
+枚举值的构造方式与结构体值类似：
+
+```move
+let s: String;
+let data = VersionedData::V1{name: s};
+```
+
+如果枚举变体没有字段，大括号也可以省略：
+
+```move
+let color = Color::Blue;
+```
+
+## 枚举变体的名称解析
+
+枚举的变体名称需要通过枚举类型名称来限定，如 `VersionedData::V1`。
+
+> 注意：目前不支持通过 `use` 子句为枚举变体设置别名，但将在后续语言版本中添加
+
+在某些情况下（如下面的匹配表达式），Move 编译器可以从上下文中推断出枚举类型，此时可以省略类型名称限定：
+
+```move
+fun f(data: VersionedData) {
+  match (data) { V1{..} => .., ..} // 简单的变体名称即可
+}
+```
+
+## 匹配枚举值
+
+可以使用匹配表达式来检查枚举值。例如：
+
+```move
+fun area(self: &Shape): u64 {
+    match (self) {
+        Circle{radius}           => mul_with_pi(*radius * *radius),
+        Rectangle{width, height} => *width * *height
+    }
+}
+```
+
+注意上面的匹配值是对枚举值的不可变引用。匹配表达式也可以消耗一个值，或通过可变引用来匹配以进行内部更新：
+
+```move
+fun scale_radius(self: &mut Shape, factor:  u64) {
+    match (self) {
+        Circle{radius: r} => *r = *r * factor,
+        _                 => {} // 如果不是 Circle 则不做任何操作
+  }
+}
+```匹配表达式中的模式会按照文本出现的顺序依次求值，直到找到匹配项。如果未覆盖所有已知模式，将产生编译时错误。
+
+模式可以嵌套并包含条件，如下例所示：
+
+```move
+let r : Result<Result<u64>> = Ok(Err(42));
+let v = match (r) {
+  Ok(Err(c)) if c < 42  => 0,
+  Ok(Err(c)) if c >= 42 => 1,
+  Ok(_)                 => 2,
+  _                     => 3
+};
+assert!(v == 1);
+```
+
+注意上例中，最后一个匹配子句（`_`）同时覆盖了模式 `Ok(Err(_))` 和 `Err(_)`。虽然在运行时，前面的子句会匹配所有 `c` 值的 `Ok(Err(c))`，但由于条件限制，编译器无法确定所有情况都被覆盖：匹配表达式中的条件在覆盖率检查时不被考虑。因此前两个匹配子句不足以确保匹配完整性，需要额外子句来避免编译器报错。
+
+## 测试枚举变体
+
+使用 `is` 操作符可以检查枚举值是否属于特定变体：
+
+```move
+let data: VersionedData;
+if (data is VersionedData::V1) { .. }
+```
+
+该操作符允许指定以"`|`"分隔的变体列表。如果被测试表达式的类型已知，变体无需通过枚举名限定：
+
+```move
+assert!(data is V1|V2);
+```
+
+## 从枚举值中选择字段
+
+可以直接从枚举值中选择字段。回顾版本化数据的定义：
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+  V2{name: String, age: u64}
+}
+```
+
+可以编写如下代码直接选择变体字段：
+
+```move
+let s: String;
+let data1 = VersionedData::V1{name: s};
+let data2 = VersionedData::V2{name: s, age: 20};
+assert!(data1.name == data2.name)
+assert!(data2.age == 20); 
+```
+
+注意当枚举值没有对应字段的变体时（如 `data1.age`），字段选择会中止。该情况使用的中止码为 `0xCA26CBD9BE0B0001`。根据 `std::error` 规范，此代码的类别为 `std::error::INTERNAL`，原因为 `1`。
+
+仅当字段在所有变体中具有唯一名称和类型时才能进行选择。因此以下代码会产生编译时错误：
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+  V2{name: u64}
+}
+
+data.name
+ // ^^^^^ 编译时错误：`name` 字段选择存在歧义
+```
+
+## 在Let语句中使用枚举模式
+
+枚举变体模式可用于 `let` 语句：
+
+```move
+let data: VersionData;
+let V1{name} = data;
+```
+
+如果变体不符合预期，解包枚举值会中止。为确保处理所有枚举变体，建议使用 `match` 表达式而非 `let`。`match` 在编译时检查确保覆盖所有变体。某些情况下，可使用 Move Prover 等工具验证 `let` 不会发生意外中止。
+
+## 通过模式匹配销毁枚举
+
+与结构体类似，可以通过显式解包来销毁枚举值。枚举可通过以下方式解包：
+- `match` 表达式中的模式匹配
+- `let` 绑定中的枚举模式
+- 赋值语句中的枚举模式移动
+
+```move
+// 注意：`Shape` 没有 `drop` 能力，因此必须通过显式解构来销毁。
+enum Shape {
+    Circle{radius: u64},
+    Rectangle{width: u64, height: u64}
+}
+
+fun destroy_empty(self: Shape) {
+    match (self) {
+        Shape::Circle{radius} => assert!(radius == 0),
+        Shape::Rectangle{width, height: _} => assert!(width == 0),
+    }
+}
+
+fun example_destroy_shapes() {
+    let c = Shape::Circle{radius: 0};
+    let r = Shape::Rectangle{width: 0, height: 0};
+    c.destroy_empty();
+    r.destroy_empty();
+}
+```
+
+## 枚举类型升级兼容性 
+
+当且仅当新类型仅在变体列表末尾添加新变体时，枚举类型可以被另一个枚举类型升级。旧枚举类型中的所有变体都必须出现在新类型中，且顺序必须保持一致并从开头开始排列。考虑 `VersionedData` 类型，它最初可能只有一个版本：
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+}
+```
+
+该类型可以升级到本文目前使用的版本：
+
+```move
+enum VersionedData has key {
+  V1{name: String}
+  V2{name: String, age: u64}
+}
+```
+
+以下升级将不被允许，因为必须保持变体顺序：
+
+```move
+enum VersionedData has key {
+  V2{name: String, age: u64}   // 非兼容性升级
+  V1{name: String}
+}
+```

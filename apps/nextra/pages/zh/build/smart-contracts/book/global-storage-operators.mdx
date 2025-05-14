@@ -1,0 +1,286 @@
+# 全局存储 - 操作符
+
+Move 程序可以使用以下五个指令在全局存储中创建、删除和更新 [资源](structs-and-resources.mdx)：
+
+| 操作                                   | 描述                                                     | 是否中止？                           |
+| --------------------------------------- | -------------------------------------------------------- | ------------------------------------ |
+| `move_to<T>(&signer,T)`                 | 在 `signer.address` 下发布 `T`                           | 如果 `signer.address` 已持有 `T`     |
+| `move_from<T>(address): T`              | 从 `address` 移除 `T` 并返回                            | 如果 `address` 不持有 `T`            |
+| `borrow_global_mut<T>(address): &mut T` | 返回对 `address` 下存储的 `T` 的可变引用                 | 如果 `address` 不持有 `T`            |
+| `borrow_global<T>(address): &T`         | 返回对 `address` 下存储的 `T` 的不可变引用              | 如果 `address` 不持有 `T`            |
+| `exists<T>(address): bool`              | 如果 `address` 下存储了 `T` 则返回 `true`               | 永不                                 |
+
+这些指令都通过具有[`key`能力](abilities.mdx)的类型`T`进行参数化。每个类型`T`必须_在当前模块中声明_，这确保资源只能通过其定义模块公开的API进行操作。这些指令还接受表示存储类型`T`资源的账户地址的[`address`](address.mdx)或[`&signer`](signer.mdx)。
+
+另请参阅用于访问全局存储的[索引符号(`[]`)](#存储操作符的索引表示法)。
+
+## 资源引用
+
+由`borrow_global`或`borrow_global_mut`返回的全局资源引用大多表现得像对本地存储的引用：它们可以使用普通的[引用操作符](references.mdx)进行扩展、读取和写入，并作为参数传递给其他函数。但是，本地引用和全局引用有一个重要区别：**函数不能返回指向全局存储的引用**。例如，以下两个函数都无法编译：
+
+```move
+module 0x42::example {
+  struct R has key { f: u64 }
+  // 无法编译
+  fun ret_direct_resource_ref_bad(a: address): &R {
+    borrow_global<R>(a) // 错误！
+  }
+  // 同样无法编译
+  fun ret_resource_field_ref_bad(a: address): &u64 {
+    &borrow_global<R>(a).f // 错误！
+  }
+}
+```
+
+Move 必须强制执行此限制以保证不会出现对全局存储的悬垂引用。[本节](#全局资源的引用安全性)为感兴趣的读者提供了更多详细信息。
+
+## 泛型全局存储操作符
+
+全局存储操作可以应用于具有实例化和非实例化泛型类型参数的泛型资源：
+
+```move
+module 0x42::example {
+  struct Container<T> has key { t: T }
+
+  // 发布一个存储调用者选择类型 T 的 Container
+  fun publish_generic_container<T>(account: &signer, t: T) {
+    move_to<Container<T>>(account, Container { t })
+  }
+
+  /// 发布一个存储 u64 的容器
+  fun publish_instantiated_generic_container(account: &signer, t: u64) {
+    move_to<Container<u64>>(account, Container { t })
+  }
+}
+```
+
+通过运行时选择的类型参数索引全局存储的能力是Move语言的一个强大特性，称为 _存储多态性_ 。关于此特性支持的设计模式，请参阅[ Move 泛型](generics.mdx)。
+
+## 示例：`Counter`
+
+下面这个简单的 `Counter` 模块演示了五种全局存储操作符的使用。该模块暴露的API允许：
+
+- 任何人在其账户下发布 `Counter` 资源
+- 任何人检查任意地址下是否存在 `Counter`
+- 任何人读取或增加任意地址下的 `Counter` 资源值
+- 存储 `Counter` 资源的账户可以将其重置为零
+- 存储 `Counter` 资源的账户可以移除并删除它
+
+```move
+module 0x42::counter {
+  use std::signer;
+
+  /// 包装整数计数器的资源
+  struct Counter has key { i: u64 }
+
+  /// 在给定 `account` 下发布值为 `i` 的 `Counter` 资源
+  public fun publish(account: &signer, i: u64) {
+    // "打包"（创建） Counter 资源。这是特权操作，
+    // 只能在声明 `Counter` 资源的模块内执行
+    move_to(account, Counter { i })
+  }
+
+  /// 读取 `addr` 地址存储的`Counter`资源值
+  public fun get_count(addr: address): u64 acquires Counter {
+    borrow_global<Counter>(addr).i
+  }
+
+  /// 增加 `addr` 地址的 `Counter` 资源值
+  public fun increment(addr: address) acquires Counter {
+    let c_ref = &mut borrow_global_mut<Counter>(addr).i;
+    *c_ref = *c_ref + 1
+  }
+
+  /// 将 `account` 账户的 `Counter` 重置为0
+  public fun reset(account: &signer) acquires Counter {
+    let c_ref = &mut borrow_global_mut<Counter>(signer::address_of(account)).i;
+    *c_ref = 0
+  }
+
+  /// 删除 `account` 下的 `Counter` 资源并返回其值
+  public fun delete(account: &signer): u64 acquires Counter {
+    // 移除Counter资源
+    let c = move_from<Counter>(signer::address_of(account));
+    // 将 `Counter` 资源解包为字段。这是特权操作，
+    // 只能在声明 `Counter` 资源的模块内执行
+    let Counter { i } = c;
+    i
+  }
+
+  /// 如果 `addr` 包含 `Counter` 资源则返回 `true`
+  public fun exists_at(addr: address): bool {
+    exists<Counter>(addr)
+  }
+}
+```
+
+## 使用 `acquires` 标注函数
+
+*注意：从语言版本2.2开始， acquires 标注变为可选。如果未提供，将自动推断。*
+
+在 `counter` 示例中，你可能注意到 `get_count` 、 `increment` 、 `reset` 和 `delete` 函数都标注了 `acquires Counter` 。Move 函数 `m::f` 必须标注 `acquires T` 当且仅当：
+
+- 函数体包含 `move_from<T>`、`borrow_global_mut<T>` 或 `borrow_global<T>` 指令，或
+- 函数体调用了同一模块中标注了 `acquires` 的函数 `m::g`
+
+例如，`Counter` 模块中的以下函数需要 `acquires` 标注：
+
+```move
+module 0x42::example {
+  // 需要 `acquires` 因为 `increment` 被标记为 `acquires`
+  fun call_increment(addr: address): u64 acquires Counter {
+    counter::increment(addr)
+  }
+}
+```
+
+然而，在 `Counter` 模块 _外部_ 的相同函数则不需要注解：
+
+```move
+module 0x43::m {
+  use 0x42::counter;
+
+  // 正确。只有当被调用方获取的资源是在同一模块中声明时
+  // 才需要注解
+  fun call_increment(addr: address): u64 {
+    counter::increment(addr)
+  }
+}
+```
+
+如果一个函数涉及多个资源，则需要多个 `acquires`：
+
+```move
+module 0x42::two_resources {
+  struct R1 has key { f: u64 }
+  struct R2 has key { g: u64 }
+
+  fun double_acquires(a: address): u64 acquires R1, R2 {
+    borrow_global<R1>(a).f + borrow_global<R2>(a).g
+  }
+}
+```
+
+`acquires` 注解不考虑泛型类型参数：
+
+```move
+module 0x42::m {
+  struct R<T> has key { t: T }
+
+  // 写 `acquires R`，而不是 `acquires R<T>`
+  fun acquire_generic_resource<T: store>(a: address) acquires R {
+    let _ = borrow_global<R<T>>(a);
+  }
+
+  // 写 `acquires R`，而不是 `acquires R<u64>
+  fun acquire_instantiated_generic_resource(a: address) acquires R {
+    let _ = borrow_global<R<u64>>(a);
+  }
+}
+```
+
+最后：不允许冗余的 `acquires`。在 `Counter` 模块内添加此函数会导致编译错误：
+
+```move
+module 0x42::m {
+  // 这段代码无法编译，因为函数体既没有使用全局存储指令
+  // 也没有调用带有 `acquires` 的函数
+  fun redundant_acquires_bad() acquires Counter {}
+}
+```
+
+关于 `acquires` 的更多信息，请参阅[Move函数](functions.mdx)。
+
+## 全局资源的引用安全性
+
+Move禁止返回全局引用并要求 `acquires` 注解，以防止悬空引用。这使得Move能够实现对所有[引用](references.mdx)类型的静态引用安全性承诺（即没有悬空引用，没有 `null` 或 `nil` 解引用）。
+
+以下示例说明Move类型系统如何使用 `acquires` 防止悬空引用：
+
+```move
+module 0x42::dangling {
+  struct T has key { f: u64 }
+
+  fun borrow_then_remove_bad(a: address) acquires T {
+    let t_ref: &mut T = borrow_global_mut<T>(a);
+    let t = remove_t(a); // 类型系统在此报错
+    // t_ref 现在成为悬空引用！
+    let uh_oh = *&t_ref.f;
+  }
+
+  fun remove_t(a: address): T acquires T {
+    move_from<T>(a)
+  }
+}
+```
+
+在这段代码中，第6行获取了全局存储在地址 `a` 处的 `T` 的引用。随后被调用的 `remove_t` 移除了该值，导致 `t_ref` 成为悬空引用。
+
+幸运的是，这种情况不会发生，因为类型系统会拒绝该程序。`remove_t` 上的 `acquires` 注解让类型系统知道第7行是危险的，而无需单独重新检查或内省 `remove_t` 的函数体！
+
+禁止返回全局引用的规定防止了类似但更隐蔽的问题：
+
+```move
+address 0x42 {
+  module m1 {
+    struct T has key {}
+
+    public fun ret_t_ref(a: address): &T acquires T {
+      borrow_global<T>(a) // 错误！类型系统在此报错
+    }
+
+    public fun remove_t(a: address) acquires T {
+      let T {} = move_from<T>(a);
+    }
+  }
+
+  module m2 {
+    fun borrow_then_remove_bad(a: address) {
+      let t_ref = m1::ret_t_ref(a);
+      let t = m1::remove_t(a); // t_ref现在成为悬空引用！
+    }
+  }
+}
+```
+
+第16行获取了对全局资源 `m1::T` 的引用，随后第17行移除了该资源，导致 `t_ref` 成为悬垂引用。在这种情况下，`acquires` 注解无法提供帮助，因为 `borrow_then_remove_bad` 函数位于声明 `T` 的 `m1` 模块之外（请注意 `acquires` 注解仅能用于当前模块声明的资源）。类型系统通过禁止在第6行返回全局引用，从而避免了这个问题。
+
+未来我们可能会考虑更复杂的类型系统，这些系统可以在不牺牲引用安全性的前提下允许返回全局引用，这可能会成为 Move 语言后续迭代的方向。当前的设计选择在表达能力、注解负担和类型系统复杂性之间取得了良好的平衡。
+
+
+## 存储操作符的索引表示法
+
+*自语言版本2.0起*
+
+除了冗长的 `borrow_global` 和 `borrow_global_mut` 函数外，还可以使用索引表示法来访问全局存储。
+
+下表概述了存储操作的索引表示法：
+
+| 索引语法               | 存储操作                                  |
+|-----------------------|------------------------------------------|
+| `&T[address]`         | `borrow_global<T>(address)`              |
+| `&mut T[address]`     | `borrow_global_mut<T>(address)`          |
+| `T[address]`          | `*borrow_global<T>(address)`             |
+| `T[address] = x`      | `*borrow_global_mut<T>(address) = x`     |
+| `&T[address].field`   | `&borrow_global<T>(address).field`       |
+| `&mut T[address].field` | `&mut borrow_global_mut<T>(address).field` |
+| `T[address].field`    | `borrow_global<T>(address).field`        |
+| `T[address].field = x`| `borrow_global_mut<T>(address).field = x`|
+
+其中 `T` 代表可以接受类型参数的泛型资源类型。
+
+请注意 `T[address].field` 会从存储中获取资源的引用，然后复制字段值（该字段必须具有复制能力）；这是 `*&T[address].field` 的简写形式。
+
+示例：
+
+```move
+struct R has key, drop { value: bool }
+
+fun f1() acquires R {
+  let x = &mut R[@0x1];
+  x.value = false;
+  assert!(R[@0x1].value == false);
+  R[@0x1].value = true;
+  assert!(R[@0x1].value == true);
+}
+```

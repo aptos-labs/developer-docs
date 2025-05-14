@@ -1,0 +1,285 @@
+# While、For 和 Loop 循环
+
+Move 提供了三种循环结构：`while`、`for` 和 `loop`。
+
+## `while` 循环
+
+`while` 结构会重复执行循环体（一个 unit 类型表达式），直到条件（一个 `bool` 类型表达式）求值为 `false`。
+
+以下是计算从 `1` 到 `n` 数字总和的简单 `while` 循环示例：
+
+```move
+script {
+  fun sum(n: u64): u64 {
+    let sum = 0;
+    let i = 1;
+    while (i <= n) {
+      sum = sum + i;
+      i = i + 1
+    };
+
+    sum
+  }
+}
+```
+
+允许无限循环：
+
+```move
+script {
+  fun foo() {
+    while (true) { }
+  }
+}
+```
+
+### `break`
+
+可以使用 `break` 表达式在条件变为 `false` 前退出循环。例如，这个循环使用 `break` 来查找大于 1 的 `n` 的最小因数：
+
+```move
+script {
+  fun smallest_factor(n: u64): u64 {
+    // 假设输入不为 0 或 1
+    let i = 2;
+    while (i <= n) {
+      if (n % i == 0) break;
+      i = i + 1
+    };
+
+    i
+  }
+}
+```
+
+`break` 表达式不能在循环外使用。
+
+### `continue`
+
+`continue` 表达式跳过循环剩余部分，继续下一次迭代。这个循环使用 `continue` 来计算 `1, 2, ..., n` 的总和，但跳过能被 10 整除的数字：
+
+```move
+script {
+  fun sum_intermediate(n: u64): u64 {
+    let sum = 0;
+    let i = 0;
+    while (i < n) {
+      i = i + 1;
+      if (i % 10 == 0) continue;
+      sum = sum + i;
+    };
+
+    sum
+  }
+}
+```
+
+`continue` 表达式不能在循环外使用。
+
+### `break` 和 `continue` 的类型
+
+`break` 和 `continue` 与 `return` 和 `abort` 类似，可以是任意类型。以下示例展示了这种灵活类型的应用场景：
+
+```move
+script {
+  fun pop_smallest_while_not_equal(
+    v1: vector<u64>,
+    v2: vector<u64>,
+  ): vector<u64> {
+    let result = vector::empty();
+    while (!vector::is_empty(&v1) && !vector::is_empty(&v2)) {
+      let u1 = *vector::borrow(&v1, vector::length(&v1) - 1);
+      let u2 = *vector::borrow(&v2, vector::length(&v2) - 1);
+      let popped =
+        if (u1 < u2) vector::pop_back(&mut v1)
+        else if (u2 < u1) vector::pop_back(&mut v2)
+        else break; // 这里 `break` 的类型是 `u64`
+      vector::push_back(&mut result, popped);
+    };
+
+    result
+  }
+}
+```
+
+```move
+script {
+  fun pick(
+    indexes: vector<u64>,
+    v1: &vector<address>,
+    v2: &vector<address>
+  ): vector<address> {
+    let len1 = vector::length(v1);
+    let len2 = vector::length(v2);
+    let result = vector::empty();
+    while (!vector::is_empty(&indexes)) {
+      let index = vector::pop_back(&mut indexes);
+      let chosen_vector =
+        if (index < len1) v1
+        else if (index < len2) v2
+        else continue; // 这里 `continue` 的类型是 `&vector<address>`
+      vector::push_back(&mut result, *vector::borrow(chosen_vector, index))
+    };
+
+    result
+  }
+}
+```
+
+## `for` 表达式
+
+`for` 表达式遍历由整数类型 `lower_bound`（包含）和 `upper_bound`（不包含）定义的区间，对区间内的每个元素执行循环体。`for` 适用于循环次数由特定区间决定的场景。
+
+以下是计算从 `0` 到 `n-1` 区间元素总和的 `for` 循环示例：
+
+```move
+script {
+  fun range_sum(n: u64): u64 {
+    let sum = 0;
+    for (i in 0..n) {
+      sum = sum + i
+    };
+
+    sum
+  }
+}
+```
+
+循环迭代变量（上例中的 `i`）当前必须是数值类型（根据边界自动推断），这里的边界 `0` 和 `n` 可以被任意数值表达式替代。每个边界仅在循环开始时计算一次。迭代变量 `i` 会被赋值为 `lower_bound`（本例中为 `0`）并在每次循环迭代后递增；当迭代器 `i` 达到或超过 `upper_bound`（本例中为 `n`）时循环终止。
+
+### `for` 循环中的 `break` 与 `continue`
+
+与 `while` 循环类似，`for` 循环中可以使用 `break` 表达式提前退出循环，`continue` 表达式可跳过当前迭代进入下一次循环。以下示例演示了二者的用法：该循环会遍历 `0` 到 `n-1` 的数字并求和，跳过能被 `3` 整除的数字（使用 `continue`），并在遇到大于 `10` 的数字时终止循环（使用 `break`）：
+
+```move
+script {
+  fun sum_conditional(n: u64): u64 {
+    let sum = 0;
+    for (iter in 0..n) {
+      if (iter > 10) {
+        break; // 当数字大于10时退出循环
+      };
+      if (iter % 3 == 0) {
+        continue; // 当数字能被3整除时跳过当前迭代
+      };
+
+      sum = sum + iter;
+    };
+
+    sum
+  }
+}
+```
+
+## `loop` 表达式
+
+`loop` 表达式会重复执行循环体（类型为 `()` 的表达式），直到遇到 `break`。
+
+如果没有 `break`，循环将无限执行：
+
+```move
+script {
+  fun foo() {
+    let i = 0;
+    loop { i = i + 1 }
+  }
+}
+```
+
+以下是用 `loop` 重写的 `sum` 函数示例：
+
+```move
+script {
+  fun sum(n: u64): u64 {
+    let sum = 0;
+    let i = 0;
+    loop {
+      i = i + 1;
+      if (i > n) break;
+      sum = sum + i
+    };
+
+    sum
+  }
+}
+```
+
+如你所料，`continue` 也可用于 `loop` 内部。以下是之前用 `while` 实现的 `sum_intermediate` 改用 `loop` 的版本：
+
+```move
+script {
+  fun sum_intermediate(n: u64): u64 {
+    let sum = 0;
+    let i = 0;
+    loop {
+      i = i + 1;
+      if (i % 10 == 0) continue;
+      if (i > n) break;
+      sum = sum + i
+    };
+
+    sum
+  }
+}
+```
+
+## `while`、`loop` 和 `for` 表达式的类型
+
+Move 的循环是带类型的表达式。`while` 和 `for` 表达式的类型始终为 `()`。
+
+```move
+script {
+  fun example() {
+    let () = while (i < 10) { i = i + 1 };
+    let () = for (i in 0..10) {};
+  }
+}
+```
+
+如果 `loop` 包含 `break`，则该表达式具有单元类型 `()`
+
+```move
+script {
+  fun example() {
+    (loop { if (i < 10) i = i + 1 else break }: ());
+    let () = loop { if (i < 10) i = i + 1 else break };
+  }
+}
+```
+
+如果 `loop` 不包含 `break`，则 `loop` 可以具有任意类型，这与 `return`、`abort`、`break` 和 `continue` 类似。
+
+```move
+script {
+  fun example() {
+    (loop (): u64);
+    (loop (): address);
+    (loop (): &vector<vector<u8>>);
+  }
+}
+```
+
+## 循环标签
+
+_自语言版本 2.1 起_
+
+`while` 或 `loop` 语句可以拥有一个标签，该标签可以被 `break` 或 `continue` 语句引用。在存在嵌套循环的情况下，这允许引用外部循环。例如：
+
+```move
+script {
+  fun example(x: u64): u64 {
+    'label1: while (x > 10) {
+      loop {
+        if (x % 2 == 0) {
+          x -= 1;
+          continue 'label1;
+        } else if (x < 10) {
+          break 'label1
+        } else
+          x -= 2
+      }
+    };
+    x
+  }
+}
+```

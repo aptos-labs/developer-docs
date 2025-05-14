@@ -1,0 +1,131 @@
+import { Callout } from "nextra/components";
+
+# 模块与脚本
+
+Move 有两种不同类型的程序：**_模块_** 和 **_脚本_**。模块是定义了结构体类型及操作这些类型函数的库。结构体类型定义了Move [global storage](global-storage-structure.mdx) 的架构，模块函数则定义了更新存储的规则。模块本身也存储在全局存储中。脚本是可执行的入口点，类似于传统语言中的 `main` 函数。脚本通常调用已发布模块中的函数来更新全局存储。脚本是临时性的代码片段，不会被发布到全局存储中。
+
+一个Move源文件（ 或 **编译单元** ）可以包含多个模块和脚本。但发布模块和执行脚本是虚拟机中两个独立操作。
+
+## 语法
+
+### 脚本
+
+<Callout type="info">
+学习如何发布和执行Move脚本，请参考 [Move Scripts](../scripts/script-tutorial.mdx) 示例。
+</Callout>
+
+脚本的基本结构如下：
+
+```text
+script {
+    <use>*
+    <constants>*
+    fun <identifier><[type parameters: constraint]*>([identifier: type]*) <function_body>
+}
+```
+
+`script` 代码块必须首先声明所有 [`use`](uses.mdx) 语句，接着是任何 [constants](constants.mdx) 声明，最后是主 [function](functions.mdx) 声明。
+
+主函数可以任意命名（不必叫 `main` ），是脚本块中唯一的函数，可以接受任意数量的参数，且不能有返回值。以下是一个包含所有组件的示例：
+
+```move
+script {
+    // 导入发布在命名地址 std 上的 debug 模块
+    use std::debug;
+
+    const ONE: u64 = 1;
+
+    fun main(x: u64) {
+        let sum = x + ONE;
+        debug::print(&sum)
+    }
+}
+```
+
+脚本功能非常有限——它们不能声明友元、结构体类型或访问全局存储。其主要目的是调用模块函数。
+
+### 模块
+
+模块的语法如下：
+
+```move
+module <address>::<identifier> {
+    (<use> | <friend> | <type> | <function> | <constant>)*
+}
+```
+
+其中 `<address>` 是有效的 [named or literal address](address.mdx)。
+
+例如：
+
+```move
+module 0x42::example {
+    struct Example has copy, drop { i: u64 }
+
+    use std::debug;
+    friend 0x42::another_example;
+
+    const ONE: u64 = 1;
+
+    public fun print(x: u64) {
+        let sum = x + ONE;
+        let example = Example { i: sum };
+        debug::print(&sum)
+    }
+}
+```
+
+`module 0x42::example` 这部分指定了模块 `example` 将被发布到 [global storage](global-storage-structure.mdx)中的 [account address](address.mdx) `0x42` 下。
+
+模块也可以使用 [named addresses](address.mdx) 来声明。例如：
+
+```move
+module example_addr::example {
+    struct Example has copy, drop { a: address }
+
+    use std::debug;
+    friend example_addr::another_example;
+
+    public fun print() {
+        let example = Example { a: @example_addr };
+        debug::print(&example)
+    }
+}
+```
+
+由于命名地址仅在源代码层面和编译过程中存在，在字节码级别，命名地址将完全被其数值替代。
+
+例如，如果我们有以下代码：
+
+```move
+script {
+    fun example() {
+        my_addr::m::foo(@my_addr);
+    }
+}
+```
+
+并且在编译时将 `my_addr` 设置为 `0xC0FFEE`，那么在操作上它将等同于以下代码：
+
+```move
+script {
+    fun example() {
+        0xC0FFEE::m::foo(@0xC0FFEE);
+    }
+}
+```
+
+然而，在源代码层面，这两者并不等价——函数 `m::foo` 必须通过命名地址 `my_addr` 访问，而不能通过分配给该地址的数值访问。
+
+模块名称可以以字母 `a` 到 `z` 或 `A` 到 `Z` 开头。在第一个字符之后，模块名称可以包含下划线 `_`、字母 `a` 到 `z`、字母 `A` 到 `Z` 或数字 `0` 到 `9`。
+
+```move
+module my_module {}
+module foo_bar_42 {}
+```
+
+通常，模块名称以小写字母开头。名为 `my_module` 的模块应该存储在名为 `my_module.move` 的源文件中。`module` 代码块内的所有元素可以以任意顺序出现。  
+本质上，模块是 [`types`](structs-and-resources.mdx) 和 [`functions`](functions.mdx) 的集合。  
+[`use`](uses.mdx) 关键字用于从其他模块导入类型。  
+[`friend`](friends.mdx) 关键字用于指定受信任的模块列表。  
+[`const`](constants.mdx) 关键字用于定义可在模块函数中使用的私有常量。

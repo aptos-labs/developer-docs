@@ -1,0 +1,124 @@
+# 元组与单位类型
+
+Move 并不像其他语言那样完全支持将元组作为 [一等公民](https://en.wikipedia.org/wiki/First-class_citizen) 。
+然而为了实现多返回值功能，Move 提供了类似元组的表达式。这些表达式在运行时不会生成具体值（字节码中不存在元组），
+因此它们的功能非常有限：仅能出现在表达式上下文中（通常作为函数返回值）；不能绑定到局部变量；不能存储在结构体中；且元组类型不能用于泛型实例化。
+
+同样地，[单位类型 `()`](https://en.wikipedia.org/wiki/Unit_type) 是 Move 源语言为了实现基于表达式的特性而创建的类型。
+单位值 `()` 不会产生任何运行时值。我们可以将 unit`()` 视为空元组，所有适用于元组的限制同样适用于单位类型。
+
+考虑到这些限制，在语言中保留元组可能会显得奇怪。
+但在其他语言中，元组最常见的用途之一就是允许函数返回多个值。
+某些语言通过强制用户编写包含多个返回值的结构体来解决这个问题。然而在 Move 中，
+你不能将引用放入[结构体](structs-and-resources.mdx)中。
+这就要求 Move 必须支持多返回值。这些多返回值在字节码层面都会被压入栈中，而在源码层面则使用元组来表示。
+
+## 字面量
+
+元组通过括号内逗号分隔的表达式列表创建。
+
+| 语法           | 类型                                                                         | 描述                                                       |
+| -------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `()`           | `(): ()`                                                                     | 单位类型/空元组/0元组                                     |
+| `(e1, ..., en)` | `(e1, ..., en): (T1, ..., Tn)` 其中 `e_i: Ti` 满足 `0 < i <= n` 且 `n > 0` | n元组（包含n个元素的元组）                                |
+
+注意 `(e)` 并不具有 `(e): (t)` 类型，即不存在单元素元组。如果括号内只有一个元素，括号仅用于消除歧义而不具有其他特殊含义。
+
+有时，二元组被称为"对(pairs)"，三元组被称为"三重(triples)"。
+
+### 示例
+
+```move
+module 0x42::example {
+  // 以下三个函数完全等价
+
+  // 当未指定返回类型时，默认为 `()`
+  fun returns_unit_1() { }
+
+  // 空表达式块隐含 () 值
+  fun returns_unit_2(): () { }
+
+  // 显式版本的 `returns_unit_1` 和 `returns_unit_2`
+  fun returns_unit_3(): () { () }
+
+
+  fun returns_3_values(): (u64, bool, address) {
+    (0, false, @0x42)
+  }
+  fun returns_4_values(x: &u64): (&u64, u8, u128, vector<u8>) {
+    (x, 0, 1, b"foobar")
+  }
+}
+```
+
+## 操作
+
+目前对元组唯一可执行的操作是解构。
+
+### 解构
+
+对于任意大小的元组，都可以在 `let` 绑定或赋值中进行解构。
+
+例如：
+
+```move
+module 0x42::example {
+  // 以下3个函数功能等价
+  fun returns_unit() {}
+  fun returns_2_values(): (bool, bool) { (true, false) }
+  fun returns_4_values(x: &u64): (&u64, u8, u128, vector<u8>) { (x, 0, 1, b"foobar") }
+
+  fun examples(cond: bool) {
+    let () = ();
+    let (x, y): (u8, u64) = (0, 1);
+    let (a, b, c, d) = (@0x0, 0, false, b"");
+
+    () = ();
+    (x, y) = if (cond) (1, 2) else (3, 4);
+    (a, b, c, d) = (@0x1, 1, true, b"1");
+  }
+
+  fun examples_with_function_calls() {
+    let () = returns_unit();
+    let (x, y): (bool, bool) = returns_2_values();
+    let (a, b, c, d) = returns_4_values(&0);
+
+    () = returns_unit();
+    (x, y) = returns_2_values();
+    (a, b, c, d) = returns_4_values(&1);
+  }
+}
+```
+
+更多细节请参阅 [Move 变量](variables.mdx)。
+
+## 子类型
+
+与引用类似，元组是 Move 中另一种支持 [子类型](https://en.wikipedia.org/wiki/Subtyping) 的类型。元组的子类型关系主要体现在它们与引用之间的协变关系。
+
+例如：
+
+```move
+script {
+  fun example() {
+    let x: &u64 = &0;
+    let y: &mut u64 = &mut 1;
+
+    // (&u64, &mut u64) 是 (&u64, &u64) 的子类型
+    // 因为 &mut u64 是 &u64 的子类型
+    let (a, b): (&u64, &u64) = (x, y);
+
+    // (&mut u64, &mut u64) 是 (&u64, &u64) 的子类型
+    // 因为 &mut u64 是 &u64 的子类型
+    let (c, d): (&u64, &u64) = (y, y);
+
+    // 错误！(&u64, &mut u64) 不是 (&mut u64, &mut u64) 的子类型
+    // 因为 &u64 不是 &mut u64 的子类型
+    let (e, f): (&mut u64, &mut u64) = (x, y);
+  }
+}
+```
+
+## 所有权
+
+如上所述，元组值在运行时并不真实存在。由于这个原因，目前它们不能被存储到局部变量中（但这个功能很可能很快就会实现）。因此，目前元组只能被移动，因为复制它们需要先将它们放入局部变量。

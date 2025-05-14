@@ -1,0 +1,76 @@
+# 签名者（Signer）
+
+`signer` 是 Move 语言内置的资源类型。
+`signer` 是一种 [能力](https://en.wikipedia.org/wiki/Object-capability_model)，
+允许持有者代表特定 `address` 进行操作。
+可以将其原生实现理解为：
+
+```move
+module 0x1::signer {
+  struct signer has drop { a: address }
+}
+```
+
+`signer` 类似于 Unix 系统中的[UID](https://en.wikipedia.org/wiki/User_identifier)，它代表通过 Move _外部_代码（例如验证加密签名或密码）认证的用户身份。
+
+## 与 `address` 的比较
+
+Move 程序可以使用地址字面量无需特殊权限创建任意 `address` 值：
+
+```move
+script {
+  fun example() {
+    let a1 = @0x1;
+    let a2 = @0x2;
+    // 以及其他所有可能的地址...
+  }
+}
+```
+
+但 `signer` 值具有特殊性，因为它们不能通过字面量或指令创建——只能由 Move 虚拟机生成。
+在虚拟机执行带有 `signer` 类型参数的脚本前，它会自动创建 `signer` 值并传入脚本：
+
+```move
+script {
+    use std::signer;
+    fun main(s: signer) {
+        assert!(signer::address_of(&s) == @0x42, 0);
+    }
+}
+```
+
+如果脚本不是从 `0x42` 地址发送的，该脚本将中止并返回代码 `0`。
+
+Move 脚本可以包含任意数量的 `signer` 参数，只要这些 `signer` 参数位于其他参数之前。
+换句话说，所有 `signer` 参数必须排在前面：
+
+```move
+script {
+    use std::signer;
+    fun main(s1: signer, s2: signer, x: u64, y: u8) {
+        // ...
+    }
+}
+```
+
+这对于实现需要多方授权的 _多签脚本_ 非常有用。
+例如，上述脚本的扩展可以实现`s1`和`s2`之间的原子货币交换。
+
+## `signer` 操作符
+
+`std::signer` 标准库模块为 `signer` 值提供了两个实用函数：
+
+| 函数                                       | 描述                                                  |
+| ------------------------------------------ | ---------------------------------------------------- |
+| `signer::address_of(&signer): address`     | 返回该 `&signer` 包装的 `address`。                     |
+| `signer::borrow_address(&signer): &address`| 返回该 `&signer` 包装的 `address` 的引用。               |
+
+此外，`move_to<T>(&signer, T)` [全局存储操作符](global-storage-operators.mdx) 需要 `&signer` 参数来在`signer.address`账户下发布资源 `T`。
+这确保了只有经过认证的用户才能选择在其 `address` 下发布资源。
+
+## 所有权
+
+与简单的标量值不同，`signer` 值是不可复制的，
+这意味着它们不能通过任何操作进行复制，
+无论是通过显式的 [`copy`](variables.mdx#移动--move--与复制--copy-) 指令，
+还是通过 [解引用 `*`](references.mdx#通过引用读写) 操作。
