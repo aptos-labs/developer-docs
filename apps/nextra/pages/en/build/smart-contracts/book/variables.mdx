@@ -763,11 +763,12 @@ script {
   fun example() {
     {
       let x = 0;
-      x + 1; // value is discarded
+      x + 1; // 
       x + 2; // value is discarded
       b"hello"; // value is discarded
     }
   }
+}
 ```
 
 But! If the expression contains a resource (a value without the `drop` [ability](abilities.mdx)),
