@@ -1,0 +1,77 @@
+---
+title: "编译 (Move)"
+---
+
+import { Steps, Callout, FileTree } from "nextra/components";
+import { RemoteCodeblock, permalinkFetch } from '@components/index';
+
+# 编译
+
+<Callout>
+确保在编译之前，您的 [CLI](../cli) 是最新的。
+</Callout>
+
+## `aptos move compile`
+
+一旦您设置了一个包，您可以通过以下方式编译您的 Move 代码：
+
+```bash filename="Terminal"
+aptos move compile
+```
+
+如果运行成功，您应该会收到如下的终端输出
+
+```bash filename="Terminal"
+{
+  "Result": [
+    "<PUBLISHING_ADDRESS>::<MODULE_NAME>"
+  ]
+}
+```
+
+<Callout>
+  您可能需要添加命名地址，特别是对于示例。例如，对于 Hello Blockchain Move 示例，您需要添加 `hello_blockchain` 命名地址：
+
+  ```bash filename="Terminal"
+  aptos move compile --named-addresses hello_blockchain=default
+  ```
+</Callout>
+
+## 解包构建
+
+编译的 Move 包包含一个类似于下面的文件夹结构。
+
+<FileTree>
+  <FileTree.Folder name="build" defaultOpen>
+    <FileTree.Folder name="package_name" defaultOpen active>
+      <FileTree.Folder name="bytecode_modules" defaultOpen>
+        <FileTree.Folder name="dependencies" defaultOpen></FileTree.Folder>
+        <FileTree.File name="module_name.mv" active></FileTree.File>
+      </FileTree.Folder>
+      <FileTree.Folder name="source_maps" defaultOpen>
+        <FileTree.Folder name="dependencies" defaultOpen></FileTree.Folder>
+        <FileTree.File name="module_name.mvsm" active></FileTree.File>
+      </FileTree.Folder>
+      <FileTree.Folder name="sources" defaultOpen>
+        <FileTree.Folder name="dependencies" defaultOpen></FileTree.Folder>
+        <FileTree.File name="module_name.move" active></FileTree.File>
+      </FileTree.Folder>
+      <FileTree.File name="BuildInfo.yaml"></FileTree.File>
+    </FileTree.Folder>
+  </FileTree.Folder>
+  <FileTree.Folder name="scripts" defaultOpen></FileTree.Folder>
+  <FileTree.Folder name="sources" defaultOpen>
+    <FileTree.File name="module_name.move" active></FileTree.File>
+  </FileTree.Folder>
+  <FileTree.Folder name="tests" defaultOpen></FileTree.Folder>
+  <FileTree.File name="Move.toml" />
+</FileTree>
+
+### `bytecode_modules`
+
+字节码模块文件夹包含您的模块的编译 Move 字节码（例如 `module_name.mv`）。
+要了解有关字节码及其安全功能的更多信息，请参阅 [为什么选择 Move?](./why-move)
+
+### `source_maps`
+
+源映射文件夹包含源映射（例如 `module_name.mvsm`），允许用户将编译的字节码映射回源代码和相关依赖项。 

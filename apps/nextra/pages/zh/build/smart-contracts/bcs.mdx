@@ -1,0 +1,792 @@
+---
+title: "二进制规范化序列化 (BCS)"
+---
+
+import { Tabs } from 'nextra/components'
+
+# 二进制规范化序列化 (BCS)
+
+二进制规范化序列化 (BCS) 是 Aptos 区块链上使用的序列化格式。它是一种二进制规范化的非自描述序列化格式，用于序列化数据结构。BCS 用于序列化链上所有数据，提供 REST API 的二进制响应，并对交易的输入参数进行编码。
+
+## 概述
+
+由于 BCS 不是自描述格式，读取者必须提前知道字节的格式。
+
+## 基本类型
+
+支持 8 位、16 位、32 位、64 位、128 位和 256 位无符号整数。它们以小端字节顺序序列化。
+
+### Bool (布尔值)
+
+布尔值序列化为单个字节。`true` 序列化为 `0x01`，`false` 序列化为 `0x00`。所有其他值均无效。
+
+| 值     | 字节  |
+|--------|-------|
+| `true`  | `0x01` |
+| `false` | `0x00` |
+
+<Tabs items={['Move', 'Rust', 'TypeScript', 'Go']}>
+  <Tabs.Tab>
+    ```move filename="bool.move"
+    #[test_only]
+    module 0x42::example {
+      use std::bcs;
+      use std::from_bcs;
+
+      #[test]
+      fun test_bool() {
+        // Serialize
+        let val: bool = true;
+        let bytes: vector<u8> = bcs::to_bytes(&val);
+        assert!(bytes == vector[0x01]);
+
+        // Deserialize
+        let val_des = from_bcs::to_bool(bytes);
+        assert!(val_des == true);
+      }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust filename="bool.rs"
+    // Serialize
+    let val: bool = true;
+    let bytes: Vec<u8> = bcs::to_bytes(&val).unwrap();
+    assert_eq!(bytes, vec![0x01]);
+
+    // Deserialize
+    let val_des = bcs::from_bytes::<bool>(&bytes).unwrap();
+    assert_eq!(val_des, true);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts filename="bool.ts"
+    import { Serializer, Deserializer } from "@aptos-labs/ts-sdk";
+
+    // Serialize
+    const ser = new Serializer();
+    ser.serializeBool(true);
+    const bytes = ser.toUint8Array();
+    console.log(bytes == Uint8Array.from([1]));
+
+    // Deserialize
+    const des = new Deserializer(bytes);
+    const val = des.deserializeBool();
+    console.log(val == true);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```go filename="bool.go"
+    import (
+      "github.com/aptos-labs/aptos-go-sdk"
+    )
+
+    func main() {
+      // Serialize
+      ser := bcs.Serializer{}
+      ser.Bool(true)
+      trueBytes := ser.ToBytes()
+      trueBytes == []byte{0x01}
+
+      // Deserialize
+      des := bcs.NewDeserializer(trueBytes)
+      val := des.Bool()
+      val == true
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### U8 (无符号 8 位整数)
+
+无符号 8 位整数序列化为单个字节。
+
+<Tabs items={['Move', 'Rust', 'TypeScript', 'Go']}>
+  <Tabs.Tab>
+    ```move filename="u8.move"
+    #[test_only]
+    module 0x42::example {
+      use std::bcs;
+      use std::from_bcs;
+
+      #[test]
+      fun test_u8() {
+        // Serialize
+        let val: u8 = 1;
+        let bytes: vector<u8> = bcs::to_bytes(&val);
+        assert!(bytes == vector[0x01]);
+
+        // Deserialize
+        let val_des = from_bcs::to_u8(bytes);
+        assert!(val_des == 1);
+      }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust filename="u8.rs"
+    // Serialize
+    let val: u8 = 1;
+    let bytes: Vec<u8> = bcs::to_bytes(&val).unwrap();
+    assert_eq!(bytes, vec![0x01]);
+
+    // Deserialize
+    let val_des = bcs::from_bytes::<u8>(&bytes).unwrap();
+    assert_eq!(val_des, 1);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts filename="bool.ts"
+    import { Serializer, Deserializer } from "@aptos-labs/ts-sdk";
+
+    // Serialize
+    const ser = new Serializer();
+    ser.serializeU8(1);
+    const bytes = ser.toUint8Array();
+    console.log(bytes == Uint8Array.from([1]));
+
+    // Deserialize
+    const des = new Deserializer(bytes);
+    const val = des.deserializeU8();
+    console.log(val == 1);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```go filename="bool.go"
+    import (
+      "github.com/aptos-labs/aptos-go-sdk"
+    )
+
+    func main() {
+      // Serialize
+      ser := bcs.Serializer{}
+      ser.U8(1)
+      trueBytes := ser.ToBytes()
+      trueBytes == []byte{0x01}
+
+      // Deserialize
+      des := bcs.NewDeserializer(trueBytes)
+      val := des.U8()
+      val == 1
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### U16 (无符号 16 位整数)
+
+无符号 16 位整数以小端字节顺序序列化为 2 个字节。
+
+<Tabs items={['Move', 'Rust', 'TypeScript', 'Go']}>
+  <Tabs.Tab>
+     ```move filename="u16.move"
+    #[test_only]
+    module 0x42::example {
+      use std::bcs;
+      use std::from_bcs;
+
+      #[test]
+      fun test_u16() {
+        // Serialize
+        let val: u16 = 1000;
+        let bytes: vector<u8> = bcs::to_bytes(&val);
+        assert!(bytes == vector[0xe8, 0x03]);
+
+        // Deserialize
+        let val_des = from_bcs::to_u16(bytes);
+        assert!(val_des == 1000);
+      }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust filename="u16.rs"
+    // Serialize
+    let val: u16 = 1000;
+    let bytes: Vec<u8> = bcs::to_bytes(&val).unwrap();
+    assert_eq!(bytes, vec![0xe8, 0x03]);
+
+    // Deserialize
+    let val_des = bcs::from_bytes::<u16>(&bytes).unwrap();
+    assert_eq!(val_des, 1000);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts filename="u16.ts"
+    import { Serializer, Deserializer } from "@aptos-labs/ts-sdk";
+
+    // Serialize
+    const ser = new Serializer();
+    ser.serializeU16(1000);
+    const bytes = ser.toUint8Array();
+    console.log(bytes == Uint8Array.from([0xe8, 0x03]));
+
+    // Deserialize
+    const des = new Deserializer(bytes);
+    const val = des.deserializeU16();
+    console.log(val == 1000);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```go filename="u16.go"
+    import (
+      "github.com/aptos-labs/aptos-go-sdk"
+    )
+
+    func main() {
+      // Serialize
+      ser := bcs.Serializer{}
+      ser.U16(1000)
+      bytes := ser.ToBytes()
+      bytes == []byte{0xe8, 0x03}
+
+      // Deserialize
+      des := bcs.NewDeserializer(bytes)
+      val := des.U16()
+      val == 1000
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### U32 (无符号 32 位整数)
+
+无符号 32 位整数以小端字节顺序序列化为 4 个字节。
+
+<Tabs items={['Move', 'Rust', 'TypeScript', 'Go']}>
+  <Tabs.Tab>
+    ```move filename="u32.move"
+    #[test_only]
+    module 0x42::example {
+      use std::bcs;
+      use std::from_bcs;
+
+      #[test]
+      fun test_u32() {
+        // Serialize
+        let val: u32 = 1000000000;
+        let bytes: vector<u8> = bcs::to_bytes(&val);
+        assert!(bytes == vector[0x00, 0xca, 0x9a, 0x3b]);
+
+        // Deserialize
+        let val_des = from_bcs::to_u32(bytes);
+        assert!(val_des == 1000000000);
+      }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust filename="u32.rs"
+    // Serialize
+    let val: u32 = 1000000000;
+    let bytes: Vec<u8> = bcs::to_bytes(&val).unwrap();
+    assert_eq!(bytes, vec![0x00, 0xca, 0x9a, 0x3b]);
+
+    // Deserialize
+    let val_des = bcs::from_bytes::<u32>(&bytes).unwrap();
+    assert_eq!(val_des, 1000000000);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts filename="u32.ts"
+    import { Serializer, Deserializer } from "@aptos-labs/ts-sdk";
+
+    // Serialize
+    const ser = new Serializer();
+    ser.serializeU32(1000000000);
+    const bytes = ser.toUint8Array();
+    console.log(bytes == Uint8Array.from([0x00, 0xca, 0x9a, 0x3b]));
+
+    // Deserialize
+    const des = new Deserializer(bytes);
+    const val = des.deserializeU32();
+    console.log(val == 1000000000);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```go filename="u32.go"
+    import (
+      "github.com/aptos-labs/aptos-go-sdk"
+    )
+
+    func main() {
+      // Serialize
+      ser := bcs.Serializer{}
+      ser.U32(1000000000)
+      bytes := ser.ToBytes()
+      bytes == []byte{0x00, 0xca, 0x9a, 0x3b}
+
+      // Deserialize
+      des := bcs.NewDeserializer(bytes)
+      val := des.U32()
+      val == 1000000000
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### U64 (无符号 64 位整数)
+
+无符号 64 位整数以小端字节顺序序列化为 8 个字节。
+
+<Tabs items={['Move', 'Rust', 'TypeScript', 'Go']}>
+  <Tabs.Tab>
+    ```move filename="u64.move"
+    #[test_only]
+    module 0x42::example {
+      use std::bcs;
+      use std::from_bcs;
+
+      #[test]
+      fun test_u64() {
+        // Serialize
+        let val: u64 = 10000000000000000;
+        let bytes: vector<u8> = bcs::to_bytes(&val);
+        assert!(bytes == vector[0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00]);
+
+        // Deserialize
+        let val_des = from_bcs::to_u64(bytes);
+        assert!(val_des == 10000000000000000);
+      }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust filename="u64.rs"
+    // Serialize
+    let val: u64 = 10000000000000000;
+    let bytes: Vec<u8> = bcs::to_bytes(&val).unwrap();
+    assert_eq!(bytes, vec![0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00]);
+
+    // Deserialize
+    let val_des = bcs::from_bytes::<u64>(&bytes).unwrap();
+    assert_eq!(val_des, 10000000000000000);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts filename="u64.ts"
+    import { Serializer, Deserializer } from "@aptos-labs/ts-sdk";
+
+    // Serialize
+    const ser = new Serializer();
+    ser.serializeU64(10000000000000000n);
+    const bytes = ser.toUint8Array();
+    console.log(bytes == Uint8Array.from([0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00]));
+
+    // Deserialize
+    const des = new Deserializer(bytes);
+    const val = des.deserializeU64();
+    console.log(val == 10000000000000000n);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```go filename="u64.go"
+    import (
+      "github.com/aptos-labs/aptos-go-sdk"
+    )
+
+    func main() {
+      // Serialize
+      ser := bcs.Serializer{}
+      ser.U64(10000000000000000)
+      bytes := ser.ToBytes()
+      bytes == []byte{0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00}
+
+      // Deserialize
+      des := bcs.NewDeserializer(bytes)
+      val := des.U64()
+      val == 10000000000000000
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### U128 (无符号 128 位整数)
+
+无符号 128 位整数以小端字节顺序序列化为 16 个字节。
+
+<Tabs items={['Move', 'Rust', 'TypeScript', 'Go']}>
+  <Tabs.Tab>
+    ```move filename="u128.move"
+    #[test_only]
+    module 0x42::example {
+      use std::bcs;
+      use std::from_bcs;
+
+      #[test]
+      fun test_u128() {
+        // Serialize
+        let val: u128 = 10000000000000000;
+        let bytes: vector<u8> = bcs::to_bytes(&val);
+        assert!(bytes == vector[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00]);
+
+        // Deserialize
+        let val_des = from_bcs::to_u128(bytes);
+        assert!(val_des == 10000000000000000);
+      }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust filename="u128.rs"
+    // Serialize
+    let val: u128 = 10000000000000000;
+    let bytes: Vec<u8> = bcs::to_bytes(&val).unwrap();
+    assert_eq!(bytes, vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00]);
+
+    // Deserialize
+    let val_des = bcs::from_bytes::<u128>(&bytes).unwrap();
+    assert_eq!(val_des, 10000000000000000);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts filename="u128.ts"
+    import { Serializer, Deserializer } from "@aptos-labs/ts-sdk";
+
+    // Serialize
+    const ser = new Serializer();
+    ser.serializeU128(10000000000000000n);
+    const bytes = ser.toUint8Array();
+    console.log(bytes == Uint8Array.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00]));
+
+    // Deserialize
+    const des = new Deserializer(bytes);
+    const val = des.deserializeU128();
+    console.log(val == 10000000000000000n);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```go filename="u128.go"
+    import (
+      "github.com/aptos-labs/aptos-go-sdk"
+      "math/big"
+    )
+
+    func main() {
+      // Serialize
+      ser := bcs.Serializer{}
+      val := new(big.Int)
+      val.SetString("10000000000000000", 10)
+      ser.U128(val)
+      bytes := ser.ToBytes()
+      bytes == []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00}
+
+      // Deserialize
+      des := bcs.NewDeserializer(bytes)
+      val_des := des.U128()
+      val_des.String() == "10000000000000000"
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### U256 (无符号 256 位整数)
+
+无符号 256 位整数以小端字节顺序序列化为 32 个字节。
+
+<Tabs items={['Move', 'Rust', 'TypeScript', 'Go']}>
+  <Tabs.Tab>
+    ```move filename="u256.move"
+    #[test_only]
+    module 0x42::example {
+      use std::bcs;
+      use std::from_bcs;
+
+      #[test]
+      fun test_u256() {
+        // Serialize
+        let val: u256 = 10000000000000000;
+        let bytes: vector<u8> = bcs::to_bytes(&val);
+        assert!(bytes == vector[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00]);
+
+        // Deserialize
+        let val_des = from_bcs::to_u256(bytes);
+        assert!(val_des == 10000000000000000);
+      }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust filename="u256.rs"
+    // Serialize
+    let val: U256 = U256::from(10000000000000000u64);
+    let bytes: Vec<u8> = bcs::to_bytes(&val).unwrap();
+    assert_eq!(bytes, vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00]);
+
+    // Deserialize
+    let val_des = bcs::from_bytes::<U256>(&bytes).unwrap();
+    assert_eq!(val_des, U256::from(10000000000000000u64));
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts filename="u256.ts"
+    import { Serializer, Deserializer } from "@aptos-labs/ts-sdk";
+
+    // Serialize
+    const ser = new Serializer();
+    ser.serializeU256(10000000000000000n);
+    const bytes = ser.toUint8Array();
+    console.log(bytes == Uint8Array.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00]));
+
+    // Deserialize
+    const des = new Deserializer(bytes);
+    const val = des.deserializeU256();
+    console.log(val == 10000000000000000n);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```go filename="u256.go"
+    import (
+      "github.com/aptos-labs/aptos-go-sdk"
+      "math/big"
+    )
+
+    func main() {
+      // Serialize
+      ser := bcs.Serializer{}
+      val := new(big.Int)
+      val.SetString("10000000000000000", 10)
+      ser.U256(val)
+      bytes := ser.ToBytes()
+      bytes == []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x9c, 0x4f, 0x2c, 0x68, 0x00, 0x00}
+
+      // Deserialize
+      des := bcs.NewDeserializer(bytes)
+      val_des := des.U256()
+      val_des.String() == "10000000000000000"
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### Uleb128 (无符号 128 位变长整数)
+
+无符号 128 位变长整数序列化为可变字节数。每个字节的最高有效位用于指示是否有更多字节需要读取。剩余的 7 位用于存储值。
+
+这通常用于向量的可变长度或枚举。
+
+<Tabs items={['Move', 'Rust', 'TypeScript', 'Go']}>
+  <Tabs.Tab>
+    ```move filename="uleb128.move"
+    // Currently not supported by itself in Move
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust filename="uleb128.rs"
+    // Currently not supported by itself in Rust with serde
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts filename="uleb128.ts"
+    import { Serializer, Deserializer } from "@aptos-labs/ts-sdk";
+
+    // Serialize
+    const ser = new Serializer();
+    ser.serializeU32AsUleb128(127);
+    const bytes = ser.toUint8Array();
+    console.log(bytes == Uint8Array.from([0x7f]));
+
+    const ser = new Serializer();
+    ser.serializeU32AsUleb128(128);
+    const bytes2 = ser.toUint8Array();
+    console.log(bytes2 == Uint8Array.from([0x80, 0x01]));
+
+    // Deserialize
+    const des = new Deserializer(bytes2);
+    const val = des.deserializeUleb128AsU32();
+    console.log(val == 128);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```go filename="uleb128.go"
+    import (
+      "github.com/aptos-labs/aptos-go-sdk"
+      "math/big"
+    )
+
+    func main() {
+      // Serialize
+      ser := bcs.Serializer{}
+      val := new(big.Int)
+      val.SetInt64(127)
+      ser.Uleb128(val)
+      bytes := ser.ToBytes()
+      bytes == []byte{0x7f}
+
+      // Deserialize
+      des := bcs.NewDeserializer(bytes)
+      val_des := des.Uleb128()
+      val_des.Int64() == 127
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### Sequence 和 FixedSequence
+
+序列化为一个项目的可变长度向量。向量的长度序列化为 Uleb128，后跟重复的项目。FixedSequences 在没有前导大小字节的情况下序列化。读取者必须在反序列化之前知道字节数。
+
+<Tabs items={['Move', 'Rust', 'TypeScript', 'Go']}>
+  <Tabs.Tab>
+    ```move filename="vector.move"
+    #[test_only]
+    module 0x42::example {
+      use std::bcs;
+      use std::from_bcs;
+
+      #[test]
+      fun test_vector() {
+        // Serialize
+        let val = vector[1u8, 2u8, 3u8];
+        let bytes = bcs::to_bytes(&val);
+        assert!(bytes == vector[3, 1, 2, 3]);
+
+        // Deserialize, only supports bytes for now
+        let val_des = from_bcs::to_bytes(bytes);
+        assert!(val_des == vector[1, 2, 3]);
+      }
+    }
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```rust filename="vector.rs"
+    // Serialize
+    let val = vec![1u8, 2u8, 3u8];
+    let bytes = bcs::to_bytes(&val).unwrap();
+    assert_eq!(bytes, vec![3, 1, 2, 3]);
+
+    // Deserialize
+    let val_des = bcs::from_bytes::<Vec<u8>>(&bytes).unwrap();
+    assert_eq!(val_des, vec![1, 2, 3]);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```ts filename="vector.ts"
+    import { Serializer, Deserializer } from "@aptos-labs/ts-sdk";
+
+    // Serialize
+    const ser = new Serializer();
+    ser.serializeVector([1, 2, 3], (s, item) => s.serializeU8(item));
+    const bytes = ser.toUint8Array();
+    console.log(bytes == Uint8Array.from([3, 1, 2, 3]));
+
+    // Deserialize
+    const des = new Deserializer(bytes);
+    const val = des.deserializeVector((d) => d.deserializeU8());
+    console.log(val == [1, 2, 3]);
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```go filename="vector.go"
+    import (
+      "github.com/aptos-labs/aptos-go-sdk"
+    )
+
+    func main() {
+      // Serialize
+      ser := bcs.Serializer{}
+      ser.SerializeVector([]uint8{1, 2, 3}, func(s *bcs.Serializer, item uint8) {
+        s.U8(item)
+      })
+      bytes := ser.ToBytes()
+      bytes == []byte{3, 1, 2, 3}
+
+      // Deserialize
+      des := bcs.NewDeserializer(bytes)
+      val := des.DeserializeVector(func(d *bcs.Deserializer) uint8 {
+        return d.U8()
+      })
+      val == []uint8{1, 2, 3}
+    }
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+
+## 复杂类型
+
+### 字符串
+
+字符串序列化为字节向量，但字节编码为 UTF-8。
+
+```rust
+// Note that this string has 10 characters but has a byte length of 24
+let utf8_str = "çå∞≠¢õß∂ƒ∫";
+let expecting = vec![
+    24, 0xc3, 0xa7, 0xc3, 0xa5, 0xe2, 0x88, 0x9e, 0xe2, 0x89, 0xa0, 0xc2,
+    0xa2, 0xc3, 0xb5, 0xc3, 0x9f, 0xe2, 0x88, 0x82, 0xc6, 0x92, 0xe2, 0x88, 0xab,
+];
+assert_eq!(to_bytes(&utf8_str)?, expecting);
+```
+
+### AccountAddress
+
+AccountAddress 序列化为固定的 32 字节向量。
+
+```
+@0x1 => [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01]
+```
+
+### 结构体
+
+结构体序列化为字段的有序集合。字段按结构体中定义的顺序序列化。
+
+```
+struct Color {
+  r: u8 = 1,
+  g: u8 = 2,
+  b: u8 = 3,
+} => [0x01, 0x02, 0x03]
+```
+
+### Option
+
+Options 序列化为单个字节以确定是否填充。如果选项为 `None`，字节为 `0x00`。如果选项为 `Some`，字节为 `0x01`，后跟序列化值。
+
+```rust
+let some_data: Option<u8> = Some(8);
+assert_eq!(to_bytes(&some_data)?, vec![1, 8]);
+
+let no_data: Option<u8> = None;
+assert_eq!(to_bytes(&no_data)?, vec![0]);
+```
+
+### 枚举
+
+枚举序列化为 uleb128 以确定使用哪个变体。大小后跟变体的序列化值。
+
+```rust
+#[derive(Serialize)]
+enum E {
+    Variant0(u16),
+    Variant1(u8),
+    Variant2(String),
+}
+
+let v0 = E::Variant0(8000);
+let v1 = E::Variant1(255);
+let v2 = E::Variant2("e".to_owned());
+
+assert_eq!(to_bytes(&v0)?, vec![0, 0x40, 0x1F]);
+assert_eq!(to_bytes(&v1)?, vec![1, 0xFF]);
+assert_eq!(to_bytes(&v2)?, vec![2, 1, b'e']);
+```
+
+### 映射
+
+映射存储为元组序列。映射的长度序列化为 Uleb128，后跟重复的键值对。
+
+```rust
+let mut map = HashMap::new();
+map.insert(b'e', b'f');
+map.insert(b'a', b'b');
+map.insert(b'c', b'd');
+
+let expecting = vec![(b'a', b'b'), (b'c', b'd'), (b'e', b'f')];
+
+assert_eq!(to_bytes(&map)?, to_bytes(&expecting)?);
+```
+
+## 参考
+
+- [BCS 规范](https://github.com/diem/bcs)

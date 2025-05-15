@@ -1,0 +1,251 @@
+---
+title: "Aptos代币标准（旧版）"
+---
+
+import { Callout } from "nextra/components";
+import { ThemedImage } from '@components/index'
+
+# Aptos代币标准（旧版）
+
+## NFT概述
+
+[NFT](https://en.wikipedia.org/wiki/Non-fungible_token)是一种存储在区块链上的非同质化[代币](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move)，它唯一地定义了资产的归属权。NFT最初在[EIP-721](https://eips.ethereum.org/EIPS/eip-721)中定义，后来在[EIP-1155](https://eips.ethereum.org/EIPS/eip-1155)中进行了扩展。NFT通常通过以下属性定义：
+
+- `name`：资产名称。在同一个集合内必须唯一。
+- `description`：资产描述。
+- `uri`：指向链外数据的URL链接，用于获取资产更多信息。这些资产可以是图片、视频等媒体文件或更多元数据。
+- `supply`：该NFT的总供应量。许多NFT只有一个供应量，而拥有多个供应量的则被称为"版本"。
+
+此外，大多数NFT都属于某个集合（collection），即具有共同属性（如主题、创建者或最小合约单位）的一组NFT。每个集合都有类似的属性集：
+
+- `name`：集合名称。在创建者账户内必须唯一。
+- `description`：集合描述。
+- `uri`：指向链外数据的URL链接，用于获取集合更多信息。
+- `supply`：该集合当前的NFT总数。
+- `maximum`：该集合允许的最大NFT数量。若`maximum`设为0，则不跟踪供应量。
+
+## 设计原则
+
+[Aptos代币标准](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move)基于以下原则开发：
+
+- **互操作性**：通过标准实现提升生态系统项目间的互操作性。由于Move是静态语言且不支持动态分发，这一原则尤为重要。
+- **流动性**：通过在同一合约中定义NFT、同质化（非小数）和半同质化代币，实现最大流动性。这些不同类型的代币可以相同方式存储、转移和交易，从而更容易在各类市场、交易所和其他交易方式间实现互操作。
+- **丰富的链上属性**：支持自定义链上代币属性。用户可以定义自己的属性并存储在链上，这有可能消除对链外元数据的依赖。
+- **降低开销**：减少从同质化代币创建大量NFT的成本。例如，通过重用某些同质化代币的链上元数据，降低相似代币的开销。
+
+<Callout type="info">
+  **同质化代币 → NFT**<br />
+  Aptos代币标准支持[将同质化代币演变为NFT](#evolving-from-fungible-token-to-nft)。
+</Callout>
+
+### 在链上存储自定义代币属性
+
+Aptos代币标准使用[`PropertyMap`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/property_map.move)模块来存储代币的链上属性。`PropertyMap`将字符串键映射到链上的属性值，该值以二进制规范序列化(BCS)格式及其类型存储。当前`PropertyMap`仅支持原始类型(bool, u8, u64, u128, address和String)。诸如[Aptos Names](https://www.aptosnames.com/)等应用程序会定义特定于应用的属性，这些属性由应用程序智能合约读写。
+
+#### 默认属性
+
+您可以将属性添加到TokenData中的[`default_properties`](https://github.com/aptos-labs/aptos-core/blob/e62fd09cb1c916d857fa655b3f174991ef8698b3/aptos-move/framework/aptos-token/sources/token.move#L98)。此处定义的属性默认由所有代币共享。
+
+`default_properties`字段是一个带有类型信息的键值存储。它利用PropertyMap模块，该模块包含将不同原始类型序列化和反序列化为属性值的函数。
+
+#### 代币属性
+
+您也可以使用代币本身定义的`token_properties`进行链上定制。可以为该特定代币的某个属性创建定制值，从而允许代币拥有与其默认值不同的属性值。
+
+请注意，链上存储自定义代币属性存在限制：每个代币最多1000个属性，且字段名称限制为128个字符。
+
+### 从同质化代币演变为NFT
+
+同质化代币共享相同的默认属性值。但这些属性值会随时间演变而变得互不相同。为了支持此类代币属性的演变，Aptos代币标准提供了`property_version`字段。其工作原理如下：
+
+- 在代币创建(铸造)期间，所有代币初始时`property_version`设为`0`，这些代币可以堆叠在一起作为同质化代币。
+- 当创建者变更代币的默认属性时，被变更的代币将被分配一个唯一的`property_version`以创建新的[`token_id`](https://github.com/aptos-labs/aptos-core/blob/bba1690d7268759bd86ccd7459d7967172f1da24/aptos-move/framework/aptos-token/sources/token.move#L288)，从而与其他同质化代币区分。这个唯一的`token_id`允许代币拥有自己的属性值，且该代币的所有进一步变更**不会**再次改变`property_version`。此时该代币本质上已成为NFT。
+
+#### 配置可变性
+
+为了使可变性对创建者和所有者都明确可见，Aptos代币标准在集合级别和代币级别都提供了[`mutability_config`](https://github.com/aptos-labs/aptos-core/blob/bba1690d7268759bd86ccd7459d7967172f1da24/aptos-move/framework/aptos-token/sources/token.move#L100)来控制哪些字段是可变的。这里的"可配置"意味着创建者可以在创建时将该字段配置为可变或不可变。
+
+### 链下存储元数据
+
+请遵循以下标准以确保您的NFT能在各类钱包中正确显示。
+
+您应该将元数据存储在如[Irys](https://docs.irys.xyz/)这样的链上数据解决方案中的JSON文件里，并在代币或集合的`uri`字段中提供该JSON文件的URL。我们建议开发者按照[ERC-1155链下数据](https://eips.ethereum.org/EIPS/eip-1155)模式来格式化JSON文件。
+
+```json
+{
+  "image": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjGzb4POUibCEG-TGPInmofp-O-o",
+  "animation_url": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjHzb4POUibCEG-TGPInmofp-O-o",
+  "external_url": "https://petra.app/",
+  "attributes": [
+    {
+      "trait_type": "web",
+      "value": "yes"
+    },
+    {
+      "trait_type": "mobile",
+      "value": "yes"
+    },
+    {
+      "trait_type": "extension",
+      "value": "yes"
+    }
+  ],
+  "properties": {
+    "files": [
+      {
+        "uri": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjGzb4POUibCEG-ENXUnmofp-O-o",
+        "type": "image/png"
+      },
+      {
+        "uri": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjGzb4POUibCEG-UENCnmofp-O-o",
+        "type": "unknown",
+        "cdn": true
+      },
+      {
+        "uri": "https://gateway.irys.xyz/QH3rksVhbFg5L9vvjGzb4POUibCEG-DJHUUnmofp-O-o",
+        "type": "video/mp4"
+      }
+    ],
+    "category": "video"
+  }
+}
+```
+
+- `image`: 图像资源的URL。可使用`?ext={文件扩展名}`查询参数提供文件类型信息
+- `animation_url`: 资产多媒体附件的URL。可使用相同的`file_extension`查询参数提供文件类型
+- `external_url`: 用户也可查看图像的外部网站URL
+- `attributes`: 对象数组，每个对象应包含`trait_type`和`value`字段。`value`可以是字符串或数字
+- `properties.files`: 对象数组，每个对象应包含作为资产组成部分的文件URI和类型。类型应与文件扩展名匹配。该数组还应包含`image`和`animation_url`字段中指定的文件，以及与资产相关的任何其他文件。可使用`?ext={文件扩展名}`查询参数提供文件类型信息
+- `properties.category`: 支持的类别包括：
+  - `image` - PNG, GIF, JPG
+  - `video` - MP4, MOV
+  - `audio` - MP3, FLAC, WAV
+  - `vr` - 3D模型；GLB, GLTF
+  - `html` - HTML页面；HTML页面中的脚本和相对路径也受支持
+
+您还可以通过在文件对象中使用`cdn`标志将文件托管在CDN上以提供更快的加载速度。当文件存在时，这应该是钱包读取媒体文件(`video`, `audio`, `vr`)的主要位置。如果文件不再可用，钱包可以回退使用`animation_url`加载文件。
+
+```json
+{
+  "properties": {
+    "files": [
+      {
+        "uri": "https://watch.videodelivery.net/52a52c4a261c88f19d267931426c9be6",
+        "type": "unknown",
+        "cdn": true
+      }
+    ]
+  }
+}
+```
+
+## 代币数据模型
+
+[以下流程图](/docs/aptos-token-standard-flow.svg)展示了代币数据在Aptos中的流转过程。
+
+<ThemedImage
+  alt="Signed Transaction Flow"
+  sources={{
+    light: '/docs/aptos-token-standard-flow.svg',
+    dark: '/docs/aptos-token-standard-flow-dark.svg',
+  }}
+/>
+
+## 代币资源
+
+如上图所示，与代币相关的数据同时存储在创建者账户和所有者账户中。
+
+### 结构体级资源
+
+以下表格描述了结构体级别的字段。完整列表请参阅[Aptos代币框架](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/overview.md)。
+
+#### 存储在创建者地址的资源
+
+| 字段                                                                                                                                                                 | 描述                                                                                                                                                                                                                                                |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`Collections`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#resource-collections)                                | 维护一个名为`collection_data`的表格，将集合名称映射到`CollectionData`。同时存储该创建者创建的所有`TokenData`。                                                                                          |
+| [`CollectionData`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#struct-collectiondata)                            | 存储集合元数据。supply表示当前集合中已创建的代币数量，maximum是该集合中代币数量的上限。                                                                                        |
+| [`CollectionMutabilityConfig`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_CollectionMutabilityConfig) | 指定哪些字段是可变的。                                                                                                                                                                            |                                               |
+| [`TokenData`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenData)                                   | 作为存储代币元数据的主要结构体。Properties字段允许用户添加未在代币数据中定义的自定义属性。用户可以根据`TokenData`铸造更多代币，这些代币共享相同的`TokenData`。 |
+| [`TokenMutabilityConfig`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenMutabilityConfig)           | 控制哪些字段是可变的。                                                                                                                                                                                                                         |
+| [`TokenDataId`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenDataId)                               | 用于表示和查询链上`TokenData`的ID。该ID主要包含三个字段：创建者地址、集合名称和代币名称。                                                                                             |
+| [`Royalty`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_Royalty)                                       | 指定计算版税的分母和分子，并包含用于存放版税的收款人账户地址。                                                                                                                 |
+| `PropertyValue`                                                                                                                                                       | 包含属性的值和类型。                                                                                                                                                                                                    |
+
+#### 存储在所有者地址的资源
+
+| 字段                                                                                                                                 | 描述                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`TokenStore`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenStore) | 存储该地址所拥有代币的主要结构体。它将 `TokenId` 映射到实际代币。                                                                    |
+| [`Token`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_Token)           | 数量字段表示代币的个数。                                                                                                                                    |
+| [`TokenId`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_TokenId)       | `TokenDataId` 指向该代币的元数据。`property_version` 表示该代币的属性相对于 `TokenData` 中 `default_properties` 发生了变异的版本。 |
+
+更详细描述请参阅 [Aptos代币框架](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/overview.md)。
+
+## 代币生命周期
+
+### 代币创建
+
+每个Aptos代币都属于一个集合。开发者首先需要通过 `create_collection_script` 创建一个集合，然后创建属于该集合的代币 `create_token_script`。为了实现并行的 `TokenData` 和 `Token` 创建，开发者可以创建无限量的集合和 `TokenData`，其中集合和 `TokenData` 的 `maximum` 都设置为 `0`。通过这种设置，代币合约不会跟踪代币类型（`TokenData` 数量）和每个代币类型中的代币供应量。因此，`TokenData` 和代币可以并行创建。
+
+Aptos还对输入大小实施简单验证并防止重复：
+
+- 代币名称 - 在每个集合内唯一
+- 集合名称 - 在每个账户内唯一
+- 代币和集合名称长度 - 小于128个字符
+- URI长度 - 小于512个字符
+- 属性映射 - 最多可容纳1000个属性，每个键应小于128个字符
+
+### 代币可变性
+
+我们的标准支持可变性设计，其核心原则是：
+
+所有可变字段必须在代币创建时明确指定。这样当代币所有者从创建者处获取代币时，可以清楚知晓哪些字段是可变的。我们的合约使用`CollectionMutabilityConfig`来检查集合级别的字段可变性，同时使用`TokenMutabilityConfig`来检查`TokenData`字段的可变性。
+
+关于属性可变性，我们提供两种机制：
+
+- 存储在`TokenData`中的`default_properties`，由属于该`TokenData`的所有代币共享
+- 存储在代币本身的`token_properties`
+
+要修改`default_properties`，开发者可以在`TokenMutabilityConfig`设为`true`时使用`mutate_tokendata_property`进行变更。
+
+> **警告：除非绝对必要，否则应将`TokenMutabilityConfig`字段设为`false`。允许修改`default_properties`会赋予创建者过大权限——他们甚至可以在代币创建后修改可燃烧配置，从而获得销毁代币的权力。**
+
+对于代币中存储的`token_properties`，我们的标准通过在`default_properties`中设置`TOKEN_PROPERTY_MUTABLE`属性来控制可变性。当创建者在初始化`TokenData`时将`TOKEN_PROPERTY_MUTABLE`设为`true`时，才能修改`token_properties`。需注意：如果`mutate_tokendata_property`被启用，创建者仍可通过覆写`default_properties`中的设置来间接修改`token_properties`。
+
+### 代币销毁
+
+我们提供`burn`和`burn_by_creator`函数，分别供代币所有者和创建者销毁代币。这两个函数的执行权限同样受代币创建时的配置约束，确保双方都明确销毁权限。只有当`default_properties`中的`BURNABLE_BY_OWNER`属性为`true`时允许所有者销毁，而`BURNABLE_BY_CREATOR`为`true`时允许创建者销毁。当某个`TokenData`下的所有代币都被销毁后，该`TokenData`会从创建者账户移除。同理，如果集合中所有`TokenData`都被移除，对应的`CollectionData`也将从创建者账户删除。
+
+### 代币转移
+
+我们提供三种不同的代币转移模式：
+
+#### 两步转移机制
+
+为防止用户收到不想要的NFT，接收方必须首先接收转移要约，然后主动确认接受，代币才会存入其存储地址。这是默认的转移行为，例如：
+
+1. 当Alice想向Bob发送NFT时，她需要先向Bob发出转移要约，此时NFT仍保留在Alice账户
+2. 只有当Bob确认接收后，NFT才会从Alice账户转移到Bob的代币存储中
+
+<Callout type="info">
+  **代币转账模块**<br />
+  代币转账功能实现在
+  [`token_transfers`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token_transfers.move)
+  模块中。
+</Callout>
+
+#### 选择性转账
+
+如果用户希望直接接收 NFT 转账，跳过初始的报价和申领步骤，可以调用 [`opt_in_direct_transfer`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_opt_in_direct_transfer)
+来允许他人直接将 NFT 转入该用户的代币存储库。选择启用直接转账后，用户可以调用 [`transfer`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#0x3_token_transfer)
+直接转账代币。例如，一旦 Bob 选择启用，Alice 或任何人都可以直接将代币发送到 Bob 的代币存储库。
+
+<Callout type="info">
+  **关闭直接转账**<br />
+  用户也可以通过调用相同的 `opt_in_direct_transfer` 函数来关闭此直接转账行为，恢复为默认设置。
+</Callout>
+
+#### 多代理转账
+
+发送方和接收方可以共同签署一笔转账交易，直接将代币从发送方转移到接收方 [`direct_transfer_script`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/doc/token.md#function-direct_transfer_script)。例如，当 Alice 和 Bob 都签署了转账交易后，代币将直接从 Alice 的账户转移到 Bob 的账户。
