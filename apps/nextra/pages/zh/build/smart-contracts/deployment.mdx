@@ -1,0 +1,116 @@
+---
+title: "对象代码部署"
+---
+
+# 对象代码部署
+
+本文档介绍如何将代码部署到 [Objects](objects.mdx)。这是将代码部署到区块链的推荐方式，因为这减少了部署的复杂性，并安全地管理代码所有者的访问控制策略。请注意，在此上下文中，代码是指 [packages](book/packages.mdx)。
+
+将代码部署到对象将保证以下几点：
+- 每次部署发布到一个新地址。
+- 只有**代码对象的所有者**可以升级和冻结代码。
+
+这意味着您可以将对象转移给新所有者，他们将拥有代码的完整所有权。您正在授予他们升级和冻结代码的权利。无需管理种子，或在每次部署时部署到新地址。对象代码部署极大地简化了部署过程。
+
+## 指南
+
+以下是如何编译、部署和升级代码到对象的说明。
+
+import { Steps } from 'nextra/components'
+
+<Steps>
+
+### 编译代码
+
+确保 `<named_address>` 保持为占位符 `_`。这是必需的，因为 CLI 命令将覆盖地址。`<named_address>` 值表示代码的所有者，或要将代码部署到的对象的所有者。
+以下是 `<named_address>` 值为 `my_address` 的示例。
+
+```toml filename="Move.toml"
+[addresses]
+my_address = "_"
+```
+
+通过运行以下命令编译您的 move 代码。
+- 将 `<named_address>` 替换为命名地址。
+- 将 `<your_address>` 替换为您的账户地址。
+
+```bash filename="Terminal"
+aptos move compile --named-addresses <named_address>=<your_address>
+```
+
+### 将代码部署到对象
+
+通过以下命令将编译后的代码部署到对象：
+- 将 `<named_address>` 替换为命名地址。
+
+```bash filename="Terminal"
+aptos move deploy-object --address-name <named_address>
+```
+
+**下面是一个示例：**
+
+```bash filename="Terminal"
+aptos move deploy-object --address-name my_address
+```
+
+这将询问您是否要在指定的对象地址下发布代码。
+
+**示例输出：**
+
+```bash filename="Terminal"
+Do you want to publish this package at object address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab [yes/no] >
+```
+
+**恭喜，您已将代码部署到具有唯一地址的新对象！**
+
+请注意对象地址，因为您稍后需要它进行升级。
+
+### 转移和升级现有包中的代码
+
+首先，您可能希望将对象从部署者账户转移到管理员账户。管理员账户将有权升级代码。
+
+以下是通过 CLI 的操作方法，这里您的 `deployer_account` 应该是对象的当前所有者。
+```bash
+aptos move run —-function-id 0x1::object::transfer --type-args 0x1::object::ObjectCore -—args address:<object_address> address:<new_owner_address> —-profile <deployer_account_profile>
+```
+
+以下是通过 typescript SDK 的操作方法：
+```typescript
+const transaction = await aptos.transaction.build.simple({
+  sender: deployerAccount.accountAddress,
+  data: {
+	  function: "0x1::object::transfer",
+      typeArguments: [`0x1::object::ObjectCore`],
+	  functionArguments: [object_address, new_owner_address],
+  },
+});
+```
+现在，您可以使用指定的管理员账户升级代码，如下所示。
+
+如果您希望升级已部署的对象中的代码，请运行以下命令：
+- 将 `<named_address>` 替换为现有的命名地址。
+- 将 `<code_object_addr>` 替换为托管代码的对象地址。
+
+注意：账户名称的值现在应该是对象地址，因为包含模块的包现在已部署到该地址。
+
+```bash filename="Terminal"
+aptos move upgrade-object --address-name <named_address> --object-address <code_object_addr>
+```
+
+上述命令的示例：
+
+```bash filename="Terminal"
+aptos move upgrade-object --address-name my_address --object-address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab
+```
+
+这将询问您是否要升级在对象地址上部署的现有代码。
+
+**示例输出：**
+
+```bash filename="Terminal"
+Do you want to upgrade the package 'MyPackage' at object address 0x8d6eb306bcf6c61dbaa0dbf8daa8252e121b63e95991afcab3b12d3be7f001ab [yes/no]
+```
+
+**恭喜，您已在现有对象中升级了代码！**
+
+</Steps> 

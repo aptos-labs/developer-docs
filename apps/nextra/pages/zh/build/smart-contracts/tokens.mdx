@@ -1,0 +1,75 @@
+---
+title: "Aptos 代币标准概述"
+---
+
+# Aptos 代币标准
+
+[Aptos Digital Asset Standard](digital-asset.mdx) 定义了 Aptos 上的规范非同质化代币（NFT）。Aptos 利用可组合性，通过 [Fungible Asset standard](fungible-asset.mdx) 等扩展数字资产标准，实现了可替代性等特性。可组合性的概念源自这些结构的底层数据模型：[Move object](objects.mdx) 数据模型。
+
+本文其余部分将讨论 Aptos 代币标准与以太坊和 Solana 标准的对比。
+
+## 数据模型
+
+为了理解代币，我们首先比较不同区块链上的数据模型。
+
+### Ethereum
+
+以太坊有两种类型的账户：
+
+- 外部拥有账户，存储以太币余额。
+- 合约账户，管理其底层智能合约，并拥有只能由关联合约修改的持久化存储。
+
+要创建新的 NFT 收藏品，创作者必须在区块链上部署自己的合约，该合约会在其存储中创建一个收藏品和一组 NFT。
+
+### Solana
+
+与以太坊或 Aptos 上数据和代码共存不同，Solana 将数据和程序存储在不同的账户中。Solana 区块链上有两种类型的账户：
+
+- 可执行账户仅存储合约代码
+- 不可执行账户存储与可执行账户相关联并由其拥有的数据。
+
+要创建新的 NFT 收藏品，创作者调用已部署的程序来生成新的收藏品和一组 NFT。
+
+### Aptos
+
+Aptos 的 [accounts](../../network/blockchain/accounts.mdx) 存储智能合约和数据。与以太坊不同，智能合约的关联数据分布在所有账户空间中的 [resources](../../network/blockchain/resources.mdx) 或 [objects](objects.mdx) 内。例如，一个收藏品和该收藏品下的 NFT 分别存储在不同地址的对象中，而定义它们的智能合约则在另一个地址。智能合约开发者也可以将与 NFT 和收藏品相关的数据存储在与智能合约相同的地址，或其他对象中。
+
+在 Aptos 上有两种方式创建 NFT：
+
+- [无代码标准](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-22.md) 允许创作者调用合约来创建新的收藏品和代币，无需部署新合约。
+- 自定义 NFT 合约允许创作者通过扩展对象模型自定义 NFT，管理其收藏品的所有方面。
+
+Aptos 在以太坊提供的可定制性与 Solana 简化创建新收藏品的方式之间取得了平衡。
+
+与以太坊类似，Aptos 需要索引以确定账户拥有的所有 NFT 集合，而 Solana 则不需要。
+
+## 代币标准对比
+
+可替代代币（FT）最初由 [EIP-20](https://eips.ethereum.org/EIPS/eip-20) 引入，非同质化代币（NFT）由 [EIP-721](https://eips.ethereum.org/EIPS/eip-721) 定义。随后，[EIP-1155](https://eips.ethereum.org/EIPS/eip-1155) 将 FT、NFT 甚至半同质化代币（SFT）合并为一个标准。
+
+以太坊的代币标准要求每个代币都部署自己的合约代码，以区分代币集合。Solana 的账户模型则实现了另一种模式，代码可复用，一个通用程序可操作各种数据。要创建新代币，可以创建一个可铸造代币的账户，以及更多可接收代币的账户。铸币账户本身唯一确定了代币类型，而不是合约账户，这些都作为参数传递给部署在某个可执行账户上的合约。
+
+Aptos 的代币标准集合与 Solana 有一些相似之处，尤其是在如何通过一套通用链上代码覆盖 FT、NFT 和 SFT。与为每个新代币部署新智能合约不同，创作者只需调用合约中的函数并传入必要参数。根据调用的函数不同，代币合约会铸造、转移、销毁等代币。
+
+### 代币标识
+
+Aptos 通过其 `Address` 或 `ObjectId`（全局存储中的位置）来标识代币。收藏品的存储位置由创作者地址和收藏品名称共同决定。
+
+在以太坊中，合约部署在由部署者账户决定的地址上，NFT 作为合约内数据表的索引进行存储。
+
+在 Solana 中，NFT 数据存储在铸币账户下，与程序账户无关。
+
+### 代币元数据
+
+Aptos 代币的元数据存储在其 `Token` 资源中，包含 dapp 交互常用的数据。例如：
+
+- `name`：代币名称，在收藏品内必须唯一。
+- `description`：代币描述。
+- `uri`：指向链下更多代币信息的 URL。该资源可以是图片、视频等媒体，或包含更多元数据的 JSON 文件。
+- `collection`：指向收藏品的 ObjectId。
+
+创作者还可以在自定义资源或 `PropertyMap` 资源中存储额外字段，`PropertyMap` 定义了通用的键值对映射。
+
+在以太坊中，仅有少部分属性以方法形式定义，如 ERC-20 的 `name()`、`symbol()`、`decimals()`、`totalSupply()`；ERC-721 可选元数据扩展的 `name()`、`symbol()`、`tokenURI()`；ERC-1155 也有类似的可选元数据扩展方法 `uri()`。代币元数据并未标准化，dapp 需针对不同情况做特殊处理。
+
+在 Solana 中，Token Metadata 程序通过 Metadata Account 定义了与代币相关的多种元数据字段，包括在 Aptos 中由 `TokenDataId` 定义的 `collection`。但 Solana 不支持资产的可变性，而 Aptos 支持。与 Aptos 类似，Token Metadata v1.1.0 也提供了 `attribute` 容器用于自定义属性。 

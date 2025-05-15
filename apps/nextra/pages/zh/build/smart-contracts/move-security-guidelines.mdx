@@ -1,0 +1,828 @@
+---
+title: "Move 安全指南"
+---
+
+# Move 安全指南
+
+Move 语言天生具备安全性，内置了类型系统和线性逻辑等多种特性。尽管如此，由于其新颖性以及部分业务逻辑的复杂性，开发者未必总能熟悉 Move 的安全编码模式，进而导致漏洞。
+
+本指南旨在弥补这一空白，详细介绍常见的反模式及其安全替代方案。通过实际示例说明安全问题的产生方式，并推荐安全编码最佳实践。希望本指南能帮助开发者加深对 Move 安全机制的理解，确保智能合约的健壮开发。
+
+## 访问控制
+
+### 对象所有权检查
+
+每个 `Object<T>` 都可以被任何人访问，这意味着任何人都可以将 `Object<T>` 传递给任意函数，即使调用者并不拥有该对象。
+因此，务必验证 `signer` 是否为对象的真正所有者。
+
+#### 不安全示例代码
+
+在此模块中，用户需先购买订阅才能执行某些操作。用户调用注册函数以获取 `Object<Subscription>`，之后可用其执行操作。
+
+```move filename="object_example.move"
+module 0x42::example {
+
+    struct Subscription has key {
+        end_subscription: u64
+    }
+
+    entry fun registration(user: &signer, end_subscription: u64) {
+        let price = calculate_subscription_price(end_subscription);
+        payment(user,price);
+
+        let user_address = address_of(user);
+        let constructor_ref = object::create_object(user_address);
+        let subscription_signer = object::generate_signer(&constructor_ref);
+        move_to(&subscription_signer, Subscription { end_subscription });
+    }
+
+    entry fun execute_action_with_valid_subscription(
+        user: &signer, obj: Object<Subscription>
+    ) acquires Subscription {
+        let object_address = object::object_address(&obj);
+        let subscription = borrow_global<Subscription>(object_address);
+        assert!(subscription.end_subscription >= aptos_framework::timestamp::now_seconds(),1);
+        // Use the subscription
+        [...]
+    }
+}
+```
+
+在此不安全示例中，`execute_action_with_valid_subscription` 未验证用户是否拥有传入的 `obj`。因此，任何人都可以使用他人的订阅，绕过付费要求。
+
+#### 安全示例代码
+
+确保 signer 拥有该对象。
+
+```move filename="object_example.move"
+module 0x42::example {
+
+    struct Subscription has key {
+        end_subscription: u64
+    }
+
+    entry fun registration(user: &signer, end_subscription: u64) {
+        let price = calculate_subscription_price(end_subscription);
+        payment(user,price);
+
+        let user_address = address_of(user);
+        let constructor_ref = object::create_object(user_address);
+        let subscription_signer = object::generate_signer(&constructor_ref);
+        move_to(&subscription_signer, Subscription { end_subscription });
+    }
+
+    entry fun execute_action_with_valid_subscription(
+        user: &signer, obj: Object<Subscription>
+    ) acquires Subscription {
+        //ensure that the signer owns the object.
+        assert!(object::owner(&obj)==address_of(user),ENOT_OWNWER);
+        let object_address = object::object_address(&obj);
+        let subscription = borrow_global<Subscription>(object_address);
+        assert!(subscription.end_subscription >= aptos_framework::timestamp::now_seconds(),1);
+        // Use the subscription
+        [...]
+    }
+}
+```
+
+### 全局存储访问控制
+
+仅接受 `&signer` 作为参数并不足以实现访问控制。务必断言 signer 是否为预期账户，尤其是在执行敏感操作时。
+
+如果未做授权校验，任何用户都可执行特权操作。
+
+#### 不安全示例代码
+
+此代码片段允许任何调用 `delete` 函数的用户删除 `Object`，未校验调用者权限。
+
+```move
+module 0x42::example {
+  struct Object has key{
+    data: vector<u8>
+  }
+
+  public fun delete(user: &signer, obj: Object) {
+    let Object { data } = obj;
+  }
+}
+```
+
+#### 安全示例代码
+
+更好的做法是利用 Move 提供的全局存储，直接通过 `signer::address_of(signer)` 访问数据。这样可确保只操作 signer 拥有的数据，极大降低访问控制出错风险。
+
+```move
+module 0x42::example {
+  struct Object has key{
+    data: vector<u8>
+  }
+
+  public fun delete(user: &signer) {
+    let Object { data } = move_from<Object>(signer::address_of(user));
+  }
+}
+```
+
+### 函数可见性
+
+遵循最小权限原则：
+
+- 始终以私有函数为起点，按业务需求逐步提升可见性。
+- 仅为 Aptos CLI 或 SDK 使用的函数加 `entry`。
+- 仅允许特定模块访问的函数使用 `friend`。
+- 仅读取存储、不修改状态的函数使用 `#[view]` 装饰器。注意，`#[view]` 函数可被间接调用，此时可能会修改存储。
+
+函数可见性决定了谁可以调用该函数，是强制访问控制的重要手段，对智能合约安全至关重要：
+
+- private 函数仅能在定义它的模块内调用，外部模块及 CLI/SDK 无法访问，防止合约内部被意外调用。
+
+```move
+module 0x42::example {
+  fun sample_function() { /* ... */ }
+}
+```
+
+- `public(friend)` 允许指定 _friends_ 模块调用，实现合约间受控交互，同时限制一般访问。
+
+```move
+module 0x42::example {
+  friend package::mod;
+
+  public(friend) fun sample_function() { /* ... */ }
+}
+```
+
+- `public` 函数可被任意已发布模块或脚本调用。
+
+```move
+module 0x42::example {
+  public fun sample_function() { /* ... */ }
+}
+```
+
+- `#[view]` 装饰的函数不能修改存储，仅用于安全读取信息。
+
+```move
+module 0x42::example {
+  #[view]
+  public fun read_only() { /* ... */ }
+}
+```
+
+- Move 中的 `entry` 修饰符用于标记交易入口点。带有 `entry` 的函数作为区块链交易的执行起点。
+
+```move
+module 0x42::example {
+  entry fun f(){}
+}
+```
+
+总结如下：
+
+|                | 模块自身 | 其他模块                     | Aptos CLI/SDK |
+| -------------- | -------- | ---------------------------- | ------------- |
+| private        | ✅       | ⛔                           | ⛔            |
+| public(friend) | ✅       | ✅ if friend<br></br>⛔ otherwise | ⛔            |
+| public         | ✅       | ✅                           | ⛔            |
+| entry          | ✅       | ⛔                           | ✅            |
+
+这种分层可见性确保只有授权实体能执行特定函数，大大降低因过度暴露导致的漏洞或攻击风险。
+
+注意，可将 `entry` 与 `public` 或 `public(friend)` 组合使用：
+
+```move
+module 0x42::example {
+  public(friend) entry fun sample_function() { /* ... */ }
+}
+```
+
+此时 `sample_function` 可被 Aptos CLI/SDK 及所有声明为 friend 的模块调用。
+
+#### 影响
+
+遵循最小权限原则可防止函数过度暴露，将访问范围限制在业务所需范围内。
+
+## 类型与数据结构
+
+### 泛型类型检查
+
+泛型可用于定义适用于不同输入数据类型的函数和结构体。使用泛型时，务必确保泛型类型有效且符合预期。[详细了解](book/generics.mdx) 泛型。
+
+未检查的泛型可能导致未授权操作或交易中止，危及协议完整性。
+
+#### 不安全示例代码
+
+下方代码为简化版闪电贷。
+
+在 `flash_loan<T>` 函数中，用户可借出指定类型 **`T`** 的币及记录应还金额（含手续费）的 `Receipt`。
+
+`repay_flash_loan<T>` 接收 `Receipt` 和 `Coin<T>`，仅断言还款币值大于等于 `Receipt`，但未校验还款币种是否与借出币种一致，允许用价值较低的币还款。
+
+```move
+module 0x42::example {
+  struct Coin<T> {
+    amount: u64
+  }
+
+  struct Receipt {
+    amount: u64
+  }
+
+  public fun flash_loan<T>(user: &signer, amount: u64): (Coin<T>, Receipt) {
+    let (coin, fee) = withdraw(user, amount);
+    ( coin, Receipt {amount: amount + fee} )
+  }
+
+  public fun repay_flash_loan<T>(rec: Receipt, coins: Coin<T>) {
+    let Receipt{ amount } = rec;
+    assert!(coin::value<T>(&coin) >= rec.amount, 0);
+    deposit(coin);
+  }
+}
+```
+
+#### 安全示例代码
+
+Aptos Framework 示例中，创建了由泛型 `K` 和 `V` 组成的键值表。相关 `add` 函数参数为 `Table<K, V>`、`key` 和 `value`，类型分别为 `K` 和 `V`。`phantom` 语法确保 key 和 value 类型与表一致，防止类型不匹配。[详细了解](book/generics.mdx#phantom-type-parameters) `phantom` 泛型参数。
+
+```move
+module 0x42::example {
+  struct Table<phantom K: copy + drop, phantom V> has store {
+    handle: address,
+  }
+
+  public fun add<K: copy + drop, V>(table: &mut Table<K, V>, key: K, val: V) {
+    add_box<K, V, Box<V>>(table, key, Box { val })
+  }
+}
+```
+
+得益于 Move 语言的类型检查机制，我们可优化闪电贷协议代码。如下代码确保 `repay_flash_loan` 传入的币与借出币一致。
+
+```move
+module 0x42::example {
+  struct Coin<T> {
+    amount: u64
+  }
+  struct Receipt<phantom T> {
+    amount: u64
+  }
+
+  public fun flash_loan<T>(_user: &signer, amount:u64): (Coin<T>, Receipt<T>) {
+    let (coin, fee) = withdraw(user, amount);
+    (coin,Receipt { amount: amount + fee})
+  }
+
+  public fun repay_flash_loan<T>(rec: Receipt<T>, coins: Coin<T>) {
+    let Receipt{ amount } = rec;
+    assert!(coin::value<T>(&coin) >= rec.amount, 0);
+    deposit(coin);
+  }
+}
+```
+
+### 资源管理与无界执行
+
+高效的资源管理与无界执行预防对协议安全和 gas 效率至关重要，设计合约时需重点考虑：
+
+1. 避免对允许无限添加条目的公开结构体进行遍历。
+2. 用户资产（如币、NFT）应存储在各自账户下。
+3. 模块或包相关信息应存储于 Object，与用户数据分离。
+4. 用户操作应分散存储，避免全部集中于全局空间。
+
+#### 影响
+
+忽视上述原则，攻击者可消耗大量 gas 并导致交易中止，进而阻断应用功能。
+
+#### 不安全示例代码
+
+下方代码遍历所有订单，攻击者可通过注册大量订单阻塞操作：
+
+```move
+module 0x42::example {
+  public fun get_order_by_id(order_id: u64): Option<Order> acquires OrderStore {
+    let order_store = borrow_global_mut<OrderStore>(@admin);
+    let i = 0;
+    let len = vector::length(&order_store.orders);
+    while (i < len) {
+      let order = vector::borrow<Order>(&order_store.orders, i);
+      if (order.id == order_id) {
+        return option::some(*order)
+      };
+      i = i + 1;
+    };
+    return option::none<Order>()
+  }
+  //O(1) in time and gas operation.
+  public entry fun create_order(buyer: &signer) { /* ... */ }
+}
+```
+
+#### 安全示例代码
+
+推荐将订单管理系统设计为每个用户的订单存储在其账户下，而非全局订单池。这样既能隔离用户数据提升安全性，也能分散数据负载提升可扩展性。应通过用户账户访问订单，而非 `borrow_global_mut<OrderStore>(@admin)`。
+
+```move
+module 0x42::example {
+  public fun get_order_by_id(user: &signer, order_id: u64): Option<Order> acquires OrderStore {
+    let order_store = borrow_global_mut<OrderStore>(signer::address_of(user));
+    if (smart_table::contains(&order_store.orders, order_id)) {
+      let order = smart_table::borrow(&order_store.orders, order_id);
+      option::some(*order)
+    } else {
+      option::none<Order>()
+    }
+  }
+}
+```
+
+同时建议根据操作需求选用高效数据结构，如 **`SmartTable`**。
+
+### Move 能力（Abilities）
+
+Move 的能力是一组权限，用于控制数据结构的操作。开发者需谨慎分配能力，仅在必要时赋予，并理解其安全影响，防止安全漏洞。
+
+| 能力   | 描述                                                                                 |
+| ------ | ------------------------------------------------------------------------------------ |
+| copy   | 允许值被复制，可在合约内多次使用。                                                  |
+| drop   | 允许值被丢弃，防止资源泄漏。                                                        |
+| store  | 允许数据存储于全局存储，实现跨交易持久化。                                          |
+| key    | 允许数据作为全局存储的 key，便于数据检索与操作。                                    |
+
+[详细了解](book/abilities.mdx) 能力。
+
+能力使用不当可能导致安全问题，如敏感数据被复制（`copy`）、资源泄漏（`drop`）、全局存储误用（`store`）。
+
+#### 不安全示例代码
+
+```move
+module 0x42::example {
+  struct Token has copy { }
+  struct FlashLoan has drop { }
+}
+```
+
+- `Token` 拥有 `copy` 能力，允许复制，可能导致双花和通胀，币值贬损。
+- `FlashLoan` 拥有 `drop` 能力，允许借款人销毁贷款，逃避还款。
+
+## 算术运算
+
+---
+
+### 除法精度
+
+算术运算因向下取整导致精度损失，可能使协议低估计算结果。
+
+Move 支持六种无符号整数类型：`u8`、`u16`、`u32`、`u64`、`u128`、`u256`。Move 中的除法操作会截断小数部分，向下取整，可能导致协议低估结果。
+
+精度误差可能带来广泛影响，如财务失衡、数据不准确、决策失误，甚至造成损失或安全风险。准确计算对系统可靠性和用户信心至关重要。
+
+#### 不安全示例代码
+
+```move
+module 0x42::example {
+  public fun calculate_protocol_fees(size: u64): (u64) {
+    return size * PROTOCOL_FEE_BPS / 10000
+  }
+}
+```
+
+若 `size` 小于 `10000 / PROTOCOL_FEE_BPS`，则手续费将被向下取整为 0，用户可零手续费与协议交互。
+
+#### 安全示例代码
+
+以下为两种缓解方案：
+
+- 设置最小订单规模阈值，大于 `10000 / PROTOCOL_FEE_BPS`，确保手续费不为零。
+
+```move
+module 0x42::example {
+  const MIN_ORDER_SIZE: u64 = 10000 / PROTOCOL_FEE_BPS + 1;
+
+  public fun calculate_protocol_fees(size: u64): (u64) {
+    assert!(size >= MIN_ORDER_SIZE, 0);
+    return size * PROTOCOL_FEE_BPS / 10000
+  }
+}
+```
+
+- 检查手续费非零，若为零则设定最小手续费或拒绝交易。
+
+```move
+module 0x42::example {
+  public fun calculate_protocol_fees(size: u64): (u64) {
+    let fee = size * PROTOCOL_FEE_BPS / 10000;
+    assert!(fee > 0, 0);
+    return fee;
+  }
+}
+```
+
+### 整数运算注意事项
+
+Move 中，整数运算具备安全性，防止溢出和下溢，避免异常行为或漏洞：
+
+- 加法（`+`）和乘法（`*`）若结果超出类型范围会直接中止程序。
+- 减法（`-`）若结果小于零会中止。
+- 除法（`/`）若除数为零会中止。
+- 左移（`<<`）不会因溢出中止，超出位数会产生错误值或不可预测行为。
+
+[详细了解](book/integers.mdx#operations) 运算。
+
+不当运算可能导致合约执行异常或数据错误。
+
+## Aptos Objects
+
+---
+
+### ConstructorRef 泄漏
+
+创建对象时，切勿暴露对象的 `ConstructorRef`，否则可被用于向对象添加资源。`ConstructorRef` 还能生成其他能力（或 "Refs"），用于更改或转移对象所有权。[详细了解](object/creating-objects.mdx) 对象能力。
+
+#### 漏洞示例代码
+
+例如，若 `mint` 函数返回 NFT 的 `ConstructorRef`，可被转换为 `TransferRef` 并存储于全局，允许原持有者在 NFT 售出后转回。
+
+```move
+module 0x42::example {
+  use std::string::utf8;
+
+  public fun mint(creator: &signer): ConstructorRef {
+    let constructor_ref = token::create_named_token(
+        creator,
+        string::utf8(b"Collection Name"),
+        string::utf8(b"Collection Description"),
+        string::utf8(b"Token"),
+        option::none(),
+        string::utf8(b"https://mycollection/token.jpeg"),
+    );
+    constructor_ref
+  }
+}
+```
+
+#### 安全示例代码
+
+`mint` 函数不返回 `CostructorRef`：
+
+```move
+module 0x42::example {
+  use std::string::utf8;
+
+  public fun mint(creator: &signer) {
+    let constructor_ref = token::create_named_token(
+        creator,
+        string::utf8(b"Collection Name"),
+        string::utf8(b"Collection Description"),
+        string::utf8(b"Token"),
+        option::none(),
+        string::utf8(b"https://mycollection/token.jpeg"),
+    );
+  }
+}
+```
+
+### Object 账户
+
+在 Aptos Framework 中，多个具备 `key` 能力的资源可存储于同一 object 账户。
+
+但对象应隔离存储于不同账户，否则对一个对象的修改会影响整个集合。
+
+例如，转移一个资源会导致所有组成员一同转移，因为 transfer 操作针对 `ObjectCore`，即账户下所有资源的通用标签。
+
+[详细了解](objects.mdx) Aptos Objects。
+
+#### 不安全示例代码
+
+`mint_two` 允许 `sender` 为自己创建 `Monkey` 并向 `recipient` 发送 `Toad`。
+
+由于 `Monkey` 和 `Toad` 属于同一 object 账户，结果是两者都归 `recipient` 所有。
+
+```move
+module 0x42::example {
+  #[resource_group(scope = global)]
+  struct ObjectGroup { }
+
+  #[resource_group_member(group = 0x42::example::ObjectGroup)]
+  struct Monkey has store, key { }
+
+  #[resource_group_member(group = 0x42::example::ObjectGroup)]
+  struct Toad has store, key { }
+
+  fun mint_two(sender: &signer, recipient: &signer) {
+    let constructor_ref = &object::create_object_from_account(sender);
+    let sender_object_signer = object::generate_signer(constructor_ref);
+    let sender_object_addr = object::address_from_constructor_ref(constructor_ref);
+
+    move_to(sender_object_signer, Monkey{});
+    move_to(sender_object_signer, Toad{});
+    let monkey_object: Object<Monkey> = object::address_to_object<Monkey>(sender_object_addr);
+    object::transfer<Monkey>(sender, monkey_object, signer::address_of(recipient));
+  }
+}
+```
+
+#### 安全示例代码
+
+应将对象分别存储于不同 object 账户：
+
+```move
+module 0x42::example {
+  #[resource_group(scope = global)]
+  struct ObjectGroup { }
+
+  #[resource_group_member(group = 0x42::example::ObjectGroup)]
+  struct Monkey has store, key { }
+
+  #[resource_group_member(group = 0x42::example::ObjectGroup)]
+  struct Toad has store, key { }
+
+  fun mint_two(sender: &signer, recipient: &signer) {
+    let sender_address = signer::address_of(sender);
+
+    let constructor_ref_monkey = &object::create_object(sender_address);
+    let constructor_ref_toad = &object::create_object(sender_address);
+    let object_signer_monkey = object::generate_signer(&constructor_ref_monkey);
+    let object_signer_toad = object::generate_signer(&constructor_ref_toad);
+
+    move_to(object_signer_monkey, Monkey{});
+    move_to(object_signer_toad, Toad{});
+
+    let object_address_monkey = signer::address_of(&object_signer_monkey);
+
+    let monkey_object: Object<Monkey> = object::address_to_object<Monkey>(object_address_monkey);
+    object::transfer<Monkey>(sender, monkey_object, signer::address_of(recipient));
+  }
+}
+```
+
+## 业务逻辑
+
+### 抢先交易（Front-running）
+
+抢先交易是指利用对未来已提交操作的预知，提前执行交易以获利。这种行为会破坏公平性，使抢先者获得不正当优势。
+
+抢先交易会破坏 DApp 的公平性和完整性，导致资金损失、游戏不公、市场价格操纵，甚至平台信任丧失。
+
+#### 不安全示例代码
+
+以彩票为例，用户选择 1~100 的数字参与。管理员调用 `set_winner_number` 设置中奖号码，随后通过 `evaluate_bets_and_determine_winners` 评奖。
+
+抢先者可在 `set_winner_number` 后观察中奖号码，提交或修改投注以匹配中奖号码，在 `evaluate_bets_and_determine_winners` 执行前获利。
+
+```move
+module 0x42::example {
+  struct LotteryInfo {
+    winning_number: u8,
+    is_winner_set: bool,
+  }
+
+  struct Bets { }
+
+  public fun set_winning_number(admin: &signer, winning_number: u8) {
+    assert!(signer::address_of(admin) == @admin, 0);
+    assert!(winning_number < 10,0);
+    let lottery_info = LotteryInfo { winning_number, is_winner_set: true };
+    move_to<LotteryInfo>(admin, lottery_info);
+  }
+
+  public fun evaluate_bets_and_determine_winners(admin: &signer) acquires LotteryInfo, Bets {
+    assert!(signer::address_of(admin) == @admin, 0);
+    let lottery_info = borrow_global<LotteryInfo>(admin);
+    assert(lottery_info.is_winner_set, 1);
+
+    let bets = borrow_global<Bets>(admin);
+    let winners: vector<address> = vector::empty();
+
+    let winning_bets_option = smart_table::borrow_with_default(&bets.bets, lottery_info.winning_number, &vector::empty());
+
+    vector::iter(winning_bets_option, |bet| {
+       vector::push_back(&mut winners, bet.player);
+    });
+    distribute_rewards(&winners);
+  }
+}
+```
+
+#### 安全示例代码
+
+可通过实现 `finalize_lottery`，在单笔交易中公布答案并结束游戏，并将其他函数设为私有。这样一旦答案公布，系统即不再接受新答案，杜绝抢先交易。
+
+```move
+module 0x42::example {
+  public fun finalize_lottery(admin: &signer, winning_number: u64) {
+    set_winning_number(admin, winning_number);
+    evaluate_bets_and_determine_winners(admin);
+  }
+
+  fun set_winning_number(admin: &signer, winning_number: u64) { }
+
+  fun evaluate_bets_and_determine_winners(admin: &signer) acquires LotteryInfo, Bets { }
+}
+```
+
+### 价格预言机操纵
+
+在 Defi 应用中，若价格预言机通过流动性池中代币比例定价，易被大户操纵。大户可通过调整持仓影响流动性比例，进而操纵价格，甚至耗尽资金池。
+
+建议采用多预言机定价。
+
+#### 安全示例代码
+
+Thala 采用分层预言机设计，主备双预言机，具备智能切换逻辑，能应对对抗性场景，始终提供高精度价格。[详细了解](https://docs.thala.fi/thala-protocol-design/move-dollar-mod/oracles)。
+
+### Token 标识符冲突
+
+处理 Token 时，确保用于比较 Token 结构体以确定顺序的方法不会导致冲突。将地址、模块、结构体名拼接为 vector 不足以区分同名但应唯一的 Token。
+
+否则协议可能因冲突错误拒绝合法交易对，危及资金安全。
+
+#### 不安全示例代码
+
+`get_pool_address` 为交易对生成唯一池地址。其通过拼接符号生成种子，但用户可自定义 `Object<Metadata>` 符号，可能伪造已存在实例，导致种子冲突。
+
+```move
+module 0x42::example {
+  public fun get_pool_address(token_1: Object<Metadata>, token_2: Object<Metadata>): address {
+    let token_symbol = string::utf8(b"LP-");
+    string::append(&mut token_symbol, fungible_asset::symbol(token_1));
+    string::append_utf8(&mut token_symbol, b"-");
+    string::append(&mut token_symbol, fungible_asset::symbol(token_2));
+    let seed = *string::bytes(&token_symbol);
+    object::create_object_address(&@swap, seed)
+  }
+}
+```
+
+#### 安全示例代码
+
+`object::object_address` 为每个 `Object<Metadata>` 返回唯一标识符。
+
+```move
+module 0x42::example {
+  public fun get_pool_address(token_1: Object<Metadata>, token_2: Object<Metadata>): address {
+    let seeds = vector[];
+    vector::append(&mut seeds, bcs::to_bytes(&object::object_address(&token_1)));
+    vector::append(&mut seeds, bcs::to_bytes(&object::object_address(&token_2)));
+    object::create_object_address(&@swap, seed)
+  }
+}
+```
+
+## 操作
+
+---
+
+### 暂停功能
+
+协议应具备高效暂停操作的能力。不可升级协议需内置暂停功能；可升级协议可通过合约或升级实现暂停。团队应具备自动化工具以快速执行。
+
+缺乏暂停机制会导致漏洞暴露时间过长，带来重大损失。高效暂停功能可及时应对安全威胁、漏洞等，保障用户资产和协议安全。
+
+#### 安全示例代码
+
+集成暂停功能示例：
+
+```move
+module 0x42::example {
+  struct State {
+    is_paused: bool,
+  }
+
+  public entry fun pause_protocol(admin: &signer) {
+    assert!(signer::address_of(admin)==@protocol_address, ERR_NOT_ADMIN);
+    let state = borrow_global_mut<State>(@protocol_address);
+    state.is_paused = true;
+  }
+
+  public entry fun resume_protocol(admin: &signer) {
+    assert!(signer::address_of(admin)==@protocol_address, ERR_NOT_ADMIN);
+    let state = borrow_global_mut<State>(@protocol_address);
+    state.is_paused = false;
+  }
+
+  public fun main(user: &signer) {
+    let state = borrow_global<State>(@protocol_address);
+    assert!(!state.is_paused, 0);
+    // ...
+  }
+}
+```
+
+### 智能合约发布密钥管理
+
+测试网和主网共用账户存在安全风险。测试网私钥常存储于不安全环境（如笔记本），易泄露。攻击者若获取测试网私钥，可升级主网合约。
+
+## 随机性
+
+关于随机性及其防止可预测性的作用，详见：[随机性指南](https://aptos.dev/guides/randomness/)。
+
+---
+
+### 随机性 - test-and-abort
+
+> Aptos 始终以安全为先。编译时会确保无 randomness API 被 public 函数调用。但用户可通过 `#[lint::allow_unsafe_randomness]` 允许 public 函数调用。
+
+若 `public` 函数直接或间接调用 randomness API，恶意用户可利用函数可组合性，在结果不理想时中止交易，反复尝试直至获利，破坏随机性。
+
+#### 漏洞示例代码
+
+```move filename="randomness_example.move"
+module user::lottery {
+    fun mint_to_user(user: &signer) {
+        move_to(user, WIN {});
+    }
+
+    #[lint::allow_unsafe_randomness]
+    public entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            mint_to_user(user);
+        }
+    }
+}
+```
+
+此例中，`play` 为 `public`，可被其他模块组合。攻击者可调用后检查是否中奖，未中奖则中止并重试。
+
+```move filename="randomness_example.move"
+module attacker::exploit {
+    entry fun exploit(attacker: &signer) {
+        @user::lottery::play(attacker);
+        assert!(exists<@user::lottery::WIN>(address_of(attacker)));
+    }
+}
+```
+
+解决方法：所有调用 randomness API 的函数（直接或间接）应设为 `entry`，而非 `public` 或 `public entry`。
+
+#### 安全示例代码
+
+```move filename="randomness_example.move"
+module user::lottery {
+    fun mint_to_user(user: &signer) {
+        move_to(user, WIN {});
+    }
+
+    #[lint::allow_unsafe_randomness]
+    entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            mint_to_user(user);
+        }
+    }
+}
+```
+
+### 随机性 - undergasing
+
+若函数不同分支消耗 gas 不同，攻击者可通过设置 gas 上限偏向结果。如下例，不同路径消耗 gas 不同。
+
+#### 漏洞示例代码
+
+```move filename="randomness_example.move"
+module user::lottery {
+
+    //transfer 10 aptos from admin to user
+    fun win(user: &signer) {
+        let admin_signer = &get_admin_signer();
+        let aptos_metadata = get_aptos_metadata();
+        primary_fungible_store::transfer(admin_signer, aptos_metadata, address_of(user),10);
+    }
+
+    //transfer 10 aptos from user to admin, then 1 aptos from admin to fee_admin
+    fun lose(user: &signer) {
+
+        //user to admin
+        let aptos_metadata = get_aptos_metadata();
+        primary_fungible_store::transfer(user, aptos_metadata, @admin, 10);
+
+        //admin to fee_admin
+        let admin_signer = &get_admin_signer();
+        primary_fungible_store::transfer(admin_signer, aptos_metadata, @fee_admin, 1);
+    }
+
+    #[randomness]
+    entry fun play(user: &signer) {
+        let random_value = aptos_framework::randomness::u64_range(0, 100);
+        if (random_value == 42) {
+            win(user);
+        } else {
+            lose(user);
+        }
+    }
+}
+```
+
+此彩票示例中，`win` 和 `lose` 消耗 gas 不同。
+`lose` 消耗更多 gas。攻击者可设置 gas 上限，仅足够 `win`，不足以执行 `lose`，从而确保永远不会走 `lose` 分支。攻击者可反复调用直至中奖。
+
+#### 安全示例代码
+
+可通过以下方式防护：
+
+1. 保证更优结果消耗的 gas 不少于较差结果。
+2. 仅允许管理员调用 randomness API。
+3. 保证 entry 函数无论随机结果如何都能正常执行。可先提交随机结果，再用随机结果在另一交易中执行操作，避免立即基于随机性分支，确保 gas 消耗一致。
+
+> 未来将提供更多功能，支持更复杂代码安全防护 undergasing 攻击。

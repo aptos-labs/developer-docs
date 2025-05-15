@@ -1,0 +1,45 @@
+---
+title: "资源账户"
+---
+
+# 资源账户
+
+[对象代码部署](deployment.mdx) 是在 Aptos 上部署和升级智能合约的首选方法。资源账户要求开发者在每次创建资源账户时生成种子，并且升级合约需要特定步骤，容易出错。
+
+[resource account](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/resource_account.move) 是一个为开发者设计的功能，用于独立于用户管理的账户来管理资源，特别是用于发布模块和提供仅链上访问控制（如 signers）。
+
+通常，资源账户有两个主要用途：
+
+- 存储和隔离资源；模块创建资源账户仅用于托管特定资源。
+- 以独立（资源）账户的形式发布模块，这是去中心化设计中的一个构建块，没有私钥可以控制该资源账户。所有权（SignerCap）可以保存在另一个模块中，例如治理模块。
+
+## 限制
+
+在 Aptos 中，资源账户是基于源地址和附加种子的 SHA3-256 哈希创建的。资源账户只能被创建一次；对于给定的源地址和种子，只能有一个资源账户。这是因为资源账户地址的计算完全由前者决定。
+
+某个实体可能会调用 `create_account` 试图在资源账户创建之前抢占账户。但如果发现该账户是资源账户，Aptos 会将账户的所有权转移给资源账户。这是通过验证该账户尚未执行任何交易且 `Account::signer_capbility_offer::for` 为 none 来实现的。有人合法生成与资源账户地址相同的私钥的概率极低。
+
+## 设置
+
+设置资源账户最简单的方法如下：
+
+1. 使用 Aptos CLI：`aptos account create-resource-account` 用于创建资源账户，`aptos move create-resource-account-and-publish-package` 用于创建资源账户并在该资源账户地址下发布指定包。
+2. 编写自定义智能合约代码：在 `resource_account.move` 模块中，开发者可以找到资源账户创建函数 `create_resource_account`、`create_resource_account_and_fund` 和 `create_resource_account_and_publish_package`。开发者可以在智能合约中调用这些函数来创建资源账户。
+
+每种方式提供的功能略有不同：
+
+- `create_resource_account` —— 仅创建资源账户但不为其注资，保留对资源账户 signer 的访问权限，直到显式调用 `retrieve_resource_account_cap`。
+- `create_resource_account_and_fund` —— 创建资源账户并为其注资，保留对资源账户 signer 的访问权限，直到显式调用 `retrieve_resource_account_cap`。
+- `create_resource_account_and_publish_package` —— 创建资源账户，并按设计失去对资源账户的访问权限，因为资源账户用于使合约自治且不可变。
+
+在本示例中，你将[初始化](https://github.com/aptos-labs/aptos-core/blob/2e9d8ee759fcd3f6e831034f05c1656b1c48efc4/aptos-move/move-examples/mint_nft/sources/minting.move#L73) `mint_nft` 模块，并从资源账户和模块账户中获取 signer 能力。为此，调用 `create_resource_account_and_publish_package`，将模块发布到资源账户地址下。
+
+1. 按 [`minting.move`](https://github.com/aptos-labs/aptos-core/blob/2e9d8ee759fcd3f6e831034f05c1656b1c48efc4/aptos-move/move-examples/mint_nft/sources/minting.move#L73) 示例初始化模块。
+2. 调用 `create_resource_account_and_publish_package`，将模块发布到资源账户地址下，如 [`mint_nft.rs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/e2e-move-tests/src/tests/mint_nft.rs#L62) 端到端示例所示。
+3. 按 [`minting.move`](https://github.com/aptos-labs/aptos-core/blob/2e9d8ee759fcd3f6e831034f05c1656b1c48efc4/aptos-move/move-examples/mint_nft/sources/minting.move#L83) 示例，从资源账户和模块账户中获取 signer 能力。
+
+注意，如果上述 `resource_account` signer 尚未设置为资源账户，则获取 signer 能力会失败。`retrieve_resource_account_cap` 函数中的 `source_addr` 字段指的是源账户的地址，即创建资源账户的账户。
+
+举例来说，参见 [`minting.move`](https://github.com/aptos-labs/aptos-core/blob/2e9d8ee759fcd3f6e831034f05c1656b1c48efc4/aptos-move/move-examples/mint_nft/sources/minting.move#L143-L181) 中 `mint_nft` 函数使用的 `SignerCapability`。
+
+更多细节请参见 [`resource_account.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/resource_account.move) 和 [`account.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/account/account.move) 中的 "resource account" 相关内容。 

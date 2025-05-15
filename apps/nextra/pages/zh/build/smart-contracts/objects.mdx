@@ -1,0 +1,62 @@
+---
+title: "对象开发指南"
+---
+
+# Move 对象
+在 Move 中，对象（Objects）将资源组合在一起，使其能够作为链上的单一实体进行处理。
+
+对象拥有自己的地址，并且可以像账户一样拥有资源。它们适用于在链上表示更复杂的数据类型，因为对象可以直接在 entry 函数中使用，并且可以作为完整的包进行转移，而无需一次转移一个资源。
+
+下面是创建对象并转移的示例：
+
+```move filename="Example.move"
+module my_addr::object_playground {
+  use std::signer;
+  use std::string::{Self, String};
+  use aptos_framework::object::{Self, ObjectCore};
+
+  struct MyStruct1 has key {
+    message: String,
+  }
+
+  struct MyStruct2 has key {
+    message: String,
+  }
+
+  entry fun create_and_transfer(caller: &signer, destination: address) {
+    // Create object
+    let caller_address = signer::address_of(caller);
+    let constructor_ref = object::create_object(caller_address);
+    let object_signer = object::generate_signer(&constructor_ref);
+
+    // Set up the object by creating 2 resources in it
+    move_to(&object_signer, MyStruct1 {
+      message: string::utf8(b"hello")
+    });
+    move_to(&object_signer, MyStruct2 {
+      message: string::utf8(b"world")
+    });
+
+    // Transfer to destination
+    let object = object::object_from_constructor_ref<ObjectCore>(
+      &constructor_ref
+    );
+    object::transfer(caller, object, destination);
+  }
+}
+```
+
+在构建过程中，可以配置对象是否可转移和可扩展。
+
+例如，你可以通过只允许对象转移一次，将其用作灵魂绑定 NFT，并让其拥有图片链接和元数据等资源。对象还可以拥有其他对象，因此你可以通过将多个灵魂绑定 NFT 转移到集合对象中，实现自定义的 NFT 集合。
+
+## 你可以学习如何
+
+- [创建和配置新对象。](object/creating-objects.mdx)
+- [使用你创建的对象。](object/using-objects.mdx)
+
+## 对象合约示例
+
+- [数字资产市场示例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/marketplace)
+- [数字资产示例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/token_objects)
+- [同质化资产示例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset) 

@@ -1,0 +1,429 @@
+---
+title: "Aptos 数字资产标准"
+---
+
+import { Callout } from 'nextra/components'
+import { ThemedImage, GraphQLEditor } from "@components/index";
+
+# Aptos 数字资产（DA）标准
+
+数字资产（DA）标准是 Aptos 上现代的非同质化代币（NFT）标准。NFT 代表链上的独特资产，并存储在集合中。这些 NFT 可以自定义，后续可通过你的智能合约进行转移、灵魂绑定、销毁、变更或扩展。
+
+该标准取代了旧的 [Aptos Token Standard](aptos-token.mdx)。主要改进如下：
+
+| **改进项** | **描述** |
+|-----------------|-----------------|
+| **Token 扩展性** | Token 通过 Move [Objects](objects.mdx) 实现，易于扩展。 |
+| **直接 NFT 转账** | 现在可以直接转移 NFT，无需接收方在链上"预先注册"。 |
+| **NFT 组合性** | NFT 可以拥有其他 NFT，便于组合。 |
+
+如果你只需要简单铸造 NFT，无需自定义或扩展功能，可以使用实现了 DA 标准的 `aptos_token` 模块（见下文用法）。
+
+<Callout type="info">
+请注意，所有数字资产模块都部署在保留地址 `0x4`。
+</Callout>
+
+## 使用数字资产标准
+
+该标准通过两个 Object 实现：
+
+1. `Collection` - 具有名称和上下文信息的 NFT 集合。
+2. `Token` - 代表独特资产的数字资产。通常用于表示 NFT，通常使用 `uri` 链接指向资产的更多信息（如图片、视频等）。
+
+<ThemedImage
+alt="Digital Asset token and collection relationship"
+sources={{
+    light: '/docs/digital-asset-light.svg',
+    dark: '/docs/digital-asset-dark.svg',
+  }}
+/>
+
+所有 `Token` 必须引用一个父 `Collection`，但父 `Collection` **不拥有** `Token`。新铸造的 `Token` 通常归创建者所有，之后可以转移给其他账户。
+
+## 集合（Collections）
+
+| **字段** | **描述** |
+|-----------|-----------------|
+| **Description** | 可选字符串，少于 2048 字符（可通过 `MutatorRef` 修改）。 |
+| **Name** | 必填字符串，用于标识 `Collection`。名称在每个账户内必须唯一，即单个创建者账户不能创建多个同名 `Collection`。 |
+| **Royalty** | 可选 [`Royalty`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/royalty.md#0x4_royalty_Royalty) 结构体，表示销售价格中归创作者的分成比例。可通过 [Royalty 模块](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move) 生成的 `MutatorRef` 修改。该模块是 DA 标准的扩展。示例见 [`aptos_token.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)。 |
+| **URI length** | 可选字符串，少于 512 字符，链接到 `Collection` 相关内容（可通过 `MutatorRef` 修改）。 |
+
+### 创建 `Collection`
+
+根据是否需要最大 Token 数量限制，有两种方式创建 `Collection`。
+
+#### 固定最大供应量
+
+如需固定供应量的 `Collection`，可使用 `collection::create_fixed_collection`：
+
+```move filename="example.move"
+use aptos_token_objects::collection;
+use std::option::{Self, Option};
+
+public entry fun create_collection(creator: &signer) {
+    let max_supply = 1000;
+    let royalty = option::none();
+
+    // 创建后最大供应量不可更改
+    collection::create_fixed_collection(
+        creator,
+        "My Collection Description",
+        max_supply,
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
+    );
+}
+```
+#### 无限供应量
+
+如需无限供应量的 `Collection`，可使用 `collection::create_unlimited_collection`：
+
+```move filename="example.move"
+use std::option::{Self, Option};
+
+public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
+
+    collection::create_unlimited_collection(
+        creator,
+        "My Collection Description",
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
+    );
+}
+```
+
+<Callout type="warning">
+`Collection` 的最大供应量创建后不可更改。
+</Callout>
+
+### 自定义 `Collection`
+
+每个 `Collection` 都是 [Move Object](objects.mdx)，可通过生成权限 `Ref` 进行自定义。每个 `Ref` 允许你后续修改 Object 的某一方面。除了常规 [Object Refs](object/creating-objects.mdx)，`Collection` 还可通过 `get_mutator_ref` 获取 `MutatorRef`：
+
+```move filename="example.move"
+use std::option::{Self, Option};
+
+public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
+    let collection_constructor_ref = &collection::create_unlimited_collection(
+        creator,
+        "My Collection Description",
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
+    );
+    let mutator_ref = collection::get_mutator_ref(collection_constructor_ref);
+    // 将 mutator ref 安全存储
+}
+```
+
+<Callout type="warning">
+Ref **必须**在 Object 创建时生成。用于生成其他 Ref 的 `ConstructorRef` 在创建 Object 的交易结束后即失效。
+</Callout>
+
+你还可以通过智能合约为 `Collection` 添加更多资源或功能。例如，可以记录创建时间以限制 Token 铸造时间：
+
+```move filename="example.move"
+use std::option::{Self, Option};
+
+struct MyCollectionMetadata has key {
+    creation_timestamp_secs: u64,
+}
+
+public entry fun create_collection(creator: &signer) {
+    let royalty = option::none();
+    // Constructor ref 是创建新 object 时返回的不可存储结构体。
+    // 可生成 object signer 以向 collection object 添加资源。
+    let collection_constructor_ref = &collection::create_unlimited_collection(
+        creator,
+        "My Collection Description",
+        "My Collection",
+        royalty,
+        "https://mycollection.com",
+    );
+    // Constructor ref 可换取 signer 以向 collection object 添加资源。
+    let collection_signer = &object::generate_signer(collection_constructor_ref);
+    move_to(collection_signer, MyCollectionMetadata { creation_timestamp_secs: timestamp::now_seconds() })
+}
+```
+
+## Token
+
+| **字段** | **描述** |
+|-----------|-----------------|
+| **Description** | 可选字符串，少于 2048 字符（可通过 `MutatorRef` 修改）。 |
+| **Name** | 必填字符串，用于标识 `Collection`，在每个 `Collection` 内唯一。即单个 `Collection` 账户不能有多个同名 `Token`。 |
+| **Royalty** | 可选 [`Royalty`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/royalty.md#0x4_royalty_Royalty) 结构体，表示销售价格中归创作者的分成比例。可通过 [Royalty 模块](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move) 生成的 `MutatorRef` 修改（该模块为 DA 标准扩展，示例见 [`aptos_token.move`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)）。通常 royalty 设置在 collection 上，但也可为单独的 `Token` 设置自定义分成比例。 |
+| **URI length** | 可选字符串，少于 512 字符，链接到 `Collection` 相关内容（可通过 `MutatorRef` 修改）。 |
+
+### 创建 Token
+
+有几种方式可以创建 `Token`：
+
+1. 命名 Token。使用 `Token` 名称生成命名 Object。这样如果知道 token 和 `Collection` 名称，便于查找 token 地址，但命名 Object 不可删除。尝试删除命名 token 只会删除数据，Object 本身不会被删除。
+
+```move filename="example.move"
+use aptos_token_objects::token;
+use std::option::{Self, Option};
+
+public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
+    token::create_named_token(
+        creator,
+        "Collection Name",
+        "Description",
+        "Token Name",
+        royalty,
+        "https://mycollection.com/my-named-token.jpeg",
+    );
+}
+```
+
+<Callout type="info">
+你可以通过以下方式推导命名 token 的地址：
+1. 拼接创建者地址、collection 名称和 token 名称。
+2. 对拼接后的字符串做 sha256 哈希。
+</Callout>
+
+2. "未命名" token。创建未命名 *Object*（可删除），但仍有 `Token` 名称。由于 Object 地址不可预测，需通过 Indexer 查找其地址。
+
+```move filename="example.move"
+use aptos_token_objects::token;
+use std::option::{Self, Option};
+
+public entry fun mint_token(creator: &signer) {
+    let royalty = option::none();
+    token::create(
+        creator,
+        "Collection Name",
+        "Description",
+        "Token Name",
+        royalty,
+        "https://mycollection.com/my-named-token.jpeg",
+    );
+}
+```
+
+### 通过 Indexer 查找未命名 Token 地址
+
+你可以通过 [Aptos Indexer](../indexer/indexer-api.mdx) 查询最近创建的"未命名" `Token` 地址，示例如下：
+
+1. 通过账户地址和 `Collection` 名称查找 collection id。
+
+<GraphQLEditor
+  query={`query GetCollectionIdByName($creatorAddress: String!, $collectionName: String!) {
+  current_collections_v2(
+    where: {creator_address: {_eq: $creatorAddress}, collection_name: {_eq: $collectionName}}
+  ) {
+    collection_name
+    collection_id
+  }
+}`}
+  variables={`{
+  "creatorAddress": "0x8726af08ea897c35c8137601ce1789992dacdd0eb0b724531a4e7dea035d950f",
+  "collectionName": "Horse Emojis"
+}`}
+/>
+
+2. 再通过 collection_id（上一步结果）和 token 名称查找 `Token` 的地址（`token_data_id`）：
+
+<GraphQLEditor
+  query={`query GetTokenID($collection_id: String!, $token_name: String!) {
+  current_token_datas_v2(
+    where: {collection_id: {_eq: $collection_id}, token_name: {_eq: $token_name}}
+  ) {
+    token_name
+    description
+    token_data_id
+  }
+}`}
+  variables={`{
+  "collection_id": "0x158dc6481aec80004d0f21a8994757e3c8203fc37b0f508be2a5364ad99e649e",
+  "token_name": "Horse Emojis #127"
+}`}
+/>
+
+<Callout type="info">
+一般来说，使用未命名 token 灵活性更高，因为 Object 可后续删除；而命名 token 便于地址查找。
+</Callout>
+
+### Token 用法
+
+#### Token 转账
+
+可通过 [`object::transfer`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-framework/doc/object.md#0x1_object_transfer) 转移 `Token`。
+
+```move filename="example.move"
+public entry fun transfer<T: key>(owner: &signer, object: object::Object<T>, to: address)
+```
+
+#### Token 销毁
+
+销毁 / 删除 `Token` 需先用 `token::generate_burn_ref` 生成 `BurnRef`，再调用 `token::burn`。
+
+```move filename="example.move"
+module 0x42::example {
+  use std::option;
+  use aptos_token_objects::token::{Self, BurnRef, Token};
+  use std::string::utf8;
+  use aptos_framework::object::{Self, Object};
+
+  struct CustomData has key, drop { 
+    burn_ref: BurnRef,
+  }
+
+  public entry fun mint_token(creator: &signer) {
+    let token_constructor_ref = &token::create(
+      creator,
+      utf8(b"My Collection"),
+      utf8(b"My named Token description"),
+      utf8(b"My named token"),
+      option::none(),
+      utf8(b"https://mycollection.com/my-named-token.jpeg"),
+    );
+
+    let token_signer = &object::generate_signer(token_constructor_ref);
+
+    let burn_ref = token::generate_burn_ref(token_constructor_ref);
+        
+    // 将 burn ref 安全存储
+    move_to(token_signer, CustomData {
+      burn_ref,
+    });
+  }
+
+  public entry fun burn_token(token: Object<Token>) acquires CustomData {
+    let token_address = object::object_address(&token);
+    // 删除 token object 上的所有自定义数据。
+    // 从存储中取出 burn ref
+    let CustomData { burn_ref } = move_from<CustomData>(token_address);
+    // 销毁 token
+    token::burn(burn_ref);
+  }
+}
+```
+
+<Callout type="warning">
+如果 Token 上有自定义资源，必须先移除/删除，`token::burn` 才能删除 Token。对于不可删除的命名 token，`token::burn` 只会移除 Token 内容。
+</Callout>
+
+#### Token 创建后修改
+
+要修改 `Token` 的 `URI` 或 `description`，需在创建时生成 `MutatorRef` 并存储，后续使用。
+
+```move filename="example.move"
+module 0x42::example {
+  use std::option;
+  use aptos_token_objects::token::{Self, MutatorRef, Token};
+  use std::string::utf8;
+  use aptos_framework::object::{Self, Object};
+
+  struct CustomData has key, drop { 
+    mutator_ref: MutatorRef,
+  }
+
+  public entry fun mint_token(creator: &signer) {
+    // Constructor ref 是创建新 object 时返回的不可存储结构体。
+    // 可换取 signer 以向 token object 添加资源。
+    let token_constructor_ref = &token::create(
+      creator,
+      utf8(b"My Collection"),
+      utf8(b"My named Token description"),
+      utf8(b"My named Token"),
+      option::none(),
+      utf8(b"https://mycollection.com/my-named-token.jpeg"),
+    );
+
+    let token_signer = &object::generate_signer(token_constructor_ref);
+    
+    let mutator_ref = token::generate_mutator_ref(token_constructor_ref);
+    
+    // 将 mutator ref 安全存储
+    move_to(token_signer, CustomData {
+      mutator_ref,
+    });
+  }
+
+  public entry fun mutate_token(token: Object<Token>) acquires CustomData {
+    let token_address = object::object_address(&token);
+    // 从存储中取出 mutator ref
+    let CustomData { mutator_ref } = move_from<CustomData>(token_address);
+    // 修改 token 描述
+    token::set_description(&mutator_ref, utf8(b"This is my named Token description"));
+  }
+}
+```
+
+<Callout type="warning">
+修改 royalty 需通过 [Royalty 模块](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/royalty.move) 生成 *单独* 的 `MutatorRef`。
+</Callout>
+
+#### Token 扩展
+
+`Token` 可通过添加额外资源（作为 Object）或使用 `Ref` 修改 Object 进行扩展。
+
+## Aptos Token
+
+如果你不想自定义 NFT 逻辑，可直接使用 [`aptos_token`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move) 模块铸造 NFT。该模块已部署在 `0x4`，支持：
+
+1. 铸造可转让、带分成的 `Token`。
+2. 铸造灵魂绑定 `Token`。
+3. 管理 NFT 的资源。
+
+所有可用辅助函数见 `aptos_token` [参考文档](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/aptos_token.md)。
+
+<Callout type="warning">
+使用 `aptos_token` 模块的主要限制是 Token 不可扩展（`mint` 函数不会返回 `ConstructorRef`）。
+</Callout>
+
+### 使用 `aptos_token` 铸造
+
+使用 `aptos_token` 铸造 `Token` 所需参数与实现 DA 标准的 token 相同。此外，`aptos_token` 模块允许你指定属性键值对（property map）以满足 NFT 的其他需求。
+
+可通过调用 `aptos_token::mint` 铸造 `Token`：
+
+```move filename="example.move"
+public entry fun mint(
+    creator: &signer,
+    collection: String,
+    description: String,
+    name: String,
+    uri: String,
+    property_keys: vector<String>,
+    property_types: vector<String>,
+    property_values: vector<vector<u8>>,
+) acquires AptosCollection, AptosToken
+```
+
+#### 灵魂绑定 Token
+
+如需铸造灵魂绑定 `Token`，可调用 [`aptos_token::mint_soul_bound`](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-token-objects/doc/aptos_token.md#0x4_aptos_token_mint_soul_bound)：
+
+```move filename="example.move"
+public entry fun mint_soul_bound(
+    creator: &signer,
+    collection: String,
+    description: String,
+    name: String,
+    uri: String,
+    property_keys: vector<String>,
+    property_types: vector<String>,
+    property_values: vector<vector<u8>>,
+    soul_bound_to: address,
+) acquires AptosCollection
+```
+
+<Callout type="warning">
+近期将发布新模块 `TokenMinter` 替代 `aptos_token`。可在 [此处](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-72.md) 跟进进展。
+</Callout>
+
+## 示例与有用链接
+
+- [数字资产示例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/token_objects)
+- [数字资产市场示例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/marketplace)
+- [源代码](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/token.move)
+- [`aptos_token` 源代码](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move) 

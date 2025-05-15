@@ -1,0 +1,342 @@
+---
+title: "随机性 API"
+---
+import { Callout } from 'nextra/components'
+
+# Aptos Roll：一个随机性 API
+
+## 它能做什么：快速示例
+
+### 以前如何获取随机数（不安全/笨拙的方法）
+
+在中心化世界中，构建一个抽奖系统并从 `n` 个参与者中随机选出一个获胜者非常简单：后端只需调用一个随机整数采样函数（在 python 中是 `random.randint(0, n-1)`，在 JS 中是 `Math.floor(Math.random() * n)`）。
+
+不幸的是，在 Aptos Move 中没有等价的 `random.randint()`，因此在 dApp 中实现这一功能曾经非常困难。
+
+有些人可能会写一个合约，从区块链时间戳等不安全的来源采样随机数：
+
+```move
+module module_owner::lottery {
+    // ...
+
+    struct LotteryState {
+        players: vector<address>,
+        winner_idx: std::option::Option<u64>,
+    }
+
+    fun load_lottery_state_mut(): &mut LotteryState {
+        // ...
+    }
+
+    entry fun decide_winner() {
+        let lottery_state = load_lottery_state_mut();
+        let n = std::vector::length(&lottery_state.players);
+        let winner_idx = aptos_framework::timestamp::now_microseconds() % n;
+        lottery_state.winner_idx = std::option::some(winner_idx);
+    }
+}
+```
+
+上述实现存在多种不安全之处：
+
+- 恶意用户可以通过选择交易提交时间来操控结果；
+- 恶意验证者可以轻松操控结果，通过选择 `decide_winner` 交易进入的区块。
+
+还有一些 dApp 选择使用外部安全随机源（如 [drand](https://drand.love/)），但这通常流程复杂：
+
+1. 参与者约定使用随机源承诺的未来随机种子来决定获胜者。
+2. 随机种子揭晓后，客户端获取并在本地推导出获胜者。
+3. 其中一位参与者将种子和获胜者提交到链上。
+
+```move
+module module_owner::lottery {
+    // ...
+
+    struct LotteryState {
+        players: vector<address>,
+        /// 关于"未来随机性"的公开信息，通常是 VRF 公钥和输入。
+        seed_verifier: vector<u8>,
+        winner_idx: std::option::Option<u64>,
+    }
+
+    fun load_lottery_state_mut(): &mut LotteryState {
+        // ...
+    }
+
+    fun is_valid_seed(seed_verifier: vector<u8>, seed: vector<u8>): bool {
+        // ...
+    }
+
+    fun derive_winner(n: u64, seed: vector<u8>): u64 {
+        // ...
+    }
+
+    entry fun update_winner(winner_idx: u64, seed: vector<u8>) {
+        let lottery_state = load_lottery_state_mut();
+        assert!(is_valid_seed(lottery_state.seed_verifier, seed), ERR_INVALID_SEED);
+        let n = std::vector::length(players);
+        let expected_winner_idx = derive_winner(n, seed);
+        assert!(expected_winner_idx == winner_idx, ERR_INCORRECT_DERIVATION);
+        lottery_state.winner_idx = std::option::some(winner_idx);
+    }
+}
+```
+
+### 用 Aptos 随机性 API 实现简单与安全
+
+使用 Aptos 随机性 API，代码实现如下：
+
+```move
+module module_owner::lottery {
+    // ...
+
+    struct LotteryState {
+        players: vector<address>,
+        winner_idx: std::option::Option<u64>,
+    }
+
+    fun load_lottery_state_mut(): &mut Lottery {
+        // ...
+    }
+
+    #[randomness]
+    entry fun decide_winner() {
+        let lottery_state = load_lottery_state_mut();
+        let n = vector::length(&lottery_state.players);
+        let winner_idx = aptos_framework::randomness::u64_range(0, n);
+        lottery_state.winner_idx = std::option::some(winner_idx);
+    }
+}
+```
+
+其中：
+
+- `let winner_idx = aptos_framework::randomness::u64_range(0, n);` 是随机性 API 调用，返回 `[0, n)` 区间内均匀分布的 u64 整数。
+- `#[randomness]` 是启用该 API 调用所需的属性。
+
+<Callout type="info">
+### 安全性注意事项
+编译器会帮助检测测试与中止攻击，要求使用随机性的函数为私有。但目前随机性 API 并不能防止 undergasing 攻击。智能合约需要以特定方式编写以规避此类攻击。
+</Callout>
+
+## 如何使用 Aptos 随机性 API
+
+### 前置条件
+确保你已安装最新版 [aptos-cli](https://aptos.dev/en/build/cli)。
+
+### 注意 undergasing 攻击
+
+<Callout type="warning">
+**随机性 API 目前无法防止 undergasing 攻击。** 请仔细阅读 undergasing 部分，了解攻击原理及防范方法。作为 dApp 开发者，你需要以安全为前提设计使用随机性的应用。
+</Callout>
+
+### 识别依赖随机性的入口函数并使其合规
+
+为安全起见（后文有详细讨论），随机性 API 只能在满足以下条件的入口函数中调用：
+
+- 私有，且
+- 带有 `#[randomness]` 注解。
+
+现在是思考哪些用户操作需要用到随机性 API 的好时机，将其列出，并确保它们是私有且带有正确属性，如下例所示：
+
+```move
+module module_owner::lottery {
+    // ...
+
+    #[randomness]
+    entry fun decide_winner() {
+        // ...
+    }
+}
+```
+
+运行时，调用随机性 API 时，虚拟机会检查调用栈最外层是否为带 `#[randomness]` 注解的私有入口函数。
+**否则，整个交易会被中止。**
+
+<Callout type="info">
+  注意：这也意味着随机性 API 仅支持基于入口函数的交易。
+  （例如，在 Move 脚本中使用随机性 API 是不可能的。）
+</Callout>
+
+### 调用 API
+
+这些 API 是 `0x1::randomness` 下的公共函数，可直接引用，如上方抽奖示例所示。
+
+```move
+module module_owner::lottery {
+    // ...
+
+    #[randomness]
+    entry fun decide_winner() {
+        // ...
+        let winner_idx = aptos_framework::randomness::u64_range(0, n);
+        lottery_state.winner_idx = std::option::some(winner_idx);
+    }
+}
+```
+
+上述示例使用了 `u64_range()`，但还支持许多其他基础类型。
+以下是所有 API 的简要概览，其中 `T` 可以是 `u8, u16, u32, u64, u128, u256` 之一。
+
+```move
+module aptos_framework::randomness {
+    /// 均匀生成一个随机数。
+    fun u8_integer(): u8 {}
+
+    /// 均匀生成一个随机数。
+    fun u16_integer(): u16 {}
+
+    // fun u32_integer(), fun u64_integer() ...
+
+    /// 均匀生成 `[min_incl, max_excl)` 区间的随机数。
+    fun u8_range(min_incl: u8, max_excl: u8): u8 {}
+
+    /// 均匀生成 `[min_incl, max_excl)` 区间的随机数。
+    fun u16_range(min_incl: u16, max_excl: u16): u16 {}
+
+    // fun u32_range(), fun u64_range() ...
+
+    /// 均匀生成指定字节数的随机字节序列
+    /// n 为字节数
+    /// 若 n 为 0，返回空向量。
+    fun bytes(n: u64): vector<u8> {}
+
+    /// 均匀生成 `[0, 1, ..., n-1]` 的一个排列。
+    /// n 为字节数
+    /// 若 n 为 0，返回空向量。
+    fun permutation(n: u64): vector<u64> {}
+}
+```
+
+完整 API 函数列表及文档见 [这里](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/randomness.md)。
+
+## 安全性注意事项
+
+随机性 API 功能强大，能解锁新的 dApp 设计；
+但若使用不当，可能让你的 dApp 暴露于攻击之下！
+以下是一些常见错误，务必避免。
+
+### 在公共函数中调用随机性 API
+
+随着 dApp 复杂度提升，可能有多个入口函数需要共享依赖随机性的逻辑，并希望将其提取为辅助函数。
+
+如下面所示，这是支持的，但需格外小心。
+
+```move
+module module_owner::lottery {
+    // ...
+
+    #[randomness]
+    entry fun decide_winner_v0() {
+        // ...
+        decide_winner_internal(lottery_state);
+    }
+
+    #[randomness]
+    entry fun decide_winner_v1() {
+        // ...
+        decide_winner_internal(lottery_state);
+    }
+
+    // 私有辅助函数
+    fun decide_winner_internal(lottery_state: &mut lottery_state) {
+        let n = std::vector::length(&lottery_state.players);
+        let winner_idx = aptos_framework::randomness::u64_range(0, n);
+        lottery_state.winner_idx = std::option::some(winner_idx);
+    }
+}
+```
+
+如果 `decide_winner_internal()` 被错误地标记为 public，
+恶意玩家可以部署自己的合约：
+
+1. 调用 `decide_winner_internal()`；
+2. 读取抽奖结果（假设 `lottery` 模块有结果 getter）；
+3. 若结果不利于自己则中止。
+   通过反复调用自己的合约直到交易成功，
+   恶意用户可以操控获胜者分布（违背 dApp 开发者初衷）。
+   这被称为 [test-and-abort 攻击](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#test-and-abort-attacks)。
+
+Aptos Move 编译器已更新以防止此类攻击，保障你的合约安全：
+依赖随机性的 public 函数会被视为编译错误。
+如果你已完成["构建 Aptos CLI"](../cli.mdx)部分，
+那么你的 Aptos CLI 已配备了新版编译器。
+
+```move
+module module_owner::lottery {
+    // 编译错误！
+    public fun decide_winner_internal(lottery_state: &mut lottery_state) {
+        let n = std::vector::length(&lottery_state.players);
+        let winner_idx = aptos_framework::randomness::u64_range(0, n);
+        lottery_state.winner_idx = std::option::some(winner_idx);
+    }
+}
+```
+
+不推荐，但如你确实想将此类依赖随机性的函数暴露为 public，可通过注解 `#[lint::allow_unsafe_randomness]` 绕过编译器检查。
+
+```move
+module module_owner::lottery {
+    // 可以编译，但风险自负！
+    #[lint::allow_unsafe_randomness]
+    public fun decide_winner_internal(lottery_state: &mut lottery_state) {
+        let n = std::vector::length(&lottery_state.players);
+        let winner_idx = aptos_framework::randomness::u64_range(0, n);
+        lottery_state.winner_idx = std::option::some(winner_idx);
+    }
+}
+```
+
+### Undergasing 攻击及防范方法
+
+假设有这样一个 dApp。它定义了一个私有入口函数，用户可以：
+
+1. 抛硬币（gas 消耗：9），然后
+2. 若为正面获得奖励（gas 消耗：10），否则做清理（gas 消耗：100）。
+
+恶意用户可以控制其账户余额，使其最多覆盖 108 gas 单位（或设置交易参数 `max_gas=108`），
+这样清理分支（总 gas 消耗：110）总会因 gas 不足而中止。
+用户便可反复调用入口函数直到获得奖励。
+
+严格来说，这被称为 [undergasing 攻击](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md#undergasing-attacks)，
+攻击者可控制入口函数剩余 gas，从而随意中止高 gas 路径，
+进而操控随机数分布（即改变原本的概率分布）。
+
+<Callout type="Warning">
+  **警告：随机性 API 目前无法防止 undergasing 攻击。**
+  作为 dApp 开发者，你需要非常谨慎地设计以规避此类攻击。
+  以下是一些通用防范思路：
+
+  - 让入口函数的 gas 消耗与随机性结果无关。
+  最简单的做法是只读取并存储随机性结果，不做后续操作。注意，调用其他函数可能导致 gas 消耗变化。例如，调用随机性决定获胜者后再给其发奖，看似 gas 固定，但 `0x1::coin::transfer` / `0x1::fungible_asset::transfer` 的消耗会因用户链上状态不同而变化。
+  - 若 dApp 有可信管理员/管理组，仅允许其执行随机性交易（即要求 admin signer）。
+  - 让最有利的路径 gas 消耗最高（攻击者只能中止高于其设定阈值的路径）。
+  注意：这很难做到绝对安全，gas schedule 可能变化，且多于两种结果时更难把控。
+
+  除上述情况外，其他设计都可能以微妙方式受到 undergasing 攻击。如需帮助请联系我们。
+
+  未来我们会提供更多功能，支持更复杂代码安全防范 undergasing 攻击。
+</Callout>
+
+### 它是随机的，但不是秘密
+
+虽然随机性 API 模仿了你在中心化服务器上实现的标准库，
+但请记住：**种子是公开的，交易执行过程也是公开的**，
+并非所有依赖随机性的私有逻辑都能安全迁移到链上，
+**尤其涉及只有服务器可见的秘密时**。
+
+例如，在合约中请勿尝试如下操作：
+
+- 用随机性 API 生成非对称密钥对，丢弃私钥，认为公钥是安全的。
+- 用随机性 API 洗牌后遮盖部分牌面，认为没人知道排列顺序。
+
+## 延伸阅读
+
+[Aptogotchi Random Mint](https://github.com/aptos-labs/aptogotchi-random-mint/tree/main) 是官方演示随机性 API 用法的 dApp。
+
+完整 API 函数列表及文档见 [这里](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/randomness.md)。
+
+部分 API 实现及单元测试见 [这里](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/randomness.move)。
+
+API 设计详见 [AIP-41](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-41.md)，
+系统级/密码学细节见 [AIP-79](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-79.md)。 

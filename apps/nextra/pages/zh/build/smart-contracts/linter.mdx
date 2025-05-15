@@ -1,0 +1,146 @@
+---
+title: "Aptos Move Lint"
+---
+
+# Aptos Move Lint
+
+"Aptos Move Lint" 工具可在 Move 包上运行，以发现并警告 Move 程序中的常见问题，帮助提升你的 Move 代码质量。
+
+你可以通过 aptos CLI 命令运行它：`aptos move lint`。
+
+如果你发现任何问题，请提交 [bugs and feedback](https://github.com/aptos-labs/aptos-core/issues/new?title=%5Blinter%5D%20%3CDescriptive%20Title%3E&body=%3CDetailed%20description%20of%20the%20issue%20or%20feature%20request%3E&labels=move-linter&projects=aptos-labs/16)。此外，我们正在 [这里](https://github.com/aptos-labs/aptos-core/issues/15221) 跟踪新 lint 规则的想法和优先级请求，欢迎你的贡献。
+
+
+## Lint 检查项
+### `almost_swapped`
+检查看起来像是交换失败的表达式模式并通知用户。这些模式很可能是错误的代码。目前仅检测简单的访问模式，如对变量或结构体字段的赋值。示例包括：
+- `a = b; b = a;`，可以用 `(a, b) = (b, a);` 正确交换
+- `a.x = b.x; b.x = a.x;`，可以用 `(a.x, b.x) = (b.x, a.x);` 正确交换
+
+### `avoid_copy_on_identity_comparison`
+
+检查在进行身份比较（`==` 或 `!=`）时，对 `vector` 或 `struct` 类型的值进行了拷贝（即 copy 可能开销较大）。建议改用基于引用的身份比较（即在满足上述条件时，使用 `&x == &y` 替代 `x == y`）。
+
+[该建议](book/equality.mdx#avoid-extra-copies) 也在 Move 书中给出。由于自动 copy 推断，使用 `==` 或 `!=` 时可能不易察觉何时发生了拷贝。此 lint 可识别在 vector 或 struct 上可跳过额外拷贝、应使用引用比较的情况。
+
+### `blocks_in_conditions`
+
+检查条件语句（如 `if`、`match` 和 `while` 条件）中使用代码块的情况，这会导致代码难以阅读。该 lint 捕获的典型代码模式示例：
+
+```move
+if ({let x = foo(); !x}) { // uses a block in condition
+  bar();
+}
+```
+
+此类代码通常可以通过将代码块提升到条件语句之前来重写，从而提升可读性。
+
+在 Move 中，常见的做法是在条件中内联规范，尤其是循环不变式，这需要在条件中创建代码块。我们在 lint 检查中排除了这种模式，以继续支持这种规范写法。
+
+注意，`assert!` 会被翻译为条件中止，因此在 `assert!` 条件中的代码块也会被此 lint 报告。
+
+### `needless_bool`
+
+检查如下模式（其中 `x` 为任意布尔表达式）：
+
+- `if (x) true else false`，可简化为 `x`。
+- `if (x) false else true`，可简化为 `!x`。
+- `if (x) { return true } else { return false }`，可简化为 `return x`。
+- `if (x) { return false } else { return true }`，可简化为 `return !x`。
+- `if (x) true else true` 或 `if (x) false else false`，应重写以去除冗余分支。
+
+### `needless_deref_ref`
+
+检查立即对引用进行解引用的模式，并建议移除成对的解引用-引用操作符：
+
+- `*&x.f` 可简化为 `x.f`
+- `*&mut x.f` 可简化为 `x.f`
+- `*&mut x.f = 5;` 可简化为 `x.f = 5;`
+
+### `needless_mutable_reference`
+
+检查未被实际修改使用的可变引用或借用（目前包括：可变引用参数、本地变量的可变借用、`borrow_global_mut`），建议改用不可变引用或借用。
+
+例如，在下方的 `foo` 函数中，`&mut` 可替换为 `&`，因为该引用未被实际修改。
+
+```move
+fun foo(x: u64): u64 {
+  let y = &mut x;
+  *y
+}
+
+```
+
+### `needless_ref_deref`
+
+检查对解引用立即取不可变引用的模式，并建议移除成对的引用-解引用操作符：`&*x` 可简化为 `x`。
+
+### `needless_ref_in_field_access`
+
+检查在访问结构体或枚举字段时多余的引用操作，并建议移除显式引用：
+
+- `(&s).f` 可简化为 `s.f`
+- `(&mut s).f = 42;` 可简化为 `s.f = 42;`
+
+### `nonminimal_bool`
+
+检查包含布尔字面量（`true` 或 `false`）的布尔表达式是否可简化。示例：
+- `x && true` 逻辑等价于 `x`
+- `x || true` 逻辑等价于 `true`
+- `x => false` 逻辑等价于 `!x`
+- `x <==> true` 逻辑等价于 `x`
+- `! true` 逻辑等价于 `false`
+
+在推荐简化时**不考虑副作用/短路**。示例：
+- `1/0 || true` 逻辑等价于 `true`，但简化会影响程序语义。
+
+### `self_assignment`
+
+检查变量或结构体字段自赋值的模式，并建议移除该赋值。这类赋值不会影响程序状态。示例包括：
+- `let x = x;`
+- `x = x;`
+- `a.x = a.x;`
+
+### `simpler_numeric_expression`
+
+检查可用更简单数值表达式替代的各种模式。在所有这些情况下，代码必须已通过类型检查，`x` 可为任意数值表达式。
+
+- `x & 0`、`x * 0`、`0 & x`、`0 * x`、`0 << x`、`0 >> x`、`x % 1` 都可简化为 `0`。
+- `x | 0`、`x ^ 0`、`x >> 0`、`x << 0`、`x + 0`、`x - 0`、`x / 1`、`x * 1`、`0 | x`、`0 ^ x`、`0 + x`、`1 * x` 都可简化为 `x`。
+
+### `unnecessary_boolean_identity_comparison`
+
+检查如下布尔身份比较模式：
+
+- `x == true`、`true == x`，可简化为 `x`。
+- `x == false`、`false == x`，可简化为 `!x`。
+
+在所有这些情况下，`x` 可为任意布尔表达式。
+
+### `unnecessary_numerical_extreme_comparison`
+
+检查与极值（即该数值类型可表示的最小值和最大值）进行数值比较的情况，这些比较可能是多余的，或可更精确、清晰。根据比较方式，给出不同的建议。
+
+以下为被捕获的表达式示例及对应建议（其中 `x` 为 `u8`、`u16`、`u32`、`u64`、`u128` 或 `u256` 类型的数值表达式，`MAX` 为该类型可表示的最大值）：
+
+- `x < 0`、`0 > x`、`x > MAX`、`MAX < x`，始终为 false，应移除该比较
+- `x >= 0`、`0 <= x`、`x <= MAX`、`MAX >= x`，始终为 true，应移除该比较
+- `x <= 0`、`0 >= x`、`x >= MAX`、`MAX <= x`，可简化为 `==`
+- `x > 0`、`0 < x`、`x < MAX`、`MAX > x`，可简化为 `!=`
+
+### `while_true`
+
+检查 `while (true) { .... }` 模式，并建议改用更明确的 `loop { .... }` 结构。
+
+## 抑制 Lint 警告
+
+如需在某个函数或模块中跳过一个或多个名为 `check1`、`check2` ... 的 lint 检查，可为该函数或模块添加属性 `#[lint::skip(check1, check2, ...)]`。linter 将不会对该函数或模块执行指定的 lint 检查。
+
+例如，下方函数通常会收到关于 `needless_bool` 的 lint 警告，但由于函数上的属性，linter 不会发出警告。
+
+```move
+#[lint::skip(needless_bool)]
+fun violation(): bool {
+    if (foo()) true else false
+}
+``` 
