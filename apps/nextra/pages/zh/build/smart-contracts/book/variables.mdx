@@ -1,0 +1,967 @@
+# 局部变量与作用域
+
+Move语言中的局部变量采用词法（静态）作用域。使用关键字 `let` 可以声明新变量，新变量会遮蔽同名的先前局部变量。局部变量是可变的，可以直接更新或通过可变引用更新。
+
+## 声明局部变量
+
+### `let`  绑定
+
+Move 程序使用 `let` 将变量名绑定到值：
+
+```move
+script {
+  fun example() {
+    let x = 1;
+    let y = x + x;
+  }
+}
+```
+
+`let` 也可以不立即绑定值：
+
+```move
+script {
+  fun example() {
+    let x;
+  }
+}
+```
+
+随后可以再给局部变量赋值：
+
+```move
+script {
+  fun example() {
+    let x;
+    if (cond) {
+      x = 1
+    } else {
+      x = 0
+    }
+  }
+}
+```
+
+这在无法提供默认值但需要从循环中提取值时非常有用：
+
+```move
+script {
+  fun example() {
+    let x;
+    let cond = true;
+    let i = 0;
+    loop {
+      (x, cond) = foo(i);
+      if (!cond) break;
+      i = i + 1;
+    }
+  }
+}
+```
+
+### 变量必须先赋值后使用
+
+Move 的类型系统会阻止在赋值前使用局部变量：
+
+```move
+script {
+  fun example() {
+    let x;
+    x + x; // 错误！
+  }
+}
+```
+
+```move
+script {
+  fun example() {
+    let x;
+    if (cond) x = 0;
+    x + x; // 错误！
+  }
+}
+```
+
+```move
+script {
+  fun example() {
+    let x;
+    while (cond) x = 0;
+    x + x; // 错误！
+  }
+}
+```
+
+### 有效的变量名
+
+变量名可以包含下划线 `_`、字母 `a` 到 `z`、字母 `A` 到 `Z` 以及数字 `0` 到 `9`。
+
+变量名必须以 `_` 或 `a` 到 `z` 的字母开头，不能以大写字母开头。
+
+```move
+script {
+  fun example() {
+    // 以下都有效
+    let x = e;
+    let _x = e;
+    let _A = e;
+    let x0 = e;
+    let xA = e;
+    let foobar_123 = e;
+
+    // 以下都无效
+    let X = e; // 错误！
+    let Foo = e; // 错误！
+  }
+}
+```
+
+### 类型标注
+
+Move 的类型系统通常能自动推断局部变量类型，但也支持显式类型标注以增强可读性、
+清晰性或可调试性。类型标注语法如下：
+
+```move
+script {
+  fun example() {
+    let x: T = e; // "类型为T的变量x被初始化为表达式e"
+  }
+}
+```
+
+一些显式类型标注的示例：
+
+```move
+module 0x42::example {
+
+  struct S { f: u64, g: u64 }
+
+  fun annotated() {
+    let u: u8 = 0;
+    let b: vector<u8> = b"hello";
+    let a: address = @0x0;
+    let (x, y): (&u64, &mut u64) = (&0, &mut 1);
+    let S { f, g: f2 }: S = S { f: 0, g: 1 };
+  }
+}
+```
+
+注意类型标注必须始终位于模式右侧：
+
+```move
+script {
+  fun example() {
+    let (x: &u64, y: &mut u64) = (&0, &mut 1); // 错误！应为 let (x, y): ... =
+  }
+}
+```
+
+### 需要标注的情况
+
+当类型系统无法推断类型时，局部变量类型标注是必需的。
+这通常发生在无法推断泛型类型参数时，例如：
+
+```move
+script {
+  fun example() {
+    let _v1 = vector::empty(); // 错误!
+    //        ^^^^^^^^^^^^^^^ 无法推断此类型。请尝试添加类型标注
+    let v2: vector<u64> = vector::empty(); // 无错误
+  }
+}
+```
+
+在更罕见的情况下，类型系统可能无法为发散代码（后续所有代码都不可达）推断类型。
+`return` 和 [`abort`](abort-and-assert.mdx) 都是表达式且可以具有任何类型。
+如果 [`loop`](loops.mdx) 包含 `break` 则类型为 `()`，但如果没有跳出循环的 `break`，它可以具有任何类型。
+如果这些类型无法推断，则需要类型标注。例如以下代码：
+
+```move
+script {
+  fun example() {
+    let a: u8 = return ();
+    let b: bool = abort 0;
+    let c: signer = loop ();
+
+    let x = return (); // 错误!
+    //  ^ 无法推断此类型。请尝试添加类型标注
+    let y = abort 0; // 错误!
+    //  ^ 无法推断此类型。请尝试添加类型标注
+    let z = loop (); // 错误!
+    //  ^ 无法推断此类型。请尝试添加类型标注
+  }
+}
+```
+
+为此代码添加类型标注会暴露关于死代码或未使用局部变量的其他错误，但该示例仍有助于理解此问题。
+
+### 使用元组进行多重声明
+
+`let` 可以通过元组一次性引入多个局部变量。括号内声明的局部变量会被初始化为元组中对应的值。
+
+```move
+script {
+  fun example() {
+    let () = ();
+    let (x0, x1) = (0, 1);
+    let (y0, y1, y2) = (0, 1, 2);
+    let (z0, z1, z2, z3) = (0, 1, 2, 3);
+  }
+}
+```
+
+表达式类型必须与元组模式的数量严格匹配。
+
+```move
+script {
+  fun example() {
+    let (x, y) = (0, 1, 2); // 错误!
+    let (x, y, z, q) = (0, 1, 2); // 错误!
+  }
+}
+```
+
+不能在单个 `let` 中声明多个同名局部变量。
+
+```move
+script {
+  fun example() {
+    let (x, x) = 0; // 错误!
+  }
+}
+```
+
+### 使用结构体进行多重声明
+
+`let` 在解构（或匹配）结构体时也可以一次性引入多个局部变量。在这种形式中，`let` 会创建一组局部变量，这些变量被初始化为结构体字段的值。语法如下：
+
+```move
+script {
+  fun example() {
+    struct T { f1: u64, f2: u64 }
+  }
+}
+```
+
+```move
+script {
+  fun example() {
+    let T { f1: local1, f2: local2 } = T { f1: 1, f2: 2 };
+    // local1: u64
+    // local2: u64
+  }
+}
+```
+
+这是一个更复杂的示例：
+
+```move
+module 0x42::example {
+  struct X { f: u64 }
+  struct Y { x1: X, x2: X }
+
+  fun new_x(): X {
+    X { f: 1 }
+  }
+
+  fun example() {
+    let Y { x1: X { f }, x2 } = Y { x1: new_x(), x2: new_x() };
+    assert!(f + x2.f == 2, 42);
+
+    let Y { x1: X { f: f1 }, x2: X { f: f2 } } = Y { x1: new_x(), x2: new_x() };
+    assert!(f1 + f2 == 2, 42);
+  }
+}
+```
+
+结构体的字段可以双重用途，既标识要绑定的字段又作为变量名。这有时被称为双关(punning)。
+
+```move
+script {
+  fun example() {
+    let X { f } = e;
+  }
+}
+```
+
+等价于：
+
+```move
+script {
+  fun example() {
+    let X { f: f } = e;
+  }
+}
+```
+
+如元组示例所示，在单个 `let` 语句中不能声明多个同名局部变量。
+
+```move
+script {
+  fun example() {
+    let Y { x1: x, x2: x } = e; // 错误！
+  }
+}
+```
+
+### 针对引用的解构
+
+在上述结构体示例中，`let` 绑定的值会被移动，导致结构体值被销毁并将其字段绑定。
+
+```move
+script {
+  fun example() {
+    struct T { f1: u64, f2: u64 }
+  }
+}
+```
+
+```move
+script {
+  fun example() {
+    let T { f1: local1, f2: local2 } = T { f1: 1, f2: 2 };
+    // local1: u64
+    // local2: u64
+  }
+}
+```
+
+在这个场景中，结构体值 `T { f1: 1, f2: 2 }` 在 `let` 语句执行后就不再存在。
+
+如果希望不移动并销毁结构体值，可以借用其每个字段。例如：
+
+```move
+script {
+  fun example() {
+    let t = T { f1: 1, f2: 2 };
+    let T { f1: local1, f2: local2 } = &t;
+    // local1: &u64
+    // local2: &u64
+  }
+}
+```
+
+可变引用同理：
+
+```move
+script {
+  fun example() {
+    let t = T { f1: 1, f2: 2 };
+    let T { f1: local1, f2: local2 } = &mut t;
+    // local1: &mut u64
+    // local2: &mut u64
+  }
+}
+```
+
+此行为也适用于嵌套结构体。
+
+```move
+module 0x42::example {
+  struct X { f: u64 }
+  struct Y { x1: X, x2: X }
+
+  fun new_x(): X {
+    X { f: 1 }
+  }
+
+  fun example() {
+    let y = Y { x1: new_x(), x2: new_x() };
+
+    let Y { x1: X { f }, x2 } = &y;
+    assert!(*f + x2.f == 2, 42);
+
+    let Y { x1: X { f: f1 }, x2: X { f: f2 } } = &mut y;
+    *f1 = *f1 + 1;
+    *f2 = *f2 + 1;
+    assert!(*f1 + *f2 == 4, 42);
+  }
+}
+```
+
+### 忽略值
+
+在 `let` 绑定中，忽略某些值通常很有帮助。以下划线 `_` 开头的局部变量会被忽略且不会引入新变量。
+
+```move
+module 0x42::example {
+  fun three(): (u64, u64, u64) {
+    (0, 1, 2)
+  }
+
+  fun example() {
+    let (x1, _, z1) = three();
+    let (x2, _y, z2) = three();
+    assert!(x1 + z1 == x2 + z2, 42);
+  }
+}
+```
+
+有时这是必要的，因为编译器会对未使用的局部变量报错。
+
+```move
+module 0x42::example {
+  fun example() {
+    let (x1, y, z1) = three(); // 错误！
+    //       ^ 未使用的局部变量 'y'
+  }
+}
+```
+
+### 通用 `let` 语法
+
+`let` 语句中的所有不同结构可以组合使用！由此我们得出 `let` 语句的通用语法：
+
+> _let绑定_ → **let** _模式或列表_ _类型标注_<sub>_可选_</sub> _初始化器_<sub>_可选_</sub>
+
+> _模式或列表_ → _模式_ | **(** _模式列表_ **)**
+
+> _模式列表_ → _模式_ **,**<sub>_可选_</sub> | _模式_ **,** _模式列表_
+
+> _类型标注_ → **:** _类型_
+
+> _初始化器_ → **=** _表达式_
+
+引入绑定的通用术语称为_模式_。模式既用于解构数据（可能是递归的），也用于引入绑定。模式语法如下：
+
+> _模式_ → _局部变量_ | _结构体类型_ **\{** _字段绑定列表_ **}**
+
+> _字段绑定列表_ → _字段绑定_ **,**<sub>_可选_</sub> | _字段绑定_ **,** _字段绑定列表_
+
+> _字段绑定_ → _字段_ | _字段_ **:** _模式_
+
+以下是应用此语法的几个具体示例：
+
+```move
+script {
+  fun example() {
+    let (x, y): (u64, u64) = (0, 1);
+    //       ^                           局部变量
+    //       ^                           模式
+    //          ^                        局部变量
+    //          ^                        模式
+    //          ^                        模式列表
+    //       ^^^^                        模式列表
+    //      ^^^^^^                       模式或列表
+    //            ^^^^^^^^^^^^           类型注解
+    //                         ^^^^^^^^  初始化器
+    //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ let绑定
+
+    let Foo { f, g: x } = Foo { f: 0, g: 1 };
+    //      ^^^                                    结构体类型
+    //            ^                                字段
+    //            ^                                字段绑定
+    //               ^                             字段
+    //                  ^                          局部变量
+    //                  ^                          模式
+    //               ^^^^                          字段绑定
+    //            ^^^^^^^                          字段绑定列表
+    //      ^^^^^^^^^^^^^^^                        模式
+    //      ^^^^^^^^^^^^^^^                        模式或列表
+    //                      ^^^^^^^^^^^^^^^^^^^^   初始化器
+    //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ let绑定
+  }
+}
+```
+
+## 可变操作
+
+### 赋值
+
+在局部变量被引入后（通过 `let` 或作为函数参数），可以通过赋值来修改变量：
+
+```move
+script {
+  fun example(e: u8) {
+    let x = 0;
+    x = e
+  }
+}
+```
+
+与 `let` 绑定不同，赋值是表达式。在某些语言中，赋值会返回被赋的值，但在Move中，任何赋值的类型始终是`()`。
+
+```move
+script {
+  fun example(e: u8) {
+    let x = 0;
+    (x = e) == ()
+  }
+}
+```
+
+实际上，赋值作为表达式意味着它们可以在不添加新表达式块（`{`...`}`）的情况下使用。
+
+```move
+script {
+  fun example(e: u8) {
+    let x = 0;
+    if (cond) x = 1 else x = 2;
+  }
+}
+```
+
+赋值使用与 `let` 绑定相同的模式语法方案：
+
+```move
+module 0x42::example {
+    struct X { f: u64 }
+
+    fun new_x(): X {
+        X { f: 1 }
+    }
+
+    // 此示例会提示未使用的变量和赋值
+    fun example() {
+       let (x, _, z) = (0, 1, 3);
+       let (x, y, f, g);
+
+       (X { f }, X { f: x }) = (new_x(), new_x());
+       assert!(f + x == 2, 42);
+
+       (x, y, z, f, _, g) = (0, 0, 0, 0, 0, 0);
+    }
+}
+```
+
+注意，局部变量只能有一种类型，因此在多次赋值之间不能改变局部变量的类型。
+
+```move
+script {
+  fun example() {
+    let x;
+    x = 0;
+    x = false; // 错误！
+  }
+}
+```
+
+### 通过引用修改
+
+除了通过赋值直接修改局部变量外，还可以通过可变引用`&mut`来修改局部变量。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    let r = &mut x;
+    *r = 1;
+    assert!(x == 1, 42);
+  }
+}
+```
+
+这在以下两种情况下特别有用：
+
+(1) 您希望根据某些条件修改不同的变量。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    let y = 1;
+    let r = if (cond) {
+      &mut x
+    } else {
+      &mut y
+    };
+    *r = *r + 1;
+  }
+}
+```
+
+(2) 您希望另一个函数修改您的局部变量。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    modify_ref(&mut x);
+  }
+}
+```
+
+这种修改方式正是您修改结构体和向量的方法！
+
+```move
+script {
+  use 0x1::vector;
+
+  fun example() {
+    let v = vector::empty();
+    vector::push_back(&mut v, 100);
+    assert!(*vector::borrow(&v, 0) == 100, 42);
+  }
+}
+```
+
+更多细节请参阅 [Move 引用](references.mdx)。
+
+### 复合赋值
+
+_自语言版本 2.1 起_
+
+Move 还支持复合赋值运算符。这些运算符类似于对变量的赋值或通过引用的修改，区别在于被赋值的位置必须已经有一个值，该值会在存储回位置之前被读取并进行操作。目前这些运算符仅适用于数值类型。
+
+| 语法   | 描述                                                  |
+| ------ | ------------------------------------------------------------ |
+| `+=`   | 执行加法并更新左侧的值            |
+| `-=`   | 执行减法并更新左侧的值         |
+| `*=`   | 执行乘法并更新左侧的值      |
+| `%=`   | 执行模除并更新左侧的值    |
+| `/=`   | 执行截断除法并更新左侧的值 |
+| `&=`   | 执行按位与并更新左侧的值         |
+| `\|=`  | 执行按位或并更新左侧的值          |
+| `^=`   | 执行按位异或并更新左侧的值         |
+| `<<=`  | 执行左移并更新左侧的值          |
+| `>>=`  | 执行右移并更新左侧的值         |
+
+对于 `e1 += e2`，**修改操作数** `e2` 会首先被求值，然后是 **被赋值操作数** `e1`。操作数值执行 `+` 的结果随后会被存储到左侧位置。
+被赋值操作数仅会被求值一次。
+上表中列出的所有其他操作同理。
+
+```move
+module 0x42::example {
+  struct S { f: u64 }
+
+  fun example() {
+    let x = 41;
+    x += 1;
+    assert!(x == 42);
+
+    let y = 41;
+    let p = &mut y;
+    *p += 1;
+    assert!(*p == 42);
+
+    let z = S { f: 41 };
+    z.f += 1;
+    assert!(z.f == 42);
+  }
+}
+```
+
+## 作用域
+
+任何用 `let` 声明的局部变量都可在_该作用域内_的后续表达式中使用。
+作用域由表达式块 `{`...`}` 声明。
+
+局部变量不能在声明的作用域外使用。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    {
+      let y = 1;
+    };
+    x + y // 错误！
+    //  ^ 未绑定的局部变量 'y'
+  }
+}
+```
+
+但是，外部作用域中的局部变量 _可以_ 在嵌套作用域中使用。
+
+```move
+script {
+  fun example() {
+    {
+      let x = 0;
+      {
+        let y = x + 1; // 有效
+      }
+    }
+  }
+}
+```
+
+在局部变量可访问的任何作用域中，都可以对其进行修改。
+这种修改会保留在局部变量中，无论修改发生在哪个作用域。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    x = x + 1;
+    assert!(x == 1, 42);
+    {
+      x = x + 1;
+      assert!(x == 2, 42);
+    };
+    assert!(x == 2, 42);
+  }
+}
+```
+
+### 表达式块
+
+表达式块是由分号 (`;`) 分隔的一系列语句。
+表达式块的结果值是块中最后一个表达式的值。
+
+```move
+script {
+  fun example() {
+    { let x = 1; let y = 1; x + y }
+  }
+}
+```
+
+在这个例子中，块的结果是 `x + y`。
+
+语句可以是 `let` 声明或表达式。记住赋值语句 (`x = e`) 是类型为 `()` 的表达式。
+
+```move
+script {
+  fun example() {
+    { let x; let y = 1; x = 1; x + y }
+  }
+}
+```
+
+函数调用是另一种常见的 `()` 类型表达式。修改数据的函数调用通常被用作语句。
+
+```move
+script {
+  fun example() {
+    { let v = vector::empty(); vector::push_back(&mut v, 1); v }
+  }
+}
+```
+
+这不仅限于 `()` 类型——任何表达式都可以在语句序列中使用！
+
+```move
+script {
+  fun example() {
+    {
+      let x = 0;
+      x + 1; // 值被丢弃
+      x + 2; // 值被丢弃
+      b"hello"; // 值被丢弃
+    }
+  }
+}
+```
+
+但是！如果表达式包含资源（没有 `drop` [能力](abilities.mdx) 的值），你会得到一个错误。
+这是因为 Move 的类型系统保证任何被丢弃的值都必须具有 `drop` [能力](abilities.mdx)。（所有权必须被转移或该值必须在其声明模块内显式销毁。）
+
+```move
+script {
+  fun example() {
+    {
+      let x = 0;
+      Coin { value: x }; // 错误！
+      //  ^^^^^^^^^^^^^^^^^ 未使用的值没有`drop`能力
+      x
+    }
+  }
+}
+```
+
+如果块中没有最终表达式——也就是说，如果有一个尾随分号 `;`，
+那么会隐式返回一个 [unit `()`值](https://en.wikipedia.org/wiki/Unit_type)。
+同样，如果表达式块为空，也会隐式返回一个 unit `()` 值。
+
+```move
+script {
+  fun example() {
+    // 两者等价
+    { x = x + 1; 1 / x; };
+    { x = x + 1; 1 / x; () };
+  }
+}
+```
+
+```move
+script {
+  fun example() {
+    // 两者等价
+    {}
+    { () }
+  }
+}
+```
+
+表达式块本身就是一个表达式，可以在任何需要表达式的地方使用。（注意：函数体也是一个表达式块，但函数体不能被其他表达式替换。）
+
+```move
+script {
+  fun example() {
+    let my_vector: vector<vector<u8>> = {
+      let v = vector::empty();
+      vector::push_back(&mut v, b"hello");
+      vector::push_back(&mut v, b"goodbye");
+      v
+    };
+  }
+}
+```
+
+（这个例子中不需要类型注解，只是为了清晰而添加。）
+
+### 变量遮蔽
+
+如果一个 `let` 引入的局部变量名已存在于当前作用域中，那么在剩下的作用域内将无法再访问之前的变量。这称为 _变量遮蔽_。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    assert!(x == 0, 42);
+
+    let x = 1; // x 被遮蔽(shadowed)
+    assert!(x == 1, 42);
+  }
+}
+```
+
+当局部变量被遮蔽时，不需要保留之前的类型。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    assert!(x == 0, 42);
+
+    let x = b"hello"; // x 被遮蔽
+    assert!(x == b"hello", 42);
+  }
+}
+```
+
+局部变量被遮蔽后，存储在其中的值仍然存在，但无法再访问。对于没有 [`drop` 能力](abilities.mdx) 的类型值，这一点尤为重要，因为函数结束时必须转移这些值的所有权。
+
+```move
+module 0x42::example {
+  struct Coin has store { value: u64 }
+
+  fun unused_resource(): Coin {
+    let x = Coin { value: 0 }; // 错误！
+    //  ^ 该局部变量仍包含没有 `drop` 能力的值
+    x.value = 1;
+    let x = Coin { value: 10 };
+    x
+    // ^ 无效返回
+  }
+}
+```
+
+当局部变量在作用域内被遮蔽时，遮蔽效果仅在该作用域内有效。作用域结束后，遮蔽效果消失。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    {
+      let x = 1;
+      assert!(x == 1, 42);
+    };
+    assert!(x == 0, 42);
+  }
+}
+```
+
+注意：局部变量被遮蔽时可以改变类型。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    {
+      let x = b"hello";
+      assert!(x = b"hello", 42);
+    };
+    assert!(x == 0, 42);
+  }
+}
+```
+
+## 移动 ( Move ) 与复制 ( Copy )
+
+Move语言中的所有局部变量可以通过两种方式使用： `move` 或 `copy`。
+如果没有明确指定，Move编译器会推断应该使用 `copy` 还是 `move`。
+这意味着在上述所有示例中，编译器会自动插入 `move` 或 `copy`。
+局部变量不能在不使用 `move` 或 `copy` 的情况下被使用。
+
+对于来自其他编程语言的开发者，`copy` 会感觉更熟悉，因为它会创建变量值的新副本用于表达式。
+使用 `copy` 后，局部变量可以被多次使用。
+
+```move
+script {
+  fun example() {
+    let x = 0;
+    let y = copy x + 1;
+    let z = copy x + 2;
+  }
+}
+```
+
+任何具有 `copy` [能力](abilities.mdx) 的值都可以通过这种方式复制。
+
+`move` 会取出局部变量中的值且不复制数据。`move` 操作后，该局部变量将不可用。
+
+```move
+script {
+  fun example() {
+    let x = 1;
+    let y = move x + 1;
+    //      ------ 局部变量在此处被移动
+    let z = move x + 2; // 错误！
+    //      ^^^^^^ 无效使用局部变量 'x'
+    y + z;
+  }
+}
+```
+
+### 安全性
+
+Move的类型系统会阻止值在被移动后再次使用。
+这与 [`let` 声明](#llet--绑定) 中描述的安全检查相同，可以防止局部变量在赋值前被使用。
+
+{/* 更多信息请参见未来关于所有权和移动语义的章节 TODO */}
+
+### 推断
+
+如上所述，如果未明确指定，Move编译器会推断使用 `copy` 或 `move`。推断算法非常简单：
+
+- 任何具有 `copy` [能力](abilities.mdx) 的值会被赋予 `copy`
+- 任何引用（包括可变引用 `&mut` 和不可变引用 `&`）会被赋予 `copy`
+  - 除非在特殊情况下，为了可预测的借用检查错误会使用 `move`
+- 其他所有值会被赋予 `move`
+- 如果编译器能证明具有复制能力的源值在赋值后不会被使用，则出于性能考虑可能会使用 `move` 代替 `copy`，但这对程序员不可见（可能表现为执行时间或gas成本降低）
+
+例如：
+
+```move
+module 0x42::example {
+  struct Foo {
+    f: u64
+  }
+
+  struct Coin has copy {
+    value: u64
+  }
+
+  fun example() {
+    let s = b"hello";
+    let foo = Foo { f: 0 };
+    let coin = Coin { value: 0 };
+
+    let s2 = s; // 复制
+    let foo2 = foo; // 移动
+    let coin2 = coin; // 复制
+
+    let x = 0;
+    let b = false;
+    let addr = @0x42;
+    let x_ref = &x;
+    let coin_ref = &mut coin2;    let x2 = x; // 复制
+    let b2 = b; // 复制
+    let addr2 = @0x42; // 复制
+    let x_ref2 = x_ref; // 复制
+    let coin_ref2 = coin_ref; // 复制
+  }
+}
+```

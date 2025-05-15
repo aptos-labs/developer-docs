@@ -1,0 +1,16 @@
+# 全局存储 - 结构
+
+Move 程序的主要目的是从树形结构的持久化全局存储中[读取和写入](global-storage-operators.mdx)数据。程序无法访问文件系统、网络或此树形结构之外的任何其他数据。
+
+用伪代码表示，全局存储的结构大致如下：
+
+```move
+module 0x42::example {
+  struct GlobalStorage {
+    resources: Map<(address, ResourceType), ResourceValue>,
+    modules: Map<(address, ModuleName), ModuleBytecode>
+  }
+}
+```
+
+从结构上看，全局存储是由以账户 [`address`](address.mdx) 为根的树组成的 [森林](https://en.wikipedia.org/wiki/Tree_(graph_theory)) 。每个地址既可以存储 [资源](structs-and-resources.mdx) 数据值，也可以存储 [模块](modules-and-scripts.mdx) 代码值。如上述伪代码所示，每个 `address` 最多只能存储一个给定类型的资源值和一个给定名称的模块。

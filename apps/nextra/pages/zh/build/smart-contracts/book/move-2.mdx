@@ -1,0 +1,70 @@
+# Move 2 版本说明
+
+本页描述 Move 2 语言的各个版本发布情况。
+
+新特性的参考文档已整合至书中，并在文本中用 " _自语言版本 2.n 起_ " 标记。
+
+## Move 2.2
+
+Move 2.2 语言版本新增以下特性：
+
+- **可选 acquires**：函数声明中的 `acquires` 注解现在可以省略，由编译器自动推断。
+- **Function Values** ：Move 现在支持将函数作为值传递，可作为参数或存储在资源中。
+
+    详见 [Function Values](functions.mdx#函数值)。
+
+## Move 2.1
+
+Move 2.1 语言版本新增以下特性：
+
+- **Compound Assignments**：现在可以使用 `x += n`、`x -= n` 等语法来组合赋值与算术运算。
+
+    支持的运算符详见 [Compound Assignments](variables.mdx#复合赋值)。
+
+- **Loop Labels**：现在可以为循环添加标签，并通过 `break` 或 `continue` 表达式引用这些标签。这使得可以从嵌套循环中继续或中断外部循环。
+
+    详见 [循环标签参考文档](loops.mdx#循环标签)。
+
+- **Underscore function parameters are wildcards, not symbols**：名为 `_` 的函数参数不再作为变量使用：它们不会绑定值，且函数的多个此类参数不会引发冲突。在值表达式中使用 `_` 将产生错误，因为它没有值。这使得 `_` 的行为更接近其在模式和 let 表达式中的通配符角色（不绑定值）。
+
+## Move 2.0
+
+Move 2.0 语言版本新增以下特性：
+
+- **枚举类型**：新增定义可存储类型不同数据变体的功能。
+
+    文档详见[枚举类型章节](enums.mdx)。
+
+- **Receiver Style Functions**：支持使用 `value.func(arg)` 这种熟悉的语法调用函数。
+
+    文档详见[点接收者函数调用风格章节](functions.mdx#点号接收者函数调用语法)。
+
+- **索引表示法**：支持通过 `&mut vector[index]` 或 `&mut Resource[addr]` 等语法访问 [elements of vectors](vector.mdx#向量的索引表示法) 和 [resource storage](global-storage-operators.mdx#存储操作符的索引表示法)。
+
+- **Positional Structs**：支持定义包装类型如 `struct Wrapped(u64)`。
+
+    文档详见 [位置结构体章节](structs-and-resources.mdx#位置结构体) 。枚举变体也支持位置形式。
+
+- **Dot-dot pattern wildcards**：支持 `let Struct{x, ..} = value` 这类语句来匹配数据的特定部分。
+
+    文档详见 [部分模式章节](structs-and-resources.mdx#部分模式) 。这些模式同样适用于枚举变体。
+- **Package visibility** 允许声明一个函数在包内任意位置可见，但在包外不可见。
+
+    友元函数仍然受支持，不过在多数情况下包内可见性更为适用。作为一种更简洁的写法，包内函数和友元函数可以分别简写为 `package fun` 或 `friend fun`，而不用较长的 `public(package) fun` 和 `public(friend) fun`。
+    
+    该特性文档见 [此处](functions.mdx#package可见性) 。
+
+- **Assert abort code optional** `assert!`宏现在可以只带一个参数使用，省略中止代码，此时将选择默认代码。另见 [此处](abort-and-assert.mdx#assert) 。
+
+- **New Cast Syntax** 此前类型转换必须始终放在括号内，需要写成 `function((x as u256))` 这样的代码。
+
+    现在取消了这一要求，类型转换可以作为顶层表达式不加括号使用，例如 `function(x as u256)`。但在表达式中仍需写成 `(x as u64) + (y as u64)`。
+    
+    新的枚举变体测试 `data is VersionedData::V1` 同样适用此规则。
+
+- **Well-defined evaluation order** 以下情况的求值顺序现已明确定义（此前未作规定）：
+    - 函数调用的(a)参数和(b)二元运算的操作数表达式都从左到右求值。
+    - 对于形如`*lexp = rexp`的"可变"表达式（参见 [通过引用修改](variables.mdx#通过引用修改) ），其中 `lexp` 是 `&mut T` 类型的表达式，`rexp` 是 `T` 类型的表达式，`rexp` 会先于 `lexp` 被求值。
+- **Bug fix for acquires annotation** [函数应被标注 `acquires`](functions.mdx#acquires-声明) 当且仅当它直接或通过调用链间接使用 `move_from`、`borrow_global` 或 `borrow_global_mut` 访问资源。
+    
+    否则，这将是一个错误。此前，当调用链图中存在循环时，这类错误不会被报告：这是不正确的行为。我们现在已修正该行为，即使调用链图中存在循环也会报告这些错误。

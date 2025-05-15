@@ -1,0 +1,199 @@
+# 中止与断言
+
+[`return`](functions.mdx) 和 `abort` 是两种终止执行的流程控制结构，前者用于结束当前函数，后者用于终止整个交易。
+
+关于 [`return` 的更多信息可查阅相关章节](functions.mdx)
+
+## `abort`
+
+`abort` 是一个接收单个参数的表达式：类型为 `u64` 的**中止代码**。例如：
+
+```move
+abort 42
+```
+
+`abort` 表达式会中止当前函数的执行，并回滚当前交易对全局状态的所有修改。Move 中没有"捕获"或处理 `abort` 的机制。
+
+幸运的是，Move 中的交易具有原子性，意味着对全局存储的修改要么全部生效（交易成功），要么完全不生效（交易失败）。由于这种交易的原子提交特性，在 `abort` 后无需担心回滚问题。虽然这种方式缺乏灵活性，但极其简单且可预测。
+
+与 [`return`](functions.mdx) 类似，`abort` 适用于当某些条件无法满足时提前退出控制流。
+
+在以下示例中，函数会从向量中弹出两个元素，但如果向量不足两个元素则会提前中止：
+
+```move
+script {
+  use std::vector;
+  fun pop_twice<T>(v: &mut vector<T>): (T, T) {
+      if (vector::length(v) < 2) abort 42;
+
+      (vector::pop_back(v), vector::pop_back(v))
+  }
+}
+```
+
+这在深层控制流结构中更为实用。例如，以下函数检查向量中的所有数字是否都小于指定边界 `bound`，否则中止：
+
+```move
+script {
+  use std::vector;
+  fun check_vec(v: &vector<u64>, bound: u64) {
+      let i = 0;
+      let n = vector::length(v);
+      while (i < n) {
+          let cur = *vector::borrow(v, i);
+          if (cur > bound) abort 42;
+          i = i + 1;
+      }
+  }
+}
+```
+
+### `assert`
+
+`assert` 是 Move 编译器提供的内置宏式操作。它接收两个参数：`bool` 类型的条件和 `u64` 类型的代码：
+
+```move
+assert!(condition: bool, code: u64)
+assert!(condition: bool) // 自 Move 2.0 起支持
+```
+
+由于这是宏操作，必须使用 `!` 调用。这表明 `assert` 的参数是按表达式求值的。换句话说，`assert` 不是普通函数，在字节码层面不存在。它会在编译时被替换为：
+
+```move
+if (condition) () else abort code
+```
+
+自 Move 2.0 起，支持不带错误代码的 `assert`。如果使用此形式，将生成中止代码 `0xCA26CBD9BE0B0000`。按照 `std::error` 规范，此代码的类别为 `std::error::INTERNAL`，原因码为 `0`。
+
+`assert` 比直接使用 `abort` 更为常见。前述的 `abort` 示例可以用 `assert` 重写：
+
+```move
+script {
+  use std::vector;
+  fun pop_twice<T>(v: &mut vector<T>): (T, T) {
+      assert!(vector::length(v) >= 2, 42); // 现在使用 'assert'
+
+      (vector::pop_back(v), vector::pop_back(v))
+  }
+}
+```
+
+以及：
+
+```move
+script {
+  use std::vector;
+  fun check_vec(v: &vector<u64>, bound: u64) {
+      let i = 0;
+      let n = vector::length(v);
+      while (i < n) {
+          let cur = *vector::borrow(v, i);
+          assert!(cur <= bound, 42); // 现在使用 'assert'
+          i = i + 1;
+      }
+  }
+}
+```
+
+请注意，由于该操作被替换为这个 `if-else` 结构，`code` 参数并不总是会被求值。例如：
+
+```move
+assert!(true, 1 / 0)
+```
+
+不会导致算术错误，它等价于：
+
+```move
+if (true) () else (1 / 0)
+```
+
+因此算术表达式永远不会被求值！
+
+### Move VM 中的中止代码
+
+当使用 `abort` 时，理解 VM 将如何使用 `u64` 代码非常重要。
+
+通常，在执行成功后，Move VM 会生成一个变更集，记录对全局存储所做的更改（添加/删除资源、更新现有资源等）。
+
+如果遇到 `abort`，VM 将返回错误信息。该错误包含两部分内容：
+
+- 触发中止的模块（地址和名称）
+- 中止代码
+
+例如：
+
+```move
+module 0x42::example {
+  public fun aborts() {
+    abort 42
+  }
+}
+
+script {
+  fun always_aborts() {
+    0x2::example::aborts()
+  }
+}
+```
+
+如果一个交易（如上面的脚本 `always_aborts`）调用了 `0x2::example::aborts`，VM 会产生一个错误，指明模块 `0x2::example` 和代码 `42`。
+
+这对于在模块内分组多个中止操作很有用。
+
+在这个例子中，模块有两个不同的错误代码被多个函数使用：
+
+```move
+module 0x42::example {
+
+  use std::vector;
+
+  const EMPTY_VECTOR: u64 = 0;
+  const INDEX_OUT_OF_BOUNDS: u64 = 1;
+
+  // 将 i 移到 j，j 移到 k，k 移到 i
+  public fun rotate_three<T>(v: &mut vector<T>, i: u64, j: u64, k: u64) {
+    let n = vector::length(v);
+    assert!(n > 0, EMPTY_VECTOR);
+    assert!(i < n, INDEX_OUT_OF_BOUNDS);
+    assert!(j < n, INDEX_OUT_OF_BOUNDS);
+    assert!(k < n, INDEX_OUT_OF_BOUNDS);
+
+    vector::swap(v, i, k);
+    vector::swap(v, j, k);
+  }
+
+  public fun remove_twice<T>(v: &mut vector<T>, i: u64, j: u64): (T, T) {
+    let n = vector::length(v);
+    assert!(n > 0, EMPTY_VECTOR);
+    assert!(i < n, INDEX_OUT_OF_BOUNDS);
+    assert!(j < n, INDEX_OUT_OF_BOUNDS);
+    assert!(i > j, INDEX_OUT_OF_BOUNDS);
+
+    (vector::remove<T>(v, i), vector::remove<T>(v, j))
+  }
+}
+```
+
+## `abort` 的类型
+
+`abort i` 表达式可以具有任何类型！这是因为这两种结构都会中断正常的控制流，因此它们不需要求值为该类型的值。
+
+以下示例虽然不实用，但可以通过类型检查：
+
+```move
+let y: address = abort 0;
+```
+
+这种行为在某些情况下很有帮助，例如当分支指令在某些分支上产生值，但并非所有分支都产生值时：
+
+```move
+script {
+  fun example() {
+    let b =
+        if (x == 0) false
+        else if (x == 1) true
+        else abort 42;
+    //       ^^^^^^^^ `abort 42` 的类型是 `bool`
+  }
+}
+```

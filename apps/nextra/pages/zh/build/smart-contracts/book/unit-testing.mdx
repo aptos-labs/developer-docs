@@ -1,0 +1,254 @@
+# 单元测试
+
+Move语言的单元测试为源代码新增了三种注解：
+
+- `#[test]`
+- `#[test_only]`
+- `#[expected_failure]`
+
+它们分别用于：将函数标记为测试用例、将模块或模块成员（`use`、函数或结构体）标记为仅测试代码、以及标记预期会失败的测试。这些注解可以应用于任何可见性的函数。当模块或模块成员被标记为`#[test_only]`或`#[test]`时，除非是专门为测试编译，否则它们不会被包含在编译后的字节码中。
+
+## 测试注解的含义与用法
+
+`#[test]`和`#[expected_failure]`注解都可以带参数或不带参数使用。
+
+不带参数时，`#[test]`注解只能应用于无参数的函数。该注解仅将该函数标记为由单元测试框架运行的测试用例。
+
+```move
+module 0x42::example {
+  #[test] // 正确
+  fun this_is_a_test() { /* ... */ }
+
+  #[test] // 编译失败，因为测试函数带有参数
+  fun this_is_not_correct(arg: signer) { /* ... */ }
+}
+```
+
+### 预期失败
+
+测试函数也可以被标记为`#[expected_failure]`，表示该测试预期会抛出错误。
+
+你可以通过`#[expected_failure(abort_code = <code>)]`注解来确保测试因特定中止代码`<code>`而失败，该代码对应于`abort`语句（或失败的`assert!`宏）的参数。
+
+除了`abort_code`外，`expected_failure`还可以指定程序执行错误，如`arithmetic_error`、`major_status`、`vector_error`和`out_of_gas`。为了更精确，还可以可选地指定`minor_status`。
+
+如果预期错误来自特定位置，也可以指定：`#[expected_failure(abort_code = <code>, location = <loc>)]`。如果测试确实因正确错误但发生在不同模块而失败，则该测试也会失败。注意`<loc>`可以是`Self`（当前模块）或限定名称，例如`vector::std`。
+
+只有带有`#[test]`注解的函数才能同时被标记为`#[expected_failure]`。
+
+```move
+module 0x42::example {
+  #[test]
+  #[expected_failure]
+  public fun this_test_will_abort_and_pass() { abort 1 }
+
+  #[test]
+  #[expected_failure]
+  public fun test_will_error_and_pass() { 1/0; }
+
+  #[test]
+  #[expected_failure(abort_code = 0, location = Self)]
+  public fun test_will_error_and_fail() { 1/0; }
+
+  #[test, expected_failure] // 可以在一个属性中包含多个注解。该测试会通过。
+  public fun this_other_test_will_abort_and_pass() { abort 1 }
+
+  #[test]
+  #[expected_failure(vector_error, minor_status = 1, location = Self)]
+  fun borrow_out_of_range() { /* ... */ }
+  #[test]
+  #[expected_failure(abort_code = 26113, location = extensions::table)]
+  fun test_destroy_fails() { /* ... */ }
+}
+```
+
+### 测试参数
+
+带参数时，测试注解的形式为`#[test(<参数名_1> = <地址>, ..., <参数名_n> = <地址>)]`。如果函数被这样注解，函数的参数必须是`<参数名_1>, ..., <参数名_n>`的某种排列组合，即这些参数在函数中的顺序与测试注解中的顺序不必相同，但必须能通过名称相互匹配。
+
+只有`signer`类型的参数才能作为测试参数。如果提供了非`signer`类型的参数，测试在运行时会产生错误
+
+```move
+module 0x42::example {
+  #[test(arg = @0xC0FFEE)] // 正确用法
+  fun this_is_correct_now(arg: signer) { /* ... */ }
+
+  #[test(wrong_arg_name = @0xC0FFEE)] // 错误：参数名不匹配
+  fun this_is_incorrect(arg: signer) { /* ... */ }
+
+  #[test(a = @0xC0FFEE, b = @0xCAFE)] // 正确。支持多个 signer 参数，但必须为每个参数提供值
+  fun this_works(a: signer, b: signer) { /* ... */ }
+
+  // 声明一个命名地址
+  #[test_only] // 支持测试专用命名地址
+  address TEST_NAMED_ADDR = @0x1;
+  ...
+  #[test(arg = @TEST_NAMED_ADDR)] // 支持使用命名地址！
+  fun this_is_correct_now(arg: signer) { /* ... */ }
+}
+```
+
+### 测试支持代码
+
+模块及其成员都可以声明为测试专用。在这种情况下，该条目仅在测试模式下编译时才会包含在Move字节码中。此外，在非测试模式下编译时，任何对`#[test_only]`模块的非测试`use`都会在编译期间引发错误。
+
+```move
+#[test_only] // 测试属性可以附加到模块
+module 0x42::abc { /*... */ }
+
+module 0x42::other {
+  #[test_only] // 测试属性可以附加到命名地址
+  address ADDR = @0x1;
+
+  #[test_only] // .. 可以附加到 use 语句
+  use 0x1::some_other_module;
+
+  #[test_only] // .. 可以附加到结构体
+  struct SomeStruct { /* ... */ }
+
+  #[test_only] // .. 以及函数。只能从测试代码调用，但本身不是测试
+  fun test_only_function(/* ... */) { /* ... */ }
+}
+```
+
+## 运行单元测试
+
+可以使用 `aptos move test` 命令运行 Move 包的单元测试。更多信息请参阅 [package](packages.mdx) 。
+
+运行测试时，每个测试结果会是 `PASS`（通过）、`FAIL`（失败）或 `TIMEOUT`（超时）。如果测试失败，在可能的情况下会报告失败位置及导致失败的函数名称。您可以在下面看到示例。
+
+如果单个测试执行的指令数超过最大值，测试将被标记为超时。可以使用下面的选项更改此限制，默认值为 100000 条指令。
+另外，虽然测试结果始终是确定性的，但测试默认是并行运行的，因此除非使用单线程运行（见下面的 `OPTIONS` ），否则测试结果的顺序是非确定性的。
+
+还有许多选项可以传递给单元测试二进制文件，以微调测试并帮助调试失败的测试。这些选项可以通过帮助标志查看：
+
+```bash filename="Terminal"
+$ aptos move test -h
+```
+
+## 示例
+
+以下示例展示了一个使用部分单元测试功能的简单模块：
+
+首先在空目录中创建空包：
+
+```bash filename="Terminal"
+$ aptos move init --name TestExample
+```
+
+然后在 `Move.toml` 中添加以下内容：
+
+```toml
+[dependencies]
+MoveStdlib = { git = "https://github.com/aptos-labs/aptos-framework.git", subdir="aptos-move/framework/move-stdlib", rev = "main", addr_subst = { "std" = "0x1" } }
+```
+
+接下来在 `sources` 目录下添加以下模块：
+
+```move
+// filename: sources/my_module.move
+module 0x1::my_module {
+
+  struct MyCoin has key { value: u64 }
+
+  public fun make_sure_non_zero_coin(coin: MyCoin): MyCoin {
+    assert!(coin.value > 0, 0);
+    coin
+  }
+
+  public fun has_coin(addr: address): bool {
+    exists<MyCoin>(addr)
+  }
+
+  #[test]
+  fun make_sure_non_zero_coin_passes() {
+    let coin = MyCoin { value: 1 };
+    let MyCoin { value: _ } = make_sure_non_zero_coin(coin);
+  }
+
+  #[test]
+  // 如果不关心中止代码也可以使用 #[expected_failure]
+  #[expected_failure(abort_code = 0, location = Self)]
+  fun make_sure_zero_coin_fails() {
+    let coin = MyCoin { value: 0 };
+    let MyCoin { value: _ } = make_sure_non_zero_coin(coin);
+  }
+
+  #[test_only] // 仅用于测试的辅助函数
+  fun publish_coin(account: &signer) {
+    move_to(account, MyCoin { value: 1 })
+  }
+
+  #[test(a = @0x1, b = @0x2)]
+  fun test_has_coin(a: signer, b: signer) {
+    publish_coin(&a);
+    publish_coin(&b);
+    assert!(has_coin(@0x1), 0);
+    assert!(has_coin(@0x2), 1);
+    assert!(!has_coin(@0x3), 1);
+  }
+}
+```
+
+### 运行测试
+
+然后可以使用 `aptos move test` 命令运行这些测试：
+
+```bash filename="Terminal"
+$ aptos move test
+BUILDING MoveStdlib
+BUILDING TestExample
+Running Move unit tests
+[ PASS    ] 0x1::my_module::make_sure_non_zero_coin_passes
+[ PASS    ] 0x1::my_module::make_sure_zero_coin_fails
+[ PASS    ] 0x1::my_module::test_has_coin
+Test result: OK. Total tests: 3; passed: 3; failed: 0
+```
+
+### 使用测试标志
+
+#### `-f <str>` 或 `--filter <str>`
+
+这将只运行完全限定名称包含 `<str>` 的测试。例如如果我们只想运行名称中包含 `"zero_coin"` 的测试：
+
+```bash filename="Terminal"
+$ aptos move test -f zero_coin
+CACHED MoveStdlib
+BUILDING TestExample
+Running Move unit tests
+[ PASS    ] 0x1::my_module::make_sure_non_zero_coin_passes
+[ PASS    ] 0x1::my_module::make_sure_zero_coin_fails
+Test result: OK. Total tests: 2; passed: 2; failed: 0
+```
+
+#### `--coverage`
+
+这将计算测试用例覆盖的代码并生成覆盖率摘要。
+
+```bash filename="Terminal"
+$ aptos move test --coverage
+INCLUDING DEPENDENCY AptosFramework
+INCLUDING DEPENDENCY AptosStdlib
+INCLUDING DEPENDENCY MoveStdlib
+BUILDING TestExample
+Running Move unit tests
+[ PASS    ] 0x1::my_module::make_sure_non_zero_coin_passes
+[ PASS    ] 0x1::my_module::make_sure_zero_coin_fails
+[ PASS    ] 0x1::my_module::test_has_coin
+Test result: OK. Total tests: 3; passed: 3; failed: 0
++-------------------------+
+| Move Coverage Summary   |
++-------------------------+
+Module 0000000000000000000000000000000000000000000000000000000000000001::my_module
+>>> % Module coverage: 100.00
++-------------------------+
+| % Move Coverage: 100.00  |
++-------------------------+
+Please use `aptos move coverage -h` for more detailed source or bytecode test coverage of this package
+```
+
+然后通过运行 `aptos move coverage` ，我们可以获取更详细的覆盖率信息。这些信息可以通过帮助标志查看：
+
+```bash filename="终端"
+$ aptos move coverage -h
+```

@@ -1,0 +1,352 @@
+# 用途与别名
+
+`use` 语法可用于为其他模块中的成员创建别名。`use` 可以创建两种范围的别名：在整个模块范围内有效，或在特定表达式块范围内有效。
+
+## 语法
+
+`use` 有几种不同的语法形式。从最简单的开始，我们有以下用于为其他模块创建别名的语法：
+
+```move
+use <address>::<module name>;
+use <address>::<module name> as <module alias name>;
+```
+
+例如：
+
+```move
+script {
+  use std::vector;
+  use std::vector as V;
+}
+```
+
+`use std::vector;` 为 `std::vector` 创建了别名 `vector`。这意味着在可以使用模块名 `std::vector` 的地方（假设这个 `use` 在当前作用域内），都可以改用 `vector`。`use std::vector;` 等效于 `use std::vector as vector;`
+
+类似地，`use std::vector as V;` 允许使用 `V` 代替 `std::vector`
+
+```move
+module 0x42::example {
+  use std::vector;
+  use std::vector as V;
+
+  fun new_vecs(): (vector<u8>, vector<u8>, vector<u8>) {
+    let v1 = std::vector::empty();
+    let v2 = vector::empty();
+    let v3 = V::empty();
+    (v1, v2, v3)
+  }
+}
+```
+
+如果要导入特定的模块成员（如函数、结构体或常量），可以使用以下语法：
+
+```move
+use <address>::<module name>::<module member>;
+use <address>::<module name>::<module member> as <member alias>;
+```
+
+例如：
+
+```move
+script {
+  use std::vector::empty;
+  use std::vector::empty as empty_vec;
+}
+```
+
+这使得你可以不使用完整限定名来调用函数 `std::vector::empty`，而可以分别使用 `empty` 和 `empty_vec`。同样，`use std::vector::empty;` 等效于 `use std::vector::empty as empty;`
+
+```move
+module 0x42::example {
+  use std::vector::empty;
+  use std::vector::empty as empty_vec;
+
+  fun new_vecs(): (vector<u8>, vector<u8>, vector<u8>) {
+    let v1 = std::vector::empty();
+    let v2 = empty();
+    let v3 = empty_vec();
+    (v1, v2, v3)
+  }
+}
+```
+
+如果需要同时为多个模块成员添加别名，可以使用以下语法：
+
+```move
+use <address>::<module name>::{<module member>, <module member> as <member alias> ... };
+```
+
+例如：
+
+```move
+module 0x42::example {
+  use std::vector::{push_back, length as len, pop_back};
+
+  fun swap_last_two<T>(v: &mut vector<T>) {
+    assert!(len(v) >= 2, 42);
+    let last = pop_back(v);
+    let second_to_last = pop_back(v);
+    push_back(v, last);
+    push_back(v, second_to_last)
+  }
+}
+```
+
+如果需要在添加模块成员别名的同时为模块本身添加别名，可以在单个 `use` 语句中使用 `Self`。`Self` 是一种特殊成员，指代模块本身。
+
+```move
+script {
+  use std::vector::{Self, empty};
+}
+```
+
+为明确起见，以下所有写法都是等价的：
+
+```move
+script {
+  use std::vector;
+  use std::vector as vector;
+  use std::vector::Self;
+  use std::vector::Self as vector;
+  use std::vector::{Self};
+  use std::vector::{Self as vector};
+}
+```
+
+如果需要，您可以为任何项设置任意数量的别名
+
+```move
+module 0x42::example {
+  use std::vector::{
+    Self,
+    Self as V,
+    length,
+    length as len,
+  };
+
+  fun pop_twice<T>(v: &mut vector<T>): (T, T) {
+    // 上述 `use` 语句提供的所有选项都可用
+    assert!(vector::length(v) > 1, 42);
+    assert!(V::length(v) > 1, 42);
+    assert!(length(v) > 1, 42);
+    assert!(len(v) > 1, 42);
+
+    (vector::pop_back(v), vector::pop_back(v))
+  }
+}
+```
+
+## 在 `module` 内部
+
+在 `module` 内部，所有 `use` 声明都可以使用，无论声明顺序如何。
+
+```move
+module 0x42::example {
+  use std::vector;
+
+  fun example(): vector<u8> {
+    let v = empty();
+    vector::push_back(&mut v, 0);
+    vector::push_back(&mut v, 10);
+    v
+  }
+
+  use std::vector::empty;
+}
+```
+
+模块内通过 `use` 声明的别名在该模块内都可用。
+
+此外，引入的别名不能与其他模块成员冲突。详见 [唯一性](#唯一性) 部分
+
+## 在表达式内部
+
+您可以在任何表达式块的开头添加 `use` 声明
+
+```move
+module 0x42::example {
+
+  fun example(): vector<u8> {
+    use std::vector::{empty, push_back};
+
+    let v = empty();
+    push_back(&mut v, 0);
+    push_back(&mut v, 10);
+    v
+  }
+}
+```
+
+与 `let` 类似，表达式块中通过 `use` 引入的别名在该块结束时会被移除。
+
+```move
+module 0x42::example {
+
+  fun example(): vector<u8> {
+    let result = {
+      use std::vector::{empty, push_back};
+      let v = empty();
+      push_back(&mut v, 0);
+      push_back(&mut v, 10);
+      v
+    };
+    result
+  }
+}
+```
+
+尝试在块结束后使用别名会导致错误
+
+```move
+module 0x42::example {
+  fun example(): vector<u8> {
+    let result = {
+      use std::vector::{empty, push_back};
+      let v = empty();
+      push_back(&mut v, 0);
+      push_back(&mut v, 10);
+      v
+    };
+    let v2 = empty(); // 错误！
+//           ^^^^^ 未绑定的函数 'empty'
+    result
+  }
+}
+```
+
+任何 `use` 必须是块中的第一个项。如果 `use` 出现在任何表达式或 `let` 之后，会导致解析错误
+
+```move
+script {
+  fun example() {
+    {
+      let x = 0;
+      use std::vector; // 错误！
+      let v = vector::empty();
+    }
+  }
+}
+
+```
+
+## 命名规则
+
+别名必须遵循与其他模块成员相同的规则。这意味着结构体或常量的别名必须以 `A` 到 `Z` 开头
+
+```move
+address 0x42 {
+  module data {
+    struct S {}
+    const FLAG: bool = false;
+    fun foo() {}
+  }
+  module example {
+    use 0x42::data::{
+      S as s, // 错误！
+      FLAG as fLAG, // 错误！
+      foo as FOO,  // 有效
+      foo as bar, // 有效
+    };
+  }
+}
+```
+
+## 唯一性
+
+在给定作用域内，所有通过 `use` 声明引入的别名必须是唯一的。
+
+对于模块来说，这意味着通过 `use` 引入的别名不能重复
+
+```move
+module 0x42::example {
+  use std::vector::{empty as foo, length as foo}; // 错误！
+  //                                        ^^^ 重复的 'foo'
+
+  use std::vector::empty as bar;
+  use std::vector::length as bar; // 错误！
+  //                         ^^^ 重复的 'bar'
+}
+```
+
+并且，它们不能与模块中的其他成员产生命名冲突
+
+```move
+address 0x42 {
+  module data {
+    struct S {}
+  }
+  module example {
+    use 0x42::data::S;
+
+    struct S { value: u64 } // 错误！
+    //     ^ 与上方的别名'S'冲突
+  }
+}
+```
+
+在表达式块内部，它们彼此之间不能重叠，但可以[遮蔽](#遮蔽)外部作用域中的别名或名称
+
+## 遮蔽
+
+表达式块内部的 `use` 别名可以遮蔽外部作用域中的名称（模块成员或别名）。
+与局部变量的遮蔽规则类似，这种遮蔽会在表达式块结束时失效；
+
+```move
+module 0x42::example {
+
+  struct WrappedVector { vec: vector<u64> }
+
+  fun empty(): WrappedVector {
+    WrappedVector { vec: std::vector::empty() }
+  }
+
+  fun example1(): (WrappedVector, WrappedVector) {
+    let vec = {
+      use std::vector::{empty, push_back};
+      // 现在'empty'指向std::vector::empty
+
+      let v = empty();
+      push_back(&mut v, 0);
+      push_back(&mut v, 1);
+      push_back(&mut v, 10);
+      v
+    };
+    // 现在'empty'重新指向Self::empty
+
+    (empty(), WrappedVector { vec })
+  }
+
+  fun example2(): (WrappedVector, WrappedVector) {
+    use std::vector::{empty, push_back};
+    let w: WrappedVector = {
+      use 0x42::example::empty;
+      empty()
+    };
+    push_back(&mut w.vec, 0);
+    push_back(&mut w.vec, 1);
+    push_back(&mut w.vec, 10);
+
+    let vec = empty();
+    push_back(&mut vec, 0);
+    push_back(&mut vec, 1);
+    push_back(&mut vec, 10);
+
+    (w, WrappedVector { vec })
+  }
+}
+```
+
+## 未使用的Use或别名
+
+未使用的 `use` 会导致错误
+
+```move
+module 0x42::example {
+  use std::vector::{empty, push_back}; // 错误！
+  //                       ^^^^^^^^^ 未使用的别名'push_back'
+
+  fun example(): vector<u8> {
+    empty()
+  }
+}
+```

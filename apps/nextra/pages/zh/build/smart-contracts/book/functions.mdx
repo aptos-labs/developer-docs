@@ -1,0 +1,901 @@
+import { Callout } from "nextra/components";
+
+# 函数
+
+Move语言中的函数语法在模块函数和脚本函数之间是通用的。模块内部的函数可重复使用，而脚本函数仅用于调用交易的一次性执行。
+
+## 声明
+
+函数使用 `fun` 关键字声明，后跟函数名、类型参数、参数、返回类型、acquires注解，最后是函数体。
+
+```text
+fun <identifier><[type_parameters: constraint],*>([identifier: type],*): <return_type> <acquires [identifier],*> <function_body>
+```
+
+例如
+
+```move
+fun foo<T1, T2>(x: u64, y: T1, z: T2): (T2, T1, u64) { (z, y, x) }
+```
+
+### 可见性
+
+模块函数默认只能在同一个模块内调用。这些内部（有时称为私有）函数不能被其他模块或脚本调用。
+
+```move
+address 0x42 {
+module m {
+    fun foo(): u64 { 0 }
+
+    fun calls_foo(): u64 { foo() } // 有效
+}
+
+module other {
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // 错误!
+        //       ^^^^^ `foo`在`0x42::m`中是内部函数
+    }
+}
+}
+
+script {
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // 错误!
+        //       ^^^^^ `foo`在`0x42::m`中是内部函数
+    }
+}
+```
+
+要允许从其他模块或脚本访问，函数必须声明为 `public` 或 `public(friend)`。
+
+#### `public`可见性
+
+`public` 函数可以被 _任何_ 模块或脚本中定义的函数调用。如下例所示， `public` 函数可以被以下对象调用：
+- 同一模块中定义的其他函数
+- 其他模块中定义的函数
+- 脚本中定义的函数
+
+对public函数的参数类型和返回类型也没有任何限制。
+
+```move
+address 0x42 {
+module m {
+    public fun foo(): u64 { 0 }
+
+    fun calls_foo(): u64 { foo() } // 有效
+}
+
+module other {
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // 有效
+    }
+}
+}
+
+script {
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // 有效
+    }
+}
+```
+
+### `package`可见性
+
+*自语言版本2.0起*
+
+`package` 函数只能在同一个 package 内调用。package 的概念由 Move 的宿主环境定义，语言本身不显式声明。通常 package 由构建环境处理的清单文件 `Move.toml` 定义。
+
+以下代码在假设两个模块属于同一 package 且位于相同地址时有效：
+
+```move
+module 0x42::m {
+  package fun foo(): u64 { 0 }
+}
+
+module 0x42::other {
+  fun calls_m_foo(): u64 {
+    0x42::m::foo() // 有效
+  }
+}
+```
+
+尝试从其他 package 访问 `0x42::m::foo` 会在编译时失败。
+
+除了 `package fun` 表示法外，也支持更长的 `public(package) fun` 表示法。
+
+注意 package 可见性是编译时概念，编译器会将其转换为友元可见性（见[下文](#publicfriend可见性)），可由 Move VM 验证。Move VM 保证友元函数不能跨地址边界调用，与编译环境支持的 package 系统无关。
+
+#### `public(friend)`可见性
+
+*自语言版本2.0起*，`friend fun` 取代 `public(friend) fun`。旧表示法仍受支持。
+
+`public(friend)` 可见性修饰符是 `public` 修饰符的限制版本，用于更精确控制函数的使用范围。`public(friend)`函数可以被以下对象调用：
+- 同一模块中定义的其他函数
+- 显式指定在**友元列表**中的模块定义函数（参见[友元](friends.mdx)了解如何指定友元列表），且这些模块位于相同地址
+
+注意由于无法声明脚本作为模块的友元，脚本中定义的函数永远不能调用 `public(friend)` 函数。
+
+```move
+address 0x42 {
+module m {
+    friend 0x42::n;  // 友元声明
+    public(friend) fun foo(): u64 { 0 }
+    friend fun foo2(): u64 { 0 } // 自 Move 2.0 起
+
+    fun calls_foo(): u64 { foo() } // 有效
+    fun calls_foo2(): u64 { foo2() } // 有效，自 Move 2.0 起
+}
+
+module n {
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // 有效
+    }
+
+    fun calls_m_foo2(): u64 {
+        0x42::m::foo2() // 有效，自 Move 2.0 起
+    }
+}
+
+module other {
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // 错误！
+        //       ^^^^^ `foo` 只能被 `0x42::m` 的友元模块调用
+    }
+
+    fun calls_m_foo2(): u64 {
+        0x42::m::foo2() // 错误！
+        //       ^^^^^^ `foo2` 只能被 `0x42::m` 的友元模块调用
+    }
+}
+}
+
+script {
+    fun calls_m_foo(): u64 {
+        0x42::m::foo() // 错误！
+        //       ^^^^^ `foo` 只能被 `0x42::m` 的友元模块调用
+    }
+}
+```
+
+### `entry` 修饰符
+
+`entry` 修饰符旨在允许模块函数像脚本一样被安全直接调用。这使得模块作者可以指定哪些函数可以作为执行入口点。模块作者由此可知，任何非 `entry` 函数都将在已执行的 Move 程序中被调用。
+
+本质上，`entry` 函数是模块的"主"函数，它们指定了 Move 程序的执行起点。
+
+但需注意，`entry` 函数 _仍可以_ 被其他 Move 函数调用。因此虽然它们 _可以_ 作为 Move 程序的起点，但并不局限于此。
+
+例如：
+
+```move
+address 0x42 {
+module m {
+    public entry fun foo() {}
+
+    fun calls_foo() { foo(); } // 有效！
+}
+
+module n {
+    fun calls_m_foo() {
+        0x42::m::foo(); // 有效！
+    }
+}
+
+module other {
+    public entry fun calls_m_foo() {
+        0x42::m::foo(); // 有效！
+    }
+}
+}
+
+script {
+    fun calls_m_foo() {
+        0x42::m::foo(); // 有效！
+    }
+}
+```
+
+即使是内部函数也可以标记为 `entry`！这可以确保该函数仅在执行开始时被调用（假设没有在模块其他地方调用它）
+
+```move
+address 0x42 {
+module m {
+    entry fun foo() {} // 有效！entry 函数不必是公开的
+}
+
+module n {
+    fun calls_m_foo() {
+        0x42::m::foo(); // 错误！
+        //       ^^^^^ `foo` 是 `0x42::m` 的私有函数
+    }
+}
+
+module other {
+    public entry fun calls_m_foo() {
+        0x42::m::foo(); // 错误！
+        //       ^^^^^ `foo` 是 `0x42::m` 的私有函数
+    }
+}
+}
+
+script {
+    fun calls_m_foo() {
+        0x42::m::foo(); // 错误！
+        //       ^^^^^ `foo` 是 `0x42::m` 的私有函数
+    }
+}
+```
+
+entry 函数可以接受以下类型的参数：基本类型、`signer` 的引用、向量（其中元素类型本身是允许的）、以及某些标准库类型如 `String`、`Object` 和 `Option`。entry 函数不得有任何返回值。
+
+
+### 命名规则
+
+函数名可以以字母 `a` 到 `z` 或 `A` 到 `Z` 开头。在第一个字符之后，函数名可以包含下划线 `_`、字母 `a` 到 `z`、字母 `A` 到 `Z` 或数字 `0` 到 `9`。
+
+```move
+module 0x42::example {
+    // 全部有效
+    fun FOO() {}
+
+    fun bar_42() {}
+
+    fun bAZ19() {}
+
+    // 无效
+    fun _bAZ19() {} // 函数名不能以'_'开头
+}
+```
+
+### 类型参数
+
+函数名后可以声明类型参数
+
+```move
+module 0x42::example {
+    fun id<T>(x: T): T { x }
+
+    fun example<T1: copy, T2>(x: T1, y: T2): (T1, T1, T2) { (copy x, x, y) }
+}
+```
+
+更多细节请参阅 [Move 泛型](generics.mdx)。
+
+### 函数参数
+
+函数参数通过局部变量名后跟类型注解来声明
+
+```move
+module 0x42::example {
+    fun add(x: u64, y: u64): u64 { x + y }
+}
+```
+
+我们将其读作 `x` 具有 `u64` 类型
+
+函数也可以完全不包含任何参数。
+
+```move
+module 0x42::example {
+    fun useless() {}
+}
+```
+
+这在创建新数据结构或空数据结构的函数中非常常见
+
+```move
+module 0x42::example {
+    struct Counter { count: u64 }
+
+    fun new_counter(): Counter {
+        Counter { count: 0 }
+    }
+}
+```
+
+### Acquires 声明
+
+当函数使用 `move_from`、`borrow_global` 或 `borrow_global_mut` 访问资源时，必须通过 `acquires` 声明该资源。
+Move 的类型系统会利用此声明来确保全局存储引用的安全性，特别是避免出现对全局存储的悬垂引用。
+
+```move
+module 0x42::example {
+
+    struct Balance has key { value: u64 }
+
+    public fun add_balance(s: &signer, value: u64) {
+        move_to(s, Balance { value })
+    }
+
+    public fun extract_balance(addr: address): u64 acquires Balance {
+        let Balance { value } = move_from<Balance>(addr); // 需要 acquires 声明
+        value
+    }
+}
+```
+
+对于模块内部的间接调用，也需要添加 `acquires` 声明。从其他模块调用这些函数时则不需要声明，因为一个模块无法访问另一个模块声明的资源——因此不需要通过此声明来确保引用安全。
+
+```move
+module 0x42::example {
+
+    struct Balance has key { value: u64 }
+
+    public fun add_balance(s: &signer, value: u64) {
+        move_to(s, Balance { value })
+    }
+
+    public fun extract_balance(addr: address): u64 acquires Balance {
+        let Balance { value } = move_from<Balance>(addr); // 需要 acquires 声明
+        value
+    }
+
+    public fun extract_and_add(sender: address, receiver: &signer) acquires Balance {
+        let value = extract_balance(sender); // 这里需要 acquires 声明
+        add_balance(receiver, value)
+    }
+}
+
+module 0x42::other {
+    fun extract_balance(addr: address): u64 {
+        0x42::example::extract_balance(addr) // 不需要 acquires 声明
+    }
+}
+```
+
+一个函数可以 `acquire` 所需数量的资源
+
+```move
+module 0x42::example {
+    use std::vector;
+
+    struct Balance has key { value: u64 }
+
+    struct Box<T> has key { items: vector<T> }
+
+    public fun store_two<Item1: store, Item2: store>(
+        addr: address,
+        item1: Item1,
+        item2: Item2,
+    ) acquires Balance, Box {
+        let balance = borrow_global_mut<Balance>(addr); // 需要 acquires 声明
+        balance.value = balance.value - 2;
+        let box1 = borrow_global_mut<Box<Item1>>(addr); // 需要 acquires 声明
+        vector::push_back(&mut box1.items, item1);
+        let box2 = borrow_global_mut<Box<Item2>>(addr); // 需要 acquires 声明
+        vector::push_back(&mut box2.items, item2);
+    }
+}
+```
+
+### 返回值类型
+
+在参数之后，函数会指定其返回值类型。
+
+```move
+module 0x42::example {
+    fun zero(): u64 { 0 }
+}
+```
+
+这里的 `: u64` 表示该函数的返回类型为 `u64`。
+
+<Callout type="info">
+如果函数从输入引用派生值，则可以返回不可变 `&` 或可变 `&mut` 的[引用](references.mdx)。请注意，这意味着函数[不能返回全局存储的引用](references.mdx#引用不能被存储)，除非它是[内联函数](#内联函数)。
+</Callout>
+
+通过使用元组，函数可以返回多个值：
+
+```move
+module 0x42::example {
+    fun one_two_three(): (u64, u64, u64) { (0, 1, 2) }
+}
+```
+
+如果未指定返回类型，则函数隐式返回 unit 类型 `()`。以下函数是等价的：
+
+```move
+module 0x42::example {
+    fun just_unit1(): () { () }
+
+    fun just_unit2() { () }
+
+    fun just_unit3() {}
+}
+```
+
+`script` 函数的返回类型必须为 unit `()`：
+
+```move
+script {
+    fun do_nothing() {}
+}
+```
+
+如[元组章节](tuples.mdx)所述，这些元组"值"是虚拟的，在运行时并不存在。因此对于返回 unit `()` 的函数，在执行过程中实际上不会返回任何值。
+
+### 函数体
+
+函数体是一个表达式块。函数的返回值是序列中的最后一个值：
+
+```move
+module 0x42::example {
+    fun example(): u64 {
+        let x = 0;
+        x = x + 1;
+        x // 返回 'x'
+    }
+}
+```
+
+更多关于返回值的说明，请参见[下文](#返回值)
+
+关于表达式块的更多信息，请参阅 [Move 变量](variables.mdx)。
+
+### 原生函数
+
+某些函数没有显式定义函数体，而是由虚拟机提供实现。这类函数标记为 `native`。
+
+在不修改虚拟机源代码的情况下，程序员无法添加新的原生函数。此外，`native` 函数的设计初衷是用于标准库代码或特定 Move 环境所需的功能。
+
+大多数常见的 `native` 函数出现在标准库代码中，例如 `vector` 模块：
+
+```move
+module std::vector {
+    native public fun empty<Element>(): vector<Element>;
+    // ...
+}
+```
+
+## 函数调用
+
+调用函数时，可以通过别名或完全限定名来指定函数名：
+
+```move
+module 0x42::example {
+    public fun zero(): u64 { 0 }
+}
+
+script {
+    use 0x42::example::{Self, zero};
+
+    fun call_zero() {
+        // 使用上述 use 语句后，以下调用方式都是等价的
+        0x42::example::zero();
+        example::zero();
+        zero();
+    }
+}
+```
+
+调用函数时，必须为每个参数提供实参：
+
+```move
+module 0x42::example {
+    public fun takes_none(): u64 { 0 }
+
+    public fun takes_one(x: u64): u64 { x }
+
+    public fun takes_two(x: u64, y: u64): u64 { x + y }
+
+    public fun takes_three(x: u64, y: u64, z: u64): u64 { x + y + z }
+}
+
+script {
+    use 0x42::example;
+
+    fun call_all() {
+        example::takes_none();
+        example::takes_one(0);
+        example::takes_two(0, 1);
+        example::takes_three(0, 1, 2);
+    }
+}
+```
+
+类型参数可以显式指定或由编译器推断。以下两种调用方式是等价的：
+
+```move
+module 0x42::example {
+    public fun id<T>(x: T): T { x }
+}
+
+script {
+    use 0x42::example;
+
+    fun call_all() {
+        example::id(0);
+        example::id<u64>(0);
+    }
+}
+```
+
+更多细节请参阅 [Move 泛型](generics.mdx)。
+
+## 返回值
+
+函数的执行结果称为"返回值"，即函数体最终求得的表达式值。例如：
+
+```move
+module 0x42::example {
+    fun add(x: u64, y: u64): u64 {
+        x + y
+    }
+}
+```
+
+[如前所述](#function-body)，函数体是一个[表达式块](variables.mdx)。表达式块可以包含多条语句，其中最后一个表达式的值就是整个函数块的返回值。
+
+```move
+module 0x42::example {
+    fun double_and_add(x: u64, y: u64): u64 {
+        let double_x = x * 2;
+        let double_y = y * 2;
+        double_x + double_y
+    }
+}
+```
+
+这里的返回值是 `double_x + double_y`
+
+### `return` 表达式
+
+函数会隐式返回其函数体的求值结果。但也可以使用显式的 `return` 表达式：
+
+```move
+module 0x42::example {
+    fun f1(): u64 { return 0 }
+
+    fun f2(): u64 { 0 }
+}
+```
+
+这两个函数是等价的。在下面这个稍复杂的示例中，函数执行两个 `u64` 值的减法运算，但当第二个值过大时会通过 `return` 提前返回 0：
+
+```move
+module 0x42::example {
+    fun safe_sub(x: u64, y: u64): u64 {
+        if (y > x) return 0;
+        x - y
+    }
+}
+```
+
+注意这个函数体也可以写成 `if (y > x) 0 else x - y` 的形式。
+
+但 `return` 真正的优势在于可以从深层控制流中直接退出。在下面示例中，函数通过遍历向量来查找目标值的索引：
+
+```move
+module 0x42::example {
+    use std::vector;
+    use std::option::{Self, Option};
+
+    fun index_of<T>(v: &vector<T>, target: &T): Option<u64> {
+        let i = 0;
+        let n = vector::length(v);
+        while (i < n) {
+            if (vector::borrow(v, i) == target) return option::some(i);
+            i = i + 1
+        };
+
+        option::none()
+    }
+}
+```
+
+不带参数的 `return` 是 `return ()` 的简写形式。因此以下两个函数等价：
+
+```move
+module 0x42::example {
+    fun foo1() { return }
+
+    fun foo2() { return () }
+}
+```
+
+## 内联函数
+
+内联函数是指在编译期间将其函数体在调用处直接展开的函数。因此内联函数不会作为独立函数出现在 Move 字节码中：所有对它们的调用都会被编译器展开。在某些情况下，这可以提升执行速度并节省 gas。但需要注意可能会导致字节码体积增大：过度内联可能触发各种大小限制。
+
+可以通过在函数声明前添加 `inline` 关键字来定义内联函数，如下所示：
+
+```移动
+模块 0x42::example {
+    inline fun 百分比(x: u64, y: u64): u64 { x * 100 / y }
+}
+```
+
+如果我们调用这个内联函数为 `百分比(2, 200)`，编译器会将此调用替换为内联函数体，就像用户写了 `2 * 100 / 200` 一样。
+
+### 函数参数与 Lambda 表达式
+
+内联函数支持_函数参数_，可以接受 lambda 表达式（即匿名函数）作为参数。
+这个特性使得编写某些常见编程模式更加优雅。
+与内联函数类似，lambda 表达式也会在调用点展开。
+
+一个 lambda 表达式包含参数列表（用`||`包裹）和函数体。
+简单示例：`|x| x + 1`、`|x, y| x + y`、`|| 1`、`|| { 1 }`。
+lambda 函数体可以引用定义时所在作用域的变量：这被称为捕获。
+这些变量可以被 lambda 表达式读取或写入（如果可变）。
+
+函数参数的类型写作 `|<参数类型列表>| <返回类型>`。
+例如，当函数参数类型为 `|u64, u64| bool` 时，任何接受两个`u64`参数并返回`bool`值的lambda表达式都可以作为参数。
+
+下面是一个展示这些概念的实例（示例取自`std::vector`模块）：
+
+```move
+module 0x42::example {
+    /// Fold the function over the elements.
+    /// E.g, `fold(vector[1,2,3], 0, f)` is the same as `f(f(f(0, 1), 2), 3)`.
+    public inline fun fold<Accumulator, Element>(
+        v: vector<Element>,
+        init: Accumulator,
+        f: |Accumulator, Element|Accumulator
+    ): Accumulator {
+        let accu = init;
+        // Note: `for_each` is an inline function, but is not shown here.
+        for_each(v, |elem| accu = f(accu, elem));
+        accu
+    }
+}
+```
+
+未展示的public inline函数 `for_each` 的类型签名为 `fun for_each<Element>(v: vector<Element>, f: |Element|)`。
+它的第二个参数`f`是函数参数，接受任何消费一个 `Element` 类型且无返回值的lambda表达式。
+在代码示例中， 我们使用lambda表达式 `|Element| 累加 = f(Accumulator, Element)` 作为该函数参数的实参。
+注意这个lambda表达式从外部作用域捕获了变量 `Accumulator`。
+
+### 当前限制
+
+未来计划放宽部分限制，但目前：
+
+- 只有内联函数可以有函数参数
+- 只有显式的lambda表达式可以作为内联函数函数参数的实参
+- 内联函数和lambda表达式：
+  - 不能包含 `return` 表达式；或游离的 `break` / `continue` 表达式（出现在循环外部）
+  - 不能返回lambda表达式
+- 不允许纯内联函数的循环递归
+- lambda表达式的参数不能带类型标注 （如不允许 `|x: u64| x + 1` ）：其类型会被推断
+
+### 其他注意事项
+
+- 避免在public inline函数中使用模块私有常量/方法。
+  当这类内联函数在模块外调用时，调用点的就地展开会导致对私有常量/方法的无效访问。
+- 避免将不同位置调用的大型函数标记为inline。同时避免内联函数链式调用大量其他内联函数。
+  这可能导致过度内联并增加字节码大小。
+- 内联函数可用于返回全局存储的引用，这是非内联函数无法实现的。
+
+### 内联函数与引用
+
+如[前文提示](#返回值类型)所述，`inline`函数比普通函数能更自由地使用引用。
+
+例如，非 `inline` 函数调用的实际参数不能存在不安全的别名（多个 `&` 参数指向同一对象，且至少一个是 `&mut` ），
+但 `inline` 函数调用不必然受此限制，只要函数内联后不存在引用使用冲突。
+
+```move
+inline fun add(dest: &mut u64, a: &u64, b: &u64) {
+    *dest = *a + *b;
+}
+
+fun user(...) {
+    ...
+    x = 3;
+    add(&mut x, &x, &x);  // 仅因内联而合法
+    ...
+}
+```
+
+从非内联函数返回的引用类型值必须源自传递给函数的引用参数，但对于内联函数则不必如此，只要被引用的值在内联后仍在函数作用域内即可。
+
+关于引用安全性和"借用检查"的具体细节较为复杂，其他文档中有详细说明。高级Move用户通过理解"借用检查"仅在所有 `inline` 函数调用展开后发生，可以发现新的表达能力。
+
+然而，这种能力也带来了新的责任：非平凡的 `inline` 函数文档可能需要解释调用点处对引用参数和结果的任何潜在限制。
+
+## 点号(接收者)函数调用语法
+
+*自语言版本2.0起*
+
+通过在函数声明中使用众所周知的名称 `self` 作为第一个参数，可以使用 `.` 语法调用该函数——通常也称为接收者风格语法。示例：
+
+```move
+module 0x42::example {
+    struct S {}
+
+    fun foo(self: &S, x: u64) { /* ... */ }
+
+    //...
+
+    fun example() {
+        let s = S {};
+        s.foo(1);
+    }
+}
+```
+
+调用 `s.foo(1)` 是 `foo(&s, 1)` 的语法糖。注意编译器会自动插入引用运算符。第二种旧式写法对 `foo` 仍然可用，因此可以逐步引入新的调用风格而不破坏现有代码。
+
+`self` 参数的类型可以是结构体或对结构体的不可变/可变引用。该结构体必须与函数声明在同一模块中。
+
+注意，你不需要 `use` 引入了接收者函数的模块。编译器会根据像 `s.foo(1)` 这样的调用中 `s` 的参数类型自动找到这些函数。这与自动插入引用运算符相结合，可以使使用这种语法的代码更加简洁。
+
+接收者风格语法也可用于泛型函数，如下面展示的泛型函数 `std::vector::remove<T>(self: &mut vector<T>, i: u64): T`。
+
+```move
+module 0x42::example {
+    fun bar() {
+        let v = vector[1, 2, 3];
+        let e1 = v.remove(0); // 为 `remove<T>` 推断类型参数
+        assert!(e1 == 1);
+        let e2 = v.remove::<u8>(0); // 显式指定类型参数
+        assert!(e2 == 2);
+    }
+}
+```
+
+## 函数值
+
+*自语言版本2.2起*(预览)
+
+Move支持将 *函数值* 作为语言的一等公民。函数值通过函数名或lambda表达式构造，并通过向其传递参数并执行底层函数来求值。
+此功能通常也称为 _动态分派_ 。具体调用哪个函数对调用者来说是未知的，由运行时值决定。动态分派是组合应用程序的重要工具。
+Move通过提供防止重入的内置保护机制使动态分派变得安全，用户选择可以进一步细化这些机制。
+
+### 函数类型
+
+函数值的类型在[内联函数](#函数参数与-lambda-表达式)中已经介绍过。函数类型的表示方式例如 `|u64|bool`，表示一个接受数字并返回布尔值的函数。类型列表用逗号分隔，如 `|u64, bool|(bool,u4)`。
+
+函数类型可以有关联的能力，写作 `|u64|bool has copy`。多个能力用加号分隔，如 `|u64|bool has copy+drop`。如果没有提供能力，该值只能被移动和求值(关于函数值的求值，参见[下文](#function-evaluation))。
+
+函数值可以存储在结构体或枚举的字段中。在这种情况下，字段类型继承结构体的能力：
+
+```move
+struct S has key {
+  func: |u64| bool /* has store */  // 不需要因为继承
+}
+```
+
+### 函数值的操作
+
+函数值通过提供相应数量的参数来求值，类似于调用命名函数。在求值过程中，函数值会被 *消耗* 。
+因此如果需要多次求值同一个函数值，其类型必须具有`copy`能力：
+
+```move
+let f: |u64|bool has copy = |x| x > 0;
+assert!(f(1) == f(2))
+```
+
+函数值支持相等性和排序比较。注意这些关系是基于运行时值背后底层函数的名称，并不反映语义等价性。
+
+### 函数类型包装器
+
+函数类型（特别是与能力组合使用时）可能显得冗长，如果相同类型的函数在代码中多次使用，会显得重复。为此，Move 将函数类型的结构体包装器视为特例，可以用来有效创建命名函数类型：
+
+```move
+struct Predicate<T>(|&T|bool) has copy;
+```
+
+Move 通过自动将函数值转换为包装器类型（反之亦然）来支持此特性。例如：
+
+```move
+let f: Predicate<u64> = |x| *x > 0; // lambda 转换为 Predicate
+assert!(f(&22)) // Predicate 可调用
+```
+
+### 表示函数值
+
+函数值可以通过直接使用函数名来构造。生成的函数类型派生自底层函数的签名，具有 `copy+drop` 能力。如果函数是公开的，这些函数值还会具有 `store` 能力：
+
+```move
+public fun is_even(x: u64): bool { x % 2 == 0 }
+fun is_odd(x: u64): bool { x % 2 == 1 }
+...
+let f: |u64|bool has copy+drop+store = is_even;
+let g: |u64|bool has copy+drop = is_odd;
+```
+
+构建可存储的函数值需要_持久化_函数，因为需要确保底层函数存在且可以在未来任何时候从存储中安全恢复。不过代码升级可能会改变函数的底层实现，而其签名是持久化的。
+
+虽然`public`和`entry`函数默认持久化，但非公开函数需要通过`#[persistent]`属性标记才能变为可存储：
+
+```move
+#[persistent] fun is_odd(x: u64): bool { x % 2 == 1 }
+...
+let g: |u64|bool has copy+drop+store = is_odd;
+```
+
+如果仅为了让函数可存储，优先使用 `#[persistent]` 属性，可以避免公开或入口可见性带来的安全影响。
+
+### Lambda 表达式与闭包
+
+函数值可以通过 _lambda表达式_ 表示（也可作为[内联函数](#函数参数与-lambda-表达式)的参数）。Lambda 表达式可以通过值捕获上下文变量：这些值会被移动（或复制）到 _闭包_ 中，在函数求值时从中产生。例如：
+
+```move
+struct S(u64); // 不能被复制或丢弃
+...
+let s = S(1);
+let add = |y| { let S(x) = s; x + y }; // s 将被移动到闭包中
+assert!(add(2) == 3)
+```
+
+带有捕获值的闭包按字典序排序，首先根据底层函数名称（可能由lambda提升生成），然后根据捕获的值。
+
+由 lambda 表达式构造的闭包类型是从表达式推断出来的（例如，上面示例中 `add` 的类型被推断为 `|u64|u64` ）。该函数类型的能力按以下方式派生：默认情况下，闭包的基础函数是私有函数，因此该函数本身具有 `copy+drop` 能力（但不具有 `store` 能力）。这会与所有捕获的上下文变量的能力取交集。然而，lambda存在一个特殊情况：当可以识别出基础持久函数而非私有函数时，该 lambda 只是"延迟"了该函数的某些参数。这种模式在函数式编程中也被称为"柯里化"（以数学家 Curry 命名）。以下是一些示例：
+
+```move
+#[persistent] fun add(x: u64, y: u64) { x + y }
+...
+let x = 22;
+let f: |u64|u64 has copy+drop+store = |y| add(x, y);  // 第1个参数被捕获，第2个参数延迟
+let f: |u64|u64 has copy+drop+store = |y| add(y, x);  // 第1个参数延迟，第2个参数被捕获
+```
+
+请注意，在Move当前阶段无法捕获引用值。因此以下代码无法编译：
+
+```move
+let x = &22;
+let f = |y| add(*x, y) // 无法编译
+```
+
+相关地，也无法在lambda上下文中修改任何局部变量。具体来说，以下来自内联函数lambda的模式不受支持：
+
+```move
+let x = 0;
+collection.for_each(|e| x += e) // 无法编译
+```
+
+但是，lambda的实际参数可以是引用，只有捕获的值受到限制。例如：
+
+```move
+let x = 22;
+let f : |&u64|u64 = |y| add(x, *y)
+```
+
+### 重入检查
+
+通过函数值的动态分发，在函数调用链中可能出现模块重入。如果模块`m1`使用模块`m2`，且`m1`调用`m2::f`时向其传递一个函数值，该函数值可以回调到`m1`中。这种情况称为重入 （reentrancy） ，在没有函数值的 Move 中不可能发生，因为模块使用关系是无环的。
+
+Move虚拟机会动态检测模块重入，并锁定该模块中声明的所有资源以防止访问。因此在`m`的重入期间，调用资源操作如 `&m::R[addr]`、`&mut m::R[addr]` 和 `move_from<m::R>` 会导致中止。示例如下：
+
+```move
+module 0x42::caller {
+  use 0x42::callee;
+  struct R{ count: u64 } has key;
+  fun calling() acquires R {
+     let r = &mut R[@addr];
+     // 此回调正常，因为未访问`R`
+     callee::call_me(r, |x| do_something(x))
+     // 此回调将导致重入运行时错误
+     callee::call_me(r, |_| R[@addr].count += 1)
+     r.call_count += 1
+  }
+  fun do_something(r: &mut R) { .. }
+}
+
+module 0x42::callee {
+  fun call_me<T(x: &mut T, action: |&mut T|) {
+    action(x)
+  }
+}
+```
+
+请注意，向同一模块中的具体函数分派函数值也被视为重入。如果将函数 `callee::call_me` 移动到模块 `caller` 中，同样会触发这种语义。
+
+默认的重入检查机制确保了Move引用语义的一致性，并抑制了重入对目标模块所拥有资源产生的副作用。然而，重入代码仍被允许访问重入路径之外模块管理的资源状态。虽然这种状态访问可能被视为不良设计，但它们确实存在。
+
+针对这种情况，可以使用 `#[module_lock]` 属性标注函数：
+
+```move
+module 0x42::account { ... }
+module 0x42::caller {
+  #[module_lock] // 若无此锁，notify调用可能超额提取资金
+  fun transfer(from: address, to: address, amount: u64, notify: |u64|) {
+    // 注意：此处设计应改用 `Coin` 类型并进行转移操作
+    assert!(account::balance(from) - MIN_BALANCE >= amount);
+    account::deposit(to, amount)
+    notify(amount); // 尝试重入 `transfer` 将被阻止
+    account::withdraw(from, amount);
+  }
+}
+```
+
+当带有此属性的函数正在执行时，所有试图重入任何模块的调用都将导致中止，从而提供更强的保护机制。属性 `#[module_lock]` 的限制并非默认行为，因为它对于高阶编程的典型模式而言过于严格。例如，`collection.find(|x| cond(x))` 会导致包含该表达式的模块从定义集合类型的模块发生重入。
