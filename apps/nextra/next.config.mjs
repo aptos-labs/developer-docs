@@ -1505,8 +1505,8 @@ export default withBundleAnalyzer(
         permanent: true,
       },
       {
-        source: "/en/build",
-        destination: "/en/build/get-started",
+        source: "/:locale/build",
+        destination: "/:locale/build/get-started",
         permanent: true,
       },
       {
