@@ -1,0 +1,100 @@
+---
+title: "调试 Move"
+---
+
+# 调试 Move
+
+Move 设计得简单且安全，但与所有编程语言一样，仍然可能出现错误。本指南将帮助您调试 Move 代码并找出问题所在。
+
+请随时贡献额外的工具和信息，以帮助社区中的其他人。
+
+## 使用 Aptos CLI 进行调试
+
+### 交易提交时的模拟
+
+您可以使用 Aptos CLI 在执行之前模拟入口函数。
+
+通常，如果交易在链上无法执行，模拟时也会失败。例如：
+
+```bash name="Terminal"
+aptos move run --function-id 0x1::aptos_account::transfer --args address:0x1 u64:1000000000000000000
+{
+  "Error": "Simulation failed with status: Move abort in 0x1::coin: EINSUFFICIENT_BALANCE(0x10006): Not enough coins to complete transaction"
+}
+```
+
+同样适用于 Move 脚本。例如：
+
+```bash name="Terminal"
+ aptos move run-script --script-path <script_path> ...
+```
+
+### 本地模拟
+
+此外，在某些情况下，本地模拟可能会提供额外的信息，并[打印出您代码中的任何调试语句](https://aptos.dev/en/build/cli/working-with-move-contracts#printing-debugging-information)。
+
+```bash name="Terminal"
+aptos move run --function-id 0x1::aptos_account::transferred --args address:0x1 u64:1000000000000000000 --local
+
+Simulating transaction locally...
+{
+  "Result": {
+    "transaction_hash": "0x4115316915d409ba4106632c82d4b09220035ffdbd0b86bbe29a586d03d06318",
+    "gas_used": 3,
+    "gas_unit_price": 100,
+    "sender": "78077fe8db589e1a3407170cf8af3bd60a8c95737918c15dd6f49dcbecc7900a",
+    "success": false,
+    "version": 56634003,
+    "vm_status": "status FUNCTION_RESOLUTION_FAILURE of type Verification with message Function 0x1::aptos_account::transferred does not exist"
+  }
+}
+```
+
+### Gas 分析和追踪
+
+添加 gas 分析将额外提供计算中使用的 gas 量的追踪能力：
+
+```bash name="Terminal"
+aptos move run --function-id 0x1::aptos_account::transferred --args address:0x1 u64:1000000000000000000 --profile-gas
+
+Simulating transaction locally using the gas profiler...
+Gas report saved to gas-profiling/txn-a90ca655-0x1-aptos_account-transferred.
+{
+  "Result": {
+    "transaction_hash": "0xa90ca6550dcdd7f514f4cdcdee7dc1fbee17082fcf68f3db3e5755a93b89bcfc",
+    "gas_used": 3,
+    "gas_unit_price": 100,
+    "sender": "78077fe8db589e1a3407170cf8af3bd60a8c95737918c15dd6f49dcbecc7900a",
+    "success": false,
+    "version": 56651618,
+    "vm_status": "status FUNCTION_RESOLUTION_FAILURE of type Verification with message Function 0x1::aptos_account::transferred does not exist"
+  }
+}
+```
+
+这将生成一个可在 HTML 格式中查看的 gas 报告：
+
+```bash name="Terminal"
+open  gas-profiling/txn-a90ca655-0x1-aptos_account-transferred/index.html
+```
+
+## 评估性能
+
+```bash name="Terminal"
+aptos move run --function-id 0x1::aptos_account::transfer --args address:0x1 u64:1 --benchmark
+
+Benchmarking transaction locally...
+Running time (cold code cache): 22.144458ms
+Running time (warm code cache): 669.5µs
+{
+  "Result": {
+    "transaction_hash": "0x7cdf37ff4d798b3ac3f1e860a40428853e381598a511b9291f2a49e5ff6262a0",
+    "gas_used": 11,
+    "gas_unit_price": 100,
+    "sender": "78077fe8db589e1a3407170cf8af3bd60a8c95737918c15dd6f49dcbecc7900a",
+    "success": true,
+    "version": 56679764,
+    "vm_status": "status EXECUTED of type Execution"
+  }
+}
+``` 

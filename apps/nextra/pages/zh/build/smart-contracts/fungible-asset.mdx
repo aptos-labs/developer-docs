@@ -1,0 +1,434 @@
+---
+title: "Aptos 同质化资产（FA）标准"
+id: "fungible-asset"
+---
+
+import { Callout } from "nextra/components";
+import { ThemedImage } from "@components/index";
+
+# Aptos 同质化资产（FA）标准
+
+Aptos 同质化资产标准（也称为"Fungible Asset"或"FA"）为 Move 生态系统中定义同质化资产提供了一种标准且类型安全的方式。它是对 `coin` 模块的现代替代方案，能够无缝地铸造、转账和自定义各种用例的同质化资产。
+
+该标准的重要性在于，它让 Aptos 上的同质化资产（如货币和现实世界资产（RWA））能够以 dApp 可识别的一致方式表示和转移所有权。相比 `coin` 模块，FA 标准通过利用 [Move Objects](objects.mdx) 来表示同质化资产数据，允许更广泛的自定义。
+
+FA 标准为你提供了创建、铸造、转账和销毁同质化资产所需的全部功能（并且自动允许接收方存储和管理他们收到的任何同质化资产）。
+
+它通过使用两个 Move Object 实现：
+
+1. `Object<Metadata>` —— 表示同质化资产本身的详细信息，包括 `name`、`symbol` 和 `decimals` 等信息。
+2. `Object<FungibleStore>` —— 存储该账户所拥有的同质化资产单位数量。只要元数据一致，同质化资产之间可以互换。一个账户*可以*拥有同一同质化资产的多个 `FungibleStore`，但这仅用于高级用例。
+
+下图展示了这些 Object 之间的关系。`Metadata` Object 由同质化资产创建者拥有，然后在 FA 持有者的 `FungibleStore` 中引用，以指示跟踪的是哪个 FA：
+
+<ThemedImage
+alt="FA Object Relationship"
+sources={{
+    light: '/docs/fa-diagram-light.png',
+    dark: '/docs/fa-diagram-dark.png',
+  }}
+/>
+
+[本实现](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move) 相较于 `coin` 标准有改进，因为 Move Object 更易于通过智能合约自定义和扩展。更多关于编写 [Move Objects](objects.mdx) 的高级指南请参考相关文档。
+FA 标准还自动处理账户所拥有的同质化资产数量，无需像 `coin` 标准那样要求接收方单独注册 `CoinStore` 资源。
+
+## 创建新的同质化资产（FA）
+
+总体流程如下：
+
+1. 创建一个不可删除的 Object 来拥有新创建的同质化资产 `Metadata`。
+2. 生成 `Ref` 以启用所需权限。
+3. 铸造同质化资产并将其转账给任意账户。
+
+FA 标准基于 Move Object 实现。Object 默认可转让、可拥有多个资源，并可通过智能合约自定义。关于 Object 及其工作原理的详细信息，请阅读[本指南](objects.mdx)。
+
+要创建 FA，首先需要创建一个**不可删除的 Object**，因为在存在活跃余额时销毁同质化资产的元数据是不合理的。你可以通过调用 `object::create_named_object(caller_address, NAME)` 或 `object::create_sticky_object(caller_address)` 在链上创建 Object。
+
+调用这些函数时，会返回一个 `ConstructorRef`。`Ref` 允许在 Object 创建后立即自定义 Object。你可以使用 `ConstructorRef` 生成基于用例所需的其他权限。
+
+<Callout type="info">
+注意：`ConstructorRef` 不能被存储，并会在创建 Object 的交易结束时销毁，因此所有 `Ref` 必须在 Object 创建时生成。
+</Callout>
+
+`ConstructorRef` 的一个用途是生成 FA 的 `Metadata` Object。标准提供了一个生成函数 `primary_fungible_store::create_primary_store_enabled_fungible_asset`，它允许你的同质化资产可以转账给任意账户。该方法会自动为接收方创建或复用主 `FungibleStore`，无需你直接创建或索引该 store。
+
+`create_primary_store_enabled_fungible_asset` 的定义如下：
+
+```move filename="example.move"
+public fun create_primary_store_enabled_fungible_asset(
+    constructor_ref: &ConstructorRef,
+    // This ensures total supply does not surpass this limit - however,
+    // Setting this will prevent any parallel execution of mint and burn.
+    maximum_supply: Option<u128>,
+    // The fields below here are purely metadata and have no impact on-chain.
+    name: String,
+    symbol: String,
+    decimals: u8,
+    icon_uri: String,
+    project_uri: String,
+)
+```
+
+<Callout type="info">
+你也可以使用 `add_fungibility`，其参数相同，但要求接收方自行跟踪其 `FungibleStore` 地址以管理 FA 数量。
+</Callout>
+
+创建好 Metadata 后，还可以使用 `ConstructorRef` 生成额外的 `Ref`。除了常规的 [Object Refs](object/creating-objects.mdx)，FA 还定义了三种额外权限：
+
+1. `MintRef` —— 允许铸造新的 FA 单位。
+2. `TransferRef` —— 允许冻结账户转账该 FA，或绕过现有冻结（合规场景下可能很重要）。
+3. `BurnRef` —— 允许销毁或删除 FA 单位。
+
+<Callout type="warning">
+注意：所有 `Ref` 必须在 Object 创建时生成，因为那是唯一可以获得 Object 的 `ConstructorRef` 的时机。
+</Callout>
+
+要生成拥有全部 FA 权限的 Object，可以部署如下合约：
+
+```move filename="example.move"
+module my_addr::fungible_asset_example {
+    use aptos_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata, FungibleAsset};
+    use aptos_framework::object::{Self, Object};
+    use aptos_framework::primary_fungible_store;
+    use std::error;
+    use std::signer;
+    use std::string::utf8;
+    use std::option;
+
+  const ASSET_SYMBOL: vector<u8> = b"FA";
+
+	// Make sure the `signer` you pass in is an address you own.
+	// Otherwise you will lose access to the Fungible Asset after creation.
+  entry fun init_module(admin: &signer) {
+    // Creates a non-deletable object with a named address based on our ASSET_SYMBOL
+    let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
+
+    // Create the FA's Metadata with your name, symbol, icon, etc.
+    primary_fungible_store::create_primary_store_enabled_fungible_asset(
+        constructor_ref,
+        option::none(),
+        utf8(b"FA Coin"), /* name */
+        utf8(ASSET_SYMBOL), /* symbol */
+        8, /* decimals */
+        utf8(b"http://example.com/favicon.ico"), /* icon */
+        utf8(b"http://example.com"), /* project */
+    );
+
+    // Generate the MintRef for this object
+    // Used by fungible_asset::mint() and fungible_asset::mint_to()
+    let mint_ref = fungible_asset::generate_mint_ref(constructor_ref);
+
+    // Generate the TransferRef for this object
+    // Used by fungible_asset::set_frozen_flag(), fungible_asset::withdraw_with_ref(),
+    // fungible_asset::deposit_with_ref(), and fungible_asset::transfer_with_ref().
+    let transfer_ref = fungible_asset::generate_transfer_ref(constructor_ref);
+
+    // Generate the BurnRef for this object
+    // Used by fungible_asset::burn() and fungible_asset::burn_from()
+    let burn_ref = fungible_asset::generate_burn_ref(constructor_ref);
+
+    // Add any other logic required for your use case.
+    // ...
+  }
+}
+```
+
+<Callout type="info">
+完整的自定义同质化资产模块示例请参见 [fa_coin.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/fungible_asset/fa_coin/sources/FACoin.move)。
+你也可以在 [FA 示例代码集合](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset) 中查看更多示例。
+</Callout>
+
+现在你可以通过 `MintRef` 进行铸造：
+
+```move filename="example.move"
+public fun mint(ref: &MintRef, amount:u64): FungibleAsset
+```
+
+或通过 `BurnRef` 销毁 FA 单位：
+
+```move filename="example.move"
+public fun burn(ref: &BurnRef, fa: FungibleAsset)
+```
+
+此时，你可以使用生成的 `Ref` 进行同质化资产的铸造、转账和销毁。具体实现请参考上述 Move 脚本示例。
+
+## 参考文档
+
+你可以在[这里](https://aptos.dev/reference/move/?branch=mainnet&page=aptos-framework/doc/fungible_asset.md)找到 FA 标准提供的完整函数集。 {/* TODO: Move Reference 链接迁移后需更新 */}
+
+同质化资产拥有者可用的基础功能包括：
+
+### 提取（Withdraw）
+
+拥有者可通过以下方式从主 store 提取 FA：
+
+```move filename="withdraw"
+public fun primary_fungible_store::withdraw<T: key>(owner: &signer, metadata: Object<T>, amount:u64): FungibleAsset
+```
+该函数会触发 `WithdrawEvent`。
+
+### 存入（Deposit）
+
+拥有者可通过以下方式将 FA 存入主 store：
+
+```move filename="deposit"
+public fun primary_fungible_store::deposit(owner: address, fa: FungibleAsset)
+```
+
+该函数会触发 `DepositEvent`。
+
+### 转账（Transfer）
+拥有者可通过以下方式将 FA 从主 store 转账到其他账户：
+
+```move filename="transfer"
+public entry fun primary_fungible_store::transfer<T: key>(sender: &signer, metadata: Object<T>, recipient: address, amount:u64)
+```
+
+这会分别在相关 `FungibleStore` 上触发 `WithdrawEvent` 和 `DepositEvent`。
+
+### 查询余额（Check Balance）
+
+要查询主 store 的余额，请调用：
+
+```move filename="check_balances"
+public fun primary_fungible_store::balance<T: key>(account: address, metadata: Object<T>): u64
+```
+
+### 查询冻结状态（Check Frozen Status）
+
+要查询指定账户的主 store 是否被冻结，请调用：
+
+```move filename="is_frozen"
+public primary_fungible_store::fun is_frozen<T: key>(account: address, metadata: Object<T>): bool
+```
+
+### 事件（Events）
+
+FA 的基础功能会触发三类事件：
+
+1. `Deposit`：当 FA 被存入 store 时触发。
+
+```move filename="deposit_event"
+struct Deposit has drop, store {
+    store: address,
+    amount: u64,
+}
+```
+
+2. `Withdraw`：当 FA 被从 store 提取时触发。
+
+```move filename="withdraw_event"
+struct Withdraw has drop, store {
+    store: address,
+    amount: u64,
+}
+```
+
+3. `Frozen`：当同质化资产 store 的冻结状态被更新时触发。
+
+```move filename="frozen_event"
+struct Frozen has drop, store {
+    store: address,
+    frozen: bool,
+}
+```
+
+## 可调度同质化资产（高级）
+
+除了 Aptos Framework 提供的默认同质化资产管理功能外，发行方还可以通过可调度同质化资产标准实现自定义的存取逻辑。只需在资产元数据中注册自定义钩子函数，Aptos Framework 会在存取时自动调用这些钩子，从而实现复杂的访问控制等逻辑。详情请参考对应的 [AIP](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md)。
+
+### 实现钩子函数
+
+要实现自定义钩子函数，需在模块中编写如下签名的函数：
+
+```move filename="example.move"
+module my_addr::my_fungible_asset_example {
+    // ...
+    public fun withdraw<T: key>(
+        store: Object<T>,
+        amount: u64,
+        transfer_ref: &TransferRef,
+    ): FungibleAsset {
+        // Your custom logic here
+    }
+
+    public fun deposit<T: key>(
+        store: Object<T>,
+        fa: FungibleAsset,
+        transfer_ref: &TransferRef,
+    ) {
+        // Your custom logic here
+    }
+    // ...
+}
+```
+
+### 限制说明
+
+- **重入防护**：自定义钩子中仅可调用 `with_ref` API 进行存取操作。
+    - 使用 `fungible_asset::deposit_with_ref` 替代 `fungible_asset::deposit`。
+    - 使用 `fungible_asset::withdraw_with_ref` 替代 `fungible_asset::withdraw`。
+- 避免在自定义钩子中调用 `dispatchable_fungible_asset` 和 `primary_fungible_store` 中定义的函数（内联函数除外），以防转账时出错。
+- 注意：对于注册了钩子的资产，调用 `fungible_asset::withdraw` 和 `fungible_asset::deposit` 将**无法生效**。详情见"与可调度同质化资产交互"部分。
+
+更多限制说明请参考 [AIP](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-73.md)。
+
+### 注册钩子函数
+
+实现好函数后，使用 `dispatchable_fungible_asset::register_dispatch_functions` API 将其与同质化资产绑定：
+
+```move filename="register_dispatch"
+module 0x1::dispatchable_fungible_asset {
+    public fun register_dispatch_functions(
+        constructor_ref: &ConstructorRef,
+        withdraw_function: Option<FunctionInfo>,
+        deposit_function: Option<FunctionInfo>,
+        derived_balance_function: Option<FunctionInfo>,
+    )
+}
+```
+
+<Callout type="info">
+`register_dispatch_functions` 接收 `Option<FunctionInfo>` 作为输入，用于指定提取/存入/余额操作是否使用自定义逻辑。传入 `option::none()` 时将使用默认逻辑。
+`constructor_ref` 是你的同质化资产元数据对象的引用。
+</Callout>
+
+要构造 `FunctionInfo`，请使用：
+
+```move filename="new_function_info"
+module 0x1::dispatchable_fungible_asset {
+    public fun new_function_info(module_signer: &signer, module_name: String, function_name: String): FunctionInfo
+}
+```
+
+出于安全考虑，需由模块的 signer（部署者或代码所有者）来创建 FunctionInfo。
+
+```move filename="example.move"
+module my_addr::my_fungible_asset_example {
+    use aptos_framework::string;
+    use aptos_framework::object;
+    use aptos_framework::primary_fungible_store;
+    use aptos_framework::dispatchable_fungible_asset;
+
+    fun create_fungible_asset(module_signer: &signer, /* ... */) {
+        // Make the deposit override function info
+        let deposit_override = dispatchable_fungible_asset::new_function_info(
+            module_signer,
+            string::utf8(b"example"),
+            string::utf8("deposit")
+        );
+
+        // Create the fungible asset
+        let constructor_ref = object::create_sticky_object( /* ... */);
+
+        primary_fungible_store::create_primary_store_enabled_fungible_asset(&constructor_ref, ...);
+        // or below if not having primary stores
+        // fungible_asset::add_fungibility(&constructor_ref, /* ... */);
+
+        // Override default functionality for deposit
+        dispatchable_fungible_asset::register_dispatch_functions(
+            &constructor_ref,
+            option::none(),
+            option::some(deposit_override),
+            option::none()
+        );
+
+        // ...
+    }
+
+    // ...
+}
+```
+
+### 与可调度同质化资产交互
+对于使用 `primary_fungible_store` 管理资产的用户，无需更改与注册钩子的资产的交互方式。Aptos Framework 会自动调用钩子逻辑。
+
+对于使用二级 `FungibleStore` 交互的用户，请使用 `dispatchable_fungible_asset::withdraw/deposit` 替代 `fungible_asset::withdraw/deposit`，以支持注册了钩子的资产。
+
+`dispatchable_fungible_asset::withdraw/deposit` 既可用于有钩子的资产，也可用于无钩子的资产。
+
+## 管理 Store（高级）
+
+在底层，FA 标准需要管理每个账户资产余额的存储方式。绝大多数情况下，用户会将所有 FA 余额存储在主 `FungibleStore` 中。但在某些高级 DeFi 场景下，也可以创建额外的"二级 Store"。
+
+- 每个账户对每种 FA 仅拥有一个不可删除的主 store，其地址由账户地址和元数据对象地址按确定性方式推导。如果主 store 不存在，当通过 `primary_fungible_store.move` 中的函数存入 FA 时会自动创建。
+- 二级 store 地址不具备确定性，且在为空时可删除。用户可通过提供的函数创建任意数量的二级 store，但链上定位二级 store 会更复杂。
+
+你可以通过以下函数查找主 store：
+
+```move filename="primary_store"
+public fun primary_store<T: key>(owner: address, metadata: Object<T>): Object<FungibleStore>
+```
+
+如需手动创建主 store，可调用：
+
+```move filename="create_primary_store"
+public fun create_primary_store<T: key>(owner_addr: address, metadata: Object<T>): Object<FungibleStore>
+```
+
+使用二级 store 的主要场景是由智能合约管理的资产。例如，资产池可能需要为一种或多种 FA 管理多个同质化资产 store。
+
+要创建二级 store，需：
+
+1. 创建一个 Object 以获得其 `ConstructorRef`。
+2. 调用：
+
+```move filename="create_store"
+public fun create_store<T: key>(constructor_ref: &ConstructorRef, metadata: Object<T>): Object<FungibleStore>
+```
+
+这会创建一个由新 Object 拥有的二级 store。有时可以复用 Object 作为 store。例如，元数据对象本身可以作为 store 持有自身类型的 FA，或流动性池对象可以作为发行的流动性池币的 store。
+
+正确设置 `FungibleStore` 对象的 owner 对于管理其中的 FA 至关重要。默认情况下，新创建对象的 owner 是传入创建函数的 signer。对于由智能合约自身管理的 `FungibleStore`，owner 通常应为合约控制的 Object 地址。在这些场景下，应妥善保存这些对象的 `ExtendRef`，以便在需要时通过合约逻辑创建 signer 来修改 `FungibleStore`。
+
+## 从 `Coin` 迁移到同质化资产标准
+
+### 智能合约迁移
+
+**使用 `coin` 模块的项目无需修改合约。** `coin` 模块已增强，可自动处理迁移。当需要 `coin` 的配对 FA 时，会自动创建（如尚未存在）。coin 与 FA 的映射是不可变的，并存储在链上的表中：
+
+```move filename="coin_conversion"
+struct CoinConversionMap has key {
+    coin_to_fungible_asset_map: Table<TypeInfo, address>,
+}
+```
+
+提供了 `#[view]` 函数用于检索配对 FA 的元数据（如存在）：
+
+```move filename="paired_metadata"
+#[view]
+public fun paired_metadata<CoinType>(): Option<Object<Metadata>>
+```
+
+同样，也有反向查找函数：
+
+```move filename="paired_coin"
+#[view]
+public fun paired_coin(metadata: Object<Metadata>): Option<TypeInfo>
+```
+
+### 链下迁移
+
+链下服务需做两点调整：
+
+1. 余额应反映用户可能**同时**拥有 `coin` 余额和配对 FA 余额。
+2. 事件监听需同时监听 `coin` 和 FA 事件。
+
+由于用户可能**同时**拥有 `coin` 余额和配对 FA 余额，链下应用应更新为显示两者之和。
+
+- 对于 Aptos Indexer 用户，可通过 `current_fungible_asset_balances` 表获取 coin 余额与配对 FA 余额的最新总和。如果 FA 有配对 coin 类型，asset type 字段为 coin 类型（如 `0x1::aptos_coin::AptosCoin`）；否则为元数据地址。用户可按此字段筛选感兴趣的 FA 余额。
+- 对于使用 Node API 或自定义索引的用户，应将用户 `FungibleStore` 和 `ConcurrentFungibleBalance`（如存在）中的配对 FA 余额与 coin 余额相加。
+
+要获取配对 FA 的主 `FungibleStore` 余额（针对已有 `coin` 的 `CoinType`）：
+
+1. 调用 `paired_metadata<CoinType>()` 获取配对 FA 的元数据对象地址（该地址不可变）。
+2. 获取配对 FA 余额：
+    - 调用 [getCurrentFungibleAssetBalances](https://github.com/aptos-labs/aptos-ts-sdk/blob/c01a26ff899235fac1c31c6cc3fe504b764e5b91/src/api/fungibleAsset.ts#L115)。
+    - 或者，按如下公式确定主 `FungibleStore` 地址：
+        - `sha3_256(32-byte account address | 32-byte metadata object address | 0xFC)`
+    - 然后用该地址获取 `FungibleStore` 资源以查询余额。
+        - 若余额非零，则为该 FA 的最终余额。
+        - 否则，尝试在同一地址获取 `ConcurrentFungibleBalance` 资源并查询余额。
+        - 若两者均不存在，则该账户的 FA 余额为 0。
+
+**迁移后，同一操作可能会同时触发 coin 事件和 FA 事件，具体取决于用户是否已迁移。** 依赖事件的 Dapp 应相应更新业务逻辑。 

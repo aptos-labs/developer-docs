@@ -1,0 +1,130 @@
+---
+title: "表（Table）"
+---
+
+# 表（Table）
+
+`Table` 提供了一种灵活高效的方式，以表格格式管理大量数据。每个表项都作为单独的全局状态项进行存储，从而实现可扩展的存储解决方案。
+
+## Table 的核心特性
+
+### 结构
+
+`Table` 结构体旨在高效处理大规模存储：
+
+- `handle`：唯一标识表的地址。
+
+### 常量
+
+以下常量定义了模块中使用的各种错误码（这些在代码中隐含但未明确列出）：
+
+- `ENOT_FOUND`：表中未找到指定键。
+- `EALREADY_EXIST`：指定键已存在于表中。
+- `EINVALID_ARGUMENT`：传递给函数的参数无效。
+
+### API 概览
+
+#### 创建表
+
+- `new<K: copy + drop, V: store>(): Table<K, V>`：创建一个新表。
+
+#### 管理表项
+
+- `add<K: copy + drop, V>(table: &mut Table<K, V>, key: K, val: V)`：向表中添加键值对。如果键已存在则中止。
+- `remove<K: copy + drop, V>(table: &mut Table<K, V>, key: K): V`：移除并返回与指定键关联的值。如果键不存在则中止。
+- `upsert<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, value: V)`：插入或更新键值对。
+
+#### 查询表项
+
+- `borrow<K: copy + drop, V>(table: &Table<K, V>, key: K): &V`：返回与指定键关联的值的不可变引用。如果键不存在则中止。
+- `borrow_with_default<K: copy + drop, V>(table: &Table<K, V>, key: K, default: &V): &V`：返回与指定键关联的值，若不存在则返回默认值。
+- `borrow_mut<K: copy + drop, V>(table: &mut Table<K, V>, key: K): &mut V`：返回与指定键关联的值的可变引用。如果键不存在则中止。
+- `borrow_mut_with_default<K: copy + drop, V: drop>(table: &mut Table<K, V>, key: K, default: V): &mut V`：若键不存在则插入键值对，然后返回值的可变引用。
+
+#### 工具函数
+
+- `contains<K: copy + drop, V>(table: &Table<K, V>, key: K): bool`：检查表中是否包含指定键。
+
+## 示例用法
+
+### 创建和使用表
+
+```move filename="table.move"
+module 0x42::table_usage {
+    use aptos_std::table;
+
+    public entry fun main() {
+        let table = table::new<u64, u64>();
+        table::add(&mut table, 1, 100);
+        table::add(&mut table, 2, 200);
+
+        let value1 = table::borrow(&table, 1);
+        assert!(*value1 == 100, 0);
+
+        let value2 = table::borrow(&table, 2);
+        assert!(*value2 == 200, 0);
+
+        let removed_value = table::remove(&mut table, 1);
+        assert!(removed_value == 100, 0);
+
+        let contains_key = table::contains(&table, 2);
+        assert!(contains_key, 0);
+
+        // Note: A table must be stored in a resource at the end of a function
+    }
+}
+```
+
+### 添加和 Upsert 多个表项
+
+```move filename="table.move"
+module 0x42::table_usage {
+    use aptos_std::table;
+
+    public fun add_and_upsert_entries() {
+        let table = table::new<u64, u64>();
+        table::add(&mut table, 1, 100);
+        table::upsert(&mut table, 1, 200);
+        table::upsert(&mut table, 2, 300);
+
+        let value1 = table::borrow(&table, 1);
+        assert!(*value1 == 200, 0);
+
+        let value2 = table::borrow(&table, 2);
+        assert!(*value2 == 300, 0);
+
+        // Note: A table must be stored in a resource at the end of a function
+    }
+}
+```
+
+### 借用可变引用
+
+```move filename="table.move"
+module 0x42::table_usage {
+    use aptos_std::table;
+
+    public fun borrow_mutable_references() {
+        let table = table::new<u64, u64>();
+        table::add(&mut table, 1, 100);
+
+        let value_mut = table::borrow_mut(&mut table, 1);
+        *value_mut = 200;
+
+        let value = table::borrow(&table, 1);
+        assert!(*value == 200, 0);
+
+        // Note: A table must be stored in a resource at the end of a function
+    }
+}
+```
+
+## 源码链接
+
+- [table.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/table.move)
+
+## 其他示例
+
+- [Move Spiders Tables 教程](https://movespiders.com/courses/modules/datastructures/lessonId/4)
+- [Move Spiders 通过 FullNode 查询 Table](https://movespiders.com/courses/modules/datastructures/lessonId/9)
+- [Move Spiders 通过 View Function 查询 Table](https://movespiders.com/courses/modules/datastructures/lessonId/10) 

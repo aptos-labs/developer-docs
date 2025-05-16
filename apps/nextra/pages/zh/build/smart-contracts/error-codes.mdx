@@ -1,0 +1,183 @@
+---
+title: "Aptos 错误码"
+---
+
+# Aptos 中的错误码
+
+本页面收录了 Aptos 区块链中常见的错误，并尽可能解释了如何解决这些错误。与所有软件一样，代码本身才是错误处理的最终权威来源，因此这里未必涵盖所有条目。本表旨在帮助你解决那些最常见、最易误解或最容易遇到的错误。
+
+这些错误的来源请参见：
+
+- [vm_status.rs](https://github.com/aptos-labs/aptos-core/blob/main/third_party/move/move-core/types/src/vm_status.rs)
+- [error.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/move-stdlib/sources/error.move)
+- [account.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/account/account.move)
+- [coin.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)
+- [token.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move)
+- [token_transfers.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token_transfers.move)
+
+欢迎通过 Pull Request 补充你遇到的错误。如果你不知道如何解决该错误，可以将 _Action_ 列留空。
+
+## 常见错误
+
+### INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE
+
+这意味着交易的最大可能 gas 消耗大于交易发送者（或手续费支付者）账户中的 APT 余额。要解决此问题，请尝试降低 max gas amount，并重新提交。
+
+例如，如果 max gas amount 为 1000 gas 单位，gas unit price 为 `100` octas，则账户所需的总 APT 为 `0.00100000` APT（`1000 * 100 / 100000000`）。默认值通常为 `200000` gas 单位，这将需要 `0.20000000` APT。如果你遇到此问题，请联系你的钱包服务商。
+
+### OUT_OF_GAS
+
+这意味着交易消耗的 gas 超过了发送者为该交易指定的最大 gas 数量，导致交易中止。要解决此问题，请尝试增加 max gas amount，并重新提交交易。
+
+### SEQUENCE_NUMBER_TOO_OLD
+
+这意味着交易中的序列号已被该账户使用并提交到区块链。要向区块链提交新交易，请使用新的序列号重新提交。
+
+### SEQUENCE_NUMBER_TOO_NEW
+
+此错误仅在模拟时出现，表示提交的序列号大于账户的下一个序列号。请减小序列号后重试。
+
+## Move 虚拟机（VM）
+
+{/* TODO improve formatting on table */}
+| Error                                                    |                                                                                                                                                 含义                                                                                                                                                 | 可能的解决方法                                                                                                                                   |
+|----------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| LOOKUP_FAILED                                            |                                                                                                                 所调用的函数在当前网络上不存在                                                                                                                 | 检查链上依赖项的版本是否一致                                                                                           |
+| UNKNOWN_VALIDATION_STATUS                                |                                                                                                                              默认值不应为有效。                                                                                                                               | N/A                                                                                                                                                   |
+| INVALID_SIGNATURE                                        |                                                                                                                                  交易签名无效。                                                                                                                                   | 使用新签名重新提交交易                                                                                                         |
+| INVALID_AUTH_KEY                                         |                                                                                                                                     账户认证密钥无效。                                                                                                                                     | 使用新签名重新提交交易，检查账户与认证密钥是否匹配且未被轮换                          |
+| SEQUENCE_NUMBER_TOO_OLD                                  |                                                                                                                                       序列号过旧。                                                                                                                                       | 使用账户中更新的序列号重新提交交易                                                                                |
+| SEQUENCE_NUMBER_TOO_NEW                                  |                                                                                                                                       序列号过新。                                                                                                                                       | 使用新签名重新提交交易                                                                                                         |
+| INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE                 |                                                                           账户余额不足以支付交易指定的 max_gas。余额需大于 max_gas_amount * gas_unit_price 才能继续。                                                                                   | 为账户充值更多 APT 以支付 gas 费用                                                                                                 |
+| TRANSACTION_EXPIRED                                      |                                                                                                                                      交易已过期。                                                                                                                                       | 提交一个过期时间更晚的新交易                                                                                |
+| SENDING_ACCOUNT_DOES_NOT_EXIST                           |                                                                                                                                   发送账户不存在。                                                                                                                                   | 先创建账户再重新发送交易                                                                                             |
+| REJECTED_WRITE_SET                                       |                                                                                                        此写集交易因不满足要求而被拒绝。                                                                                                        | N/A                                                                                                                                                   |
+| INVALID_WRITE_SET                                        |                                                                                                                   此写集交易无法应用于当前状态。                                                                                                                    | N/A                                                                                                                                                   |
+| EXCEEDED_MAX_TRANSACTION_SIZE                            |                                                                                                                     原始交易中 program 字段长度超过最大限制。                                                                                                                     | 交易过大，无法作为单笔交易提交；如果是包发布，请拆分为多个包                           |
+| UNKNOWN_SCRIPT                                           |                                                                                                                             此脚本不在允许列表中。                                                                                                                             | N/A                                                                                                                                                   |
+| UNKNOWN_MODULE                                           |                                                                                                                             交易尝试发布新模块。                                                                                                                              | N/A                                                                                                                                                   |
+| MAX_GAS_UNITS_EXCEEDS_MAX_GAS_UNITS_BOUND                |                                                                                                               交易提交的最大 gas 单位数超过了 VM 的最大限制。                                                                                                               | 将交易中的 max gas amount 降低到 gas schedule 的最大值以下                                                            |
+| MAX_GAS_UNITS_BELOW_MIN_TRANSACTION_GAS_UNITS            |                                                                                                   交易提交的最大 gas 单位数不足以覆盖交易的固有成本。                                                                                                   | 将 max gas amount 提高到 gas schedule 的最小值以上                                                                               |
+| GAS_UNIT_PRICE_BELOW_MIN_BOUND                           |                                                                                                           交易提交的 gas 单价低于 VM 设置的最小 gas 单价。                                                                                                           | 将 gas unit price 提高到 gas schedule 的最小值以上                                                                      |
+| GAS_UNIT_PRICE_ABOVE_MAX_BOUND                           |                                                                                                       交易提交的 gas 单价高于 VM 设置的最大 gas 单价。                                                                                                       | 将 gas unit price 降低到 gas schedule 的最大值以下                                                                      |
+| INVALID_GAS_SPECIFIER                                    |                                                                                          gas specifier 格式错误（不是有效标识符）或不是被接受的 gas specifier。                                                                                          | N/A                                                                                                                                                   |
+| SENDING_ACCOUNT_FROZEN                                   |                                                                                                                                     发送账户被冻结。                                                                                                                                      | N/A                                                                                                                                                   |
+| UNABLE_TO_DESERIALIZE_ACCOUNT                            |                                                                                                                                 无法反序列化账户 blob。                                                                                                                                 | N/A                                                                                                                                                   |
+| CURRENCY_INFO_DOES_NOT_EXIST                             |                                                                                                                                找不到 currency info。                                                                                                                                | N/A                                                                                                                                                   |
+| INVALID_MODULE_PUBLISHER                                 |                                                                                                                     账户无权限发布模块。                                                                                                                     | N/A                                                                                                                                                   |
+| NO_ACCOUNT_ROLE                                          |                                                                                                                                    发送账户没有角色。                                                                                                                                     | N/A                                                                                                                                                   |
+| BAD_CHAIN_ID                                             |                                                                                                                  交易的 chain_id 与链上发布的不一致。                                                                                                                  | 确认你的 chain ID 与网络的 chain ID 一致                                                                                       |
+| SEQUENCE_NUMBER_TOO_BIG                                  |                                                                                                          序列号过大，若执行交易将溢出。                                                                                                          | N/A                                                                                                                                                   |
+| BAD_TRANSACTION_FEE_CURRENCY                             |                                                                                                                    gas 货币未注册为 TransactionFee 货币。                                                                                                                     | N/A                                                                                                                                                   |
+| FEATURE_UNDER_GATING                                     |                                                                                                        请求的功能仅适用于未来 Aptos 版本，当前版本不可用。                                                                                                         | N/A                                                                                                                                                   |
+| SECONDARY_KEYS_ADDRESSES_COUNT_MISMATCH                  |                                                                                                二级签名者地址数量与二级公钥数量不一致。                                                                                                 | 检查 multi-agent 或 multi-ed25519 的二级签名者地址与二级公钥是否匹配                                                    |
+| SIGNERS_CONTAIN_DUPLICATES                               |                                                                                                         签名者中存在重复，包括发送者和所有二级签名者。                                                                                                         | 移除所有重复签名者                                                                                                                          |
+| SEQUENCE_NONCE_INVALID                                   |                                                                                                          交易中的 sequence nonce 无效（过新、过旧或已被使用）。                                                                                                          | N/A                                                                                                                                                   |
+| CHAIN_ACCOUNT_INFO_DOES_NOT_EXIST                        |                                                                                                                  访问链特定账户信息时出错。                                                                                                                  | N/A                                                                                                                                                   |
+| MODULE_ADDRESS_DOES_NOT_MATCH_SENDER                     |                                                                                                              模块发布者不是最终持有该模块的账户。                                                                                                              | 确认 Move 合约中的模块地址与交易发送者一致                                                                 |
+| ZERO_SIZED_STRUCT                                        |                                                                                                                                 报告结构体字段数为零。                                                                                                                                 | N/A                                                                                                                                                   |
+| DUPLICATE_MODULE_NAME                                    |                                                                                                           发送者尝试在一笔交易中发布两个同名模块。                                                                                                            | 确认每个模块名称唯一                                                                                                                |
+| BACKWARD_INCOMPATIBLE_MODULE_UPDATE                      |                                                                                                             发送者尝试发布不兼容的模块更新。                                                                                                              | 确认新发布的模块未破坏向后兼容性                                                                          |
+| CYCLIC_MODULE_DEPENDENCY                                 |                                                                                                          更新后的模块引入了循环依赖（如 A 依赖 B，B 也依赖 A）。                                                                                                          | 检查要发布模块的依赖关系是否存在循环                                                                            |
+| INVALID_FRIEND_DECL_WITH_SELF                            |                                                                                                                               不能将模块自身声明为 friend。                                                                                                                                | 确认要发布的模块没有将自身声明为 friend                                                                        |
+| INVALID_FRIEND_DECL_WITH_MODULES_OUTSIDE_ACCOUNT_ADDRESS |                                                                                                                      不能将账户地址外的模块声明为 friend。                                                                                                                      | 确认所有 friend 都在同一账户地址下                                                                            |
+| INVALID_FRIEND_DECL_WITH_MODULES_IN_DEPENDENCIES         |                                                                                                                     不能将依赖的模块声明为 friend。                                                                                                                      | 检查要发布模块的 friend 声明                                                                                              |
+| CYCLIC_MODULE_FRIENDSHIP                                 |                                                                                                       更新后的模块引入了循环 friend 关系（如 A friend B，B 也 friend A）。                                                                                                       | 检查要发布模块的 friend 声明                                                                                              |
+| INVALID_PHANTOM_TYPE_PARAM_POSITION                      |                                                                                                                      phantom 类型参数被用于非 phantom 位置。                                                                                                                       | 确认 phantom 类型仅用于泛型                                                                                                     |
+| LOOP_MAX_DEPTH_REACHED                                   |                                                                                                                                      循环嵌套过深。                                                                                                                                       | 检查是否存在多层嵌套循环                                                                                                                           |
+| TYPE_RESOLUTION_FAILURE                                  |                                                                                                                 验证后链接断裂导致类型解析失败。                                                                                                                  | N/A                                                                                                                                                   |
+| RESOURCE_DOES_NOT_EXIST                                  |                                                                                                                  试图访问账户下不存在的资源。                                                                                                                   | 检查合约，必要时修改以处理不存在的资源                                                                        |
+| RESOURCE_ALREADY_EXISTS                                  |                                                                                                           试图在账户下创建已存在的资源。                                                                                                            | 检查合约，必要时修改以处理已存在的资源                                                                      |
+| UNKNOWN_STATUS                                           |                                                                             保留状态，表示未知 vm status。此值为 std::u64::MAX，但无法进行模式匹配，因此需硬编码。                                                                              | N/A                                                                                                                                                   |
+| LINKER_ERROR                                             | 可能是函数尚未在链上发布，或因账户地址、模块名、函数名错误导致调用无效函数。如果本地有源码但尚未发布到链上，本地不会报错。 | 原因较多，请检查账户地址、模块名、函数名是否正确且已发布 |
+| FAILED_TO_DESERIALIZE_ARGUMENT                           | 反序列化参数时触发的错误，可能由以下校验导致：1）嵌套或解包结构体数量超过限制（含 vector），最大深度为 10。2）嵌套结构体超过最大深度。3）构造函数序列化参数包含多余数据。4）反序列化 utf8 但 struct_constructors 被禁用。5）字符串参数过长。6）utf8 的 BCS 反序列化失败。 | N/A                                                                                                                                                   |
+
+## Move 标准库（stdlib）
+
+| Error              |                                             含义                                             |
+|--------------------|:-----------------------------------------------------------------------------------------------:|
+| INVALID_ARGUMENT   |                        调用方指定了无效参数（HTTP: 400）。                        |
+| OUT_OF_RANGE       |                输入或计算结果超出范围（HTTP: 400）。                 |
+| INVALID_STATE      |         系统当前状态不允许执行该操作（HTTP: 400）。          |
+| UNAUTHENTICATED    | 请求未认证，因缺失、无效或过期的认证令牌（HTTP: 401）。 |
+| PERMISSION_DENIED  |                   客户端权限不足（HTTP: 403）。                   |
+| NOT_FOUND          |                         指定资源未找到（HTTP: 404）。                          |
+| ABORTED            |              并发冲突，如读-改-写冲突（HTTP: 409）。              |
+| ALREADY_EXISTS     |             客户端尝试创建的资源已存在（HTTP: 409）。              |
+| RESOURCE_EXHAUSTED |                         超出 gas 或其他配额（HTTP: 429）。                         |
+| CANCELLED          |                          客户端取消请求（HTTP: 499）。                           |
+| INTERNAL           |                                   内部错误（HTTP: 500）。                                   |
+| NOT_IMPLEMENTED    |                              功能未实现（HTTP: 501）。                               |
+| UNAVAILABLE        | 服务当前不可用。重试可能解决问题（HTTP: 503）。 |
+
+## Aptos 账户
+
+| Error                                |                                                              含义                                                               | 可能的解决方法                                                              |
+|--------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------:|----------------------------------------------------------------------------------|
+| EACCOUNT_ALREADY_EXISTS              |                                                      账户已存在。                                                       | N/A                                                                              |
+| EACCOUNT_DOES_NOT_EXIST              |                                                      账户不存在。                                                       | 先创建账户                                                         |
+| ESEQUENCE_NUMBER_TOO_BIG             |                                        序列号超过 u64 最大值。                                        | 提供更小的序列号                                                |
+| EMALFORMED_AUTHENTICATION_KEY        |                                       提供的认证密钥长度无效。                                       | 检查认证密钥，应为 32 字节向量                     |
+| ECANNOT_RESERVED_ADDRESS             |                                         地址为保留地址，无法创建账户。                                         | N/A                                                                              |
+| EOUT_OF_GAS                          |                                            交易超出分配的最大 gas。                                             | 增加 max gas amount                                                      |
+| EWRONG_CURRENT_PUBLIC_KEY            |                                            当前公钥不正确。                                            | 确认公钥与账户匹配                                       |
+| EINVALID_PROOF_OF_KNOWLEDGE          |                        轮换密钥时，证明拥有公钥的 proof of knowledge 无效。                        | 检查轮换密钥时的 proof of knowledge 是否有正确签名 |
+| ENO_CAPABILITY                       |                        调用方没有基于数字签名的能力调用此函数。                        | 确认你拥有被调用函数的能力                         |
+| EINVALID_ACCEPT_ROTATION_CAPABILITY  |                         调用方没有来自其他账户的有效轮换能力授权。                         | 确认被轮换的账户正确                                     |
+| ENO_VALID_FRAMEWORK_RESERVED_ADDRESS |                               要创建的地址不是 Aptos framework 的有效保留地址。                               | N/A                                                                              |
+| EINVALID_SCHEME                      | 创建账户时，指定的 scheme 只能为 ED25519_SCHEME(0) 或 MULTI_ED25519_SCHEME(1)。 | 确认交易签名方式正确           |
+| EINVALID_ORIGINATING_ADDRESS         |           如果期望的 originating address 与链上的 originating address 不同，则中止交易。            | 确认你正在轮换正确账户的密钥                               |
+| ENO_SUCH_SIGNER_CAPABILITY           |                                     给定地址下不存在 signer capability。                                      | 确认地址是否正确                                                   |
+
+## Aptos 代币
+
+| Error                              |                                                含义                                                 | 可能的解决方法                                                       |
+|------------------------------------|:------------------------------------------------------------------------------------------------------:|---------------------------------------------------------------------------|
+| ECOIN_INFO_ADDRESS_MISMATCH        | 初始化 coin `CoinType` 时，账户地址与模块部署者不一致。 | 使用与创建 coin 的账户相同的 `CoinType` 创建 coin。 |
+| ECOIN_INFO_ALREADY_PUBLISHED       |                              `CoinType` 已初始化为 coin。                              | N/A                                                                       |
+| ECOIN_INFO_NOT_PUBLISHED           |                             `CoinType` 尚未初始化为 coin。                              | 先用 `CoinType` 创建 coin 后再使用                     |
+| ECOIN_STORE_ALREADY_PUBLISHED      |                       账户已为 `CoinType` 注册 CoinStore。                       | N/A                                                                       |
+| ECOIN_STORE_NOT_PUBLISHED          |                         账户尚未为 `CoinType` 注册 CoinStore。                          | 先为该账户注册 `CoinType`                                   |
+| EINSUFFICIENT_BALANCE              |                               余额不足，无法完成交易。                                | 转账金额减少，或先获取更多代币          |
+| EDESTRUCTION_OF_NONZERO_TOKEN      |                                     不能销毁非零余额代币。                                     | N/A                                                                       |
+| EZERO_COIN_AMOUNT                  |                                      代币数量不能为零。                                       | 不要对零数量代币进行销毁或其他操作                 |
+| EFROZEN                            |                      CoinStore 已冻结，无法存取代币。                      | 该账户对此代币被冻结，请联系代币所有者                  |
+| ECOIN_SUPPLY_UPGRADE_NOT_SUPPORTED |                 不能将代币总供应量升级为不同实现。                  | N/A                                                                       |
+| ECOIN_NAME_TOO_LONG                |                                     代币名称过长。                                      | 代币名称需小于等于 32 个字符                     |
+| ECOIN_SYMBOL_TOO_LONG              |                                    代币符号过长。                                     | 代币符号需小于等于 10 个字符                   |
+
+## Aptos 代币（Token）
+
+| Error                                        |                            含义                             |
+|----------------------------------------------|:--------------------------------------------------------------:|
+| EALREADY_HAS_BALANCE                         |        该代币已有余额，无法初始化。        |
+| ECOLLECTIONS_NOT_PUBLISHED                   |         该账户下没有任何 collection。         |
+| ECOLLECTION_NOT_PUBLISHED                    |          在创建者账户中找不到 collection。          |
+| ECOLLECTION_ALREADY_EXISTS                   |                 collection 已存在。                 |
+| ECREATE_WOULD_EXCEED_COLLECTION_MAXIMUM      |     超过 collection 最大允许的 token_data 数量。     |
+| EINSUFFICIENT_BALANCE                        |                  代币余额不足。                   |
+| EINVALID_TOKEN_MERGE                         |     不能合并两个 token_id 不同的代币。      |
+| EMINT_WOULD_EXCEED_TOKEN_MAXIMUM             |             超过 token data 最大允许数量。             |
+| ENO_BURN_CAPABILITY                          |                      没有销毁能力。                       |
+| ETOKEN_DATA_ALREADY_EXISTS                   |                   TokenData 已存在。                    |
+| ETOKEN_DATA_NOT_PUBLISHED                    |                    TokenData 未发布。                    |
+| ETOKEN_STORE_NOT_PUBLISHED                   |                   TokenStore 不存在。                    |
+| ETOKEN_SPLIT_AMOUNT_LARGER_THAN_TOKEN_AMOUNT |    拆分代币数量大于其本身数量。     |
+| EFIELD_NOT_MUTABLE                           |                   字段不可变。                    |
+| ENO_MUTATE_CAPABILITY                        |                   无权修改。                    |
+| ENO_TOKEN_IN_TOKEN_STORE                     |                 TokenStore 中不存在该代币。                  |
+| EUSER_NOT_OPT_IN_DIRECT_TRANSFER             |              用户未开启直传功能。               |
+| EWITHDRAW_ZERO                               |                    不能提取 0 个代币。                    |
+| ENFT_NOT_SPLITABLE                           |          不能拆分仅有 1 数量的代币。          |
+| ENO_MINT_CAPABILITY                          |                       没有铸造能力                       |
+| ECOLLECTION_NAME_TOO_LONG                    |                collection 名称过长。                |
+| ENFT_NAME_TOO_LONG                           |                   NFT 名称过长。                    |
+| EURI_TOO_LONG                                |                      URI 过长。                      |
+| ENO_DEPOSIT_TOKEN_WITH_ZERO_AMOUNT           |             不能存入数量为 0 的代币。              |
+| ENO_BURN_TOKEN_WITH_ZERO_AMOUNT              |                      不能销毁 0 个代币。                      |
+| EWITHDRAW_PROOF_EXPIRES                      |                    提取凭证已过期。                     |
+| EOWNER_CANNOT_BURN_TOKEN                     |                代币所有者不可销毁该代币。                 |
+| ECREATOR_CANNOT_BURN_TOKEN                   |               代币创建者不可销毁该代币。                 |
+| ECANNOT_UPDATE_RESERVED_PROPERTY             | Token 合约的保留字段，用户不可修改。 |
+| EURI_TOO_SHORT                               |                         URI 过短。                         |
+| ETOKEN_OFFER_NOT_EXIST                       |                   Token offer 不存在。                   |

@@ -1,0 +1,40 @@
+---
+title: "使用 Move 脚本进行开发"
+---
+
+# 什么是 Move 脚本？
+
+Move 脚本是一种在 Aptos 上通过单笔交易运行多个 public 函数的方法。这类似于部署一个用于常见任务的 helper module，但它的灵活性在于无需提前部署。
+
+一个例子是将用户余额的一半转账给另一个账户的函数。这是一个容易编程实现的功能，但通常不需要为此专门部署一个 module：
+
+```move
+script {
+  use std::signer;
+  use aptos_framework::coin;
+  use aptos_framework::aptos_account;
+
+  fun transfer_half<Coin>(caller: &signer, receiver_address: address) {
+    // Retrieve the balance of the caller
+    let caller_address: address = signer::address_of(caller);
+    let balance: u64 = coin::balance<Coin>(caller_address);
+
+    // Send half to the receiver
+    let half = balance / 2;
+    aptos_account::transfer_coins<Coin>(caller, receiver_address, half);
+  }
+}
+```
+
+# 了解更多关于 Move 脚本的内容
+
+- [编写脚本](scripts/writing-scripts.mdx)
+- [编译脚本](scripts/compiling-scripts.mdx)
+- [运行脚本](scripts/running-scripts.mdx)
+
+# 更多细节
+
+如需了解 Move 脚本的更多细节，请参阅：
+
+- [Move Book on Scripts](book/modules-and-scripts.mdx)
+- [脚本教程](scripts/script-tutorial.mdx) 

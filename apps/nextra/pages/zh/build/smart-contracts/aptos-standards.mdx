@@ -1,0 +1,42 @@
+---
+title: "Aptos 标准规范"
+---
+
+# Aptos 标准规范
+
+标准规范为所有开发者定义了通用的互操作性接口。这些规范包含确保Aptos区块链上应用程序与钱包之间兼容性的规则。查看由hippospace提供的[Aptos已知代币资源地址列表](https://github.com/hippospace/aptos-coin-list)。
+
+## Move 标准
+
+### [Aptos 对象](objects.mdx)
+
+[对象模型](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/object.move)允许Move将复杂类型表示为存储在单个地址下的一组资源，并提供丰富的权限模型，实现细粒度的资源控制和所有权管理。
+
+## 资产标准
+
+### [数字资产 (DA)](digital-asset.mdx)
+
+新版[Aptos数字资产标准](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/token.move)支持：
+
+- 丰富灵活的资产与收藏品
+- 轻松扩展基础功能以提供更丰富的自定义功能，例如[aptos_token模块](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token-objects/sources/aptos_token.move)
+
+建议所有新建的NFT或半同质化代币项目采用数字资产(DA)标准。
+
+### [同质化资产 (FA)](fungible-asset.mdx)
+
+新版[Aptos同质化资产标准](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/fungible_asset.move)是基于对象模型的简单、类型安全且可互换的资产标准，旨在取代Aptos代币。同质化资产(FA)为开发者提供了更多创建和管理同质化资产的特性和灵活性。
+
+## 旧版标准
+
+### [Aptos 代币](aptos-token.mdx)
+
+旧版[代币模块](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-token/sources/token.move)具有以下特点：
+
+- 封装了丰富灵活的资产与收藏品，这些资产是离散型（非十进制）的，可以是同质化、半同质化或非同质化的
+- 代币标准位于地址`0x3`的独立`AptosToken`包中，以便根据社区反馈快速迭代
+
+### [Aptos 代币](aptos-coin.mdx)
+
+[代币模块](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)是面向简单、类型安全且可互换资产的轻量级标准。该标准被独立封装为Move模块以确保：- 应用程序和用户可以创建并使用高性能、低Gas开销的简易代币。
+- Coin标准是Aptos核心框架的一部分，因此可用于包括Gas代币在内的各类货币。

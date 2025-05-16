@@ -1,0 +1,20 @@
+---
+title: "Aptos 上的模块"
+---
+import { Callout } from "nextra/components";
+
+# Aptos 上的模块
+
+Aptos 允许在 [package](book/packages.mdx) 中无权限地发布 [module](book/modules-and-scripts.mdx)，并且对于设置了合适兼容性策略的模块支持 [升级](book/package-upgrades.mdx)。
+
+一个 module 包含多个 struct 和 function，类似于 Rust。
+
+在 package 发布时，会遵循以下约束：
+
+- Struct 和 public function 的签名在发布后是不可变的。
+- 只有在首次发布 module（而非升级）时，虚拟机会查找并执行 `init_module(account: &signer)` 函数。发布模块的账户 signer 会被传递给合约的 `init_module` 函数。**该函数必须是私有的且不能有返回值。**
+
+<Callout type="info">
+`init_module` 是可选的
+只有在首次发布模块时需要初始化数据时才需要实现该函数。
+</Callout> 

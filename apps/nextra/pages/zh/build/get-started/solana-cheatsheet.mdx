@@ -1,0 +1,24 @@
+---
+title: "Solana 到 Aptos 速查表"
+---
+
+# Solana 到 Aptos 速查表
+
+如需了解更多差异与相似之处，请参见 [Aptos Learn](https://learn.aptoslabs.com/en/tutorials/solana-to-aptos-guide/cheat-sheet?workshop=solana-to-aptos)
+
+|                              | Solana                                                                                                           | Aptos                                                                                                                                                              |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **智能合约**                 | Rust, SVM                                                                                                        | Move, MoveVM                                                                                                                                                       |
+| **交易手续费**               | 低                                                                                                               | 低                                                                                                                                                                 |
+| **并行化**                   | 悲观并行，需要声明所有写入账户                                                                                   | 乐观并行，链会自动推断写入账户                                                                                              |
+| **合约账户支持**             | PDA Account                                                                                                      | [Object](../smart-contracts/objects.mdx) 或 [resource account](../smart-contracts/resource-accounts.mdx)（推荐优先使用 object） |
+| **数据存储**                 | 数据存储在程序拥有的账户中                                                                                        | 数据以 resource 形式存储在用户账户或 object 下                                                                                 |
+| **存储级别**                 | 程序级                                                                                                          | 存储于 object 下时为全局级                                                                                                   |
+| **存储思路**                 | 用户数据分布式存储在账户下                                                                                        | 用户数据分布式存储在 object 下                                                                                               |
+| **示例代码**                 | [Todo list contract on Solana](https://github.com/aptos-labs/move-by-examples/tree/main/advanced-todo-list/solana) | [Todo list contract on Aptos](https://github.com/aptos-labs/move-by-examples/tree/main/advanced-todo-list/aptos)              |
+| **调用者身份**               | `signer`                                                                                                         | `signer`                                                                                                                                                           |
+| **可升级性**                 | Program 可升级                                                                                                   | Module 可升级                                                                                                                                                      |
+| **调度类型**                 | 静态调度                                                                                                        | 静态调度                                                                                                                                                           |
+| **FT 标准**                  | Token program                                                                                                    | [Coin](../smart-contracts/aptos-coin.mdx)（传统）和 [Fungible Asset Standard](../smart-contracts/fungible-asset.mdx)         |
+| **NFT 标准**                 | Token program                                                                                                    | [Digital Asset Standard](../smart-contracts/digital-asset.mdx)                                                               |
+| **区块链交互**               | Solana web3.js library                                                                                           | [Aptos Typescript SDK](../sdks/ts-sdk.mdx)                                                                                   |
