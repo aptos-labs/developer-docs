@@ -27,7 +27,7 @@ const transaction = await aptos.transaction.build.scriptComposer({
         // 调用 0x1::coin::withdraw，该函数会返回一个 `coin` 类型的值
         const coin = await builder.addBatchedCalls({
             function: "0x1::coin::withdraw",
-            functionArguments: [CallArgument.new_signer(0), 1],
+            functionArguments: [CallArgument.newSigner(0), 1],
             typeArguments: ["0x1::aptos_coin::AptosCoin"],
         });
 
