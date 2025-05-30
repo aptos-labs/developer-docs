@@ -5,11 +5,9 @@ export default {
   },
   "first-transaction": {
     title: "您的第一笔交易",
-    href: "/en/build/guides/first-transaction",
   },
   "build-e2e-dapp": {
     title: "使用 Aptos 构建端到端 Dapp",
-    href: "/en/build/guides/build-e2e-dapp",
   },
   "your-first-nft": {
     title: "您的第一个 NFT",
@@ -17,19 +15,15 @@ export default {
   },
   "first-coin": {
     title: "您的第一个代币",
-    href: "/en/build/guides/first-coin",
   },
   "first-fungible-asset": {
     title: "您的第一个同质化资产",
-    href: "/en/build/guides/first-fungible-asset",
   },
   "first-move-module": {
     title: "您的第一个 Move 模块",
-    href: "/en/build/guides/first-move-module",
   },
   "first-multisig": {
     title: "您的第一个多重签名",
-    href: "/en/build/guides/first-multisig",
   },
   "---advanced---": {
     type: "separator",
@@ -61,7 +55,6 @@ export default {
   },
   exchanges: {
     title: "交易所",
-    href: "/en/build/guides/integration/exchanges",
   },
   "system-integrators-guide": {
     title: "应用程序",

@@ -1,0 +1,1209 @@
+---
+title: "交易所集成指南"
+---
+
+import { Callout } from "nextra/components";
+
+# 交易所集成指南
+
+本文档介绍如何将 Aptos 及 Aptos 资产集成到交易所中。它提供了
+用于跟踪余额、转移资产和测试集成的通用信息。
+
+## 概述
+
+本文档将指导你完成以下与 Aptos 集成的任务：
+
+* 基础设施
+* 地址标准
+* 资产标准
+* 获取余额
+* 追踪余额变化
+* 转移资产
+* 测试集成
+
+## 基础设施
+
+建议你运行自己的[全节点](../../network/nodes/full-node.mdx)来与 Aptos 区块链交互。
+这样你可以查询区块链的最新状态并提交交易。
+你也可以使用[Indexer](../indexer.mdx)高效查询链上数据。
+
+## 地址标准
+
+### 地址
+
+一个地址可以用三种方式表示。建议你显示所有前导零和前缀 `0x`。下面是框架地址 `0x1` 的三种表示示例：
+
+* `0x00000000000000000000000000000001` - 32字节的完整16进制表示，带前缀 `0x`，这是推荐格式。
+* `0x1` - 简短表示，带前缀 `0x`。此格式为兼容保留，但推荐使用带前导零的完整格式。
+* `00000000000000000000000000000001` - 32字节完整16进制表示，但不带前缀 `0x`。此格式为兼容保留，但推荐带 `0x`。
+
+例如，官方 SDK 会自动处理解析，建议直接使用 SDK 来处理地址。
+
+```ts filename="example.ts"
+import { AccountAddress } from "@aptos-labs/ts-sdk";
+const address = AccountAddress.from("0x1");
+address.toStringLong(); // 0x00000000000000000000000000000001
+```
+
+此外，Aptos 还有 Aptos 名称服务（ANS），支持友好的 `.apt` 名称。关于地址和 Aptos 名称的更多信息，请参见我们的[账户](../../network/blockchain/accounts)页面。
+
+## 账户标准
+
+账户必须存在，才能向区块链发送交易。这通过创建账户资源实现，
+可以通过向想创建的账户调用 `0x1::aptos_account::transfer`，金额为零来完成。
+另外，也可以用 `0x1::aptos_account::create_account` 来创建余额为零的账户。
+
+```ts filename="example.ts"
+import { Aptos, Ed25519Account, Ed25519PrivateKey } from "@aptos-labs/ts-sdk";
+
+const aptos = new Aptos();
+const account = new Ed25519Account({privateKey: new Ed25519PrivateKey("private key")})
+const transaction = await aptos.transferCoinTransaction({sender: account.accountAddress, recipient: "receiver address", amount: 100000000})
+const pendingTransaction = await aptos.transaction.signAndSubmitTransaction({signer: account, transaction})
+const committedTransaction = await aptos.waitForTransaction({transactionHash: pendingTransaction.hash});
+```
+
+## 资产标准
+
+Aptos 提供了两种类 ERC-20 的可替代代币标准：
+
+* 较早的[Coin 标准](../smart-contracts/aptos-coin.mdx)，用于 Aptos 上的资产。
+* 较新的[可替代资产标准](../smart-contracts/fungible-asset.mdx)，功能更丰富。
+
+此外，资产从 Coin 标准向可替代资产标准有一个迁移期。
+我们称之为**迁移币**。迁移币可能有两种形式，但都可与 Coin 标准互换使用。
+这点在查询余额时很重要，需使用 Coin 函数而非可替代资产函数。FA 标准只能处理 FA 形式。
+
+<Callout type="info">
+APT，Aptos 的原生代币，是迁移币。这意味着它可以同时使用 Coin 和可替代资产标准。
+</Callout>
+
+### Coin 标准（简要）
+
+**币** 关联一个合约，该合约持有链上表示该币的结构体。币的表示形式如 `0x1::aptos_coin::AptosCoin`（针对 `APT`）。
+
+所有币都存储在账户资源 `0x1::coin::CoinStore<CoinType>` 中。币在使用 `CoinStore` 前必须注册，
+但如果使用正确的函数，例如 `0x1::aptos_account::transfer` 或 `0x1::aptos_account::transfer_coins<CoinType>`，注册会自动完成。
+
+币可以*迁移*为可替代资产。支持迁移资产时，请继续使用币的相关函数。
+
+更多信息见：[Coin 标准](../smart-contracts/aptos-coin.mdx)
+
+### 可替代资产标准（简要）
+
+**可替代资产** 关联一个元数据地址，该地址保存该资产的元数据，通常称为 fa 元数据地址。资产用地址表示，如 `0xA` 代表 `APT`。
+
+所有可替代资产存储在一个称为“可替代资产存储”的对象中。
+
+对于交易所，最重要的是 `primary_fungible_store`，这是可替代资产的默认存储，与所有者直接关联。
+从本指南开始，只讨论支持 `primary_fungible_store`。
+
+更多信息见：[可替代资产标准](../smart-contracts/fungible-asset.mdx)
+
+## 获取余额
+
+不同标准的资产获取当前余额的方式不同。集成完成的标志是两者都能处理。
+
+余额总是以子单位返回。例如，`APT` 的余额以 `octas` 返回（1e-8 APT）。API 返回 `100000000` 就是 `1 APT`，返回 `100` 则是 `0.000001 APT`。
+
+### Coin（及迁移币）余额
+
+<Callout type="info">
+  注意：包括 APT 以及任何迁移为可替代资产的币。如果资产是迁移币，请优先使用此方式获取余额。
+  可替代资产余额不会包含币部分余额。
+</Callout>
+
+要获取币或迁移币的余额，可以调用视图函数 `0x1::coin::balance<CoinType>(账户地址)`。
+该函数会合并币和迁移币的余额。
+
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.DEVNET });
+const aptos = new Aptos(config);
+
+const coinType = "0x1::aptos_coin::AptosCoin";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::coin::balance",
+    typeArguments: [coinType],
+    functionArguments: [account]
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+可以提供特定的账本版本（交易高度）以获取该时间点的余额。下面的示例展示了账本版本 `1,000,000`。
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.DEVNET });
+const aptos = new Aptos(config);
+
+const coinType = "0x1::aptos_coin::AptosCoin";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::coin::balance",
+    typeArguments: [coinType],
+    functionArguments: [account],
+    options: {
+      ledgerVersion: 1_000_000
+    }
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+### 同质化资产余额
+
+要检索同质化资产的余额，可以使用  
+`0x1::primary_fungible_store::balance<0x1::object::ObjectCore>(account address, fungible asset metadata address)` view 函数。  
+注意，如果该资产是已迁移的币，该方法不包含币的余额。
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.DEVNET });
+const aptos = new Aptos(config);
+
+const faMetadataAddress = "0xA";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::primary_fungible_store::balance",
+    typeArguments: ["0x1::object::ObjectCore"],
+    functionArguments: [account, faMetadataAddress]
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+可以提供特定的账本版本（交易高度）以获取该时间点的余额。下面的示例展示了账本版本 `1,000,000`。
+
+```ts filename="example.ts"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+
+const config = new AptosConfig({ network: Network.DEVNET });
+const aptos = new Aptos(config);
+
+const faMetadataAddress = "0xA";
+const account = "0x00000000000000000000000000000001";
+const [balanceStr] = await aptos.view<[string]>({
+  payload: {
+    function: "0x1::primary_fungible_store::balance",
+    typeArguments: ["0x1::object::ObjectCore"],
+    functionArguments: [account, faMetadataAddress]
+  },
+  options: {
+    ledgerVersion: 1_000_000
+  }
+});
+const balance = parseInt(balanceStr, 10);
+```
+
+除了 SDK，您也可以直接使用 aptos 节点的 [balance API endpoint](../../build/apis/fullnode-rest-api-reference#tag/accounts/GET/accounts/{address}/balance/{asset_type}) 来获取已迁移币或同质化资产的余额。
+
+## 余额变动追踪
+
+余额变动可以通过两种方式查询：  
+1. 通过监听每笔交易中更改余额的事件。  
+2. 通过查询索引器获取索引后的余额变动事件。
+
+过去，可以使用账户的 `events` 端点获取改变余额的交易。该方法至今仍可使用，但未来将废弃，并不推荐用于新的集成项目。
+
+### 币余额变动
+
+币余额作为两项内容跟踪，分别是写入集变动（write set changes）和事件（events）。  
+写入集变动是币余额的最终状态，事件则是币被提取或存入时产生的事件。
+
+这是一个[币转账示例](https://explorer.aptoslabs.com/txn/1747361321?network=mainnet)。  
+币转账可以作为单独一笔交易通过 REST API  
+[这里](https://fullnode.mainnet.aptoslabs.com/v1/transactions/by_version/1747361321)追踪。
+
+我们将其分解为几个部分：
+
+1. 通用交易详情提供关于该交易的信息。  
+这里最重要的是交易版本是 `1747361321`，这为区块链上的所有交易定义了严格的顺序。可以把它看作是交易版块高度。
+
+<details>
+  <summary>交易详情</summary>
+  ```json
+  {
+    "version": "1747361321",
+    "hash": "0x7c56ad56c7d02bb11887e535b9f1b221626d5b0d4cb5a1ffbadc358c1db515ea",
+    "state_change_hash": "0xc901b5e9e0965201e8205977720d7dea8a3709ee0d818fd5ec752cac13eaf18a",
+    "event_root_hash": "0x0077cb7df9db9ee7194c489db177fe9a325bcf3f1309ea99ed934085e5592041",
+    "state_checkpoint_hash": null,
+    "gas_used": "999",
+    "success": true,
+    "vm_status": "Executed successfully",
+    "accumulator_root_hash": "0xb531e918441ff0a37b49856e0f1b80c329146461582287cf9788964d25e31a68",
+  }
+  ```
+</details>
+2. 写入集 `changes` 是交易的最终状态，展示了所有  
+被该笔交易修改的资源及其最终状态。
+
+这里，我们只关心币存储变化。
+
+<details>
+<summary>币存储变动</summary>
+```json
+  "changes": [
+  {
+    "address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "state_key_hash": "0xb2bfa7198457291a0e582b912be2bf8577feff08e352c9f16935a55ebd202dcc",
+    "data": {
+      "type": "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+      "data": {
+        "coin": {
+          "value": "903837250"
+        },
+        "deposit_events": {
+          "counter": "10",
+          "guid": {
+            "id": {
+              "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+              "creation_num": "2"
+            }
+          }
+        },
+        "frozen": false,
+        "withdraw_events": {
+          "counter": "52485",
+          "guid": {
+            "id": {
+              "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+              "creation_num": "3"
+            }
+          }
+        }
+      }
+    },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "state_key_hash": "0xa45b7cfe18cc0ef1d6588f0f548a6a6a260d5e6bbab174507ed40cd21b7bd082",
+    "data": {
+      "type": "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+      "data": {
+        "coin": {
+          "value": "10"
+        },
+        "deposit_events": {
+          "counter": "1",
+          "guid": {
+            "id": {
+              "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+              "creation_num": "2"
+            }
+          }
+        },
+        "frozen": false,
+        "withdraw_events": {
+          "counter": "0",
+          "guid": {
+            "id": {
+              "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+              "creation_num": "3"
+            }
+          }
+        }
+      }
+    },
+    "type": "write_resource"
+  }],
+```
+</details>
+
+3. Events 是由交易触发的事件。在此案例中，我们只关注 `0x1::coin::Withdraw` 和 `0x1::coin::Deposit` 事件。
+
+Coin withdraw 事件在从账户中提取硬币时触发。账户余额将按 `data.amount` 字段的金额减少。  
+要确定对应的资产，你必须将 `withdraw_events` 中的 `guid` 与 `changes` 部分中对应 `CoinStore` 的 `guid` 进行匹配。  
+但是如果在 `changes` 中找不到对应的 `CoinStore`，意味着该资源已经被删除，必须出现 `CoinStoreDeleteEvent`。  
+在这种情况下，你可以通过 `deleted_withdraw_event_handle_creation_number` 和 `event_handle_creation_address` 匹配相应的 `guid`。
+
+<details>
+  <summary>Coin Withdraw Event</summary>
+  ```json
+  {
+    "events": [
+      {
+        "guid": {
+          "creation_number": "3",
+          "account_address": "0xf8e25f6c8ce40a15107fb4b4d288ca03dd434d057392f2ccb5fde505a300a0bf"
+        },
+        "sequence_number": "0",
+        "type": "0x1::coin::WithdrawEvent",
+        "data": {
+          "amount": "100000"
+        }
+      },
+    ]
+  }
+  ```
+</details>
+
+<details>
+  <summary>Coin Store Deletion Event</summary>
+  ```json
+  {
+    "events": [
+      {
+        "guid": {
+          "creation_number": "0",
+          "account_address": "0x0"
+        },
+        "sequence_number": "0",
+        "type": "0x1::coin::CoinStoreDeletion",
+        "data": {
+          "coin_type": "0x1::aptos_coin::AptosCoin",
+          "deleted_deposit_event_handle_creation_number": "2",
+          "deleted_withdraw_event_handle_creation_number": "3",
+          "event_handle_creation_address": "0xf8e25f6c8ce40a15107fb4b4d288ca03dd434d057392f2ccb5fde505a300a0bf"
+        }
+      }
+    ]
+  }
+  ```
+</details>
+
+Coin deposit 事件在向账户存入硬币时触发。账户余额将按 `data.amount` 字段的金额增加。  
+要确定对应的资产，你必须将 `deposit_events` 中的 `guid` 与 `changes` 部分中对应 `CoinStore` 的 `guid` 进行匹配。  
+同样，如果在 `changes` 中找不到对应的 `CoinStore`，意味着该资源已经被删除，必须出现 `CoinStoreDeleteEvent`。  
+然后，你可以通过 `deleted_deposit_event_handle_creation_number` 和 `event_handle_creation_address` 匹配相应的 `guid`。
+
+<details>
+  <summary>Coin Deposit Event</summary>
+  ```json
+  {
+    "events": [{
+      "guid": {
+        "creation_number": "2",
+        "account_address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28"
+      },
+      "sequence_number": "0",
+      "type": "0x1::coin::DepositEvent",
+      "data": {
+        "amount": "10"
+      }
+    }]
+  }
+  ```
+</details>
+
+
+4. Gas 消耗仅针对 APT 进行跟踪。此处没有直接跟踪 gas 的事件，但可以通过交易信息计算得出。  
+利用 `gas_used` 字段和 `gas_unit_price` 字段，可以计算出总的 gas 消耗。  
+在此例中，`gas_used` 为 `999`，`gas_unit_price` 为 `100`，所以从发送者(`0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0`) 总共扣除了 `999 * 100 = 99900 subunits` ，  
+请注意，这里的单位是 subunits。该 gas 代币 APT 的价值相当于 `0.00099900 APT`。
+
+<details>
+  <summary>Gas Information</summary>
+```json
+ {
+   "gas_used": "999",
+   "max_gas_amount": "100000",
+   "gas_unit_price": "100",
+   "sender": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+}
+```
+</details>
+
+
+5. 总体来说，您需要同时关注事件和变更以确定账户的转账金额。最终余额仅能由变更中展示。如果您关注了所有这些事件，就能够处理所有可能的交易。以下是交易响应的完整示例。
+
+<details>
+  <summary>完整响应</summary>
+  ```json
+  {
+    "version": "1747361321",
+    "hash": "0x7c56ad56c7d02bb11887e535b9f1b221626d5b0d4cb5a1ffbadc358c1db515ea",
+    "state_change_hash": "0xc901b5e9e0965201e8205977720d7dea8a3709ee0d818fd5ec752cac13eaf18a",
+    "event_root_hash": "0x0077cb7df9db9ee7194c489db177fe9a325bcf3f1309ea99ed934085e5592041",
+    "state_checkpoint_hash": null,
+    "gas_used": "999",
+    "success": true,
+    "vm_status": "Executed successfully",
+    "accumulator_root_hash": "0xb531e918441ff0a37b49856e0f1b80c329146461582287cf9788964d25e31a68",
+    "changes": [
+  {
+    "address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "state_key_hash": "0xb2bfa7198457291a0e582b912be2bf8577feff08e352c9f16935a55ebd202dcc",
+    "data": {
+    "type": "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+    "data": {
+    "coin": {
+    "value": "903837250"
+  },
+    "deposit_events": {
+    "counter": "10",
+    "guid": {
+    "id": {
+    "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "creation_num": "2"
+  }
+  }
+  },
+    "frozen": false,
+    "withdraw_events": {
+    "counter": "52485",
+    "guid": {
+    "id": {
+    "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "creation_num": "3"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "state_key_hash": "0xa3f2635d084b3cc01ae545c96ee15901549dab594363a46bf18e3d575c83102d",
+    "data": {
+    "type": "0x1::account::Account",
+    "data": {
+    "authentication_key": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "coin_register_events": {
+    "counter": "1",
+    "guid": {
+    "id": {
+    "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "creation_num": "0"
+  }
+  }
+  },
+    "guid_creation_num": "4",
+    "key_rotation_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "creation_num": "1"
+  }
+  }
+  },
+    "rotation_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  },
+    "sequence_number": "104628",
+    "signer_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "state_key_hash": "0xa45b7cfe18cc0ef1d6588f0f548a6a6a260d5e6bbab174507ed40cd21b7bd082",
+    "data": {
+    "type": "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+    "data": {
+    "coin": {
+    "value": "10"
+  },
+    "deposit_events": {
+    "counter": "1",
+    "guid": {
+    "id": {
+    "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "creation_num": "2"
+  }
+  }
+  },
+    "frozen": false,
+    "withdraw_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "creation_num": "3"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "state_key_hash": "0xba04f5a13812778031f67322e9801be65a846224e46f1360a6008402fcd0e0e0",
+    "data": {
+    "type": "0x1::account::Account",
+    "data": {
+    "authentication_key": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "coin_register_events": {
+    "counter": "1",
+    "guid": {
+    "id": {
+    "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "creation_num": "0"
+  }
+  }
+  },
+    "guid_creation_num": "4",
+    "key_rotation_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "creation_num": "1"
+  }
+  }
+  },
+    "rotation_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  },
+    "sequence_number": "0",
+    "signer_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "state_key_hash": "0x6e4b28d40f98a106a65163530924c0dcb40c1349d3aa915d108b4d6cfc1ddb19",
+    "handle": "0x1b854694ae746cdbd8d44186ca4929b2b337df21d1c74633be19b2710552fdca",
+    "key": "0x0619dc29a0aac8fa146714058e8dd6d2d0f3bdf5f6331907bf91f3acd81e6935",
+    "value": "0x9f9835f429758d010000000000000000",
+    "data": null,
+    "type": "write_table_item"
+  }
+    ],
+    "sender": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0",
+    "sequence_number": "104627",
+    "max_gas_amount": "100000",
+    "gas_unit_price": "100",
+    "expiration_timestamp_secs": "1727826277",
+    "payload": {
+    "function": "0x1::aptos_account::transfer",
+    "type_arguments": [],
+    "arguments": [
+    "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28",
+    "10"
+    ],
+    "type": "entry_function_payload"
+  },
+    "signature": {
+    "public_key": "0xfd448fada2bac29c5f3213277e001ca8851d5644578e79484b0426c41357a457",
+    "signature": "0x40d8a6ee9150aa5736bee23ce1b1b851790bc0aa7e2485c0760d5808027040a2ef4170b88962867b045197576c5e89a4c640bf43586e6b3ead2b510b59acc20a",
+    "type": "ed25519_signature"
+  },
+    "events": [
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28"
+  },
+    "sequence_number": "0",
+    "type": "0x1::account::CoinRegisterEvent",
+    "data": {
+    "type_info": {
+    "account_address": "0x1",
+    "module_name": "0x6170746f735f636f696e",
+    "struct_name": "0x4170746f73436f696e"
+  }
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "3",
+    "account_address": "0x559d4f690c683fca7c539237aa8dc4c6ec09886b7016bf66f2cdeffef55468f0"
+  },
+    "sequence_number": "52484",
+    "type": "0x1::coin::WithdrawEvent",
+    "data": {
+    "amount": "10"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "2",
+    "account_address": "0x5d6233bb8d7f8bd714af196339e9fb3104c9d66f38867b2a0585c4f7b9d04d28"
+  },
+    "sequence_number": "0",
+    "type": "0x1::coin::DepositEvent",
+    "data": {
+    "amount": "10"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::transaction_fee::FeeStatement",
+    "data": {
+    "execution_gas_units": "6",
+    "io_gas_units": "5",
+    "storage_fee_octas": "98800",
+    "storage_fee_refund_octas": "0",
+    "total_charge_gas_units": "999"
+  }
+  }
+    ],
+    "timestamp": "1727825677775812",
+    "type": "user_transaction"
+  }
+  ```
+</details>
+
+
+### 可替代资产余额变更
+
+对于可替代资产，余额变更是在 `primary_fungible_store` 中跟踪的。  
+primary fungible store 地址是确定性的，并且总是由该存储的所有者跟踪。
+
+示例：https://api.mainnet.aptoslabs.com/v1/transactions/by_version/1750174030
+
+跟踪可替代资产有几个步骤：
+
+1. 可替代资产会有两种类型的事件。`0x1::fungible_asset::Deposit` 和 `0x1::fungible_asset::Withdraw`。
+
+`Withdraw` 事件类似于 coin 事件，余额将会减少 `data.amount` 字段的数额。  
+同理，`Deposit` 事件余额将增加 `data.amount` 字段的数额。
+
+请注意，这里我省略了序列号和 GUID 字段，因为它们不适用于模块事件。
+
+每个事件都有一个 `store` 字段，在这个例子中是 `0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a`。  
+这是该资产的 `FungibleStore` 地址，余额就存在该处。请记住这个地址，用于下一步骤。
+
+<details>
+  <summary>可替代资产事件</summary>
+```json
+{
+  "events": [
+    {
+      "type": "0x1::fungible_asset::Withdraw",
+      "data": {
+        "amount": "1",
+        "store": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a"
+      }
+    },
+    {
+      "type": "0x1::fungible_asset::Deposit",
+      "data": {
+        "amount": "1",
+        "store": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a"
+      }
+    }
+  ]
+}
+```
+</details>
+
+2. 接下来，我们查看 `0x1::fungible_asset::FungibleStore` 的变动。这将显示可替代资产余额的最终状态。余额位于 `data.balance` 字段中。`address` 字段将与事件中的 `store` 字段匹配。可替代资产的标识符位于 `metadata` 字段，它是可替代资产的元数据地址。
+
+此外，要确定资产的实际所有者，需要查看 store 的所有者。在此情况下，您需要查找 `0x1::object::ObjectCore`，其 `address` 字段与事件中 `store` 字段相匹配。`owner` 字段将显示资产所有者的地址。类似于 coin 事件，如果在 `changes` 中未找到 `ObjectCore`，则表示已被删除，必须存在一个 `FungibleStoreDeletion` 事件。然后，您可以通过匹配 `Withdraw`/`Deposit` 事件和 `FungibleStoreDeletion` 事件中的 `store` 字段来确定关系。
+
+<details>
+  <summary>可替代资产变动</summary>
+```json
+{
+  "changes":[
+    {
+      "address": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a",
+      "state_key_hash": "0x5b587931247dd5b43874ab29c3305c0ee7d26e7571fed3aea409375530e3a62c",
+      "data": {
+        "type": "0x1::fungible_asset::FungibleStore",
+        "data": {
+          "balance": "126691270443",
+          "frozen": false,
+          "metadata": {
+            "inner": "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12"
+          }
+        }
+      },
+      "type": "write_resource"
+    },
+    {
+      "address": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a",
+      "state_key_hash": "0x5b587931247dd5b43874ab29c3305c0ee7d26e7571fed3aea409375530e3a62c",
+      "data": {
+        "type": "0x1::object::ObjectCore",
+        "data": {
+          "allow_ungated_transfer": false,
+          "guid_creation_num": "1125899906842628",
+          "owner": "0xc67545d6f3d36ed01efc9b28cbfd0c1ae326d5d262dd077a29539bcee0edce9e",
+          "transfer_events": {
+            "counter": "0",
+            "guid": {
+              "id": {
+                "addr": "0x8a9d57692a9d4deb1680eaf107b83c152436e10f7bb521143fa403fa95ef76a",
+                "creation_num": "1125899906842624"
+              }
+            }
+          }
+        }
+      },
+      "type": "write_resource"
+    }
+  ]
+}
+```
+</details>
+
+<details>
+  <summary>FungibleStore 删除事件</summary>
+```json
+{
+  "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+  "sequence_number": "0",
+  "type": "0x1::fungible_asset::FungibleStoreDeletion",
+  "data": {
+    "metadata": "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12",
+    "owner": "0xcf3906e2c9bc7e489c3b09d5ed5d90d8d403a68a50fe52932116b26e5878af26",
+    "store": "0xa6ab8518e5f28a5f27247a895aa8b3de4a917209c6841b16187e8d64a67de242"
+  }
+}
+```</details>
+
+
+### 迁移至可替代资产余额变动的代币
+
+对于迁移至可替代资产的代币，这仅仅是上述两项的简单追踪。
+迁移成可替代资产的代币将同时拥有代币存储变动和
+主要可替代资产存储变动。需要将这些金额汇总起来，
+并且其他方面仍按代币进行处理。
+
+可替代资产元数据地址是代币类型与 0xA 的哈希值
+
+```
+address = sha3_256(0xA | coin_type | 0xFE)
+```
+
+以下是一个包含 APT 迁移代币的示例：https://api.mainnet.aptoslabs.com/v1/transactions/by_version/1642580695
+<details>
+  <summary>完整响应</summary>
+  ```json
+  {
+    "version": "1642580695",
+    "hash": "0xe67ba1c4242d5c1de42eb8419558c4edf2318e185a3940a00f4150b519d06508",
+    "state_change_hash": "0x07c5ec97afdf731c2778fccb37fe209369b28dcf6dcf11c3cf13b83c962f7f96",
+    "event_root_hash": "0xad349cbea90bef601dfae9df822f5698af296951fc5f94359fcacc1e69e9fa3d",
+    "state_checkpoint_hash": null,
+    "gas_used": "545",
+    "success": true,
+    "vm_status": "Executed successfully",
+    "accumulator_root_hash": "0x88e81bde70f32a86e46b288a917a44b2868a46973fac7fad16b5e780f48b0e67",
+    "changes": [
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::coin::PairedCoinType",
+    "data": {
+    "type": {
+    "account_address": "0x1",
+    "module_name": "0x6170746f735f636f696e",
+    "struct_name": "0x4170746f73436f696e"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::coin::PairedFungibleAssetRefs",
+    "data": {
+    "burn_ref_opt": {
+    "vec": [
+  {
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+    ]
+  },
+    "mint_ref_opt": {
+    "vec": [
+  {
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+    ]
+  },
+    "transfer_ref_opt": {
+    "vec": [
+  {
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+    ]
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::fungible_asset::ConcurrentSupply",
+    "data": {
+    "current": {
+    "max_value": "340282366920938463463374607431768211455",
+    "value": "47948384"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::fungible_asset::Metadata",
+    "data": {
+    "decimals": 8,
+    "icon_uri": "",
+    "name": "Aptos Coin",
+    "project_uri": "",
+    "symbol": "APT"
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::object::ObjectCore",
+    "data": {
+    "allow_ungated_transfer": true,    "guid_creation_num": "1125899906842625",
+    "owner": "0x1",
+    "transfer_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0xa",
+    "creation_num": "1125899906842624"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa",
+    "state_key_hash": "0x1db5441d8fa4229c5844f73fd66da4ad8176cb8793d8b3a7f6ca858722030043",
+    "data": {
+    "type": "0x1::primary_fungible_store::DeriveRefPod",
+    "data": {
+    "metadata_derive_ref": {
+    "self": "0xa"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188",
+    "state_key_hash": "0x5ce89e323a23fb5570694dfb687d474d44563638c5ef774a2364d8347f5732b8",
+    "data": {
+    "type": "0x1::coin::MigrationFlag",
+    "data": {
+    "dummy_field": false
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188",
+    "state_key_hash": "0x5ce89e323a23fb5570694dfb687d474d44563638c5ef774a2364d8347f5732b8",
+    "data": {
+    "type": "0x1::fungible_asset::FungibleStore",
+    "data": {
+    "balance": "37949184",
+    "frozen": false,
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188",
+    "state_key_hash": "0x5ce89e323a23fb5570694dfb687d474d44563638c5ef774a2364d8347f5732b8",
+    "data": {
+    "type": "0x1::object::ObjectCore",
+    "data": {
+    "allow_ungated_transfer": false,
+    "guid_creation_num": "1125899906842625",
+    "owner": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "transfer_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188",
+    "creation_num": "1125899906842624"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x8a4613c356c21a45045e06dcc404bfee363aabd65a774d4d43defd71289239b2",
+    "state_key_hash": "0x7c2d6e31d4ac5bbf93e19412437c0c288766b240674f71f457b9e3ef68be5003",
+    "data": {
+    "type": "0x1::fungible_asset::FungibleStore",
+    "data": {
+    "balance": "10000",
+    "frozen": false,
+    "metadata": {
+    "inner": "0xa"
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0x8a4613c356c21a45045e06dcc404bfee363aabd65a774d4d43defd71289239b2",
+    "state_key_hash": "0x7c2d6e31d4ac5bbf93e19412437c0c288766b240674f71f457b9e3ef68be5003",
+    "data": {
+    "type": "0x1::object::ObjectCore",
+    "data": {
+    "allow_ungated_transfer": false,
+    "guid_creation_num": "1125899906842625",
+    "owner": "0x5",
+    "transfer_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0x8a4613c356c21a45045e06dcc404bfee363aabd65a774d4d43defd71289239b2",
+    "creation_num": "1125899906842624"
+  }
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  },
+  {
+    "address": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "state_key_hash": "0xfb7c1f2762da89f00a222f93bd771b478edb4361475c4a518178564be8616dd6",
+    "data": {
+    "type": "0x1::account::Account",
+    "data": {
+    "authentication_key": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "coin_register_events": {
+    "counter": "14",
+    "guid": {
+    "id": {
+    "addr": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "creation_num": "0"
+  }
+  }
+  },
+    "guid_creation_num": "44",
+    "key_rotation_events": {
+    "counter": "0",
+    "guid": {
+    "id": {
+    "addr": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "creation_num": "1"
+  }
+  }
+  },
+    "rotation_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  },
+    "sequence_number": "52",
+    "signer_capability_offer": {
+    "for": {
+    "vec": []
+  }
+  }
+  }
+  },
+    "type": "write_resource"
+  }
+    ],
+    "sender": "0xa746e980ae21949a4f084db7403430f00bce3c9a1da4101ffcf0bf45ebd35e7e",
+    "sequence_number": "51",
+    "max_gas_amount": "817",
+    "gas_unit_price": "100",
+    "expiration_timestamp_secs": "1724196316",
+    "payload": {
+    "function": "0x1::primary_fungible_store::transfer",
+    "type_arguments": [
+    "0x1::fungible_asset::Metadata"
+    ],
+    "arguments": [
+  {
+    "inner": "0xa"
+  },
+    "0x5",
+    "10000"
+    ],
+    "type": "entry_function_payload"
+  },
+    "signature": {
+    "public_key": "0x330e75a102e37270b788caee8dd819e5badedd5fa17fe9f72017732e9bb98c60",
+    "signature": "0xd4666df2887cf2d8192230e4a03d842ea75a86ffbc46a9a16a9baede6ff646c6b2bcafc524d3a4a7a66c223b5db576beb5cfefbd549620e69097c0a364c7a800",
+    "type": "ed25519_signature"
+  },
+    "events": [
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::fungible_asset::Withdraw",
+    "data": {
+    "amount": "10000",
+    "store": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::fungible_asset::Deposit",
+    "data": {
+    "amount": "10000",
+    "store": "0x8a4613c356c21a45045e06dcc404bfee363aabd65a774d4d43defd71289239b2"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::fungible_asset::Withdraw",
+    "data": {
+    "amount": "54500",
+    "store": "0x7ed92ce166e251fc133f6b4d46a6b41307962e3b6864c2231110b3808648188"
+  }
+  },
+  {
+    "guid": {
+    "creation_number": "0",
+    "account_address": "0x0"
+  },
+    "sequence_number": "0",
+    "type": "0x1::transaction_fee::FeeStatement",
+    "data": {
+    "execution_gas_units": "6",
+    "io_gas_units": "7",
+    "storage_fee_octas": "53240",
+    "storage_fee_refund_octas": "0",
+    "total_charge_gas_units": "545"
+  }
+  }
+    ],
+    "timestamp": "1724196287102837",
+    "type": "user_transaction"
+  }
+  ```
+</details>
+
+
+## 资产转移
+
+### Coin（或迁移的 coin）Transfers
+
+<Callout type="info">
+  APT, 作为 Aptos 的原生代币，是一种已迁移的币。请使用 `aptos_account::transfer` 函数来转移 APT 代币。
+</Callout>
+
+我们建议您使用 `0x1::aptos_account::transfer_coins<CoinType>(receiver address, amount)` 来转移代币。  
+如果该币尚未注册，它将自动注册；如果关联账户尚未创建，也会自动创建。  
+这将继续适用于任何迁移为同质资产的代币，包括 APT。
+
+代币可以通过以下方式进行转账：  
+* [`0x1::aptos_account::transfer_coins<CoinType>(receiver address, amount)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L108-L112) - 向另一个账户转移代币。  
+* [`0x1::aptos_account::batch_transfer_coins<CoinType>(receiver addresses, amounts)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L93-L106) - 向多个账户批量转移代币。  
+* [`0x1::aptos_account::transfer(receiver address, amount)`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/aptos_account.move#L74-L91) - 专门向另一个账户转移 APT。
+
+{/* TODO examples */}
+
+### Fungible Asset Transfers
+
+我们建议您使用 `0x1::primary_fungible_store::transfer<0x1::object::ObjectCore>(receiver address, amount)` 来转移同质资产。  
+它将发送相关的同质资产，如果尚未创建该资产的 primary store，也会一并创建。
+
+{/* TODO examples */}
+
+<Callout type="warning">
+  注意：如果账户尚未创建，该方法不会自动创建账户。  
+  您需要调用 `0x1::aptos_account::create_account(account address)` 来创建账户，  
+  用户才能提交交易。
+</Callout>
+
+{ /* TODO Staking some other day */ }
+
+## Testing
+
+为确保所有功能正常，我们提供了以下检查方法。
+
+### Balance Checks
+
+要进行余额检查，您可以查询账户 `0x5` 的资产 `0x1::aptos_coin::AptosCoin` 余额。  
+余额应显示为 `0.002 APT`，其中 0.001 APT 是币，0.001 APT 是迁移后的币（同质资产）。
+
+如果您的余额不正确，请参见 [Coin and Migrated Coin Balances](#coin-and-migrated-coins-balances) 获取更多信息。
+
+### Balance Change / Transfer Checks
+
+#### Check Coin Transfer
+
+要测试转账，创建一个交易，将 0.001 APT 转给另一个账户。  
+交易应成功，余额应更新，余额将减少 0.001 APT 并扣除相关的 gas 费用。
+
+#### Check Fungible Asset Transfer要测试转账，您可以通过https://test-token-faucet.vercel.app/ 向账户充值同质化资产，
+然后将该同质化资产转账给另一个账户。余额应根据变动进行更新，
+并且您应能够在网站上追踪铸币记录。
+
+## Stablecoin Addresses
+
+| Token Name           | Token Symbol | Token Address                                                                                                                                                              | Source of Address                                                                                     |
+|----------------------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| Tether USD           | USDt         | [0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b](https://explorer.aptoslabs.com/fungible_asset/0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b?network=mainnet) | [Aptos Foundation](https://aptosfoundation.org/currents/global-finance-moves-faster-on-aptos)       |
+| USDC                 | USDC         | [0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b](https://explorer.aptoslabs.com/fungible_asset/0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b?network=mainnet) | [Circle](https://developers.circle.com/stablecoins/usdc-on-main-networks)                |
+| Ondo US Dollar Yield | USDY         | [0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc::usdy::USDY](https://explorer.aptoslabs.com/coin/0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc::usdy::USDY?network=mainnet) | [Ondo Finance](https://ondo.finance/usdy)                                                           |
+
+## FAQ
+
+### What is the finality of a transaction?
+
+Aptos 使用 BFT 共识算法，因此交易在提交到区块链后立即被最终确定。
+
+### What is the transaction fee on a transaction?交易费用是可变的，但在大多数情况下是固定的。请查看
+[simulating transactions](../../network/blockchain/gas-txn-fee#estimating-gas-consumption-via-simulation)
+以了解费用的估算方法。

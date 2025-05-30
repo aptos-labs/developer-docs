@@ -1,0 +1,710 @@
+---
+title: "你的第一个 Aptos 多重签名（Python SDK）"
+---
+
+import { Callout, Steps, Tabs } from 'nextra/components'
+
+# 你的第一个 Aptos 多重签名（Python SDK）
+
+在本教程中，你将学习如何创建和管理一个需要 3 个密钥持有者中的 2 个批准才能执行任何交易的多重签名账户。
+你将学习如何：
+
+1. 设置 Aptos 开发环境
+2. 创建多个账户作为密钥持有者
+3. 配置需要 2/3 签名的多重签名账户
+4. 为账户提供资金并验证余额
+5. 创建和执行多重签名交易
+
+<Callout type="info">
+如果你来自以太坊/Solidity，请注意 Aptos 处理多重签名账户的方式不同。Aptos 在[协议层面直接实现多重签名](../../network/blockchain/accounts)，允许账户需要多个签名而无需部署额外的智能合约。
+
+![多重签名图表](/docs/multisig_chart.svg)
+
+我们使用 [Aptos Python SDK](../sdks/python-sdk) 与 Aptos 进行交互。
+</Callout>
+
+从概念上讲，多重签名账户就像需要多个密钥持有者授权才能访问的银行金库。在 Aptos 中，这是通过数字签名而不是物理密钥实现的，每个授权签名者都提供其加密批准。
+
+## 设置
+
+首先，让我们准备开发环境。我们将创建一个独立的工作空间并安装所有必要的依赖项。
+
+<Steps>
+
+### 打开终端
+
+打开一个新的终端窗口。
+
+### 验证 Python 安装
+
+运行以下命令检查你的 Python 版本：
+
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 --version
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python --version
+  ```     
+  </Tabs.Tab>
+</Tabs>
+
+你应该看到类似 "Python 3.7" 或更高版本的信息。
+
+<Callout type="warning">
+如果你看到错误或 Python 版本低于 3.7，请从 [python.org](https://python.org/) 下载 Python。
+</Callout>
+
+### 创建项目目录
+
+为我们的项目创建一个新文件夹：
+
+```bash filename="Terminal"
+mkdir my-first-multisig
+```
+
+### 进入项目目录
+
+移动到这个新文件夹：
+
+```bash filename="Terminal"
+cd my-first-multisig
+```
+
+### 创建虚拟环境
+
+设置一个独立的 Python 环境：
+
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 -m venv venv
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python -m venv venv
+  ```     
+  </Tabs.Tab>
+</Tabs>
+
+这个命令：
+- 创建一个独立的 Python 环境
+- 安装一个全新的 Python 实例
+- 将项目依赖项与系统 Python 分开
+- 创建一个 `venv` 文件夹（你可以查看但不要修改其内容！）
+
+### 激活虚拟环境
+
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  source venv/bin/activate
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  .\venv\Scripts\activate
+  ```     
+  
+  <Callout type="info">
+  如果你收到关于脚本不允许运行的错误，可以使用 PowerShell 启用它们：
+  
+  ```powershell filename="Terminal"
+  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+  ```
+  
+  输入 `[Y]` 并按 Enter 确认，然后重试激活命令。
+  </Callout>
+  </Tabs.Tab>
+</Tabs>
+
+这个命令：
+- 修改你的终端环境变量
+- 使你的终端使用 `venv` 中的 Python 而不是系统 Python
+- 你会在终端行首看到 `(venv)`
+- 要稍后停用，只需输入 `deactivate`
+
+### 安装 Aptos SDK
+
+安装所需的 SDK：
+
+```bash filename="Terminal"
+pip install aptos-sdk
+```
+
+这个命令：
+- 从 PyPI（Python 包索引）下载 Aptos SDK 包
+- 将其安装到你的 `venv` 文件夹中
+- 在 `venv/lib/python3.x/site-packages/aptos_sdk` 中创建文件
+- 你可以通过导航到该目录来查看这些文件
+</Steps>
+
+## 创建基础
+
+让我们开始构建我们的多重签名实现。首先，我们将设置导入、主循环和基本配置。
+
+<Steps>
+
+### 创建 Python 脚本
+
+创建一个空的 Python 脚本文件：
+
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  touch multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  echo "" > multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
+
+### 添加基础代码
+
+在你的 IDE 中打开 `multisig.py`（我们推荐 VSCode 或 JetBrains）并添加以下代码：
+
+```python filename="multisig.py"
+# Copyright © Aptos Foundation
+# SPDX-License-Identifier: Apache-2.0
+
+import asyncio
+import subprocess
+import time
+
+from aptos_sdk.account import Account, RotationProofChallenge
+from aptos_sdk.account_address import AccountAddress
+from aptos_sdk.async_client import FaucetClient, RestClient
+from aptos_sdk.authenticator import Authenticator, MultiEd25519Authenticator
+from aptos_sdk.bcs import Serializer
+from aptos_sdk.ed25519 import MultiPublicKey, MultiSignature
+from aptos_sdk.transactions import (
+    EntryFunction,
+    RawTransaction,
+    Script,
+    ScriptArgument,
+    SignedTransaction,
+    TransactionArgument,
+    TransactionPayload,
+)
+from aptos_sdk.type_tag import StructTag, TypeTag
+
+# Network configuration - using devnet for testing. Check current urls at:
+# https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/common.py
+NODE_URL = "https://fullnode.devnet.aptoslabs.com/v1"
+FAUCET_URL = "https://faucet.devnet.aptoslabs.com"
+
+should_wait = True
+
+# "wait" is used to make the terminal more interactive, so it's easier to follow what is happening.
+def wait():
+    """Wait for user to press Enter before starting next section."""
+    if should_wait:
+        input("\nPress Enter to continue...")
+
+# Now we define our main function which calls everything else. 
+# We will add all future additions inside this function.
+async def main(should_wait_input=True):
+    # This is just used for this tutorial.
+    global should_wait
+    should_wait = should_wait_input
+
+    # Initialize our blockchain clients
+    rest_client = RestClient(NODE_URL)
+    faucet_client = FaucetClient(FAUCET_URL, rest_client)
+    
+    ############# Add additional code here ###############
+    
+    
+    ######################################################
+    
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+这段代码导入了 Aptos SDK 的所有必要模块。`aptos_sdk.account` 模块提供了管理账户和签名的基本功能，而 `aptos_sdk.transactions` 则为我们提供了创建和提交区块链交易的工具。
+
+<Callout type="info">
+你可以通过使用 `FaucetClient` 在 Aptos Devnet 或 Testnet 上获取免费测试代币。
+</Callout>
+</Steps>
+
+## 创建我们的密钥持有者
+
+就像银行金库需要指定的密钥持有者一样，我们的多重签名也需要授权签名者。让我们为我们的密钥持有者创建账户。
+
+<Steps>
+
+### 创建密钥持有者账户
+
+在 `############# Add additional code here ###############` 后添加以下代码：
+
+```python filename="multisig.py"
+# Create three accounts to act as our key holders
+alice = Account.generate()
+bob = Account.generate()
+chad = Account.generate()
+```
+
+`Account.generate()` 函数创建一个带有新密钥对的新 Aptos 账户。每个账户都有自己的私钥（用于签名）和公钥（用于验证）。在我们的多重签名设置中，这些账户代表有权签署交易的密钥持有者，类似于每个银行金库密钥持有者都有自己的物理密钥。
+
+<Callout type="info">
+每次运行此脚本时，它都会在 devnet 上生成新账户。如果你想继续使用该账户，需要保存私钥和账户地址。
+</Callout>
+
+### 添加账户信息显示
+
+在 `chad = Account.generate()` 下添加此代码：
+
+```python filename="multisig.py"
+print("\n=== Account addresses ===")
+print(f"Alice: {alice.address()}")
+print(f"Bob:   {bob.address()}")
+print(f"Chad:  {chad.address()}")
+
+print("\n=== Authentication keys ===")
+print(f"Alice: {alice.auth_key()}")
+print(f"Bob:   {bob.auth_key()}")
+print(f"Chad:  {chad.auth_key()}")
+
+print("\n=== Public keys ===")
+print(f"Alice: {alice.public_key()}")
+print(f"Bob:   {bob.public_key()}")
+print(f"Chad:  {chad.public_key()}")
+
+wait()
+
+# Add additional code below this wait()
+```
+
+### 运行脚本
+
+从终端运行我们的 `multisig.py`：
+
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
+
+你应该看到显示每个账户的地址、认证密钥和公钥的输出。例如：
+
+```bash filename="Terminal"
+=== Account addresses ===
+Alice: 0x5323a06f21b04af53fc57367b50d3bbb5675c655bc9bc62f33b5e083d5d06b8b
+Bob:   0x9f3e94fc92e0076336c122a576304c0b9fa8def13a98c469dce05e0836b9fe5b
+Chad:  0x1d0e7b790493dcf7bc7ce60bf4ccdcca1d38ce0d7f8dd26d2791a6d3ff6da708
+
+=== Authentication keys ===
+Alice: 0x5323a06f21b04af53fc57367b50d3bbb5675c655bc9bc62f33b5e083d5d06b8b
+Bob:   0x9f3e94fc92e0076336c122a576304c0b9fa8def13a98c469dce05e0836b9fe5b
+Chad:  0x1d0e7b790493dcf7bc7ce60bf4ccdcca1d38ce0d7f8dd26d2791a6d3ff6da708
+
+=== Public keys ===
+Alice: 0x730264a36d4ec90af2e28e1cf9c4d686440598317123469a7c827d4fcdf74715
+Bob:   0xcf21e85337a313bdac33d068960a3e52d22ce0e6190e9acc03a1c9930e1eaf3e
+Chad:  0xa1a2aef8525eb20655387d3ed50b9a3ea1531ef6117f579d0da4bcf5a2e1f76d
+```
+
+<Callout type="info">
+对于每个用户，请注意[账户地址](../../network/blockchain/accounts.mdx#account-address)和[认证密钥](../../network/blockchain/accounts.mdx#authentication-key)是相同的，但[公钥](../../network/blockchain/accounts.mdx#creating-an-account)是不同的。
+
+Aptos 账户模型支持独特的能力，可以轮换账户的私钥。由于账户的地址是*初始*认证密钥，因此可以在不更改其公共地址的情况下将账户的签名能力转移到另一个私钥。
+</Callout>
+</Steps>
+
+## 配置多重签名金库
+
+现在我们有了密钥持有者（Alice、Bob 和 Chad），让我们设置多重签名配置。
+
+<Steps>
+
+### 配置多重签名账户
+
+添加代码来配置 2/3 多重签名账户：
+
+```python filename="multisig.py"
+# Configure a 2-of-3 multisig account
+threshold = 2
+
+multisig_public_key = MultiPublicKey(
+    [alice.public_key(), bob.public_key(), chad.public_key()],
+    threshold
+)
+
+multisig_address = AccountAddress.from_key(multisig_public_key)
+```
+
+`threshold = 2` 设置我们需要三个可能的签名者中的两个签名。`MultiPublicKey` 将所有三个公钥组合成一个多重签名配置。
+
+<Callout type="info">
+这就像设置银行金库的访问规则："这三个人中的任何两个必须批准才能访问金库。"
+</Callout>
+
+### 显示多重签名信息
+
+在我们新定义的 `multisig_address` 下添加此代码：
+
+```python filename="multisig.py"
+print("\n=== 2-of-3 Multisig account ===")
+print(f"Account public key: {multisig_public_key}")
+print(f"Account address:    {multisig_address}")
+
+wait()
+
+# Add additional code here
+```
+
+### 运行脚本
+
+验证输出：
+
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
+
+你应该看到显示多重签名账户的公钥类型和其在 Aptos 区块链上的唯一地址的输出。例如：
+
+```bash filename="Terminal"
+=== 2-of-3 Multisig account ===
+Account public key: 2-of-3 Multi-Ed25519 public key
+Account address:    0x08cac3b7b7ce4fbc5b18bc039279d7854e4c898cbf82518ac2650b565ad4d364
+```
+</Steps>
+
+## 为我们的账户提供资金
+
+就像新银行账户需要初始存款一样，我们的区块链账户需要资金才能运行。
+
+<Steps>
+
+### 添加资金代码
+
+添加代码为所有账户提供资金：
+
+```python filename="multisig.py"
+print("\n=== Funding accounts ===")
+alice_start = 10_000_000
+bob_start = 20_000_000
+chad_start = 30_000_000
+multisig_start = 40_000_000
+
+# Fund all accounts concurrently
+alice_fund = faucet_client.fund_account(alice.address(), alice_start)
+bob_fund = faucet_client.fund_account(bob.address(), bob_start)
+chad_fund = faucet_client.fund_account(chad.address(), chad_start)
+multisig_fund = faucet_client.fund_account(multisig_address, multisig_start)
+await asyncio.gather(*[alice_fund, bob_fund, chad_fund, multisig_fund])
+```
+
+`fund_account()` 函数从 Aptos 水龙头请求测试代币，让我们可以在不使用真实 APT 的情况下进行实验。我们通过首先将它们初始化为 `[name]_fund` 然后等待异步函数调用 `asyncio.gather()` 来同时为所有账户提供资金，而不是一次一个。
+
+### 检查余额
+
+添加代码检查所有余额并打印出来：
+
+```python filename="multisig.py"
+# Check all balances
+alice_balance = rest_client.account_balance(alice.address())
+bob_balance = rest_client.account_balance(bob.address())
+chad_balance = rest_client.account_balance(chad.address())
+multisig_balance = rest_client.account_balance(multisig_address)
+[alice_balance, bob_balance, chad_balance, multisig_balance] = await asyncio.gather(
+    *[alice_balance, bob_balance, chad_balance, multisig_balance]
+)
+
+print(f"Alice's balance:  {alice_balance}")
+print(f"Bob's balance:    {bob_balance}")
+print(f"Chad's balance:   {chad_balance}")
+print(f"Multisig balance: {multisig_balance}")
+
+wait()
+```
+
+`account_balance()` 函数查询区块链以获取每个账户的当前余额。同样，我们使用 `asyncio.gather()` 来并行高效地进行所有这些查询。
+
+### 运行脚本
+
+通过运行以下命令验证资金是否成功：
+
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
+
+输出应该显示每个账户及其相应的余额。例如：
+
+```bash filename="Terminal"
+=== Funding accounts ===
+Alice's balance:  10000000
+Bob's balance:    20000000
+Chad's balance:   30000000
+Multisig balance: 40000000
+```
+
+<Callout type="warning">
+如果任何余额显示为 0，你可能需要重新运行资金命令，因为水龙头偶尔会有临时问题。
+</Callout>
+
+<Callout type="info">
+值以 octas 为单位（1 APT = 100_000_000 octas）。这类似于 1 美元 = 100 美分。
+</Callout>
+</Steps>
+
+## 创建我们的第一个多重签名交易
+
+现在让我们创建一个需要多个签名的交易。我们将从多重签名账户向 Chad 转账 100 octas，类似于银行转账需要两个经理批准大额提款。
+
+<Steps>
+
+### 创建转账交易
+
+通过定义其参数创建转账交易：
+
+```python filename="multisig.py"
+# Create the transfer transaction
+entry_function = EntryFunction.natural(
+    module="0x1::coin",
+    function="transfer",
+    ty_args=[TypeTag(StructTag.from_str("0x1::aptos_coin::AptosCoin"))],
+    args=[
+        TransactionArgument(chad.address(), Serializer.struct),
+        TransactionArgument(100, Serializer.u64),
+    ],
+)
+
+# Build the raw transaction
+chain_id = await rest_client.chain_id()
+raw_transaction = RawTransaction(
+    sender=multisig_address,
+    sequence_number=0,
+    payload=TransactionPayload(entry_function),
+    max_gas_amount=2000,
+    gas_unit_price=100,
+    expiration_timestamps_secs=int(time.time()) + 600,
+    chain_id=chain_id,
+)
+```
+
+上面的代码：
+- 使用 `EntryFunction.natural()` 创建向 Chad 的地址转账 100 octas（APT 的最小单位）
+- 设置交易参数，如 gas 限制和过期时间
+- 创建一个原始交易，在提交之前仍需要签名
+
+### 获取签名
+
+从 Alice 和 Bob 获取签名：
+
+```python filename="multisig.py"
+alice_signature = alice.sign(raw_transaction.keyed())
+bob_signature = bob.sign(raw_transaction.keyed())
+
+print("\n=== Individual signatures ===")
+print(f"Alice: {alice_signature}")
+print(f"Bob:   {bob_signature}")
+
+wait()
+```
+
+上面的代码：
+- 让 Alice 用她的私钥签名交易
+- 让 Bob 用他的私钥签名相同的交易
+- 打印签名以验证它们是否成功创建
+
+### 运行脚本
+
+在添加创建交易和获取签名的代码后，运行脚本：
+
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
+
+你应该看到类似这样的内容：
+
+```bash filename="Terminal"
+=== Individual signatures ===
+Alice: 0x360e66c75b1ba787ec7b05998cbc14276d7fc0c006fb10c33d5cc3c4cc2ec4f53a8c0996b8e746fd6d86b09b4f8bb128cbf62d8b375f5b974faae040e889ac0d
+Bob:   0xdcfd1965e531deb79de9d8daf7f28f46023107ce4f11612ce76da33e808486a0a368b34563d4f89d6179a3957a266c1e8809691fddabba3c2a3d8be14d6f2f0c
+```
+
+这表明 Alice 和 Bob 都已签名交易。每个签名都是一个唯一的哈希值，证明他们使用私钥授权了交易。
+
+<Callout type="info">
+就像召集两个银行经理签署提款单一样 - 我们需要两个签名才能继续交易。
+
+将所需经理数量从三选二改为二十二选十三（或你的业务需要的任何 K/N）只需要几行代码。
+</Callout>
+</Steps>
+
+## 提交多重签名交易
+
+现在我们将组合签名并提交交易。这类似于收集银行经理的所有签名文件并提交它们以处理大额转账。
+
+<Steps>
+
+### 组合签名
+
+将签名组合成多重签名认证器：
+
+```python filename="multisig.py"
+# Combine the signatures (map from signatory public key index to signature)
+sig_map = [(0, alice_signature), (1, bob_signature)]
+multisig_signature = MultiSignature(sig_map)
+
+# Create the authenticator with our multisig configuration
+authenticator = Authenticator(
+    MultiEd25519Authenticator(multisig_public_key, multisig_signature)
+)
+```
+
+`sig_map` 将每个签名者的公钥与其签名链接起来，证明 Alice 和 Bob 都已批准此交易。`MultiSignature` 和 `Authenticator` 对象将这些签名打包成区块链可以验证的格式。
+
+### 提交交易
+
+创建并提交已签名的交易：
+
+```python filename="multisig.py"
+# Create and submit the signed transaction
+signed_transaction = SignedTransaction(raw_transaction, authenticator)
+
+print("\n=== Submitting transfer transaction ===")
+tx_hash = await rest_client.submit_bcs_transaction(signed_transaction)
+await rest_client.wait_for_transaction(tx_hash)
+print(f"Transaction hash: {tx_hash}")
+```
+
+`SignedTransaction` 将原始交易数据与证明存在两个所需签名的认证器组合在一起。然后我们使用 `submit_bcs_transaction()` 将其提交到区块链并等待确认。
+
+### 检查新余额
+
+检查交易后的新账户余额：
+
+```python filename="multisig.py"
+print("\n=== New account balances ===")
+[alice_balance, bob_balance, chad_balance, multisig_balance] = await asyncio.gather(
+    *[
+        rest_client.account_balance(alice.address()),
+        rest_client.account_balance(bob.address()),
+        rest_client.account_balance(chad.address()),
+        rest_client.account_balance(multisig_address),
+    ]
+)
+
+print(f"Alice's balance:  {alice_balance}")
+print(f"Bob's balance:    {bob_balance}")
+print(f"Chad's balance:   {chad_balance}")
+print(f"Multisig balance: {multisig_balance}")
+```
+
+### 运行脚本
+
+要查看交易结果，运行：
+
+<Tabs items={["Mac/Linux", "Windows"]}>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python3 multisig.py
+  ```     
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```bash filename="Terminal"     
+  python multisig.py
+  ```     
+  </Tabs.Tab>
+</Tabs>
+
+你应该看到类似这样的内容：
+
+```bash filename="Terminal"
+=== Submitting transfer transaction ===
+Transaction hash: 0x2f0b7fc8e69213f0c7e720e660f789b6e3d3564729a298f2b4f6794245833f2d
+
+=== New account balances ===
+Alice's balance:  10000000
+Bob's balance:    20000000
+Chad's balance:   30000100        # 增加了 100 octas
+Multisig balance: 39999200        # 减少了 100 octas 加上 gas 费用
+```
+
+注意：
+- Chad 的余额正好增加了 100 octas，但 Alice 和 Bob 的余额没有变化，因为他们只是签名
+- 多重签名账户支付了转账金额和 gas 费用
+
+<Callout type="info">
+你可以在 Aptos Explorer 上验证交易：
+- 访问 [Aptos Explorer](https://explorer.aptoslabs.com/)
+- 确保 Explorer 设置为 Devnet（检查右上角）
+![在 Aptos Explorer 中切换到 Devnet 网络](/screenshots/explorer_devnet.png)
+- 搜索你的多重签名地址或交易哈希
+- 查看交易详情和余额变化
+</Callout>
+</Steps>
+
+## 更进一步：高级功能
+
+你已经完成了 Aptos 多重签名的基础知识 - 创建"金库"（多重签名账户）、添加"密钥持有者"（签名者）以及进行需要多个批准的简单转账。但就像现代银行业务一样，我们还可以做更多：
+
+### 自定义地址
+
+就像拥有自定义银行账号一样，Aptos 允许你创建以特定字符开头的"自定义"地址。想象一下能够为你的公司"Digital Dynamics"选择一个难忘的账户号码，比如"0xdd..."！
+
+### 账户轮换
+
+银行允许你更新安全凭证而不更改账号。同样，Aptos 多重签名账户可以在保持相同地址的同时"轮换"其认证密钥 - 非常适合在不中断现有支付设置的情况下更新安全性。
+
+### 治理和智能合约
+
+就像银行对大公司账户有复杂的批准系统一样，Aptos 多重签名可以与智能合约和治理系统交互。想象设置自动规则，如：
+- 基于交易规模所需的批准
+- 时间锁定交易
+- 与 DAO 投票系统集成
+
+<Callout type="info">
+让我们知道你最喜欢 Aptos 多重签名的哪些方面！加入我们的社区频道分享你的想法和经验。
+</Callout>
+
+## 下一步
+
+1. 查看[完整代码示例](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/multisig.py)，其中包含所有高级功能（见上文）。
+2. 在[本教程](../cli/working-with-move-contracts/multi-signature-tutorial)中了解多重签名治理。
+3. 探索 [Aptos 中的账户抽象](../../network/blockchain/accounts)。
+4. 加入 [Aptos Discord](https://discord.gg/aptoslabs) 获取开发者支持。 

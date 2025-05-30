@@ -1,0 +1,397 @@
+import { Callout, Tabs } from 'nextra/components';
+
+# 你的第一个代币
+
+本教程介绍如何编译、部署和铸造你自己的代币（定义见[这里](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)），名为 [MoonCoin](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/moon_coin)。
+
+## 步骤 1：选择 SDK
+
+从以下列表安装你偏好的 SDK：
+
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+
+---
+
+## 步骤 2：安装 CLI
+
+[安装 Aptos CLI 预编译二进制文件](../cli.mdx)。
+
+---
+
+## 步骤 3：运行示例
+
+<Tabs items={["TypeScript", "Python"]}>
+  <Tabs.Tab>
+
+克隆 `aptos-ts-sdk` 仓库并构建：
+
+```bash filename="Terminal"
+git clone https://github.com/aptos-labs/aptos-ts-sdk.git
+cd aptos-ts-sdk
+pnpm install
+pnpm build
+```
+
+导航到 TypeScript 示例目录：
+
+```bash filename="Terminal"
+cd examples/typescript/
+```
+
+安装必要的依赖：
+
+```bash filename="Terminal"
+pnpm install
+```
+
+运行 TypeScript [`your_coin`](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/your_coin.ts) 示例：
+
+```bash filename="Terminal"
+pnpm run your_coin
+```
+
+应用程序将完成运行，输出：
+
+```bash filename="Terminal"
+Bob's initial MoonCoin balance: 0.
+Alice mints herself 100 MoonCoin.
+Alice transfers 100 MoonCoin to Bob.
+Bob's updated MoonCoin balance: 100.
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+克隆 `aptos-core` 仓库：
+
+```bash filename="Terminal"
+git clone https://github.com/aptos-labs/aptos-core
+```
+
+导航到 Python SDK 目录：
+
+```bash filename="Terminal"
+cd aptos-core/ecosystem/python/sdk
+```
+
+安装必要的依赖：
+
+```bash filename="Terminal"
+curl -sSL https://install.python-poetry.org | python3
+poetry install
+```
+
+运行 Python [`your_coin`](https://github.com/aptos-labs/aptos-python-sdk/blob/main/examples/your_coin.py) 示例：
+
+```bash filename="Terminal"
+poetry run python -m examples.your_coin ~/aptos-core/aptos-move/move-examples/moon_coin
+```
+
+### 步骤 3.1：构建包
+
+示例运行将暂停并显示以下输出：
+
+```bash filename="Terminal"
+=== Addresses ===
+Alice: 0x5e603a89cf690d7134cf2f24fdb16ba90c4f5686333721c12e835fb6c76bc7ba
+Bob: 0xc8421fa4a99153f955e50f1de2a6acff2f3fd0bb33aa17ba1f5b32b699f6c825
+
+Update the package with Alice's address, compile, and press enter.
+```
+
+此时，打开另一个终端并切换到 MoonCoin 包的目录：
+
+```bash filename="Terminal"
+cd ~/aptos-core/aptos-move/move-examples/moon_coin
+```
+
+接下来，使用 CLI 构建包：
+
+```bash filename="Terminal"
+aptos move compile --named-addresses MoonCoin=0x5e603a89cf690d7134cf2f24fdb16ba90c4f5686333721c12e835fb6c76bc7ba --save-metadata
+```
+
+`--named-addresses` 是地址映射列表，必须进行转换才能将包编译并存储在 Alice 的账户中。注意 `MoonCoin` 被设置为上面打印的 Alice 的地址。另外，`--save-metadata` 是发布包所必需的。
+
+---
+
+### 步骤 3.2：完成示例
+
+返回到之前的提示，按 ENTER 键，因为包现在已经准备好发布了。
+
+应用程序将完成运行，输出：
+
+```bash filename="Terminal"
+
+Publishing MoonCoin package.
+
+Bob registers the newly created coin so he can receive it from Alice.
+Bob's initial MoonCoin balance: 0.
+Alice mints Bob some of the new coin.
+Bob's updated MoonCoin balance: 100.
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 步骤 4：深入了解 MoonCoin
+
+### 步骤 4.1：构建和发布 MoonCoin 包
+
+Move 合约本质上是一组被称为包的 Move 模块。在部署或升级新包时，编译器必须使用 `--save-metadata` 来发布包。对于 MoonCoin，以下输出文件至关重要：
+
+- `build/Examples/package-metadata.bcs`：包含与包相关的元数据。
+- `build/Examples/bytecode_modules/moon_coin.mv`：包含 `moon_coin.move` 模块的字节码。
+
+这些文件由示例读取并发布到 Aptos 区块链：
+
+<Tabs items={["TypeScript", "Python"]}>
+  <Tabs.Tab>
+
+在 TypeScript 示例中，我们使用 `aptos move build-publish-payload` 命令来编译和构建模块。
+该命令构建包含 `package-metadata.bcs` 和 `moon_coin.mv` 模块字节码的 `build` 文件夹。该命令还构建发布交易负载并将其存储在 JSON 输出文件中，我们稍后可以从中读取 `metadataBytes` 和 `byteCode` 以将合约发布到链上。
+
+编译包：
+
+```ts filename="example.ts"
+export function compilePackage(
+  packageDir: string,
+  outputFile: string,
+  namedAddresses: Array<{ name: string; address: AccountAddress }>,
+) {
+  const addressArg = namedAddresses
+    .map(({ name, address }) => `${name}=${address}`)
+    .join(" ");
+  // Assume-yes automatically overwrites the previous compiled version, only do this if you are sure you want to overwrite the previous version.
+  const compileCommand = `aptos move build-publish-payload --json-output-file ${outputFile} --package-dir ${packageDir} --named-addresses ${addressArg} --assume-yes`;
+  execSync(compileCommand);
+}
+
+compilePackage("move/moonCoin", "move/moonCoin/moonCoin.json", [
+  { name: "MoonCoin", address: alice.accountAddress },
+]);
+```
+
+将包发布到链上：
+
+```ts filename="example.ts"
+export function getPackageBytesToPublish(filePath: string) {
+  // current working directory - the root folder of this repo
+  const cwd = process.cwd();
+  // target directory - current working directory + filePath (filePath JSON file is generated with the previous, compilePackage, CLI command)
+  const modulePath = path.join(cwd, filePath);
+
+  const jsonData = JSON.parse(fs.readFileSync(modulePath, "utf8"));
+
+  const metadataBytes = jsonData.args[0].value;
+  const byteCode = jsonData.args[1].value;
+
+  return { metadataBytes, byteCode };
+}
+
+const { metadataBytes, byteCode } = getPackageBytesToPublish(
+  "move/moonCoin/moonCoin.json",
+);
+
+// Publish MoonCoin package to chain
+const transaction = await aptos.publishPackageTransaction({
+  account: alice.accountAddress,
+  metadataBytes,
+  moduleBytecode: byteCode,
+});
+
+const pendingTransaction = await aptos.signAndSubmitTransaction({
+  signer: alice,
+  transaction,
+});
+
+await aptos.waitForTransaction({ transactionHash: pendingTransaction.hash });
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+```python filename="example.py"
+module_path = os.path.join(
+    moon_coin_path, "build", "Examples", "bytecode_modules", "moon_coin.mv"
+)
+with open(module_path, "rb") as f:
+    module = f.read()
+
+metadata_path = os.path.join(
+    moon_coin_path, "build", "Examples", "package-metadata.bcs"
+)
+with open(metadata_path, "rb") as f:
+    metadata = f.read()
+
+print("\nPublishing MoonCoin package.")
+package_publisher = PackagePublisher(rest_client)
+txn_hash = await package_publisher.publish_package(alice, metadata, [module])
+await rest_client.wait_for_transaction(txn_hash)
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+### 步骤 4.2：理解 MoonCoin 模块
+
+MoonCoin 模块定义了 `MoonCoin` 结构体，即代币类型的独特类型。此外，它还包含一个名为 `init_module` 的函数。`init_module` 函数在模块发布时被调用。在这种情况下，MoonCoin 将 `MoonCoin` 代币类型初始化为 `ManagedCoin`，由账户所有者维护。
+
+<Callout type="info">
+ManagedCoin 框架
+[`ManagedCoin`](https://github.com/aptos-labs/aptos-core/blob/f81ccb01f00227f9c0f36856fead4879f185a9f6/aptos-move/framework/aptos-framework/sources/managed_coin.move#L1) 是一个简单的代币管理框架，用于用户直接管理的代币。它提供了围绕 `mint` 和 `burn` 的便捷包装器。
+</Callout>
+
+```move filename="moon_coin.mv"
+module MoonCoin::moon_coin {
+    struct MoonCoin {}
+
+    fun init_module(sender: &signer) {
+        aptos_framework::managed_coin::initialize<MoonCoin>(
+            sender,
+            b"Moon Coin",
+            b"MOON",
+            6,
+            false,
+        );
+    }
+}
+```
+
+---
+
+### 步骤 4.3：理解代币
+
+代币有几个基本操作：
+
+- **铸造（Minting）**：创建新代币。
+- **销毁（Burning）**：删除代币。
+- **冻结（Freezing）**：阻止账户在 `CoinStore` 中存储代币。
+- **注册（Registering）**：在账户上创建用于存储代币的 `CoinStore` 资源。
+- **转账（Transferring）**：从 `CoinStore` 中提取和存入代币。
+
+<Callout type="info">
+
+创建新代币的实体获得铸造、销毁和冻结的能力。
+</Callout>
+
+---
+
+#### 步骤 4.3.1：初始化代币
+
+一旦代币类型发布到 Aptos 区块链，发布该代币类型的实体就可以初始化它：
+
+```move
+module 0x1::coin {
+    public fun initialize<CoinType>(
+        account: &signer,
+        name: string::String,
+        symbol: string::String,
+        decimals: u8,
+        monitor_supply: bool,
+    ): (BurnCapability<CoinType>, FreezeCapability<CoinType>, MintCapability<CoinType>) {
+        let account_addr = signer::address_of(account);
+
+        assert!(
+            coin_address<CoinType>() == account_addr,
+            error::invalid_argument(ECOIN_INFO_ADDRESS_MISMATCH),
+        );
+
+        assert!(
+            !exists<CoinInfo<CoinType>>(account_addr),
+            error::already_exists(ECOIN_INFO_ALREADY_PUBLISHED),
+        );
+
+        let coin_info = CoinInfo<CoinType> {
+            name,
+            symbol,
+            decimals,
+            supply: if (monitor_supply) { option::some(optional_aggregator::new(MAX_U128, false)) } else { option::none() },
+        };
+        move_to(account, coin_info);
+
+        (BurnCapability<CoinType>{ }, FreezeCapability<CoinType>{ }, MintCapability<CoinType>{ })
+  }
+}
+```
+
+这确保了这种代币类型之前从未被初始化过。注意第 10 行和第 15 行的检查，确保调用 `initialize` 的实体与发布此模块的实体相同，并且其账户上没有存储 `CoinInfo`。如果这两个条件都满足，则存储 `CoinInfo` 并让调用者获得销毁、冻结和铸造的能力。
+
+<Callout type="info">
+MoonCoin 在包发布时自动调用此 `initialize` 函数。
+</Callout>
+
+---
+
+#### 步骤 4.3.2：注册代币
+
+要使用代币，实体必须在其账户上注册 `CoinStore`：
+
+```move"
+public entry fun registerCoinType(account: &signer) {
+```
+
+MoonCoin 使用 `ManagedCoin` 提供入口函数包装器：`managed_coin::register`。以下是注册示例脚本：
+
+```move
+script {
+    fun register(account: &signer) {
+        aptos_framework::managed_coin::register<MoonCoin::moon_coin::MoonCoin>(account)
+    }
+}
+```
+
+---
+
+#### 步骤 4.3.3：铸造代币
+
+铸造代币需要初始化时产生的铸造能力。函数 `mint`（见下文）接收该能力和数量，并返回包含该数量代币的 `Coin<T>` 结构体。如果代币跟踪供应量，它将被更新。
+
+```move
+module 0x1::coin {
+    public fun mint<CoinType>(
+        amount: u64,
+        _cap: &MintCapability<CoinType>,
+    ): Coin<CoinType> acquires CoinInfo {
+        if (amount == 0) {
+            return zero<CoinType>()
+        };
+
+        let maybe_supply = &mut borrow_global_mut<CoinInfo<CoinType>>(coin_address<CoinType>()).supply;
+        if (option::is_some(maybe_supply)) {
+            let supply = option::borrow_mut(maybe_supply);
+            optional_aggregator::add(supply, (amount as u128));
+        };
+
+        Coin<CoinType> { value: amount }
+    }
+}
+```
+
+`ManagedCoin` 通过提供入口函数 `managed_coin::mint` 使这变得更容易。
+
+---
+
+#### 步骤 4.3.4：转账代币
+
+Aptos 提供了几个支持代币转账的基础构建块：
+
+- `coin::deposit<CoinType>`：允许任何实体将代币存入已调用 `coin::register<CoinType>` 的账户。
+- `coin::withdraw<CoinType>`：允许任何实体从其账户中提取代币数量。
+- `aptos_account::transfer_coins<CoinType>`：将特定 CoinType 的代币转给接收者。
+
+<Callout type="info">
+有两个独立的提取和存入事件，而不是单个转账事件。
+</Callout>
+
+## 支持文档
+
+- [Aptos CLI](../cli.mdx)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+- [REST API 规范](../../network/nodes/aptos-api-spec.mdx) 

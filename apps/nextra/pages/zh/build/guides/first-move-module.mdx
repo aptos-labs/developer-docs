@@ -1,0 +1,512 @@
+---
+title: "你的第一个 Move 模块"
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# 你的第一个 Move 模块
+
+Aptos 区块链允许开发者使用安全设计的 Move 语言编写图灵完备的智能合约（称为"模块"）。智能合约不仅能让用户通过区块链发送资金，还能编写任意代码，甚至游戏！这一切都始于使用 Aptos CLI 创建一个账户，该账户将存储已部署（"发布"）的 Move 模块。
+
+本教程将帮助你理解 Move 模块，通过指导你设置一个最小的 Aptos 环境，然后学习如何编译、测试、发布和与 Aptos 区块链上的 Move 模块交互。你将学习如何：
+
+1. 设置环境，安装 CLI
+2. 创建 devnet 账户并获取资金
+3. 编译和测试 Move 模块
+4. 将 Move 模块发布（或"部署"）到 Aptos 区块链
+5. 与模块交互
+6. 继续使用 Aptos 构建（后续步骤）
+
+<Callout type="info">
+本教程并不旨在教授 Move 的基础知识。这是一个更长的主题，最好通过 [Move Book](../smart-contracts/book) 来学习。
+</Callout>
+
+## 1. 设置
+
+对区块链的更改称为"交易"，它们需要一个账户来支付网络费用（"gas 费"）。我们需要创建一个带有一些 APT 的账户来支付该费用并拥有已发布的合约。为此，我们需要使用 Aptos CLI。
+
+<Steps>
+### 安装 Aptos CLI
+
+[安装 Aptos CLI](../cli)（如果尚未安装）。
+
+### 打开新的终端
+
+打开一个新的终端窗口或标签页。
+
+### 验证安装
+
+运行 `aptos --version` 来验证是否已安装。
+
+```bash filename="Terminal"
+aptos --version
+```
+
+你应该看到类似 `aptos 4.6.1` 的响应。
+
+### 创建项目文件夹
+
+通过运行以下命令创建一个新的文件夹用于本教程：
+
+```bash filename="Terminal"
+mkdir my-first-module
+```
+
+### 导航到项目文件夹
+
+运行 `cd my-first-module` 进入你的新文件夹。
+
+### 初始化你的账户
+
+运行 `aptos init` 并在设置过程中按 'enter' 键在 `devnet` 上创建一个测试账户。
+
+<Callout type="info">
+当我们为这个文件夹配置 Aptos CLI 时，请注意这个设置遵循区块链本身的逻辑：
+
+1. 我们在哪个网络上工作（默认为 `devnet`，每周刷新一次）？
+2. 我们交易来自哪个账户（创建一个唯一的私钥，进而生成加密公钥和账户地址）？
+3. 如何支付 "gas"？（对于 devnet、testnet 和本地网络，Aptos CLI 将帮助用 Aptos Coin (APT) 为这个账户提供资金）。
+
+现在，只需重复按 'enter' 键接受所有默认值。
+</Callout>
+
+你应该看到类似这样的成功消息：
+
+```bash filename="Terminal"
+---
+Aptos CLI is now set up for account 0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba as profile default!
+{
+  "Result": "Success"
+}
+```
+
+<Callout type="info">
+你可能没有注意到的是，Aptos CLI 已经创建了一个新的隐藏文件夹 `.aptos/`，其中包含 `.gitignore` 和 `config.yaml`，这些文件包含账户信息，包括私钥、公钥和账户地址。
+
+你可以在 Unix/Mac 终端中使用 `ls -a` 或在 Windows 中使用 `dir /ah` 查看隐藏文件。
+</Callout>
+</Steps>
+
+## 2. （可选）探索你在链上的操作
+
+<Steps>
+### 复制你的账户地址
+
+从命令行复制你的新账户地址。
+
+地址看起来像这样 `0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba`，你可以在这一行找到它：
+
+```bash filename="Terminal"
+Aptos CLI is now set up for account 0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba as profile default!
+```
+
+### 打开 Aptos Explorer
+
+访问 [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet)。
+
+这是在 devnet、testnet 或 mainnet 上快速查看正在发生的事情的主要方式。我们稍后将使用它来查看我们部署的合约。
+
+### 确保你在 `Devnet` 网络上
+
+在右上角查找 "Devnet"，或通过点击 "Mainnet" 下拉菜单并选择 Devnet 来切换网络
+
+![在 Aptos Explorer 中切换到 Devnet 网络](/screenshots/explorer_devnet.png)
+
+### 搜索你的账户
+
+将你新创建的地址粘贴到搜索栏中。
+
+<Callout type="warning">
+不要按回车键！有一个已知的 bug，使用回车键搜索不起作用。
+</Callout>
+
+### 查看搜索结果
+
+等待结果出现，然后点击最上面的结果。
+
+### 检查交易
+
+你应该看到你新创建的账户和一个带有水龙头功能的交易，为其提供 devnet 代币。
+
+![在 Explorer 中查看账户](/screenshots/explorer_account.png)
+
+### 验证你的余额
+
+点击 "Coins" 标签页，你会看到你有 1 APT 的 Aptos Coin。这将允许你在 aptos devnet 上发布和与智能合约交互。
+
+<Callout type="info">
+Explorer 是一个重要的工具，可以查看我们部署的合约，并提供了一种查找合约功能的方式。只需搜索合约部署的地址，你就可以看到该模块的代码。
+</Callout>
+</Steps>
+
+## 3. 编写和编译你的第一个模块
+
+现在我们已经设置好环境并创建了账户，让我们编写和编译我们的第一个 Move 模块。与以太坊不同，在以太坊中合约独立存在，Move 将所有内容都与账户绑定 - 包括模块和它们的资源。让我们从一个简单的例子开始，以理解核心概念。
+
+![Move 区块链图](/screenshots/move_blockchain.png)
+
+这个图说明了模块所有权、代币所有权和 Move 区块链状态之间的关系。它帮助可视化模块和资源如何与账户绑定，强调了 Move 的设计与其他区块链平台相比的独特之处。
+
+### 什么是 Move 模块？
+
+Move 模块与其他区块链中的智能合约类似，但有一些关键区别：
+
+- **资源：** 与 Solidity 不同，在 Solidity 中状态存储在合约变量中，Move 使用"资源" - 特殊的数据类型，一次只能存在于一个地方，并且总是与账户绑定
+- **基于模块：** 与 Solidity 不同，在 Solidity 中整个合约作为独立单元部署，Move 代码被组织成可重用的模块，可以跨边界共享和处理资源。模块更像是标准库包，可以一起或单独发布，提供对代码组织的更细粒度控制。
+- **安全设计：** Move 的类型系统和资源语义有助于防止常见的智能合约漏洞
+
+<Callout type="info">
+如果你熟悉 Rust，你会发现 Move 的语法非常相似。如果你来自 Solidity，可以将模块视为可重用的智能合约库。
+</Callout>
+
+### 你的第一个 Move 模块
+
+我们的第一个模块将是一个简单的消息存储系统，允许账户存储和检索消息。让我们在 `my-first-module` 文件夹中创建一个新的 move 项目：
+
+<Steps>
+### 初始化项目
+
+使用 `aptos move init --name my_first_module` 初始化一个新的 move 项目
+
+这将创建一个带有 `sources` 目录和 `Move.toml` 文件的项目结构。
+
+### 创建模块文件
+
+创建一个新文件 `sources/message.move`，包含我们的模块代码：
+
+```move filename="message.move"
+module my_first_module::message {
+    use std::string;
+    use std::signer;
+
+    struct MessageHolder has key, store, drop {
+        message: string::String,
+    }
+
+    public entry fun set_message(account: &signer, message: string::String) acquires MessageHolder {
+        let account_addr = signer::address_of(account);
+
+        if (exists<MessageHolder>(account_addr)) {
+            move_from<MessageHolder>(account_addr);
+        };
+
+        move_to(account, MessageHolder { message });
+    }
+
+    public fun get_message(account_addr: address): string::String acquires MessageHolder {
+        assert!(exists<MessageHolder>(account_addr), 0);
+        let message_holder = borrow_global<MessageHolder>(account_addr);
+        message_holder.message
+    }
+}
+```
+
+让我们分解这个模块：
+
+- 我们定义了一个 `MessageHolder` 资源类型，可以存储字符串消息
+- `set_message` 允许账户存储消息
+- `get_message` 允许任何人检索存储的消息
+- `acquires` 关键字表示函数需要访问哪些资源（在这种情况下是 MessageHolder）
+- `move_to` 和 `move_from` 处理资源在账户下的存储
+
+<Callout type="info">
+Move 有一些独特的特性，使其与其他智能合约语言不同：
+
+1. 资源类型用于表示资产和状态，一次只能存在于一个地方
+2. 能力修饰符如 `key`、`store` 和 `drop` 控制值的使用方式
+3. 显式的 acquire 注释告诉我们函数可能访问哪些资源
+</Callout>
+
+### 编译模块
+
+使用 `aptos move compile --named-addresses my_first_module=default` 编译我们刚刚创建的 Move 模块
+
+<Callout type="info">
+`--named-addresses` 标志将我们的模块名称映射到我们的账户地址。在 Move 中，模块必须在编译时与地址关联 - 我们使用 `'default'`，它指向我们刚刚创建的账户。
+</Callout>
+
+如果成功，你应该看到类似这样的消息：
+
+```bash filename="Terminal"
+❯ aptos move compile --named-addresses my_first_module=default
+Compiling, may take a little while to download git dependencies...
+UPDATING GIT DEPENDENCY https://github.com/aptos-labs/aptos-framework.git
+INCLUDING DEPENDENCY AptosFramework
+INCLUDING DEPENDENCY AptosStdlib
+INCLUDING DEPENDENCY MoveStdlib
+BUILDING my_first_module
+{
+  "Result": [
+    "9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba::message"
+  ]
+}
+```
+</Steps>
+
+太棒了！我们现在准备好测试和调试了。
+
+## 4. 测试和调试
+
+测试和调试是 Move 模块开发的关键部分。Move 内置支持单元测试和调试打印。
+
+<Steps>
+### 添加调试打印
+
+首先，让我们修改我们的消息模块以添加一些调试打印。更新你的 `sources/message.move`：
+
+```move filename="message.move"
+module my_first_module::message {
+    use std::string;
+    use std::signer;
+    use std::debug;  // 添加这个用于调试打印
+
+    struct MessageHolder has key, store, drop {
+        message: string::String,
+    }
+
+    public entry fun set_message(account: &signer, message: string::String) acquires MessageHolder {
+        let account_addr = signer::address_of(account);
+        debug::print(&message); // 打印正在设置的消息
+
+        if (exists<MessageHolder>(account_addr)) {
+            debug::print(&b"Updating existing message"); // 打印调试信息
+            move_from<MessageHolder>(account_addr);
+        } else {
+            debug::print(&b"Creating new message"); // 打印创建新消息时
+        };
+
+        move_to(account, MessageHolder { message });
+    }
+
+    public fun get_message(account_addr: address): string::String acquires MessageHolder {
+        assert!(exists<MessageHolder>(account_addr), 0);
+        let message_holder = borrow_global<MessageHolder>(account_addr);
+        debug::print(&message_holder.message); // 打印检索到的消息
+        message_holder.message
+    }
+}
+```
+
+### 创建测试文件
+
+创建我们的测试：一个新文件 `sources/message_tests.move`，包含：
+
+```move filename="message_tests.move"
+#[test_only]
+module my_first_module::message_tests {
+    use std::string;
+    use std::signer;
+    use aptos_framework::account;
+    use my_first_module::message;
+
+    #[test]
+    fun test_set_and_get_message() {
+        // 设置测试账户
+        let test_account = account::create_account_for_test(@0x1);
+
+        // 测试设置消息
+        message::set_message(&test_account, string::utf8(b"Hello World"));
+
+        // 验证消息设置正确
+        let stored_message = message::get_message(signer::address_of(&test_account));
+        assert!(stored_message == string::utf8(b"Hello World"), 0);
+    }
+}
+```
+
+### 运行测试
+
+现在使用 `aptos move test --named-addresses my_first_module=default` 运行测试
+
+如果测试通过，你应该看到输出：（有关如何处理错误，请参见下文）
+
+```bash filename="Terminal"
+INCLUDING DEPENDENCY AptosFramework
+INCLUDING DEPENDENCY AptosStdlib
+INCLUDING DEPENDENCY MoveStdlib
+BUILDING my_first_module
+Running Move unit tests
+[debug] "Hello World"
+[debug] 0x4372656174696e67206e6577206d657373616765
+[debug] "Hello World"
+[ PASS    ] 0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba::message_tests::test_set_and_get_message
+Test result: OK. Total tests: 1; passed: 1; failed: 0
+{
+  "Result": "Success"
+}
+```
+</Steps>
+
+**如果你在测试过程中遇到错误，这里有一些常见问题和解决方案：**
+
+- 确保所有模块依赖项都正确导入
+- 检查你的账户地址在 `-named-addresses` 参数中是否匹配
+- 验证测试函数是否有 `#[test]` 属性
+- 确保字符串字面量正确编码
+
+<Callout type="info">
+### 调试技巧
+
+1. 在测试函数中使用 `debug::print()`
+2. 调试打印将在测试执行期间自动显示
+3. 记住，调试语句只会在测试中工作，不会在生产代码中工作。它们不会影响代码性能。
+4. 要调试模块状态：
+   - 使用 `debug::print(&addr)` 打印账户地址
+   - 使用 `debug::print(&some_string)` 打印字符串值
+   - 使用 `debug::print(&some_bool)` 打印布尔条件
+</Callout>
+
+## 5. 发布你的模块
+
+在成功编译和测试你的模块后，你可以将其发布到 Aptos 区块链。这个过程部署你的代码，使其在链上可访问。
+
+<Steps>
+### 发布模块
+
+使用 `aptos move publish --named-addresses my_first_module=default` 发布你的模块
+
+你将看到显示编译过程的输出，然后是一个询问 gas 费用的提示：
+
+```bash filename="Terminal"
+Compiling, may take a little while to download git dependencies...
+UPDATING GIT DEPENDENCY https://github.com/aptos-labs/aptos-framework.git
+INCLUDING DEPENDENCY AptosFramework
+INCLUDING DEPENDENCY AptosStdlib
+INCLUDING DEPENDENCY MoveStdlib
+BUILDING my_first_module
+package size 1271 bytes
+Do you want to submit a transaction for a range of [141300 - 211900] Octas at a gas unit price of 100 Octas? [yes/no] >
+```
+
+### 确认交易
+
+输入 `y` 并按回车键确认交易。
+
+确认后，你将收到显示交易详情的响应：
+
+```bash filename="Terminal"
+{
+  "Result": {
+    "transaction_hash": "0x95fce7344b066abda10c07dbf1ffa83e0d9c7bd400e2b143682a6c8a5f179dc2",
+    "gas_used": 1413,
+    "gas_unit_price": 100,
+    "sender": "9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba",
+    "sequence_number": 0,
+    "success": true,
+    "timestamp_us": 1735351260227638,
+    "version": 273029731,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+</Steps>
+
+### （可选）在链上查看你的合约
+
+成功发布后，你可以通过以下步骤验证你的模块是否在链上：
+
+<Steps>
+### 打开 Explorer
+
+访问 [Aptos Explorer](https://explorer.aptoslabs.com/?network=devnet)
+
+### 检查交易
+
+搜索你的账户地址。你应该注意到你的账户中有一个新的交易，即 `code::publish_package_txn` 函数。
+
+### 查看你的余额
+
+点击 "Coins" 标签页，你会看到你现在拥有的 Aptos Coin 少于 1 APT。
+
+![Explorer Coins 视图](/screenshots/explorer_coins.png)
+
+你已经花费了一小部分 gas 来部署合约，所以应该还剩下大约 `0.99855 APT`。
+
+### 找到你的模块
+
+查看 "Modules" 标签页下
+
+![Explorer Modules 视图](/screenshots/explorer_modules.png)
+
+### 验证模块
+
+你应该看到你的 "message" 模块列出
+
+<Callout type="info">
+你可以分享你的模块的 explorer 链接，其他人甚至可以通过连接钱包与模块交互。
+</Callout>
+</Steps>
+
+## 6. 与你的模块交互
+
+现在你的模块已经发布，你可以通过 Aptos CLI 与之交互：
+
+<Steps>
+### 设置消息
+
+使用 CLI 设置消息：
+
+```bash filename="Terminal"
+aptos move run --function-id 'default::message::set_message' --args 'string:Hello, Aptos!'
+```
+
+你将看到一个类似于发布时看到的 gas 费用提示。
+
+### 确认交易
+
+在确认 `y` 后，你应该得到类似这样的成功响应：
+
+```bash filename="Terminal"
+Transaction submitted: https://explorer.aptoslabs.com/txn/0x0c0b1e56a31d037280278327eb8fdfcc469a20213e5e65accf6e7c56af574449?network=devnet
+{
+  "Result": {
+    "transaction_hash": "0x0c0b1e56a31d037280278327eb8fdfcc469a20213e5e65accf6e7c56af574449",
+    "gas_used": 445,
+    "gas_unit_price": 100,
+    "sender": "9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba",
+    "sequence_number": 1,
+    "success": true,
+    "timestamp_us": 1735351754495208,
+    "version": 273137362,
+    "vm_status": "Executed successfully"
+  }
+}
+```
+
+### 查看你的消息
+
+通过检查 Explorer 上的 Resources 查看你存储的消息。
+
+### 庆祝！
+
+我们做到了！
+
+<Callout type="info">
+你完成这个指南花了多长时间？我们想听听你的反馈！
+</Callout>
+</Steps>
+
+## 后续步骤
+
+恭喜！你已经成功：
+
+1. 编译了你的第一个 Move 模块
+2. 添加了测试来帮助调试
+3. 在链上发布了你的模块
+4. 通过 CLI 使用了你的合约
+
+现在你发布的 Move 模块可以通过我们的[多个官方 SDK](../sdks/) 像 API 一样连接！
+
+以下是一些**建议的后续步骤，以更深入地理解 Move 模块**：
+
+1. 尝试修改模块以添加新功能。你可以使用 [Move Book](../smart-contracts/book.mdx) 来建立对编写 Move 模块的理解。
+2. 要了解 Move 在链上的工作原理，你可以学习 Move 的[资源系统](../../network/blockchain/resources.mdx)。
+3. 如果你正在构建应用程序来与合约交互或查找链上数据，学习如何使用 SDK [这里](../sdks/)。
+4. 加入 [Aptos Discord](https://discord.gg/aptoslabs) 与其他开发者交流。
+
+## 支持文档
+
+- [账户基础](../../network/blockchain/accounts.mdx)
+- [TypeScript SDK](../sdks/ts-sdk.mdx)
+- [Python SDK](../sdks/python-sdk.mdx)
+- [REST API 规范](../../network/nodes/aptos-api-spec.mdx) 

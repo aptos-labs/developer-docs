@@ -1,0 +1,248 @@
+---
+title: "你的第一个 Fungible Asset"
+---
+import { Callout, Steps } from 'nextra/components'
+
+# 你的第一个 Fungible Asset
+
+本教程将教你如何创建自己的 Fungible Asset (FA)，命名为 [FACoin](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/fungible_asset/fa_coin)。[Fungible Asset 标准](../smart-contracts/fungible-asset.mdx) 提供了铸造、转移、销毁和跟踪账户余额的内置支持，因此对于表示可替代资产非常有用。我们将使用 [TypeScript SDK](../sdks/ts-sdk.mdx) 来部署合约并在链上测试它。
+
+从高层次来看，Fungible Asset 标准通过两个主要对象工作：
+
+1. 一个 `Metadata` 对象，用于存储关于可替代资产的信息。
+2. 每个拥有可替代资产的账户都有一个 `FungibleStore`，用于跟踪其当前账户余额。
+
+向某人发送可替代资产将导致他们收到一个 `FungibleStore`，并相应地更新两个账户的余额。
+
+## 查看 Fungible Assets 的实际运行
+
+在这里，我们将修改、部署和测试示例 [FACoin](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/move/facoin/sources/fa_coin.move) 合约，以了解 Fungible Asset 标准的工作原理。如果你正在编写自己的可替代资产合约，你可能还想参考 Stablecoin 示例合约[这里](https://learn.aptoslabs.com/en/code-examples/stablecoin)。
+
+<Steps>
+### 安装 [Aptos CLI](../../build/cli.mdx)。
+
+这将由部署脚本用于在链上发布 `FACoin` 合约。
+
+### 克隆 TypeScript SDK 仓库。
+
+这个仓库包含 Fungible Asset 示例代码。
+
+```bash filename="Terminal"
+git clone https://github.com/aptos-labs/aptos-ts-sdk.git
+```
+
+### 导航到克隆仓库的顶层目录。
+
+```bash filename="Terminal"
+cd aptos-ts-sdk
+```
+
+### 安装 SDK 的依赖项。
+
+```bash filename="Terminal"
+pnpm install
+```
+
+### 构建 TypeScript SDK。
+
+示例需要 TypeScript SDK 的本地构建。
+
+```bash filename="Terminal"
+pnpm build
+```
+
+### 在编辑器中打开 `fa_coin.move`。
+
+你可以在 `examples/typescript/move/facoin/sources/fa_coin.move` 找到 `fa_coin.move`。
+
+这是包含大部分合约逻辑的 Move 文件。在向你展示它的实际运行示例后，我们将深入探讨这个合约的工作原理。
+
+### 编辑 `ASSET_NAME` 为你新的可替代资产的名称。
+
+例如："Tutorial Token"。你在这里设置的值将显示在部署的合约中，以及在我们测试功能时。
+
+### 导航到 `examples/typescript`。
+
+```bash filename="Terminal"
+cd examples/typescript
+```
+
+### 安装示例的依赖项。
+
+```bash filename="Terminal"
+pnpm install
+```
+
+### 运行 `your_fungible_asset`。
+
+```bash filename="Terminal"
+pnpm run your_fungible_asset
+```
+
+你应该看到一个演示如何创建和转移可替代资产的输出，看起来像这样：
+
+```bash filename="Terminal"
+=== Addresses ===
+Alice: 0x0c5dd7abbd67db06325fa1a2f37a1833f9a92ff2beb90f32495a9d80972429cd
+Bob: 0x2a796f4255d5c23684fe6cc521069d684516031bb5ae1ad2061ddc5414450807
+Charlie: 0xd824909be65a224f651ff6e9b82ec99ad5707fcef739d1003be20fc69fb93d7a
+
+=== Compiling FACoin package locally ===
+In order to run compilation, you must have the `aptos` CLI installed.
+Running the compilation locally, in a real situation you may want to compile this ahead of time.
+aptos move build-publish-payload --json-output-file move/facoin/facoin.json --package-dir move/facoin --named-addresses FACoin=0x0c5dd7abbd67db06325fa1a2f37a1833f9a92ff2beb90f32495a9d80972429cd --assume-yes
+Compiling, may take a little while to download git dependencies...
+UPDATING GIT DEPENDENCY https://github.com/aptos-labs/aptos-core.git
+INCLUDING DEPENDENCY AptosFramework
+INCLUDING DEPENDENCY AptosStdlib
+INCLUDING DEPENDENCY MoveStdlib
+BUILDING facoin
+
+===Publishing FACoin package===
+Transaction hash: 0x0c8a24987bdf2e5e40d8a00f6c97ac55419757bc440097d76959a64dbeafc351
+metadata address: 0x2e0e90c701233467f27150f42d365e27e72eb0be8e2a74ee529c31b813bbb321
+All the balances in this example refer to balance in primary fungible stores of each account.
+Alice's initial balance: 0.
+Bob's initial balance: 0.
+Charlie's initial balance: 0.
+Alice mints Charlie 100 coins.
+Charlie's updated "Tutorial Token" primary fungible store balance: 0.
+Alice freezes Bob's account.
+Alice as the admin forcefully transfers the newly minted coins of Charlie to Bob ignoring that Bob's account is frozen.
+Bob's updated "Tutorial Token" balance: 0.
+Alice unfreezes Bob's account.
+Alice burns 50 coins from Bob.
+Bob's updated "Tutorial Token" balance: 0.
+Bob transfers 10 coins to Alice as the owner.
+Alice's updated "Tutorial Token" balance: 0.
+Bob's updated "Tutorial Token" balance: 0.
+done.
+```
+
+</Steps>
+
+<Callout type="info">
+如果你在 `fa_coin.move` 合约中更改代币的名称，你将看到输出更新为那个名称。
+</Callout>
+
+## 理解 `fa_coin.move` 示例合约
+
+FACoin.move 的完整合约可以在[这里](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/move/facoin/sources/fa_coin.move)找到。
+
+让我们逐步了解这个合约是如何编写的。
+
+<Steps>
+### Move.toml
+
+Move.toml 文件允许 Move 导入依赖项，确定要使用的地址，并包含有关合约的元数据。
+
+无论你为可替代资产添加哪些功能，你的 Move.toml 至少都会有类似的字段。在这种情况下，我们有主要合约地址 `FACoin`，需要在部署时指定（通过将值留为"_"表示）。它还包括从 "AptosFramework" 导入 Fungible Asset 标准的 GitHub 依赖项。
+
+```toml filename="Move.toml"
+[package]
+name = "facoin"
+version = "1.0.0"
+authors = []
+
+[addresses]
+FACoin = "_"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+```
+
+### 导入
+
+FACoin 模块使用了几个重要的模块：
+
+1. `fungible_asset` 包含授予铸造、转移、销毁和创建 FungibleAsset 权限的逻辑。
+2. `object` 允许创建 Aptos 对象。
+3. `primary_fungible_store` 包含跟踪新 Fungible Asset 账户余额的逻辑。
+
+```move filename="fa_coin.move"
+module FACoin::fa_coin {
+    use aptos_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata, FungibleAsset};
+    use aptos_framework::object::{Self, Object};
+    use aptos_framework::primary_fungible_store;
+    use std::error;
+    use std::signer;
+    use std::string::utf8;
+    use std::option;
+		//...
+}
+```
+
+这些导入在 `Move.toml` 文件中被定义为 GitHub 依赖项。
+
+### `init_module`
+
+这个函数在模块最初发布时被调用，以设置适当的权限和对象。对于 FACoin，这用于初始化资产的 `MetaData` 对象（包含资产名称和符号等信息），以及获取如何使用我们的可替代资产的相关引用。
+
+`ManagedFungibleAsset` 标准帮助跟踪该模块允许使用的权限。
+
+```move filename="fa_coin.move"
+fun init_module(admin: &signer) {
+    let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
+    primary_fungible_store::create_primary_store_enabled_fungible_asset(
+        constructor_ref,
+        option::none(),
+        utf8(ASSET_NAME),
+        utf8(ASSET_SYMBOL),
+        8,
+        utf8(b"http://example.com/favicon.ico"),
+        utf8(b"http://example.com"),
+    );
+
+    let mint_ref = fungible_asset::generate_mint_ref(constructor_ref);
+    let burn_ref = fungible_asset::generate_burn_ref(constructor_ref);
+    let transfer_ref = fungible_asset::generate_transfer_ref(constructor_ref);
+    let metadata_object_signer = object::generate_signer(constructor_ref);
+    move_to(
+        &metadata_object_signer,
+        ManagedFungibleAsset { mint_ref, transfer_ref, burn_ref }
+    )
+}
+```
+
+### 视图函数
+
+在创建自己的可替代资产时，为以后需要的任何数据添加视图函数会很有帮助。在这种情况下，我们想要查看资产的名称，以便在我们的示例场景中报告正在交易哪个资产。
+
+```move filename="fa_coin.move"
+#[view]
+public fun get_metadata(): Object<Metadata> {
+    let asset_address = object::create_object_address(&@FACoin, ASSET_SYMBOL);
+    object::address_to_object<Metadata>(asset_address)
+}
+
+#[view]
+public fun get_name(): string::String {
+    let metadata = get_metadata();
+    fungible_asset::name(metadata)
+}
+```
+
+### 入口函数
+
+每个可替代资产都有类似的接口（铸造、转移、销毁、冻结、解冻、存入和提取）。这是一个最小的铸造函数示例，它铸造并将资金转移到适当的接收者：
+
+```move filename="fa_coin.move"
+public entry fun mint(admin: &signer, to: address, amount: u64) acquires ManagedFungibleAsset {
+    let asset = get_metadata();
+    let managed_fungible_asset = authorized_borrow_refs(admin, asset);
+    let to_wallet = primary_fungible_store::ensure_primary_store_exists(to, asset);
+    let fa = fungible_asset::mint(&managed_fungible_asset.mint_ref, amount);
+    fungible_asset::deposit_with_ref(&managed_fungible_asset.transfer_ref, to_wallet, fa);
+}
+```
+</Steps>
+
+## 总结
+
+如果你想构建自己的 Fungible Asset，你可以使用 [`fa_coin.move`](https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript/move/facoin) 作为起点，或者查看其他代码示例[这里](https://learn.aptoslabs.com/en/code-examples)。
+
+无论如何，Fungible Asset 标准将帮助你自动铸造、转移、销毁和跟踪你想要在链上表示的任何可替代资产的余额。
+
+你可以在 [Move 参考文档中的 Fungible Assets](../smart-contracts/move-reference.mdx?branch=mainnet&page=aptos-framework%2Fdoc%2Ffungible_asset.md) 中找到更多关于函数签名和实现细节的信息。 

@@ -1,0 +1,50 @@
+# 在 Aptos 上构建端到端 Dapp
+
+学习新框架或编程语言的常见方式是构建一个简单的待办事项列表。在本教程中，我们将学习如何构建一个端到端的待办事项 dapp，从智能合约端开始，到前端端，最后使用钱包与两者进行交互。
+
+在 [source-code](https://github.com/aptos-labs/developer-docs/tree/main/apps/nextra/pages/en/build/guides/build-e2e-dapp) 中查看完整代码。
+
+## 章节
+
+在满足以下 [前提条件](#前提条件) 并完成 [设置](#setup) 后，请按以下顺序学习本教程：
+
+1. [创建智能合约](build-e2e-dapp/1-create-smart-contract.mdx)
+2. [设置前端](build-e2e-dapp/2-set-up-the-frontend.mdx)
+3. [从链上获取数据](build-e2e-dapp/3-fetch-data-from-chain.mdx)
+4. [提交数据到链上](build-e2e-dapp/4-submit-data-to-chain.mdx)
+5. [处理任务](build-e2e-dapp/5-handle-tasks.mdx)
+
+## 前提条件
+
+你必须具备：
+
+- [node 和 npm](https://nodejs.org/en/)
+
+虽然我们会解释一些 React 的决策，但我们不会深入探讨 React 的工作原理；因此我们假设你有一些 React 的先前经验。
+
+## 设置
+
+在本节中，我们将创建一个 `my-first-dapp` 目录来存放我们的项目文件，包括客户端代码（基于 React）和 Move 代码（我们的智能合约）。
+
+为此，我们将使用 [create-aptos-dapp](../create-aptos-dapp.mdx) 来创建项目。
+
+1. 打开终端并导航到项目的目标目录（例如，`Desktop` 目录）。
+2. 运行 `npx create-aptos-dapp@latest` 来创建项目。
+
+```bash filename="Terminal"
+npx create-aptos-dapp@latest
+```
+
+3. 按照说明创建项目。
+- 为项目选择一个名称，例如 `my-first-dapp`。
+- 选择 `Full-stack project` 选项。
+- 选择 `Boilerplate Template` 选项。
+- 为简单起见，选择不使用 Surf。
+- 选择 `Vite app` 框架选项。
+- 选择 `Devnet` 网络选项。
+
+该工具将在与项目同名的目录中创建项目并安装所需的依赖项。
+
+按照 `Next Steps` 说明进行操作。
+
+现在让我们 [创建智能合约](build-e2e-dapp/1-create-smart-contract.mdx)。 
