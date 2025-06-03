@@ -99,7 +99,7 @@ module my_addr::my_fungible_asset_example {
 
 	// Make sure the `signer` you pass in is an address you own.
 	// Otherwise you will lose access to the Fungible Asset after creation.
-  entry fun init_module(admin: &signer) {
+  entry fun initialize(admin: &signer) {
     // Creates a non-deletable object with a named address based on our ASSET_SYMBOL
     let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
 
