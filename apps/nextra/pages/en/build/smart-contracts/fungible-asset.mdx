@@ -86,7 +86,7 @@ Note: All `Ref`s must be generated when the Object is created as that is the onl
 To generate an Object with all FA permissions, you could deploy a contract like this:
 
 ```move filename="example.move"
-module my_addr::fungible_asset_example {
+module my_addr::my_fungible_asset_example {
     use aptos_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata, FungibleAsset};
     use aptos_framework::object::{Self, Object};
     use aptos_framework::primary_fungible_store;
