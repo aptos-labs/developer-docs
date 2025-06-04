@@ -1,0 +1,500 @@
+# 泛型
+
+泛型可用于定义适用于不同输入数据类型的函数和结构体。这一语言特性有时被称为_参数多态_。在Move中，我们经常将术语"泛型"与类型参数/类型实参互换使用。
+
+泛型通常用于库代码中（例如vector），用来声明可以适用于任何实例化类型的代码（只要满足指定约束）。在其他框架中，泛型代码有时可以用于以多种不同方式与全局存储交互，而这些方式仍共享相同的实现。
+
+## 声明类型参数
+
+函数和结构体都可以在其签名中接受一组由尖括号`<...>`包裹的类型参数。
+
+### 泛型函数
+
+函数的类型参数位于函数名和（值）参数列表之间。以下代码定义了一个泛型恒等函数，它接受任何类型的值并原样返回该值。
+
+```move
+module 0x42::example {
+  fun id<T>(x: T): T {
+    // 这个类型注解不是必须的，但有效
+    (x: T)
+  }
+}
+```
+
+一旦定义，类型参数`T`就可以用于参数类型、返回类型以及函数体内。
+
+### 泛型结构体
+
+结构体的类型参数位于结构体名称之后，可用于命名字段的类型。
+
+```move
+module 0x42::example {
+  struct Foo<T> has copy, drop { x: T }
+
+  struct Bar<T1, T2> has copy, drop {
+    x: T1,
+    y: vector<T2>,
+  }
+}
+```
+
+注意[类型参数不必被使用](#unused-type-parameters)
+
+## 类型实参
+
+### 调用泛型函数
+
+调用泛型函数时，可以在尖括号中指定函数类型参数的类型实参列表。
+
+```move
+module 0x42::example {
+  fun foo() {
+    let x = id<bool>(true);
+  }
+}
+```
+
+如果不指定类型实参，Move的[类型推断](#类型推断)会为你补充。
+
+### 使用泛型结构体
+
+类似地，在构造或解构泛型类型的值时，可以为结构体的类型参数附加类型实参列表。
+
+```move
+module 0x42::example {
+  fun foo() {
+    let foo = Foo<bool> { x: true };
+    let Foo<bool> { x } = foo;
+  }
+}
+```
+
+如果不指定类型实参，Move的[类型推断](#类型推断)会为你补充。
+
+### 类型实参不匹配
+
+如果指定的类型实参与实际提供的值冲突，将会报错：
+
+```move
+module 0x42::example {
+  fun foo() {
+    let x = id<u64>(true); // 错误！true不是u64类型
+  }
+}
+```
+
+类似地：
+
+```move
+module 0x42::example {
+  fun foo() {
+    let foo = Foo<bool> { x: 0 }; // 错误！0不是bool类型
+    let Foo<address> { x } = foo; // 错误！bool与address不兼容
+  }
+}
+```
+
+## 类型推断
+
+在大多数情况下，Move编译器能够推断类型实参，因此无需显式写出。以下是省略类型实参时上述示例的样子：
+
+```move
+module 0x42::example {
+  fun foo() {
+    let x = id(true);
+    //        ^ <bool> 被推断
+
+    let foo = Foo { x: true };
+    //           ^ <bool> 被推断
+
+    let Foo { x } = foo;
+    //     ^ <bool> 被推断
+  }
+}
+```
+
+注意：当编译器无法推断类型时，需要手动标注类型。常见场景是调用一个仅出现在返回位置的类型参数的函数。
+
+```move
+module 0x2::m {
+  use std::vector;
+
+  fun foo() {
+    // let v = vector::new();
+    //                    ^ 编译器无法推断元素类型
+
+    let v = vector::new<u64>();
+    //                 ^~~~~ 必须手动标注
+  }
+}
+```
+
+但如果返回值在函数后续被使用，编译器就能推断类型：
+
+```move
+module 0x2::m {
+  use std::vector;
+
+  fun foo() {
+    let v = vector::new();
+    //                 ^ <u64> 被推断
+    vector::push_back(&mut v, 42);
+  }
+}
+```
+
+## 未使用的类型参数
+
+对于结构体定义，
+未使用的类型参数是指
+没有出现在结构体任何字段中的类型参数，
+但会在编译时进行静态检查。
+Move允许未使用的类型参数，因此以下结构体定义是有效的：
+
+```move
+module 0x2::m {
+  struct Foo<T> {
+    foo: u64
+  }
+}
+```
+
+这在建模某些概念时非常方便。例如：
+
+```move
+module 0x2::m {
+  // 货币标识符
+  struct Currency1 {}
+  struct Currency2 {}
+
+  // 可使用货币标识符类型实例化的通用代币类型
+  //   例如 Coin<Currency1>, Coin<Currency2> 等
+  struct Coin<Currency> has store {
+    value: u64
+  }
+
+  // 编写适用于所有货币的通用代码
+  public fun mint_generic<Currency>(value: u64): Coin<Currency> {
+    Coin { value }
+  }
+
+  // 编写特定货币的具体代码
+  public fun mint_concrete(value: u64): Coin<Currency1> {
+    Coin { value }
+  }
+}
+```
+
+在此示例中，
+`struct Coin<Currency>` 对 `Currency` 类型参数是泛型的，
+它指定了代币的货币类型，
+允许代码对任何货币进行通用编写，
+或对特定货币进行具体编写。
+这种泛型性即使当 `Currency` 类型参数
+没有出现在 `Coin` 定义的任何字段中时也适用。
+
+### 幻象类型参数
+
+在上面的例子中，
+尽管 `struct Coin` 要求 `store` 能力，
+但 `Coin<Currency1>` 和 `Coin<Currency2>` 都不会具有 `store` 能力。
+这是因为
+[条件能力与泛型类型](abilities.mdx#条件能力与泛型类型)
+的规则，
+以及 `Currency1` 和 `Currency2` 没有 `store` 能力的事实，
+尽管它们甚至没有在 `struct Coin` 的主体中使用。
+这可能导致一些不愉快的后果。
+例如，我们无法将 `Coin<Currency1>` 放入全局存储的钱包中。
+
+一个可能的解决方案是
+为 `Currency1` 和 `Currency2` 添加虚假的能力标注
+（即 `struct Currency1 has store {}`）。
+但这可能会导致错误或安全漏洞，
+因为它通过不必要的能力声明削弱了类型。
+例如，我们从不期望全局存储中的资源具有类型为 `Currency1` 的字段，
+但如果有虚假的 `store` 能力，这将成为可能。
+此外，虚假标注会具有传染性，
+要求许多对未使用类型参数进行泛型化的函数也包含必要的约束。
+
+幻象类型参数解决了这个问题。
+未使用的类型参数可以标记为 _phantom_ 类型参数，
+它们不参与结构体的能力推导。
+这样，
+在推导泛型类型的能力时，
+不会考虑幻象类型参数的参数，
+从而避免了虚假能力标注的需要。
+为了使这一宽松规则保持健全，
+Move的类型系统保证声明为 `phantom` 的参数
+要么完全不在结构体定义中使用，
+要么仅用作同样声明为 `phantom` 的类型参数的参数。
+
+#### 声明
+
+在结构体定义中，
+可以通过在类型参数声明前添加 `phantom` 关键字将其声明为幻象。
+如果类型参数被声明为幻象，则称其为幻象类型参数。
+在定义结构体时，Move的类型检查器确保每个幻象类型参数
+要么不在结构体定义内部使用，
+要么仅用作幻象类型参数的参数。
+
+更正式地说，
+如果一个类型被用作幻象类型参数的参数，
+我们称该类型出现在 _phantom 位置_。
+有了这个定义，
+可以如下指定幻象参数的正确使用规则：
+**幻象类型参数只能出现在 phantom 位置**。
+
+以下两个示例展示了幻象参数的有效使用。
+在第一个中，
+参数 `T1` 完全未在结构体定义中使用。
+在第二个中，参数 `T1` 仅用作幻象类型参数的参数。
+
+```move
+module 0x2::m {
+  struct S1<phantom T1, T2> { f: u64 }
+  //                ^^
+  //                正确：T1未出现在结构体定义中
+
+
+  struct S2<phantom T1, T2> { f: S1<T1, T2> }
+  //                                ^^
+  //                                正确：T1出现在phantom位置
+}
+```
+
+以下代码展示了违反规则的情况：
+
+```move
+module 0x2::m {
+  struct S1<phantom T> { f: T }
+  //                        ^
+  //                        错误：不是phantom位置
+
+  struct S2<T> { f: T }
+
+  struct S3<phantom T> { f: S2<T> }
+  //                           ^
+  //                           错误：不是phantom位置
+}
+```
+
+#### 实例化
+
+当实例化结构体时，
+在推导结构体能力时会忽略phantom类型参数的实参。
+例如以下代码：
+
+```move
+module 0x2::m {
+  struct S<T1, phantom T2> has copy { f: T1 }
+  struct NoCopy {}
+  struct HasCopy has copy {}
+}
+```
+
+现在考虑类型 `S<HasCopy, NoCopy>`。
+由于 `S` 定义时带有 `copy` 能力且所有非phantom参数都具有 `copy` 能力，
+因此 `S<HasCopy, NoCopy>` 也具备 `copy` 能力。
+
+#### 带有能力约束的Phantom类型参数
+
+能力约束和phantom类型参数是正交特性，
+即phantom参数可以声明能力约束。
+当使用带能力约束的phantom类型参数进行实例化时，
+类型实参必须满足该约束，
+即使该参数是phantom。
+例如以下定义完全有效：
+
+```move
+module 0x2::m {
+  struct S<phantom T: copy> {}
+}
+```
+
+常规限制仍然适用，`T` 只能用具有 `copy` 能力的类型实参进行实例化。
+
+## 约束
+
+在前面的示例中，我们展示了如何使用类型参数来定义"未知"类型，这些类型可以在稍后由调用者填入。但这意味着类型系统对这些类型知之甚少，必须以非常保守的方式执行检查。从某种意义上说，类型系统必须假设无约束泛型的最坏情况。简而言之，默认情况下泛型类型参数不具备任何[能力](abilities.mdx)。
+
+这就是约束发挥作用的地方：它们提供了一种方法来指定这些未知类型具有哪些属性，从而让类型系统允许原本不安全的操作。
+
+### 声明约束
+
+可以使用以下语法对类型参数施加约束。
+
+```move
+// T 是类型参数的名称
+T: <ability> (+ <ability>)*
+```
+
+`<ability>` 可以是四种[能力](abilities.mdx)中的任意一种，一个类型参数可以同时被多个能力约束。因此以下都是有效的类型参数声明：
+
+```move
+T: copy
+T: copy + drop
+T: copy + drop + store + key
+```
+
+### 验证约束
+
+约束会在调用点进行检查，因此以下代码无法通过编译。
+
+```move
+module 0x2::m {
+  struct Foo<T: key> { x: T }
+
+  struct Bar { x: Foo<u8> }
+  //                  ^ 错误！u8不具有'key'能力
+
+  struct Baz<T> { x: Foo<T> }
+  //                     ^ 错误！T不具有'key'能力
+}
+```
+
+```move
+module 0x2::m {
+  struct R {}
+
+  fun unsafe_consume<T>(x: T) {
+    // 错误！x 没有 'drop' 能力
+  }
+
+  fun consume<T: drop>(x: T) {
+    // 有效！
+    // x 会被自动丢弃
+  }
+
+  fun foo() {
+    let r = R {};
+    consume<R>(r);
+    //      ^ 错误！R 没有 'drop' 能力
+  }
+}
+```
+
+```move
+module 0x2::m {
+  struct R {}
+
+  fun unsafe_double<T>(x: T) {
+    (copy x, x)
+    // 错误！x 没有 'copy' 能力
+  }
+
+  fun double<T: copy>(x: T) {
+    (copy x, x) // 有效！
+  }
+
+  fun foo(): (R, R) {
+    let r = R {};
+    double<R>(r)
+    //     ^ 错误！R 没有 'copy' 能力
+  }
+}
+```
+
+更多信息请参阅[条件能力和泛型类型](abilities.mdx#条件能力与泛型类型)章节。
+
+## 递归限制
+
+### 递归结构体
+
+泛型结构体不能直接或间接包含相同类型的字段，即使类型参数不同。以下所有结构体定义都是无效的：
+
+```move
+module 0x2::m {
+  struct Foo<T> {
+    x: Foo<u64> // 错误！'Foo' 包含 'Foo'
+  }
+
+  struct Bar<T> {
+    x: Bar<T> // 错误！'Bar' 包含 'Bar'
+  }
+
+  // 错误！'A' 和 'B' 形成循环，同样不允许
+  struct A<T> {
+    x: B<T, u64>
+  }
+
+  struct B<T1, T2> {
+    x: A<T1>,
+    y: A<T2>
+  }
+}
+```
+
+### 高级主题：类型级递归
+
+Move 允许泛型函数递归调用。然而，当与泛型结构体结合使用时，在某些情况下可能会创建无限数量的类型，允许这种情况意味着会给编译器、虚拟机和其他语言组件增加不必要的复杂性。因此，此类递归是被禁止的。
+
+允许的情况：
+
+```move
+module 0x2::m {
+  struct A<T> {}
+
+  // 有限数量的类型 —— 允许
+  // foo1<T> -> foo1<T> -> foo1<T> -> ... 是有效的
+  fun foo1<T>() {
+    foo1<T>();
+  }
+
+  // 有限数量的类型 —— 允许
+  // foo2<T> -> foo2<A<u64>> -> foo2<A<u64>> -> ... 是有效的
+  fun foo2<T>() {
+    foo2<A<u64>>();
+  }
+}
+```
+
+不允许的情况：
+
+```move
+module 0x2::m {
+  struct A<T> {}
+
+  // 无限数量的类型 —— 不允许
+  // 错误！
+  // foo<T> -> foo<A<T>> -> foo<A<A<T>>> -> ...
+  fun foo<T>() {
+    foo<A<T>>();
+  }
+}
+```
+
+```move
+module 0x2::n {
+  struct A<T> {}
+
+  // 无限数量的类型 —— 不允许
+  // 错误！
+  // foo<T1, T2> -> bar<T2, T1> -> foo<T2, A<T1>>
+  //   -> bar<A<T1>, T2> -> foo<A<T1>, A<T2>>
+  //   -> bar<A<T2>, A<T1>> -> foo<A<T2>, A<A<T1>>>
+  //   -> ...
+  fun foo<T1, T2>() {
+    bar<T2, T1>();
+  }
+
+  fun bar<T1, T2>() {
+    foo<T1, A<T2>>();
+  }
+}
+```
+
+注意：类型级递归的检查基于对调用点的保守分析，不会考虑控制流或运行时值。
+
+```move
+module 0x2::m {
+  struct A<T> {}
+
+  fun foo<T>(n: u64) {
+    if (n > 0) {
+      foo<A<T>>(n - 1);
+    };
+  }
+}
+```
+
+在上面的示例中，该函数在技术上对于任何给定的输入都会终止，因此只会创建有限数量的类型，但它仍然在Move的类型系统中仍被视为无效。

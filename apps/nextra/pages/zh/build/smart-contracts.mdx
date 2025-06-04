@@ -1,0 +1,82 @@
+---
+title: "智能合约"
+---
+
+import { RemoteCodeblock, permalinkFetch, Card, Cards } from '@components/index'
+import { Callout } from 'nextra/components'
+
+export async function getStaticProps() {
+  return await permalinkFetch([
+    'https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59'
+  ])
+}
+
+# Aptos 上的智能合约
+
+Aptos 合约使用 Move 语言编写，这是一种用于安全、沙盒化和形式化验证编程的下一代语言，被多个区块链采用。
+Move 允许开发者编写灵活管理和转移资产的程序，同时为这些资产提供安全性和攻击防护。
+
+## 📖 学习 Move
+
+<Cards>
+  <Card href="smart-contracts/why-move">
+    <Card.Title>为什么选择 Move？</Card.Title>
+    <Card.Description>了解 Aptos 为什么使用 Move 语言</Card.Description>
+  </Card>
+  {/* <Card href="smart-contracts/prover">
+    <Card.Title>Move Prover</Card.Title>
+    <Card.Description>Formal specification and verification of Move contracts on Aptos</Card.Description>
+  </Card> */}
+  <Card href="smart-contracts/create-package">
+    <Card.Title>创建包</Card.Title>
+    <Card.Description>通过学习如何创建 Move 包开始</Card.Description>
+  </Card>
+  <Card href="smart-contracts/objects">
+    <Card.Title>对象</Card.Title>
+    <Card.Description>学习如何在 Aptos 上使用对象标准来创建可组合和灵活的链上原语</Card.Description>
+  </Card>
+</Cards>
+
+## 👨‍💻 Move 示例
+
+<Cards>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples">
+    <Card.Title linkType="external">Aptos Move 示例</Card.Title>
+    <Card.Description>30+ 个关于如何在 Aptos 上开发 Move 的示例</Card.Description>
+  </Card>
+  <Card href="https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/move-tutorial">
+    <Card.Title linkType="external">Move 教程</Card.Title>
+    <Card.Description>涵盖 Move 编程的基础知识</Card.Description>
+  </Card>
+  <Card href="guides/first-move-module">
+    <Card.Title>你的第一个 Move 模块</Card.Title>
+    <Card.Description>一个 `hello_blockchain` 示例，展示如何发布你的第一个 move 模块</Card.Description>
+  </Card>
+</Cards>
+
+这是一个 `hello_blockchain` 的 move 示例
+
+<RemoteCodeblock 
+  permalink="https://github.com/aptos-labs/aptos-core/blob/77e1d222ebc5e7294e115e0d090c001da1d0e072/aptos-move/move-examples/hello_blockchain/sources/hello_blockchain.move#L1-L59" 
+/>
+
+## ⚒️ 开发者资源
+
+### FAQ 和讨论
+
+- [Aptos 开发者讨论](https://github.com/aptos-labs/aptos-developer-discussions/discussions) 用于 Move 相关的问答。
+
+### Move IDE 插件
+
+- [Aptos Move Analyzer](https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer) 用于 Visual Studio。
+- [JetBrains IDE 的 Move 语言插件](https://plugins.jetbrains.com/plugin/14721-move-language)：支持语法高亮、代码导航、重命名、格式化、类型检查和代码生成。
+
+### 外部资源
+
+- [Aptos Move by Example](https://move-developers-dao.gitbook.io/aptos-move-by-example)
+- [在 Aptos 上自学 Move](https://github.com/econia-labs/teach-yourself-move)。
+- [形式化验证、Move 语言和 Move Prover](https://www.certik.com/resources/blog/2wSOZ3mC55AB6CYol6Q2rP-formal-verification-the-move-language-and-the-move-prover)
+- [Pontem Move Playground](https://playground.pontem.network/)
+- [可嵌套的 Move 资源集合](https://github.com/taoheorg/taohe)
+
+我们有一个新的支持 Move 2 的 Aptos Move 编译器。查看[此页面](smart-contracts/compiler_v2.mdx)了解更多信息。 

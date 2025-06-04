@@ -1,0 +1,273 @@
+# 能力（Abilities）
+
+能力是Move语言中的类型特性，用于控制特定类型值允许执行的操作。该系统对值的"线性"类型行为提供了细粒度控制，同时决定了值在全局存储中的使用方式和条件。这是通过在特定字节码指令上设置访问限制来实现的——要使用某个字节码指令处理值，该值必须具备相应的能力（并非所有指令都受能力限制）。
+
+{/* TODO 未来可能会添加详细讲解章节。结尾处已有示例，但解释为何精确选择这组能力可能更有帮助 */}
+
+{/* 如果已通过编写Move程序对能力有所了解但仍感困惑，建议跳转至[动机详解](#motivating-walkthrough)章节了解系统设计原理 --> */}
+
+## 四种能力类型
+
+Move定义了四种能力：
+
+- [`copy`](#copy)
+  - 允许具备该能力的类型的值被复制
+- [`drop`](#drop)
+  - 允许具备该能力的类型的值被弹出/丢弃
+- [`store`](#store)
+  - 允许具备该能力的类型的值存在于全局存储的结构体中
+- [`key`](#key)
+  - 允许该类型作为全局存储操作的键值
+
+### `copy`
+
+`copy` 能力允许具备该能力的类型的值被复制。它控制着以下操作权限：
+- 使用 [`copy`操作符](variables.mdx#移动--move--与复制--copy-) 从局部变量复制值
+- 通过 [解引用`*e`](references.mdx#通过引用读写) 复制引用值
+
+若某值具有 `copy` 能力，则该值内部包含的所有值都具备 `copy` 能力。
+
+### `drop`
+
+`drop` 能力允许具备该能力的类型的值被丢弃。这里的"丢弃"指值未被转移，而是在Move程序执行过程中被有效销毁。该能力控制着在以下场景中忽略值的权限：
+- 未使用局部变量或参数中的值
+- 未在 [通过`;`的序列](variables.mdx#表达式块) 中使用值
+- 在 [赋值](variables.mdx#赋值) 时覆盖变量中的值
+- 通过 [写入`*e1 = e2`](references.mdx#通过引用读写) 覆盖引用值
+
+若某值具有 `drop` 能力，则该值内部包含的所有值都具备 `drop` 能力。
+
+### `store`
+
+`store` 能力允许具备该能力的类型的值存在于全局存储的结构体（资源）中，但 _不一定_ 能作为顶级资源存在于全局存储。
+这是唯一不直接控制操作的能力，而是与 `key` 能力配合使用时，控制值在全局存储中的存在权限。
+
+若某值具有 `store` 能力，则该值内部包含的所有值都具备 `store` 能力。
+
+### `key`
+
+`key` 能力允许类型作为 [全局存储操作](global-storage-operators.mdx) 的键使用。
+它控制着所有全局存储操作，因此若要将某类型用于 `move_to`、`borrow_global`、`move_from` 等操作，
+该类型必须具有 `key` 能力。注意这些操作仍必须在定义 `key` 类型的模块中使用（从某种意义上说，这些操作对定义模块是私有的）。
+
+如果一个值具有 `key`，那么该值内部包含的所有值都必须具有 `store`。这是唯一具有这种不对称特性的能力。
+
+## 内置类型
+
+大多数原始内置类型都具有 `copy`、`drop` 和 `store` 能力，除了 `signer` 只具有 `drop`：
+
+- `bool`、`u8`、`u16`、`u32`、`u64`、`u128`、`u256` 和 `address` 都具有 `copy`、`drop` 和 `store`
+- `signer` 具有 `drop`
+  - 不可复制，也不能放入全局存储
+- `vector<T>` 可能具有 `copy`、`drop` 和 `store`，具体取决于 `T` 的能力
+  - 详见 [条件能力与泛型类型](#结构体注解)
+- 不可变引用 `&` 和可变引用 `&mut` 都具有 `copy` 和 `drop`
+  - 这里指的是复制和删除引用本身，而非它们引用的内容
+  - 引用不能出现在全局存储中，因此它们没有 `store`
+
+所有原始类型都不具有 `key`，意味着它们都不能直接用于 [全局存储操作](global-storage-operators.mdx)。
+
+## 结构体注解
+
+要为 `struct` 声明能力，需在结构体名称之后、字段之前使用 `has <能力>` 语法。例如：
+
+```move
+module 0x42::example {
+  struct Ignorable has drop { f: u64 }
+
+  struct Pair has copy, drop, store { x: u64, y: u64 }
+}
+```
+
+此例中：`Ignorable` 具有 `drop` 能力，`Pair` 具有 `copy`、`drop` 和 `store`。
+
+所有这些能力都对受控操作有严格要求。只有当值具有相应能力时才能执行操作——即使该值深度嵌套在其他集合中！
+
+因此：在声明结构体能力时，会对字段提出特定要求。所有字段必须满足这些约束条件。这些规则确保结构体符合上述能力的可达性规则。如果结构体声明具有...
+
+- `copy`，则所有字段必须具有 `copy`
+- `drop`，则所有字段必须具有 `drop`
+- `store`，则所有字段必须具有 `store`
+- `key`，则所有字段必须具有 `store`
+  - `key` 是目前唯一不要求自身能力的能力
+
+例如：
+
+```move
+module 0x42::example {
+  // 没有任何能力的结构体
+  struct NoAbilities {}
+
+  struct WantsCopy has copy {
+    f: NoAbilities, // 错误：'NoAbilities' 没有 'copy' 能力
+  }
+}
+```
+
+类似地：
+
+```move
+module 0x42::example {
+  // 没有任何能力的结构体
+  struct NoAbilities {}
+
+  struct MyResource has key {
+    f: NoAbilities, // 错误：'NoAbilities' 没有 'store' 能力
+  }
+}
+```
+
+## 条件能力与泛型类型
+
+当泛型类型上标注能力时，并非该类型的所有实例都保证拥有这些能力。考虑以下结构体声明：
+
+```move
+module 0x42::example {
+  struct Cup<T> has copy, drop, store, key { item: T }
+}
+```
+
+如果 `Cup` 能持有任意类型（无论其能力如何）会非常有用。类型系统可以_看到_类型参数，因此当它_发现_某个类型参数会违反该能力的保证时，就应该能够从 `Cup` 中移除相应能力。
+
+这种行为初听起来可能有些困惑，但如果我们考虑集合类型可能会更容易理解。我们可以认为内置类型 `vector` 具有以下类型声明：
+
+```move
+vector<T> has copy, drop, store;
+```
+
+我们希望 `vector` 能适用于任何类型，不希望为不同能力创建单独的 `vector` 类型。那么我们希望的规则是什么？正是与上述字段规则完全相同的逻辑。因此，只有当内部元素可复制时，复制 `vector` 值才是安全的；只有当内部元素可被忽略/丢弃时，忽略 `vector` 值才是安全的；只有当内部元素能存在于全局存储时，将 `vector` 放入全局存储才是安全的。
+
+为了实现这种额外的表达能力，类型的实际能力可能与其声明的能力不同，这取决于该类型的实例化方式。实际上，类型的能力取决于其声明**和**类型参数的组合。对于任何类型，类型参数都会被悲观地假设为在结构体内部使用，因此只有当类型参数满足上述字段要求时，才会授予相应能力。以前文的 `Cup` 为例：
+
+- 只有当 `T` 具有 `copy` 能力时，`Cup` 才具有 `copy` 能力
+- 只有当 `T` 具有 `drop` 能力时，`Cup` 才具有 `drop` 能力
+- 只有当 `T` 具有 `store` 能力时，`Cup` 才具有 `store` 能力
+- 只有当 `T` 具有 `store` 能力时，`Cup` 才具有 `key` 能力
+
+以下是针对每种能力的条件系统示例：
+
+### 示例：条件性 `copy`
+
+```move
+module 0x42::example {
+  struct NoAbilities {}
+
+  struct S has copy, drop { f: bool }
+
+  struct Cup<T> has copy, drop, store { item: T }
+
+  fun example(c_x: Cup<u64>, c_s: Cup<S>) {
+    // 有效，'Cup<u64>' 具有 'copy' 因为 'u64' 具有 'copy'
+    let c_x2 = copy c_x;
+    // 有效，'Cup<S>' 具有 'copy' 因为 'S' 具有 'copy'
+    let c_s2 = copy c_s;
+  }
+
+  fun invalid(c_account: Cup<signer>, c_n: Cup<NoAbilities>) {
+    // 无效，'Cup<signer>' 不具有 'copy'
+    // 尽管 'Cup' 声明了 copy，但该实例不具备 'copy'
+    // 因为 'signer' 不具有 'copy'
+    let c_account2 = copy c_account;
+    // 无效，'Cup<NoAbilities>' 不具有 'copy'
+    // 因为 'NoAbilities' 不具有 'copy'
+    let c_n2 = copy c_n;
+  }
+}
+```
+
+### 示例：条件性 `drop`
+
+```move
+module 0x42::example {
+  struct NoAbilities {}
+
+  struct S has copy, drop { f: bool }
+
+  struct Cup<T> has copy, drop, store { item: T }
+
+  fun unused() {
+    Cup<bool> { item: true }; // 有效，'Cup<bool>' 具有 'drop'
+    Cup<S> { item: S { f: false } }; // 有效，'Cup<S>' 具有 'drop'
+  }
+
+  fun left_in_local(c_account: Cup<signer>): u64 {
+    let c_b = Cup<bool> { item: true };
+    let c_s = Cup<S> { item: S { f: false } };
+    // 有效返回：'c_account'、'c_b' 和 'c_s' 有值
+    // 但 'Cup<signer>'、'Cup<bool>' 和 'Cup<S>' 具有 'drop'
+    0
+  }
+
+  fun invalid_unused() {
+    // 无效，不能忽略 'Cup<NoAbilities>' 因为它不具有 'drop'
+    // 尽管 'Cup' 声明了 'drop'，但该实例不具备 'drop'
+    // 因为 'NoAbilities' 不具有 'drop'
+    Cup<NoAbilities> { item: NoAbilities {} };
+  }
+
+  fun invalid_left_in_local(): u64 {
+    let c_n = Cup<NoAbilities> { item: NoAbilities {} };
+    // 无效返回：'c_n' 有值
+    // 且 'Cup<NoAbilities>' 不具有 'drop'
+    0
+  }
+}
+```
+
+### 示例：条件性 `store`
+
+```move
+module 0x42::example {
+  struct Cup<T> has copy, drop, store { item: T }
+
+  // 'MyInnerResource' 声明了 'store' 能力，因此所有字段都需要 'store'
+  struct MyInnerResource has store {
+    yes: Cup<u64>,
+    // 有效，'Cup<u64>' 具有 'store' 能力
+    // no: Cup<signer>, 无效，'Cup<signer>' 不具备 'store' 能力
+  }
+
+  // 'MyResource' 声明了 'key' 能力，因此所有字段都需要 'store'
+  struct MyResource has key {
+    yes: Cup<u64>,
+    // 有效，'Cup<u64>' 具有 'store' 能力
+    inner: Cup<MyInnerResource>,
+    // 有效，'Cup<MyInnerResource>' 具有 'store' 能力
+    // no: Cup<signer>, 无效，'Cup<signer>' 不具备 'store' 能力
+  }
+}
+```
+
+### 示例：条件性 `key`
+
+```move
+module 0x42::example {
+  struct NoAbilities {}
+
+  struct MyResource<T> has key { f: T }
+
+  fun valid(account: &signer) acquires MyResource {
+    let addr = signer::address_of(account);
+    // 有效，'MyResource<u64>' 具有 'key' 能力
+    let has_resource = exists<MyResource<u64>>(addr);
+    if (!has_resource) {
+      // 有效，'MyResource<u64>' 具有 'key' 能力
+      move_to(account, MyResource<u64> { f: 0 })
+    };
+    // 有效，'MyResource<u64>' 具有 'key' 能力
+    let r = borrow_global_mut<MyResource<u64>>(addr)
+    r.f = r.f + 1;
+  }
+
+  fun invalid(account: &signer) {
+    // 无效，'MyResource<NoAbilities>' 不具备 'key' 能力
+    let has_it = exists<MyResource<NoAbilities>>(addr);
+    // 无效，'MyResource<NoAbilities>' 不具备 'key' 能力
+    let NoAbilities {} = move_from<NoAbilities>(addr);
+    // 无效，'MyResource<NoAbilities>' 不具备 'key' 能力
+    move_to(account, NoAbilities {});
+    // 无效，'MyResource<NoAbilities>' 不具备 'key' 能力
+    borrow_global<NoAbilities>(addr);
+  }
+}
+```

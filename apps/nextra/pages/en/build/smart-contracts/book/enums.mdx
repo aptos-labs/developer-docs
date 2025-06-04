@@ -107,7 +107,7 @@ Patterns can be nested and contain conditions, as in the following example:
 
 ```move
 let r : Result<Result<u64>> = Ok(Err(42));
-let v = match (r)) {
+let v = match (r) {
   Ok(Err(c)) if c < 42  => 0,
   Ok(Err(c)) if c >= 42 => 1,
   Ok(_)                 => 2,

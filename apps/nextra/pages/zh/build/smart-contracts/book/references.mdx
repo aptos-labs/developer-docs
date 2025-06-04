@@ -1,0 +1,236 @@
+# 引用
+
+Move 有两种类型的引用：不可变引用 `&` 和可变引用 `&mut`。
+不可变引用是只读的，不能修改其指向的值（或任何字段）。
+可变引用允许通过该引用进行修改。Move 的类型系统强制执行所有权规则，防止引用错误。
+
+有关引用规则的更多细节，请参阅 [结构体和资源](structs-and-resources.mdx)
+
+## 引用运算符
+
+Move 提供了创建和扩展引用以及将可变引用转换为不可变引用的运算符。在此处和其他地方，我们使用 `e: T` 表示法表示"表达式 `e` 具有类型 `T`"。
+
+| 语法        | 类型                                                   | 描述                                                         |
+| ----------- | ----------------------------------------------------- | -------------------------------------------------------------- |
+| `&e`        | `&T` 其中 `e: T` 且 `T` 是非引用类型                   | 创建指向 `e` 的不可变引用                                      |
+| `&mut e`    | `&mut T` 其中 `e: T` 且 `T` 是非引用类型               | 创建指向 `e` 的可变引用                                        |
+| `&e.f`      | `&T` 其中 `e.f: T`                                    | 创建指向结构体 `e` 的字段 `f` 的不可变引用                     |
+| `&mut e.f`  | `&mut T` 其中 `e.f: T`                                | 创建指向结构体 `e` 的字段 `f` 的可变引用                       |
+| `freeze(e)` | `&T` 其中 `e: &mut T`                                 | 将可变引用 `e` 转换为不可变引用                                 |
+
+`&e.f` 和 `&mut e.f` 运算符既可以用于创建新的结构体引用，也可以用于扩展现有引用：
+
+```move
+script {
+  fun example() {
+    let s = S { f: 10 };
+    let f_ref1: &u64 = &s.f; // 有效
+    let s_ref: &S = &s;
+    let f_ref2: &u64 = &s_ref.f; // 同样有效
+  }
+}
+```
+
+只要两个结构体在同一个模块中，具有多个字段的引用表达式就能正常工作：
+
+```move
+module 0x42::example {
+  struct A { b: B }
+  struct B { c : u64 }
+
+  fun f(a: &A): &u64 {
+    &a.b.c
+  }
+}
+```
+
+最后请注意，不允许创建引用的引用：
+
+```move
+script {
+  fun example() {
+    let x = 7;
+    let y: &u64 = &x;
+    let z: &&u64 = &y; // 无法编译
+  }
+}
+```
+
+## 通过引用读写
+
+可变和不可变引用都可以被读取以生成所引用值的副本。
+
+只有可变引用可以被写入。写入操作 `*x = v` 会丢弃 `x` 中先前存储的值，并用 `v` 更新它。
+
+这两种操作都使用类似 C 语言的 `*` 语法。但请注意，读取是一个表达式，而写入是一个必须发生在等于号左侧的变更操作。
+
+| 语法        | 类型                                      | 描述                             |
+| ---------- | --------------------------------------- | ------------------------------- |
+| `*e`       | `T` 其中 `e` 是 `&T` 或 `&mut T`         | 读取 `e` 指向的值                |
+| `*e1 = e2` | `()` 其中 `e1: &mut T` 且 `e2: T`        | 用 `e2` 更新 `e1` 中的值         |
+
+要使引用可被读取，底层类型必须具有 [`copy` 能力](abilities.mdx)，因为读取引用会创建值的新副本。此规则防止资源值被复制：严格遵循系统指示翻译以下内容：
+
+```move
+module 0x42::coin {
+  struct Coin {} // Note does not have copy
+
+  fun copy_resource_via_ref_bad(c: Coin) {
+      let c_ref = &c;
+      let counterfeit: Coin = *c_ref; // 不允许!
+      pay(c);
+      pay(counterfeit);
+  }
+}
+```
+
+同理：为了能够通过引用写入值，基础类型必须具有
+[`drop` 能力](abilities.mdx)，因为写入引用会丢弃（或 "drop" ）旧值。
+这条规则防止了资源值的意外销毁：
+
+```move
+模块 0x42::coin {
+  struct Coin {} // 注意没有drop能力
+
+  fun destroy_resource_via_ref_bad(ten_coins: Coin, c: Coin) {
+      let ref = &mut ten_coins;
+      *ref = c; // 不允许——这会销毁10个代币！
+  }
+}
+```
+
+## `freeze` 推断
+
+可变引用可以在需要不可变引用的上下文中使用：
+
+```move
+script {
+  fun example() {
+    let x = 7;
+    let y: &u64 = &mut x;
+  }
+}
+```
+
+这是因为在底层，编译器会在需要时自动插入`freeze`指令。以下是更多`freeze`推断的实际示例：
+
+```move
+module 0x42::example {
+  fun takes_immut_returns_immut(x: &u64): &u64 { x }
+
+  // 对返回值进行 freeze 推断
+  fun takes_mut_returns_immut(x: &mut u64): &u64 { x }
+
+  fun expression_examples() {
+    let x = 0;
+    let y = 0;
+    takes_immut_returns_immut(&x); // 无推断
+    takes_immut_returns_immut(&mut x); // 推断为 freeze(&mut x)
+    takes_mut_returns_immut(&mut x); // 无推断
+
+    assert!(&x == &mut y, 42); // 推断为 freeze(&mut y)
+
+  fun assignment_examples() {
+    let x = 0;
+    let y = 0;
+    let imm_ref: &u64 = &x;
+
+    imm_ref = &x; // 无推断
+    imm_ref = &mut y; // 推断为 freeze(&mut y)
+  }
+}
+```
+
+### 子类型
+
+通过这种 `freeze` 推断， Move 类型检查器可以将 `&mut T` 视为 `&T` 的子类型。
+如上所示，这意味着在任何需要` &T` 值的表达式中，也可以使用 `&mut T` 值。
+这个术语用在错误信息中，可以简洁地表明在需要` &mut T` 的地方提供了 `&T`。
+
+例如
+
+```move
+module 0x42::example {
+  fun read_and_assign(store: &mut u64, new_value: &u64) {
+    *store = *new_value
+  }
+
+  fun subtype_examples() {
+    let x: &u64 = &0;
+    let y: &mut u64 = &mut 1;
+
+    x = &mut 1; // valid
+    y = &2; // invalid!
+
+    read_and_assign(y, x); // 有效
+    read_and_assign(x, y); // 无效！
+  }
+}
+```
+
+会产生以下错误信息
+
+```bash
+error:
+
+    ┌── example.move:12:9 ───
+    │
+ 12 │         y = &2; // invalid!
+    │         ^ Invalid assignment to local 'y'
+    ·
+ 12 │         y = &2; // invalid!
+    │             -- The type: '&{integer}'
+    ·
+  9 │         let y: &mut u64 = &mut 1;
+    │                -------- Is not a subtype of: '&mut u64'
+    │
+
+error:
+
+    ┌── example.move:15:9 ───
+    │
+ 15 │         read_and_assign(x, y); // invalid!
+    │         ^^^^^^^^^^^^^^^^^^^^^ Invalid call of '0x42::example::read_and_assign'. Invalid argument for parameter 'store'
+    ·
+  8 │         let x: &u64 = &0;
+    │                ---- The type: '&u64'
+    ·
+  3 │     fun read_and_assign(store: &mut u64, new_value: &u64) {
+    │                                -------- Is not a subtype of: '&mut u64'
+    │
+```
+
+目前唯一具有子类型的其他类型是 [元组](tuples.mdx)
+
+## 所有权
+
+可变和不可变引用都可以被复制和扩展 _即使已存在相同引用的副本或扩展_ ：
+
+```move
+script {
+  fun reference_copies(s: &mut S) {
+    let s_copy1 = s; // 允许
+    let s_extension = &mut s.f; // 同样允许
+    let s_copy2 = s; // 仍然允许
+    // ...
+  }
+}
+```
+
+对于熟悉Rust所有权系统的程序员来说，这可能会令人惊讶，因为Rust会拒绝上述代码。
+Move 的类型系统在处理 [copies](variables.mdx#移动--move--与复制--copy-) 时更为宽松，但在确保可变引用写入前的唯一所有权方面同样严格。
+
+### 引用不能被存储
+
+引用和元组是 _唯二_ 不能作为结构体字段值存储的类型，这也意味着它们不能存在于全局存储中。
+
+所有在程序执行期间创建的引用都会在 Move 程序终止时被销毁；它们是纯粹临时性的。
+这个不变量对于没有 `store` [能力](abilities.mdx) 的类型值同样成立，但要注意引用和元组更进一步：从一开始就不允许出现在结构体中。
+
+这是 Move 与 Rust 之间的另一个区别， Rust 允许将引用存储在结构体内部。
+
+目前Move无法支持这一点，因为引用不能被 [序列化](https://en.wikipedia.org/wiki/Serialization) ，而 _每个Move值都必须是可序列化的_ 。
+这要求源于 Move 的[持久化全局存储](global-storage-structure.mdx)，它需要通过序列化值来跨程序执行保持数据。结构体可以被写入全局存储，因此它们必须是可序列化的。
+可以设想一种更复杂、更具表现力的类型系统，它允许在结构体中存储引用_同时_禁止这些结构体存在于全局存储中。
+我们或许可以允许在不具备 `store` [能力](abilities.mdx) 的结构体内部使用引用，但这并不能完全解决问题：Move语言拥有相当复杂的静态引用安全追踪系统，类型系统的这一方面也需要进行扩展才能支持在结构体中存储引用。
+简而言之，Move的类型系统（特别是涉及引用安全的部分）必须扩展才能支持存储引用。不过随着语言的发展，这是我们正在持续关注的方向。

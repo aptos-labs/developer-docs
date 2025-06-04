@@ -1,0 +1,85 @@
+# 条件语句
+
+`if` 表达式用于指定只有当某个条件为真时才执行特定代码。例如：
+
+```move
+script {
+  fun example() {
+    if (x > 5) x = x - 5
+  }
+}
+```
+
+条件必须是 `bool` 类型的表达式。
+
+`if` 表达式可以包含可选的 `else` 子句，用于指定条件为假时要执行的另一个表达式。
+
+```move
+script {
+  fun example() {
+    if (y <= 10) y = y + 1 else y = 10
+  }
+}
+```
+
+只会执行"真"分支或"假"分支中的一个，不会同时执行。每个分支可以是单个表达式或表达式块。
+
+条件表达式可以产生值，因此 `if` 表达式可以有结果值。
+
+```move
+script {
+  fun example() {
+    let z = if (x < 100) x else 100;
+  }
+}
+```
+
+真假分支中的表达式必须具有兼容的类型。例如：
+
+```move
+script {
+  fun example() {
+    // x 和 y 必须是 u64 整数
+    let maximum: u64 = if (x > y) x else y;
+
+    // 错误！分支类型不同
+    let z = if (maximum < 10) 10u8 else 100u64;
+
+    // 错误！分支类型不同，因为默认假分支是 () 而不是 u64
+    if (maximum >= 10) maximum;
+  }
+}
+```
+
+如果未指定 `else` 子句，假分支默认为单位值。以下两种写法是等价的：
+
+```move
+script {
+  fun example() {
+    if (condition) true_branch // 隐含默认值：else ()
+    if (condition) true_branch else ()
+  }
+}
+```
+
+通常，[`if` 表达式](conditionals.mdx)会与表达式块结合使用。
+
+```move
+script {
+  fun example() {
+    let maximum = if (x > y) x else y;
+    if (maximum < 10) {
+        x = x + 10;
+        y = y + 10;
+    } else if (x >= 10 && y >= 10) {
+        x = x - 10;
+        y = y - 10;
+    }
+  }
+}
+```
+
+## 条件语句语法
+
+> _if表达式_ → **if (** _表达式_ **)** _表达式_ _else子句_<sub>_可选_</sub>>
+> _else 子句_ → **else** _表达式_

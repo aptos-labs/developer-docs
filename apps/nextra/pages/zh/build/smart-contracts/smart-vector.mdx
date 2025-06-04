@@ -1,0 +1,200 @@
+---
+title: "Smart Vector"
+---
+
+# Smart Vector
+
+Smart Vector 是一种基于 `tables` 的可扩展向量实现，其中元素被分组到桶中。这种数据结构通过将小型向量的灵活性与大型结构的可扩展性相结合，实现了对大规模数据集的高效处理。
+
+## `SmartVector` 的核心特性
+
+### 结构
+
+`SmartVector` 结构体旨在高效地处理动态数据：
+
+- `inline_vec`：直接存储元素的小型向量。
+- `big_vec`：可选的大型向量，用于可扩展存储。
+- `inline_capacity`：可选值，定义 `inline_vec` 的容量。
+- `bucket_size`：可选值，定义 `big_vec` 中桶的大小。
+
+### 常量
+
+以下常量定义了模块中使用的各种错误码：
+
+- `EINDEX_OUT_OF_BOUNDS`：1
+- `EVECTOR_NOT_EMPTY`：2
+- `EVECTOR_EMPTY`：3
+- `EZERO_BUCKET_SIZE`：4
+- `ESMART_VECTORS_LENGTH_MISMATCH`：0x20005
+
+## API 概览
+
+### 创建向量
+
+- `new<T: store>(): SmartVector<T>`：创建一个空向量。
+- `empty_with_config<T: store>(inline_capacity: u64, bucket_size: u64): SmartVector<T>`：使用自定义容量和桶大小创建一个空向量。
+- `singleton<T: store>(element: T): SmartVector<T>`：创建一个包含单个元素的向量。
+
+### 销毁向量
+
+- `destroy_empty<T>(v: SmartVector<T>)`：销毁一个空向量。
+- `destroy<T: drop>(v: SmartVector<T>)`：销毁向量及其元素。
+
+### 元素管理
+
+- `push_back<T: store>(v: &mut SmartVector<T>, val: T)`：向向量末尾添加元素。
+- `pop_back<T>(v: &mut SmartVector<T>): T`：移除并返回向量末尾的元素。
+- `remove<T>(v: &mut SmartVector<T>, i: u64): T`：移除指定索引处的元素。
+- `swap_remove<T>(v: &mut SmartVector<T>, i: u64): T`：将指定索引处的元素与末尾元素交换并移除。
+- `borrow<T>(v: &SmartVector<T>, i: u64): &T`：返回指定索引处元素的不可变引用。
+- `borrow_mut<T>(v: &mut SmartVector<T>, i: u64): &mut T`：返回指定索引处元素的可变引用。
+
+### 工具函数
+
+- `length<T>(v: &SmartVector<T>): u64`：返回向量中的元素数量。
+- `is_empty<T>(v: &SmartVector<T>): bool`：判断向量是否为空。
+- `clear<T: drop>(v: &mut SmartVector<T>)`：清空向量中的所有元素。
+- `to_vector<T: store + copy>(v: &SmartVector<T>): vector<T>`：将 smart vector 转换为原生向量。
+
+## 示例用法
+
+### 创建与使用 SmartVector
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public entry fun main() {
+        let v = smart_vector::new<u64>();
+        smart_vector::push_back(&mut v, 10);
+        smart_vector::push_back(&mut v, 20);
+        let length = smart_vector::length(&v);
+        assert!(length == 2, 0);
+        let first_elem = smart_vector::borrow(&v, 0);
+        assert!(*first_elem == 10, 0);
+        let second_elem = smart_vector::borrow(&v, 1);
+        assert!(*second_elem == 20, 0);
+        let last_elem = smart_vector::pop_back(&mut v);
+        assert!(last_elem == 20, 0);
+        smart_vector::destroy_empty(v);
+    }
+}
+```
+
+### 向量追加
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public fun append_vectors() {
+        let v1 = smart_vector::new<u64>();
+        let v2 = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v1, 1);
+        smart_vector::push_back(&mut v1, 2);
+
+        smart_vector::push_back(&mut v2, 3);
+        smart_vector::push_back(&mut v2, 4);
+
+        smart_vector::append(&mut v1, v2);
+
+        let length = smart_vector::length(&v1);
+        assert!(length == 4, 0);
+
+        let first_elem = smart_vector::borrow(&v1, 0);
+        assert!(*first_elem == 1, 0);
+
+        let second_elem = smart_vector::borrow(&v1, 1);
+        assert!(*second_elem == 2, 0);
+
+        let third_elem = smart_vector::borrow(&v1, 2);
+        assert!(*third_elem == 3, 0);
+
+        let fourth_elem = smart_vector::borrow(&v1, 3);
+        assert!(*fourth_elem == 4, 0);
+    }
+}
+```
+
+### 移除元素
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public fun remove_elements() {
+        let v = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v, 1);
+        smart_vector::push_back(&mut v, 2);
+        smart_vector::push_back(&mut v, 3);
+
+        let removed_elem = smart_vector::remove(&mut v, 1);
+        assert!(removed_elem == 2, 0);
+
+        let length = smart_vector::length(&v);
+        assert!(length == 2, 0);
+
+        let first_elem = smart_vector::borrow(&v, 0);
+        assert!(*first_elem == 1, 0);
+
+        let second_elem = smart_vector::borrow(&v, 1);
+        assert!(*second_elem == 3, 0);
+    }
+}
+```
+
+
+### 清空向量
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public fun clear_vector() {
+        let v = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v, 1);
+        smart_vector::push_back(&mut v, 2);
+        smart_vector::push_back(&mut v, 3);
+
+        smart_vector::clear(&mut v);
+        let length = smart_vector::length(&v);
+        assert!(length == 0, 0);
+    }
+}
+```
+
+### 元素交换
+
+```move filename="smart_vector.move"
+module 0x42::smart_vector_usage {
+    use aptos_std::smart_vector;
+
+    public fun swap_elements() {
+        let v = smart_vector::new<u64>();
+
+        smart_vector::push_back(&mut v, 1);
+        smart_vector::push_back(&mut v, 2);
+        smart_vector::push_back(&mut v, 3);
+
+        smart_vector::swap(&mut v, 0, 2);
+
+        let first_elem = smart_vector::borrow(&v, 0);
+        assert!(*first_elem == 3, 0);
+
+        let third_elem = smart_vector::borrow(&v, 2);
+        assert!(*third_elem == 1, 0);
+    }
+}
+```
+
+## 源码链接
+
+- [smart_vector.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/data_structures/smart_vector.move)
+
+## 其他示例
+
+- [move spiders tutorial on smart vectors](https://movespiders.com/courses/modules/datastructures/lessonId/6)
+- [move spiders tutorial on querying smart vectors](https://movespiders.com/courses/modules/datastructures/lessonId/9) 

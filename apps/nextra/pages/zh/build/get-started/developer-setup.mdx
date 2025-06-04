@@ -1,0 +1,186 @@
+---
+title: "开发者环境配置"
+---
+
+import { Tabs, Steps } from 'nextra/components'
+import { Cards, Card } from '@components/index'
+
+# 开发者环境配置
+
+根据开发类型的不同，以下是配置环境的简易指南。
+
+<Tabs items={['前端开发', '智能合约', '创建 Aptos Dapp']}>
+  {/* 前端开发 */}
+  <Tabs.Tab>
+    <Steps>
+
+      ### 初始化前端项目
+
+      以下是几种流行框架的示例：
+
+      <Tabs items={['Next.js', 'Vite (TS)']}>
+        <Tabs.Tab>
+          ```bash filename="终端"
+          pnpx create-next-app@latest
+          ```
+        </Tabs.Tab>
+        <Tabs.Tab>
+          ```bash filename="终端"
+          pnpx create vite my-aptos-app --template react-ts
+          ```
+        </Tabs.Tab>
+      </Tabs>
+
+      ### 安装 `@aptos-labs/ts-sdk`
+
+      ```bash npm2yarn
+      npm i @aptos-labs/ts-sdk
+      ```
+
+      ### 配置 TS SDK
+
+      <Cards>
+        <Card href="../sdks/ts-sdk/quickstart">
+          <Card.Title>TS SDK 快速入门</Card.Title>
+          <Card.Description>了解如何设置账户、网络、使用水龙头、发送/模拟交易等</Card.Description>
+        </Card>
+      </Cards>
+
+      ### 开始构建应用！
+
+      现在已完成前端集成 Aptos 的开发环境配置。
+      查看我们其他能优化开发流程的工具
+
+      <Cards>
+        <Card href="../indexer">
+          <Card.Title>索引器</Card.Title>
+          <Card.Description>高效查询链上状态，如余额、交易活动、代币数据等</Card.Description>
+        </Card>
+        <Card
+          href="https://github.com/aptos-labs/aptos-ts-sdk/tree/main/examples/typescript">
+          <Card.Title linkType="external">TS SDK 示例</Card.Title>
+          <Card.Description>20+ 个 TS SDK 使用示例</Card.Description>
+        </Card>
+        <Card href="https://build.aptoslabs.com/">
+          <Card.Title linkType="external">Aptos Build</Card.Title>
+          <Card.Description>遇到 Fullnode API/索引器速率限制？可在此获取API密钥</Card.Description>
+        </Card>
+      </Cards>
+
+    </Steps>
+  </Tabs.Tab>
+
+  {/* 智能合约 */}
+  <Tabs.Tab>
+    <Steps>
+
+      ### 安装 CLI
+
+      <Cards>
+        <Card href="../cli">
+          <Card.Title>Aptos CLI</Card.Title>
+          <Card.Description>
+            Aptos CLI 安装指南
+          </Card.Description>
+        </Card>
+      </Cards>
+
+      ### 配置编辑器或 IDE
+
+      为您的编辑器添加以下扩展以简化 Move 开发
+
+      <Tabs items={['JetBrains IDE', 'VSCode']}>
+        <Tabs.Tab>
+          <Cards>
+            <Card
+              href="https://plugins.jetbrains.com/plugin/14721-move-language">
+              <Card.Title linkType="external">Move 语言插件</Card.Title>
+              <Card.Description>语言服务器和语法高亮插件为
+                JetBrains 系列 IDE（如 CLion、Rust Rover、WebStorm、
+                IntelliJ）</Card.Description>
+            </Card>
+          </Cards>
+        </Tabs.Tab>
+        <Tabs.Tab>
+          <Cards>
+            <Card
+              href="https://marketplace.visualstudio.com/items?itemName=MoveBit.aptos-move-analyzer">
+              <Card.Title linkType="external">Aptos Move 分析器</Card.Title>
+              <Card.Description>适用于 VSCode 的语言服务器和语法高亮工具</Card.Description>
+            </Card>
+          </Cards>
+        </Tabs.Tab>
+      </Tabs>
+
+      ### 创建智能合约
+
+      导航到您的应用目录并通过以下命令初始化一个新的智能合约：
+
+      ```sh filename="Terminal"
+      aptos move init --name my_todo_list
+      ```
+
+      ### 构建、编译和部署智能合约！
+
+      用于 Aptos 智能合约开发的设置现已完成。
+      更多信息请查看下方 Dapp 教程链接
+
+      <Cards>
+        <Card
+          href="../guides/build-e2e-dapp/1-create-smart-contract#what-is-a-movetoml-file">
+          <Card.Title>智能合约创建指南</Card.Title>
+          <Card.Description>一个简易的待办事项列表指南，介绍如何使用 Move 设置智能合约</Card.Description>
+        </Card>
+      </Cards>
+
+    </Steps>
+  </Tabs.Tab>
+  {/* create-aptos-dapp */}
+  <Tabs.Tab>
+    <Steps>
+      ### 安装 `create-aptos-dapp`
+      运行以下命令，几秒内即可从模板安装一个 dApp：
+      <Tabs items={["npx", "pnpx"]}>
+        { /* npx */ }
+        <Tabs.Tab>
+          ```bash filename="Terminal"
+          npx create-aptos-dapp@latest
+          ```
+        </Tabs.Tab>
+        { /* pnpx */ }
+        <Tabs.Tab>
+          ```bash filename="Terminal"
+          pnpx create-aptos-dapp@latest
+          ```
+        </Tabs.Tab>
+      </Tabs>
+
+      ### 跟随提示操作
+      根据 CLI 提示选择您新 dApp 的名称、[模板](../create-aptos-dapp#templates) 和网络。
+
+      ![cad](/docs/cad-video.gif)
+
+      ### 开始构建并定制您的新 dApp！
+      导航到您的新项目并在您喜欢的 IDE 中打开以继续开发！
+
+      按照生成的 `README.md` 文件进行后续步骤。
+
+      ### 继续阅读
+      <Cards>
+        <Card href="../create-aptos-dapp">
+          <Card.Title>创建 Aptos Dapp</Card.Title>
+          <Card.Description>获取关于该工具的更多信息</Card.Description>
+        </Card>
+        <Card href="../create-aptos-dapp#templates">
+          <Card.Title>模板</Card.Title>
+          <Card.Description>浏览预制模板</Card.Description>
+        </Card>
+        <Card href="../create-aptos-dapp/faq">
+          <Card.Title>常见问题</Card.Title>
+          <Card.Description>获取常见问题和解决方案</Card.Description>
+        </Card>
+      </Cards>   
+      
+    </Steps>
+  </Tabs.Tab>
+</Tabs>

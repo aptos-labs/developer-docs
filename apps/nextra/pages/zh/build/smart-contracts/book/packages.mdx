@@ -1,0 +1,365 @@
+import { FileTree } from "nextra/components";
+
+# 包管理
+
+包 (Packages) 使得 Move 程序员能够更轻松地复用代码并在项目间共享。Move 包管理系统支持程序员完成以下操作：
+
+- 定义包含 Move 代码的包
+- 通过[命名地址](address.mdx)参数化包
+- 在其他 Move 代码中导入和使用包，并实例化命名地址
+- 构建包并生成相关的编译产物
+- 通过统一接口处理已编译的 Move 产物
+
+## 包目录结构与清单语法
+
+Move 包的源目录包含一个 `Move.toml` 包清单文件及若干子目录：
+
+<FileTree>
+  <FileTree.Folder name="a_move_package" defaultOpen>
+    <FileTree.File name="Move.toml" />
+    <FileTree.Folder name="sources (required)" defaultOpen>
+      <FileTree.File name="module.move" />
+      <FileTree.File name="*.move" />
+    </FileTree.Folder>
+    <FileTree.Folder name="examples (optional, test & dev mode)" />
+    <FileTree.Folder name="scripts (optional, can also put in sources)" />
+    <FileTree.Folder name="doc_templates (optional)" />
+    <FileTree.Folder name="tests (optional, test mode)" />
+  </FileTree.Folder>
+</FileTree>
+
+标记为 `required` 的目录必须存在才能使该目录被视为 Move 包并进行编译。可选目录可以存在，若存在则会被包含在编译过程中。根据包的构建模式(`test`或`dev`)，`tests`和`examples`目录也会被包含进来。
+
+`sources` 目录可以同时包含 Move 模块和 Move 脚本(包括脚本函数)。`examples` 目录可以存放仅用于开发和/或教程目的的额外代码，这些代码在非 `test` 或 `dev` 模式下不会被包含。
+
+`scripts` 目录用于将 Move 脚本与模块分离(如果包作者需要)。只要存在该目录，其中的内容总会被包含在编译过程中。`doc_templates` 目录中的文档模板会被用于构建文档。
+
+### Move.toml 文件
+
+Move 包清单定义在 `Move.toml` 文件中，语法如下。标有`*`的字段为可选，`+`表示一个或多个元素：
+
+```toml filename="Move.toml"
+[package]
+name = <string>                  # 例如："MoveStdlib"
+version = "<uint>.<uint>.<uint>" # 例如："0.1.1"
+license* = <string>              # 例如："MIT", "GPL", "Apache 2.0"
+authors* = [<string>]            # 例如：["Joe Smith (joesmith@noemail.com)", "Jane Smith (janesmith@noemail.com)"]
+
+[addresses]  # (可选章节)声明本包中的命名地址并在包图中实例化命名地址
+# 一行或多行以下格式的命名地址声明
+<addr_name> = "_" | "<hex_address>" # 例如：std = "_" 或 my_addr = "0xC0FFEECAFE"
+
+[dependencies] # (可选章节)依赖项路径以及对每个依赖项中命名地址的实例化或重命名
+# 一行或多行以下格式的依赖声明
+<string> = { local = <string>, addr_subst* = { (<string> = (<string> | "<hex_address>"))+ } } # 本地依赖
+<string> = { git = <URL ending in .git>, subdir=<path to dir containing Move.toml inside git repo>, rev=<git commit hash or branch name>, addr_subst* = { (<string> = (<string> | "<hex_address>"))+ } } # git依赖
+
+[dev-addresses] # (可选章节)与[addresses]章节相同，但仅在"dev"和"test"模式下包含
+# 一行或多行以下格式的开发命名地址声明
+<addr_name> = "_" | "<hex_address>" # 例如：std = "_" 或 my_addr = "0xC0FFEECAFE"
+
+[dev-dependencies] # (可选章节)与[dependencies]章节相同，但仅在"dev"和"test"模式下包含
+# 一行或多行以下格式的开发依赖声明
+<string> = { local = <string>, addr_subst* = { (<string> = (<string> | <address>))+ } }
+```一个包含一个本地依赖和一个git依赖的最小化包清单示例：
+
+```toml
+[package]
+name = "AName"
+version = "0.0.0"
+```
+
+一个更标准的包清单示例，还包含了 Move 标准库，并将命名地址 `Std` 实例化为地址值 `0x1` ：
+
+```toml
+[package]
+name = "AName"
+version = "0.0.0"
+license = "Apache 2.0"
+
+[addresses]
+address_to_be_filled_in = "_"
+specified_address = "0xB0B"
+
+[dependencies]
+# 本地依赖
+LocalDep = { local = "projects/move-awesomeness", addr_subst = { "std" = "0x1" } }
+# Git依赖
+MoveStdlib = { git = "https://github.com/aptos-labs/aptos-framework", subdir="move-stdlib", rev = "mainnet" }
+
+[dev-addresses] # 用于开发时使用
+address_to_be_filled_in = "0x101010101"
+```
+
+包清单中的大部分部分都一目了然，但命名地址可能较难理解，因此值得更详细地探讨。
+
+## 编译期间的命名地址
+
+回忆一下 Move 有 [命名地址](address.mdx) ，且命名地址不能在 Move 中声明。因此在此之前，命名地址及其值需要通过命令行传递给编译器。有了 Move 包系统后就不再需要这样了，你可以在包中声明命名地址，实例化作用域内的其他命名地址，并在 Move 包系统清单文件中重命名来自其他包的命名地址。让我们逐一了解：
+
+### 声明
+
+假设我们在`example_pkg/sources/A.move`中有如下 Move 模块：
+
+```move
+module named_addr::A {
+  public fun x(): address { @named_addr }
+}
+```
+
+我们可以在 `example_pkg/Move.toml` 中以两种不同方式声明命名地址 `named_addr`。第一种：
+
+```toml
+[package]
+name = "ExamplePkg"
+# ...
+[addresses]
+named_addr = "_"
+```
+
+声明 `named_addr` 作为包 `ExamplePkg` 中的一个命名地址，且 _该地址可以是任何有效的地址值_。因此，导入包可以选择命名地址 `named_addr` 的值为任何它想要的地址。直观上，你可以将此视为通过命名地址 `named_addr` 参数化包 `ExamplePkg`，然后该包稍后可以被导入包实例化。
+
+`named_addr` 也可以声明为：
+
+```toml
+[package]
+name = "ExamplePkg"
+# ...
+[addresses]
+named_addr = "0xCAFE"
+```
+
+它声明了命名地址 `named_addr` 的值固定为 `0xCAFE`，且不可更改。这样做的好处是，其他导入该包的包在使用这个命名地址时，无需关心它具体被赋了什么值。
+
+由于存在这两种不同的命名地址声明方式，命名地址的信息在包依赖图中的传递也有两种方式：
+
+第一种（“未赋值的命名地址”）允许命名地址的值从导入方流向声明方；
+
+第二种（“已赋值的命名地址”）则允许命名地址的值从声明方向上传递到使用该地址的包。
+
+正因为命名地址信息可以通过这两种方式在包依赖图中传递，理解作用域和重命名的规则就变得非常重要。
+
+## 命名地址的作用域和重命名
+
+包 `P` 中的命名地址 `N` 在以下情况下处于作用域内：
+
+1. 它声明了命名地址 `N` ；或
+2. `P` 的某个传递依赖包声明了命名地址 `N`，并且在包图中 `P` 与声明 `N` 的包之间存在依赖路径，且在此路径上 `N` 没有被重命名。
+
+此外，包中的每个命名地址都会被导出。因此结合上述作用域规则，每个包可以被视为附带一组命名地址，当导入该包时这些命名地址会被带入作用域。
+例如，如果导入了 `ExamplePkg` 包，该导入会将 `named_addr` 命名地址带入作用域。
+因此，如果 `P` 导入了两个包 `P1` 和 和`P2`，且这两个包都声明了命名地址 `N`，那么在 `P` 中就会出现问题：当在 `P` 中引用 `N` 时，指的是哪个"`N`"？来自 `P1` 还是 `P2` 的？为了防止这种关于命名地址来源的歧义，我们强制要求包中所有依赖项引入的作用域集合互不相交，并提供了一种在导入时将命名地址_重命名_的方法。
+
+在我们的 `P`、`P1` 和 `P2` 示例中，可以在导入时按如下方式重命名命名地址：
+
+```toml
+[package]
+name = "P"
+# ...
+[dependencies]
+P1 = { local = "some_path_to_P1", addr_subst = { "P1N" = "N" } }
+P2 = { local = "some_path_to_P2"  }
+```
+
+通过这种重命名方式，`N` 将指向 `P2` 中的 `N`，而 `P1N` 将指向来自 `P1` 的 `N`：
+
+```move
+module N::A {
+    public fun x(): address { @P1N }
+}
+```
+
+需要注意的是 _重命名不是局部的_ ：一旦在包 `P` 中将命名地址 `N` 重命名为 `N2`，所有导入 `P` 的包将无法看到 `N`，只能看到 `N2`，除非 `N` 从 `P` 外部重新引入。
+这就是为什么本节开头的作用域规则中的第二条特别指明“在包图中 `P` 与 `N` 的声明包之间的依赖路径上不能对 `N` 进行重命名”。
+
+### 实例化
+
+命名地址可以在包图中多次实例化，只要每次实例化的值相同即可。如果在包图中同一个命名地址（无论是否经过重命名）被赋予了不同的值，将会报错。
+
+Move 包只有在所有命名地址都解析为具体值时才能编译。如果包希望暴露一个未实例化的命名地址，就会产生问题。这正是 `[dev-addresses]` 节要解决的问题。
+该节可以为命名地址设置值，但不能引入新的命名地址。此外，只有根包中的 `[dev-addresses]` 会在 `dev` 模式下被包含。
+例如，以下清单的根包在非 `dev` 模式下将无法编译，因为 `named_addr` 未被实例化：
+
+```toml
+[package]
+name = "ExamplePkg"
+# ...
+[addresses]
+named_addr = "_"
+
+[dev-addresses]
+named_addr = "0xC0FFEE"
+```
+
+## 使用方式、产物与数据结构
+
+Move 包系统作为 Move CLI 的一部分提供了命令行选项 `move <flags> <command> <command_flags>`。除非指定了特定路径，所有包命令都将在当前工作目录下运行。运行 `move --help` 可以查看 Move CLI 的完整命令和标志列表。
+
+### 使用方式
+
+包可以通过 Move CLI 命令编译，也可以通过 Rust 中的库函数 `compile_package` 编译。
+这将创建一个 `CompiledPackage`，其中包含编译后的字节码以及其他编译产物（源映射、文档、ABI）。
+`CompiledPackage` 可以转换为 `OnDiskPackage`，反之亦然——后者是 `CompiledPackage` 数据按以下文件系统结构存放的形式：
+
+<FileTree>
+  <FileTree.Folder name="a_move_package" defaultOpen>
+    <FileTree.Folder name="..." />
+    <FileTree.Folder name="build" defaultOpen>
+      <FileTree.Folder name="dependency_name" defaultOpen>
+        <FileTree.File name="BuildInfo.yaml" />
+        <FileTree.Folder name="bytecode_modules" defaultOpen>
+          <FileTree.File name="module_name.mv" />
+          <FileTree.File name="*.mv" />
+        </FileTree.Folder>
+        <FileTree.Folder name="source_maps" defaultOpen>
+          <FileTree.File name="module_name.mvsm" />
+          <FileTree.File name="*.mvsm" />
+        </FileTree.Folder>
+        <FileTree.Folder name="bytecode_scripts" defaultOpen>
+          <FileTree.File name="script_name.mv" />
+          <FileTree.File name="*.mv" />
+        </FileTree.Folder>
+        <FileTree.Folder name="abis" defaultOpen>
+          <FileTree.File name="script_name.abi" />
+          <FileTree.File name="*.abi" />
+          <FileTree.Folder name="module_name" defaultOpen>
+            <FileTree.File name="function_name.abi" />
+            <FileTree.File name="*.abi" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+        <FileTree.Folder name="sources" defaultOpen>
+          <FileTree.File name="module_name.move" />
+        </FileTree.Folder>
+      </FileTree.Folder>
+      <FileTree.Folder name="dependency_name2 ..." defaultOpen />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+
+关于这些数据结构以及如何在 Rust 库中使用 Move 包系统的更多信息，请参阅 `move-package` crate。
+
+## 使用字节码作为依赖项
+
+当依赖项的 Move 源代码在本地不可用时，可以使用 Move 字节码作为依赖项。要使用此功能，需要将这些文件放在同级目录中，然后在相应的 `Move.toml` 文件中指定它们的路径。
+
+## 要求与限制
+
+使用本地字节码作为依赖项需要将字节码文件下载到本地，并且每个命名地址的实际地址必须在 `Move.toml` 中或通过 `--named-addresses` 指定。
+
+请注意，`aptos move prove` 和 `aptos move test` 命令目前不支持将字节码作为依赖项。
+
+## 推荐结构
+
+我们通过一个示例来说明使用此功能的开发流程。假设我们要编译包 `A`。包的布局如下：
+
+<FileTree>
+  <FileTree.Folder name="A" defaultOpen>
+    <FileTree.File name="Move.toml" />
+    <FileTree.Folder name="sources" defaultOpen>
+      <FileTree.File name="AModule.move" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+
+`A.move` 的定义如下，依赖于模块 `Bar` 和 `Foo`：
+
+```move filename="A/AModule.move"
+module A::AModule {
+    use B::Bar;
+    use C::Foo;
+    public fun foo(): u64 {
+        Bar::foo() + Foo::bar()
+    }
+}
+```
+
+假设 `Bar` 和 `Foo` 的源代码不可用，但对应的字节码文件 `Bar.mv` 和 `Foo.mv` 在本地可用。要使用它们作为依赖项，我们需要：
+
+为 `Bar` 和 `Foo` 指定 `Move.toml` 文件。注意命名地址已在字节码中实例化为实际地址。在我们的示例中，`C` 的实际地址已绑定为 `0x3`。因此，必须在 `[addresses]` 中将 `C` 指定为 `0x3`，如下所示：
+
+```toml filename="workspace/C/Move.toml"
+[package]
+name = "Foo"
+version = "0.0.0"
+
+[addresses]
+C = "0x3"
+```
+
+将字节码文件和对应的 `Move.toml` 文件放在同一目录下，字节码需置于 `build` 子目录中。注意必须存在一个空的 `sources` 目录。例如，包 `Bar` 对应的文件夹 `B` 和包 `Foo` 对应的文件夹 `C` 的布局如下：
+
+<FileTree>
+  <FileTree.Folder name="workspace" defaultOpen>
+    <FileTree.Folder name="A">
+      <FileTree.File name="Move.toml" />
+      <FileTree.Folder name="sources" defaultOpen>
+        <FileTree.File name="AModule.move" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+    <FileTree.Folder name="B" defaultOpen>
+      <FileTree.File name="Move.toml" />
+      <FileTree.Folder name="sources">
+      </FileTree.Folder>
+      <FileTree.Folder name="build" defaultOpen>
+        <FileTree.File name="Bar.mv" />
+      </FileTree.Folder>
+    </FileTree.Folder>
+    <FileTree.Folder name="C" defaultOpen>
+      <FileTree.File name="Move.toml" />
+      <FileTree.Folder name="sources">
+      </FileTree.Folder>
+      <FileTree.Folder name="build" defaultOpen>
+        <FileTree.Folder name="Foo" defaultOpen>
+          <FileTree.Folder name="bytecode_modules" defaultOpen>
+            <FileTree.File name="Foo.mv" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+在目标（第一个）包的 `Move.toml` 中通过 `[dependencies]` 指定依赖（次级）包的位置。例如，假设三个包目录位于同一层级，`A` 的 `Move.toml` 应如下所示：
+
+```toml filename="workspace/A/Move.toml"
+[package]
+name = "A"
+version = "0.0.0"
+
+[addresses]
+A = "0x2"
+
+[dependencies]
+Bar = { local = "../B" }
+Foo = { local = "../C" }
+```
+
+请注意，如果同一个包的字节码和源代码同时存在于搜索路径中，编译器会报错声明重复。
+
+## 覆盖标准库
+在使用第三方包时，可能会遇到引用了不同版本的 Move 和 Aptos 标准库包的问题。
+
+这可能导致包解析失败。
+
+```
+"Error": "Move 编译失败:
+  无法解析包 'C' 的依赖:
+    在解析包 'C' 的依赖 'B' 时:
+      无法解析包依赖 'B':
+        在解析包 'B' 的依赖 'AptosFramework' 时:
+          无法解析包依赖 'AptosFramework':
+            发现冲突依赖: 包 'AptosFramework' 与 'AptosFramework' 冲突
+```
+
+要解决此问题，您可以通过命令行选项覆盖标准库包。这允许您在整个依赖关系树中强制执行特定版本的标准库。您可以将覆盖应用于诸如 `aptos move compile`、`aptos move run` 等命令。语法如下：
+
+```
+--override-std <network name>
+```
+
+其中 `network_name` 可以是以下选项之一：
+- devnet
+- testnet
+- mainnet

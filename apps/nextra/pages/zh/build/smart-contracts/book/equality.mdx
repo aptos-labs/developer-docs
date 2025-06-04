@@ -1,0 +1,173 @@
+# 相等性
+
+Move 语言支持两种相等性操作 `==` 和 `!=`
+
+## 操作符
+
+| 语法  | 操作       | 描述                                                                 |
+| ----- | ---------- | -------------------------------------------------------------------- |
+| `==`  | 等于       | 如果两个操作数具有相同的值则返回 `true`，否则返回 `false`            |
+| `!=`  | 不等于     | 如果两个操作数具有不同的值则返回 `true`，否则返回 `false`             |
+
+### 类型要求
+
+等于 (`==`) 和 不等于 (`!=`) 操作都要求两个操作数必须是相同类型
+
+```move
+script {
+  fun example() {
+    0 == 0; // `true`
+    1u128 == 2u128; // `false`
+    b"hello" != x"00"; // `true`
+  }
+}
+```
+
+相等性和不等性也适用于用户自定义类型！
+
+```move
+module 0x42::example {
+    struct S has copy, drop { f: u64, s: vector<u8> }
+
+    fun always_true(): bool {
+        let s = S { f: 0, s: b"" };
+        // 括号不是必须的，但为了示例清晰而添加
+        (copy s) == s
+    }
+
+    fun always_false(): bool {
+        let s = S { f: 0, s: b"" };
+        // 括号不是必须的，但为了示例清晰而添加
+        (copy s) != s
+    }
+}
+```
+
+如果操作数类型不同，则会出现类型检查错误
+
+```move
+script {
+  fun example() {
+    1u8 == 1u128; // 错误！
+    //     ^^^^^ 期望参数类型为 'u8'
+    b"" != 0; // 错误！
+    //     ^ 期望参数类型为 'vector<u8>'
+  }
+}
+```
+
+### 引用类型比较
+
+当比较[引用](references.mdx)时，引用类型（不可变或可变）无关紧要。这意味着你可以比较相同基础类型的不可变 `&` 引用和可变 `&mut` 引用。
+
+```move
+script {
+  fun example() {
+    let i = &0;
+    let m = &mut 1;
+
+    i == m; // `false`
+    m == i; // `false`
+    m == m; // `true`
+    i == i; // `true`
+  }
+}
+```
+
+上述代码等价于在需要时对每个可变引用显式应用冻结操作
+
+```move
+script {
+  fun example() {
+    let i = &0;
+    let m = &mut 1;
+
+    i == freeze(m); // `false`
+    freeze(m) == i; // `false`
+    m == m; // `true`
+    i == i; // `true`
+  }
+}
+```
+
+但同样，基础类型必须是相同的
+
+```move
+script {
+  fun example() {
+    let i = &0;
+    let s = &b"";
+
+    i == s; // 错误！
+    //   ^ 期望参数类型为 '&u64'
+  }
+}
+```
+
+## 限制条件
+
+`==` 和 `!=` 操作都会消耗比较的值。因此类型系统要求该类型必须具有 [`drop`](abilities.mdx) 能力。请记住，如果没有 [`drop` 能力](abilities.mdx)，所有权必须在函数结束时转移，并且这些值只能在其声明模块中显式销毁。如果直接使用这些值与 `==` 或 `!=` 操作，值会被销毁，这将破坏 [`drop` 能力](abilities.mdx) 的安全保证！
+
+```move
+module 0x42::example {
+  struct Coin has store { value: u64 }
+  fun invalid(c1: Coin, c2: Coin) {
+    c1 == c2 // 错误！
+//  ^^    ^^ 这些资源会被销毁！
+  }
+}
+```但是，程序员可以_始终_先借用值而不是直接比较值，而且引用类型具有[`drop`能力](abilities.mdx)。例如：
+
+```move
+module 0x42::example {
+  struct Coin has store { value: u64 }
+  fun swap_if_equal(c1: Coin, c2: Coin): (Coin, Coin) {
+    let are_equal = &c1 == &c2; // 有效操作
+    if (are_equal) (c2, c1) else (c1, c2)
+  }
+}
+```
+
+## 避免不必要的拷贝
+
+虽然程序员 _可以_ 比较任何具有[`drop`](abilities.mdx)能力的类型的值，但通常应该通过引用来比较以避免昂贵的拷贝操作。
+
+```move
+script {
+  fun example() {
+    let v1: vector<u8> = function_that_returns_vector();
+    let v2: vector<u8> = function_that_returns_vector();
+    assert!(copy v1 == copy v2, 42);
+    //     ^^^^       ^^^^
+    use_two_vectors(v1, v2);
+
+    let s1: Foo = function_that_returns_large_struct();
+    let s2: Foo = function_that_returns_large_struct();
+    assert!(copy s1 == copy s2, 42);
+    //     ^^^^       ^^^^
+    use_two_foos(s1, s2);
+  }
+}
+```
+
+这段代码完全可用（假设`Foo`具有[`drop`](abilities.mdx)能力），只是效率不高。标记处的拷贝操作可以通过借用替换：
+
+```move
+script {
+  fun example() {
+    let v1: vector<u8> = function_that_returns_vector();
+    let v2: vector<u8> = function_that_returns_vector();
+    assert!(&v1 == &v2, 42);
+    //     ^      ^
+    use_two_vectors(v1, v2);
+
+    let s1: Foo = function_that_returns_large_struct();
+    let s2: Foo = function_that_returns_large_struct();
+    assert!(&s1 == &s2, 42);
+    //     ^      ^
+    use_two_foos(s1, s2);
+  }
+}
+```
+
+`==` 本身的效率保持不变，但由于移除了 `copy` 操作，因此程序的整体效率得到了提升。

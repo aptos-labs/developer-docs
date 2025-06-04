@@ -1,0 +1,195 @@
+---
+title: "Maps"
+---
+
+# 概述
+
+框架内有多种不同的键值对映射（Map）实现，适用于不同的使用场景。
+我们将介绍它们的异同，以及如何选择合适的实现。
+
+## Aptos 区块链性能与 gas 成本考量
+
+Aptos 区块链的状态保存在 **storage slots**（存储槽）中。
+此外，交易的性能和 gas 成本在很大程度上受这些 **slots** 的读写影响。
+进一步细分 gas 成本，我们有：
+1. 存储费用，由 **slots** 的数量和大小决定（例如，写入新 **slot** 会产生最高的存储费用，而删除现有 **slot** 会获得最大退款）。
+2. IO gas 成本——通常较低——取决于读取和修改的资源数量和大小。
+3. 执行 gas 成本基于所需的计算量，通常与 IO gas 成本处于同一量级。
+
+修改同一 **slot** 的交易无法并发执行（有一些例外，如 aggregators 和作为同一 resource group 的资源），因为它们彼此冲突。
+
+一个有用的类比是将每个 **slot** 想象成磁盘上的一个文件，
+那么智能合约的性能就与以相同方式操作文件的程序相关。
+
+## 不同的 Map 实现
+
+| 实现方式            | 大小限制  | 存储结构 | 主要特性 |
+|--------------------|------------|------------------|--------------|
+| `OrderedMap`    | 有界（存储于单个 **slot**） | 完全存储在包含它的资源内 | 支持有序访问（front/back, prev/next），实现为有序向量，但由于内部优化，操作实际上为 O(log(n)) |
+| `Table`         | 无界   | 每个 (key, value) 存储在单独的 **slot** | 支持基本操作，如 `add`、`remove`、`contains`，但**不支持遍历**，且**无法销毁**；适用于大/无限制的键值对及高并发需求 |
+| `TableWithLength` | 无界  | 与 `Table` 相同 | `Table` 的变体，增加了长度跟踪，新增 `length`、`empty` 和 `destroy_empty` 方法；添加或移除元素**不可并发**，但修改现有元素可以。|
+| `BigOrderedMap` | 无界 | 将多个键组合到单个 **slot**，初始存储于包含它的资源内，随着增长动态扩展到多个 **slot** | 实现为 B+ 树；对非相邻键**可并发**；支持有序访问（front/back, prev/next）；可配置节点容量以平衡存储与性能 |
+
+注意：
+- `SimpleMap` 已弃用，被 `OrderedMap` 取代。
+- `SmartTable` 已弃用，被 `BigOrderedMap` 取代。
+
+#### 性能对比
+
+我们在小规模下测量了性能，统计了在不同规模的 map 中执行一次 `insert` + `remove` 操作所需的微秒数。
+
+| 元素数量 | OrderedMap | BigOrderedMap max_degree>10000 | BigOrderedMap max_degree=16 |
+|--------------|------------|---------------------------|-----------------------------|
+| 10 | 65 | 123 | 123 |
+| 100 | 85 | 146 | 455 |
+| 1000 | 105 | 168 | 567 |
+| 10000 | 142 | 210 | 656 |
+
+可以看到，当两者都在单个 **slot** 内时，`BigOrderedMap` 相比 `OrderedMap` 的开销约为 1.5-2 倍。
+因此，当数据是否会超出单个 **slot** 存储上限不确定时，通常可以选择 `BigOrderedMap`。
+
+## 常见 Map 操作
+
+上述大多数 Map 支持相同的一组函数（具体签名和限制请参见对应实现）：
+
+#### 创建 Map
+
+- `new<K, V>(): Self`：创建一个空的 map
+
+#### 销毁 Map
+
+- `destroy_empty<K, V>(self: Self<K, V>)`：销毁空 map。（`Table` **不支持**）
+- `destroy<K, V>(self: Self<K, V>, dk: |K|, dv: |V|)`：销毁带有指定销毁函数的 map。（`Table` 和 `TableWithLength` **不支持**）
+
+#### 管理条目
+
+- `add<K, V>(self: &mut Self<K, V>, key: K, value: V)`：向 map 添加键值对。
+- `remove<K, V>(self: &mut Self<K, V>, key: K): V`：移除并返回指定键的值。
+- `upsert<K, V>(self: &mut Self<K, V>, key: K, value: V): Option<V>`：插入或更新键值对。
+- `add_all<K, V>(self: &mut Self<K, V>, keys: vector<K>, values: vector<V>)`：批量添加键值对。（`Table` 和 `TableWithLength` **不支持**）
+
+#### 获取条目
+
+- `contains<K, V>(self: &Self<K, V>, key: &K): bool`：检查 map 是否包含指定键。
+- `borrow<K, V>(self: &Self<K, V>, key: &K): &V`：返回指定键对应值的不可变引用。
+- `borrow_mut<K: drop, V>(self: &mut Self<K, V>, key: K): &mut V`：返回指定键对应值的可变引用。
+  （`BigOrderedMap` 仅当值类型为静态常量大小时支持 `borrow_mut`，否则请使用 `remove()` 和 `add()` 组合）
+
+#### 有序相关函数
+
+这些函数仅由 `OrderedMap` 和 `BigOrderedMap` 实现。
+
+- `borrow_front<K, V>(self: &Self<K, V>): (&K, &V)`
+- `borrow_back<K, V>(self: &Self<K, V>): (&K, &V)`
+- `pop_front<K, V>(self: &mut Self<K, V>): (K, V)`
+- `pop_back<K, V>(self: &mut Self<K, V>): (K, V)`
+- `prev_key<K: copy, V>(self: &Self<K, V>, key: &K): Option<K>`
+- `next_key<K: copy, V>(self: &Self<K, V>, key: &K): Option<K>`
+
+#### 工具函数
+
+- `length<K, V>(self: &Self<K, V>): u64`：返回 map 中的条目数。（`Table` 不支持）
+
+#### 遍历函数
+
+这些函数 `Table` 和 `TableWithLength` 未实现。
+
+- `keys<K: copy, V>(self: &Self<K, V>): vector<K>`
+- `values<K, V: copy>(self: &Self<K, V>): vector<V>`
+- `to_vec_pair<K, V>(self: Self<K, V>): (vector<K>, vector<V>)`
+- `for_each_ref<K, V>(self: &Self<K, V>, f: |&K, &V|)`
+
+- `to_ordered_map<K, V>(self: &BigOrderedMap<K, V>): OrderedMap<K, V>`：将 `BigOrderedMap` 转换为 `OrderedMap`
+
+## 示例用法
+
+### 创建和使用 OrderedMap
+
+```move filename="map_usage.move"
+module 0x42::map_usage {
+    use aptos_framework::ordered_map;
+
+    public entry fun main() {
+        let map = ordered_map::new<u64, u64>();
+        map.add(1, 100);
+        map.add(2, 200);
+
+        let length = map.length();
+        assert!(length == 2, 0);
+
+        let value1 = map.borrow(&1);
+        assert!(*value1 == 100, 0);
+
+        let value2 = map.borrow(&2);
+        assert!(*value2 == 200, 0);
+
+        let removed_value = map.remove(&1);
+        assert!(removed_value == 100, 0);
+
+        map.destroy_empty();
+    }
+}
+```
+
+## `BigOrderedMap` 额外细节
+
+其当前实现为 B+ 树，因其最适合链上存储布局——主要成本来自加载和写入存储项，且无法部分读写。
+
+该实现有一些特性，使其在多种场景下非常通用和实用：
+
+- 当元素较少时，全部存储在包含它的资源内，性能与 OrderedMap 相当，随着元素增多会动态扩展到多个资源
+- 降低冲突：对键空间不同部分的修改通常可并发进行，并可通过参数调节并发性与大小的平衡
+- 所有操作都有性能上限（执行时间、执行和 IO gas 消耗），可安全用于多种场景。
+  - 需要注意的是可退款的存储费。默认情况下，若操作导致 map 扩展到更多资源，则需为其支付存储费。此实现支持预付存储槽并在增删元素时复用，从而实现完全可预测的总 gas 费用。
+- 只要键/值在配置的大小限制内，插入操作绝不会不可预期地失败，map 会自动管理最大 **slot** 大小限制。
+
+### `BigOrderedMap` 结构
+
+`BigOrderedMap` 表现为一棵树，内部节点将"键空间"划分为各自的范围，叶节点存储实际的键值对。
+内部有 `inner_max_degree` 表示内部节点最大子节点数，`leaf_max_degree` 表示叶节点最大键值对数。
+
+#### 创建 `BigOrderedMap`
+
+由于其布局影响可插入内容和性能，有几种创建和配置方式：
+
+- `new<K, V>(): Self<K, V>`：返回默认配置的新 `BigOrderedMap`。仅允许常量大小类型。对于变长类型，需用其他构造函数，显式选择自动或指定度数。
+- `new_with_type_size_hints<K, V>(avg_key_bytes: u64, max_key_bytes: u64, avg_value_bytes: u64, max_value_bytes: u64): Self<K, V>`：返回针对给定平均/最大键值大小优化的 map，保证可容纳最大元素。
+- `new_with_config<K, V>(inner_max_degree: u16, leaf_max_degree: u16, reuse_slots: bool): Self<K, V>`：返回指定最大度数的新 `BigOrderedMap`（内部/叶节点最大子节点数）。若传入 0，则根据首个键值大小动态计算，最大支持 100 倍大小。
+  若非 0，则所有元素大小必须满足：
+  - `key_size * inner_max_degree <= MAX_NODE_BYTES`
+  - `entry_size * leaf_max_degree <= MAX_NODE_BYTES`
+
+  `reuse_slots` 表示移除元素时不释放存储槽并返还退款。
+  配合 `allocate_spare_slots`，可预分配存储槽，使插入操作 gas 成本可预测。
+  （否则，扩展新节点的插入操作成本会显著高于其他操作）
+
+## 源码链接
+
+- [ordered_map.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/datastructures/ordered_map.move)
+- [table.move](https://github.com/aptos-labs/aptos-core/blob/6f5872b567075fe3615e1363d35f89dc5eb45b0d/aptos-move/framework/aptos-stdlib/sources/table.move)
+- [table_with_length.move](https://github.com/aptos-labs/aptos-core/blob/6f5872b567075fe3615e1363d35f89dc5eb45b0d/aptos-move/framework/aptos-stdlib/sources/table.move)
+- [big_ordered_map.move](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/datastructures/big_ordered_map.move)
+
+## （已弃用）SmartTable 额外细节
+
+Smart Table 是一种基于线性哈希的可扩展哈希表实现。
+该数据结构通过线性哈希优化存储和性能，线性哈希每次只拆分一个桶，而不是桶数量翻倍，从而避免了不可预期的 gas 成本。
+遗憾的是，其实现导致每次添加/移除都产生冲突，使相关交易完全串行化。
+Smart Table 使用 SipHash 进行更快的哈希计算并容忍冲突。但这也意味着冲突是可预测的，如果终端用户可控插入的键，可能导致大量冲突集中在单个桶中。
+
+### SmartTable 结构
+
+`SmartTable` 结构体旨在高效处理动态数据：
+
+- `buckets`：一个带长度的 table，存储条目向量。
+- `num_buckets`：当前桶数量。
+- `level`：表示 `num_buckets` 的位数。
+- `size`：表中总条目数。
+- `split_load_threshold`：触发桶拆分的负载阈值百分比。
+- `target_bucket_size`：每个桶的目标大小（非强制）。
+
+### SmartTable 使用示例
+
+- [Move Spiders Smart Table](https://movespiders.com/courses/modules/datastructures/lessonId/7)
+- [Move Spiders Querying Smart Table via FullNode APIs](https://movespiders.com/courses/modules/datastructures/lessonId/9)
+- [Move Spiders Querying Smart Table via View Function](https://movespiders.com/courses/modules/datastructures/lessonId/10) 

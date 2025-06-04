@@ -1,0 +1,247 @@
+---
+title: "密码学"
+---
+import {Callout} from "nextra/components";
+
+# Move 中的密码学
+
+密码学在确保区块链系统中数据的安全性、完整性、机密性和不可变性方面起着至关重要的作用。Move 的 Aptos 适配器为开发者提供了一系列密码学原语以满足这一需求。本文档深入探讨了 Move 在 Aptos 上提供的密码学功能，并阐明了其设计背后的原则。
+
+## 密码学原语
+
+通过 Aptos 适配器，Move 包含了几种基本的密码学工具：
+
+1. [密码学哈希函数](#cryptographic-hash-functions) – 从可变大小的输入数据生成固定大小输出（哈希）的算法。支持的函数包括 SHA2-256、SHA3-256、Keccak256 和 Blake2b-256。
+2. [数字签名验证](#digital-signature-verification) – 用于签署消息以确保其完整性、验证其发送者、确保不可否认性或其组合的算法。支持的签名方案包括 Ed25519、ECDSA 和 BLS。
+3. [椭圆曲线算术](#elliptic-curve-arithmetic) – 椭圆曲线是高级密码学原语的构建块之一，如数字签名、公钥加密或可验证的秘密共享。支持的曲线包括 Ristretto255 和 BLS12-381。
+4. [零知识证明 (ZKP)](#building-powerful-cryptographic-applications) – 这些密码学技术使一方能够证明关系 $R(x; w)$ 在公共声明 $x$ 上成立，而不泄露使其成立的秘密见证 $w$。目前，我们支持 Groth16 ZKP 验证和 Bulletproofs ZK 范围证明验证。
+
+Aptos 密码学扩展在 Move 中的设计和集成由三个基本原则指导：
+
+1. **经济的 Gas 使用** – 通过将关键原语实现为 [Move 原生函数](book/functions.mdx#native-functions)，努力为 Move 开发者最小化 gas 成本。例如，参见 [BLS 签名在 BLS12-381 椭圆曲线上的模块](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381.move)。
+2. **类型安全的 API** – 确保 API 抵抗常见错误，类型安全性增强了代码可靠性并促进了高效的开发过程。有关示例，请参见 [Ed25519 签名模块](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ed25519.move)。
+3. **开发者赋能** – 在原生函数不可用的情况下，我们赋能开发者在抽象的密码学构建块（如有限域和阿贝尔群）之上构建自己的密码学原语。有关更多见解，请参阅 [`aptos_std::crypto_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/crypto_algebra.move) 模块。
+
+继续阅读以深入了解这些扩展背后的一些复杂性，以及它们赋能的应用范围。要全面了解此主题，请参阅 [密码学 Move 模块代码](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/framework/aptos-stdlib/sources/cryptography)。
+
+## 密码学哈希函数
+
+开发者现在可以通过 [`aptos_std::aptos_hash`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/hash.move) 模块在 Move 中使用更多的密码学哈希函数：
+
+| 哈希函数 | 哈希大小（位） | 对 1KiB 进行哈希的成本（内部 gas 单位） | 抗碰撞安全性（位） |
+| ------------- | ---------------- | --------------------------------------------- | ------------------------------------ |
+| Keccak256     | 256              | 1,001,600                                     | 128                                  |
+| SHA2-256      | 256              | 1,084,000                                     | 128                                  |
+| SHA2-512      | 512              | 1,293,600                                     | 256                                  |
+| SHA3-256      | 256              | 1,001,600                                     | 128                                  |
+| SHA3-512      | 512              | 1,114,000                                     | 256                                  |
+| RIPEMD160     | 160              | 1,084,000                                     | 80 (**弱**)                        |
+| Blake2b-256   | 256              | 342,200                                       | 128                                  |
+
+所有哈希函数具有相同的安全属性（例如，单向性、抗碰撞性等），但它们的安全级别不同。
+
+<Callout type="warning">
+RIPEMD160 由于其 80 位的安全级别，应避免作为抗碰撞函数使用。它主要是为了向后兼容的原因而支持：例如，比特币地址推导依赖于 RIPEMD160。
+</Callout>
+
+其中一些函数可用于与其他链的互操作性（例如，通过 [`aptos_std::aptos_hash::keccak256`](https://github.com/aptos-labs/aptos-core/blob/137acee4c6dddb1c86398dce25b041d78a3028d3/aptos-move/framework/aptos-stdlib/sources/hash.move#L35) 验证以太坊 Merkle 证明）。
+其他函数具有较低的 gas 成本，例如 [`aptos_std::aptos_hash::blake2b_256`](https://github.com/aptos-labs/aptos-core/blob/137acee4c6dddb1c86398dce25b041d78a3028d3/aptos-move/framework/aptos-stdlib/sources/hash.move#L69)。
+一般来说，更广泛的哈希函数种类为开发者在安全性和与其他链下密码系统的互操作性方面提供了更多自由。
+
+## 数字签名验证
+
+开发者现在可以在 Move 中使用 _类型安全_ 的 API 来验证多种数字签名：
+
+| 签名方案                                                                                                                                           | 曲线         | 签名大小（字节） | 公钥大小（字节） | 可变性 | 假设 | 优点          | 缺点                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------- | --------------- | ------------ | ----------- | ------------- | ------------------- |
+| [ECDSA](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/secp256k1.move)                          | secp256k1     | 64                | 64              | 是          | GGM         | 广泛采用 | 安全性证明      |
+| [Ed25519](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ed25519.move)                          | Edwards 25519 | 64                | 32              | 否           | DLA, ROM    | 快速          | 细节问题          |
+| [MultiEd25519](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/multi_ed25519.move)               | Edwards 25519 | $4 + t \cdot 64$  | $n \cdot 32$    | 否           | DLA, ROM    | 易于采用 | 大签名大小     |
+| [MinPK BLS](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381.move)                       | BLS12-381     | 96                | 48              | 否           | CDH, ROM    | 多功能     | 验证较慢 |
+| [MinSig BLS](https://github.com/aptos-labs/aptos-core/blob/7d4fb98c6604c67e526a96f55668e7add7aaebf6/aptos-move/move-examples/drand/sources/drand.move#L57) | BLS12-381     | 48                | 96              | 否           | CDH, ROM    | 多功能     | 验证较慢 |
+
+<Callout type="info">
+
+- CDH 代表 _"计算 Diffie-Hellman 假设"_
+- DLA 代表 _"离散对数假设"_
+- GGM 代表 _"通用群模型"_
+- ROM 代表 _"随机预言机模型"_
+</Callout>
+
+上述数字签名模块可用于构建基于智能合约的钱包、安全的空投领取机制或任何基于数字签名的 dapp 访问控制机制。
+
+在 dapp 中选择合适的签名方案可能取决于许多因素：
+
+1. **向后兼容性**
+   - 如果 dapp 的用户群主要使用特定的签名机制，支持该机制将有助于过渡和采用的便利性。
+     - 示例：如果用户主要使用 Ed25519 签名，则成为一个合乎逻辑的选择。
+2. **实现的简易性**
+   - 虽然理论上可行，但复杂的协议在实践中可能难以实现。
+     - 示例：尽管 Ed25519 的 $t$-out-of-$n$ 阈值协议存在，但其在签名者一侧的复杂性可能会推动开发者选择 MultiEd25519，因为其签名实现更为简单。
+3. **效率**
+   - 根据 dapp 的要求，您可能会优先考虑效率的某一方面。
+     - 签名大小与公钥大小：某些应用可能优先考虑较小的签名占用，而其他应用可能强调紧凑的公钥。
+     - 签名时间与验证时间：对于某些 dapp，签名速度可能更为重要，而对于其他 dapp，快速的签名验证可能是优先事项。
+4. **安全分析**
+   - 考虑签名方案的基础假设和潜在漏洞是至关重要的。
+     - 示例：ECDSA 的安全性在强假设下得到证明，如通用群模型 (GGM)。
+     - 可变性问题：某些签名方案容易受到可变性影响，其中有效签名 $ $ 可以被篡改为不同但仍然有效的签名 $ $，用于相同的消息 $m$。
+5. **多功能性**
+   - 签名方案的适应性和灵活性是需要考虑的重要因素，以便您能够正确满足 dapp 的密码学需求。
+     - 示例：$t$-out-of-$n$ 阈值 BLS 签名非常容易实现。
+
+<Callout type="warning">
+尽管其设计谨慎且原则性强[^ed25519]，Ed25519 存在已知的实现细节问题。例如，不同的实现可能在签名的有效性上容易产生分歧，尤其是在批量验证时[^devalence]$^,$[^eddsa]。
+</Callout>
+
+<Callout type="info">
+我们的 [`aptos_std::bls12381`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381.move) 模块支持 [MinPK BLS](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#name-variants) 的单个签名、多重签名、聚合签名和阈值签名的验证。
+</Callout>
+
+## 椭圆曲线算术
+
+虽然 [哈希函数](#cryptographic-hash-functions) 和 [数字签名](#digital-signature-verification) 模块应为大多数应用提供足够的功能，但某些应用将需要更强大的密码学。
+通常，此类应用的开发者需要等待其所需的密码学功能在 [Aptos Move 框架](../../network/blockchain/move.mdx) 中作为 [Move 原生函数](book/functions.mdx#native-functions) 高效实现。
+相反，我们公开了基本的构建块，开发者可以使用这些构建块直接在 Move 语言中实现自己的密码学原语，并且做到 **高效**。
+
+具体来说，我们目前公开了两个流行的椭圆曲线群及其相关有限域的低级算术操作：
+
+1.  Ristretto255，通过 [`aptos_std::ristretto255`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255.move)
+2.  BLS12-381，通过 [`aptos_std::crypto_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/crypto_algebra.move)
+    和 [`aptos_std::bls12381_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381_algebra.move)
+
+这些模块支持低级操作，例如：
+
+- 椭圆曲线点的标量乘法
+- 多标量乘法 (MSMs)
+- 配对
+- 标量加法、乘法、求逆
+- 哈希到标量或点
+- 以及更多
+
+可以在其上构建的强大应用示例包括：
+
+1.  **有效性汇总** – 请参阅 [`groth16` zkSNARK 验证器示例](#groth16-zksnark-verifier)。
+2.  **基于随机性的游戏** – 请参阅 [`drand` 验证器示例](#verifying-randomness-from-the-drand-beacon)。
+3.  **隐私保护应用** – 请参阅 [`veiled_coin` 示例](#veiled-coins)。
+
+### Ristretto255 算术
+
+[`aptos_std::ristretto255`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255.move) 模块提供了对流行的 [Ristretto255 曲线](https://ristretto.group/) 上的椭圆曲线算术的支持。
+Ristretto255 的主要优势之一是它是一个素数阶群（与 Edwards 25519 曲线不同），这消除了在其上构建的高级密码系统中的小子群攻击。
+此外，Ristretto255 的序列化是规范的，反序列化仅接受规范编码，这消除了高级协议中的可变性问题。
+
+此模块已被证明对实现多种密码学原语有用：
+
+1.  **零知识 $\Sigma$ 协议** – 请参阅 [`veiled_coin` 示例](#veiled-coins)。
+2.  **ElGamal** 加密 – 请参阅 [`aptos_std::ristretto255_elgamal`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_elgamal.move)
+3.  **Pedersen** 承诺 – 请参阅 [`aptos_std::ristretto255_pedersen`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_pedersen.move)
+4.  **Bulletproofs** ZK 范围证明[^bulletproofs] – 请参阅 [`aptos_std::ristretto255_bulletproofs`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/ristretto255_bulletproofs.move)
+
+需要关于在 `ristretto255` 上构建密码系统的想法吗？
+您可以轻松构建的一个流行原语是 [schnorrkel](https://github.com/w3f/schnorrkel) 签名方案，它是 Ristretto255 群上 Schnorr 签名的强化版本。
+
+### 通用椭圆曲线算术
+
+比一条曲线更好的是？更多的曲线！
+
+[`aptos_std::crypto_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/crypto_algebra.move) 提供了对 **任何** 支持的椭圆曲线，包括配对友好曲线的椭圆曲线算术操作。
+因此，Move 开发者可以在 **任何** 当前或将来支持的曲线上通用地实现密码系统。
+与在代码中固定特定曲线（例如，通过针对 [Ristretto255 模块](#ristretto255-arithmetic) 实现）相比，这种方法提供了更大的灵活性，并降低了迁移到不同曲线时的开发时间。
+
+尽管目前 `crypto_algebra` 模块仅支持 BLS12-381 曲线上的算术（通过在 [`aptos_std::bls12381_algebra`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-stdlib/sources/cryptography/bls12381_algebra.move) 中声明的标记类型），但未来将支持更多曲线（例如，BN254、Ristretto255、BLS12-377、BW6-761、secp256k1、secp256r1）。
+
+例如，Move 开发者可以通过在其实现中使用 [类型参数](book/functions.mdx#type-parameters) 为曲线类型，通用地在 **任何** 曲线上实现流行的 Boneh-Lynn-Shacham (BLS) 签名方案：
+
+```rust
+use std::option;
+use aptos_std::crypto_algebra::{eq, pairing, one, deserialize, hash_to};
+
+/// 示例 BLS 签名验证函数，适用于任何配对友好
+/// 群三元组 `Gr1`、`Gr2`、`GrT`，其中签名在 `Gr1` 中，公钥在 `Gr2` 中。
+/// 点使用 `FormatG1` 和 `FormatG2` 格式序列化，哈希
+/// 方法是 `HashMethod`。
+///
+/// 警告：此示例类型不安全，可能不适合生产代码。
+public fun bls_verify_sig<Gr1, Gr2, GrT, FormatG1, FormatG2, HashMethod>(
+    dst:        vector<u8>,
+    signature:  vector<u8>,
+    message:    vector<u8>,
+    public_key: vector<u8>): bool
+{
+    let sig  = option::extract(&mut deserialize<Gr1, FormatG1>(&signature));
+    let pk   = option::extract(&mut deserialize<Gr2, FormatG2>(&public_key));
+    let hash = hash_to<Gr1, HashMethod>(&dst, &message);
+
+    // 检查 $e(H(m), pk) = e(sig, g_2)$，其中 $g_2$ 生成 $ $
+    eq(
+        &pairing<Gr1, Gr2, GrT>(&hash, &pk),
+        &pairing<Gr1, Gr2, GrT>(&sig, &one<Gr2>())
+    )
+}
+```
+
+使用上面的 `bls_verify_sig` _通用_ 函数，开发者可以在 **任何** 支持的（配对友好）曲线上验证 BLS 签名。
+例如，可以通过在调用上述函数时使用正确的 BLS12-381 标记类型作为其类型参数来验证 [MinSig BLS](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05#name-variants) 签名：
+
+```rust
+use aptos_std::bls12381_algebra::{
+    G1, G2, Gt, FormatG1Compr, FormatG2Compr, HashG1XmdSha256SswuRo
+};
+
+// 如果 MinSig BLS 签名在 BLS12-381 曲线上验证失败，则中止并返回代码 1。
+assert(
+    bls_verify_sig<G1, G2, Gt, FormatG1Compr, FormatG2Compr, HashG1XmdSha256SswuRo>(
+        dst, signature, message, public_key
+    ),
+    1
+);
+```
+
+有关 `crypto_algebra` 模块的更多用例，请查看一些 Move 示例：
+
+1. [验证 Groth16 zkSNARK 证明](#groth16-zksnark-verifier) 在 **任何** 曲线上
+2. [验证 `drand` 信标的随机性](#verifying-randomness-from-the-drand-beacon)
+
+## 构建强大的密码学应用
+
+### Veiled coins
+
+[`veiled_coin` 示例](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-experimental/sources/veiled_coin/) 演示了如何使用 [上述 Ristretto255 模块](#ristretto255-arithmetic) 为硬币余额和交易添加合理的机密性层。
+
+具体来说，用户可以 **隐藏** 他们的余额，使其对所有人，包括验证者，保持隐藏。
+此外，用户可以发送 **隐藏交易**，隐藏交易金额，使其对所有人，包括验证者，保持隐藏。
+一个重要的警告是，隐藏交易 **不** 隐藏发送者或接收者的身份。
+
+<Callout type="error">
+此模块是教育性的。它 **不是** 生产就绪的。使用它可能导致资金损失。
+</Callout>
+
+### Groth16 zkSNARK 验证器
+
+[`groth16` 示例](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/move-examples/groth16_example/sources/groth16.move) 演示了如何验证 Groth16 zkSNARK 证明[^groth16]，这是最短、最快验证的通用零知识证明。
+重要的是，如上所述 [通用椭圆曲线算术](#generic-elliptic-curve-arithmetic)，此实现在 **任何** 曲线上是 _通用_ 的，使 Move 开发者能够非常容易地将其与他们喜欢的（支持的）曲线一起使用。
+
+<Callout type="warn">
+此代码尚未经过第三方组织的审计。如果在生产系统中使用，请自行承担风险。
+</Callout>
+
+### 验证 `drand` 信标的随机性
+
+[`drand` 示例](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/drand/sources) 显示了如何验证来自 [drand](https://drand.love) 随机信标的公共随机性。
+此随机性可用于游戏或任何其他基于机会的智能合约。
+我们在 [`lottery.move`](https://github.com/aptos-labs/aptos-core/tree/main/aptos-move/move-examples/drand/sources/lottery.move) 中给出了一个基于 `drand` 随机性的简单彩票示例。
+
+<Callout type="warn">
+此代码尚未经过第三方组织的审计。如果在生产系统中使用，请自行承担风险。
+</Callout>
+
+可以在 `drand` 上构建的另一个应用是时间锁加密[^tlock]，它允许用户加密信息，使其只能在未来的区块中解密。
+我们目前没有实现，但鼓励读者编写一个！
+
+[^bulletproofs]: _bulletproofs:_ **Bulletproofs: Short Proofs for Confidential Transactions and More**; by B. Bünz and J. Bootle and D. Boneh and A. Poelstra and P. Wuille and G. Maxwell; in 2018 IEEE Symposium on Security and Privacy
+[^devalence]: _devalence:_ **It's 255:19AM. Do you know what your validation criteria are?**, by Henry de Valence, [https://hdevalence.ca/blog/2020-10-04-its-25519am](https://hdevalence.ca/blog/2020-10-04-its-25519am)
+[^ed25519]: _ed25519:_ **Ed25519: high-speed high-security signatures**, by Daniel J. Bernstein, Niels Duif, Tanja Lange, Peter Schwabe, Bo-Yin Yang, [https://ed25519.cr.yp.to/](https://ed25519.cr.yp.to/)
+[^eddsa]: _eddsa:_ **Taming the Many EdDSAs**, by Konstantinos Chalkias, François Garillot, Valeria Nikolaenko, in SSR 2020, [https://dl.acm.org/doi/abs/10.1007/978-3-030-64357-7_4](https://dl.acm.org/doi/abs/10.1007/978-3-030-64357-7_4)
+[^groth16]: _groth16:_ **On the Size of Pairing-Based Non-interactive Arguments**; by Groth, Jens; in EUROCRYPT 2016
+[^tlock]: _tlock:_ **tlock: Practical Timelock Encryption from Threshold BLS**; by Nicolas Gailly and Kelsey Melissaris and Yolan Romailler; [https://eprint.iacr.org/2023/189](https://eprint.iacr.org/2023/189) 

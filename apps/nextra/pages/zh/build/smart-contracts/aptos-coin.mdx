@@ -1,0 +1,302 @@
+---
+title: "Aptos 代币标准 (旧版)"
+---
+
+import { Callout } from "nextra/components";
+
+# Aptos 代币标准 (旧版)
+
+[Coin](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/sources/coin.move)
+为简单可互换代币（或称为硬币）提供了一个类型安全的标准框架。
+
+<Callout type="info">
+  Coin 存储在 `0x1::coin` 中。
+</Callout>
+
+## 结构体
+
+### 可复用性
+
+Move 语言中定义的代币结构如下：
+
+```move
+module 0x1::coin {
+  struct Coin<phantom CoinType> has store {
+    /// 该地址拥有的代币数量。
+    value: u64,
+  }
+}
+```
+
+Coin 使用 `CoinType` 来支持不同代币对 Coin 框架的复用。例如，`Coin<A>` 和 `Coin<B>` 是两种不同的代币。
+
+### 全局存储
+
+Coin 还支持在全局存储中保存代币的资源：
+
+```move
+module 0x1::coin {
+  struct CoinStore<phantom CoinType> has key {
+    coin: Coin<CoinType>,
+    frozen: bool,
+    deposit_events: EventHandle<DepositEvent>,
+    withdraw_events: EventHandle<WithdrawEvent>,
+  }
+}
+```
+
+代币信息或元数据存储在代币创建者账户下的全局存储中：
+
+```move
+module 0x1::coin {
+  struct CoinInfo<phantom CoinType> has key {
+    name: string::String,
+    /// 代币符号，通常是名称的缩写版本。
+    /// 例如，新加坡元的符号是 SGD。
+    symbol: string::String,
+    /// 用于用户显示的小数位数。
+    /// 例如，如果 `decimals` 为 `2`，则 `505` 个代币应显示为 `5.05` (`505 / 10 ** 2`)。
+    decimals: u8,
+    /// 该代币类型的总供应量。
+    supply: Option<OptionalAggregator>,
+  }
+}
+```
+
+## 基础功能
+
+Coin 为创建和管理代币的用户以及使用代币的用户提供了基础功能。
+
+### 创建者
+
+代币创建者和管理者可以：
+
+- 初始化代币并设置其元数据和供应量监控
+- 铸造和销毁代币
+- 从 `CoinStore` 中销毁代币
+- 冻结 `CoinStore` 的存取功能
+
+### 用户
+
+代币用户可以：
+
+- 合并两个相同类型的 Coin 结构体
+- 从 Coin 结构体中提取值到新的 Coin 结构体
+- 向 `CoinStore` 存取代币并触发相应事件
+- 允许用户在其账户中注册 `CoinStore<CoinType>` 来处理代币
+
+### Coin 模块关键结构体
+
+以下表格描述了结构体级别的字段。完整列表请参见
+[Aptos 框架](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/overview.md)
+中的 [`coin`](https://github.com/aptos-labs/aptos-core/blob/main/aptos-move/framework/aptos-framework/doc/coin.md) 部分。
+
+##### [`Coin`](https://github.com/aptos-labs/aptos-core/blob/744c2def47cddced878fda9bbd5633022fdb083a/aptos-move/framework/aptos-framework/sources/coin.move#L68)
+
+| 字段     | 类型 | 描述                          |
+| -------- | ---- | ----------------------------- |
+| `value`  | u64  | 代币数量，例如：1000000000    |
+
+##### [`CoinInfo`](https://github.com/aptos-labs/aptos-core/blob/744c2def47cddced878fda9bbd5633022fdb083a/aptos-move/framework/aptos-framework/sources/coin.move#L92)
+
+| 字段        | 类型                             | 描述                                                                                                                      |
+| ----------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `name`      | String                           | 代币名称，例如：Aptos Coin                                                                                               |
+| `symbol`    | String                           | 代币符号，例如：APT                                                                                                      |
+| `decimals`  | u8                               | 决定代币值的显示方式；例如 APT 的小数位是 8，因此 100000000 显示为 1 APT                                                 |
+| `supply`    | Option&lt;OptionalAggregator&gt; | option::some(optional_aggregator::new(MAX_U128, parallelizable))                                                        |
+
+### 创建新的 CoinType
+
+代币创建者可以向链上账户发布一个新模块，该模块定义了一个结构体来表示新的 `CoinType`。然后，代币创建者将从该账户调用 `coin:initialize<CoinType>` 来注册这个有效的代币，并接收返回的结构体以便调用铸造和销毁代币以及冻结 `CoinStore` 的函数。创建者需要将这些结构体存储在全局存储中以管理代币的使用。
+
+```move
+module 0x1::coin {
+  public fun initialize<CoinType>(
+    account: &signer,
+    name: string::String,
+    symbol: string::String,
+    decimals: u8,
+    monitor_supply: bool,
+  ): (BurnCapability<CoinType>, FreezeCapability<CoinType>, MintCapability<CoinType>) {
+    // ...
+  }
+}
+```
+
+创建者有机会定义代币的名称、符号、小数位数以及是否监控代币总供应量。以下规则适用：
+
+- 上述前三个参数（`name`、`symbol`、`decimals`）仅为元数据，对链上应用没有功能性影响。某些应用可能使用 decimal 来表示单个代币与分数代币的等价关系。
+- 供应监控（`monitor_supply`）有助于追踪流通中的代币总量。但由于并行执行器的工作原理，启用此选项将阻止铸币和销毁操作的任何并行执行。如果代币需要频繁铸造或销毁，建议禁用 `monitor_supply`。
+
+### 铸造代币
+
+如果创建者或管理者想要铸造代币，必须获取 `initialize` 函数生成的 `MintCapability` 引用，并调用：
+
+```move
+module 0x1::coin {
+  public fun mint<CoinType>(
+    amount: u64,
+    _cap: &MintCapability<CoinType>,
+  ): Coin<CoinType> acquires CoinInfo {
+    // ...
+  }
+}
+```
+
+这将生成一个新的 Coin 结构体，其值由 `amount` 参数决定。如果启用了供应量追踪，总供应量也会相应调整。
+
+### 销毁代币
+
+如果创建者或管理者想要销毁代币，必须获取 `initialize` 函数生成的 `BurnCapability` 引用，并调用：
+
+```move
+module 0x1::coin {
+  public fun burn<CoinType>(
+    coin: Coin<CoinType>,
+    _cap: &BurnCapability<CoinType>,
+  ) acquires CoinInfo {
+    // ...
+  }
+}
+```
+
+创建者或管理者也可以直接从 `CoinStore` 销毁代币：
+
+```move
+module 0x1::coin {
+  public fun burn_from<CoinType>(
+    account_addr: address,
+    amount: u64,
+    burn_cap: &BurnCapability<CoinType>,
+  ) acquires CoinInfo, CoinStore {
+   // ...
+  }
+}
+```
+
+<Callout type="info">
+  ### burn 与 burn_from 的区别
+  `burn` 函数会销毁代币中存储的全部价值，而 `burn_from` 仅从 `CoinStore` 中销毁指定数量的价值。如果启用了供应量追踪，总供应量也会相应调整。
+
+  从账户销毁代币不会触发 `WithdrawEvent`，这与 `withdraw` 函数的行为不同。
+</Callout>
+
+### 冻结账户
+
+如果创建者或管理者想要冻结特定账户的 `CoinStore`，必须获取 `initialize` 函数生成的 `FreezeCapability` 引用，并调用：
+
+```move
+module 0x1::coin {
+  public entry fun freeze_coin_store<CoinType>(
+    account_addr: address,
+    _freeze_cap: &FreezeCapability<CoinType>,
+  ) acquires CoinStore {
+    // ...
+  }
+}
+```
+
+### 合并代币
+
+可以通过调用以下函数将两个相同类型的代币合并为一个代表两者价值总和的 Coin 结构体：
+
+```move
+module 0x1::coin {
+  public fun merge<CoinType>(
+    dst_coin: &mut Coin<CoinType>,
+    source_coin: Coin<CoinType>,
+  ) {
+    // ...
+  }
+}
+```
+
+### 提取代币
+
+可以通过调用以下方法从现有代币中扣除一定值来创建新代币：
+
+```move
+module 0x1::coin {
+  public fun extract<CoinType>(
+		coin: &mut Coin<CoinType>,
+		amount: u64,
+  ): Coin<CoinType> {
+    // ...
+  }
+}
+```
+
+### 从 CoinStore 提取代币
+
+`CoinStore`的持有者可以通过调用以下方法提取指定值的代币：
+
+```move
+module 0x1::coin {
+  public fun withdraw<CoinType>(
+    account: &signer,
+    amount: u64,
+  ): Coin<CoinType> acquires CoinStore {
+    // ...
+  }
+}
+```
+
+<Callout type="info">
+  该函数会触发一个 `WithdrawEvent` 事件。
+</Callout>
+
+### 存入代币至 CoinStore
+
+任何实体都可以通过调用以下方法将代币存入账户的 `CoinStore`：
+
+```move
+module 0x1::coin {
+  public fun deposit<CoinType>(
+		account_addr: address,
+		coin: Coin<CoinType>,
+  ) acquires CoinStore {
+    // ...
+  }
+}
+```
+
+<Callout type="info">
+  该函数会触发一个 `DepositEvent` 事件。
+</Callout>
+
+### 转账代币
+
+`CoinStore`的持有者可以通过调用以下方法直接将代币从其账户转账至另一个账户的 `CoinStore`：
+
+```move
+module 0x1::coin {
+  public entry fun transfer<CoinType>(
+    from: &signer,
+    to: address,
+    amount: u64,
+  ) acquires CoinStore {
+    // ...
+  }
+}
+```
+
+<Callout type="info">
+  该操作会在各自的 `CoinStore` 上分别触发 `WithdrawEvent` 和 `DepositEvent` 事件。
+</Callout>
+
+## 事件
+
+```move
+module 0x1::coin {
+  struct DepositEvent has drop, store {
+    amount: u64,
+  }
+}
+``````move
+module 0x1::coin {
+  struct WithdrawEvent has drop, store {
+    amount: u64,
+  }
+}
+```

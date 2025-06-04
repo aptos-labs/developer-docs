@@ -1,146 +1,115 @@
 export default {
   SUMMARY: {
-    title: "Summary",
-    href: "/en/build/smart-contracts/book/summary",
+    title: "Summary | 概要",
   },
   "move-2": {
-    title: "Move 2 Release Notes",
-    href: "/en/build/smart-contracts/book/move-2",
+    title: "Move 2 Release Notes | Move 2 版本说明",
   },
   "---getting-started---": {
     type: "separator",
-    title: "Getting Started",
+    title: "Getting Started | 入门",
   },
   "modules-and-scripts": {
-    title: "Modules and Scripts",
-    href: "/en/build/smart-contracts/book/modules-and-scripts",
+    title: "Modules and Scripts | 模块与脚本",
   },
   "move-tutorial": {
-    title: "Move Tutorial",
-    href: "/en/build/smart-contracts/book/move-tutorial",
+    title: "Move Tutorial | Move 教程",
   },
   "---primitive-types---": {
     type: "separator",
-    title: "Primitive Types",
+    title: "Primitive Types | 基本类型",
   },
   integers: {
-    title: "Integers",
-    href: "/en/build/smart-contracts/book/integers",
+    title: "Integers | 整数类型",
   },
   bool: {
-    title: "Bool",
-    href: "/en/build/smart-contracts/book/bool",
+    title: "Bool | 布尔类型",
   },
   address: {
-    title: "Address",
-    href: "/en/build/smart-contracts/book/address",
+    title: "Address | 地址类型",
   },
   vector: {
-    title: "Vector",
-    href: "/en/build/smart-contracts/book/vector",
+    title: "Vector | 向量类型",
   },
   signer: {
-    title: "Signer",
-    href: "/en/build/smart-contracts/book/signer",
+    title: "Signer | 签名者",
   },
   references: {
-    title: "References",
-    href: "/en/build/smart-contracts/book/references",
+    title: "References | 引用",
   },
   tuples: {
-    title: "Tuples and Unit",
-    href: "/en/build/smart-contracts/book/tuples",
+    title: "Tuples and Unit | 元组与单元类型",
   },
   "---basic-concepts---": {
     type: "separator",
-    title: "Basic Concepts",
+    title: "Basic Concepts | 基本概念",
   },
   variables: {
-    title: "Local Variables and Scopes",
-    href: "/en/build/smart-contracts/book/variables",
+    title: "Local Variables and Scopes | 局部变量与作用域",
   },
   equality: {
-    title: "Equality",
-    href: "/en/build/smart-contracts/book/equality",
+    title: "Equality | 相等性",
   },
   "abort-and-assert": {
-    title: "Abort and Assert",
-    href: "/en/build/smart-contracts/book/abort-and-assert",
+    title: "Abort and Assert | 中止与断言",
   },
   conditionals: {
-    title: "Conditionals",
-    href: "/en/build/smart-contracts/book/conditionals",
+    title: "Conditionals | 条件语句",
   },
   loops: {
-    title: "While, For, and Loop",
-    href: "/en/build/smart-contracts/book/loops",
+    title: "While, For, and Loop | 循环语句",
   },
   functions: {
-    title: "Functions",
-    href: "/en/build/smart-contracts/book/functions",
+    title: "Functions | 函数",
   },
   "structs-and-resources": {
-    title: "Structs and Resources",
-    href: "/en/build/smart-contracts/book/structs-and-resources",
+    title: "Structs and Resources | 结构体与资源",
   },
   enums: {
-    title: "Enum Types",
-    href: "/en/build/smart-contracts/book/enums",
+    title: "Enum Types | 枚举类型",
   },
   constants: {
-    title: "Constants",
-    href: "/en/build/smart-contracts/book/constants",
+    title: "Constants | 常量",
   },
   generics: {
-    title: "Generics",
-    href: "/en/build/smart-contracts/book/generics",
+    title: "Generics | 泛型",
   },
   abilities: {
-    title: "Type abilities",
-    href: "/en/build/smart-contracts/book/abilities",
+    title: "Type abilities | 类型能力",
   },
   uses: {
-    title: "Uses and Aliases",
-    href: "/en/build/smart-contracts/book/uses",
+    title: "Uses and Aliases | 用法与别名",
   },
   friends: {
-    title: "Friends",
-    href: "/en/build/smart-contracts/book/friends",
+    title: "Friends | 友元",
   },
   packages: {
-    title: "Packages",
-    href: "/en/build/smart-contracts/book/packages",
+    title: "Packages | 包",
   },
   "package-upgrades": {
-    title: "Package Upgrades",
-    href: "/en/build/smart-contracts/book/package-upgrades",
+    title: "Package Upgrades | 包升级",
   },
   "unit-testing": {
-    title: "Unit Tests",
-    href: "/en/build/smart-contracts/book/unit-testing",
+    title: "Unit Tests | 单元测试",
   },
   "---global-storage---": {
     type: "separator",
-    title: "Global Storage",
+    title: "Global Storage | 全局存储",
   },
   "global-storage-structure": {
-    title: "Global Storage Structure",
-    href: "/en/build/smart-contracts/book/global-storage-structure",
+    title: "Global Storage Structure | 全局存储结构",
   },
   "global-storage-operators": {
-    title: "Global Storage Operators",
-    href: "/en/build/smart-contracts/book/global-storage-operators",
+    title: "Global Storage Operators | 全局存储操作",
   },
   "---reference---": {
     type: "separator",
-    title: "Reference",
+    title: "Reference | 参考资料",
   },
   "standard-library": {
-    title: "Standard Library",
-    href: "/en/build/smart-contracts/book/standard-library",
+    title: "Standard Library | 标准库",
   },
   "coding-conventions": {
-    title: "Coding Conventions",
-    href: "/en/build/smart-contracts/book/coding-conventions",
+    title: "Coding Conventions | 编码规范",
   },
 };

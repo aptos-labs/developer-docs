@@ -1,0 +1,32 @@
+# 布尔类型
+
+`bool` 是 Move 语言中表示布尔值 `true` 和 `false` 的基本类型。
+
+## 字面量
+
+`bool` 类型的字面量只能是 `true` 或 `false`。
+
+## 操作
+
+### 逻辑运算
+
+`bool` 支持三种逻辑运算：
+
+| 语法                    | 描述                   | 等价表达式                                                   |
+| ------------------------- | ---------------------- | ----------------------------------------------------------- |
+| `&&`                      | 短路逻辑与             | `p && q` 等价于 `if (p) q else false`                       |
+| <code>&vert;&vert;</code> | 短路逻辑或             | <code>p &vert;&vert; q</code> 等价于 `if (p) true else q`   |
+| `!`                       | 逻辑非                 | `!p` 等价于 `if (p) false else true`                        |
+
+### 控制流
+
+`bool` 值被用于 Move 的多种控制流结构中：
+
+- [`if (bool) { ... }`](conditionals.mdx)
+- [`while (bool) { .. }`](loops.mdx)
+- [`assert!(bool, u64)`](abort-and-assert.mdx)
+
+## 所有权
+
+与语言内置的其他标量值一样，布尔值也是隐式可复制的，
+这意味着它们无需像[`copy`](variables.mdx#移动--move--与复制--copy-)这样的显式指令即可被复制。
