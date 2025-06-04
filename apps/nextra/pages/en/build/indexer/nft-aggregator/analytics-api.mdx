@@ -138,3 +138,17 @@ curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/list_by_sale
 ```bash
 curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/list_by_floor_price?limit=10&offset=0&time_period=1d"
 ```
+
+---
+
+### **Get Number of Unique Token Holders**
+
+- **GET** `/nft/collection/unique_holders_count`
+- **Parameters:**
+  - `collection_id` *(string, required)*
+- **Description:** Returns the number of unique wallet addresses currently holding at least one token from the specified collection. Only current holders (amount > 0) are counted.
+- **Example:**
+
+```bash
+curl "https://api.mainnet.aptoslabs.com/v1/analytics/nft/collection/unique_holders_count?collection_id=<collection_id>"
+```
