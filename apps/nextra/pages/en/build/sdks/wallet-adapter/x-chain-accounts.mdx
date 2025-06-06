@@ -86,11 +86,24 @@ import { setupAutomaticSolanaWalletDerivation } from "@aptos-labs/derived-wallet
 
 setupAutomaticSolanaWalletDerivation({ defaultNetwork: Network.TESTNET }); // this is the Aptos network your dapp is working with
 
-.....
+...
 
 <AptosWalletAdapterProvider
  dappConfig={{
     network: Network.TESTNET,
+  }}
+>
+  {children}
+<AptosWalletAdapterProvider/>
+```
+
+### Set `crossChainWallets` dapp config prop to `true` fot the `AptosWalletAdapterProvider`
+
+```tsx filename="WalletProvider.tsx"
+<AptosWalletAdapterProvider
+ dappConfig={{
+    network: Network.TESTNET,
+    crossChainWallets: true,
   }}
 >
   {children}
@@ -136,11 +149,24 @@ import { setupAutomaticEthereumWalletDerivation } from "@aptos-labs/derived-wall
 
 setupAutomaticEthereumWalletDerivation({ defaultNetwork: Network.TESTNET }); // this is the Aptos network your dapp is working with
 
-.....
+...
 
 <AptosWalletAdapterProvider
  dappConfig={{
     network: Network.TESTNET,
+  }}
+>
+  {children}
+<AptosWalletAdapterProvider/>
+```
+
+### Set `crossChainWallets` dapp config prop to `true` fot the `AptosWalletAdapterProvider`
+
+```tsx filename="WalletProvider.tsx"
+<AptosWalletAdapterProvider
+ dappConfig={{
+    network: Network.TESTNET,
+    crossChainWallets: true,
   }}
 >
   {children}
