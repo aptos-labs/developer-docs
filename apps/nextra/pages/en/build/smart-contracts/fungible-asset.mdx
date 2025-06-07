@@ -86,7 +86,7 @@ Note: All `Ref`s must be generated when the Object is created as that is the onl
 To generate an Object with all FA permissions, you could deploy a contract like this:
 
 ```move filename="example.move"
-module my_addr::fungible_asset_example {
+module my_addr::my_fungible_asset_example {
     use aptos_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata, FungibleAsset};
     use aptos_framework::object::{Self, Object};
     use aptos_framework::primary_fungible_store;
@@ -99,7 +99,7 @@ module my_addr::fungible_asset_example {
 
 	// Make sure the `signer` you pass in is an address you own.
 	// Otherwise you will lose access to the Fungible Asset after creation.
-  entry fun init_module(admin: &signer) {
+  entry fun initialize(admin: &signer) {
     // Creates a non-deletable object with a named address based on our ASSET_SYMBOL
     let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
 
@@ -290,18 +290,21 @@ module 0x1::dispatchable_fungible_asset {
 
 <Callout type="info">
 The `register_dispatch_functions` function takes `Option<FunctionInfo>` as input to specify whether to use custom or default logic for withdraw/deposit/balance operations. If `option::none()` is passed, the default logic is used.
+A `FunctionInfo` identifies the function to be used as a custom hook.
 The `constructor_ref` is a reference for the metadata object of your fungible asset.
 </Callout>
 
-To construct `FunctionInfo`, use:
+To construct a `FunctionInfo`, use either of:
 
 ```move filename="new_function_info"
-module 0x1::dispatchable_fungible_asset {
+module 0x1::function_info {
     public fun new_function_info(module_signer: &signer, module_name: String, function_name: String): FunctionInfo
+    // or if you do not have the signer:
+    public fun new_function_info_from_address(module_address: address, module_name: String, function_name: String): FunctionInfo
 }
 ```
 
-For security reasons, you need the signer of the module (the deployer or code owner) to create a FunctionInfo.
+The registration can look like this:
 
 ```move filename="example.move"
 module my_addr::my_fungible_asset_example {
@@ -309,12 +312,13 @@ module my_addr::my_fungible_asset_example {
     use aptos_framework::object;
     use aptos_framework::primary_fungible_store;
     use aptos_framework::dispatchable_fungible_asset;
+    use aptos_framework::function_info;
 
     fun create_fungible_asset(module_signer: &signer, /* ... */) {
         // Make the deposit override function info
-        let deposit_override = dispatchable_fungible_asset::new_function_info(
+        let deposit_override = function_info::new_function_info(
             module_signer,
-            string::utf8(b"example"),
+            string::utf8(b"my_fungible_asset_example"),
             string::utf8("deposit")
         );
 
