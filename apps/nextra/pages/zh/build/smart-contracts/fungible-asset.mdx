@@ -86,7 +86,7 @@ public fun create_primary_store_enabled_fungible_asset(
 要生成拥有全部 FA 权限的 Object，可以部署如下合约：
 
 ```move filename="example.move"
-module my_addr::fungible_asset_example {
+module my_addr::my_fungible_asset_example {
     use aptos_framework::fungible_asset::{Self, MintRef, TransferRef, BurnRef, Metadata, FungibleAsset};
     use aptos_framework::object::{Self, Object};
     use aptos_framework::primary_fungible_store;
@@ -99,7 +99,7 @@ module my_addr::fungible_asset_example {
 
 	// Make sure the `signer` you pass in is an address you own.
 	// Otherwise you will lose access to the Fungible Asset after creation.
-  entry fun init_module(admin: &signer) {
+  entry fun initialize(admin: &signer) {
     // Creates a non-deletable object with a named address based on our ASSET_SYMBOL
     let constructor_ref = &object::create_named_object(admin, ASSET_SYMBOL);
 
@@ -290,18 +290,21 @@ module 0x1::dispatchable_fungible_asset {
 
 <Callout type="info">
 `register_dispatch_functions` 接收 `Option<FunctionInfo>` 作为输入，用于指定提取/存入/余额操作是否使用自定义逻辑。传入 `option::none()` 时将使用默认逻辑。
+`FunctionInfo` 标识要用作自定义钩子的函数。
 `constructor_ref` 是你的同质化资产元数据对象的引用。
 </Callout>
 
 要构造 `FunctionInfo`，请使用：
 
 ```move filename="new_function_info"
-module 0x1::dispatchable_fungible_asset {
+module 0x1::function_info {
     public fun new_function_info(module_signer: &signer, module_name: String, function_name: String): FunctionInfo
+    // or if you do not have the signer:
+    public fun new_function_info_from_address(module_address: address, module_name: String, function_name: String): FunctionInfo
 }
 ```
 
-出于安全考虑，需由模块的 signer（部署者或代码所有者）来创建 FunctionInfo。
+注册过程如下:
 
 ```move filename="example.move"
 module my_addr::my_fungible_asset_example {
@@ -309,12 +312,13 @@ module my_addr::my_fungible_asset_example {
     use aptos_framework::object;
     use aptos_framework::primary_fungible_store;
     use aptos_framework::dispatchable_fungible_asset;
+    use aptos_framework::function_info;
 
     fun create_fungible_asset(module_signer: &signer, /* ... */) {
         // Make the deposit override function info
-        let deposit_override = dispatchable_fungible_asset::new_function_info(
+        let deposit_override = function_info::new_function_info(
             module_signer,
-            string::utf8(b"example"),
+            string::utf8(b"my_fungible_asset_example"),
             string::utf8("deposit")
         );
 
@@ -431,4 +435,4 @@ public fun paired_coin(metadata: Object<Metadata>): Option<TypeInfo>
         - 否则，尝试在同一地址获取 `ConcurrentFungibleBalance` 资源并查询余额。
         - 若两者均不存在，则该账户的 FA 余额为 0。
 
-**迁移后，同一操作可能会同时触发 coin 事件和 FA 事件，具体取决于用户是否已迁移。** 依赖事件的 Dapp 应相应更新业务逻辑。 
+**迁移后，同一操作可能会同时触发 coin 事件和 FA 事件，具体取决于用户是否已迁移。** 依赖事件的 Dapp 应相应更新业务逻辑。
