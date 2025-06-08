@@ -466,7 +466,7 @@ struct SignerCapabilityOfferProofChallenge has drop
 
 This struct stores the challenge message that should be signed by the source account, when the source account
 is delegating its rotation capability to the <code>recipient_address</code>.
-This V2 struct adds the <code><a href="chain_id.md#0x1_chain_id">chain_id</a></code> and <code>source_address</code> to the challenge message, which prevents replaying the challenge message.
+This V2 struct adds the <code><a href="../../aptos-stdlib/chain_id.md#0x1_chain_id">chain_id</a></code> and <code>source_address</code> to the challenge message, which prevents replaying the challenge message.
 
 ```move
 struct RotationCapabilityOfferProofChallengeV2 has drop
@@ -477,7 +477,7 @@ struct RotationCapabilityOfferProofChallengeV2 has drop
 
 <dl>
 <dt>
-<code><a href="chain_id.md#0x1_chain_id">chain_id</a>: u8</code>
+<code><a href="../../aptos-stdlib/chain_id.md#0x1_chain_id">chain_id</a>: u8</code>
 </dt>
 <dd>
 

@@ -7,7 +7,7 @@ import { Callout, Tabs, Steps } from "nextra/components";
 # X-Chain Accounts
 
 <Callout>
-  The feature is currently only available on devnet and is considered an alpha version; therefore, you can expect breaking changes.
+  The feature is currently only available on devnet and testnet and is considered an alpha version; therefore, you can expect breaking changes.
 </Callout>
 
 
@@ -60,10 +60,10 @@ Currently, the wallets that have been tested and support cross-chain accounts ar
 
 |          | Aptos Devnet | Aptos Testnet | Aptos Mainnet |
 |----------|--------------|---------------|---------------|
-| Phantom  | ✅           |                |
-| Solflare | ✅           |                |
-| Backpack | ✅           |                |
-| OKX      | ✅           |                |
+| Phantom  | ✅           | ✅             |               |
+| Solflare | ✅           | ✅             |               |
+| Backpack | ✅           | ✅             |               |
+| OKX      | ✅           | ✅             |               |
 
 
 Supporting x-chain accounts in a dApp requires only a 2-step installation process.
@@ -84,13 +84,26 @@ In the same file where you import the other wallets, such as `WalletProvider.tsx
 ```tsx filename="WalletProvider.tsx"
 import { setupAutomaticSolanaWalletDerivation } from "@aptos-labs/derived-wallet-solana";
 
-setupAutomaticSolanaWalletDerivation({ defaultNetwork: Network.DEVNET }); // this is the Aptos network your dapp is working with
+setupAutomaticSolanaWalletDerivation({ defaultNetwork: Network.TESTNET }); // this is the Aptos network your dapp is working with
 
-.....
+...
 
 <AptosWalletAdapterProvider
  dappConfig={{
-    network: Network.DEVNET,
+    network: Network.TESTNET,
+  }}
+>
+  {children}
+<AptosWalletAdapterProvider/>
+```
+
+### Set `crossChainWallets` dapp config prop to `true` fot the `AptosWalletAdapterProvider`
+
+```tsx filename="WalletProvider.tsx"
+<AptosWalletAdapterProvider
+ dappConfig={{
+    network: Network.TESTNET,
+    crossChainWallets: true,
   }}
 >
   {children}
@@ -108,12 +121,12 @@ Currently, the wallets that have been tested and support cross-chain accounts ar
 
 |          | Aptos Devnet | Aptos Testnet  | Aptos Mainnet |
 |----------|--------------|----------------|---------------|
-| Metamask | ✅           |                |
-| Phantom  | ✅           |                |
-| Coinbase | ✅           |                |
-| OKX      | ✅           |                |
-| Exodus   | ✅           |                |
-| Backpack | ✅           |                |
+| Metamask | ✅           | ✅              |
+| Phantom  | ✅           | ✅              |
+| Coinbase | ✅           | ✅              |
+| OKX      | ✅           | ✅              |
+| Exodus   | ✅           | ✅              |
+| Backpack | ✅           | ✅              |
 
 
 Supporting x-chain accounts in a dApp requires only a 2-step installation process.
@@ -134,13 +147,26 @@ In the same file where you import the other wallets, such as `WalletProvider.tsx
 ```tsx filename="WalletProvider.tsx"
 import { setupAutomaticEthereumWalletDerivation } from "@aptos-labs/derived-wallet-ethereum";
 
-setupAutomaticEthereumWalletDerivation({ defaultNetwork: Network.DEVNET }); // this is the Aptos network your dapp is working with
+setupAutomaticEthereumWalletDerivation({ defaultNetwork: Network.TESTNET }); // this is the Aptos network your dapp is working with
 
-.....
+...
 
 <AptosWalletAdapterProvider
  dappConfig={{
-    network: Network.DEVNET,
+    network: Network.TESTNET,
+  }}
+>
+  {children}
+<AptosWalletAdapterProvider/>
+```
+
+### Set `crossChainWallets` dapp config prop to `true` fot the `AptosWalletAdapterProvider`
+
+```tsx filename="WalletProvider.tsx"
+<AptosWalletAdapterProvider
+ dappConfig={{
+    network: Network.TESTNET,
+    crossChainWallets: true,
   }}
 >
   {children}
@@ -167,7 +193,7 @@ import { useWallet } from '@aptos-labs/wallet-adapter-react';
 import { Aptos, AptosConfig, Network, Ed25519PrivateKey, PrivateKey, PrivateKeyVariants, Account } from '@aptos-labs/ts-sdk';
 
 // Initialize an Aptos client
-const config = new AptosConfig({ network: Network.DEVNET });
+const config = new AptosConfig({ network: Network.TESTNET });
 const aptos = new Aptos(config);
 
 // Generate a sponsor account or use an existing account
