@@ -111,7 +111,7 @@ module 0x42::map_usage {
     use aptos_framework::ordered_map;
 
     public entry fun main() {
-        let map = ordeded_map::new<u64, u64>();
+        let map = ordered_map::new<u64, u64>();
         map.add(1, 100);
         map.add(2, 200);
 
