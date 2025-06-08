@@ -35,7 +35,7 @@ struct CustomCoinBox<phantom CoinType> has key {
 
 ## Define resources and objects
 
-All instances and resources are defined within a module that is stored at an address. For example `0x1234::coin::Coin<0x1234::coin::SomeCoin>` would be represented as:
+All instances and resources are defined within a module that is stored at an address. For example `0x1234::coin::CoinStore<0x1234::coin::SomeCoin>` would be represented as:
 
 ```move
 module 0x1234::coin {
@@ -47,7 +47,7 @@ module 0x1234::coin {
 }
 ```
 
-In this example, `0x1234` is the address, `coin` is the module, `Coin` is a struct that can be stored as a resource, and `SomeCoin` is a struct that is unlikely to ever be represented as an instance. The use of the phantom type allows for there to exist many distinct types of `CoinStore` resources with different `CoinType` parameters.
+In this example, `0x1234` is the address, `coin` is the module, `CoinStore` is a struct that can be stored as a resource, and `SomeCoin` is a struct that is unlikely to ever be represented as an instance. The use of the phantom type allows for there to exist many distinct types of `CoinStore` resources with different `CoinType` parameters.
 
 ## Permissions of Instances including Resources
 
