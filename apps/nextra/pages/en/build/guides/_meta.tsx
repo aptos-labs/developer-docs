@@ -53,4 +53,17 @@ export default {
   "system-integrators-guide": {
     title: "Applications",
   },
+  "---oracles---": {
+    type: "separator",
+    title: "Oracles",
+  },
+  pyth: {
+    title: "Pyth",
+  },
+  chainlink: {
+    title: "Chainlink",
+  },
+  switchboard: {
+    title: "Switchboard",
+  },
 };
