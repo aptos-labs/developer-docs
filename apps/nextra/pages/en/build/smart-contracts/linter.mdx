@@ -101,6 +101,27 @@ Checks for patterns where a variable or a field of a struct is assigned to itsel
 - `x = x;`
 - `a.x = a.x;`
 
+### `simpler_bool_expression`
+
+Checks for boolean patterns that can be simplified through different boolean algebra laws. Examples include:
+- Absorption law:
+  - `a && b || a` can be simplified to `a`
+  - `a || a && b` can be simplified to `a`
+- Idempotence:
+  - `a && a` can be simplified to `a`
+  - `a || a` can be simplified to `a`
+- Contradiction
+  - `a && !a` can be simplified to `false`
+  - `!a && a` can be simplified to `false`
+- Tautology:
+  - `a || !a` can be simplified to `true`
+  - `!a || a` can be simplified to `true`
+- Distributive law:
+  - `(a && b) || (a && c)` can be simplified to `a && (b || c)`
+  - `(a || b) && (a || c)` can be simplified to `a || (b && c)`
+
+Where `a`, `b` and `c` can either be simple or composed expressions.
+
 ### `simpler_numeric_expression`
 
 Checks for various patterns where a simpler numeric expression can be used instead. In all these cases, the code must already type check, and `x` can be any numeric expression.
