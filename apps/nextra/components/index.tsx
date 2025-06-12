@@ -10,3 +10,4 @@ export * from "./framework-reference";
 export * from "./media";
 export * from "./error";
 export * from "./move-reference";
+export * from "./chat-widget";
