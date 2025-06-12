@@ -17,6 +17,9 @@ Checks for expression patterns that look like a failed swap attempt and notifies
 - `a = b; b = a;` which can be correctly swapped with `(a, b) = (b, a);`
 - `a.x = b.x; b.x = a.x;` which can be correctly swapped with `(a.x, b.x) = (b.x, a.x);`
 
+### `assert_const`
+Checks for trivial assertions, i.e. `assert!(false)` and `assert!(true)`. The latter is equivalent to a no-op, so can be removed entirely, while the former can be replaced by an abort.
+
 ### `avoid_copy_on_identity_comparison`
 
 Checks for identity comparisons (`==` or `!=`) between copied values of type `vector` or `struct` (i.e., types for which copy can be expensive). It instead suggests to use reference-based identity comparison instead (i.e., use `&x == &y` instead of `x == y`, when the above mentioned conditions meet).
