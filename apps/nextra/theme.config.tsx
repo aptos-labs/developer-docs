@@ -3,6 +3,7 @@ import type { DocsThemeConfig } from "nextra-theme-docs";
 import { useConfig } from "nextra-theme-docs";
 import { useRouter } from "nextra/hooks";
 import { docsConfig, i18nConfig } from "@docs-config";
+import { ChatWidget } from "@components/chat-widget";
 
 interface FrontmatterConfig {
   description?: string;
@@ -266,6 +267,11 @@ const config: DocsThemeConfig = {
   },
   toc: {
     float: true,
+  },
+  navbar: {
+    extraContent: () => {
+      return <ChatWidget />;
+    },
   },
 };
 
