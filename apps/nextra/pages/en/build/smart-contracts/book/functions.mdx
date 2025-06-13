@@ -773,7 +773,7 @@ struct S has key {
 
 ### Operations on Functions
 
-A function value is evaluated by providing the corresponding number of parameters, similar as when calling a named function. During evaluation, the function value is *consumed*. Hence if the value needs to be evaluated multiple times, it's type must have the `copy` ability:
+A function value is evaluated by providing the corresponding number of parameters, similar as when calling a named function. During evaluation, the function value is *consumed*. Hence if the value needs to be evaluated multiple times, its type must have the `copy` ability:
 
 ```move
 let f: |u64|bool has copy = |x| x > 0;
