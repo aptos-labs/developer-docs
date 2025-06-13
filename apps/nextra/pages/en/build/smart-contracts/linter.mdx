@@ -12,10 +12,30 @@ If you find any issues, please submit [bugs and feedback](https://github.com/apt
 
 
 ## Lint Checks
+
+### `aborting_overflow_checks`
+
+Checks for patterns that look like overflow checks done in a C style:
+```move
+// Overflow check
+if (x > x + y) { 
+  abort 1;
+};
+
+// Underflow check
+if (x < x - y) { 
+  abort 1;
+};
+```
+This pattern in Move does not make sense, as it either aborts immediately or is always true/false. 
+
 ### `almost_swapped`
 Checks for expression patterns that look like a failed swap attempt and notifies the user. These patterns are likely erroneous code. This currently only detects simple access patterns such as assignments to a variable or a field of a struct. Examples include:
 - `a = b; b = a;` which can be correctly swapped with `(a, b) = (b, a);`
 - `a.x = b.x; b.x = a.x;` which can be correctly swapped with `(a.x, b.x) = (b.x, a.x);`
+
+### `assert_const`
+Checks for trivial assertions, i.e. `assert!(false)` and `assert!(true)`. The latter is equivalent to a no-op, so can be removed entirely, while the former can be replaced by an abort.
 
 ### `avoid_copy_on_identity_comparison`
 
@@ -38,6 +58,16 @@ Such code can usually be rewritten to hoist the block out and above the conditio
 It is a common Move pattern to provide inline specifications in conditions, especially loop invariants, which requires creating blocks in conditions. We exclude this pattern in the lint check to continue to allow for this specification pattern.
 
 Note that an `assert!` is translated to a conditional abort, so blocks in `assert!` condition also are reported by this lint.
+
+### `known_to_abort`
+
+Checks for expressions that will always abort at runtime due to known constant values that violate runtime constraints. This lint helps identify code that will deterministically fail before it reaches production.
+
+The following cases are detected:
+
+- **Bit shifts with excessive shift amounts**: `x << n` or `x >> n` where `n` is a constant that is greater than or equal to the bit width of `x`'s type. For example, `value << 64` when `value` is of type `u64` will always abort.
+- **Division or modulo by zero**: `x / 0` or `x % 0` operations will always abort at runtime.
+- **Out-of-range type casting**: `constant as type` where the `constant` value is outside the representable range of the target `type`. For example, `300 as u8` will abort since `u8` can only represent values 0-255.
 
 ### `needless_bool`
 
@@ -100,6 +130,27 @@ Checks for patterns where a variable or a field of a struct is assigned to itsel
 - `let x = x;`
 - `x = x;`
 - `a.x = a.x;`
+
+### `simpler_bool_expression`
+
+Checks for boolean patterns that can be simplified through different boolean algebra laws. Examples include:
+- Absorption law:
+  - `a && b || a` can be simplified to `a`
+  - `a || a && b` can be simplified to `a`
+- Idempotence:
+  - `a && a` can be simplified to `a`
+  - `a || a` can be simplified to `a`
+- Contradiction
+  - `a && !a` can be simplified to `false`
+  - `!a && a` can be simplified to `false`
+- Tautology:
+  - `a || !a` can be simplified to `true`
+  - `!a || a` can be simplified to `true`
+- Distributive law:
+  - `(a && b) || (a && c)` can be simplified to `a && (b || c)`
+  - `(a || b) && (a || c)` can be simplified to `a || (b && c)`
+
+Where `a`, `b` and `c` can either be simple or composed expressions.
 
 ### `simpler_numeric_expression`
 
