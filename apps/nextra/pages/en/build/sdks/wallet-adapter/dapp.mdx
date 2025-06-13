@@ -58,7 +58,7 @@ You can use any of the following optional fields.
 It is recommended to:
 
 1. Set `autoConnect` to `true`. 
-2. Include `plugins` for any wallets that are using the legacy standard.
+2. Set the `dappConfig` with the `network` property set to the network your dapp works with 
 
 | Field | Description | Example |
 | --- | --- | --- |
@@ -78,7 +78,6 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
 
   return (
     <AptosWalletAdapterProvider
-      optInWallets={['Petra']}
       autoConnect={true}
       dappConfig={{ network: Network.MAINNET }}
       onError={(error) => {
