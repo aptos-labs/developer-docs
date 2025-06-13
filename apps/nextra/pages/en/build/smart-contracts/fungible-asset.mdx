@@ -50,7 +50,7 @@ When you call these functions, they will return a `ConstructorRef`. `Ref`s allow
 Note that the `ConstructorRef` cannot be stored and is destroyed by the end of the transaction used to create this Object, so any `Ref`s must be generated during Object creation.
 </Callout>
 
-One use for the `ConstructorRef` is to generate the FA `Metadata` Object. The standard provides a generator function called `primary_fungible_store::create_primary_store_enabled_fungible_asset` which will allow your fungible asset to be transferred to any account. This method makes it so the primary `FungibleStore` for recipients is automatically created or re-used so you don’t need to create or index the store directly.
+One use for the `ConstructorRef` is to generate the FA `Metadata` Object. The standard provides a generator function called `primary_fungible_store::create_primary_store_enabled_fungible_asset` which will allow your fungible asset to be transferred to any account. This method makes it so the primary `FungibleStore` for recipients is automatically created or re-used so you don't need to create or index the store directly.
 
 This is what `create_primary_store_enabled_fungible_asset` looks like:
 
@@ -80,7 +80,7 @@ Once you have created the Metadata, you can also use the `ConstructorRef` to gen
 3. `BurnRef` offers the capability to burn or delete FA units.
 
 <Callout type="warning">
-Note: All `Ref`s must be generated when the Object is created as that is the only time you can generate an Object’s `ConstructorRef`.
+Note: All `Ref`s must be generated when the Object is created as that is the only time you can generate an Object's `ConstructorRef`.
 </Callout>
 
 To generate an Object with all FA permissions, you could deploy a contract like this:
@@ -437,3 +437,112 @@ To retrieve the balance of the `PrimaryFungibleStore` for a paired FA to an exis
         - If neither exist, the FA balance for this account is 0.
 
 **Post-migration, both coin events and FA events could be emitted for an activity, depending on whether the user has migrated or not.** Dapps relying on events should update their business logic accordingly.
+
+### Migration FAQs
+
+<details>
+<summary><span className="font-bold">What is the Aptos Fungible Asset (FA) standard?</span></summary>
+<div className="p-8">
+The FA standard introduces a new way to represent fungible tokens as [Move objects](https://aptos.dev/en/build/smart-contracts/objects), replacing the legacy Coin resource model. Fungible Assets are more composable and developer-friendly compared to legacy Coins.
+
+APT will be migrated starting on June 30, 2025.
+</div>
+</details>
+
+<details>
+<summary><span className="font-bold">How exactly does the new FA standard differ from legacy Coins?</span></summary>
+<div className="p-8">
+With legacy Coins, each account directly holds a `CoinStore\<CoinType>` resource that tracks balances (in u64), includes flags like "frozen," and emits basic events on deposits or withdrawals. Transfers, mints, and burns are performed via `0x1::coin` module functions.
+
+Under the FA Standard, token balances are held in FungibleStore objects (instead of each account directly holding a CoinStore resource). Each asset has metadata that defines its properties (name, symbol, etc.). For any account that owns that token, the balance lives in a FungibleStore object belonging to that account and linked to the Metadata object. 
+
+The primary way an account holds a fungible asset is via a primary fungible store; the address of this object is deterministically derived from the user's account address and the token's metadata address.
+
+FAs come in two flavors:
+
+1. **Vanilla FA**: Tokens that primarily manage simple balance updates.
+
+2. **Dispatchable FA (DFA)**: Tokens that embed custom Move logic automatically executed upon transfers.
+</div>
+</details>
+
+<details>
+<summary><span className="font-bold">How will this migration impact me?</span></summary>
+<div className="p-8">
+As an end user, you don't need to do anything. Your tokens remain safe, exactly where they should be in their new form. The migration does not affect ownership or usability in any way.
+
+If you're a developer, your existing smart contract code remains functional, but you should immediately start using the FA SDK for all new work. Existing coin API calls will continue working by silently routing to FA. After the migration, the coin module will be kept as it is, with minimal maintenance. Please note that you will no longer be able to look up coin balance by resource. Move to the `0x1::coin::balance` view function, or the balance REST API instead.
+</div>
+</details>
+
+<details>
+<summary><span className="font-bold">What is the migration timeline?</span></summary>
+<div className="p-8">
+All tokens on Aptos will begin migrating automatically from Coin v1 to the FA standard. 
+All the coins except APT will be migrated from June 23 to 30. APT will transition from June 30 to July 8, 2025.
+The process involves continuously running batched transactions until every valid CoinStore has been fully converted into the new FungibleStore.
+</div>
+</details>
+
+<details>
+<summary><span className="font-bold">Why is the upgrade to the Fungible Asset standard necessary?</span></summary>
+<div className="p-8">
+Short answer: It unlocks powerful functionalities that the legacy Coin module simply cannot support. 
+
+Modern DeFi and RWA apps increasingly demand sophisticated features like automated yield claims, custom fee structures, and built-in compliance checks. These are difficult to implement on legacy Coins. Attempting to bolt these capabilities onto the old standard rapidly creates composability issues, integration headaches and rising complexity.
+
+Beyond functionality, builders can also use a unified asset standard across all tokens, including stablecoins. Imagine designing a payment kiosk: if it accepts only digital payments, you avoid the complexity of cash slots, coin dispensers, and change mechanisms altogether. Similarly, adopting a single streamlined token standard reduces complexity in platform development. It improves developer productivity and delivers more consistent user experience.
+
+In short, the FA standard is clean and elegant. Developers can launch tokens that immediately integrate seamlessly across wallets, explorers, and DeFi applications from day one.
+</div>
+</details>
+
+<details>
+<summary><span className="font-bold">What are some new and unique functionalities I can build with Fungible Assets?</span></summary>
+<div className="p-8">
+Fungible Assets open the door to a range of advanced features that weren't possible with the legacy Coin model. Some notable capabilities include:
+
+- Tokens that automatically collect fees (like a percentage charge on transfers).
+
+- Interest-bearing tokens that accrue yield directly to the holders without manual claims.
+
+- Tokens with built-in vesting or time-locks that automatically release funds when certain conditions are met, a la escrow.
+
+- Tokens that dispense loyalty points on-chain when they're spent.
+
+- Tokens that can dynamically adjust supply; burning or minting based on usage patterns.
+
+The possibilities are endless.
+
+A great real-world example is xLPT from [Thala Labs](https://www.thalalabs.xyz/), which uses built-in DFA hooks to automate staking & unstaking LP tokens, updating positions and rewards automatically upon each transfer, without any user intervention.
+</div>
+</details>
+
+<details>
+<summary><span className="font-bold">We know there is always a paired FA of a coin type. How can we query the supply and balance of this asset after the migration?</span></summary>
+<div className="p-8">
+After the migration, querying resource `0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>` at account address will be unavailable. Instead, you can query the account balance by the following three ways:
+
+1. [Balance Node API](https://aptos.dev/en/build/apis/fullnode-rest-api-reference#tag/accounts/GET/accounts/%7Baddress%7D/balance/%7Basset_type%7D), the asset_type can be either coin_type, such as 0x1::aptos_coin::AptosCoin or FA metadata address such as 0xa, either way should return the same value.
+
+2. `#[view] function primary_fungible_store::balance<T: key>(account: address, metadata: Object<T>): u64`
+
+3. `#[view] function balance<CoinType>(owner: address): u64`. This method is deprecated and not applicable to pure FA tokens (e.g., USDt); it applies only to migrated coins such as APT. Due to its limitations and higher gas costs, it is not recommended.
+</div>
+</details>
+
+<details>
+<summary><span className="font-bold">Before migration, I could query all the assets a user has by getting all the resources at their address using API. How do I do it after migration?</span></summary>
+<div className="p-8">
+You can [use the Indexer API](https://aptos.dev/en/build/indexer/indexer-api/indexer-reference#current_fungible_asset_balances) to query all the fungible assets the user owns. 
+
+Querying raw resources to get the asset balance and types is not recommended and will not be well-supported by fullnode API.
+</div>
+</details>
+
+<details>
+<summary><span className="font-bold">What if I have more questions?</span></summary>
+<div className="p-8">
+Join the [Aptos Discord](https://discord.com/invite/aptosnetwork)! Aptos Labs engineers will be available throughout migration week to answer questions and offer support.
+</div>
+</details>
