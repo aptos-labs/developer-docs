@@ -48,6 +48,7 @@ jobs:
             --exclude '.*imageUrl.*'
             --exclude '^(file:|[./]).*\/network\/faucet.mdx$'
             --exclude '^https://x\.com/.*'
+            --exclude '^https://console.cloud.google.com/marketplace/product/bigquery-public-data/crypto-aptos-mainnet-us$'
             --accept '403,401,429'
             --retry-wait-time 1
             --max-retries 2
