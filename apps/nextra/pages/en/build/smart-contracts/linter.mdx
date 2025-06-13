@@ -12,6 +12,23 @@ If you find any issues, please submit [bugs and feedback](https://github.com/apt
 
 
 ## Lint Checks
+
+### `aborting_overflow_checks`
+
+Checks for patterns that look like overflow checks done in a C style:
+```move
+// Overflow check
+if (x > x + y) { 
+  abort 1;
+};
+
+// Underflow check
+if (x < x - y) { 
+  abort 1;
+};
+```
+This pattern in Move does not make sense, as it either aborts immediately or is always true/false. 
+
 ### `almost_swapped`
 Checks for expression patterns that look like a failed swap attempt and notifies the user. These patterns are likely erroneous code. This currently only detects simple access patterns such as assignments to a variable or a field of a struct. Examples include:
 - `a = b; b = a;` which can be correctly swapped with `(a, b) = (b, a);`
