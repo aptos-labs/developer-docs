@@ -157,7 +157,7 @@ You can also check if a user has a `ConfidentialAssetStore` for a specific token
 
 ```move filename="register_example.move"
 #[test_only]
-module confidential_asset_addr::register_example {
+module confidential_asset_example::register_example {
     /// ...
 
     fun register(bob: &signer, token: Object<Metadata>) {
@@ -170,10 +170,10 @@ module confidential_asset_addr::register_example {
 
         confidential_asset::register(bob, token, bob_ek);
 
-        print(&utf8(b"Bob's pending balance is a zero ciphertext:"));
+        print(&utf8(b"Bob's pending balance is zero:"));
         print(&confidential_asset::pending_balance(bob_addr, token));
 
-        print(&utf8(b"Bob's actual balance is a zero ciphertext:"));
+        print(&utf8(b"Bob's actual balance is zero:"));
         print(&confidential_asset::actual_balance(bob_addr, token));
 
         print(&utf8(b"Bob's encryption key is set:"));
@@ -203,7 +203,7 @@ However, tokens within the protocol become obfuscated through confidential trans
 
 ```move filename="deposit_example.move"
 #[test_only]
-module confidential_asset_addr::deposit_example {
+module confidential_asset_example::deposit_example {
     /// ...
 
     fun deposit(bob: &signer, alice: &signer, token: Object<Metadata>) {
@@ -216,7 +216,7 @@ module confidential_asset_addr::deposit_example {
 
         let bob_ek = twisted_elgamal::pubkey_to_bytes(&bob_ek);
         let alice_ek = twisted_elgamal::pubkey_to_bytes(&alice_ek);
-        
+
         confidential_asset::register(bob, token, bob_ek);
         confidential_asset::register(alice, token, alice_ek);
 
@@ -242,7 +242,7 @@ module confidential_asset_addr::deposit_example {
 
         // In real world, we would not be able to see the someone else's balance as it requires
         // the knowledge of the decryption key.
-        // The balance decryption requires solving the discrete logarithm problem, 
+        // The balance decryption requires solving the discrete logarithm problem,
         // so we just check if the passed amount is correct for simplicity.
         assert!(confidential_asset::verify_pending_balance(bob_addr, token, &bob_dk, bob_amount));
 
@@ -252,6 +252,7 @@ module confidential_asset_addr::deposit_example {
         assert!(confidential_asset::verify_pending_balance(alice_addr, token, &alice_dk, alice_amount));
     }
 }
+
 ```
 
 ### Rollover Pending Balance
@@ -278,7 +279,7 @@ It works with no additional proofs as this function utilizes properties of the [
 
 ```move filename="rollover_example.move"
 #[test_only]
-module confidential_asset_addr::rollover_example {
+module confidential_asset_example::rollover_example {
     /// ...
 
     fun rollover(bob: &signer, token: Object<Metadata>) {
@@ -290,7 +291,7 @@ module confidential_asset_addr::rollover_example {
         let bob_ek = twisted_elgamal::pubkey_to_bytes(&bob_ek);
 
         let bob_amount = 100;
-        
+
         confidential_asset::register(bob, token, bob_ek);
         confidential_asset::deposit(bob, token, bob_amount);
 
@@ -299,7 +300,7 @@ module confidential_asset_addr::rollover_example {
 
         print(&utf8(b"Bob's actual balance is zero:"));
         print(&confidential_asset::actual_balance(bob_addr, token));
-        
+
         assert!(confidential_asset::verify_pending_balance(bob_addr, token, &bob_dk, bob_amount));
         assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, 0));
 
@@ -310,7 +311,7 @@ module confidential_asset_addr::rollover_example {
 
         print(&utf8(b"Bob's pending balance is zero:"));
         print(&confidential_asset::pending_balance(bob_addr, token));
-        
+
         print(&utf8(b"Bob's actual balance is NOT zero:"));
         print(&confidential_asset::actual_balance(bob_addr, token));
 
@@ -328,7 +329,8 @@ public entry fun confidential_transfer(
     token: Object<Metadata>,
     to: address,
     new_balance: vector<u8>,
-    transfer_amount: vector<u8>,
+    sender_amount: vector<u8>,
+    recipient_amount: vector<u8>,
     auditor_eks: vector<u8>,
     auditor_amounts: vector<u8>,
     zkrp_new_balance: vector<u8>,
@@ -354,7 +356,7 @@ allowing the auditors to decrypt the transferred amount on their end.
 
 ```move filename="transfer_example.move"
 #[test_only]
-module confidential_asset_addr::transfer_example {
+module confidential_asset_example::transfer_example {
     /// ...
 
     fun transfer(bob: &signer, alice: &signer, token: Object<Metadata>) {
@@ -398,16 +400,21 @@ module confidential_asset_addr::transfer_example {
         print(&utf8(b"Alice's pending balance is zero"));
         assert!(confidential_asset::verify_pending_balance(alice_addr, token, &alice_dk, alice_current_amount));
 
-        let current_balance = confidential_balance::decompress_balance(&confidential_asset::actual_balance(bob_addr, token));
+        let current_balance = confidential_balance::decompress_balance(
+            &confidential_asset::actual_balance(bob_addr, token)
+        );
 
         let (
             proof,
             // New balance is the balance after the transfer encrypted with the sender's encryption key.
             // It will be set as the new actual balance for the sender.
             new_balance,
+            // Transfer amount encrypted with the sender's encryption key.
+            // Used for indexing purposes only.
+            sender_amount,
             // Transfer amount encrypted with the recipient's encryption key.
             // It will be Homomorphically added to the recipient's pending balance.
-            transfer_amount,
+            recipient_amount,
             // Transfer amount encrypted with the auditors' encryption keys.
             // It won't be stored on-chain, but an auditor can decrypt the transfer amount with its dk.
             auditor_amounts
@@ -432,7 +439,8 @@ module confidential_asset_addr::transfer_example {
             token,
             alice_addr,
             confidential_balance::balance_to_bytes(&new_balance),
-            confidential_balance::balance_to_bytes(&transfer_amount),
+            confidential_balance::balance_to_bytes(&sender_amount),
+            confidential_balance::balance_to_bytes(&recipient_amount),
             confidential_asset::serialize_auditor_eks(&auditor_eks),
             confidential_asset::serialize_auditor_amounts(&auditor_amounts),
             zkrp_new_balance,
@@ -481,7 +489,7 @@ This function enables users to release tokens while not revealing their remainin
 
 ```move filename="withdraw_example.move"
 #[test_only]
-module confidential_asset_addr::withdraw_example {
+module confidential_asset_example::withdraw_example {
     /// ...
 
     fun withdraw(bob: &signer, alice: &signer, token: Object<Metadata>) {
@@ -494,7 +502,7 @@ module confidential_asset_addr::withdraw_example {
 
         let bob_ek_bytes = twisted_elgamal::pubkey_to_bytes(&bob_ek);
         let alice_ek_bytes = twisted_elgamal::pubkey_to_bytes(&alice_ek);
-        
+
         confidential_asset::register(bob, token, bob_ek_bytes);
         confidential_asset::register(alice, token, alice_ek_bytes);
 
@@ -514,7 +522,9 @@ module confidential_asset_addr::withdraw_example {
         print(&utf8(b"Bob's actual balance before the withdrawal is 500"));
         assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, bob_current_amount));
 
-        let current_balance = confidential_balance::decompress_balance(&confidential_asset::actual_balance(bob_addr, token));
+        let current_balance = confidential_balance::decompress_balance(
+            &confidential_asset::actual_balance(bob_addr, token)
+        );
 
         let (proof, new_balance) = confidential_proof::prove_withdrawal(
             &bob_dk,
@@ -526,14 +536,22 @@ module confidential_asset_addr::withdraw_example {
 
         let new_balance = confidential_balance::balance_to_bytes(&new_balance);
         let (sigma_proof, zkrp_new_balance) = confidential_proof::serialize_withdrawal_proof(&proof);
-        
-        confidential_asset::withdraw_to(bob, token, alice_addr, transfer_amount, new_balance, zkrp_new_balance, sigma_proof);
-        
+
+        confidential_asset::withdraw_to(
+            bob,
+            token,
+            alice_addr,
+            transfer_amount,
+            new_balance,
+            zkrp_new_balance,
+            sigma_proof
+        );
+
         print(&utf8(b"Alice's FA balance after the withdrawal is 50:"));
         print(&primary_fungible_store::balance(alice_addr, token));
 
         assert!(primary_fungible_store::balance(alice_addr, token) == 50);
-        
+
         print(&utf8(b"Bob's actual balance after the withdrawal is 450"));
         assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, bob_new_amount));
     }
@@ -581,7 +599,7 @@ This prevents new transactions from being processed during the key rotation.
 
 ```move filename="rotate_example.move"
 #[test_only]
-module confidential_asset_addr::rotate_example {
+module confidential_asset_example::rotate_example {
     /// ...
 
     fun rotate(bob: &signer, token: Object<Metadata>) {
@@ -590,7 +608,7 @@ module confidential_asset_addr::rotate_example {
         // It's a test-only function, so we don't need to worry about the security of the keypair.
         let (bob_current_dk, bob_current_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
         let (bob_new_dk, bob_new_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
-        
+
         let bob_current_ek_bytes = twisted_elgamal::pubkey_to_bytes(&bob_current_ek);
         let bob_new_ek_bytes = twisted_elgamal::pubkey_to_bytes(&bob_new_ek);
 
@@ -601,13 +619,15 @@ module confidential_asset_addr::rotate_example {
 
         // We need to rollover the pending balance and freeze the token to prevent any new deposits being come.
         confidential_asset::rollover_pending_balance_and_freeze(bob, token);
-        
+
         print(&utf8(b"Bob's encryption key before the rotation:"));
         print(&confidential_asset::encryption_key(bob_addr, token));
 
         assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_current_dk, bob_amount));
 
-        let current_balance = confidential_balance::decompress_balance(&confidential_asset::actual_balance(bob_addr, token));
+        let current_balance = confidential_balance::decompress_balance(
+            &confidential_asset::actual_balance(bob_addr, token)
+        );
 
         let (proof, new_balance) = confidential_proof::prove_rotation(
             &bob_current_dk,
@@ -619,7 +639,7 @@ module confidential_asset_addr::rotate_example {
         );
 
         let (
-            sigma_proof, 
+            sigma_proof,
             zkrp_new_balance
         ) = confidential_proof::serialize_rotation_proof(&proof);
 
@@ -632,7 +652,7 @@ module confidential_asset_addr::rotate_example {
             zkrp_new_balance,
             sigma_proof
         );
-        
+
         print(&utf8(b"Bob's encryption key after the rotation:"));
         print(&confidential_asset::encryption_key(bob_addr, token));
 
@@ -671,7 +691,7 @@ All other functions, such as `withdraw` or `confidential_transfer`, handle norma
 
 ```move filename="normalize_example.move"
 #[test_only]
-module confidential_asset_addr::normalize_example {
+module confidential_asset_example::normalize_example {
     /// ...
 
     fun normalize(bob: &signer, token: Object<Metadata>) {
@@ -681,25 +701,27 @@ module confidential_asset_addr::normalize_example {
         let (bob_dk, bob_ek) = twisted_elgamal::generate_twisted_elgamal_keypair();
 
         let bob_ek_bytes = twisted_elgamal::pubkey_to_bytes(&bob_ek);
-        
+
         let bob_amount = 500;
 
         confidential_asset::register(bob, token, bob_ek_bytes);
         confidential_asset::deposit(bob, token, (bob_amount as u64));
 
-        // The rollover function is the only function that requires the actual balance to be normalized 
+        // The rollover function is the only function that requires the actual balance to be normalized
         // beforehand and leaves it unnormalized after execution, no matter what the pending balance was.
         confidential_asset::rollover_pending_balance(bob, token);
-        
+
         assert!(!confidential_asset::is_normalized(bob_addr, token));
 
         confidential_asset::deposit(bob, token, (bob_amount as u64));
 
-        // Before performing a second rollover, the actual balance must be normalized. 
+        // Before performing a second rollover, the actual balance must be normalized.
         // You will get an error if you try to rollover an unnormalized balance:
         // confidential_asset::rollover_pending_balance(bob, token);
 
-        let current_balance = confidential_balance::decompress_balance(&confidential_asset::actual_balance(bob_addr, token));
+        let current_balance = confidential_balance::decompress_balance(
+            &confidential_asset::actual_balance(bob_addr, token)
+        );
 
         let (
             proof,
@@ -724,9 +746,9 @@ module confidential_asset_addr::normalize_example {
         assert!(confidential_asset::is_normalized(bob_addr, token));
         assert!(confidential_asset::verify_actual_balance(bob_addr, token, &bob_dk, bob_amount));
 
-        // A rollover can be performed once the balance is normalized. 
-        // Note that functions like `withdraw` and `confidential_transfer` do not require the actual balance 
-        // to be normalized beforehand, as zk-proofs guarantee that the actual balance is normalized after 
+        // A rollover can be performed once the balance is normalized.
+        // Note that functions like `withdraw` and `confidential_transfer` do not require the actual balance
+        // to be normalized beforehand, as zk-proofs guarantee that the actual balance is normalized after
         // their execution.
         confidential_asset::rollover_pending_balance(bob, token);
     }
