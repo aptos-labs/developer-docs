@@ -95,7 +95,7 @@ CLI tutorial).
 Unlike [`account::rotate_authentication_key`], the
 [`account::rotate_authentication_key_call`] does _not_ require a signed
 [`account::RotationProofChallenge`]. This means that the operation is not proven
-in the sense the the private key from _after_ the operation has approved the
+in the sense the private key from _after_ the operation has approved the
 key rotation. Hence the [`account::OriginatingAddress`] table is _not_ updated
 for unproven key rotations, and there is thus no restriction on the number of
 accounts that can be authenticated with a given private key. Note that the
