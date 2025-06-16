@@ -15,7 +15,8 @@
     "start": "next start -p 3030",
     "types:check": "tsc --noEmit",
     "fmt": "prettier --write '**/*.(css|tsx|ts|jsx|js|cjs|mjs|json|md|html)'",
-    "lint": "prettier --check '**/*.(css|tsx|ts|jsx|js|cjs|mjs|json|md|html)'"
+    "lint": "prettier --check '**/*.(css|tsx|ts|jsx|js|cjs|mjs|json|md|html)",
+    "artifactregistry-login": "pnpm dlx google-artifactregistry-auth"
   },
   "dependencies": {
     "@aptos-internal/api-gateway-admin-api-client": "4.1.0",
