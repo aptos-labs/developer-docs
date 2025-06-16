@@ -60,13 +60,6 @@ export function ChatMessage({
                   </pre>
                 );
               },
-              p: ({ children }) => <p className="text-white">{children}</p>,
-              li: ({ children }) => <li className="text-white">{children}</li>,
-              a: ({ children, href }) => (
-                <a href={href} className="text-blue-400 hover:text-blue-300">
-                  {children}
-                </a>
-              ),
             }}
           >
             {message.content}

@@ -27,6 +27,7 @@ export interface ChatDialogProps extends ChatWidgetProps {
     photoURL?: string | null;
   } | null;
   onSignOut?: () => void;
+  isRateLimited?: boolean;
 }
 
 const IconComponent = ({
@@ -63,6 +64,7 @@ export function ChatDialog({
   onToggleFastMode,
   user,
   onSignOut,
+  isRateLimited = false,
 }: ChatDialogProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
@@ -155,23 +157,35 @@ export function ChatDialog({
             </div>
             <div className="flex items-center gap-4">
               {user ? (
+                <div className="flex items-center gap-3 border-r border-[#1F1F1F] pr-4">
+                  <span className="text-sm text-gray-300">
+                    {user.displayName || user.email}
+                  </span>
+                  {onSignOut && (
+                    <button
+                      onClick={onSignOut}
+                      className="rounded p-1.5 text-gray-400 hover:bg-[#1F1F1F] hover:text-white"
+                      title="Sign out"
+                    >
+                      <IconComponent icon={LogOut} className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              ) : null}
+
+              {/* Show sign in button if not logged in and not rate limited */}
+              {!user && !isRateLimited && (
+                <button
+                  onClick={onSignOut}
+                  className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+                >
+                  Sign in with Google
+                </button>
+              )}
+
+              {/* Always show New Chat and Delete Chat unless rate limited */}
+              {!isRateLimited && (
                 <>
-                  <div className="flex items-center gap-3 border-r border-[#1F1F1F] pr-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-300">
-                        {user.displayName || user.email}
-                      </span>
-                    </div>
-                    {onSignOut && (
-                      <button
-                        onClick={onSignOut}
-                        className="rounded p-1.5 text-gray-400 hover:bg-[#1F1F1F] hover:text-white"
-                        title="Sign out"
-                      >
-                        <IconComponent icon={LogOut} className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
                   <button
                     onClick={handleNewChat}
                     className="rounded-lg bg-white px-4 py-1.5 text-sm font-medium text-black hover:bg-gray-100"
@@ -190,7 +204,8 @@ export function ChatDialog({
                     </button>
                   )}
                 </>
-              ) : null}
+              )}
+
               <Dialog.Close className="rounded p-2 text-gray-400 hover:bg-[#1F1F1F] hover:text-white">
                 <IconComponent icon={X} className="h-5 w-5" />
               </Dialog.Close>
@@ -205,7 +220,7 @@ export function ChatDialog({
           {/* Main Content */}
           <div className="flex min-h-0 flex-1">
             {/* Sidebar */}
-            {showSidebar && user && (
+            {showSidebar && (!user || user) && !isRateLimited && (
               <ChatSidebar
                 chats={chats}
                 currentChatId={currentChatId || undefined}
@@ -224,12 +239,15 @@ export function ChatDialog({
             <div className="flex min-h-0 flex-1 flex-col bg-black">
               {/* Messages Area */}
               <div className="min-h-0 flex-1 overflow-hidden">
-                {!user ? (
+                {!user && isRateLimited ? (
                   <div className="flex h-full items-center justify-center">
                     <div className="text-center">
                       <h2 className="mb-4 text-xl font-semibold text-white">
-                        Sign in to Start Chatting
+                        Rate Limit Exceeded
                       </h2>
+                      <p className="mb-4 text-gray-300">
+                        Please sign in to continue using the chatbot.
+                      </p>
                       <button
                         onClick={onSignOut}
                         className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
@@ -248,12 +266,12 @@ export function ChatDialog({
                         {hasMoreMessages && (
                           <button
                             onClick={onLoadMore}
-                            className="text-sm text-gray-400 hover:text-white"
+                            className="mx-auto rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
                           >
-                            Load more
+                            Load more messages
                           </button>
                         )}
-                        {messages.map((message) => (
+                        {messages.map((message, index) => (
                           <ChatMessage
                             key={message.id}
                             message={message}
@@ -264,22 +282,27 @@ export function ChatDialog({
                             className={messageClassName}
                           />
                         ))}
-                        {(isLoading || isTyping) && (
-                          <div className="flex items-center text-gray-400">
-                            <div className="animate-pulse">...</div>
+                        {isTyping && (
+                          <div className="flex items-center gap-2 text-gray-400">
+                            <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400" />
+                            <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.2s]" />
+                            <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.4s]" />
                           </div>
                         )}
                       </div>
                     </ScrollArea.Viewport>
-                    <ScrollArea.Scrollbar orientation="vertical">
-                      <ScrollArea.Thumb className="z-50 w-1.5 rounded-full bg-gray-700" />
+                    <ScrollArea.Scrollbar
+                      orientation="vertical"
+                      className="flex w-2.5 touch-none select-none bg-transparent p-[2px]"
+                    >
+                      <ScrollArea.Thumb className="relative flex-1 rounded-full bg-gray-800" />
                     </ScrollArea.Scrollbar>
                   </ScrollArea.Root>
                 )}
               </div>
 
               {/* Input Area */}
-              {user && (
+              {(!user && !isRateLimited) || user ? (
                 <div
                   className="shrink-0 border-t border-[#1F1F1F] bg-[#0F0F0F] px-4"
                   style={{ height: "var(--footer-height)" }}
@@ -292,7 +315,7 @@ export function ChatDialog({
                     className="h-full py-3"
                   />
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         </Dialog.Content>

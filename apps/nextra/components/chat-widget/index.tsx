@@ -41,11 +41,15 @@ function ChatDialogContainer() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState(false);
 
   useEffect(() => {
     if (!auth) return;
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
+      if (user) {
+        setIsRateLimited(false);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -73,13 +77,26 @@ function ChatDialogContainer() {
     }
   };
 
+  const handleSendMessage = async (message: string) => {
+    try {
+      await sendMessage(message);
+    } catch (error: any) {
+      if (error?.response?.status === 429) {
+        setIsRateLimited(true);
+        setError("Rate limit exceeded. Please sign in to continue.");
+      } else {
+        setError("Failed to send message. Please try again.");
+      }
+    }
+  };
+
   return (
     <>
       <ChatDialog
         open={isOpen}
         onOpenChange={setIsOpen}
         messages={messages}
-        onSendMessage={sendMessage}
+        onSendMessage={handleSendMessage}
         isLoading={isLoading || isAuthenticating}
         isGenerating={isGenerating}
         isTyping={isTyping}
@@ -99,6 +116,7 @@ function ChatDialogContainer() {
         onToggleFastMode={setFastMode}
         user={user}
         onSignOut={handleSignInOrOut}
+        isRateLimited={isRateLimited}
       />
       {error && (
         <div className="fixed bottom-4 right-4 rounded-lg bg-red-500 px-4 py-2 text-white">
