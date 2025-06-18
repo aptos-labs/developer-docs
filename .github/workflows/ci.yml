@@ -5,8 +5,10 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
+
+permissions:
+  contents: read
+  id-token: write #required for GCP Workload Identity federation which we use to login into Google Artifact Registry
 
 jobs:
   lint:
@@ -14,13 +16,31 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9.15.1
+
       - uses: actions/setup-node@v4
         with:
           node-version: '23'
           cache: 'pnpm'
           registry-url: "https://registry.npmjs.org"
-      - run: pnpm install --frozen-lockfile
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+          create_credentials_file: true # This exports the GOOGLE_APPLICATION_CREDENTIALS env var which is commonly used by CLIs
+          project_id: aptos-registry
+
+      - name: Login to GCP Artifact Registry
+        run: pnpm artifactregistry-login
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.create_credentials_file.outputs.credentials_file }}
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
       - run: pnpm lint
