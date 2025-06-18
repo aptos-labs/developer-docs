@@ -16,6 +16,8 @@ import { ChatSidebar } from "./chat-sidebar";
 import type { ChatWidgetProps } from "@aptos-labs/ai-chatbot-client";
 import { useState, useRef, useEffect } from "react";
 import { cn } from "utils/cn";
+import Image from "next/image";
+import aptosLogo from "../../public/favicon/favicon.png";
 
 export interface ChatDialogProps extends ChatWidgetProps {
   open?: boolean;
@@ -96,21 +98,8 @@ export function ChatDialog({
       {showTrigger && (
         <Dialog.Trigger asChild>
           <button className="flex items-center gap-2 text-sm font-medium text-text-primary hover:text-text-link">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
-              />
-            </svg>
-            Chat with AI
+            <Image src={aptosLogo} alt="Aptos AI" className="h-4 w-4" />
+            AskAptos
           </button>
         </Dialog.Trigger>
       )}
@@ -139,7 +128,8 @@ export function ChatDialog({
           >
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Dialog.Title className="text-lg font-medium text-white">
+                <Dialog.Title className="flex items-center gap-2 text-lg font-medium text-white">
+                  <Image src={aptosLogo} alt="Aptos AI" className="h-5 w-5" />
                   Ask AI
                 </Dialog.Title>
                 {showSidebar && user && (
@@ -303,18 +293,41 @@ export function ChatDialog({
 
               {/* Input Area */}
               {(!user && !isRateLimited) || user ? (
-                <div
-                  className="shrink-0 border-t border-[#1F1F1F] bg-[#0F0F0F] px-4"
-                  style={{ height: "var(--footer-height)" }}
-                >
-                  <ChatInput
-                    ref={chatInputRef}
-                    onSend={onSendMessage}
-                    onStop={onStopGenerating}
-                    isLoading={isGenerating}
-                    className="h-full py-3"
-                  />
-                </div>
+                <>
+                  <div
+                    className="shrink-0 border-t border-[#1F1F1F] bg-[#0F0F0F] px-4"
+                    style={{ height: "var(--footer-height)" }}
+                  >
+                    <ChatInput
+                      ref={chatInputRef}
+                      onSend={onSendMessage}
+                      onStop={onStopGenerating}
+                      isLoading={isGenerating}
+                      className="h-full py-3"
+                    />
+                  </div>
+                  {/* Disclaimer */}
+                  <div className="text-center px-4 pb-2 text-xs text-gray-400 bg-[#0F0F0F]">
+                    By messaging AskAptos, you agree to our{" "}
+                    <a
+                      href="https://aptoslabs.com/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300"
+                    >
+                      Terms
+                    </a>{" "}
+                    and have read our{" "}
+                    <a
+                      href="https://aptoslabs.com/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300"
+                    >
+                      Privacy Policy
+                    </a>
+                  </div>
+                </>
               ) : null}
             </div>
           </div>

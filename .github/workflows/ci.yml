@@ -10,13 +10,6 @@ permissions:
   contents: read
   id-token: write #required for GCP Workload Identity federation which we use to login into Google Artifact Registry
 
-permissions:
-  contents: read
-  id-token: write #required for GCP Workload Identity federation which we use to login into Google Artifact Registry
-  issues: write
-  pull-requests: write
-  checks: write
-
 jobs:
   lint:
     runs-on: ubuntu-latest
