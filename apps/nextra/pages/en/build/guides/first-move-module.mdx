@@ -269,10 +269,10 @@ module my_first_module::message {
         debug::print(&message); // Print the message being set
 
         if (exists<MessageHolder>(account_addr)) {
-            debug::print(&b"Updating existing message"); // Print debug info
+            debug::print(&string::utf8(b"Updating existing message")); // Print debug info
             move_from<MessageHolder>(account_addr);
         } else {
-            debug::print(&b"Creating new message"); // Print when creating new
+            debug::print(&string::utf8(b"Creating new message")); // Print when creating new
         };
 
         move_to(account, MessageHolder { message });
@@ -327,7 +327,7 @@ INCLUDING DEPENDENCY MoveStdlib
 BUILDING my_first_module
 Running Move unit tests
 [debug] "Hello World"
-[debug] 0x4372656174696e67206e6577206d657373616765
+[debug] "Creating new message"
 [debug] "Hello World"
 [ PASS    ] 0x9ec1cfa30b885a5c9d595f32f3381ec16d208734913b587be9e210f60be9f9ba::message_tests::test_set_and_get_message
 Test result: OK. Total tests: 1; passed: 1; failed: 0
