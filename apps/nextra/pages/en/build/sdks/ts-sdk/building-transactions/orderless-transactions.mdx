@@ -1,0 +1,95 @@
+---
+title: "Orderless Transactions"
+---
+
+import { Callout } from 'nextra/components'
+
+# Orderless Transactions
+
+Orderless transactions allow you to create transactions that do not specify a
+order of execution between them. This is particularly useful
+in scenarios where multiple machines need to sign a transaction, but the order
+in which they sign does not affect the outcome of the transaction or matter to
+the creator.
+
+## Building Orderless Transactions
+
+Creating and executing a multi-agent transaction follows a similar flow to the
+[simple transaction flow](../building-transactions.mdx), and the
+[multi-agent transaction flow](./multi-agent-transactions.mdx).
+
+<Callout type="info">
+  Instead of providing a `sequenceNumber` (or no sequence number at all), a
+  `Replay Protection Nonce` is used to ensure that the transaction is unique and
+  cannot be replayed (i.e., executed multiple times with the same nonce).
+</Callout>
+
+For example, to create a single signer transaction that uses orderless transactions,
+specify the `nonce` in the `build.simple` method like so:
+
+```ts filename="build-a-transaction.ts"
+const transaction = await aptos.transaction.build.simple({
+  sender: sender.accountAddress,
+  data: {
+	  // All transactions on Aptos are implemented via smart contracts.
+	  function: "0x1::aptos_account::transfer",
+	  functionArguments: [destination.accountAddress, 100],
+  },
+  options: {
+    replayProtectionNonce: 12345, // This is the nonce that will be used to ensure the transaction is unique.
+  }
+});
+```
+
+Similarly, if you are building a multi-agent transaction, you can specify the
+`replayProtectionNonce` in the `build.multiAgent` method:
+
+```ts filename="build-a-transaction.ts"
+const transaction = await aptos.transaction.build.multiAgent({
+  sender: sender.accountAddress,
+  secondarySignerAddresses: [bob.accountAddress], // List of secondary signers
+  data: {
+	  // All transactions on Aptos are implemented via smart contracts.
+	  function: "0x1::aptos_account::transfer",
+	  functionArguments: [destination.accountAddress, 100],
+  },
+  options: {
+    replayProtectionNonce: 12345, // This is the nonce that will be used to ensure the transaction is unique.
+  }
+});
+```
+
+And the same if you are building a sponsored transaction, you can specify the
+`replayProtectionNonce` in the `build.multiAgent` method:
+```ts filename="build-a-transaction.ts"
+const transaction = await aptos.transaction.build.multiAgent({
+  sender: sender.accountAddress,
+  withFeePayer: true, // This indicates that the transaction will be sponsored.
+  data: {
+	  // All transactions on Aptos are implemented via smart contracts.
+	  function: "0x1::aptos_account::transfer",
+	  functionArguments: [destination.accountAddress, 100],
+  },
+  options: {
+    replayProtectionNonce: 12345, // This is the nonce that will be used to ensure the transaction is unique.
+  }
+});
+```
+
+<Callout type="info">
+  For orderless transactions, the `replayProtectionNonce` must be unique for
+  each transaction. Additionally, the expiration time of the transaction is
+  maximum 60 seconds from the time it is submitted. If the transaction is not
+  executed within that time, it will be considered expired and will not be
+  executed.
+</Callout>
+
+After that, simply follow the same steps as you would for a simple transaction:
+1. [**Simulate** the transaction (optional)](./simulating-transactions).
+2. **Sign** the transaction.
+3. **Submit** the transaction to the network.
+4. **Wait** for the transaction to be executed.
+
+### Examples
+
+* [TS SDK Example](https://github.com/aptos-labs/aptos-ts-sdk/blob/main/examples/typescript/simple_orderless_transfer.ts)
