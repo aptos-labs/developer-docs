@@ -87,7 +87,7 @@ export function ChatDialog({
         </Dialog.Trigger>
       )}
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-[99999] bg-black/80 data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out" />
+        <Dialog.Overlay className="fixed inset-0 z-[100] bg-gray-400/80 dark:bg-black/80 data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out" />
         <Dialog.Content
           className={cn(
             "fixed z-[100000] flex flex-col overflow-hidden rounded-xl bg-[#0F0F0F] shadow-xl",
@@ -112,8 +112,12 @@ export function ChatDialog({
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <Dialog.Title className="flex items-center gap-2 text-lg font-medium text-white">
-                  <Image src={aptosLogo} alt="Aptos AI" className="h-5 w-5" />
-                  Ask AI
+                  <Image
+                    src={aptosLogo}
+                    alt="Aptos AI"
+                    className="h-5 w-5 invert dark:invert"
+                  />
+                  AskAptos
                 </Dialog.Title>
                 {showSidebar && (
                   <button
@@ -188,10 +192,37 @@ export function ChatDialog({
                       {hasMoreMessages && (
                         <button
                           onClick={onLoadMore}
-                          className="mx-auto rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
+                          className="mx-auto rounded-lg bg-gray-800 px-4 py-2 text-sm text-white hover:bg-gray-700"
                         >
                           Load more messages
                         </button>
+                      )}
+                      {messages.length === 0 && (
+                        <div className="flex flex-col items-center justify-center gap-4 py-8 text-center">
+                          <div className="rounded-full bg-gray-800 p-4">
+                            <Image
+                              src={aptosLogo}
+                              alt="Aptos AI"
+                              className="h-8 w-8 invert dark:invert"
+                            />
+                          </div>
+                          <div className="max-w-sm space-y-2">
+                            <h3 className="text-lg font-medium text-white">
+                              Ask me anything about Aptos!
+                            </h3>
+                            <p className="text-sm text-white">
+                              I'm here to help you with Move development,
+                              blockchain concepts, tools, and more.
+                            </p>
+                            <div className="mt-4 rounded-lg bg-[#1F1F1F] p-3">
+                              <p className="text-sm text-white/70">
+                                💡 Pro tip: Toggle "Fast mode" in the sidebar
+                                for quicker responses. Note that fast responses
+                                might be less detailed.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       )}
                       {messages.map((message, index) => (
                         <ChatMessage
@@ -234,6 +265,28 @@ export function ChatDialog({
                   isLoading={isGenerating}
                   className="h-full py-3"
                 />
+              </div>
+
+              {/* Disclaimer */}
+              <div className="text-center px-4 pb-4 text-xs text-white/70 bg-[#0F0F0F]">
+                By messaging AskAptos, you agree to our{" "}
+                <a
+                  href="https://aptoslabs.com/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300"
+                >
+                  Terms
+                </a>{" "}
+                and have read our{" "}
+                <a
+                  href="https://aptoslabs.com/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300"
+                >
+                  Privacy Policy
+                </a>
               </div>
             </div>
           </div>

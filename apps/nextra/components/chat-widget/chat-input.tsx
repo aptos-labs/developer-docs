@@ -58,7 +58,7 @@ const ChatInput = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
             rows={1}
             className={cn(
               "w-full resize-none rounded-lg bg-[#1F1F1F] px-4 py-3",
-              "text-sm text-white placeholder-gray-500",
+              "text-sm text-white placeholder-white/60",
               "focus:outline-none focus:ring-1 focus:ring-gray-500",
             )}
             style={{

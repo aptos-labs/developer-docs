@@ -182,7 +182,7 @@ export function ChatSidebar({
           <div className="space-y-2">
             {!isCollapsed && groupedChats.today.length > 0 && (
               <div className="px-4 py-2">
-                <h2 className="text-xs font-medium uppercase text-gray-400">
+                <h2 className="text-xs font-semibold uppercase text-white">
                   Today
                 </h2>
               </div>
@@ -202,7 +202,7 @@ export function ChatSidebar({
 
             {!isCollapsed && groupedChats.previous.length > 0 && (
               <div className="px-4 py-2">
-                <h2 className="text-xs font-medium uppercase text-gray-400">
+                <h2 className="text-xs font-semibold uppercase text-white">
                   Previous 30 Days
                 </h2>
               </div>
@@ -229,7 +229,7 @@ export function ChatSidebar({
       <div className="border-t border-[#1F1F1F] p-4">
         {!isCollapsed && (
           <div className="rounded-lg bg-[#1F1F1F] p-3">
-            <label className="flex items-center gap-2 text-sm text-gray-400">
+            <label className="flex items-center gap-2 text-sm text-white">
               <input
                 type="checkbox"
                 checked={fastMode}
@@ -238,7 +238,7 @@ export function ChatSidebar({
               />
               Fast mode
             </label>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-white/70">
               Might provide less accurate answers
             </p>
           </div>
