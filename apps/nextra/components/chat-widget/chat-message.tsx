@@ -1,4 +1,3 @@
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { Copy, ThumbsUp, ThumbsDown, User } from "lucide-react";
 import type { Message } from "@aptos-labs/ai-chatbot-client";
 import ReactMarkdown from "react-markdown";
@@ -186,70 +185,35 @@ export function ChatMessage({
 
         {!isUser && (
           <div className="flex items-center gap-4 pt-2">
-            <Tooltip.Provider>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <button
-                    onClick={() => onCopy?.()}
-                    className="rounded p-1 text-gray-400 transition-colors hover:bg-[#1F1F1F] hover:text-white"
-                  >
-                    <Copy className="h-4 w-4" />
-                  </button>
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content
-                    className="rounded bg-gray-900 px-2 py-1 text-xs text-white"
-                    sideOffset={5}
-                  >
-                    Copy to clipboard
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
+            <button
+              onClick={() => onCopy?.()}
+              className="rounded p-1 text-gray-400 transition-colors hover:bg-[#1F1F1F] hover:text-white"
+              title="Copy to clipboard"
+            >
+              <Copy className="h-4 w-4" />
+            </button>
 
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <button
-                    onClick={() => onFeedback?.("positive")}
-                    className={cn(
-                      "rounded p-1 text-gray-400 transition-colors hover:bg-[#1F1F1F] hover:text-green-500",
-                      message.feedback === "positive" && "text-green-500",
-                    )}
-                  >
-                    <ThumbsUp className="h-4 w-4" />
-                  </button>
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content
-                    className="rounded bg-gray-900 px-2 py-1 text-xs text-white"
-                    sideOffset={5}
-                  >
-                    Helpful
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
+            <button
+              onClick={() => onFeedback?.("positive")}
+              className={cn(
+                "rounded p-1 text-gray-400 transition-colors hover:bg-[#1F1F1F] hover:text-green-500",
+                message.feedback === "positive" && "text-green-500",
+              )}
+              title="Helpful"
+            >
+              <ThumbsUp className="h-4 w-4" />
+            </button>
 
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <button
-                    onClick={() => onFeedback?.("negative")}
-                    className={cn(
-                      "rounded p-1 text-gray-400 transition-colors hover:bg-[#1F1F1F] hover:text-red-500",
-                      message.feedback === "negative" && "text-red-500",
-                    )}
-                  >
-                    <ThumbsDown className="h-4 w-4" />
-                  </button>
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content
-                    className="rounded bg-gray-900 px-2 py-1 text-xs text-white"
-                    sideOffset={5}
-                  >
-                    Not helpful
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
-            </Tooltip.Provider>
+            <button
+              onClick={() => onFeedback?.("negative")}
+              className={cn(
+                "rounded p-1 text-gray-400 transition-colors hover:bg-[#1F1F1F] hover:text-red-500",
+                message.feedback === "negative" && "text-red-500",
+              )}
+              title="Not helpful"
+            >
+              <ThumbsDown className="h-4 w-4" />
+            </button>
           </div>
         )}
       </div>

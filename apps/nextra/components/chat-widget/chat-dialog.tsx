@@ -1,14 +1,7 @@
 import type { ComponentProps } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
-import {
-  PenLine,
-  Trash2,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  LogOut,
-} from "lucide-react";
+import { PenLine, Trash2, X, ChevronLeft, ChevronRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ChatInput } from "./chat-input";
 import { ChatMessage } from "./chat-message";
@@ -23,13 +16,6 @@ export interface ChatDialogProps extends ChatWidgetProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   showTrigger?: boolean;
-  user?: {
-    displayName?: string | null;
-    email?: string | null;
-    photoURL?: string | null;
-  } | null;
-  onSignOut?: () => void;
-  isRateLimited?: boolean;
 }
 
 const IconComponent = ({
@@ -64,9 +50,6 @@ export function ChatDialog({
   onDeleteChat,
   onUpdateChatTitle,
   onToggleFastMode,
-  user,
-  onSignOut,
-  isRateLimited = false,
 }: ChatDialogProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
@@ -132,7 +115,7 @@ export function ChatDialog({
                   <Image src={aptosLogo} alt="Aptos AI" className="h-5 w-5" />
                   Ask AI
                 </Dialog.Title>
-                {showSidebar && user && (
+                {showSidebar && (
                   <button
                     onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                     className="rounded p-1 text-gray-400 hover:bg-[#1F1F1F] hover:text-white"
@@ -146,56 +129,23 @@ export function ChatDialog({
               </div>
             </div>
             <div className="flex items-center gap-4">
-              {user ? (
-                <div className="flex items-center gap-3 border-r border-[#1F1F1F] pr-4">
-                  <span className="text-sm text-gray-300">
-                    {user.displayName || user.email}
-                  </span>
-                  {onSignOut && (
-                    <button
-                      onClick={onSignOut}
-                      className="rounded p-1.5 text-gray-400 hover:bg-[#1F1F1F] hover:text-white"
-                      title="Sign out"
-                    >
-                      <IconComponent icon={LogOut} className="h-4 w-4" />
-                    </button>
-                  )}
+              <button
+                onClick={handleNewChat}
+                className="rounded-lg bg-white px-4 py-1.5 text-sm font-medium text-black hover:bg-gray-100"
+              >
+                <div className="flex items-center gap-2">
+                  <IconComponent icon={PenLine} className="h-4 w-4" />
+                  New chat
                 </div>
-              ) : null}
-
-              {/* Show sign in button if not logged in and not rate limited */}
-              {!user && !isRateLimited && (
+              </button>
+              {currentChatId && (
                 <button
-                  onClick={onSignOut}
-                  className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+                  onClick={() => onDeleteChat?.(currentChatId)}
+                  className="rounded p-2 text-gray-400 hover:bg-[#1F1F1F] hover:text-white"
                 >
-                  Sign in with Google
+                  <IconComponent icon={Trash2} className="h-5 w-5" />
                 </button>
               )}
-
-              {/* Always show New Chat and Delete Chat unless rate limited */}
-              {!isRateLimited && (
-                <>
-                  <button
-                    onClick={handleNewChat}
-                    className="rounded-lg bg-white px-4 py-1.5 text-sm font-medium text-black hover:bg-gray-100"
-                  >
-                    <div className="flex items-center gap-2">
-                      <IconComponent icon={PenLine} className="h-4 w-4" />
-                      New chat
-                    </div>
-                  </button>
-                  {currentChatId && (
-                    <button
-                      onClick={() => onDeleteChat?.(currentChatId)}
-                      className="rounded p-2 text-gray-400 hover:bg-[#1F1F1F] hover:text-white"
-                    >
-                      <IconComponent icon={Trash2} className="h-5 w-5" />
-                    </button>
-                  )}
-                </>
-              )}
-
               <Dialog.Close className="rounded p-2 text-gray-400 hover:bg-[#1F1F1F] hover:text-white">
                 <IconComponent icon={X} className="h-5 w-5" />
               </Dialog.Close>
@@ -210,7 +160,7 @@ export function ChatDialog({
           {/* Main Content */}
           <div className="flex min-h-0 flex-1">
             {/* Sidebar */}
-            {showSidebar && (!user || user) && !isRateLimited && (
+            {showSidebar && (
               <ChatSidebar
                 chats={chats}
                 currentChatId={currentChatId || undefined}
@@ -229,106 +179,62 @@ export function ChatDialog({
             <div className="flex min-h-0 flex-1 flex-col bg-black">
               {/* Messages Area */}
               <div className="min-h-0 flex-1 overflow-hidden">
-                {!user && isRateLimited ? (
-                  <div className="flex h-full items-center justify-center">
-                    <div className="text-center">
-                      <h2 className="mb-4 text-xl font-semibold text-white">
-                        Rate Limit Exceeded
-                      </h2>
-                      <p className="mb-4 text-gray-300">
-                        Please sign in to continue using the chatbot.
-                      </p>
-                      <button
-                        onClick={onSignOut}
-                        className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
-                      >
-                        Sign in with Google
-                      </button>
+                <ScrollArea.Root className="h-full">
+                  <ScrollArea.Viewport
+                    ref={viewportRef}
+                    className="h-full w-full"
+                  >
+                    <div className="flex flex-col gap-4 p-4">
+                      {hasMoreMessages && (
+                        <button
+                          onClick={onLoadMore}
+                          className="mx-auto rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
+                        >
+                          Load more messages
+                        </button>
+                      )}
+                      {messages.map((message, index) => (
+                        <ChatMessage
+                          key={message.id}
+                          message={message}
+                          onCopy={() => onCopyMessage?.(message.id)}
+                          onFeedback={(feedback) =>
+                            onMessageFeedback?.(message.id, feedback)
+                          }
+                          className={messageClassName}
+                        />
+                      ))}
+                      {isTyping && (
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400" />
+                          <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.2s]" />
+                          <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.4s]" />
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ) : (
-                  <ScrollArea.Root className="h-full">
-                    <ScrollArea.Viewport
-                      ref={viewportRef}
-                      className="h-full w-full"
-                    >
-                      <div className="flex flex-col gap-4 p-4">
-                        {hasMoreMessages && (
-                          <button
-                            onClick={onLoadMore}
-                            className="mx-auto rounded-lg bg-gray-800 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700"
-                          >
-                            Load more messages
-                          </button>
-                        )}
-                        {messages.map((message, index) => (
-                          <ChatMessage
-                            key={message.id}
-                            message={message}
-                            onCopy={() => onCopyMessage?.(message.id)}
-                            onFeedback={(feedback) =>
-                              onMessageFeedback?.(message.id, feedback)
-                            }
-                            className={messageClassName}
-                          />
-                        ))}
-                        {isTyping && (
-                          <div className="flex items-center gap-2 text-gray-400">
-                            <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400" />
-                            <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.2s]" />
-                            <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0.4s]" />
-                          </div>
-                        )}
-                      </div>
-                    </ScrollArea.Viewport>
-                    <ScrollArea.Scrollbar
-                      orientation="vertical"
-                      className="flex w-2.5 touch-none select-none bg-transparent p-[2px]"
-                    >
-                      <ScrollArea.Thumb className="relative flex-1 rounded-full bg-gray-800" />
-                    </ScrollArea.Scrollbar>
-                  </ScrollArea.Root>
-                )}
+                  </ScrollArea.Viewport>
+                  <ScrollArea.Scrollbar
+                    orientation="vertical"
+                    className="flex w-2.5 touch-none select-none bg-transparent p-[2px]"
+                  >
+                    <ScrollArea.Thumb className="relative flex-1 rounded-full bg-gray-800" />
+                  </ScrollArea.Scrollbar>
+                </ScrollArea.Root>
               </div>
 
               {/* Input Area */}
-              {(!user && !isRateLimited) || user ? (
-                <>
-                  <div
-                    className="shrink-0 border-t border-[#1F1F1F] bg-[#0F0F0F] px-4"
-                    style={{ height: "var(--footer-height)" }}
-                  >
-                    <ChatInput
-                      ref={chatInputRef}
-                      onSend={onSendMessage}
-                      onStop={onStopGenerating}
-                      isLoading={isGenerating}
-                      className="h-full py-3"
-                    />
-                  </div>
-                  {/* Disclaimer */}
-                  <div className="text-center px-4 pb-2 text-xs text-gray-400 bg-[#0F0F0F]">
-                    By messaging AskAptos, you agree to our{" "}
-                    <a
-                      href="https://aptoslabs.com/terms"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300"
-                    >
-                      Terms
-                    </a>{" "}
-                    and have read our{" "}
-                    <a
-                      href="https://aptoslabs.com/privacy"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300"
-                    >
-                      Privacy Policy
-                    </a>
-                  </div>
-                </>
-              ) : null}
+              <div
+                className="shrink-0 border-t border-[#1F1F1F] bg-[#0F0F0F] px-4"
+                style={{ height: "var(--footer-height)" }}
+              >
+                <ChatInput
+                  ref={chatInputRef}
+                  onSend={onSendMessage}
+                  onStop={onStopGenerating}
+                  isLoading={isGenerating}
+                  className="h-full py-3"
+                />
+              </div>
             </div>
           </div>
         </Dialog.Content>

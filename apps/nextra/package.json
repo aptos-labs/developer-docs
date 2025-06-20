@@ -15,11 +15,10 @@
     "start": "next start -p 3030",
     "types:check": "tsc --noEmit",
     "fmt": "prettier --write '**/*.(css|tsx|ts|jsx|js|cjs|mjs|json|md|html)'",
-    "lint": "prettier --check '**/*.(css|tsx|ts|jsx|js|cjs|mjs|json|md|html)",
+    "lint": "prettier --check '**/*.(css|tsx|ts|jsx|js|cjs|mjs|json|md|html)'",
     "artifactregistry-login": "pnpm dlx google-artifactregistry-auth"
   },
   "dependencies": {
-    "@aptos-internal/api-gateway-admin-api-client": "4.1.0",
     "@aptos-labs/ai-chatbot-client": "^0.1.0",
     "@aptos-labs/aptos-nextra-config": "workspace:*",
     "@aptos-labs/github-fetch": "workspace:*",
