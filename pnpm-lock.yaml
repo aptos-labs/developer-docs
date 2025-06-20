@@ -35,6 +35,9 @@ importers:
 
   apps/nextra:
     dependencies:
+      '@aptos-internal/api-gateway-admin-api-client':
+        specifier: 4.1.0
+        version: 4.1.0(@tanstack/react-query@5.62.16(react@18.3.1))(react@18.3.1)
       '@aptos-labs/aptos-nextra-config':
         specifier: workspace:*
         version: link:../../packages/aptos-nextra-config
@@ -326,6 +329,9 @@ packages:
 
   '@antfu/utils@0.7.10':
     resolution: {integrity: sha512-+562v9k4aI80m1+VuMHehNJWLOFjBnXn3tdOitzD0il5b7smkSBal4+a3oKiQTbrwMmN/TBUMDvbdoWDehgOww==}
+
+  '@aptos-internal/api-gateway-admin-api-client@4.1.0':
+    resolution: {integrity: sha512-2PsXpc3gJIdzmiL1kgj6SAfrE4Gmxsy3ybzQc+kCzcpyCnMLIQMDMyWagmv4PDVDDpx4eOL0YxVBahOS0VfaSA==, tarball: https://us-npm.pkg.dev/aptos-registry/npm/@aptos-internal/api-gateway-admin-api-client/-/@aptos-internal/api-gateway-admin-api-client-4.1.0.tgz}
 
   '@babel/code-frame@7.26.2':
     resolution: {integrity: sha512-RJlIHRueQgwWitWgF8OdFYGZX328Ax5BCemNGlqHfplnRT9ESi8JkFlvaVYbS+UubVY6dpv87Fs2u5M29iNFVQ==}
@@ -2423,6 +2429,16 @@ packages:
     resolution: {integrity: sha512-ECyOuDeH3C1I8jH2MK1RtBJW+YPMvSfT0a5NN0nHfQYnDSJ6tUiZH3gzwVP5/Kfh/+Tt7tpWVF9LXNTnhTJ3kA==}
     cpu: [x64]
     os: [win32]
+
+  '@rspc/client@0.2.0':
+    resolution: {integrity: sha512-IIOfAk4g+bzbfr3cmvm42EocsjtzMO9CRCc95ZMx9mFh5ixHzP4Na1lun+KipGzsFV1QsmV6uYSBg/4Kpnu9iA==}
+
+  '@rspc/react@0.2.0':
+    resolution: {integrity: sha512-gQ9nnj+AYMpRnyrKjBTkKYK5b13Ml0PJjb/BAjwCqXq5fDK5PMdmXL8bTh6mCmQYxOnnukzYKcvxz7MTbjd2DA==}
+    deprecated: Please use @rspc/react-query
+    peerDependencies:
+      '@tanstack/react-query': ^5.0.0
+      react: ^18.0.0
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -7060,6 +7076,14 @@ snapshots:
 
   '@antfu/utils@0.7.10': {}
 
+  '@aptos-internal/api-gateway-admin-api-client@4.1.0(@tanstack/react-query@5.62.16(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@rspc/client': 0.2.0
+      '@rspc/react': 0.2.0(@tanstack/react-query@5.62.16(react@18.3.1))(react@18.3.1)
+    transitivePeerDependencies:
+      - '@tanstack/react-query'
+      - react
+
   '@babel/code-frame@7.26.2':
     dependencies:
       '@babel/helper-validator-identifier': 7.25.9
@@ -9248,6 +9272,14 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.40.1':
     optional: true
+
+  '@rspc/client@0.2.0': {}
+
+  '@rspc/react@0.2.0(@tanstack/react-query@5.62.16(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@rspc/client': 0.2.0
+      '@tanstack/react-query': 5.62.16(react@18.3.1)
+      react: 18.3.1
 
   '@rtsao/scc@1.1.0': {}
 
