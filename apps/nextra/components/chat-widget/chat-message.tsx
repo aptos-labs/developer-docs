@@ -37,7 +37,11 @@ export function ChatMessage({
         </div>
       ) : (
         <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-white">
-          <Image src={aptosLogo} alt="Aptos AI" className="h-5 w-5" />
+          <Image
+            src={aptosLogo}
+            alt="Aptos AI"
+            className="h-5 w-5 dark:invert"
+          />
         </div>
       )}
 
