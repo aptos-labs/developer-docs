@@ -1,0 +1,30 @@
+# Orderless Transactions
+
+As outlined
+in [AIP-123](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-123.md),
+orderless transactions allow for transactions to be executed out of order, which
+is particularly useful in scenarios where multiple machines need to sign for a
+single sending account, but the order in which they sign does not affect the
+outcome of the transaction or matter to the creator.  Replay is protected in
+
+## Process Overview
+
+Orderless transactions are dependent on the transaction payload specified in
+[AIP-129](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-129.md).
+The process for building and executing an orderless transaction is as follows:
+
+1. Build a transaction with a `replayProtectionNonce` and a `TransactionPayload::TransactionPayloadPayload` that defines the operation to be executed.
+2. Sign and submit the transaction as any other transaction, but with the
+`replayProtectionNonce` set.
+
+Note, that the behavior of the `replayProtectionNonce` is similar to a sequence
+number, but it does not guarantee ordered execution of transactions. Instead, it
+ensures that the transaction is unique and cannot be replayed (executed twice)
+with the same nonce.
+
+## SDK Support
+
+These are demonstrations of sponsored transactions:
+
+- The [TypeScript SDK](../sdks/ts-sdk/building-transactions/orderless-transactions.mdx) has documentation
+- The [Go SDK](https://github.com/aptos-labs/aptos-go-sdk/tree/main/examples/orderless_transaction) has an example
