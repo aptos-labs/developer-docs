@@ -101,7 +101,7 @@ RIPEMD160 由于其 80 位的安全级别，应避免作为抗碰撞函数使用
 ## 椭圆曲线算术
 
 虽然 [哈希函数](#cryptographic-hash-functions) 和 [数字签名](#digital-signature-verification) 模块应为大多数应用提供足够的功能，但某些应用将需要更强大的密码学。
-通常，此类应用的开发者需要等待其所需的密码学功能在 [Aptos Move 框架](../../network/blockchain/move.mdx) 中作为 [Move 原生函数](book/functions.mdx#native-functions) 高效实现。
+通常，此类应用的开发者需要等待其所需的密码学功能在 [Aptos Move 框架](../why-move.mdx) 中作为 [Move 原生函数](book/functions.mdx#native-functions) 高效实现。
 相反，我们公开了基本的构建块，开发者可以使用这些构建块直接在 Move 语言中实现自己的密码学原语，并且做到 **高效**。
 
 具体来说，我们目前公开了两个流行的椭圆曲线群及其相关有限域的低级算术操作：
