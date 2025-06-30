@@ -5,6 +5,9 @@ export default {
   "multi-agent-transactions": {
     title: "Multi-Agent Transactions",
   },
+  "orderless-transactions": {
+    title: "Orderless Transactions",
+  },
   "sponsoring-transactions": {
     title: "Sponsoring Transactions",
   },
