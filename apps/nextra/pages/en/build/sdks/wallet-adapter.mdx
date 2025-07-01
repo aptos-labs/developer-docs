@@ -4,24 +4,45 @@ title: "Wallet Adapter"
 
 # Wallet Adapter
 
-The Aptos Wallet Adapter provides a single interface for Aptos dapps and Aptos wallets to communicate with each other.
+There are two wallet adapter standards in the Aptos ecosystem:
 
-For app developers, this means that you can connect to an ever-growing list of Aptos wallets with a single integration. As new wallets enter the ecosystem and integrate with the Wallet Adapter, you can support them simply by updating your Wallet Adapter version.
+1. [Aptos Wallet Adapter](#aptos-wallet-adapter) by Aptos Labs
+2. [OKX Connect](#okx-connect) by OKX
 
-For Aptos wallet providers, integrating with the Wallet Adapter allows you to be supported on a wide range of Aptos apps.
+## Aptos Wallet Adapter
 
-## For Aptos Dapps
+The Aptos Wallet Adapter by Aptos Labs provides a single interface for Aptos
+dapps and Aptos wallets to communicate with each other.
 
-Follow the [Wallet Adapter for Dapp Builders Guide](./wallet-adapter/dapp.mdx) on how to use the Wallet Adapter (via the [Wallet Adapter React package](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-react)).
+For dapp developers, this means that you can connect to any Aptos wallet that is
+integrated with the Wallet Adapter without needing to write custom code for each
+wallet.  This is described in [AIP-62](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-62.md),
+which defines the Modern Wallet Standard and autodetection of wallets.
 
-## For Aptos Wallet Providers
+For Aptos wallet providers, integrating with AIP-62 means that your wallet will
+be compatible with any dapp that uses the Wallet Adapter.
 
-Follow one of these guides for how to implement a Wallet Adapter plugin that dapps can connect to:
+### For Aptos Dapps
+
+Follow the [Wallet Adapter for Dapp Builders Guide](./wallet-adapter/dapp.mdx) on how to use the
+Wallet Adapter (via the [Wallet Adapter React package](https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-react)).
+
+### For Aptos Wallet Providers
+
+Follow one of these guides for how to implement a Wallet Adapter plugin that
+dapps can connect to:
 
 1. For [Browser Extension Wallets](./wallet-adapter/browser-extension-wallets.mdx) (ex. [Petra](https://chromewebstore.google.com/detail/petra-aptos-wallet/ejjladinnckdgjemekebdpeokbikhfci?hl=en))
 2. For [SDK Wallets](./wallet-adapter/wallets.mdx) (ex. [AptosConnect](https://aptosconnect.app))
 
-## Reference Material
+## OKX Connect
+
+The OKX Connect adapter provides an interface for Aptos dapps to connect to OKX
+wallet and other wallets that support the OKX Connect standard.  You can find
+more information about OKX Connect for Aptos dapps in the [OKX Connect documentation](https://web3.okx.com/build/dev-docs/sdks/app-connect-aptos)
+
+
+## Other Resources
 
 - [Dapp Builder Guide](./wallet-adapter/dapp.mdx)
 - [Wallet Browser Extension Guide](./wallet-adapter/browser-extension-wallets.mdx)

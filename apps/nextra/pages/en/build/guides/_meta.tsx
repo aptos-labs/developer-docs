@@ -37,6 +37,9 @@ export default {
   "sponsored-transactions": {
     title: "Sponsored Transactions",
   },
+  "orderless-transactions": {
+    title: "Orderless Transactions",
+  },
   "transaction-management": {
     title: "Transaction Management",
   },
