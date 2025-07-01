@@ -7,4 +7,5 @@ export default {
   cli: "CLI",
   "create-aptos-dapp": "create-aptos-dapp",
   guides: "Guides",
+  aips: "Aptos Improvement Proposals (AIPs)",
 };

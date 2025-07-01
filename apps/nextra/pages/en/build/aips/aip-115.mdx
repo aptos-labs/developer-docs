@@ -1,0 +1,136 @@
+---
+title: AIP-115 - Stateless Accounts
+---
+
+# AIP-115: Stateless Accounts
+
+[AIP-115](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-115.md) covers
+stateless accounts.
+
+## General FAQ
+### What is a Stateless Account?
+
+A Stateless Account is a new behavior for Aptos accounts that allows them to
+operate without requiring an explicitly created `0x1::account::Account` resource.
+Instead, these accounts use default behaviors until an action necessitates the
+creation of the resource. This change simplifies account management and reduces
+unnecessary resource creation, making it easier for developers and users to
+interact with the Aptos blockchain.
+
+### How is it different from a regular account?
+
+Technically, there is no separate account type. All accounts are the same under
+the hood. The difference is that accounts without a resource behave in a
+"stateless" manner using default values. The account resource is only created
+on-demand when needed.
+
+### How does it work?
+
+When an account signs its first transaction sequence number transaction, it
+will not have the `0x1::account::Account` resource created. Instead, it will
+create the `0x1::account::Account` resource only when an action that requires to
+increment the sequence number.
+
+For an orderless transaction, the account resource is not needed at all, and the
+account resource will not be created.
+
+## Technical Details FAQ
+
+### What is the default auth_key for Stateless Accounts?
+
+If the `0x1::account::Account` resource does not exist, the auth_key defaults to
+the account address itself. This allows the account to sign and submit
+transactions without needing a resource.
+
+### What is the sequence number of a Stateless Account?
+
+It defaults to `0` if the account resource does not exist. In the future, with
+Orderless Transactions, the sequence number may be eliminated entirely.
+
+### When is the account resource automatically created?
+
+The resource is created when an action that requires on-chain state, such as:
+- Rotating the authentication key
+- Using capabilities or features that rely on the account resource such as sequence number
+- Explicitly calling functions that access fields in the account resource
+
+### Does creating the account resource incur extra gas cost?
+
+Yes. The creation of the resource is deferred, and the corresponding gas and
+storage fees are only charged at the moment of actual creation, not beforehand.
+
+### Any behavior change to account module at the Move level?
+
+`0x1::account::exists_at` always returns true, as all on-chain account addresses
+are considered valid and treated as existing by default. There is no move
+function in the module to check whether the underlying account resource really
+exists since the goal is to make it transparent to users. As a result, any logic
+that first checks whether an account exists before attempting to create it is
+now obsolete.
+
+### Can users force-create the account resource upfront?
+
+Yes. Users can explicitly call functions like
+`0x1::account::create_account_if_does_not_exist` to create the resource
+manually, if desired.
+
+### Any behavior change to API?
+
+If you rely on the following API behavior, please adjust correspondingly.
+`GET /accounts/{address}` will never return “404 not found” but the default
+authentication key and sequence number mentioned above for stateless accounts.
+Therefore, if it is desired to check whether the account resource exists or not,
+try `GET /accounts/{address}/resource/0x1::account::Account`
+
+### Do existing accounts get affected?
+
+No. Existing accounts with resources already created will continue to work
+exactly as they do now. Stateless Account behavior only applies to accounts that
+have not yet created a resource.
+
+
+### Do dApps / CEX need to change anything?
+
+Maybe. Previously, checking whether an account existed often relied on calling
+APIs that return a 404 error if the account resource was not found. Applications
+would then use this as a signal to warn users (e.g., "This account does not
+exist"). Under the new model, all addresses are considered valid, and such
+404-based existence checks are no longer reliable or meaningful. However, we are
+not banning this pattern—developers may still choose to warn users that an
+account may not have performed any on-chain activity and thus might not have a
+resource created yet.
+
+If you still want to detect whether an account has an associated resource, you
+can refer to the method described in Q9 or check whether the sequence_number is
+0. But be aware that with the introduction of orderless transactions, some
+accounts may only submit transactions that never create a resource, which could
+result in false negatives.
+
+We recommend designing your application to be robust regardless of whether the
+account resource exists, and to avoid assuming resource presence as a proxy for
+account existence.
+
+Examples:
+- A wallet might check for an account to see if it’s a new account, and provide
+a user a warning.  With this change, instead a mitigation like Q9 will be needed.
+- A custodial wallet may send funds to initialize an account with gas.  With
+this change, it will need to check the account’s balance instead of just the
+account existing.
+
+### Is this compatible with Orderless Transactions?
+
+Yes. Orderless Transactions and Stateless Accounts are complementary. Once
+Orderless Transactions are enabled, sequence numbers will no longer be needed,
+enabling truly stateless usage.
+
+## Will all accounts become Stateless in the future?
+
+No. Stateless Accounts are not a new account type. It simply allows accounts to
+behave with default logic until the account resource is needed. This lazy
+resource creation, does not transform existing account state. All accounts can
+behave in a stateless way by default, but they will still create the standard
+resource if and when advanced features are used.
+
+
+
+
