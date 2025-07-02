@@ -59,6 +59,12 @@ It is a common Move pattern to provide inline specifications in conditions, espe
 
 Note that an `assert!` is translated to a conditional abort, so blocks in `assert!` condition also are reported by this lint.
 
+# `equal_operands_in_bin_op`
+
+Checks for binary operations where both operands are the same, which is likely a mistake. For example `x % x`, `x ^ x`,  `x > x`, `x >= x`, `x == x`, `x | x`, `x & x`, `x / x`, and `x != x` are all caught by this lint. The lint suggests replacing these with a more appropriate value or expression, such as `0`, `true`, or `false`.
+
+This lint does not catch cases where the operands are vector access.
+
 ### `known_to_abort`
 
 Checks for expressions that will always abort at runtime due to known constant values that violate runtime constraints. This lint helps identify code that will deterministically fail before it reaches production.
