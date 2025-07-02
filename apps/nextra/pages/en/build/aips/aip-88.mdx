@@ -1,0 +1,92 @@
+---
+title: AIP-88 - Block Epilogue Transactions
+---
+
+# AIP-88: Block Epilogue Transactions
+
+[AIP-88](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-88.md) covers
+block epilogue transactions, which are a new type of transaction that give
+information about the block after it has been executed. These transactions can
+only be created by the consensus and are not user-initiated.  They contain
+information about gas usage in the block and will contain more information in
+the future.
+
+It replaces the previous `StateCheckpoint` transaction type, which was used to
+"sometimes" signal the end of a block.  The new `BlockEpilogue` transaction is
+now sometimes created at the end of a block instead, and it is guaranteed to be
+the last transaction in the block.  The only case this does not apply is the
+last block of an epoch, which will have no `BlockEpilogue` transaction.
+
+## General FAQ
+### What is in the Block Epilogue Transaction?
+
+The block epilogue transaction contains a `BlockEndInfo` enum.  It is purposely
+designed to be an enum so that it can be extended in the future without breaking
+existing code.  The current version is `V0` and contains the following fields:
+
+```move
+module 0x1::epilogue {
+  enum BlockEndInfo {
+    V0 {
+      /// Whether block gas limit was reached
+      block_gas_limit_reached: bool,
+      /// Whether block output limit was reached
+      block_output_limit_reached: bool,
+      /// Total gas_units block consumed
+      block_effective_block_gas_units: u64,
+      /// Total output size block produced
+      block_approx_output_size: u64,
+    },
+  }
+}
+```
+
+These mainly contain information about the gas usage in the block for debugging
+purposes.
+
+The JSON output will look like this:
+
+```json
+{
+    "version":"1912",
+    "hash":"0x54a8efc93fc94f5b545dadb63da3d4dc192125c717b336dc446d55a5b553913f",
+    "state_change_hash":"0xafb6e14fe47d850fd0a7395bcfb997ffacf4715e0f895cc162c218e4a7564bc6",
+    "event_root_hash":"0x414343554d554c41544f525f504c414345484f4c4445525f4841534800000000",
+    "state_checkpoint_hash":"0x841a43956ca09a02b1c1cdadc65f24c390170aa666015a2e8f7ec5c9d6a3875f",
+    "gas_used":"0",
+    "success":true,
+    "vm_status":"Executed successfully",
+    "accumulator_root_hash":"0x6561976b4560ff25239dffc6cada70e7008dd42fc4d3df2eca6a86b6d2ec384d",
+    "changes":[],
+    "timestamp":"1719263322836578",
+    "block_end_info": {
+        "block_gas_limit_reached":false,
+        "block_output_limit_reached":false,
+        "block_effective_block_gas_units":0,
+        "block_approx_output_size":1163
+    },
+    "type":"block_epilogue_transaction"
+}
+```
+
+## Compatibility FAQ
+### What does this mean for my dApp?
+
+If you process transactions in your dApp, and expect the last transaction in a
+block to be a `StateCheckpoint`, you will need to update your code to handle the
+`BlockEpilogue` transaction instead.
+
+Note that, the `BlockEpilogue` transaction is guaranteed to be the last
+transaction of a block except for the last block of an epoch, which will not
+have a `BlockEpilogue` transaction.
+
+### What apps are likely to be affected?
+
+Apps that index all transactions such as block explorers and centralized
+exchange indexer processors may be affected.  However, most of these are
+informational and do not affect the core functionality of the dApp.
+
+### What can I do to process the new transaction type?
+
+If you're using the Aptos Go SDK or the Aptos TypeScript SDK, you can update to
+the latest version, which will automatically handle the new transaction type.
