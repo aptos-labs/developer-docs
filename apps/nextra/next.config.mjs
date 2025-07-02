@@ -40,6 +40,7 @@ export default withBundleAnalyzer(
     transpilePackages: [
       "@aptos-labs/aptos-nextra-config",
       "@aptos-labs/github-fetch",
+      "@aptos-labs/ai-chatbot-client",
     ],
     redirects: async () => [
       {
