@@ -175,8 +175,8 @@ Because it's layout affects what can be inserted and performance, there are a fe
 
 The Smart Table is a scalable hash table implementation based on linear hashing.
 This data structure aims to optimize storage and performance by utilizing linear hashing, which splits one bucket at a time instead of doubling the number of buckets, thus avoiding unexpected gas costs.
-Unfortunatelly, it's implementation makes every addition/removal be a conflict, making such transactions fully sequential.
-The Smart Table uses the SipHash function for faster hash computations while tolerating collisions. Unfortunatelly, this also means that collisions are predictable, which means that if end users can control the keys being inserted, it can have large number of collisions in a single bucket.
+Unfortunately, it's implementation makes every addition/removal be a conflict, making such transactions fully sequential.
+The Smart Table uses the SipHash function for faster hash computations while tolerating collisions. Unfortunately, this also means that collisions are predictable, which means that if end users can control the keys being inserted, it can have large number of collisions in a single bucket.
 
 ### SmartTable Structure
 
