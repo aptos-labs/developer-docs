@@ -18,16 +18,16 @@ If you find any issues, please submit [bugs and feedback](https://github.com/apt
 Checks for patterns that look like overflow checks done in a C style:
 ```move
 // Overflow check
-if (x > x + y) { 
+if (x > x + y) {
   abort 1;
 };
 
 // Underflow check
-if (x < x - y) { 
+if (x < x - y) {
   abort 1;
 };
 ```
-This pattern in Move does not make sense, as it either aborts immediately or is always true/false. 
+This pattern in Move does not make sense, as it either aborts immediately or is always true/false.
 
 ### `almost_swapped`
 Checks for expression patterns that look like a failed swap attempt and notifies the user. These patterns are likely erroneous code. This currently only detects simple access patterns such as assignments to a variable or a field of a struct. Examples include:
@@ -117,6 +117,28 @@ Checks for patterns where there are needless references taken when accessing a f
 
 - `(&s).f` can be simplified to `s.f`
 - `(&mut s).f = 42;` can be simplified to `s.f = 42;`
+
+### `nested_if`
+
+Checks for nested if statements that can be simplified using the `&&` operator. This lint identifies patterns where an inner if statement with no else branch is contained within an outer if statement that also has no else branch.
+
+```move
+if (a) {
+    if (b) {
+        // some code
+    }
+}
+```
+
+This pattern can be simplified to:
+
+```move
+if (a && b) {
+    // some code
+}
+```
+
+The simplified version is more readable and avoids unnecessary nesting while maintaining the same logical behavior.
 
 ### `nonminimal_bool`
 
