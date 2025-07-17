@@ -1,0 +1,111 @@
+---
+Title: Use Switchboard Oracle in Your Aptos Applications
+---
+
+# Switchboard Oracle Integration on Aptos
+
+This reference guide explains how to integrate **Switchboard** oracles into your Aptos applications. Switchboard provides on-demand, pull-based oracle feeds that give developers granular control over data updates and enable custom data source integration.
+
+## Overview
+
+Switchboard is a decentralized oracle network that enables smart contracts to access real-world data through customizable, on-demand feeds. Unlike traditional push-based oracles, Switchboard uses a pull-based mechanism where developers control when and how frequently data is updated.
+
+## How to Use Switchboard On-Demand Feeds in Aptos Contracts
+
+This guide explains how to integrate Switchboard's on-demand oracle feeds into your Aptos Move applications.
+
+### Configuring the Move.toml File
+
+Add the Switchboard contract to your project dependencies in the `Move.toml` file:
+
+```toml
+[addresses]
+switchboard = "0x890fd4ed8a26198011e7923f53f5f1e5eeb2cc389dd50b938f16cb95164dc81c"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "main" }
+Switchboard = { git = "https://github.com/switchboard-xyz/aptos.git", subdir = "mainnet", rev = "main" }
+```
+
+For testnet development, use the testnet subdir:
+```toml
+Switchboard = { git = "https://github.com/switchboard-xyz/aptos.git", subdir = "testnet", rev = "main" }
+```
+
+### Write Contract Code
+
+The code snippet below provides an example module for fetching price data from Switchboard feeds:
+
+```move
+module example::example_basic_read {
+    use aptos_std::event;
+    use aptos_framework::object::{Self, Object};
+    use aptos_framework::aptos_coin::AptosCoin;
+    use switchboard::aggregator::{Self, Aggregator, CurrentResult};
+    use switchboard::decimal::Decimal;
+    use switchboard::update_action;
+
+    #[event]
+    struct AggregatorUpdated has drop, store {
+        aggregator: address,
+        value: Decimal,
+        timestamp: u64,
+    }
+
+    public entry fun update_and_read_feed(
+        account: &signer,
+        update_data: vector<vector<u8>>,
+    ) {
+        
+        // Update the feed with the provided data
+        update_action::run<AptosCoin>(account, update_data);
+
+        // Get the feed object - here it's testnet BTC/USD
+        let aggregator: address = @0x4bac6bbbecfe7be5298358deaf1bf2da99c697fea16a3cf9b0e340cb557b05a8;
+        let aggregator: Object<Aggregator> = object::address_to_object<Aggregator>(aggregator);
+
+        // Get the latest update info for the feed
+        let current_result: CurrentResult = aggregator::current_result(aggregator);
+
+        // Access various result properties
+        let result: Decimal = aggregator::result(&current_result);              // Update result
+        let timestamp_seconds = aggregator::timestamp(&current_result);         // Timestamp in seconds
+
+        // Emit an event with the updated result
+        event::emit(AggregatorUpdated {
+            aggregator: object::object_address(&aggregator),
+            value: result,
+            timestamp: timestamp_seconds,
+        });
+    }
+}
+```
+
+The `update_data` argument contains the latest oracle responses from Switchboard. Calling `update_action::run` with this value updates the on-chain aggregator and ensures your application has recent price data. The `update_data` can be fetched using the Switchboard TypeScript SDK.
+
+The code snippet above does the following:
+- Calls `update_action::run` to update the Switchboard aggregator with fresh data
+- Gets the aggregator object using the feed address
+- Calls `aggregator::current_result` to read the latest aggregated data
+- Extracts various statistical properties including price, timestamp.
+
+
+### Core Functions
+
+- `update_action::run<CoinType>(account, update_data)` - Updates aggregator with new data
+- `aggregator::current_result(aggregator)` - Gets the latest aggregated result
+- `aggregator::result(current_result)` - Extracts the primary price value
+- `aggregator::timestamp(current_result)` - Gets the timestamp of the latest update
+
+## Resources
+
+### Documentation
+- [Official Switchboard Aptos Documentation](https://docs.switchboard.xyz/product-documentation/data-feeds/aptos)
+- [Switchboard TypeScript SDK](https://www.npmjs.com/package/@switchboard-xyz/aptos-sdk)
+
+### Example Applications
+- [Basic Price Read Contract](https://github.com/switchboard-xyz/aptos/tree/main/examples/example_basic_read)
+
+### Community Support
+- [Switchboard Discord](https://discord.gg/switchboardxyz)
+- [Aptos Developer Community](https://discord.gg/aptoslabs)
