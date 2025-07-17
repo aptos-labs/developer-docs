@@ -58,13 +58,14 @@ You can use any of the following optional fields.
 It is recommended to:
 
 1. Set `autoConnect` to `true`. 
-2. Set the `dappConfig` with the `network` property set to the network your dapp works with 
+2. Set the `dappConfig` with:
+  - The `network` property set to the network your dapp works with 
+  - The `aptosApiKeys` property set to the generated Api Key for the specified network 
 
 | Field | Description | Example |
 | --- | --- | --- |
 | `autoConnect` | A prop indicates whether the dapp should auto connect with the most recently connected wallet on page reload. | `true` |
-| `optInWallets` | Limit the list of supported AIP-62 wallets to just the ones with names in optedInWallets.  | `['Petra']` |
-| `dappConfig` | Specify an alternate network to work on. This prop only works for wallets which are NOT chrome extensions. If set, this object must include the name of the network the app is connected to. The object may include a aptosConnectDappId. | `{ network: 'mainnet',   aptosConnectDappId: undefined }` |
+| `dappConfig` | Specify an alternate network to work on. This prop only works for wallets which are NOT chrome extensions. If set, this object must include the name of the network the app is connected to. The object may include a aptosConnectDappId. | `{ network: 'mainnet', aptosApiKeys:{}, aptosConnectDappId: undefined }` |
 | `onError` | A callback function to fire when the adapter throws an error. | `(error) => { console.log("error", error); }` |
 
 #### Full Example
@@ -79,10 +80,15 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
   return (
     <AptosWalletAdapterProvider
       autoConnect={true}
-      dappConfig={{ network: Network.MAINNET }}
+      dappConfig={{ 
+        network: Network.MAINNET, 
+        aptosApiKeys: {
+          mainnet: process.env.APTOS_API_KEY_MAINNET,
+        } 
+      }}
       onError={(error) => {
-    console.log("error", error);
-  }}
+        console.log("error", error);
+      }}
     >
       {children}
     </AptosWalletAdapterProvider>
