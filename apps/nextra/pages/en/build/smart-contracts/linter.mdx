@@ -134,6 +134,28 @@ Checks for patterns where there are needless references taken when accessing a f
 - `(&s).f` can be simplified to `s.f`
 - `(&mut s).f = 42;` can be simplified to `s.f = 42;`
 
+### `nested_if`
+
+Checks for nested if statements that can be simplified using the `&&` operator. This lint identifies patterns where an inner if statement with no else branch is contained within an outer if statement that also has no else branch.
+
+```move
+if (a) {
+    if (b) {
+        // some code
+    }
+}
+```
+
+This pattern can be simplified to:
+
+```move
+if (a && b) {
+    // some code
+}
+```
+
+The simplified version is more readable and avoids unnecessary nesting while maintaining the same logical behavior.
+
 ### `nonminimal_bool`
 
 Check for boolean expressions that can be simplified when a boolean literal (either `true` or `false`) is part of a binary or unary boolean operator. Examples:
