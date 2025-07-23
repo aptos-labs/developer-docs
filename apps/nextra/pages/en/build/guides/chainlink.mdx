@@ -1,0 +1,155 @@
+---
+Title: Use Chainlink Oracle in Your Aptos Applications
+---
+
+# Chainlink Oracle Integration on Aptos
+
+This reference guide explains how to integrate **Chainlink Data Feeds** into your Aptos applications. 
+
+Chainlink provides tamper-proof, decentralized oracle data that powers the world's leading DeFi protocols and smart contract applications.
+
+## Overview
+
+[Chainlink](https://chain.link/) is the industry-standard decentralized oracle network that enables smart contracts to securely access off-chain data, APIs, and computations. 
+
+## How to Use Chainlink Data Feeds in Aptos Contracts
+
+This guide explains how to integrate Chainlink's reliable data feeds into your Aptos Move applications using the Benchmark structure provided by the data feeds contract.
+
+### Configuring the Move.toml File
+
+Add the Chainlink dependencies to your project in the `Move.toml` file:
+
+```toml
+[package]
+name = "chainlink-example"
+version = "1.0.0"
+authors = []
+
+[addresses]
+sender = "<YOUR_ACCOUNT_ADDRESS>"
+owner = "<YOUR_ACCOUNT_ADDRESS>"
+data_feeds = "0xf1099f135ddddad1c065203431be328a408b0ca452ada70374ce26bd2b32fdd3"  # Testnet
+platform = "0x516e771e1b4a903afe74c27d057c65849ecc1383782f6642d7ff21425f4f9c99"
+move_stdlib = "0x1"
+aptos_std = "0x1"
+
+[dev-addresses]
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "main" }
+MoveStdlib = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/move-stdlib", rev = "main" }
+ChainlinkDataFeeds = { local = "./ChainlinkDataFeeds" }
+```
+
+**Note**: Replace `<YOUR_ACCOUNT_ADDRESS>` with your actual Aptos account address. You can find this in `~/.aptos/config.yaml` or by running:
+```bash
+aptos account list --query balance
+```
+
+The `data_feeds` address is the Chainlink Data Feeds contract address on Aptos testnet. For mainnet, consult the [official Chainlink documentation](https://docs.chain.link/data-feeds/price-feeds/addresses?network=aptos&page=1&testnetPage=1) for the current contract addresses.
+
+### Download Chainlink Dependencies
+
+Download the compiled bytecode for the Chainlink packages:
+
+```bash
+aptos move download --account 0x516e771e1b4a903afe74c27d057c65849ecc1383782f6642d7ff21425f4f9c99 --package ChainlinkPlatform && \
+aptos move download --account 0xccad6853cabea164842907df3de4f89bb34be5bf249bbf16939f9c90db1bf63b --package ChainlinkDataFeeds
+```
+
+Update the ChainlinkDataFeeds package configuration file (`ChainlinkDataFeeds/Move.toml`) to point to your local ChainlinkPlatform dependency:
+
+```toml
+ChainlinkPlatform = { local = "../ChainlinkPlatform" }
+```
+
+### Write Contract Code
+
+Create a Move module that interacts with Chainlink Data Feeds. This example fetches and stores price data:
+
+```move
+module sender::MyOracleContractTest {
+   use std::vector;
+   use std::signer;
+   use data_feeds::router::get_benchmarks;
+   use data_feeds::registry::{Benchmark, get_benchmark_value, get_benchmark_timestamp};
+   use move_stdlib::option::{Option, some, none};
+
+   struct PriceData has copy, key, store {
+      /// The price value with 18 decimal places of precision
+      price: u256,
+      /// Unix timestamp in seconds
+      timestamp: u256,
+   }
+
+   // Function to fetch and store the price data for a given feed ID
+   public entry fun fetch_price(account: &signer, feed_id: vector<u8>) acquires PriceData {
+      let feed_ids = vector[feed_id]; // Use the passed feed_id
+      let billing_data = vector[];
+      let benchmarks: vector<Benchmark> = get_benchmarks(account, feed_ids, billing_data);
+      let benchmark = vector::pop_back(&mut benchmarks);
+      let price: u256 = get_benchmark_value(&benchmark);
+      let timestamp: u256 = get_benchmark_timestamp(&benchmark);
+
+      // Check if PriceData exists and update it
+      if (exists<PriceData>(signer::address_of(account))) {
+            let data = borrow_global_mut<PriceData>(signer::address_of(account));
+            data.price = price;
+            data.timestamp = timestamp;
+      } else {
+            // If PriceData does not exist, create a new one
+            move_to(account, PriceData { price, timestamp });
+      }
+   }
+
+   // View function to get the stored price data
+   #[view]
+   public fun get_price_data(account_address: address): Option<PriceData> acquires PriceData {
+      if (exists<PriceData>(account_address)) {
+            let data = borrow_global<PriceData>(account_address);
+            some(*data)
+      } else {
+            none()
+      }
+   }
+}
+
+```
+
+### Compile and Publish Your Contract
+
+Compile your Move package:
+
+```bash
+aptos move compile --named-addresses sender=<YOUR_ACCOUNT_ADDRESS>
+```
+
+Publish the contract to Aptos testnet:
+
+```bash
+aptos move publish --named-addresses sender=<YOUR_ACCOUNT_ADDRESS>
+```
+
+### Available Feed IDs
+
+Chainlink Data Feeds on Aptos use specific feed IDs to identify different price pairs. Here are some common feed IDs for testnet:
+
+| Asset Pair | Feed ID |
+|------------|---------|
+| BTC/USD | `0x01a0b4d920000332000000000000000000000000000000000000000000000000` |
+| ETH/USD | `0x01d585327c000332000000000000000000000000000000000000000000000000` |
+| APT/USD | `0x011e22d6bf000332000000000000000000000000000000000000000000000000` |
+
+For the complete list of available feeds and their IDs, visit the [Chainlink Feed Addresses page](https://docs.chain.link/data-feeds/aptos#feed-addresses).
+
+## Resources
+
+### Documentation
+- [Official Chainlink Aptos Documentation](https://docs.chain.link/data-feeds/aptos)
+- [Chainlink Data Feeds Overview](https://docs.chain.link/data-feeds)
+- [Feed Addresses and IDs](https://docs.chain.link/data-feeds/price-feeds/addresses?page=1&testnetPage=1&network=aptos)
+
+### Community Support
+- [Chainlink Discord](https://discord.gg/aSK4zew)
+- [Aptos Developer Community](https://discord.gg/aptoslabs)
