@@ -1,4 +1,6 @@
 
+> # Documentation has moved to the new [aptos-docs](https://github.com/aptos-labs/aptos-docs) repository.
+> This repository is now archived and will not receive updates.
 
 <p align="center">
  <img width="100%" src="https://github.com/aptos-labs/aptos-core/raw/main/.assets/aptos_banner.png" alt="Aptos Developer Docs">
