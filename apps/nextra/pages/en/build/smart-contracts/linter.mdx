@@ -168,6 +168,30 @@ Check for boolean expressions that can be simplified when a boolean literal (eit
 Does NOT consider side-effects/short-circuiting in the recommended simplifications. Example:
 - `1/0 || true` is logically equivalent to `true`, but applying this simplification affects program semantics.
 
+### `null_effects`
+
+Checks for statements that can be removed without changing program behavior. Examples:
+- `42;`
+- `*(&mut 0) = /*...*/;`
+- `pure_function(21);`
+
+It also checks for more complex cases, such as
+```move
+{
+    let x = 0;
+    x += 1;
+    x
+};
+```
+and
+```move
+{
+    let x = 0;
+    function_that_modifies_its_argument(&mut x);
+    x
+};
+```
+
 ### `self_assignment`
 
 Checks for patterns where a variable or a field of a struct is assigned to itself and suggests removing the assignment. These assignments do not affect the state of the program. Examples include:
