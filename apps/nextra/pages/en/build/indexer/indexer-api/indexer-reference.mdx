@@ -361,6 +361,157 @@ This tracks the asset balances of each account on-chain. It includes v1 token da
 | cufab_owner_at_index | owner_address, asset_type |
 | current_unified_fungible_asset_balances_pkey | storage_id |
 
+## Delegated Staking
+
+### `current_delegated_staking_pool_balances`
+
+This table tracks the current balances of each account in a delegated staking pool.
+
+| Field                        | Type   | Primary Key | Description                                                                 |
+|------------------------------|--------|-------------|-----------------------------------------------------------------------------|
+| staking_pool_address         | String | Yes         | The address of the staking pool.                                            |
+| total_coins                  | bigint |             | The total number of coins in the staking pool.                              |
+| total_shares                 | bigint |             | The total number of shares in the staking pool.                             |
+| last_transaction_version     | int8   |             | Blockchain version of the last transaction involving this staking pool. Ex. 30000000 |
+| inserted_at                  | String |             | The timestamp when the record was inserted.                                 |
+| operator_commission_percentage | bigint |          | The commission percentage taken by the operator.                            |
+| inactive_table_handle        | String |             | The table handle for the inactive table.                                    |
+| active_table_handle          | String |             | The table handle for the active table.                                      |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| current_delegated_staking_pool_balances_pkey | staking_pool_address |
+
+### `current_delegated_voter`
+
+This table tracks the current delegated voters of a delegation pool.
+
+| Field                      | Type   | Primary Key | Description |
+|----------------------------|--------|-------------|-------------|
+| delegation_pool_address    | String | Yes         | The address of the delegation pool. |
+| delegator_address          | String | Yes         | The address of the delegator. |
+| table_handle               | String |             | The table handle for the delegation pool. |
+| voter                      | String |             | The address of the current voter in the delegation pool. |
+| pending_voter              | String |             | The address of the pending voter awaiting confirmation. |
+| last_transaction_version   | bigint |             | The version number of the last transaction involving this delegation. |
+| last_transaction_timestamp | Timestamp |          | The timestamp of the last transaction involving this delegation. |
+| inserted_at                | Timestamp |          | The timestamp when the record was inserted into the database. |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| current_delegated_voter_pkey | delegation_pool_address, delegator_address |
+| cdv_da_index | delegator_address |
+
+### `current_delegator_balances`
+
+This table tracks the current balances of each account in a delegated staking pool.
+
+| Field                    | Type   | Primary Key | Description |
+|----------------------------|--------|-------------|-------------|
+| delegator_address          | String | Yes            | The address of the delegator.            |
+| pool_address               | String |             | The address of the delegator pool.            |
+| pool_type                | String |             | The type of the pool. Ex. "delegated" |
+| table_handle             | String |             | The table handle for the pool. |
+| last_transaction_version | bigint |             | The version number of the last transaction involving this pool. Ex. 5000000 |
+| inserted_at              | Timestamp |             | The timestamp when the record was inserted. |
+| shares                   | bigint |             | The number of shares in the pool. |
+| parent_table_handle      | String |             | The table handle for the parent table. |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| current_delegator_balances_pkey | delegator_address, pool_address, pool_type, table_handle |
+
+### `current_staking_pool_voter`
+
+This table tracks the current voters of a staking pool.
+
+| Field                    | Type   | Primary Key | Description |
+|----------------------------|--------|-------------|-------------|
+| staking_pool_address       | String | Yes            | The address of the staking pool.            |
+| voter_address              | String |             | The address of the voter.            |
+| last_transaction_version | bigint |             | The version number of the last transaction involving this pool. Ex. 5000000 |
+| inserted_at              | Timestamp |             | The timestamp when the record was inserted. |
+| operator_address         | String |             | The address of the operator. |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| current_staking_pool_voter_pkey | staking_pool_address |
+| ctpv_va_index | voter_address | 
+| ctpv_insat_index | inserted_at |
+
+### `delegated_staking_activities`
+
+This table tracks delegated staking events.
+
+| Field                    | Type   | Primary Key | Description |
+|----------------------------|--------|-------------|-------------|
+| transaction_version      | bigint |             | The version number of the transaction. Ex. 5000000 |
+| event_index              | bigint |             | The index of the event. Ex. 1 |
+| delegator_address        | String |             | The address of the delegator.            |
+| pool_address             | String |             | The address of the pool.            |
+| event_type               | String |             | The event type. Ex. "0x1::stake::DistributeRewardsEvent" |
+| amount                   | bigint |             | The amount being staked. Ex. 1000 |
+| inserted_at              | Timestamp |             | The timestamp when the record was inserted. |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| delegated_staking_activities_pkey | transaction_version, event_index |
+| dsa_pa_da_index | pool_address, delegator_address, transaction_version, event_index |
+| dsa_insat_index | pool_address |
+
+### `delegated_staking_pool_balances`
+
+This table tracks the historical balances of each account in a delegated staking pool.
+
+| Field                    | Type   | Primary Key | Description |
+|----------------------------|--------|-------------|-------------|
+| transaction_version        | bigint |             | The version number of the transaction. Ex. 5000000 |
+| staking_pool_address       | String |             | The address of the staking pool. |
+| total_coins                  | bigint |             | The total number of coins in the staking pool. |
+| total_shares                 | bigint |             | The total number of shares in the staking pool. |
+| inserted_at                  | String |             | The timestamp when the record was inserted. |
+| operator_commission_percentage | bigint |             | The commission percentage taken by the operator. |
+| inactive_table_handle        | String |             | The table handle for the inactive table. |
+| active_table_handle          | String |             | The table handle for the active table. |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| delegated_staking_pool_balances_pkey | transaction_version, staking_pool_address |
+
+### `delegated_staking_pools`
+
+This table tracks the first transaction version that a pool was created.
+
+| Field                    | Type   | Primary Key | Description |
+|----------------------------|--------|-------------|-------------|
+| staking_pool_address       | String |             | The address of the staking pool. |
+| first_transaction_version  | bigint |             | The version number of the first transaction involving this pool. Ex. 5000000 |
+| inserted_at                | Timestamp |             | The timestamp when the record was inserted. |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| delegated_staking_pools_pkey | staking_pool_address |
+
+### `delegator_balances`
+
+This table tracks the historical balances of each account in a delegator.
+
+| Field                    | Type   | Primary Key | Description |
+|----------------------------|--------|-------------|-------------|
+| transaction_version        | bigint |             | The version number of the transaction. Ex. 5000000 |
+| write_set_change_index     | bigint |             | The index of the write set change. Ex. 1 |
+| delegator_address          | String |             | The address of the delegator.            |
+| pool_address               | String |             | The address of the delegator pool.            |
+| pool_type                | String |             | The type of the pool. Ex. "delegated" |
+| table_handle             | String |             | The table handle for the pool. |
+| shares                   | bigint |             | The number of shares in the pool. |
+| parent_table_handle      | String |             | The table handle for the parent table. |
+| inserted_at              | Timestamp |             | The timestamp when the record was inserted. |
+
+| Index Name | Indexed Columns |
+|------------|----------------|
+| delegator_balances_pkey | transaction_version, write_set_change_index |
+
 ## Aptos Naming Service (ANS)
 
 ### `current_aptos_names`
